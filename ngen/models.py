@@ -16,8 +16,8 @@ class Contact(models.Model):
     contact_type = models.CharField(max_length=255)
     contact_case = models.ForeignKey('ContactCase', models.DO_NOTHING, db_column='contact_case', blank=True, null=True)
     discr = models.CharField(max_length=255)
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
+    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
@@ -74,9 +74,10 @@ class Host(models.Model):
 class Incident(models.Model):
     type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
-    state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True)
+    state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True,
+                              related_name='+')
     network = models.ForeignKey('Network', models.DO_NOTHING, blank=True, null=True)
-    reporter = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    reporter = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     date = models.DateTimeField()
     renotification_date = models.DateTimeField(blank=True, null=True)
     slug = models.CharField(max_length=100, blank=True, null=True)
@@ -86,13 +87,13 @@ class Incident(models.Model):
     report_message_id = models.CharField(max_length=255, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     tlp_state = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
-    assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     origin = models.ForeignKey(Host, models.DO_NOTHING, blank=True, null=True)
     ltd_count = models.IntegerField()
     unresponded_state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='unresponded_state', blank=True,
-                                          null=True)
+                                          null=True, related_name='+')
     unsolved_state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='unsolved_state', blank=True,
-                                       null=True)
+                                       null=True, related_name='+')
     response_dead_line = models.DateTimeField(blank=True, null=True)
     solve_dead_line = models.DateTimeField(blank=True, null=True)
     priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, blank=True, null=True)
@@ -137,16 +138,17 @@ class IncidentDecision(models.Model):
     type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     tlp = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp', blank=True, null=True)
-    state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True)
+    state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True,
+                              related_name='+')
     network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     auto_saved = models.IntegerField()
     active = models.IntegerField()
     unresponded_state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='unresponded_state', blank=True,
-                                          null=True)
+                                          null=True, related_name='+')
     unsolved_state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='unsolved_state', blank=True,
-                                       null=True)
+                                       null=True, related_name='+')
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
     priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, blank=True, null=True)
@@ -158,7 +160,7 @@ class IncidentDecision(models.Model):
 
 class IncidentDetected(models.Model):
     incident_id = models.IntegerField(blank=True, null=True)
-    assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True)
@@ -167,11 +169,11 @@ class IncidentDetected(models.Model):
     evidence_file_path = models.CharField(max_length=255, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     active = models.IntegerField()
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    reporter = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    reporter = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
@@ -268,11 +270,11 @@ class IncidentState(models.Model):
 
 class IncidentStateChange(models.Model):
     incident_id = models.IntegerField(blank=True, null=True)
-    responsable = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    responsable = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     date = models.DateTimeField(blank=True, null=True)
     method = models.CharField(max_length=25)
     state_edge = models.ForeignKey('StateEdge', models.DO_NOTHING, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
@@ -432,16 +434,20 @@ class StateBehavior(models.Model):
 
 
 class StateEdge(models.Model):
-    mail_assigned = models.ForeignKey(ContactCase, models.DO_NOTHING, db_column='mail_assigned', blank=True, null=True)
-    mail_team = models.ForeignKey(ContactCase, models.DO_NOTHING, db_column='mail_team', blank=True, null=True)
-    mail_admin = models.ForeignKey(ContactCase, models.DO_NOTHING, db_column='mail_admin', blank=True, null=True)
-    mail_reporter = models.ForeignKey(ContactCase, models.DO_NOTHING, db_column='mail_reporter', blank=True, null=True)
+    mail_assigned = models.ForeignKey(ContactCase, models.DO_NOTHING, db_column='mail_assigned', blank=True, null=True,
+                                      related_name='+')
+    mail_team = models.ForeignKey(ContactCase, models.DO_NOTHING, db_column='mail_team', blank=True, null=True,
+                                  related_name='+')
+    mail_admin = models.ForeignKey(ContactCase, models.DO_NOTHING, db_column='mail_admin', blank=True, null=True,
+                                   related_name='+')
+    mail_reporter = models.ForeignKey(ContactCase, models.DO_NOTHING, db_column='mail_reporter', blank=True, null=True,
+                                      related_name='+')
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     oldstate = models.ForeignKey(IncidentState, models.DO_NOTHING, db_column='oldState', blank=True,
-                                 null=True)  # Field name made lowercase.
+                                 null=True, related_name='+')  # Field name made lowercase.
     newstate = models.ForeignKey(IncidentState, models.DO_NOTHING, db_column='newState', blank=True,
-                                 null=True)  # Field name made lowercase.
+                                 null=True, related_name='+')  # Field name made lowercase.
     discr = models.CharField(max_length=255)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
