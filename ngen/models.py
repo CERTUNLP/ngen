@@ -9,6 +9,7 @@ from django.db import models
 
 
 class Contact(models.Model):
+    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=255)
     encryption_key = models.CharField(max_length=4000, blank=True, null=True)
@@ -56,6 +57,7 @@ class ExtTranslations(models.Model):
 
 
 class Host(models.Model):
+    id = models.BigAutoField(primary_key=True)
     network = models.ForeignKey('Network', models.DO_NOTHING, blank=True, null=True)
     ip = models.CharField(max_length=39, blank=True, null=True)
     domain = models.CharField(max_length=255, blank=True, null=True)
@@ -72,6 +74,7 @@ class Host(models.Model):
 
 
 class Incident(models.Model):
+    id = models.BigAutoField(primary_key=True)
     type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True,
@@ -88,7 +91,7 @@ class Incident(models.Model):
     notes = models.TextField(blank=True, null=True)
     tlp_state = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
     assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    origin = models.ForeignKey(Host, models.DO_NOTHING, blank=True, null=True)
+    origin = models.ForeignKey('Host', models.DO_NOTHING, blank=True, null=True)
     ltd_count = models.IntegerField()
     unresponded_state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='unresponded_state', blank=True,
                                           null=True, related_name='+')
@@ -108,6 +111,7 @@ class Incident(models.Model):
 
 
 class IncidentComment(models.Model):
+    id = models.BigAutoField(primary_key=True)
     thread = models.ForeignKey('IncidentCommentThread', models.DO_NOTHING, blank=True, null=True)
     author = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     body = models.TextField()
@@ -135,6 +139,7 @@ class IncidentCommentThread(models.Model):
 
 
 class IncidentDecision(models.Model):
+    id = models.BigAutoField(primary_key=True)
     type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     tlp = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp', blank=True, null=True)
@@ -159,6 +164,7 @@ class IncidentDecision(models.Model):
 
 
 class IncidentDetected(models.Model):
+    id = models.BigAutoField(primary_key=True)
     incident_id = models.IntegerField(blank=True, null=True)
     assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
@@ -217,7 +223,7 @@ class IncidentPriority(models.Model):
     response_time = models.IntegerField()
     solve_time = models.IntegerField()
     code = models.IntegerField()
-    impact = models.ForeignKey(IncidentImpact, models.DO_NOTHING, db_column='impact', blank=True, null=True)
+    impact = models.ForeignKey('IncidentImpact', models.DO_NOTHING, db_column='impact', blank=True, null=True)
     urgency = models.ForeignKey('IncidentUrgency', models.DO_NOTHING, db_column='urgency', blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
@@ -269,6 +275,7 @@ class IncidentState(models.Model):
 
 
 class IncidentStateChange(models.Model):
+    id = models.BigAutoField(primary_key=True)
     incident_id = models.IntegerField(blank=True, null=True)
     responsable = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     date = models.DateTimeField(blank=True, null=True)
@@ -339,6 +346,7 @@ class IncidentUrgency(models.Model):
 
 
 class Message(models.Model):
+    id = models.BigAutoField(primary_key=True)
     data = models.JSONField()
     updated_at = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
@@ -364,6 +372,7 @@ class MigrationVersions(models.Model):
 
 
 class Network(models.Model):
+    id = models.BigAutoField(primary_key=True)
     network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
     network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
     ip_mask = models.IntegerField(blank=True, null=True)
@@ -386,6 +395,7 @@ class Network(models.Model):
 
 
 class NetworkAdmin(models.Model):
+    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.CharField(unique=True, max_length=100, blank=True, null=True)
     active = models.IntegerField()
@@ -400,6 +410,7 @@ class NetworkAdmin(models.Model):
 
 
 class NetworkEntity(models.Model):
+    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
@@ -434,6 +445,7 @@ class StateBehavior(models.Model):
 
 
 class StateEdge(models.Model):
+    id = models.BigAutoField(primary_key=True)
     mail_assigned = models.ForeignKey(ContactCase, models.DO_NOTHING, db_column='mail_assigned', blank=True, null=True,
                                       related_name='+')
     mail_team = models.ForeignKey(ContactCase, models.DO_NOTHING, db_column='mail_team', blank=True, null=True,
@@ -494,6 +506,7 @@ class TaxonomyValue(models.Model):
 
 
 class User(models.Model):
+    id = models.BigAutoField(primary_key=True)
     firstname = models.CharField(max_length=50)
     lastname = models.CharField(max_length=50)
     email = models.CharField(max_length=180)
