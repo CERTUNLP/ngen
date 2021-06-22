@@ -2,7 +2,8 @@ from rest_framework import serializers
 
 from ngen.models import Incident, Network, IncidentType, IncidentFeed, IncidentState, StateBehavior, TaxonomyValue, \
     User, NetworkAdmin, NetworkEntity, TaxonomyPredicate, IncidentTlp, Host, IncidentPriority, IncidentImpact, \
-    IncidentUrgency
+    IncidentUrgency, IncidentDecision, IncidentDetected, IncidentReport, IncidentStateChange, StateEdge, Contact, \
+    ContactCase
 
 
 class IncidentSerializer(serializers.HyperlinkedModelSerializer):
@@ -10,11 +11,6 @@ class IncidentSerializer(serializers.HyperlinkedModelSerializer):
         model = Incident
         # fields = ['id', 'network', 'type', 'feed', 'state', 'reporter']
         fields = '__all__'
-        # extra_kwargs = {
-        #     'incidenttype': {'lookup_field': 'slug'},
-        #     'incidentfeed': {'lookup_field': 'slug'},
-        #     'incidentstate': {'lookup_field': 'slug'}
-        # }
 
 
 class IncidentTypeSerializer(serializers.HyperlinkedModelSerializer):
@@ -23,13 +19,16 @@ class IncidentTypeSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class IncidentReportSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = IncidentReport
+        fields = '__all__'
+
+
 class TaxonomyValueSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TaxonomyValue
         fields = '__all__'
-        # extra_kwargs = {
-        #     'taxonomypredicate': {'lookup_field': 'slug'}
-        # }
 
 
 class TaxonomyPredicateSerializer(serializers.HyperlinkedModelSerializer):
@@ -48,9 +47,18 @@ class IncidentStateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = IncidentState
         fields = '__all__'
-        # extra_kwargs = {
-        #     'statebehavior': {'lookup_field': 'slug'}
-        # }
+
+
+class IncidentStateChangeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = IncidentStateChange
+        fields = '__all__'
+
+
+class StateEdgeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = StateEdge
+        fields = '__all__'
 
 
 class StateBehaviorSerializer(serializers.HyperlinkedModelSerializer):
@@ -83,6 +91,18 @@ class IncidentImpactSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class IncidentDecisionSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = IncidentDecision
+        fields = '__all__'
+
+
+class IncidentDetectedSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = IncidentDetected
+        fields = '__all__'
+
+
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Network
@@ -104,6 +124,18 @@ class NetworkEntitySerializer(serializers.HyperlinkedModelSerializer):
 class HostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Host
+        fields = '__all__'
+
+
+class ContactSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Contact
+        fields = '__all__'
+
+
+class ContactCaseSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ContactCase
         fields = '__all__'
 
 

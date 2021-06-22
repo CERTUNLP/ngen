@@ -239,9 +239,9 @@ class IncidentPriority(models.Model):
 
 
 class IncidentReport(models.Model):
+    slug = models.CharField(primary_key=True, max_length=64)
     lang = models.CharField(max_length=2)
     type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-    slug = models.CharField(primary_key=True, max_length=64)
     problem = models.TextField()
     derivated_problem = models.TextField(blank=True, null=True)
     verification = models.TextField(blank=True, null=True)
@@ -360,15 +360,6 @@ class Message(models.Model):
     class Meta:
         managed = False
         db_table = 'message'
-
-
-class MigrationVersions(models.Model):
-    version = models.CharField(primary_key=True, max_length=14)
-    executed_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'migration_versions'
 
 
 class Network(models.Model):
