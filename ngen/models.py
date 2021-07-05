@@ -24,7 +24,6 @@ class Contact(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'contact'
 
 
@@ -39,7 +38,6 @@ class ContactCase(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'contact_case'
 
 
@@ -51,7 +49,6 @@ class ExtTranslations(models.Model):
     content = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'ext_translations'
         unique_together = (('locale', 'object_class', 'field', 'foreign_key'),)
 
@@ -69,7 +66,6 @@ class Host(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'host'
 
 
@@ -106,7 +102,6 @@ class Incident(models.Model):
     raw = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'incident'
 
 
@@ -121,7 +116,6 @@ class IncidentComment(models.Model):
     state = models.IntegerField()
 
     class Meta:
-        managed = False
         db_table = 'incident_comment'
 
 
@@ -134,7 +128,6 @@ class IncidentCommentThread(models.Model):
     last_comment_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'incident_comment_thread'
 
 
@@ -159,7 +152,6 @@ class IncidentDecision(models.Model):
     priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'incident_decision'
 
 
@@ -183,7 +175,6 @@ class IncidentDetected(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'incident_detected'
 
 
@@ -198,7 +189,6 @@ class IncidentFeed(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'incident_feed'
 
 
@@ -213,7 +203,6 @@ class IncidentImpact(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'incident_impact'
 
 
@@ -234,7 +223,6 @@ class IncidentPriority(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'incident_priority'
 
 
@@ -254,7 +242,6 @@ class IncidentReport(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'incident_report'
 
 
@@ -270,7 +257,6 @@ class IncidentState(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'incident_state'
 
 
@@ -287,7 +273,6 @@ class IncidentStateChange(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'incident_state_change'
 
 
@@ -308,7 +293,6 @@ class IncidentTlp(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'incident_tlp'
 
 
@@ -326,7 +310,6 @@ class IncidentType(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'incident_type'
 
 
@@ -341,7 +324,6 @@ class IncidentUrgency(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'incident_urgency'
 
 
@@ -358,7 +340,6 @@ class Message(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'message'
 
 
@@ -381,7 +362,6 @@ class Network(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'network'
 
 
@@ -396,7 +376,6 @@ class NetworkAdmin(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'network_admin'
 
 
@@ -411,7 +390,6 @@ class NetworkEntity(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'network_entity'
 
 
@@ -431,7 +409,6 @@ class StateBehavior(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'state_behavior'
 
 
@@ -456,7 +433,6 @@ class StateEdge(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'state_edge'
 
 
@@ -473,7 +449,6 @@ class TaxonomyPredicate(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'taxonomy_predicate'
 
 
@@ -492,7 +467,6 @@ class TaxonomyValue(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'taxonomy_value'
 
 
@@ -518,5 +492,4 @@ class User(models.Model):
     created_by = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'user'
