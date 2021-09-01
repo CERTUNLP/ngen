@@ -5,7 +5,10 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+import ipaddress
+
 from django.db import models
+from django_dnf.fields import DomainNameField
 
 
 class Contact(models.Model):
@@ -51,22 +54,6 @@ class ExtTranslations(models.Model):
     class Meta:
         db_table = 'ext_translations'
         unique_together = (('locale', 'object_class', 'field', 'foreign_key'),)
-
-
-class Host(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    network = models.ForeignKey('Network', models.DO_NOTHING, blank=True, null=True)
-    ip = models.CharField(max_length=39, blank=True, null=True)
-    domain = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    slug = models.CharField(max_length=100, blank=True, null=True)
-    active = models.IntegerField()
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'host'
 
 
 class Incident(models.Model):
@@ -343,16 +330,36 @@ class Message(models.Model):
         db_table = 'message'
 
 
-class Network(models.Model):
+class NetworkElement(models.Model):
     id = models.BigAutoField(primary_key=True)
-    network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
-    network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
-    ip_mask = models.IntegerField(blank=True, null=True)
-    ip = models.CharField(max_length=39, blank=True, null=True)
-    active = models.IntegerField()
+    ip = models.GenericIPAddressField(max_length=39, blank=True, null=True)
+    domain = DomainNameField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        abstract = True
+        ordering = ['name']
+
+
+class Host(NetworkElement):
+    network = models.ForeignKey('Network', models.DO_NOTHING, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    domain = models.CharField(max_length=255, blank=True, null=True)
+    slug = models.CharField(max_length=100, blank=True, null=True)
+    active = models.IntegerField()
+    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        db_table = 'host'
+
+
+class Network(NetworkElement):
+    ip_mask = models.IntegerField(blank=True, null=True)
+    network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
+    network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     type = models.CharField(max_length=8, blank=True, null=True)
     country_code = models.CharField(max_length=2, blank=True, null=True)
     ip_start_address = models.CharField(max_length=255, blank=True, null=True)
@@ -360,6 +367,19 @@ class Network(models.Model):
     asn = models.CharField(max_length=255, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+
+    def __init__(self, address, *args, **kwargs):
+        self.address = address
+        super().__init__(*args, **kwargs)
+
+    def ip_and_mask(self):
+        return "%s/%s" % (self.ip, self.ip_mask)
+
+    def save(self, *args, **kwargs):
+        ip_address = ipaddress.ip_network(self.address)
+        self.ip_start_address = ip_address.network_address.exploded
+        self.ip_end_address = ip_address.broadcast_address.exploded
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = 'network'
