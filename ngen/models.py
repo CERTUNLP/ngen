@@ -5,6 +5,7 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+import abc
 import ipaddress
 
 from django.db import models
@@ -330,14 +331,34 @@ class Message(models.Model):
         db_table = 'message'
 
 
-class NetworkElement(models.Model):
+class AbstractModelMeta(abc.ABCMeta, type(models.Model)):
+    pass
+
+
+class NetworkElement(models.Model, metaclass=AbstractModelMeta):
     id = models.BigAutoField(primary_key=True)
     ip = models.GenericIPAddressField(max_length=39, blank=True, null=True)
     domain = DomainNameField(max_length=255, blank=True, null=True)
 
+    def setaddress(self, address):
+        self.address = self.check_address(address)
+
+    def __init__(self, address, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.address = None
+        self.setaddress(address)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
     class Meta:
         abstract = True
         ordering = ['name']
+
+    def check_address(self, address):
+        ip_address = ipaddress.ip_network(address)
+        self.ip = ip_address.network_address.exploded
+        return ip_address
 
 
 class Host(NetworkElement):
@@ -368,17 +389,18 @@ class Network(NetworkElement):
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
-    def __init__(self, address, *args, **kwargs):
-        self.address = address
-        super().__init__(*args, **kwargs)
+    def check_address(self, address):
+        ip_address = ipaddress.ip_network(address)
+        self.ip = ip_address.network_address.exploded
+        self.ip_mask = ip_address.prefixlen
+        self.ip_start_address = ip_address.network_address.exploded
+        self.ip_end_address = ip_address.broadcast_address.exploded
+        return ip_address
 
     def ip_and_mask(self):
         return "%s/%s" % (self.ip, self.ip_mask)
 
     def save(self, *args, **kwargs):
-        ip_address = ipaddress.ip_network(self.address)
-        self.ip_start_address = ip_address.network_address.exploded
-        self.ip_end_address = ip_address.broadcast_address.exploded
         super().save(*args, **kwargs)
 
     class Meta:
