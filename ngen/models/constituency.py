@@ -5,15 +5,15 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
-import abc
 import ipaddress
+from abc import ABCMeta, ABC, abstractmethod
 
 import validators
 from django.db import models
 from django_dnf.fields import DomainNameField
 
 
-class AbstractModelMeta(abc.ABCMeta, type(models.Model)):
+class AbstractModelMeta(ABCMeta, type(models.Model)):
     pass
 
 
@@ -38,9 +38,9 @@ class NetworkElement(models.Model, metaclass=AbstractModelMeta):
     def create(cls, address):
         model = cls(address)
         if model.guess_address_type(address) == model.DOMAIN_ADDRESS:
-            model.address = model.domain_address(address)
+            model.address = AddressDomain(address)
         elif model.guess_address_type(address) in [model.IPV4_ADDRESS, model.IPV6_ADDRESS]:
-            model.address = model.ip_address(address)
+            model.address = AddressIp(address)
         else:
             raise ValueError()
         return model
@@ -48,9 +48,9 @@ class NetworkElement(models.Model, metaclass=AbstractModelMeta):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.ip:
-            self.address = self.ip_address(self.ip)
-        else:
-            self.address = self.domain_address(self.domain)
+            self.address = AddressIp(self.ip)
+        elif self.domain:
+            self.address = AddressDomain(self.domain)
 
     def domain_address(self, address):
         self.domain = address
@@ -134,3 +134,90 @@ class NetworkEntity(models.Model):
 
     class Meta:
         db_table = 'network_entity'
+
+
+class Address(ABC):
+    # _address = None
+
+    # address_mask = None
+
+    def __init__(self, address):
+        self.address = address
+
+    @property
+    def address(self):
+        return self._address
+
+    @address.setter
+    def address(self, value):
+        self._address = self.create_address_object(value)
+
+    @property
+    @abstractmethod
+    def address_mask(self):
+        pass
+
+    @address_mask.setter
+    def address_mask(self, value):
+        self._address_mask = value
+
+    @abstractmethod
+    def in_range(self, other):
+        pass
+
+    @abstractmethod
+    def in_range(self, other):
+        pass
+
+    @abstractmethod
+    def create_address_object(self, address):
+        pass
+
+    def __eq__(self, other):
+        return self.address == other.address
+
+    def __contains__(self, other):
+        self.in_range(other)
+
+
+class AddressIp(Address):
+
+    @property
+    def address(self):
+        return self._address.exploded
+
+    @property
+    def address_mask(self):
+        return self._address.prefixlen
+
+    def create_address_object(self, address: str):
+        return ipaddress.ip_network(address)
+
+    def in_range(self, other: str):
+        return ipaddress.ip_address(other) in self.address
+
+
+class AddressDomain(Address):
+
+    @property
+    def address(self):
+        return self._address
+
+    @property
+    def address_mask(self):
+        return len(self.address.split('.'))
+
+    def create_address_object(self, address):
+        return address
+
+    def in_range(self, other):
+        address_set = set(self.address.split('.'))
+        address_set_other = set(other.address.split('.'))
+
+        if address_set == address_set_other:
+            return True
+
+        if address_set > address_set_other:
+            return set(address_set) & set(address_set_other) == set(address_set_other)
+
+        return False
