@@ -5,11 +5,8 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
-import abc
-import ipaddress
 
 from django.db import models
-from django_dnf.fields import DomainNameField
 
 
 class Contact(models.Model):
@@ -329,110 +326,6 @@ class Message(models.Model):
 
     class Meta:
         db_table = 'message'
-
-
-class AbstractModelMeta(abc.ABCMeta, type(models.Model)):
-    pass
-
-
-class NetworkElement(models.Model, metaclass=AbstractModelMeta):
-    id = models.BigAutoField(primary_key=True)
-    ip = models.GenericIPAddressField(max_length=39, blank=True, null=True)
-    domain = DomainNameField(max_length=255, blank=True, null=True)
-
-    def setaddress(self, address):
-        self.address = self.check_address(address)
-
-    def __init__(self, address, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.address = None
-        self.setaddress(address)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-    class Meta:
-        abstract = True
-        ordering = ['name']
-
-    def check_address(self, address):
-        ip_address = ipaddress.ip_network(address)
-        self.ip = ip_address.network_address.exploded
-        return ip_address
-
-
-class Host(NetworkElement):
-    network = models.ForeignKey('Network', models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    slug = models.CharField(max_length=100, blank=True, null=True)
-    active = models.IntegerField()
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'host'
-
-
-class Network(NetworkElement):
-    ip_mask = models.IntegerField(blank=True, null=True)
-    network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
-    network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
-    active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    type = models.CharField(max_length=8, blank=True, null=True)
-    country_code = models.CharField(max_length=2, blank=True, null=True)
-    ip_start_address = models.CharField(max_length=255, blank=True, null=True)
-    ip_end_address = models.CharField(max_length=255, blank=True, null=True)
-    asn = models.CharField(max_length=255, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    def check_address(self, address):
-        ip_address = ipaddress.ip_network(address)
-        self.ip = ip_address.network_address.exploded
-        self.ip_mask = ip_address.prefixlen
-        self.ip_start_address = ip_address.network_address.exploded
-        self.ip_end_address = ip_address.broadcast_address.exploded
-        return ip_address
-
-    def ip_and_mask(self):
-        return "%s/%s" % (self.ip, self.ip_mask)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-    class Meta:
-        db_table = 'network'
-
-
-class NetworkAdmin(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    slug = models.CharField(unique=True, max_length=100, blank=True, null=True)
-    active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'network_admin'
-
-
-class NetworkEntity(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    slug = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    active = models.IntegerField()
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'network_entity'
 
 
 class StateBehavior(models.Model):
