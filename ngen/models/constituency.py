@@ -34,8 +34,18 @@ class NetworkElement(models.Model, metaclass=AbstractModelMeta):
         if validators.ipv6_cidr(address):
             return self
 
-    def address_and_mask(self):
-        return "%s/%s" % (self.address, self.address_mask)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.ip:
+            self.address = self.ip + '/' + str(self.ip_mask)
+        elif self.domain:
+            self.address = self.domain
+
+    @classmethod
+    def create(cls, address: str):
+        model = cls(address)
+        model.address = address
+        return model
 
     @property
     def address(self) -> "Address":
@@ -53,18 +63,11 @@ class NetworkElement(models.Model, metaclass=AbstractModelMeta):
         else:
             raise ValueError()
 
-    @classmethod
-    def create(cls, address: str):
-        model = cls(address)
-        model.address = address
-        return model
+    def __eq__(self, other: "Address"):
+        return self.address == other.address
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.ip:
-            self.address = self.ip + '/' + str(self.ip_mask)
-        elif self.domain:
-            self.address = self.domain
+    def __contains__(self, other: "Address"):
+        return other.address in self.address
 
     class Meta:
         abstract = True
@@ -170,15 +173,16 @@ class Address(ABC):
     def create_address_object(self, address):
         pass
 
-    def __eq__(self, other):
+    def __eq__(self, other: "Address"):
         return self.address == other.address
 
-    def __contains__(self, other):
-        self.in_range(other)
+    def __contains__(self, other: "Address"):
+        return self.in_range(other)
 
 
 class AddressIp(Address):
 
+    @Address.address.getter
     def address(self):
         return self._address.exploded
 
@@ -188,29 +192,29 @@ class AddressIp(Address):
     def create_address_object(self, address: str):
         return ipaddress.ip_network(address)
 
-    def in_range(self, other: str):
-        return ipaddress.ip_address(other) in self.address
+    def in_range(self, other: Address):
+        return other._address > self._address
 
 
 class AddressDomain(Address):
-
+    @Address.address.getter
     def address(self) -> str:
         return self._address
 
-    def address_mask(self):
+    def address_mask(self: Address):
         return len(self.address.split('.'))
 
     def create_address_object(self, address):
         return address
 
-    def in_range(self, other):
+    def in_range(self: Address, other: Address):
         address_set = set(self.address.split('.'))
         address_set_other = set(other.address.split('.'))
 
         if address_set == address_set_other:
             return True
 
-        if address_set > address_set_other:
-            return set(address_set) & set(address_set_other) == set(address_set_other)
+        if address_set_other > address_set:
+            return address_set & address_set_other == address_set
 
         return False
