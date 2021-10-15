@@ -137,14 +137,14 @@ class NetworkEntity(models.Model):
 
 
 class Address(ABC):
-    # _address = None
-
-    # address_mask = None
+    _address = None
+    _address_mask = None
 
     def __init__(self, address):
         self.address = address
 
     @property
+    @abstractmethod
     def address(self):
         return self._address
 
@@ -166,10 +166,6 @@ class Address(ABC):
         pass
 
     @abstractmethod
-    def in_range(self, other):
-        pass
-
-    @abstractmethod
     def create_address_object(self, address):
         pass
 
@@ -182,11 +178,9 @@ class Address(ABC):
 
 class AddressIp(Address):
 
-    @property
     def address(self):
         return self._address.exploded
 
-    @property
     def address_mask(self):
         return self._address.prefixlen
 
@@ -199,11 +193,9 @@ class AddressIp(Address):
 
 class AddressDomain(Address):
 
-    @property
-    def address(self):
+    def address(self) -> str:
         return self._address
 
-    @property
     def address_mask(self):
         return len(self.address.split('.'))
 
