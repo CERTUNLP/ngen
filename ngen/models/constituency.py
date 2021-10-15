@@ -21,12 +21,12 @@ class NetworkElement(models.Model, metaclass=AbstractModelMeta):
     id = models.BigAutoField(primary_key=True)
     ip = models.GenericIPAddressField(max_length=39, blank=True, null=True)
     domain = DomainNameField(max_length=255, blank=True, null=True)
-    address = None
+    _address = None
     DOMAIN_ADDRESS: int = 1
     IPV4_ADDRESS: int = 2
     IPV6_ADDRESS: int = 3
 
-    def guess_address_type(self, address):
+    def guess_address_type(self, address: str):
         if validators.domain(address):
             return self.DOMAIN_ADDRESS
         if validators.ipv4_cidr(address):
@@ -34,33 +34,37 @@ class NetworkElement(models.Model, metaclass=AbstractModelMeta):
         if validators.ipv6_cidr(address):
             return self
 
-    @classmethod
-    def create(cls, address):
-        model = cls(address)
-        if model.guess_address_type(address) == model.DOMAIN_ADDRESS:
-            model.address = AddressDomain(address)
-        elif model.guess_address_type(address) in [model.IPV4_ADDRESS, model.IPV6_ADDRESS]:
-            model.address = AddressIp(address)
+    def address_and_mask(self):
+        return "%s/%s" % (self.address, self.address_mask)
+
+    @property
+    def address(self) -> "Address":
+        return self._address
+
+    @address.setter
+    def address(self, value: str):
+        if self.guess_address_type(value) == self.DOMAIN_ADDRESS:
+            self._address = AddressDomain(value)
+            self.domain = self.address.address
+        elif self.guess_address_type(value) in [self.IPV4_ADDRESS, self.IPV6_ADDRESS]:
+            self._address = AddressIp(value)
+            self.ip = str(self.address.address)
+            self.ip_mask = self.address.address_mask
         else:
             raise ValueError()
+
+    @classmethod
+    def create(cls, address: str):
+        model = cls(address)
+        model.address = address
         return model
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.ip:
-            self.address = AddressIp(self.ip)
+            self.address = self.ip + '/' + str(self.ip_mask)
         elif self.domain:
-            self.address = AddressDomain(self.domain)
-
-    def domain_address(self, address):
-        self.domain = address
-        return self.domain
-
-    def ip_address(self, address):
-        ip_address = ipaddress.ip_network(address)
-        self.ip = ip_address.network_address.exploded
-        self.ip_mask = ip_address.prefixlen
-        return ip_address
+            self.address = self.domain
 
     class Meta:
         abstract = True
@@ -100,9 +104,6 @@ class Network(NetworkElement):
         self.ip_start_address = ip_address.network_address.exploded
         self.ip_end_address = ip_address.broadcast_address.exploded
         return ip_address
-
-    def ip_and_mask(self):
-        return "%s/%s" % (self.ip, self.ip_mask)
 
     class Meta:
         db_table = 'network'
@@ -146,7 +147,7 @@ class Address(ABC):
     @property
     @abstractmethod
     def address(self):
-        return self._address
+        pass
 
     @address.setter
     def address(self, value):
