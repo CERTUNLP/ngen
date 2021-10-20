@@ -12,12 +12,14 @@ import validators
 from django.db import models
 from django_dnf.fields import DomainNameField
 
+from .incident import NgenModel
+
 
 class AbstractModelMeta(ABCMeta, type(models.Model)):
     pass
 
 
-class NetworkElement(models.Model, metaclass=AbstractModelMeta):
+class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
     id = models.BigAutoField(primary_key=True)
     ip = models.GenericIPAddressField(max_length=39, blank=True, null=True)
     domain = DomainNameField(max_length=255, blank=True, null=True)
@@ -76,12 +78,9 @@ class NetworkElement(models.Model, metaclass=AbstractModelMeta):
 
 class Host(NetworkElement):
     network = models.ForeignKey('Network', models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
     slug = models.CharField(max_length=100, blank=True, null=True)
     active = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         db_table = 'host'
@@ -92,49 +91,48 @@ class Network(NetworkElement):
     network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
     network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
     active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
     type = models.CharField(max_length=8, blank=True, null=True)
     country_code = models.CharField(max_length=2, blank=True, null=True)
     ip_start_address = models.CharField(max_length=255, blank=True, null=True)
     ip_end_address = models.CharField(max_length=255, blank=True, null=True)
     asn = models.CharField(max_length=255, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
-    def ip_address(self, address):
-        ip_address = super().ip_address(address)
-        self.ip_start_address = ip_address.network_address.exploded
-        self.ip_end_address = ip_address.broadcast_address.exploded
-        return ip_address
+    @NetworkElement.address.setter
+    def address(self, value: str):
+        if self.guess_address_type(value) == self.DOMAIN_ADDRESS:
+            self._address = AddressDomain(value)
+            self.domain = self.address.address
+        elif self.guess_address_type(value) in [self.IPV4_ADDRESS, self.IPV6_ADDRESS]:
+            self._address = AddressIp(value)
+            self.ip = str(self.address.address)
+            self.ip_mask = self.address.address_mask
+            self.ip_start_address = self.address.network_address.exploded
+            self.ip_end_address = self.address.broadcast_address.exploded
+        else:
+            raise ValueError()
 
     class Meta:
         db_table = 'network'
 
 
-class NetworkAdmin(models.Model):
+class NetworkAdmin(NgenModel):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.CharField(unique=True, max_length=100, blank=True, null=True)
     active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         db_table = 'network_admin'
 
 
-class NetworkEntity(models.Model):
+class NetworkEntity(NgenModel):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
     active = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         db_table = 'network_entity'
