@@ -10,7 +10,7 @@ from abc import ABCMeta, ABC, abstractmethod
 
 import validators
 from django.db import models
-from django_dnf.fields import DomainNameField
+from netfields import InetAddressField, NetManager, CidrAddressField
 
 from .incident import NgenModel
 
@@ -21,12 +21,13 @@ class AbstractModelMeta(ABCMeta, type(models.Model)):
 
 class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
     id = models.BigAutoField(primary_key=True)
-    ip = models.GenericIPAddressField(max_length=39, blank=True, null=True)
-    domain = DomainNameField(max_length=255, blank=True, null=True)
+    cidr = CidrAddressField(blank=True, null=True)
+    domain = models.CharField(max_length=255, blank=True, null=True)
     _address = None
     DOMAIN_ADDRESS: int = 1
     IPV4_ADDRESS: int = 2
     IPV6_ADDRESS: int = 3
+    objects = NetManager()
 
     def guess_address_type(self, address: str):
         if validators.domain(address):
@@ -39,7 +40,7 @@ class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.ip:
-            self.address = self.ip + '/' + str(self.ip_mask)
+            self.address = self.ip.ip.exploded + '/' + str(self.ip_mask)
         elif self.domain:
             self.address = self.domain
 
@@ -68,8 +69,15 @@ class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
     def __eq__(self, other: "Address"):
         return self.address == other.address
 
+    def __repr__(self):
+        return self.address.address
+
     def __contains__(self, other: "Address"):
+        # b.address._address.subnet_of(a.address._address)
         return other.address in self.address
+
+    def is_default(self):
+        return self.address.address_mask == 0
 
     class Meta:
         abstract = True
@@ -81,20 +89,18 @@ class Host(NetworkElement):
     slug = models.CharField(max_length=100, blank=True, null=True)
     active = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    ip = InetAddressField(blank=True, null=True)
 
     class Meta:
         db_table = 'host'
 
 
 class Network(NetworkElement):
-    ip_mask = models.IntegerField(blank=True, null=True)
     network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
     network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
     active = models.BooleanField(default=True)
     type = models.CharField(max_length=8, blank=True, null=True)
     country_code = models.CharField(max_length=2, blank=True, null=True)
-    ip_start_address = models.CharField(max_length=255, blank=True, null=True)
-    ip_end_address = models.CharField(max_length=255, blank=True, null=True)
     asn = models.CharField(max_length=255, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
 
@@ -107,8 +113,8 @@ class Network(NetworkElement):
             self._address = AddressIp(value)
             self.ip = str(self.address.address)
             self.ip_mask = self.address.address_mask
-            self.ip_start_address = self.address.network_address.exploded
-            self.ip_end_address = self.address.broadcast_address.exploded
+            self.ip_start_address = self.address._address.network_address.exploded
+            self.ip_end_address = self.address._address.broadcast_address.exploded
         else:
             raise ValueError()
 

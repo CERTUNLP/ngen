@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'ngen.apps.NgenConfig',
     'django_dnf',
+    'netfields'
 ]
 
 MIDDLEWARE = [
@@ -75,13 +76,21 @@ WSGI_APPLICATION = 'djangoProject.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'ngen2',
+    #     'USER': 'ngenuser',
+    #     'PASSWORD': 'ngenpass',
+    #     'HOST': '172.18.0.2',
+    #     # 'PORT': '8002',
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ngen2',
-        'USER': 'ngenuser',
-        'PASSWORD': 'ngenpass',
-        'HOST': '172.18.0.2',
-        # 'PORT': '8002',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ngen',
+        'USER': 'postgres',
+        'PASSWORD': 'example',
+        'HOST': '172.21.0.3',
+        # 'PORT': '',
     }
 }
 # DATABASES = {
