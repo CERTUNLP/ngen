@@ -39,8 +39,8 @@ class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.ip:
-            self.address = self.ip.ip.exploded + '/' + str(self.ip_mask)
+        if self.cidr:
+            self.address = self.cidr.exploded
         elif self.domain:
             self.address = self.domain
 
@@ -103,7 +103,7 @@ class Network(NetworkElement):
     country_code = models.CharField(max_length=2, blank=True, null=True)
     asn = models.CharField(max_length=255, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-
+    hosts = models.ManyToOneRel
     @NetworkElement.address.setter
     def address(self, value: str):
         if self.guess_address_type(value) == self.DOMAIN_ADDRESS:

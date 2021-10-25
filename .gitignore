@@ -131,3 +131,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 /.idea/
+/dbname.json
+/postgres_data/
+/ngen-adminer-postgrs.sql
