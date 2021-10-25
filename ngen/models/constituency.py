@@ -91,6 +91,13 @@ class Host(NetworkElement):
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     ip = InetAddressField(blank=True, null=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.ip:
+            self.address = self.ip.exploded
+        elif self.domain:
+            self.address = self.domain
+
     class Meta:
         db_table = 'host'
 
@@ -103,7 +110,7 @@ class Network(NetworkElement):
     country_code = models.CharField(max_length=2, blank=True, null=True)
     asn = models.CharField(max_length=255, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    hosts = models.ManyToOneRel
+
     @NetworkElement.address.setter
     def address(self, value: str):
         if self.guess_address_type(value) == self.DOMAIN_ADDRESS:
