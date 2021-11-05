@@ -104,6 +104,12 @@ class IncidentDetectedSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
+    host_set = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='host-detail'
+    )
+
     class Meta:
         model = Network
         fields = '__all__'

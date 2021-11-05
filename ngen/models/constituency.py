@@ -47,7 +47,7 @@ class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
     @classmethod
     def create(cls, address: str):
         model = cls(address)
-        model.address = address
+        model.cidr = address
         return model
 
     @property
@@ -125,8 +125,16 @@ class Network(NetworkElement):
         else:
             raise ValueError()
 
+    def save(self, *args, **kwargs):
+        if not self.is_default() and self.cidr:
+            self.host_set.clear()
+            Host.objects.filter(ip__net_contained=self.cidr.exploded).update(network=self)
+
+        super(Network, self).save(*args, **kwargs)
+
     class Meta:
         db_table = 'network'
+        ordering = ['cidr']
 
 
 class NetworkAdmin(NgenModel):
