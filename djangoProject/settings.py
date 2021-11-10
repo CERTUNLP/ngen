@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'ngen.apps.NgenConfig',
-    'django_dnf',
-    'netfields'
+    'django.contrib.postgres',
+    'netfields',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -116,7 +117,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 # Internationalization

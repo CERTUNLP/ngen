@@ -1,5 +1,6 @@
+import django_filters
+from rest_framework import permissions, filters
 from rest_framework import viewsets
-from rest_framework import permissions
 
 from ngen.models import Incident, Network, IncidentType, IncidentFeed, IncidentState, StateBehavior, TaxonomyValue, \
     User, NetworkEntity, NetworkAdmin, TaxonomyPredicate, IncidentTlp, Host, IncidentPriority, IncidentUrgency, \
@@ -115,6 +116,9 @@ class IncidentImpactViewSet(viewsets.ModelViewSet):
 class NetworkViewSet(viewsets.ModelViewSet):
     queryset = Network.objects.all()
     serializer_class = NetworkSerializer
+    filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend]
+    search_fields = ['cidr', 'type', 'domain']
+    filterset_fields = ['type']
     permission_classes = [permissions.IsAuthenticated]
 
 

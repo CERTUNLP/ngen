@@ -10,7 +10,8 @@ from abc import ABCMeta, ABC, abstractmethod
 
 import validators
 from django.db import models
-from netfields import InetAddressField, NetManager, CidrAddressField
+from django.db.models.functions import Length
+from netfields import NetManager, CidrAddressField
 
 from .incident import NgenModel
 
@@ -62,19 +63,20 @@ class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
         elif self.guess_address_type(value) in [self.IPV4_ADDRESS, self.IPV6_ADDRESS]:
             self._address = AddressIp(value)
             self.ip = str(self.address.address)
-            self.ip_mask = self.address.address_mask
         else:
             raise ValueError()
 
-    def __eq__(self, other: "Address"):
-        return self.address == other.address
+    def __eq__(self, other: "NetworkElement"):
+        if isinstance(other, NetworkElement):
+            return self.address == other.address
 
     def __repr__(self):
         return self.address.address
 
-    def __contains__(self, other: "Address"):
+    def __contains__(self, other: "NetworkElement"):
         # b.address._address.subnet_of(a.address._address)
-        return other.address in self.address
+        if isinstance(other, NetworkElement):
+            return other.address in self.address
 
     def is_default(self):
         return self.address.address_mask == 0
@@ -89,7 +91,7 @@ class Host(NetworkElement):
     slug = models.CharField(max_length=100, blank=True, null=True)
     active = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    ip = InetAddressField(blank=True, null=True)
+    ip = CidrAddressField(blank=True, null=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -118,19 +120,22 @@ class Network(NetworkElement):
             self.domain = self.address.address
         elif self.guess_address_type(value) in [self.IPV4_ADDRESS, self.IPV6_ADDRESS]:
             self._address = AddressIp(value)
-            self.ip = str(self.address.address)
-            self.ip_mask = self.address.address_mask
-            self.ip_start_address = self.address._address.network_address.exploded
-            self.ip_end_address = self.address._address.broadcast_address.exploded
         else:
             raise ValueError()
 
     def save(self, *args, **kwargs):
-        if not self.is_default() and self.cidr:
-            self.host_set.clear()
-            Host.objects.filter(ip__net_contained=self.cidr.exploded).update(network=self)
-
         super(Network, self).save(*args, **kwargs)
+        if not self.is_default():
+            self.host_set.clear()
+            if self.cidr:
+                Host.objects.filter(ip__net_contained=self.cidr.exploded).filter(
+                    network__cidr__net_contains=self.cidr.exploded).update(network=self)
+            elif self.domain:
+                Host.objects.filter(domain__endswith=self.domain).update(network=self)
+                Host.objects.filter(domain__endswith=self.domain).annotate(network_domain_length=Length('network__domain')).filter(
+                    network_domain_length__lt=len(self.domain)).update(network=self)
+
+
 
     class Meta:
         db_table = 'network'
@@ -161,7 +166,6 @@ class NetworkEntity(NgenModel):
 
 class Address(ABC):
     _address = None
-    _address_mask = None
 
     def __init__(self, address):
         self.address = address
@@ -175,14 +179,9 @@ class Address(ABC):
     def address(self, value):
         self._address = self.create_address_object(value)
 
-    @property
     @abstractmethod
     def address_mask(self):
         pass
-
-    @address_mask.setter
-    def address_mask(self, value):
-        self._address_mask = value
 
     @abstractmethod
     def in_range(self, other):
