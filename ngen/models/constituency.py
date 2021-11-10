@@ -22,8 +22,8 @@ class AbstractModelMeta(ABCMeta, type(models.Model)):
 
 class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
     id = models.BigAutoField(primary_key=True)
-    cidr = CidrAddressField(blank=True, null=True)
-    domain = models.CharField(max_length=255, blank=True, null=True)
+    cidr = CidrAddressField(null=True, unique=True)
+    domain = models.CharField(max_length=255, null=True, unique=True, default=None)
     _address = None
     DOMAIN_ADDRESS: int = 1
     IPV4_ADDRESS: int = 2
@@ -91,7 +91,7 @@ class Host(NetworkElement):
     slug = models.CharField(max_length=100, blank=True, null=True)
     active = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    ip = CidrAddressField(blank=True, null=True)
+    ip = CidrAddressField(null=True, unique=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
