@@ -125,17 +125,19 @@ class Network(NetworkElement):
 
     def save(self, *args, **kwargs):
         super(Network, self).save(*args, **kwargs)
+        hosts = None
         if not self.is_default():
-            self.host_set.clear()
             if self.cidr:
-                Host.objects.filter(ip__net_contained=self.cidr.exploded).filter(
-                    network__cidr__net_contains=self.cidr.exploded).update(network=self)
+                hosts = Host.objects.filter(ip__net_contained=self.cidr.exploded).filter(
+                    network__cidr__net_contains=self.cidr.exploded)
             elif self.domain:
-                Host.objects.filter(domain__endswith=self.domain).update(network=self)
-                Host.objects.filter(domain__endswith=self.domain).annotate(network_domain_length=Length('network__domain')).filter(
-                    network_domain_length__lt=len(self.domain)).update(network=self)
-
-
+                hosts = Host.objects.filter(domain__endswith=self.domain).exclude(
+                    network__domain__exact=self.domain).annotate(
+                    network_domain_length=Length('network__domain')).filter(
+                    network_domain_length__lt=len(self.domain))
+            if hosts:
+                self.host_set.clear()
+                hosts.update(network=self)
 
     class Meta:
         db_table = 'network'
