@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'ngen.apps.NgenConfig',
     'django.contrib.postgres',
     'netfields',
-    'django_filters'
+    'django_filters',
+    'treebeard'
 ]
 
 MIDDLEWARE = [

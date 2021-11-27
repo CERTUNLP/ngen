@@ -10,8 +10,9 @@ from abc import ABCMeta, ABC, abstractmethod
 
 import validators
 from django.db import models
-from django.db.models.functions import Length
+from django.db.models import F
 from netfields import NetManager, CidrAddressField
+from treebeard.al_tree import AL_Node
 
 from .incident import NgenModel
 
@@ -36,19 +37,22 @@ class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
         if validators.ipv4_cidr(address):
             return self.IPV4_ADDRESS
         if validators.ipv6_cidr(address):
-            return self
+            return self.IPV6_ADDRESS
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.cidr:
-            self.address = self.cidr.exploded
+            if isinstance(self.cidr, str):
+                self.address = self.cidr
+            else:
+                self.address = self.cidr.exploded
         elif self.domain:
             self.address = self.domain
 
     @classmethod
     def create(cls, address: str):
         model = cls(address)
-        model.cidr = address
+        model.address = address
         return model
 
     @property
@@ -91,20 +95,12 @@ class Host(NetworkElement):
     slug = models.CharField(max_length=100, blank=True, null=True)
     active = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    ip = CidrAddressField(null=True, unique=True)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.ip:
-            self.address = self.ip.exploded
-        elif self.domain:
-            self.address = self.domain
 
     class Meta:
         db_table = 'host'
 
 
-class Network(NetworkElement):
+class Network(NetworkElement, AL_Node):
     network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
     network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
     active = models.BooleanField(default=True)
@@ -112,6 +108,16 @@ class Network(NetworkElement):
     country_code = models.CharField(max_length=2, blank=True, null=True)
     asn = models.CharField(max_length=255, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
+    node_order_by = ['parent', '-cidr', '-domain']
+
+    @classmethod
+    def find_problems(cls):
+        pass
+
+    @classmethod
+    def fix_tree(cls):
+        pass
 
     @NetworkElement.address.setter
     def address(self, value: str):
@@ -125,19 +131,22 @@ class Network(NetworkElement):
 
     def save(self, *args, **kwargs):
         super(Network, self).save(*args, **kwargs)
-        hosts = None
+        networks = None
         if not self.is_default():
             if self.cidr:
-                hosts = Host.objects.filter(ip__net_contained=self.cidr.exploded).filter(
-                    network__cidr__net_contains=self.cidr.exploded)
+                parent = Network.objects.filter(cidr__net_contains=self.cidr.exploded).order_by('-cidr').first()
+                children = parent.get_children().filter(cidr__net_contained=self.cidr.exploded)
             elif self.domain:
-                hosts = Host.objects.filter(domain__endswith=self.domain).exclude(
-                    network__domain__exact=self.domain).annotate(
-                    network_domain_length=Length('network__domain')).filter(
+                parent =
+                children =
+                networks = Network.objects.filter(domain__endswith=self.domain).exclude(
+                    parent__domain__exact=self.domain).annotate(
+                    network_domain_length=F('parent__domain')).filter(
                     network_domain_length__lt=len(self.domain))
-            if hosts:
-                self.host_set.clear()
-                hosts.update(network=self)
+            if networks:
+                self.parent = parent
+                self.get_children().difference(children).update(parent=self.parent)
+                children.update(parent=self)
 
     class Meta:
         db_table = 'network'
