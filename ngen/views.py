@@ -3,13 +3,13 @@ from rest_framework import permissions, filters
 from rest_framework import viewsets
 
 from ngen.models import Incident, Network, IncidentType, IncidentFeed, IncidentState, StateBehavior, TaxonomyValue, \
-    User, NetworkEntity, NetworkAdmin, TaxonomyPredicate, IncidentTlp, Host, IncidentPriority, IncidentUrgency, \
+    User, NetworkEntity, NetworkAdmin, TaxonomyPredicate, IncidentTlp, IncidentPriority, IncidentUrgency, \
     IncidentImpact, IncidentDecision, IncidentDetected, IncidentReport, IncidentStateChange, StateEdge, Contact, \
     ContactCase
 from ngen.serializers import IncidentSerializer, NetworkSerializer, IncidentTypeSerializer, IncidentFeedSerializer, \
     IncidentStateSerializer, StateBehaviorSerializer, TaxonomyValueSerializer, UserSerializer, NetworkAdminSerializer, \
-    NetworkEntitySerializer, TaxonomyPredicateSerializer, IncidentTlpSerializer, HostSerializer, \
-    IncidentPrioritySerializer, IncidentUrgencySerializer, IncidentImpactSerializer, IncidentDecisionSerializer, \
+    NetworkEntitySerializer, TaxonomyPredicateSerializer, IncidentTlpSerializer, IncidentPrioritySerializer, \
+    IncidentUrgencySerializer, IncidentImpactSerializer, IncidentDecisionSerializer, \
     IncidentDetectedSerializer, IncidentReportSerializer, IncidentStateChangeSerializer, StateEdgeSerializer, \
     ContactSerializer, ContactCaseSerializer
 
@@ -131,12 +131,6 @@ class NetworkAdminViewSet(viewsets.ModelViewSet):
 class NetworkEntityViewSet(viewsets.ModelViewSet):
     queryset = NetworkEntity.objects.all()
     serializer_class = NetworkEntitySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class HostViewSet(viewsets.ModelViewSet):
-    queryset = Host.objects.all()
-    serializer_class = HostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

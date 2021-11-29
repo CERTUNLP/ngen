@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from ngen.models import Incident, Network, IncidentType, IncidentFeed, IncidentState, StateBehavior, TaxonomyValue, \
-    User, NetworkAdmin, NetworkEntity, TaxonomyPredicate, IncidentTlp, Host, IncidentPriority, IncidentImpact, \
+    User, NetworkAdmin, NetworkEntity, TaxonomyPredicate, IncidentTlp, IncidentPriority, IncidentImpact, \
     IncidentUrgency, IncidentDecision, IncidentDetected, IncidentReport, IncidentStateChange, StateEdge, Contact, \
     ContactCase
 
@@ -124,12 +124,6 @@ class NetworkAdminSerializer(serializers.HyperlinkedModelSerializer):
 class NetworkEntitySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = NetworkEntity
-        fields = '__all__'
-
-
-class HostSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Host
         fields = '__all__'
 
 

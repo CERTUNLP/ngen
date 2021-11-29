@@ -2,18 +2,15 @@
 
 from django.db import migrations
 
-from ngen.models import Network, Host
-
 
 def set_cidr(apps, schema_editor):
-    # hosts = apps.get_model('ngen', 'Host')
-    # networks = apps.get_model('ngen', 'Host')
-    net = None
-    for host in Host.objects.all():
-        if host.guess_address_type(host.address.address) == host.DOMAIN_ADDRESS:
-            Network.objects.get_or_create(domain=host.address.address)
-        elif host.guess_address_type(host.address.address) in [host.IPV4_ADDRESS, host.IPV6_ADDRESS]:
-            Network.objects.get_or_create(cidr=host.address.address)
+    hosts = apps.get_model('ngen', 'Host')
+    networks = apps.get_model('ngen', 'Host')
+    for host in hosts.objects.all():
+        if host.domain:
+            networks.objects.get_or_create(domain=host.address.address)
+        elif host.cidr:
+            networks.objects.get_or_create(cidr=host.address.address)
 
 
 class Migration(migrations.Migration):

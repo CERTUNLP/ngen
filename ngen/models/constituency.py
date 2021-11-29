@@ -22,10 +22,17 @@ class AbstractModelMeta(ABCMeta, type(models.Model)):
     pass
 
 
-class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
+class Network(NgenModel, AL_Node):
     id = models.BigAutoField(primary_key=True)
     cidr = CidrAddressField(null=True, unique=True)
     domain = models.CharField(max_length=255, null=True, unique=True, default=None)
+    network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
+    network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
+    active = models.BooleanField(default=True)
+    type = models.CharField(max_length=8, blank=True, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
+    node_order_by = ['parent', '-cidr', 'domain']
     _address = None
     DOMAIN_ADDRESS: int = 1
     IPV4_ADDRESS: int = 2
@@ -67,50 +74,23 @@ class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
             self.domain = self.address.address
         elif self.guess_address_type(value) in [self.IPV4_ADDRESS, self.IPV6_ADDRESS]:
             self._address = AddressIp(value)
-            self.ip = str(self.address.address)
         else:
             raise ValueError()
 
-    def __eq__(self, other: "NetworkElement"):
-        if isinstance(other, NetworkElement):
+    def __eq__(self, other: "Network"):
+        if isinstance(other, Network):
             return self.address == other.address
 
     def __repr__(self):
         return self.address.address
 
-    def __contains__(self, other: "NetworkElement"):
+    def __contains__(self, other: "Network"):
         # b.address._address.subnet_of(a.address._address)
-        if isinstance(other, NetworkElement):
+        if isinstance(other, Network):
             return other.address in self.address
 
     def is_default(self):
         return self.address.address == '0.0.0.0/0'
-
-    class Meta:
-        abstract = True
-        ordering = ['name']
-
-
-class Host(NetworkElement):
-    network = models.ForeignKey('Network', models.DO_NOTHING, blank=True, null=True)
-    slug = models.CharField(max_length=100, blank=True, null=True)
-    active = models.IntegerField()
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        db_table = 'host'
-
-
-class Network(NetworkElement, AL_Node):
-    network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
-    network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
-    active = models.BooleanField(default=True)
-    type = models.CharField(max_length=8, blank=True, null=True)
-    country_code = models.CharField(max_length=2, blank=True, null=True)
-    asn = models.CharField(max_length=255, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
-    node_order_by = ['parent', '-cidr', 'domain']
 
     @classmethod
     def find_problems(cls):
@@ -120,16 +100,6 @@ class Network(NetworkElement, AL_Node):
     def fix_tree(cls):
         for network in Network.objects.all():
             network.save()
-
-    @NetworkElement.address.setter
-    def address(self, value: str):
-        if self.guess_address_type(value) == self.DOMAIN_ADDRESS:
-            self._address = AddressDomain(value)
-            self.domain = self.address.address
-        elif self.guess_address_type(value) in [self.IPV4_ADDRESS, self.IPV6_ADDRESS]:
-            self._address = AddressIp(value)
-        else:
-            raise ValueError()
 
     def save(self, *args, **kwargs):
         parent = None
@@ -165,7 +135,7 @@ class Network(NetworkElement, AL_Node):
 
     class Meta:
         db_table = 'network'
-        ordering = ['cidr']
+        ordering = ['-cidr', 'domain']
 
 
 class NetworkAdmin(NgenModel):

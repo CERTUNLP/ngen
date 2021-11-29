@@ -14,19 +14,6 @@ class NgenModel(TimeStampedModel, SoftDeletableModel):
     class Meta:
         abstract = True
 
-
-class ExtTranslations(models.Model):
-    locale = models.CharField(max_length=8)
-    object_class = models.CharField(max_length=255)
-    field = models.CharField(max_length=32)
-    foreign_key = models.CharField(max_length=64)
-    content = models.TextField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'ext_translations'
-        unique_together = (('locale', 'object_class', 'field', 'foreign_key'),)
-
-
 class Incident(models.Model):
     id = models.BigAutoField(primary_key=True)
     type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
@@ -45,7 +32,6 @@ class Incident(models.Model):
     notes = models.TextField(blank=True, null=True)
     tlp_state = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
     assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    origin = models.ForeignKey('Host', models.DO_NOTHING, blank=True, null=True)
     ltd_count = models.IntegerField()
     unresponded_state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='unresponded_state', blank=True,
                                           null=True, related_name='+')
