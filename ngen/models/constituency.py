@@ -10,7 +10,8 @@ from abc import ABCMeta, ABC, abstractmethod
 
 import validators
 from django.db import models
-from django.db.models import F
+from django.db.models import Q, CharField
+from django.db.models.functions import Length
 from netfields import NetManager, CidrAddressField
 from treebeard.al_tree import AL_Node
 
@@ -83,7 +84,7 @@ class NetworkElement(NgenModel, metaclass=AbstractModelMeta):
             return other.address in self.address
 
     def is_default(self):
-        return self.address.address_mask == 0
+        return self.address.address == '0.0.0.0/0'
 
     class Meta:
         abstract = True
@@ -109,7 +110,7 @@ class Network(NetworkElement, AL_Node):
     asn = models.CharField(max_length=255, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
-    node_order_by = ['parent', '-cidr', '-domain']
+    node_order_by = ['parent', '-cidr', 'domain']
 
     @classmethod
     def find_problems(cls):
@@ -117,7 +118,8 @@ class Network(NetworkElement, AL_Node):
 
     @classmethod
     def fix_tree(cls):
-        pass
+        for network in Network.objects.all():
+            network.save()
 
     @NetworkElement.address.setter
     def address(self, value: str):
@@ -130,23 +132,36 @@ class Network(NetworkElement, AL_Node):
             raise ValueError()
 
     def save(self, *args, **kwargs):
-        super(Network, self).save(*args, **kwargs)
-        networks = None
+        parent = None
+        children = None
         if not self.is_default():
+            if self.get_children():
+                self.get_children().update(parent=self.parent)
             if self.cidr:
                 parent = Network.objects.filter(cidr__net_contains=self.cidr.exploded).order_by('-cidr').first()
                 children = parent.get_children().filter(cidr__net_contained=self.cidr.exploded)
             elif self.domain:
-                parent =
-                children =
-                networks = Network.objects.filter(domain__endswith=self.domain).exclude(
-                    parent__domain__exact=self.domain).annotate(
-                    network_domain_length=F('parent__domain')).filter(
-                    network_domain_length__lt=len(self.domain))
-            if networks:
-                self.parent = parent
-                self.get_children().difference(children).update(parent=self.parent)
-                children.update(parent=self)
+                query = Q(domain='')
+                partition = self.domain.partition('.')[-1]
+                while partition:
+                    query |= Q(domain=partition)
+                    partition = partition.partition('.')[-1]
+
+                parent = Network.objects.filter(query).order_by(Length('domain').desc()).first()
+                CharField.register_lookup(Length)
+                children = parent.get_children().filter(domain__endswith=self.domain).exclude(
+                    domain=self.domain)
+
+            self.parent = parent
+
+        super(Network, self).save(*args, **kwargs)
+
+        if children:
+            children.update(parent=self)
+
+    @classmethod
+    def get_default_network(cls):
+        return cls.objects.get(cidr='0.0.0.0/0')
 
     class Meta:
         db_table = 'network'
