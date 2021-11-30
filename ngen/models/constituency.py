@@ -98,7 +98,7 @@ class Network(NgenModel, AL_Node):
 
     @classmethod
     def fix_tree(cls):
-        for network in Network.objects.all():
+        for network in Network.objects.exclude(cidr__endswith='32').exclude(cidr='0.0.0.0/0').order_by('cidr'):
             network.save()
 
     def save(self, *args, **kwargs):
@@ -109,6 +109,8 @@ class Network(NgenModel, AL_Node):
                 self.get_children().update(parent=self.parent)
             if self.cidr:
                 parent = Network.objects.filter(cidr__net_contains=self.cidr.exploded).order_by('-cidr').first()
+                if not parent:
+                    parent = Network.get_default_network()
                 children = parent.get_children().filter(cidr__net_contained=self.cidr.exploded)
             elif self.domain:
                 query = Q(domain='')

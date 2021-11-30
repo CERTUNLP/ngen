@@ -2,11 +2,11 @@
 
 from django.db import migrations
 
-from ngen.models import Network, Incident
+from ngen.models import Network
 
 
 def incident_origin_to_network(apps, schema_editor):
-    incidents = Incident.objects.all()
+    incidents = apps.get_model('ngen', 'Incident').objects.all()
     network = None
     for incident in incidents:
         if incident.origin.domain:

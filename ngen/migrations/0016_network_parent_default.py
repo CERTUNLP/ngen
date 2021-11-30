@@ -2,12 +2,11 @@
 
 from django.db import migrations
 
-from ngen.models import Network
-
 
 def set_cidr(apps, schema_editor):
-    default_network = Network.objects.get(cidr="0.0.0.0/0")
-    for network in Network.objects.all():
+    networks = apps.get_model('ngen', 'Network')
+    default_network = networks.objects.get(cidr="0.0.0.0/0")
+    for network in networks.objects.all():
         if not network.parent:
             network.parent = default_network
             network.save()
