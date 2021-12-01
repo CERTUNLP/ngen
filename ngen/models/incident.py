@@ -10,7 +10,7 @@ from django.db import models
 from model_utils.models import TimeStampedModel, SoftDeletableModel
 
 
-class NgenModel(TimeStampedModel, SoftDeletableModel):
+class NgenModel(TimeStampedModel):
     class Meta:
         abstract = True
 
