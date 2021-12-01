@@ -10,7 +10,7 @@ from abc import ABCMeta, ABC, abstractmethod
 
 import validators
 from django.db import models
-from django.db.models import Q, CharField
+from django.db.models import Q
 from django.db.models.functions import Length
 from netfields import NetManager, CidrAddressField
 from treebeard.al_tree import AL_Node
@@ -101,30 +101,19 @@ class Network(NgenModel, AL_Node):
         for network in Network.objects.exclude(cidr__endswith='32').exclude(cidr='0.0.0.0/0').order_by('cidr'):
             network.save()
 
+    def delete(self):
+        if self.get_children():
+            self.get_children().update(parent=self.parent)
+        super(Network, self).delete()
+
     def save(self, *args, **kwargs):
-        parent = None
         children = None
         if not self.is_default():
             if self.get_children():
                 self.get_children().update(parent=self.parent)
-            if self.cidr:
-                parent = Network.objects.filter(cidr__net_contains=self.cidr.exploded).order_by('-cidr').first()
-                if not parent:
-                    parent = Network.get_default_network()
-                children = parent.get_children().filter(cidr__net_contained=self.cidr.exploded)
-            elif self.domain:
-                query = Q(domain='')
-                partition = self.domain.partition('.')[-1]
-                while partition:
-                    query |= Q(domain=partition)
-                    partition = partition.partition('.')[-1]
 
-                parent = Network.objects.filter(query).order_by(Length('domain').desc()).first()
-                CharField.register_lookup(Length)
-                children = parent.get_children().filter(domain__endswith=self.domain).exclude(
-                    domain=self.domain)
-
-            self.parent = parent
+            self.parent = Network.lookup_parent(self)
+            children = Network.lookup_parent_children(self)
 
         super(Network, self).save(*args, **kwargs)
 
@@ -132,12 +121,38 @@ class Network(NgenModel, AL_Node):
             children.update(parent=self)
 
     @classmethod
+    def lookup_parent(cls, network):
+        parent = None
+        if network.cidr:
+            parent = Network.objects.filter(cidr__net_contains=network.cidr.exploded).order_by('-cidr').first()
+            if not parent:
+                parent = Network.get_default_network()
+        elif network.domain:
+            query = Q(domain='')
+            partition = network.domain.partition('.')[-1]
+            while partition:
+                query |= Q(domain=partition)
+                partition = partition.partition('.')[-1]
+            parent = Network.objects.filter(query).order_by(Length('domain').desc()).first()
+        return parent
+
+    @classmethod
+    def lookup_parent_children(cls, network):
+        children = None
+        if network.cidr:
+            children = network.parent.get_children().filter(cidr__net_contained=network.cidr.exploded)
+        elif network.domain:
+            children = network.parent.get_children().filter(domain__endswith=network.domain).exclude(
+                domain=network.domain)
+        return children
+
+    @classmethod
     def get_default_network(cls):
         return cls.objects.get(cidr='0.0.0.0/0')
 
     class Meta:
         db_table = 'network'
-        ordering = ['-cidr', 'domain']
+        ordering = ['-cidr']
 
 
 class NetworkAdmin(NgenModel):
