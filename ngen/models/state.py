@@ -61,16 +61,6 @@ class StateBehavior(models.Model):
 
 class StateEdge(models.Model):
     id = models.BigAutoField(primary_key=True)
-    mail_assigned = models.ForeignKey("ContactCase", models.DO_NOTHING, db_column='mail_assigned', blank=True,
-                                      null=True,
-                                      related_name='+')
-    mail_team = models.ForeignKey("ContactCase", models.DO_NOTHING, db_column='mail_team', blank=True, null=True,
-                                  related_name='+')
-    mail_admin = models.ForeignKey("ContactCase", models.DO_NOTHING, db_column='mail_admin', blank=True, null=True,
-                                   related_name='+')
-    mail_reporter = models.ForeignKey("ContactCase", models.DO_NOTHING, db_column='mail_reporter', blank=True,
-                                      null=True,
-                                      related_name='+')
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     oldstate = models.ForeignKey(IncidentState, models.DO_NOTHING, db_column='oldState', blank=True,

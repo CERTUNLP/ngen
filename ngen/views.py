@@ -3,15 +3,14 @@ from rest_framework import permissions, filters
 from rest_framework import viewsets
 
 from ngen.models import Incident, Network, IncidentType, IncidentFeed, IncidentState, StateBehavior, TaxonomyValue, \
-    User, NetworkEntity, NetworkAdmin, TaxonomyPredicate, IncidentTlp, IncidentPriority, IncidentUrgency, \
-    IncidentImpact, IncidentDecision, IncidentDetected, IncidentReport, IncidentStateChange, StateEdge, Contact, \
-    ContactCase
+    User, NetworkEntity, NetworkAdmin, TaxonomyPredicate, IncidentTlp, IncidentPriority, IncidentDecision, \
+    IncidentDetected, IncidentReport, IncidentStateChange, StateEdge, Contact
 from ngen.serializers import IncidentSerializer, NetworkSerializer, IncidentTypeSerializer, IncidentFeedSerializer, \
     IncidentStateSerializer, StateBehaviorSerializer, TaxonomyValueSerializer, UserSerializer, NetworkAdminSerializer, \
     NetworkEntitySerializer, TaxonomyPredicateSerializer, IncidentTlpSerializer, IncidentPrioritySerializer, \
-    IncidentUrgencySerializer, IncidentImpactSerializer, IncidentDecisionSerializer, \
+    IncidentDecisionSerializer, \
     IncidentDetectedSerializer, IncidentReportSerializer, IncidentStateChangeSerializer, StateEdgeSerializer, \
-    ContactSerializer, ContactCaseSerializer
+    ContactSerializer
 
 
 class IncidentViewSet(viewsets.ModelViewSet):
@@ -89,12 +88,6 @@ class IncidentPriorityViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class IncidentUrgencyViewSet(viewsets.ModelViewSet):
-    queryset = IncidentUrgency.objects.all()
-    serializer_class = IncidentUrgencySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
 class IncidentDecisionViewSet(viewsets.ModelViewSet):
     queryset = IncidentDecision.objects.all()
     serializer_class = IncidentDecisionSerializer
@@ -104,12 +97,6 @@ class IncidentDecisionViewSet(viewsets.ModelViewSet):
 class IncidentDetectedViewSet(viewsets.ModelViewSet):
     queryset = IncidentDetected.objects.all()
     serializer_class = IncidentDetectedSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class IncidentImpactViewSet(viewsets.ModelViewSet):
-    queryset = IncidentImpact.objects.all()
-    serializer_class = IncidentImpactSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -137,12 +124,6 @@ class NetworkEntityViewSet(viewsets.ModelViewSet):
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class ContactCaseViewSet(viewsets.ModelViewSet):
-    queryset = ContactCase.objects.all()
-    serializer_class = ContactCaseSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

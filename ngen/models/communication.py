@@ -16,30 +16,14 @@ class Contact(models.Model):
     encryption_key = models.CharField(max_length=4000, blank=True, null=True)
     network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
     contact_type = models.CharField(max_length=255)
-    contact_case = models.ForeignKey('ContactCase', models.DO_NOTHING, db_column='contact_case', blank=True, null=True)
-    discr = models.CharField(max_length=255)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+    priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'contact'
-
-
-class ContactCase(models.Model):
-    slug = models.CharField(primary_key=True, max_length=45)
-    name = models.CharField(max_length=45, blank=True, null=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
-    level = models.IntegerField()
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'contact_case'
 
 
 class Message(models.Model):

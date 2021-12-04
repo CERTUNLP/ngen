@@ -32,8 +32,6 @@ router.register(r'incident/state/changes', views.IncidentStateChangeViewSet)
 router.register(r'incident/state/edges', views.StateEdgeViewSet)
 router.register(r'incident/tlps', views.IncidentTlpViewSet)
 router.register(r'incident/priorities', views.IncidentPriorityViewSet)
-router.register(r'incident/priority/impact', views.IncidentImpactViewSet)
-router.register(r'incident/priority/urgency', views.IncidentUrgencyViewSet)
 router.register(r'incident/decisions', views.IncidentDecisionViewSet)
 router.register(r'incident/detections', views.IncidentDetectedViewSet)
 router.register(r'networks', views.NetworkViewSet)
@@ -41,7 +39,6 @@ router.register(r'network/admins', views.NetworkAdminViewSet)
 router.register(r'network/entities', views.NetworkEntityViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'contacts', views.ContactViewSet)
-router.register(r'contact/case', views.ContactCaseViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

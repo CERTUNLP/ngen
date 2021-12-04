@@ -12,6 +12,7 @@ import validators
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Length
+from model_utils import Choices
 from netfields import NetManager, CidrAddressField
 from treebeard.al_tree import AL_Node
 
@@ -126,7 +127,7 @@ class Network(NgenModel, AL_Node):
         if network.cidr:
             parent = Network.objects.filter(cidr__net_contains=network.cidr.exploded).order_by('-cidr').first()
             if not parent:
-                parent = Network.get_default_network()
+                parent = Network.lookup_default_network()
         elif network.domain:
             query = Q(domain='')
             partition = network.domain.partition('.')[-1]
@@ -147,7 +148,7 @@ class Network(NgenModel, AL_Node):
         return children
 
     @classmethod
-    def get_default_network(cls):
+    def lookup_default_network(cls):
         return cls.objects.get(cidr='0.0.0.0/0')
 
     class Meta:
@@ -156,6 +157,8 @@ class Network(NgenModel, AL_Node):
 
 
 class NetworkAdmin(NgenModel):
+    # ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
+    # role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.CharField(unique=True, max_length=100, blank=True, null=True)
