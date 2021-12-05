@@ -3,7 +3,7 @@
 from django.db import migrations
 
 
-def set_cidr(apps, schema_editor):
+def network_parent_default(apps, schema_editor):
     networks = apps.get_model('ngen', 'Network')
     default_network = networks.objects.get(cidr="0.0.0.0/0")
     for network in networks.objects.all():
@@ -18,5 +18,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(set_cidr)
+        migrations.RunPython(network_parent_default)
     ]

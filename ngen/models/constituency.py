@@ -161,12 +161,27 @@ class NetworkAdmin(NgenModel):
     # role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    slug = models.CharField(unique=True, max_length=100, blank=True, null=True)
-    active = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         db_table = 'network_admin'
+
+
+class Contact(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
+    encryption_key = models.CharField(max_length=4000, blank=True, null=True)
+    network_admin = models.ForeignKey('NetworkAdmin', models.CASCADE, blank=True, null=True)
+    TYPE = Choices('email', 'telegram', 'phone')
+    contact_type = models.CharField(choices=TYPE, default=TYPE.email, max_length=20)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, null=True)
+
+    class Meta:
+        db_table = 'contact'
 
 
 class NetworkEntity(NgenModel):

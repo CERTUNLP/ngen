@@ -9,23 +9,6 @@
 from django.db import models
 
 
-class Contact(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    username = models.CharField(max_length=255)
-    encryption_key = models.CharField(max_length=4000, blank=True, null=True)
-    network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
-    contact_type = models.CharField(max_length=255)
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, null=True)
-
-    class Meta:
-        db_table = 'contact'
-
-
 class Message(models.Model):
     id = models.BigAutoField(primary_key=True)
     data = models.JSONField()

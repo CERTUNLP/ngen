@@ -3,7 +3,7 @@
 from django.db import migrations
 
 
-def set_cidr(apps, schema_editor):
+def copy_host_to_network(apps, schema_editor):
     hosts = apps.get_model('ngen', 'Host')
     networks = apps.get_model('ngen', 'Host')
     for host in hosts.objects.all():
@@ -19,5 +19,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(set_cidr)
+        migrations.RunPython(copy_host_to_network)
     ]
