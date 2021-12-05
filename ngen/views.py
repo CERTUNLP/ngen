@@ -3,10 +3,10 @@ from rest_framework import permissions, filters
 from rest_framework import viewsets
 
 from ngen.models import Incident, Network, IncidentType, IncidentFeed, IncidentState, StateBehavior, TaxonomyValue, \
-    User, NetworkEntity, NetworkAdmin, TaxonomyPredicate, IncidentTlp, IncidentPriority, IncidentDecision, \
+    User, NetworkEntity, TaxonomyPredicate, IncidentTlp, IncidentPriority, IncidentDecision, \
     IncidentDetected, IncidentReport, IncidentStateChange, StateEdge, Contact
 from ngen.serializers import IncidentSerializer, NetworkSerializer, IncidentTypeSerializer, IncidentFeedSerializer, \
-    IncidentStateSerializer, StateBehaviorSerializer, TaxonomyValueSerializer, UserSerializer, NetworkAdminSerializer, \
+    IncidentStateSerializer, StateBehaviorSerializer, TaxonomyValueSerializer, UserSerializer, \
     NetworkEntitySerializer, TaxonomyPredicateSerializer, IncidentTlpSerializer, IncidentPrioritySerializer, \
     IncidentDecisionSerializer, \
     IncidentDetectedSerializer, IncidentReportSerializer, IncidentStateChangeSerializer, StateEdgeSerializer, \
@@ -106,12 +106,6 @@ class NetworkViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend]
     search_fields = ['cidr', 'type', 'domain']
     filterset_fields = ['type']
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class NetworkAdminViewSet(viewsets.ModelViewSet):
-    queryset = NetworkAdmin.objects.all()
-    serializer_class = NetworkAdminSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

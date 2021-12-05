@@ -27,8 +27,8 @@ class Network(NgenModel, AL_Node):
     id = models.BigAutoField(primary_key=True)
     cidr = CidrAddressField(null=True, unique=True)
     domain = models.CharField(max_length=255, null=True, unique=True, default=None)
-    network_admin = models.ForeignKey('NetworkAdmin', models.DO_NOTHING, blank=True, null=True)
     network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
+    contacts = models.ManyToManyField('Contact')
     active = models.BooleanField(default=True)
     type = models.CharField(max_length=8, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
@@ -156,25 +156,15 @@ class Network(NgenModel, AL_Node):
         ordering = ['-cidr']
 
 
-class NetworkAdmin(NgenModel):
-    # ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
-    # role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
-    id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        db_table = 'network_admin'
-
-
 class Contact(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    username = models.CharField(max_length=255)
-    encryption_key = models.CharField(max_length=4000, blank=True, null=True)
-    network_admin = models.ForeignKey('NetworkAdmin', models.CASCADE, blank=True, null=True)
+    username = models.CharField(max_length=255, unique=True)
+    public_key = models.CharField(max_length=4000, blank=True, null=True)
     TYPE = Choices('email', 'telegram', 'phone')
     contact_type = models.CharField(choices=TYPE, default=TYPE.email, max_length=20)
+    ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
+    role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
