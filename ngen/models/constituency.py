@@ -27,18 +27,20 @@ class Network(NgenModel, AL_Node):
     id = models.BigAutoField(primary_key=True)
     cidr = CidrAddressField(null=True, unique=True)
     domain = models.CharField(max_length=255, null=True, unique=True, default=None)
-    network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
     contacts = models.ManyToManyField('Contact')
     active = models.BooleanField(default=True)
-    type = models.CharField(max_length=8, blank=True, null=True)
+    TYPE = Choices('internal', 'external')
+    type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
+    network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
+    objects = NetManager()
     node_order_by = ['parent', '-cidr', 'domain']
     _address = None
     DOMAIN_ADDRESS: int = 1
     IPV4_ADDRESS: int = 2
     IPV6_ADDRESS: int = 3
-    objects = NetManager()
+
 
     def guess_address_type(self, address: str):
         if validators.domain(address):
@@ -162,13 +164,16 @@ class Contact(models.Model):
     username = models.CharField(max_length=255, unique=True)
     public_key = models.CharField(max_length=4000, blank=True, null=True)
     TYPE = Choices('email', 'telegram', 'phone')
-    contact_type = models.CharField(choices=TYPE, default=TYPE.email, max_length=20)
+    type = models.CharField(choices=TYPE, default=TYPE.email, max_length=20)
     ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
+
+    def __repr__(self):
+        return self.username
 
     class Meta:
         db_table = 'contact'
@@ -180,6 +185,9 @@ class NetworkEntity(NgenModel):
     slug = models.CharField(max_length=255, blank=True, null=True)
     active = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+
+    def __repr__(self):
+        return self.name
 
     class Meta:
         db_table = 'network_entity'
@@ -217,6 +225,9 @@ class Address(ABC):
 
     def __contains__(self, other: "Address"):
         return self.in_range(other)
+
+    def __repr__(self):
+        return self.address
 
 
 class AddressIp(Address):
