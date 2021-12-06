@@ -41,7 +41,6 @@ class Network(NgenModel, AL_Node):
     IPV4_ADDRESS: int = 2
     IPV6_ADDRESS: int = 3
 
-
     def guess_address_type(self, address: str):
         if validators.domain(address):
             return self.DOMAIN_ADDRESS
@@ -152,6 +151,19 @@ class Network(NgenModel, AL_Node):
     @classmethod
     def lookup_default_network(cls):
         return cls.objects.get(cidr='0.0.0.0/0')
+
+    def get_ancestors_contacts(self):
+        contacts = []
+        for ancestor in self.get_ancestors():
+            for contact in ancestor.contacts.all():
+                contacts.append(contact.username)
+        return contacts
+
+    def get_contacts(self):
+        contacts = []
+        for contact in self.contacts.all():
+            contacts.append(contact.username)
+        return contacts
 
     class Meta:
         db_table = 'network'
