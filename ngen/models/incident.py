@@ -40,7 +40,7 @@ class Incident(models.Model):
                                        null=True, related_name='+')
     response_dead_line = models.DateTimeField(blank=True, null=True)
     solve_dead_line = models.DateTimeField(blank=True, null=True)
-    priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, blank=True, null=True)
+    priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     active = models.IntegerField()
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
@@ -94,7 +94,7 @@ class IncidentDecision(models.Model):
                                        null=True, related_name='+')
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-    priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, blank=True, null=True)
+    priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         db_table = 'incident_decision'
@@ -111,7 +111,7 @@ class IncidentDetected(models.Model):
     date = models.DateTimeField(blank=True, null=True)
     evidence_file_path = models.CharField(max_length=255, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, blank=True, null=True)
+    priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     active = models.IntegerField()
     created_at = models.DateTimeField(blank=True, null=True)
@@ -137,7 +137,7 @@ class IncidentFeed(models.Model):
         db_table = 'incident_feed'
 
 
-class IncidentPriority(models.Model):
+class Priority(models.Model):
     name = models.CharField(max_length=255)
     response_time = models.IntegerField()
     solve_time = models.IntegerField()
@@ -149,9 +149,6 @@ class IncidentPriority(models.Model):
     active = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'incident_priority'
 
 
 class IncidentReport(models.Model):

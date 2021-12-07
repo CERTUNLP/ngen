@@ -5,9 +5,9 @@ from django.db import migrations
 
 def network_parent_default(apps, schema_editor):
     networks = apps.get_model('ngen', 'Network')
-    default_network = networks.objects.get(cidr="0.0.0.0/0")
+    default_network = networks.objects.get_or_create(cidr="0.0.0.0/0", domain='')[0]
     for network in networks.objects.all():
-        if not network.parent:
+        if not network.parent and not network.cidr.exploded == '0.0.0.0/0':
             network.parent = default_network
             network.save()
 

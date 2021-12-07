@@ -7,10 +7,13 @@ def priority_repited_deletion(apps, schema_editor):
     update_priority(apps.get_model('ngen', 'Incident'))
     update_priority(apps.get_model('ngen', 'IncidentDetected'))
     update_priority(apps.get_model('ngen', 'IncidentDecision'))
-    apps.get_model('ngen', 'IncidentPriority').objects.get(pk=7).delete()
-    apps.get_model('ngen', 'IncidentPriority').objects.get(pk=9).delete()
-    apps.get_model('ngen', 'IncidentPriority').objects.get(pk=4).delete()
-    apps.get_model('ngen', 'IncidentPriority').objects.get(pk=8).delete()
+    try:
+        apps.get_model('ngen', 'IncidentPriority').objects.get(pk=7).delete()
+        apps.get_model('ngen', 'IncidentPriority').objects.get(pk=9).delete()
+        apps.get_model('ngen', 'IncidentPriority').objects.get(pk=4).delete()
+        apps.get_model('ngen', 'IncidentPriority').objects.get(pk=8).delete()
+    except:
+        print("Variable x is not defined")
 
 
 def update_priority(manager):

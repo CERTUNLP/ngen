@@ -3,11 +3,11 @@ from rest_framework import permissions, filters
 from rest_framework import viewsets
 
 from ngen.models import Incident, Network, IncidentType, IncidentFeed, IncidentState, StateBehavior, TaxonomyValue, \
-    User, NetworkEntity, TaxonomyPredicate, IncidentTlp, IncidentPriority, IncidentDecision, \
+    User, NetworkEntity, TaxonomyPredicate, IncidentTlp, Priority, IncidentDecision, \
     IncidentDetected, IncidentReport, IncidentStateChange, StateEdge, Contact
 from ngen.serializers import IncidentSerializer, NetworkSerializer, IncidentTypeSerializer, IncidentFeedSerializer, \
     IncidentStateSerializer, StateBehaviorSerializer, TaxonomyValueSerializer, UserSerializer, \
-    NetworkEntitySerializer, TaxonomyPredicateSerializer, IncidentTlpSerializer, IncidentPrioritySerializer, \
+    NetworkEntitySerializer, TaxonomyPredicateSerializer, IncidentTlpSerializer, PrioritySerializer, \
     IncidentDecisionSerializer, \
     IncidentDetectedSerializer, IncidentReportSerializer, IncidentStateChangeSerializer, StateEdgeSerializer, \
     ContactSerializer
@@ -82,9 +82,9 @@ class IncidentTlpViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class IncidentPriorityViewSet(viewsets.ModelViewSet):
-    queryset = IncidentPriority.objects.all()
-    serializer_class = IncidentPrioritySerializer
+class PriorityViewSet(viewsets.ModelViewSet):
+    queryset = Priority.objects.all()
+    serializer_class = PrioritySerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

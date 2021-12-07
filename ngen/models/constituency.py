@@ -42,7 +42,7 @@ class Network(NgenModel, AL_Node):
     IPV6_ADDRESS: int = 3
 
     def guess_address_type(self, address: str):
-        if validators.domain(address):
+        if validators.domain(address) or len(address.split('.')) == 1 and len(address) == 2:
             return self.DOMAIN_ADDRESS
         if validators.ipv4_cidr(address):
             return self.IPV4_ADDRESS
@@ -53,9 +53,8 @@ class Network(NgenModel, AL_Node):
         super().__init__(*args, **kwargs)
         if self.cidr:
             if isinstance(self.cidr, str):
-                self.address = self.cidr
-            else:
-                self.address = self.cidr.exploded
+                self.cidr = ipaddress.ip_network(self.cidr)
+            self.address = self.cidr.exploded
         elif self.domain:
             self.address = self.domain
 
@@ -76,6 +75,7 @@ class Network(NgenModel, AL_Node):
             self.domain = self.address.address
         elif self.guess_address_type(value) in [self.IPV4_ADDRESS, self.IPV6_ADDRESS]:
             self._address = AddressIp(value)
+            self.cidr = self.address.address
         else:
             raise ValueError()
 
@@ -170,7 +170,7 @@ class Network(NgenModel, AL_Node):
         ordering = ['-cidr']
 
 
-class Contact(models.Model):
+class Contact(NgenModel):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
@@ -179,9 +179,7 @@ class Contact(models.Model):
     type = models.CharField(choices=TYPE, default=TYPE.email, max_length=20)
     ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    priority = models.ForeignKey('IncidentPriority', models.DO_NOTHING, null=True)
+    priority = models.ForeignKey('Priority', models.DO_NOTHING, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
 
     def __repr__(self):
@@ -246,7 +244,7 @@ class AddressIp(Address):
 
     @Address.address.getter
     def address(self):
-        return self._address.exploded
+        return self._address
 
     def address_mask(self):
         return self._address.prefixlen
