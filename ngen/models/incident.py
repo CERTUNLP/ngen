@@ -17,7 +17,7 @@ class NgenModel(TimeStampedModel):
 
 class Incident(models.Model):
     id = models.BigAutoField(primary_key=True)
-    type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    type = models.ForeignKey('Taxonomy', models.DO_NOTHING, db_column='type', blank=True, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True,
                               related_name='+')
@@ -78,7 +78,7 @@ class IncidentCommentThread(models.Model):
 
 class IncidentDecision(models.Model):
     id = models.BigAutoField(primary_key=True)
-    type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    type = models.ForeignKey('Taxonomy', models.DO_NOTHING, db_column='type', blank=True, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     tlp = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp', blank=True, null=True)
     state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True,
@@ -104,7 +104,7 @@ class IncidentDetected(models.Model):
     id = models.BigAutoField(primary_key=True)
     incident_id = models.IntegerField(blank=True, null=True)
     assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    type = models.ForeignKey('Taxonomy', models.DO_NOTHING, db_column='type', blank=True, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True)
     tlp_state = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)

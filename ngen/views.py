@@ -2,12 +2,12 @@ import django_filters
 from rest_framework import permissions, filters
 from rest_framework import viewsets
 
-from ngen.models import Incident, Network, IncidentType, IncidentFeed, IncidentState, StateBehavior, TaxonomyValue, \
-    User, NetworkEntity, TaxonomyPredicate, IncidentTlp, Priority, IncidentDecision, \
+from ngen.models import Incident, Network, Taxonomy, IncidentFeed, IncidentState, StateBehavior, \
+    User, NetworkEntity, IncidentTlp, Priority, IncidentDecision, \
     IncidentDetected, IncidentReport, IncidentStateChange, StateEdge, Contact
-from ngen.serializers import IncidentSerializer, NetworkSerializer, IncidentTypeSerializer, IncidentFeedSerializer, \
-    IncidentStateSerializer, StateBehaviorSerializer, TaxonomyValueSerializer, UserSerializer, \
-    NetworkEntitySerializer, TaxonomyPredicateSerializer, IncidentTlpSerializer, PrioritySerializer, \
+from ngen.serializers import IncidentSerializer, NetworkSerializer, TaxonomySerializer, IncidentFeedSerializer, \
+    IncidentStateSerializer, StateBehaviorSerializer, UserSerializer, \
+    NetworkEntitySerializer, IncidentTlpSerializer, PrioritySerializer, \
     IncidentDecisionSerializer, \
     IncidentDetectedSerializer, IncidentReportSerializer, IncidentStateChangeSerializer, StateEdgeSerializer, \
     ContactSerializer
@@ -22,27 +22,15 @@ class IncidentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class IncidentTypeViewSet(viewsets.ModelViewSet):
-    queryset = IncidentType.objects.all()
-    serializer_class = IncidentTypeSerializer
+class TaxonomyViewSet(viewsets.ModelViewSet):
+    queryset = Taxonomy.objects.all()
+    serializer_class = TaxonomySerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class IncidentReportViewSet(viewsets.ModelViewSet):
     queryset = IncidentReport.objects.all()
     serializer_class = IncidentReportSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class TaxonomyValueViewSet(viewsets.ModelViewSet):
-    queryset = TaxonomyValue.objects.all()
-    serializer_class = TaxonomyValueSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class TaxonomyPredicateViewSet(viewsets.ModelViewSet):
-    queryset = TaxonomyPredicate.objects.all()
-    serializer_class = TaxonomyPredicateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

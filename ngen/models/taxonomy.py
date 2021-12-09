@@ -7,22 +7,25 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 
 from django.db import models
+from django.utils.text import slugify
 from netfields import NetManager
 from treebeard.al_tree import AL_Node
 
 from ngen.models import NgenModel
 
 
-class IncidentType(NgenModel, AL_Node):
+class Taxonomy(NgenModel, AL_Node):
     name = models.CharField(max_length=100)
-    slug = models.CharField(primary_key=True, max_length=100)
-    active = models.BooleanField()
-    description = models.CharField(max_length=250, blank=True, null=True)
-    taxonomyvalue = models.ForeignKey('TaxonomyValue', models.DO_NOTHING, db_column='taxonomyValue', blank=True,
-                                      null=True)
+    slug = models.SlugField(primary_key=True, max_length=100)
+    active = models.BooleanField(default=True)
+    description = models.TextField(null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
     objects = NetManager()
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name).replace('-', '_')
+        super(Taxonomy, self).save(*args, **kwargs)
 
     @classmethod
     def find_problems(cls):
@@ -33,47 +36,13 @@ class IncidentType(NgenModel, AL_Node):
         pass
 
     class Meta:
-        db_table = 'incident_type'
-
-
-class TaxonomyPredicate(models.Model):
-    slug = models.CharField(primary_key=True, max_length=100)
-    description = models.CharField(max_length=1024)
-    expanded = models.CharField(max_length=255)
-    version = models.IntegerField()
-    value = models.CharField(unique=True, max_length=255)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'taxonomy_predicate'
-
-
-class TaxonomyValue(models.Model):
-    slug = models.CharField(primary_key=True, max_length=100)
-    description = models.CharField(max_length=1024)
-    expanded = models.CharField(max_length=255)
-    value = models.CharField(unique=True, max_length=255)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    version = models.IntegerField()
-    taxonomypredicate = models.ForeignKey(TaxonomyPredicate, models.DO_NOTHING, db_column='taxonomyPredicate',
-                                          blank=True, null=True)  # Field name made lowercase.
-    active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'taxonomy_value'
+        db_table = 'taxonomy'
 
 
 class IncidentReport(models.Model):
     slug = models.CharField(primary_key=True, max_length=64)
     lang = models.CharField(max_length=2)
-    type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    type = models.ForeignKey('Taxonomy', models.DO_NOTHING, db_column='type', blank=True, null=True)
     problem = models.TextField()
     derivated_problem = models.TextField(blank=True, null=True)
     verification = models.TextField(blank=True, null=True)
