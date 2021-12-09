@@ -17,8 +17,6 @@ class IncidentType(NgenModel, AL_Node):
     name = models.CharField(max_length=100)
     slug = models.CharField(primary_key=True, max_length=100)
     active = models.BooleanField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
     description = models.CharField(max_length=250, blank=True, null=True)
     taxonomyvalue = models.ForeignKey('TaxonomyValue', models.DO_NOTHING, db_column='taxonomyValue', blank=True,
                                       null=True)
