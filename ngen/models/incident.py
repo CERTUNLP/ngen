@@ -150,6 +150,9 @@ class Priority(models.Model):
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
+    class Meta:
+        db_table = 'priority'
+
 
 class IncidentReport(models.Model):
     slug = models.CharField(primary_key=True, max_length=64)
