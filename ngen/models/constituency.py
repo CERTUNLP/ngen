@@ -44,9 +44,10 @@ class Network(NgenModel, AL_Node):
     def guess_address_type(self, address: str):
         if validators.domain(address) or len(address.split('.')) == 1 and len(address) == 2:
             return self.DOMAIN_ADDRESS
-        if validators.ipv4_cidr(address):
+        ip_version = ipaddress.ip_network(address).version
+        if ip_version == 4:
             return self.IPV4_ADDRESS
-        if validators.ipv6_cidr(address):
+        if ip_version == 6:
             return self.IPV6_ADDRESS
 
     def __init__(self, *args, **kwargs):
