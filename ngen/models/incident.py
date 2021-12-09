@@ -154,25 +154,6 @@ class Priority(models.Model):
         db_table = 'priority'
 
 
-class IncidentReport(models.Model):
-    slug = models.CharField(primary_key=True, max_length=64)
-    lang = models.CharField(max_length=2)
-    type = models.ForeignKey('IncidentType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-    problem = models.TextField()
-    derivated_problem = models.TextField(blank=True, null=True)
-    verification = models.TextField(blank=True, null=True)
-    recomendations = models.TextField(blank=True, null=True)
-    more_information = models.TextField(blank=True, null=True)
-    active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'incident_report'
-
-
 class IncidentTlp(models.Model):
     slug = models.CharField(primary_key=True, max_length=45)
     rgb = models.CharField(max_length=45, blank=True, null=True)
@@ -191,57 +172,6 @@ class IncidentTlp(models.Model):
 
     class Meta:
         db_table = 'incident_tlp'
-
-
-class IncidentType(models.Model):
-    slug = models.CharField(primary_key=True, max_length=100)
-    name = models.CharField(max_length=100)
-    active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    description = models.CharField(max_length=250, blank=True, null=True)
-    is_classification = models.IntegerField(db_column='is_Classification')  # Field name made lowercase.
-    taxonomyvalue = models.ForeignKey('TaxonomyValue', models.DO_NOTHING, db_column='taxonomyValue', blank=True,
-                                      null=True)  # Field name made lowercase.
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'incident_type'
-
-
-class TaxonomyPredicate(models.Model):
-    slug = models.CharField(primary_key=True, max_length=100)
-    description = models.CharField(max_length=1024)
-    expanded = models.CharField(max_length=255)
-    version = models.IntegerField()
-    value = models.CharField(unique=True, max_length=255)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'taxonomy_predicate'
-
-
-class TaxonomyValue(models.Model):
-    slug = models.CharField(primary_key=True, max_length=100)
-    description = models.CharField(max_length=1024)
-    expanded = models.CharField(max_length=255)
-    value = models.CharField(unique=True, max_length=255)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    version = models.IntegerField()
-    taxonomypredicate = models.ForeignKey(TaxonomyPredicate, models.DO_NOTHING, db_column='taxonomyPredicate',
-                                          blank=True, null=True)  # Field name made lowercase.
-    active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'taxonomy_value'
 
 
 class User(models.Model):
