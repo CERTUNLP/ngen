@@ -1,11 +1,3 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
-
 from django.db import models
 from django.utils.text import slugify
 from netfields import NetManager
@@ -41,29 +33,27 @@ class Taxonomy(NgenModel, AL_Node):
     def fix_tree(cls):
         pass
 
+    def __repr__(self):
+        return self.name
+
     class Meta:
         db_table = 'taxonomy'
 
 
-class Report(models.Model):
+class Report(NgenModel):
     id = models.BigAutoField(primary_key=True)
-    slug = models.SlugField(max_length=100)
     lang = models.CharField(max_length=2)
-    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
+    taxonomy = models.ForeignKey('Taxonomy', models.CASCADE)
     problem = models.TextField()
-    derivated_problem = models.TextField(blank=True, null=True)
-    verification = models.TextField(blank=True, null=True)
-    recomendations = models.TextField(blank=True, null=True)
-    more_information = models.TextField(blank=True, null=True)
-    active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
+    derivated_problem = models.TextField(null=True)
+    verification = models.TextField(null=True)
+    recomendations = models.TextField(null=True)
+    more_information = models.TextField(null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         db_table = 'report'
+        unique_together = ['lang', 'taxonomy']
 
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
-        super(Report, self).save(*args, **kwargs)
+    def __repr__(self):
+        return "%s-%s" % (self.taxonomy.name, self.lang)
