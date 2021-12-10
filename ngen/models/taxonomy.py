@@ -15,17 +15,23 @@ from ngen.models import NgenModel
 
 
 class Taxonomy(NgenModel, AL_Node):
+    id = models.BigAutoField(primary_key=True)
+    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
     name = models.CharField(max_length=100)
-    slug = models.SlugField(primary_key=True, max_length=100)
+    slug = models.SlugField(max_length=100)
     active = models.BooleanField(default=True)
     description = models.TextField(null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
     objects = NetManager()
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name).replace('-', '_')
         super(Taxonomy, self).save(*args, **kwargs)
+
+    def delete(self):
+        if self.get_children():
+            self.get_children().update(parent=self.parent)
+        super(Taxonomy, self).delete()
 
     @classmethod
     def find_problems(cls):
@@ -42,7 +48,7 @@ class Taxonomy(NgenModel, AL_Node):
 class IncidentReport(models.Model):
     slug = models.CharField(primary_key=True, max_length=64)
     lang = models.CharField(max_length=2)
-    type = models.ForeignKey('Taxonomy', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     problem = models.TextField()
     derivated_problem = models.TextField(blank=True, null=True)
     verification = models.TextField(blank=True, null=True)
