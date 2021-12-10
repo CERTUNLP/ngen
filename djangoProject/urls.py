@@ -22,7 +22,7 @@ from ngen import views
 router = routers.DefaultRouter()
 router.register(r'incidents', views.IncidentViewSet)
 router.register(r'incident/types', views.TaxonomyViewSet)
-router.register(r'incident/type/reports', views.IncidentReportViewSet)
+router.register(r'incident/type/reports', views.ReportViewSet)
 router.register(r'incident/feeds', views.IncidentFeedViewSet)
 router.register(r'incident/states', views.IncidentStateViewSet)
 router.register(r'incident/state/behavior', views.StateBehaviorViewSet)

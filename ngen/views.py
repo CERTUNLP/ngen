@@ -4,12 +4,12 @@ from rest_framework import viewsets
 
 from ngen.models import Incident, Network, Taxonomy, IncidentFeed, IncidentState, StateBehavior, \
     User, NetworkEntity, IncidentTlp, Priority, IncidentDecision, \
-    IncidentDetected, IncidentReport, IncidentStateChange, StateEdge, Contact
+    IncidentDetected, Report, IncidentStateChange, StateEdge, Contact
 from ngen.serializers import IncidentSerializer, NetworkSerializer, TaxonomySerializer, IncidentFeedSerializer, \
     IncidentStateSerializer, StateBehaviorSerializer, UserSerializer, \
     NetworkEntitySerializer, IncidentTlpSerializer, PrioritySerializer, \
     IncidentDecisionSerializer, \
-    IncidentDetectedSerializer, IncidentReportSerializer, IncidentStateChangeSerializer, StateEdgeSerializer, \
+    IncidentDetectedSerializer, ReportSerializer, IncidentStateChangeSerializer, StateEdgeSerializer, \
     ContactSerializer
 
 
@@ -28,9 +28,9 @@ class TaxonomyViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class IncidentReportViewSet(viewsets.ModelViewSet):
-    queryset = IncidentReport.objects.all()
-    serializer_class = IncidentReportSerializer
+class ReportViewSet(viewsets.ModelViewSet):
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

@@ -45,8 +45,9 @@ class Taxonomy(NgenModel, AL_Node):
         db_table = 'taxonomy'
 
 
-class IncidentReport(models.Model):
-    slug = models.CharField(primary_key=True, max_length=64)
+class Report(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    slug = models.SlugField(max_length=100)
     lang = models.CharField(max_length=2)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     problem = models.TextField()
@@ -61,4 +62,8 @@ class IncidentReport(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        db_table = 'incident_report'
+        db_table = 'report'
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name).replace('-', '_')
+        super(Report, self).save(*args, **kwargs)
