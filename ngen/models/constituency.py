@@ -1,5 +1,5 @@
 import ipaddress
-from abc import ABCMeta, ABC, abstractmethod
+from abc import ABC, abstractmethod
 
 import validators
 from django.db import models
@@ -169,7 +169,7 @@ class Contact(NgenModel):
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
     public_key = models.CharField(max_length=4000, blank=True, null=True)
-    TYPE = Choices('email', 'telegram', 'phone')
+    TYPE = Choices('email', 'telegram', 'phone', 'uri')
     type = models.CharField(choices=TYPE, default=TYPE.email, max_length=20)
     ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
