@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.db.models.functions import Length
 from model_utils import Choices
 from netfields import NetManager, CidrAddressField
+from tld import is_tld
 from treebeard.al_tree import AL_Node
 
 from .incident import NgenModel
@@ -31,7 +32,7 @@ class Network(NgenModel, AL_Node):
     IPV6_ADDRESS: int = 3
 
     def guess_address_type(self, address: str):
-        if validators.domain(address) or len(address.split('.')) == 1 and len(address) == 2:
+        if validators.domain(address) or is_tld(address):
             return self.DOMAIN_ADDRESS
         ip_version = ipaddress.ip_network(address).version
         if ip_version == 4:
