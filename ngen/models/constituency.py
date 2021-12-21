@@ -31,15 +31,6 @@ class Network(NgenModel, AL_Node):
     IPV4_ADDRESS: int = 2
     IPV6_ADDRESS: int = 3
 
-    def guess_address_type(self, address: str):
-        if validators.domain(address) or is_tld(address):
-            return self.DOMAIN_ADDRESS
-        ip_version = ipaddress.ip_network(address).version
-        if ip_version == 4:
-            return self.IPV4_ADDRESS
-        if ip_version == 6:
-            return self.IPV6_ADDRESS
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.cidr:
@@ -58,6 +49,15 @@ class Network(NgenModel, AL_Node):
     @property
     def address(self) -> "Address":
         return self._address
+
+    def guess_address_type(self, address: str):
+        if validators.domain(address) or is_tld(address):
+            return self.DOMAIN_ADDRESS
+        ip_version = ipaddress.ip_network(address).version
+        if ip_version == 4:
+            return self.IPV4_ADDRESS
+        if ip_version == 6:
+            return self.IPV6_ADDRESS
 
     @address.setter
     def address(self, value: str):
