@@ -12,10 +12,6 @@ from treebeard.al_tree import AL_Node
 from .incident import NgenModel
 
 
-class AbstractModelMeta(ABCMeta, type(models.Model)):
-    pass
-
-
 class Network(NgenModel, AL_Node):
     id = models.BigAutoField(primary_key=True)
     cidr = CidrAddressField(null=True, unique=True)
