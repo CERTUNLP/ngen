@@ -75,7 +75,7 @@ class Network(NgenModel, AL_Node):
             return self.address == other.address
 
     def __repr__(self):
-        return self.address.address
+        return self.address.__repr__()
 
     def __contains__(self, other: "Network"):
         # b.address._address.subnet_of(a.address._address)
@@ -83,7 +83,7 @@ class Network(NgenModel, AL_Node):
             return other.address in self.address
 
     def is_default(self):
-        return self.address.address == '0.0.0.0/0'
+        return self.domain == ''
 
     @classmethod
     def find_problems(cls):
@@ -245,6 +245,9 @@ class AddressIp(Address):
 
     def in_range(self, other: Address):
         return other._address > self._address
+
+    def __repr__(self):
+        return self.address.exploded
 
 
 class AddressDomain(Address):
