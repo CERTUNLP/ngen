@@ -1,11 +1,17 @@
+amqp==5.0.9
 asgiref==3.4.1
 attrs==21.2.0
 backports.zoneinfo==0.2.1
+billiard==3.6.4.0
+celery==5.2.1
 certifi==2021.10.8
 charset-normalizer==2.0.9
+click==8.0.3
+click-didyoumean==0.3.0
+click-plugins==1.1.1
+click-repl==0.2.0
 decorator==5.1.0
 Django==4.0
-django-domainname==0.1.1
 django-filter==21.1
 django-model-utils==4.2.0
 django-netfields==1.2.4
@@ -13,10 +19,11 @@ django-treebeard==4.5.1
 djangorestframework==3.13.1
 idna==3.3
 iniconfig==1.1.1
-mysqlclient==2.1.0
+kombu==5.2.2
 netaddr==0.8.0
 packaging==21.3
 pluggy==1.0.0
+prompt-toolkit==3.0.24
 psycopg2-binary==2.9.2
 py==1.11.0
 pyparsing==3.0.6
@@ -29,3 +36,5 @@ tld==0.12.6
 toml==0.10.2
 urllib3==1.26.7
 validators==0.18.2
+vine==5.0.0
+wcwidth==0.2.5

@@ -7,10 +7,9 @@ from ngen.models import NgenModel
 
 
 class Taxonomy(NgenModel, AL_Node):
-    id = models.BigAutoField(primary_key=True)
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
     name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100)
+    slug = models.SlugField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
     description = models.TextField(null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
@@ -41,15 +40,14 @@ class Taxonomy(NgenModel, AL_Node):
 
 
 class Report(NgenModel):
-    id = models.BigAutoField(primary_key=True)
     lang = models.CharField(max_length=2)
     taxonomy = models.ForeignKey('Taxonomy', models.CASCADE)
     problem = models.TextField()
-    derivated_problem = models.TextField(null=True)
+    derived_problem = models.TextField(null=True)
     verification = models.TextField(null=True)
-    recomendations = models.TextField(null=True)
+    recommendations = models.TextField(null=True)
     more_information = models.TextField(null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'report'

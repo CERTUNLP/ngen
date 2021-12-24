@@ -5,6 +5,7 @@ import validators
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Length
+from django.utils.text import slugify
 from model_utils import Choices
 from netfields import NetManager, CidrAddressField
 from tld import is_tld
@@ -14,15 +15,14 @@ from .incident import NgenModel
 
 
 class Network(NgenModel, AL_Node):
-    id = models.BigAutoField(primary_key=True)
     cidr = CidrAddressField(null=True, unique=True)
     domain = models.CharField(max_length=255, null=True, unique=True, default=None)
     contacts = models.ManyToManyField('Contact')
     active = models.BooleanField(default=True)
     TYPE = Choices('internal', 'external')
     type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
-    network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
     objects = NetManager()
     node_order_by = ['parent', '-cidr', 'domain']
@@ -162,16 +162,15 @@ class Network(NgenModel, AL_Node):
 
 
 class Contact(NgenModel):
-    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
-    public_key = models.CharField(max_length=4000, blank=True, null=True)
+    public_key = models.CharField(max_length=4000, null=True)
     TYPE = Choices('email', 'telegram', 'phone', 'uri')
     type = models.CharField(choices=TYPE, default=TYPE.email, max_length=20)
     ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
     priority = models.ForeignKey('Priority', models.DO_NOTHING, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
 
     def __repr__(self):
         return self.username
@@ -181,11 +180,14 @@ class Contact(NgenModel):
 
 
 class NetworkEntity(NgenModel):
-    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    slug = models.CharField(max_length=255, blank=True, null=True)
+    slug = models.SlugField(max_length=100, unique=True)
     active = models.IntegerField()
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name).replace('-', '_')
+        super(NetworkEntity, self).save(*args, **kwargs)
 
     def __repr__(self):
         return self.name
