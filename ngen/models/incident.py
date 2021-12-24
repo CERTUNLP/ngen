@@ -11,8 +11,6 @@ class Incident(models.Model):
     id = models.BigAutoField(primary_key=True)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
-    state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True,
-                              related_name='+')
     network = models.ForeignKey('Network', models.DO_NOTHING, blank=True, null=True)
     reporter = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     date = models.DateTimeField()
@@ -26,10 +24,9 @@ class Incident(models.Model):
     tlp_state = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
     assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     ltd_count = models.IntegerField()
-    unresponded_state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='unresponded_state', blank=True,
-                                          null=True, related_name='+')
-    unsolved_state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='unsolved_state', blank=True,
-                                       null=True, related_name='+')
+    state = models.ForeignKey('IncidentState', models.DO_NOTHING, related_name='incident_states')
+    unresponded_state = models.ForeignKey('IncidentState', models.DO_NOTHING, related_name='incident_unresponded_states')
+    unsolved_state = models.ForeignKey('IncidentState', models.DO_NOTHING, related_name='incident_unsolved_states')
     response_dead_line = models.DateTimeField(blank=True, null=True)
     solve_dead_line = models.DateTimeField(blank=True, null=True)
     priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
@@ -73,17 +70,14 @@ class IncidentDecision(models.Model):
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     tlp = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp', blank=True, null=True)
-    state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True,
-                              related_name='+')
     network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     auto_saved = models.IntegerField()
     active = models.IntegerField()
-    unresponded_state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='unresponded_state', blank=True,
-                                          null=True, related_name='+')
-    unsolved_state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='unsolved_state', blank=True,
-                                       null=True, related_name='+')
+    state = models.ForeignKey('IncidentState', models.DO_NOTHING, related_name='decision_states')
+    unresponded_state = models.ForeignKey('IncidentState', models.DO_NOTHING, related_name='decision_unresponded_states')
+    unsolved_state = models.ForeignKey('IncidentState', models.DO_NOTHING, related_name='decision_unsolved_states')
     created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
     priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
@@ -98,7 +92,7 @@ class IncidentDetected(models.Model):
     assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
-    state = models.ForeignKey('IncidentState', models.DO_NOTHING, db_column='state', blank=True, null=True)
+    state = models.ForeignKey('IncidentState', models.DO_NOTHING)
     tlp_state = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
     evidence_file_path = models.CharField(max_length=255, blank=True, null=True)

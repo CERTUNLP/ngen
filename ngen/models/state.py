@@ -1,67 +1,62 @@
 from django.db import models
+from django.utils.text import slugify
+
+from ngen.models import NgenModel
 
 
-class IncidentState(models.Model):
-    slug = models.CharField(primary_key=True, max_length=100)
+class IncidentState(NgenModel):
+    slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    behavior = models.ForeignKey('StateBehavior', models.DO_NOTHING, db_column='behavior', blank=True, null=True)
-    description = models.CharField(max_length=250, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+    behavior = models.ForeignKey('StateBehavior', models.DO_NOTHING)
+    description = models.CharField(max_length=250, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name).replace('-', '_')
+        super(IncidentState, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'incident_state'
 
 
-class IncidentStateChange(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    incident_id = models.IntegerField(blank=True, null=True)
-    responsable = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    date = models.DateTimeField(blank=True, null=True)
+class IncidentStateChange(NgenModel):
+    incident_id = models.IntegerField(null=True)
+    responsible = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
+    date = models.DateTimeField(null=True)
     method = models.CharField(max_length=25)
-    state_edge = models.ForeignKey('StateEdge', models.DO_NOTHING, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+    state_edge = models.ForeignKey('StateEdge', models.DO_NOTHING, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
 
     class Meta:
         db_table = 'incident_state_change'
 
 
-class StateBehavior(models.Model):
-    slug = models.CharField(primary_key=True, max_length=45)
-    name = models.CharField(max_length=45, blank=True, null=True)
-    description = models.CharField(max_length=250, blank=True, null=True)
+class StateBehavior(NgenModel):
+    slug = models.SlugField(max_length=100, unique=True)
+    name = models.CharField(max_length=45, null=True)
+    description = models.CharField(max_length=250, null=True)
     can_edit_fundamentals = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
     can_edit = models.IntegerField()
     can_enrich = models.IntegerField()
     can_add_history = models.IntegerField()
-    can_comunicate = models.IntegerField()
+    can_communicate = models.IntegerField()
     discr = models.CharField(max_length=255)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name).replace('-', '_')
+        super(StateBehavior, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'state_behavior'
 
 
-class StateEdge(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    oldstate = models.ForeignKey(IncidentState, models.DO_NOTHING, db_column='oldState', blank=True,
-                                 null=True, related_name='+')  # Field name made lowercase.
-    newstate = models.ForeignKey(IncidentState, models.DO_NOTHING, db_column='newState', blank=True,
-                                 null=True, related_name='+')  # Field name made lowercase.
+class StateEdge(NgenModel):
+    parent = models.ForeignKey(IncidentState, models.DO_NOTHING, related_name='parents')
+    child = models.ForeignKey(IncidentState, models.DO_NOTHING, related_name='children')
     discr = models.CharField(max_length=255)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'state_edge'
