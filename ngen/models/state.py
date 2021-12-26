@@ -97,8 +97,8 @@ class IncidentState(NgenModel):
 
 
 class StateEdge(NgenModel):
-    parent = models.ForeignKey(IncidentState, models.DO_NOTHING, related_name='children_edge')
-    child = models.ForeignKey(IncidentState, models.DO_NOTHING, related_name='parents_edge')
+    parent = models.ForeignKey(IncidentState, models.CASCADE, related_name='children_edge')
+    child = models.ForeignKey(IncidentState, models.CASCADE, related_name='parents_edge')
     discr = models.CharField(max_length=255)
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
