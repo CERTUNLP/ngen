@@ -45,7 +45,7 @@ class IncidentState(NgenModel):
                 if delete_node:
                     child.delete()
 
-    def add_parent(self, parent, *args, **kwargs):
+    def add_parent(self, parent, **kwargs):
         return parent.add_child(self, **kwargs)
 
     def remove_parent(self, parent=None, delete_node=False):
@@ -110,6 +110,7 @@ class StateEdge(NgenModel):
 
     class Meta:
         db_table = 'state_edge'
+        unique_together = ['parent', 'child']
 
 
 class IncidentStateChange(NgenModel):
