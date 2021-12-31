@@ -15,11 +15,14 @@ services:
         ports:
             - "8080:8080"
     ngen-django:
-        build: .
+        image: ngen:latest
+        build:
+            context: ../
+            dockerfile: docker/Dockerfile
         restart: always
         command: python manage.py runserver 0.0.0.0:8000
         volumes:
-            - .:/code
+            - ../:/code
         ports:
             - "8000:8000"
         environment:
