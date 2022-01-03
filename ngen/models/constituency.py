@@ -75,7 +75,10 @@ class Network(NgenModel, AL_Node):
             return self.address == other.address
 
     def __repr__(self):
-        return self.address.__repr__()
+        return self.address
+
+    def __str__(self):
+        return self.address
 
     def __contains__(self, other: "Network"):
         # b.address._address.subnet_of(a.address._address)
@@ -175,6 +178,9 @@ class Contact(NgenModel):
     def __repr__(self):
         return self.username
 
+    def __str__(self):
+        return self.username
+
     class Meta:
         db_table = 'contact'
 
@@ -190,6 +196,9 @@ class NetworkEntity(NgenModel):
         super(NetworkEntity, self).save(*args, **kwargs)
 
     def __repr__(self):
+        return self.name
+
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -232,6 +241,9 @@ class Address(ABC):
     def __repr__(self):
         return self.address
 
+    def __str__(self):
+        return self.address
+
 
 class AddressIp(Address):
 
@@ -249,6 +261,9 @@ class AddressIp(Address):
         return other._address > self._address
 
     def __repr__(self):
+        return self.address.exploded
+
+    def __str__(self):
         return self.address.exploded
 
 

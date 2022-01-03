@@ -35,6 +35,9 @@ class Taxonomy(NgenModel, AL_Node):
     def __repr__(self):
         return self.name
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         db_table = 'taxonomy'
 
@@ -54,4 +57,7 @@ class Report(NgenModel):
         unique_together = ['lang', 'taxonomy']
 
     def __repr__(self):
+        return "%s-%s" % (self.taxonomy.name, self.lang)
+
+    def __str__(self):
         return "%s-%s" % (self.taxonomy.name, self.lang)
