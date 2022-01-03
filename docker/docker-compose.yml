@@ -32,3 +32,20 @@ services:
             - POSTGRES_HOST=ngen-postgres
         depends_on:
             - ngen-postgres
+            - ngen-rabbitmq
+    ngen-rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+    ngen-celery:
+        image: ngen:latest
+        restart: always
+        command: celery -A djangoProject worker -l debug
+        volumes:
+            - ../:/code
+        environment:
+            - CELERY_BROKER_URL=amqp://guest:guest@ngen-rabbitmq:5672
+        depends_on:
+            - ngen-django
+            - ngen-rabbitmq
