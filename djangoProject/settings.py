@@ -149,5 +149,5 @@ CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
 #: Only add pickle to this list if your broker is secured
 #: from unwanted access (see userguide/security.html)
 CELERY_ACCEPT_CONTENT = ['json']
-CELERY_RESULT_BACKEND = 'rpc://guest:guest@ngen-rabbitmq:5672'
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
 CELERY_TASK_SERIALIZER = 'json'
