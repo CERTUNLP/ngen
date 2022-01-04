@@ -30,6 +30,7 @@ services:
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=example
             - POSTGRES_HOST=ngen-postgres
+            - CELERY_BROKER_URL=amqp://guest:guest@ngen-rabbitmq:5672
         depends_on:
             - ngen-postgres
             - ngen-rabbitmq
