@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'netfields',
     'django_filters',
-    'treebeard'
+    'treebeard',
+    'djcelery_email',
 ]
 
 MIDDLEWARE = [
@@ -151,3 +152,9 @@ CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
 CELERY_TASK_SERIALIZER = 'json'
+
+EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+# CELERY_EMAIL_BACKEND
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
