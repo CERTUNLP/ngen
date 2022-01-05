@@ -154,6 +154,10 @@ CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
 CELERY_TASK_SERIALIZER = 'json'
 
 EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+CELERY_EMAIL_TASK_CONFIG = {
+    'ignore_result': False,
+}
+CELERY_EMAIL_CHUNK_SIZE = 1
 # CELERY_EMAIL_BACKEND
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
