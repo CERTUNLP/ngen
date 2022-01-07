@@ -75,10 +75,10 @@ class Network(NgenModel, AL_Node):
             return self.address == other.address
 
     def __repr__(self):
-        return self.address
+        return self.address.__repr__()
 
     def __str__(self):
-        return self.address
+        return self.address.__str__()
 
     def __contains__(self, other: "Network"):
         # b.address._address.subnet_of(a.address._address)
