@@ -7,7 +7,7 @@ class NgenModel(TimeStampedModel):
         abstract = True
 
 
-class Incident(models.Model):
+class Case(models.Model):
     id = models.BigAutoField(primary_key=True)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
@@ -36,7 +36,7 @@ class Incident(models.Model):
     raw = models.TextField(blank=True, null=True)
 
     class Meta:
-        db_table = 'incident'
+        db_table = 'case'
 
 
 class IncidentComment(models.Model):
@@ -86,7 +86,7 @@ class IncidentDecision(models.Model):
         db_table = 'incident_decision'
 
 
-class IncidentDetected(models.Model):
+class Event(models.Model):
     id = models.BigAutoField(primary_key=True)
     incident_id = models.IntegerField(blank=True, null=True)
     assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
@@ -106,7 +106,7 @@ class IncidentDetected(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        db_table = 'incident_detected'
+        db_table = 'event'
 
 
 class IncidentFeed(models.Model):

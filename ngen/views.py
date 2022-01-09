@@ -2,9 +2,9 @@ import django_filters
 from rest_framework import permissions, filters
 from rest_framework import viewsets
 
-from ngen.models import Incident, Network, Taxonomy, IncidentFeed, IncidentState, StateBehavior, \
+from ngen.models import Case, Network, Taxonomy, IncidentFeed, IncidentState, StateBehavior, \
     User, NetworkEntity, IncidentTlp, Priority, IncidentDecision, \
-    IncidentDetected, Report, IncidentStateChange, StateEdge, Contact
+    Event, Report, IncidentStateChange, StateEdge, Contact
 from ngen.serializers import IncidentSerializer, NetworkSerializer, TaxonomySerializer, IncidentFeedSerializer, \
     IncidentStateSerializer, StateBehaviorSerializer, UserSerializer, \
     NetworkEntitySerializer, IncidentTlpSerializer, PrioritySerializer, \
@@ -17,7 +17,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = Incident.objects.all()
+    queryset = Case.objects.all()
     serializer_class = IncidentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -83,7 +83,7 @@ class IncidentDecisionViewSet(viewsets.ModelViewSet):
 
 
 class IncidentDetectedViewSet(viewsets.ModelViewSet):
-    queryset = IncidentDetected.objects.all()
+    queryset = Event.objects.all()
     serializer_class = IncidentDetectedSerializer
     permission_classes = [permissions.IsAuthenticated]
 

@@ -1,13 +1,13 @@
 from rest_framework import serializers
 
-from ngen.models import Incident, Network, Taxonomy, IncidentFeed, IncidentState, StateBehavior, \
+from ngen.models import Case, Network, Taxonomy, IncidentFeed, IncidentState, StateBehavior, \
     User, NetworkEntity, IncidentTlp, Priority, IncidentDecision, \
-    IncidentDetected, Report, IncidentStateChange, StateEdge, Contact
+    Event, Report, IncidentStateChange, StateEdge, Contact
 
 
 class IncidentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Incident
+        model = Case
         # fields = ['id', 'network', 'type', 'feed', 'state', 'reporter']
         fields = '__all__'
 
@@ -74,7 +74,7 @@ class IncidentDecisionSerializer(serializers.HyperlinkedModelSerializer):
 
 class IncidentDetectedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = IncidentDetected
+        model = Event
         fields = '__all__'
 
 

@@ -11,7 +11,7 @@ from netfields import NetManager, CidrAddressField
 from tld import is_tld
 from treebeard.al_tree import AL_Node
 
-from .incident import NgenModel
+from .case import NgenModel
 
 
 class Network(NgenModel, AL_Node):
