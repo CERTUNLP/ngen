@@ -10,7 +10,7 @@ class NgenModel(TimeStampedModel):
 class Case(models.Model):
     id = models.BigAutoField(primary_key=True)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
-    feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
+    feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     network = models.ForeignKey('Network', models.DO_NOTHING, blank=True, null=True)
     reporter = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     date = models.DateTimeField()
@@ -68,7 +68,7 @@ class IncidentCommentThread(models.Model):
 class IncidentDecision(models.Model):
     id = models.BigAutoField(primary_key=True)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
-    feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
+    feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     tlp = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp', blank=True, null=True)
     network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
@@ -91,7 +91,7 @@ class Event(models.Model):
     incident_id = models.IntegerField(blank=True, null=True)
     assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
-    feed = models.ForeignKey('IncidentFeed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
+    feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     state = models.ForeignKey('IncidentState', models.DO_NOTHING)
     tlp_state = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
@@ -109,7 +109,7 @@ class Event(models.Model):
         db_table = 'event'
 
 
-class IncidentFeed(models.Model):
+class Feed(models.Model):
     slug = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=100)
     active = models.IntegerField()
@@ -120,7 +120,7 @@ class IncidentFeed(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        db_table = 'incident_feed'
+        db_table = 'feed'
 
 
 class Priority(models.Model):

@@ -2,7 +2,7 @@ import django_filters
 from rest_framework import permissions, filters
 from rest_framework import viewsets
 
-from ngen.models import Case, Network, Taxonomy, IncidentFeed, IncidentState, StateBehavior, \
+from ngen.models import Case, Network, Taxonomy, Feed, IncidentState, StateBehavior, \
     User, NetworkEntity, IncidentTlp, Priority, IncidentDecision, \
     Event, Report, IncidentStateChange, StateEdge, Contact
 from ngen.serializers import IncidentSerializer, NetworkSerializer, TaxonomySerializer, IncidentFeedSerializer, \
@@ -35,7 +35,7 @@ class ReportViewSet(viewsets.ModelViewSet):
 
 
 class IncidentFeedViewSet(viewsets.ModelViewSet):
-    queryset = IncidentFeed.objects.all()
+    queryset = Feed.objects.all()
     serializer_class = IncidentFeedSerializer
     permission_classes = [permissions.IsAuthenticated]
 
