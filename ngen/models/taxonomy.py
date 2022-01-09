@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from model_utils import Choices
 from netfields import NetManager
 from treebeard.al_tree import AL_Node
 
@@ -8,6 +9,8 @@ from ngen.models import NgenModel
 
 class Taxonomy(NgenModel, AL_Node):
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
+    TYPE = Choices('vulnerability', 'incident')
+    type = models.CharField(choices=TYPE, default=TYPE.vulnerability, max_length=20)
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
@@ -43,7 +46,8 @@ class Taxonomy(NgenModel, AL_Node):
 
 
 class Report(NgenModel):
-    lang = models.CharField(max_length=2)
+    LANG = Choices('en', 'es')
+    lang = models.CharField(choices=LANG, default=LANG.en, max_length=2)
     taxonomy = models.ForeignKey('Taxonomy', models.CASCADE)
     problem = models.TextField()
     derived_problem = models.TextField(null=True)

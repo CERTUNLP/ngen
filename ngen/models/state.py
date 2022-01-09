@@ -11,7 +11,6 @@ class IncidentState(NgenModel):
     behavior = models.ForeignKey('StateBehavior', models.DO_NOTHING)
     description = models.CharField(max_length=250, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
-
     children = models.ManyToManyField(
         "self",
         symmetrical=False,
