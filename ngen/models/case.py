@@ -36,21 +36,19 @@ class Case(models.Model):
 
 class Event(models.Model):
     case = models.ForeignKey('Case', models.CASCADE)
-    assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     feed = models.ForeignKey('Feed', models.DO_NOTHING)
     state = models.ForeignKey('State', models.DO_NOTHING)
-    priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    reporter = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    date = models.DateTimeField(blank=True, null=True)
-    evidence_file_path = models.CharField(max_length=255, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
-    active = models.IntegerField()
+    priority = models.ForeignKey('Priority', models.DO_NOTHING, null=True)
+    assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_assigned')
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_createdby')
+    reporter = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_reporter')
+    date = models.DateTimeField()
+    evidence_file_path = models.CharField(max_length=255, null=True)
+    notes = models.TextField(null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         db_table = 'event'
