@@ -14,7 +14,7 @@ class State(NgenModel):
     children = models.ManyToManyField(
         "self",
         symmetrical=False,
-        through='StateEdge',
+        through='Edge',
         related_name="parents",
     )
 
@@ -95,7 +95,7 @@ class State(NgenModel):
         db_table = 'state'
 
 
-class StateEdge(NgenModel):
+class Edge(NgenModel):
     parent = models.ForeignKey(State, models.CASCADE, related_name='children_edge')
     child = models.ForeignKey(State, models.CASCADE, related_name='parents_edge')
     discr = models.CharField(max_length=255)
@@ -108,7 +108,7 @@ class StateEdge(NgenModel):
         return "%s -> %s" % (self.parent, self.child)
 
     class Meta:
-        db_table = 'state_edge'
+        db_table = 'edge'
         unique_together = ['parent', 'child']
 
 
@@ -117,7 +117,7 @@ class IncidentStateChange(NgenModel):
     responsible = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
     date = models.DateTimeField(null=True)
     method = models.CharField(max_length=25)
-    state_edge = models.ForeignKey('StateEdge', models.DO_NOTHING, null=True)
+    state_edge = models.ForeignKey('Edge', models.DO_NOTHING, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
 
     class Meta:
