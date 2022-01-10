@@ -57,18 +57,16 @@ class Event(models.Model):
 class CaseTemplate(models.Model):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     feed = models.ForeignKey('Feed', models.DO_NOTHING)
-    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
+    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
     network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    auto_saved = models.IntegerField()
-    active = models.IntegerField()
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    active = models.BooleanField(default=True)
     state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_states')
     unresponded_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unresponded_states')
     unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unsolved_states')
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-    priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
+    priority = models.ForeignKey('Priority', models.DO_NOTHING)
 
     class Meta:
         db_table = 'case_template'
