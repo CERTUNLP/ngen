@@ -21,7 +21,7 @@ class Case(models.Model):
     evidence_file_path = models.CharField(max_length=255, blank=True, null=True)
     report_message_id = models.CharField(max_length=255, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    tlp_state = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
+    tlp_state = models.ForeignKey('Tlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
     assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     ltd_count = models.IntegerField()
     state = models.ForeignKey('IncidentState', models.DO_NOTHING, related_name='incident_states')
@@ -69,7 +69,7 @@ class IncidentDecision(models.Model):
     id = models.BigAutoField(primary_key=True)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
-    tlp = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp', blank=True, null=True)
+    tlp = models.ForeignKey('Tlp', models.DO_NOTHING, db_column='tlp', blank=True, null=True)
     network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
@@ -93,7 +93,7 @@ class Event(models.Model):
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     state = models.ForeignKey('IncidentState', models.DO_NOTHING)
-    tlp_state = models.ForeignKey('IncidentTlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
+    tlp_state = models.ForeignKey('Tlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
     evidence_file_path = models.CharField(max_length=255, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
@@ -140,7 +140,7 @@ class Priority(models.Model):
         db_table = 'priority'
 
 
-class IncidentTlp(models.Model):
+class Tlp(models.Model):
     slug = models.CharField(primary_key=True, max_length=45)
     rgb = models.CharField(max_length=45, blank=True, null=True)
     when = models.CharField(max_length=500, blank=True, null=True)
@@ -157,7 +157,7 @@ class IncidentTlp(models.Model):
     deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        db_table = 'incident_tlp'
+        db_table = 'lp'
 
 
 class User(models.Model):
