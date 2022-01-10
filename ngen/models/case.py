@@ -7,7 +7,7 @@ class NgenModel(TimeStampedModel):
         abstract = True
 
 
-class Case(models.Model):
+class Case(NgenModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     feed = models.ForeignKey('Feed', models.DO_NOTHING)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
@@ -20,21 +20,19 @@ class Case(models.Model):
     assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='incidents_assigned')
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='incidents_createdby')
     date = models.DateTimeField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    evidence_file_path = models.CharField(max_length=255, blank=True, null=True)
-    report_message_id = models.CharField(max_length=255, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
+    evidence_file_path = models.CharField(max_length=255, null=True)
+    report_message_id = models.CharField(max_length=255, null=True)
+    notes = models.TextField(null=True)
     ltd_count = models.IntegerField()
-    response_dead_line = models.DateTimeField(blank=True, null=True)
-    solve_dead_line = models.DateTimeField(blank=True, null=True)
-    raw = models.TextField(blank=True, null=True)
+    response_dead_line = models.DateTimeField(null=True)
+    solve_dead_line = models.DateTimeField(null=True)
+    raw = models.TextField(null=True)
 
     class Meta:
         db_table = 'case'
 
 
-class Event(models.Model):
+class Event(NgenModel):
     case = models.ForeignKey('Case', models.CASCADE)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
@@ -47,20 +45,16 @@ class Event(models.Model):
     date = models.DateTimeField()
     evidence_file_path = models.CharField(max_length=255, null=True)
     notes = models.TextField(null=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
 
     class Meta:
         db_table = 'event'
 
 
-class CaseTemplate(models.Model):
+class CaseTemplate(NgenModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     feed = models.ForeignKey('Feed', models.DO_NOTHING)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
     network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
     active = models.BooleanField(default=True)
     state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_states')
     unresponded_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unresponded_states')
@@ -78,7 +72,7 @@ class IncidentComment(models.Model):
     body = models.TextField()
     ancestors = models.CharField(max_length=1024)
     depth = models.IntegerField()
-    created_at = models.DateTimeField()
+    created = models.DateTimeField()
     state = models.IntegerField()
 
     class Meta:
@@ -97,12 +91,10 @@ class IncidentCommentThread(models.Model):
         db_table = 'incident_comment_thread'
 
 
-class Feed(models.Model):
+class Feed(NgenModel):
     slug = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     active = models.IntegerField()
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
     description = models.CharField(max_length=250, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
@@ -110,13 +102,11 @@ class Feed(models.Model):
         db_table = 'feed'
 
 
-class Priority(models.Model):
+class Priority(NgenModel):
     name = models.CharField(max_length=255)
     response_time = models.IntegerField()
     solve_time = models.IntegerField()
     code = models.IntegerField()
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
     unresponse_time = models.IntegerField()
     unsolve_time = models.IntegerField()
     active = models.IntegerField()
@@ -126,7 +116,7 @@ class Priority(models.Model):
         db_table = 'priority'
 
 
-class Tlp(models.Model):
+class Tlp(NgenModel):
     slug = models.CharField(max_length=45)
     rgb = models.CharField(max_length=45)
     when = models.TextField(max_length=500)
@@ -137,22 +127,18 @@ class Tlp(models.Model):
     name = models.CharField(max_length=45)
     code = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
 
     class Meta:
         db_table = 'tlp'
 
 
-class User(models.Model):
+class User(NgenModel):
     firstname = models.CharField(max_length=50)
     lastname = models.CharField(max_length=50)
     email = models.CharField(max_length=180)
     username = models.CharField(max_length=180)
     password = models.CharField(max_length=255)
     salt = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
     api_key = models.CharField(max_length=255, blank=True, null=True)
     slug = models.CharField(max_length=100, blank=True, null=True)
     enabled = models.IntegerField()
