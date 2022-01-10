@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from ngen.models import NgenModel
 
 
-class IncidentState(NgenModel):
+class State(NgenModel):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     active = models.IntegerField()
@@ -26,7 +26,7 @@ class IncidentState(NgenModel):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name).replace('-', '_')
-        super(IncidentState, self).save(*args, **kwargs)
+        super(State, self).save(*args, **kwargs)
 
     def add_child(self, child, **kwargs):
         kwargs.update({"parent": self, "child": child})
@@ -92,12 +92,12 @@ class IncidentState(NgenModel):
         return ending_node in self.partners()
 
     class Meta:
-        db_table = 'incident_state'
+        db_table = 'state'
 
 
 class StateEdge(NgenModel):
-    parent = models.ForeignKey(IncidentState, models.CASCADE, related_name='children_edge')
-    child = models.ForeignKey(IncidentState, models.CASCADE, related_name='parents_edge')
+    parent = models.ForeignKey(State, models.CASCADE, related_name='children_edge')
+    child = models.ForeignKey(State, models.CASCADE, related_name='parents_edge')
     discr = models.CharField(max_length=255)
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
