@@ -128,22 +128,20 @@ class Priority(models.Model):
 
 class Tlp(models.Model):
     slug = models.CharField(max_length=45)
-    rgb = models.CharField(max_length=45, blank=True, null=True)
-    when = models.CharField(max_length=500, blank=True, null=True)
-    encrypt = models.IntegerField(blank=True, null=True)
-    why = models.CharField(max_length=500, blank=True, null=True)
-    information = models.CharField(max_length=10, blank=True, null=True)
-    description = models.CharField(max_length=150, blank=True, null=True)
-    name = models.CharField(max_length=45, blank=True, null=True)
-    code = models.IntegerField(blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+    rgb = models.CharField(max_length=45)
+    when = models.TextField(max_length=500)
+    why = models.TextField(max_length=500, )
+    information = models.TextField(max_length=10, )
+    description = models.TextField(max_length=150)
+    encrypt = models.BooleanField(default=False)
+    name = models.CharField(max_length=45)
+    code = models.IntegerField()
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
 
     class Meta:
-        db_table = 'lp'
+        db_table = 'tlp'
 
 
 class User(models.Model):
