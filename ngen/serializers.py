@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ngen.models import Case, Network, Taxonomy, Feed, State, StateBehavior, \
+from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
     Event, Report, IncidentStateChange, Edge, Contact
 
@@ -50,7 +50,7 @@ class StateEdgeSerializer(serializers.HyperlinkedModelSerializer):
 
 class StateBehaviorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = StateBehavior
+        model = Behavior
         fields = '__all__'
 
 

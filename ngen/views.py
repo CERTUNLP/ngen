@@ -2,7 +2,7 @@ import django_filters
 from rest_framework import permissions, filters
 from rest_framework import viewsets
 
-from ngen.models import Case, Network, Taxonomy, Feed, State, StateBehavior, \
+from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
     Event, Report, IncidentStateChange, Edge, Contact
 from ngen.serializers import IncidentSerializer, NetworkSerializer, TaxonomySerializer, IncidentFeedSerializer, \
@@ -59,7 +59,7 @@ class StateEdgeViewSet(viewsets.ModelViewSet):
 
 
 class StateBehaviorViewSet(viewsets.ModelViewSet):
-    queryset = StateBehavior.objects.all()
+    queryset = Behavior.objects.all()
     serializer_class = StateBehaviorSerializer
     permission_classes = [permissions.IsAuthenticated]
 

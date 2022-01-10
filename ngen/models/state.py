@@ -8,7 +8,7 @@ class State(NgenModel):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     active = models.IntegerField()
-    behavior = models.ForeignKey('StateBehavior', models.DO_NOTHING)
+    behavior = models.ForeignKey('Behavior', models.DO_NOTHING)
     description = models.CharField(max_length=250, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
     children = models.ManyToManyField(
@@ -124,7 +124,7 @@ class IncidentStateChange(NgenModel):
         db_table = 'incident_state_change'
 
 
-class StateBehavior(NgenModel):
+class Behavior(NgenModel):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=45, null=True)
     description = models.CharField(max_length=250, null=True)
@@ -144,7 +144,7 @@ class StateBehavior(NgenModel):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name).replace('-', '_')
-        super(StateBehavior, self).save(*args, **kwargs)
+        super(Behavior, self).save(*args, **kwargs)
 
     class Meta:
-        db_table = 'state_behavior'
+        db_table = 'behavior'
