@@ -101,11 +101,10 @@ class Feed(models.Model):
     slug = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    description = models.CharField(max_length=250, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    description = models.CharField(max_length=250, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'feed'
