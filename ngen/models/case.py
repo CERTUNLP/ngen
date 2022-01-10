@@ -65,7 +65,7 @@ class IncidentCommentThread(models.Model):
         db_table = 'incident_comment_thread'
 
 
-class IncidentDecision(models.Model):
+class CaseTemplate(models.Model):
     id = models.BigAutoField(primary_key=True)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
@@ -83,7 +83,7 @@ class IncidentDecision(models.Model):
     priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        db_table = 'incident_decision'
+        db_table = 'case_template'
 
 
 class Event(models.Model):

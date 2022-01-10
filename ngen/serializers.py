@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from ngen.models import Case, Network, Taxonomy, Feed, IncidentState, StateBehavior, \
-    User, NetworkEntity, Tlp, Priority, IncidentDecision, \
+    User, NetworkEntity, Tlp, Priority, CaseTemplate, \
     Event, Report, IncidentStateChange, StateEdge, Contact
 
 
@@ -68,7 +68,7 @@ class PrioritySerializer(serializers.HyperlinkedModelSerializer):
 
 class IncidentDecisionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = IncidentDecision
+        model = CaseTemplate
         fields = '__all__'
 
 

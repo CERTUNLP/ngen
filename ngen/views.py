@@ -3,7 +3,7 @@ from rest_framework import permissions, filters
 from rest_framework import viewsets
 
 from ngen.models import Case, Network, Taxonomy, Feed, IncidentState, StateBehavior, \
-    User, NetworkEntity, Tlp, Priority, IncidentDecision, \
+    User, NetworkEntity, Tlp, Priority, CaseTemplate, \
     Event, Report, IncidentStateChange, StateEdge, Contact
 from ngen.serializers import IncidentSerializer, NetworkSerializer, TaxonomySerializer, IncidentFeedSerializer, \
     IncidentStateSerializer, StateBehaviorSerializer, UserSerializer, \
@@ -77,7 +77,7 @@ class PriorityViewSet(viewsets.ModelViewSet):
 
 
 class IncidentDecisionViewSet(viewsets.ModelViewSet):
-    queryset = IncidentDecision.objects.all()
+    queryset = CaseTemplate.objects.all()
     serializer_class = IncidentDecisionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
