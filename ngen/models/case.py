@@ -115,13 +115,12 @@ class Priority(models.Model):
     response_time = models.IntegerField()
     solve_time = models.IntegerField()
     code = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
     unresponse_time = models.IntegerField()
     unsolve_time = models.IntegerField()
     active = models.IntegerField()
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'priority'
