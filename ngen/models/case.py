@@ -8,7 +8,6 @@ class NgenModel(TimeStampedModel):
 
 
 class Case(models.Model):
-    id = models.BigAutoField(primary_key=True)
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
     network = models.ForeignKey('Network', models.DO_NOTHING, blank=True, null=True)
@@ -39,8 +38,49 @@ class Case(models.Model):
         db_table = 'case'
 
 
+class Event(models.Model):
+    incident_id = models.IntegerField(blank=True, null=True)
+    assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
+    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
+    feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
+    state = models.ForeignKey('State', models.DO_NOTHING)
+    tlp_state = models.ForeignKey('Tlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True)
+    evidence_file_path = models.CharField(max_length=255, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
+    active = models.IntegerField()
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    reporter = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
+    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        db_table = 'event'
+
+
+class CaseTemplate(models.Model):
+    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
+    feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
+    tlp = models.ForeignKey('Tlp', models.DO_NOTHING, db_column='tlp', blank=True, null=True)
+    network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    auto_saved = models.IntegerField()
+    active = models.IntegerField()
+    state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_states')
+    unresponded_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unresponded_states')
+    unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unsolved_states')
+    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
+    priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        db_table = 'case_template'
+
+
 class IncidentComment(models.Model):
-    id = models.BigAutoField(primary_key=True)
     thread = models.ForeignKey('IncidentCommentThread', models.DO_NOTHING, blank=True, null=True)
     author = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     body = models.TextField()
@@ -63,50 +103,6 @@ class IncidentCommentThread(models.Model):
 
     class Meta:
         db_table = 'incident_comment_thread'
-
-
-class CaseTemplate(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
-    feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
-    tlp = models.ForeignKey('Tlp', models.DO_NOTHING, db_column='tlp', blank=True, null=True)
-    network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    auto_saved = models.IntegerField()
-    active = models.IntegerField()
-    state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_states')
-    unresponded_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unresponded_states')
-    unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unsolved_states')
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-    priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        db_table = 'case_template'
-
-
-class Event(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    incident_id = models.IntegerField(blank=True, null=True)
-    assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
-    feed = models.ForeignKey('Feed', models.DO_NOTHING, db_column='feed', blank=True, null=True)
-    state = models.ForeignKey('State', models.DO_NOTHING)
-    tlp_state = models.ForeignKey('Tlp', models.DO_NOTHING, db_column='tlp_state', blank=True, null=True)
-    date = models.DateTimeField(blank=True, null=True)
-    evidence_file_path = models.CharField(max_length=255, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
-    priority = models.ForeignKey('Priority', models.DO_NOTHING, blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    active = models.IntegerField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    reporter = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'event'
 
 
 class Feed(models.Model):
@@ -161,7 +157,6 @@ class Tlp(models.Model):
 
 
 class User(models.Model):
-    id = models.BigAutoField(primary_key=True)
     firstname = models.CharField(max_length=50)
     lastname = models.CharField(max_length=50)
     email = models.CharField(max_length=180)

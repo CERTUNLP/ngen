@@ -2,7 +2,6 @@ from django.db import models
 
 
 class Message(models.Model):
-    id = models.BigAutoField(primary_key=True)
     data = models.JSONField()
     updated_at = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
