@@ -36,19 +36,19 @@ class Case(models.Model):
 
 class Event(models.Model):
     case = models.ForeignKey('Case', models.CASCADE)
-    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
+    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     feed = models.ForeignKey('Feed', models.DO_NOTHING)
     state = models.ForeignKey('State', models.DO_NOTHING)
-    priority = models.ForeignKey('Priority', models.DO_NOTHING, null=True)
+    priority = models.ForeignKey('Priority', models.DO_NOTHING)
     assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_assigned')
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_createdby')
     reporter = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_reporter')
     date = models.DateTimeField()
     evidence_file_path = models.CharField(max_length=255, null=True)
     notes = models.TextField(null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(null=True)
+    updated_at = models.DateTimeField(null=True)
 
     class Meta:
         db_table = 'event'
