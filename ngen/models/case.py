@@ -35,7 +35,7 @@ class Case(models.Model):
 
 
 class Event(models.Model):
-    incident_id = models.IntegerField(blank=True, null=True)
+    case = models.ForeignKey('Case', models.CASCADE)
     assigned = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True, related_name='+')
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING, null=True)
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
