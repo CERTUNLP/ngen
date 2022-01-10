@@ -47,8 +47,8 @@ class Event(models.Model):
     date = models.DateTimeField()
     evidence_file_path = models.CharField(max_length=255, null=True)
     notes = models.TextField(null=True)
-    created_at = models.DateTimeField(null=True)
-    updated_at = models.DateTimeField(null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
 
     class Meta:
         db_table = 'event'
