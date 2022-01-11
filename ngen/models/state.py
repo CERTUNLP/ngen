@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 
-from ngen.models import NgenModel
+from .utils import NgenModel
 
 
 class State(NgenModel):

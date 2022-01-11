@@ -9,12 +9,11 @@ from django.utils.text import slugify
 from model_utils import Choices
 from netfields import NetManager, CidrAddressField
 from tld import is_tld
-from treebeard.al_tree import AL_Node
 
-from .case import NgenModel
+from .utils import NgenModel, NgenTreeModel
 
 
-class Network(NgenModel, AL_Node):
+class Network(NgenTreeModel):
     cidr = CidrAddressField(null=True, unique=True)
     domain = models.CharField(max_length=255, null=True, unique=True, default=None)
     contacts = models.ManyToManyField('Contact')
@@ -22,7 +21,6 @@ class Network(NgenModel, AL_Node):
     TYPE = Choices('internal', 'external')
     type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
     network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, null=True)
-    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
     objects = NetManager()
     node_order_by = ['parent', '-cidr', 'domain']
     _address = None
@@ -146,17 +144,7 @@ class Network(NgenModel, AL_Node):
         return cls.objects.get(cidr='0.0.0.0/0')
 
     def get_ancestors_contacts(self):
-        contacts = []
-        for ancestor in self.get_ancestors():
-            for contact in ancestor.contacts.all():
-                contacts.append(contact.username)
-        return contacts
-
-    def get_contacts(self):
-        contacts = []
-        for contact in self.contacts.all():
-            contacts.append(contact.username)
-        return contacts
+        return self.get_ancestors_related(lambda obj: obj.contacts.all())
 
     class Meta:
         db_table = 'network'

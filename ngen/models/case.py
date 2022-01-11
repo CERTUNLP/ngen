@@ -1,12 +1,6 @@
 from django.db import models
-from model_utils.models import TimeStampedModel
 
-
-class NgenModel(TimeStampedModel):
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
-
-    class Meta:
-        abstract = True
+from .utils import NgenModel
 
 
 class Case(NgenModel):

@@ -2,13 +2,11 @@ from django.db import models
 from django.utils.text import slugify
 from model_utils import Choices
 from netfields import NetManager
-from treebeard.al_tree import AL_Node
 
-from ngen.models import NgenModel
+from .utils import NgenModel, NgenTreeModel
 
 
-class Taxonomy(NgenModel, AL_Node):
-    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
+class Taxonomy(NgenTreeModel):
     TYPE = Choices('vulnerability', 'incident')
     type = models.CharField(choices=TYPE, default=TYPE.vulnerability, max_length=20)
     name = models.CharField(max_length=100)
@@ -40,6 +38,9 @@ class Taxonomy(NgenModel, AL_Node):
     def __str__(self):
         return self.name
 
+    def get_ancestors_reports(self):
+        return self.get_ancestors_related(lambda obj: obj.reports.all())
+
     class Meta:
         db_table = 'taxonomy'
 
@@ -47,7 +48,7 @@ class Taxonomy(NgenModel, AL_Node):
 class Report(NgenModel):
     LANG = Choices('en', 'es')
     lang = models.CharField(choices=LANG, default=LANG.en, max_length=2)
-    taxonomy = models.ForeignKey('Taxonomy', models.CASCADE)
+    taxonomy = models.ForeignKey('Taxonomy', models.CASCADE, related_name='reports')
     problem = models.TextField()
     derived_problem = models.TextField(null=True)
     verification = models.TextField(null=True)
