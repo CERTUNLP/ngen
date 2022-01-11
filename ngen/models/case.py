@@ -3,26 +3,24 @@ from model_utils.models import TimeStampedModel
 
 
 class NgenModel(TimeStampedModel):
+    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
+
     class Meta:
         abstract = True
 
 
 class Case(NgenModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
-    state = models.ForeignKey('State', models.DO_NOTHING, related_name='incidents')
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
-    assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='incidents_assigned')
-    reporter = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='incidents_reporter')
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='incidents_createdby')
     date = models.DateTimeField()
 
-    network = models.ForeignKey('Network', models.DO_NOTHING)
-
+    assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='incidents_assigned')
+    state = models.ForeignKey('State', models.DO_NOTHING, related_name='incidents')
     unresponded_state = models.ForeignKey('State', models.DO_NOTHING, related_name='incidents_unresponded')
     unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='incidents_unsolved')
     ltd_count = models.IntegerField()
-    response_dead_line = models.DateTimeField(null=True)
-    solve_dead_line = models.DateTimeField(null=True)
+    response_dead_line = models.DateTimeField()
+    solve_dead_line = models.DateTimeField()
 
     report_message_id = models.CharField(max_length=255, null=True)
     raw = models.TextField(null=True)
@@ -32,17 +30,17 @@ class Case(NgenModel):
 
 
 class Event(NgenModel):
-    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
-    feed = models.ForeignKey('Feed', models.DO_NOTHING)
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_createdby')
-    reporter = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_reporter')
     date = models.DateTimeField()
+
+    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
+    feed = models.ForeignKey('Feed', models.DO_NOTHING)
+    reporter = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_reporter')
     evidence_file_path = models.CharField(max_length=255, null=True)
     notes = models.TextField(null=True)
 
-    # network = models.ForeignKey('Network', models.DO_NOTHING)
+    network = models.ForeignKey('Network', models.DO_NOTHING, null=True)
     case = models.ForeignKey('Case', models.CASCADE)
 
     class Meta:
@@ -56,7 +54,6 @@ class CaseTemplate(NgenModel):
     state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_states')
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
     network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     active = models.BooleanField(default=True)
     unresponded_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unresponded_states')

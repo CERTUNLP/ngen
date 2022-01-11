@@ -22,7 +22,6 @@ class Network(NgenModel, AL_Node):
     TYPE = Choices('internal', 'external')
     type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
     network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True)
     objects = NetManager()
     node_order_by = ['parent', '-cidr', 'domain']
@@ -173,7 +172,6 @@ class Contact(NgenModel):
     ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
     priority = models.ForeignKey('Priority', models.DO_NOTHING, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
 
     def __repr__(self):
         return self.username
@@ -189,7 +187,6 @@ class NetworkEntity(NgenModel):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=100, unique=True)
     active = models.IntegerField()
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name).replace('-', '_')

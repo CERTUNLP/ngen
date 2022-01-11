@@ -10,7 +10,6 @@ class State(NgenModel):
     active = models.IntegerField()
     behavior = models.ForeignKey('Behavior', models.DO_NOTHING)
     description = models.CharField(max_length=250, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
     children = models.ManyToManyField(
         "self",
         symmetrical=False,
@@ -99,7 +98,6 @@ class Edge(NgenModel):
     parent = models.ForeignKey(State, models.CASCADE, related_name='children_edge')
     child = models.ForeignKey(State, models.CASCADE, related_name='parents_edge')
     discr = models.CharField(max_length=255)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     def __repr__(self):
         return "%s -> %s" % (self.parent, self.child)
@@ -118,7 +116,6 @@ class IncidentStateChange(NgenModel):
     date = models.DateTimeField(null=True)
     method = models.CharField(max_length=25)
     state_edge = models.ForeignKey('Edge', models.DO_NOTHING, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
 
     class Meta:
         db_table = 'incident_state_change'
@@ -134,7 +131,6 @@ class Behavior(NgenModel):
     can_add_history = models.IntegerField()
     can_communicate = models.IntegerField()
     discr = models.CharField(max_length=255)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     def __repr__(self):
         return self.name

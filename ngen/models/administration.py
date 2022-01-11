@@ -9,7 +9,6 @@ class Feed(NgenModel):
     name = models.CharField(max_length=100)
     active = models.IntegerField()
     description = models.CharField(max_length=250, null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name).replace('-', '_')
@@ -27,7 +26,6 @@ class Priority(NgenModel):
     unresponse_time = models.IntegerField()
     unsolve_time = models.IntegerField()
     active = models.IntegerField()
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'priority'
@@ -43,7 +41,6 @@ class Tlp(NgenModel):
     encrypt = models.BooleanField(default=False)
     name = models.CharField(max_length=45)
     code = models.IntegerField()
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name).replace('-', '_')
@@ -69,7 +66,6 @@ class User(NgenModel):
     confirmation_token = models.CharField(unique=True, max_length=180, blank=True, null=True)
     password_requested_at = models.DateTimeField(blank=True, null=True)
     roles = models.TextField()
-    created_by = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         db_table = 'user'

@@ -15,7 +15,6 @@ class Taxonomy(NgenModel, AL_Node):
     slug = models.SlugField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
     description = models.TextField(null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
     objects = NetManager()
 
     def save(self, *args, **kwargs):
@@ -54,7 +53,6 @@ class Report(NgenModel):
     verification = models.TextField(null=True)
     recommendations = models.TextField(null=True)
     more_information = models.TextField(null=True)
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'report'
