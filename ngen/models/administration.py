@@ -1,14 +1,19 @@
 from django.db import models
+from django.utils.text import slugify
 
 from .case import NgenModel
 
 
 class Feed(NgenModel):
-    slug = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100)
     name = models.CharField(max_length=100)
     active = models.IntegerField()
     description = models.CharField(max_length=250, null=True)
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name).replace('-', '_')
+        super(Feed, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'feed'
@@ -29,7 +34,7 @@ class Priority(NgenModel):
 
 
 class Tlp(NgenModel):
-    slug = models.CharField(max_length=45)
+    slug = models.SlugField(max_length=45)
     rgb = models.CharField(max_length=45)
     when = models.TextField(max_length=500)
     why = models.TextField(max_length=500, )
@@ -39,6 +44,10 @@ class Tlp(NgenModel):
     name = models.CharField(max_length=45)
     code = models.IntegerField()
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name).replace('-', '_')
+        super(Tlp, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'tlp'
