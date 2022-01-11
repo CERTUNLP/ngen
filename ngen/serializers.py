@@ -5,7 +5,7 @@ from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     Event, Report, IncidentStateChange, Edge, Contact
 
 
-class IncidentSerializer(serializers.HyperlinkedModelSerializer):
+class CaseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Case
         # fields = ['id', 'network', 'type', 'feed', 'state', 'reporter']
@@ -24,13 +24,13 @@ class ReportSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class IncidentFeedSerializer(serializers.HyperlinkedModelSerializer):
+class FeedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Feed
         fields = '__all__'
 
 
-class IncidentStateSerializer(serializers.HyperlinkedModelSerializer):
+class StateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = State
         fields = '__all__'
@@ -42,19 +42,19 @@ class IncidentStateChangeSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class StateEdgeSerializer(serializers.HyperlinkedModelSerializer):
+class EdgeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Edge
         fields = '__all__'
 
 
-class StateBehaviorSerializer(serializers.HyperlinkedModelSerializer):
+class BehaviorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Behavior
         fields = '__all__'
 
 
-class IncidentTlpSerializer(serializers.HyperlinkedModelSerializer):
+class TlpSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tlp
         fields = '__all__'
@@ -66,13 +66,13 @@ class PrioritySerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class IncidentDecisionSerializer(serializers.HyperlinkedModelSerializer):
+class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CaseTemplate
         fields = '__all__'
 
 
-class IncidentDetectedSerializer(serializers.HyperlinkedModelSerializer):
+class EventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'

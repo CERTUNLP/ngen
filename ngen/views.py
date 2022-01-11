@@ -5,20 +5,20 @@ from rest_framework import viewsets
 from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
     Event, Report, IncidentStateChange, Edge, Contact
-from ngen.serializers import IncidentSerializer, NetworkSerializer, TaxonomySerializer, IncidentFeedSerializer, \
-    IncidentStateSerializer, StateBehaviorSerializer, UserSerializer, \
-    NetworkEntitySerializer, IncidentTlpSerializer, PrioritySerializer, \
-    IncidentDecisionSerializer, \
-    IncidentDetectedSerializer, ReportSerializer, IncidentStateChangeSerializer, StateEdgeSerializer, \
+from ngen.serializers import CaseSerializer, NetworkSerializer, TaxonomySerializer, FeedSerializer, \
+    StateSerializer, BehaviorSerializer, UserSerializer, \
+    NetworkEntitySerializer, TlpSerializer, PrioritySerializer, \
+    CaseTemplateSerializer, \
+    EventSerializer, ReportSerializer, IncidentStateChangeSerializer, EdgeSerializer, \
     ContactSerializer
 
 
-class IncidentViewSet(viewsets.ModelViewSet):
+class CaseViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
     queryset = Case.objects.all()
-    serializer_class = IncidentSerializer
+    serializer_class = CaseSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -34,15 +34,15 @@ class ReportViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class IncidentFeedViewSet(viewsets.ModelViewSet):
+class FeedViewSet(viewsets.ModelViewSet):
     queryset = Feed.objects.all()
-    serializer_class = IncidentFeedSerializer
+    serializer_class = FeedSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class IncidentStateViewSet(viewsets.ModelViewSet):
+class StateViewSet(viewsets.ModelViewSet):
     queryset = State.objects.all()
-    serializer_class = IncidentStateSerializer
+    serializer_class = StateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -52,21 +52,21 @@ class IncidentStateChangeViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class StateEdgeViewSet(viewsets.ModelViewSet):
+class EdgeViewSet(viewsets.ModelViewSet):
     queryset = Edge.objects.all()
-    serializer_class = StateEdgeSerializer
+    serializer_class = EdgeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class StateBehaviorViewSet(viewsets.ModelViewSet):
+class BehaviorViewSet(viewsets.ModelViewSet):
     queryset = Behavior.objects.all()
-    serializer_class = StateBehaviorSerializer
+    serializer_class = BehaviorSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class IncidentTlpViewSet(viewsets.ModelViewSet):
+class TlpViewSet(viewsets.ModelViewSet):
     queryset = Tlp.objects.all()
-    serializer_class = IncidentTlpSerializer
+    serializer_class = TlpSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -76,15 +76,15 @@ class PriorityViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class IncidentDecisionViewSet(viewsets.ModelViewSet):
+class CaseTemplateViewSet(viewsets.ModelViewSet):
     queryset = CaseTemplate.objects.all()
-    serializer_class = IncidentDecisionSerializer
+    serializer_class = CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class IncidentDetectedViewSet(viewsets.ModelViewSet):
+class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
-    serializer_class = IncidentDetectedSerializer
+    serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
