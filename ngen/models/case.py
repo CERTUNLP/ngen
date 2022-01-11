@@ -14,10 +14,11 @@ class Case(NgenModel):
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
     date = models.DateTimeField()
 
-    assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='incidents_assigned')
-    state = models.ForeignKey('State', models.DO_NOTHING, related_name='incidents')
-    unresponded_state = models.ForeignKey('State', models.DO_NOTHING, related_name='incidents_unresponded')
-    unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='incidents_unsolved')
+    assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='cases_assigned')
+    state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases')
+    unresponded_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unresponded')
+    unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unsolved')
+
     ltd_count = models.IntegerField()
     response_dead_line = models.DateTimeField()
     solve_dead_line = models.DateTimeField()
