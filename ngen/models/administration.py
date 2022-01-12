@@ -5,7 +5,7 @@ from .utils import NgenModel
 
 
 class Feed(NgenModel):
-    slug = models.SlugField(max_length=100)
+    slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     active = models.IntegerField()
     description = models.CharField(max_length=250, null=True)
@@ -32,7 +32,7 @@ class Priority(NgenModel):
 
 
 class Tlp(NgenModel):
-    slug = models.SlugField(max_length=45)
+    slug = models.SlugField(max_length=100, unique=True)
     rgb = models.CharField(max_length=45)
     when = models.TextField(max_length=500)
     why = models.TextField(max_length=500, )
