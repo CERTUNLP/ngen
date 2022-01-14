@@ -134,6 +134,9 @@ LANGUAGES = (
     ('en-us', _('English')),
     ('es', _('Spanish')),
 )
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'ngen/locale'),
+)
 TIME_ZONE = 'UTC'
 
 USE_I18N = True

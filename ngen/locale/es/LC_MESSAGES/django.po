@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-08 00:12+0000\n"
+"POT-Creation-Date: 2022-01-13 22:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: models/constituency.py:72
-msgid "no valid"
-msgstr "no valido"
+msgid "English"
+msgstr "Ingles"
+
+msgid "Spanish"
+msgstr "Español"
+
+#, python-format
+msgid "Dear %(contact.name)s"
+msgstr "Estimado %(contact.name)s"
+
+msgid "Related issues"
+msgstr "Problemas derivados"
+
+msgid "How to verify the issue"
+msgstr "Cómo verigicar el problema"
+
+msgid "Recommendations"
+msgstr "Recomendaciones"
+
+msgid "For more information"
+msgstr "Para mas información"
+
+msgid ""
+"Please do not hesitate to contact us if you need further assistance. Please "
+"remember to reply with the same subject and ID for better tracking of the "
+"case.'"
+msgstr ""
+" No dude en consultarnos ante cualquier inquietud. Recuerde responder con el "
+"mismo asunto e ID para un mejor seguimiento del caso."
+
+#, python-format
+msgid "Sincerely %(team.name)s - %(team.url)s"
+msgstr "Un saludo cordial, %(team.name)s - %(team.url)s"
+
+msgid "This report was generated with"
+msgstr "Este reporte ha sido generado con"
