@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "English"
-msgstr "Ingles"
+msgstr "Inglés"
 
 msgid "Spanish"
 msgstr "Español"
@@ -32,7 +32,7 @@ msgid "Related issues"
 msgstr "Problemas derivados"
 
 msgid "How to verify the issue"
-msgstr "Cómo verigicar el problema"
+msgstr "Cómo verificar el problema"
 
 msgid "Recommendations"
 msgstr "Recomendaciones"
