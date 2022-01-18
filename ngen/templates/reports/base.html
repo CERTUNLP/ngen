@@ -11,144 +11,141 @@
     {% endif %}
 </head>
 <body>
-<table class="body">
-    <tr>
-        <td class="center" align="center" valign="top">
-            <center>
-                {% include 'reports/header.html' %}
-                <table class="container">
-                    <tr>
-                        <td>
-                            <table class="row">
-                                <tr>
-                                    <td class="wrapper last">
-                                        <table class="twelve columns">
-                                            <tr>
-                                                <td>
-                                                    <p>
-                                                        {% blocktranslate trimmed %}
-                                                            Dear {{ contact.name }}
-                                                        {% endblocktranslate %}
-                                                    </p>
-                                                </td>
-                                                <td class="expander"></td>
-                                            </tr>
-                                            {% block report_content %}
-                                                {% if report.problem %}
-                                                    <tr>
-                                                        <td>
-                                                            {{ report.problem }}
-                                                        </td>
-                                                        <td class="expander"></td>
-                                                    </tr>
-                                                {% endif %}
-
-                                                {% if report.derivatedProblem %}
-                                                    <tr>
-                                                        <td>
-                                                            <p class="lead">
-                                                                {% blocktranslate trimmed %}
-                                                                    Related issues
-                                                                {% endblocktranslate %}
-                                                            </p>
-                                                            {{ report.derivatedProblem }}
-                                                        </td>
-                                                        <td class="expander"></td>
-                                                    </tr>
-                                                {% endif %}
-                                                {% if report.verification %}
-                                                    <tr>
-                                                        <td>
-                                                            <p class="lead">
-                                                                {% blocktranslate trimmed %}
-                                                                    How to verify the issue
-                                                                {% endblocktranslate %}
-                                                            </p>
-                                                            {{ report.verification }}
-                                                        </td>
-                                                        <td class="expander"></td>
-                                                    </tr>
-                                                {% endif %}
-                                                {% if report.recomendations %}
-                                                    <tr>
-                                                        <td>
-                                                            <p class="lead">
-                                                                {% blocktranslate trimmed %}
-                                                                    Recommendations
-                                                                {% endblocktranslate %}
-                                                            </p>
-                                                            {{ report.recomendations }}
-                                                        </td>
-                                                        <td class="expander"></td>
-                                                    </tr>
-                                                {% endif %}
-                                                {% if report.moreInformation %}
-                                                    <tr>
-                                                        <td>
-                                                            <p class="lead">
-                                                                {% blocktranslate trimmed %}
-                                                                    For more information
-                                                                {% endblocktranslate %}
-                                                            </p>
-                                                            {{ report.moreInformation }}
-                                                        </td>
-                                                        <td class="expander"></td>
-                                                    </tr>
-                                                {% endif %}
-                                            {% endblock report_content %}
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                            <table class="row callout">
-                                <tr>
-                                    <td class="wrapper last">
-                                        <table class="twelve columns">
-                                            <tr>
-                                                <td class="panel">
-                                                    <p>
-                                                        {% blocktranslate trimmed %}
-                                                            Please do not hesitate to contact us if you need further
-                                                            assistance.
-                                                            Please remember to reply with the same subject
-                                                            and ID for better tracking of the case.
-                                                        {% endblocktranslate %}
-                                                        {% blocktranslate trimmed %}
-                                                            Sincerely {{ team.name }} - {{ team.url }}
-                                                        {% endblocktranslate %}
-                                                    </p>
-                                                </td>
-                                                <td class="expander"></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                            <table class="row callout">
-                                <tr>
-                                    <td class="wrapper last">
-                                        <table class="twelve columns">
-                                            <tr>
-                                                <td class="panel">
-                                                    <p style="text-align:center;">
-                                                        {% blocktranslate trimmed %}
-                                                            This report was generated with
-                                                        {% endblocktranslate %}
-                                                        <a href="https://github.com/CERTUNLP/ngen">https://github.com/CERTUNLP/ngen</a>
-                                                    </p>
-                                                </td>
-                                                <td class="expander"></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </center>
-        </td>
-    </tr>
-</table>
+{% language lang %}
+    <table class="body">
+        <tr>
+            <td class="center" align="center" valign="top">
+                <center>
+                    {% include 'reports/header.html' %}
+                    <table class="container">
+                        <tr>
+                            <td>
+                                <table class="row">
+                                    <tr>
+                                        <td class="wrapper last">
+                                            <table class="twelve columns">
+                                                <tr>
+                                                    <td>
+                                                        <p>
+                                                            {% blocktranslate trimmed %}
+                                                                Dear {{ contact.name }}
+                                                            {% endblocktranslate %}
+                                                        </p>
+                                                    </td>
+                                                    <td class="expander"></td>
+                                                </tr>
+                                                {% block report_content %}
+                                                    {% if report.problem %}
+                                                        <tr>
+                                                            <td>
+                                                                {{ report.problem }}
+                                                            </td>
+                                                            <td class="expander"></td>
+                                                        </tr>
+                                                    {% endif %}
+                                                    {% if report.derivatedProblem %}
+                                                        <tr>
+                                                            <td>
+                                                                <p class="lead">
+                                                                    {% blocktranslate trimmed %}
+                                                                        Related issues
+                                                                    {% endblocktranslate %}
+                                                                </p>
+                                                                {{ report.derivatedProblem }}
+                                                            </td>
+                                                            <td class="expander"></td>
+                                                        </tr>
+                                                    {% endif %}
+                                                    {% if report.verification %}
+                                                        <tr>
+                                                            <td>
+                                                                <p class="lead">
+                                                                    {% blocktranslate trimmed %}
+                                                                        How to verify the issue
+                                                                    {% endblocktranslate %}
+                                                                </p>
+                                                                {{ report.verification }}
+                                                            </td>
+                                                            <td class="expander"></td>
+                                                        </tr>
+                                                    {% endif %}
+                                                    {% if report.recomendations %}
+                                                        <tr>
+                                                            <td>
+                                                                <p class="lead">
+                                                                    {% blocktranslate trimmed %}
+                                                                        Recommendations
+                                                                    {% endblocktranslate %}
+                                                                </p>
+                                                                {{ report.recomendations }}
+                                                            </td>
+                                                            <td class="expander"></td>
+                                                        </tr>
+                                                    {% endif %}
+                                                    {% if report.moreInformation %}
+                                                        <tr>
+                                                            <td>
+                                                                <p class="lead">
+                                                                    {% blocktranslate trimmed %}
+                                                                        For more information
+                                                                    {% endblocktranslate %}
+                                                                </p>
+                                                                {{ report.moreInformation }}
+                                                            </td>
+                                                            <td class="expander"></td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endblock report_content %}
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="row callout">
+                                    <tr>
+                                        <td class="wrapper last">
+                                            <table class="twelve columns">
+                                                <tr>
+                                                    <td class="panel">
+                                                        <p>
+                                                            {% translate "Please do not hesitate to contact us if you need further assistance." %}
+                                                            {% translate "Please remember to reply with the same subject and ID for better tracking of the case." %}
+                                                            {% blocktranslate trimmed %}
+                                                                Sincerely {{ team.name }} - {{ team.url }}
+                                                            {% endblocktranslate %}
+                                                        </p>
+                                                    </td>
+                                                    <td class="expander"></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="row callout">
+                                    <tr>
+                                        <td class="wrapper last">
+                                            <table class="twelve columns">
+                                                <tr>
+                                                    <td class="panel">
+                                                        <p style="text-align:center;">
+                                                            {% blocktranslate trimmed %}
+                                                                This report was generated with
+                                                            {% endblocktranslate %}
+                                                            <a href="https://github.com/CERTUNLP/ngen">https://github.com/CERTUNLP/ngen</a>
+                                                        </p>
+                                                    </td>
+                                                    <td class="expander"></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </center>
+            </td>
+        </tr>
+    </table>
+{% endlanguage %}
 </body>
 </html>

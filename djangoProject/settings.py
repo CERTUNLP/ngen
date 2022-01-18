@@ -170,4 +170,5 @@ CELERY_EMAIL_CHUNK_SIZE = 1
 # CELERY_EMAIL_BACKEND
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

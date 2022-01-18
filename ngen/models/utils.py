@@ -16,8 +16,7 @@ class NgenTreeModel(NgenModel, AL_Node):
     def get_ancestors_related(self, related):
         contacts = []
         for ancestor in self.get_ancestors():
-            for contact in related(ancestor):
-                contacts.insert(0, contact)
+            contacts.insert(0, list(related(ancestor)))
         return contacts
 
     class Meta:

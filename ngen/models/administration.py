@@ -17,6 +17,12 @@ class Feed(NgenModel):
     class Meta:
         db_table = 'feed'
 
+    def __repr__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
+
 
 class Priority(NgenModel):
     name = models.CharField(max_length=255)
@@ -29,6 +35,12 @@ class Priority(NgenModel):
 
     class Meta:
         db_table = 'priority'
+
+    def __repr__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
 
 
 class Tlp(NgenModel):
@@ -48,6 +60,12 @@ class Tlp(NgenModel):
 
     class Meta:
         db_table = 'tlp'
+
+    def __repr__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
 
 
 class User(NgenModel):
@@ -69,3 +87,9 @@ class User(NgenModel):
 
     class Meta:
         db_table = 'user'
+
+    def __repr__(self):
+        return self.email
+
+    def __str__(self):
+        return self.email

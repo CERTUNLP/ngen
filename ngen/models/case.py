@@ -1,9 +1,15 @@
+import re
+
+from django.core import mail
 from django.db import models
+from django.template.loader import get_template
+from django.utils.html import strip_tags
+from django_lifecycle import hook, LifecycleModelMixin, AFTER_CREATE, AFTER_UPDATE
 
 from .utils import NgenModel
 
 
-class Case(NgenModel):
+class Case(LifecycleModelMixin, NgenModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
     date = models.DateTimeField()
@@ -22,9 +28,37 @@ class Case(NgenModel):
 
     class Meta:
         db_table = 'case'
+        ordering = ['-id']
+
+    def contacts(self):
+        contacts = []
+        for event in self.events.all():
+            event_contacts = list(event.network.contacts.all())
+            if event_contacts:
+                if event_contacts not in contacts:
+                    contacts.insert(0, list(event.network.contacts.all()))
+            elif event.network.get_ancestors_contacts() and event.network.get_ancestors_contacts()[0] not in contacts:
+                contacts.insert(0, event.network.get_ancestors_contacts()[0])
+        return contacts
+
+    @hook(AFTER_CREATE)
+    def do_after_create_jobs(self):
+        html_content = get_template('reports/base.html').render({'html': True, 'lang': 'es'})
+        text_content = re.sub(r'\n+', '\n',
+                              strip_tags(get_template('reports/base.html').render({'lang': 'es'})).replace('  ', ''))
+        mail.send_mail('CREATE', text_content, 'dude@aol.com', ['mr@lebowski.com'], html_message=html_content)
+
+    @hook(AFTER_UPDATE, when="state", has_changed=True)
+    def do_after_create_jobs(self):
+        html_content = get_template('reports/base.html').render({'html': True, 'lang': 'es'})
+        text_content = re.sub(r'\n+', '\n',
+                              strip_tags(get_template('reports/base.html').render({'lang': 'es'})).replace('  ',
+                                                                                                           ''))
+        mail.send_mail('CASE_STATE_UPDATE', text_content, 'dude@aol.com', ['mr@lebowski.com'],
+                       html_message=html_content)
 
 
-class Event(NgenModel):
+class Event(LifecycleModelMixin, NgenModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
     date = models.DateTimeField()
@@ -35,11 +69,21 @@ class Event(NgenModel):
     evidence_file_path = models.CharField(max_length=255, null=True)
     notes = models.TextField(null=True)
 
-    network = models.ForeignKey('Network', models.DO_NOTHING, null=True)
-    case = models.ForeignKey('Case', models.CASCADE)
+    network = models.ForeignKey('Network', models.DO_NOTHING, null=True, related_name='events')
+    case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='events')
 
     class Meta:
         db_table = 'event'
+
+    @hook(AFTER_UPDATE, when="case", has_changed=True)
+    @hook(AFTER_CREATE)
+    def do_after_create_jobs(self):
+        if self.case:
+            html_content = get_template('reports/base.html').render({'html': True, 'lang': 'es'})
+            text_content = re.sub(r'\n+', '\n',
+                                  strip_tags(get_template('reports/base.html').render({'lang': 'es'})).replace('  ',
+                                                                                                               ''))
+            mail.send_mail('EVENT_UPDATE', text_content, 'dude@aol.com', ['mr@lebowski.com'], html_message=html_content)
 
 
 class CaseTemplate(NgenModel):
