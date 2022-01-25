@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
+from constance import config
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -180,18 +181,6 @@ CONSTANCE_ADDITIONAL_FIELDS = {
     'image_field': ['django.forms.ImageField', {}]
 }
 CONSTANCE_CONFIG = {
-    'CELERY_BROKER_URL': (os.environ.get('CELERY_BROKER_URL'), 'Celery broker URL'),
-    'CELERY_RESULT_BACKEND': (os.environ.get('CELERY_RESULT_BACKEND'), 'Celery result backend URL'),
-
-    'POSTGRES_NAME': (os.environ.get('POSTGRES_NAME'), 'Postgres database name'),
-    'POSTGRES_USER': (os.environ.get('POSTGRES_USER'), 'Postgres database username'),
-    'POSTGRES_PASSWORD': (os.environ.get('POSTGRES_PASSWORD'), 'Postgres database password'),
-    'POSTGRES_HOST': (os.environ.get('POSTGRES_HOST'), 'Postgres database host'),
-
-    'DJANGO_SUPERUSER_PASSWORD': (os.environ.get('DJANGO_SUPERUSER_PASSWORD'), 'Django default super user password'),
-    'DJANGO_SUPERUSER_USERNAME': (os.environ.get('DJANGO_SUPERUSER_USERNAME'), 'Django default super user username'),
-    'DJANGO_SUPERUSER_EMAIL': (os.environ.get('DJANGO_SUPERUSER_EMAIL'), 'Django default super user mail'),
-
     'TEAM_MAIL': (os.environ.get('TEAM_MAIL'), 'CSIRT team email'),
     'TEAM_ABUSE': (os.environ.get('TEAM_ABUSE'), 'CSIRT abuse email'),
     'TEAM_URL': (os.environ.get('TEAM_URL'), 'CSIRT site url'),
@@ -199,14 +188,8 @@ CONSTANCE_CONFIG = {
     'TEAM_LOGO': ('logo.png', 'CSIRT logo', 'image_field'),
     'TEAM_NAME': (os.environ.get('TEAM_NAME'), 'CSIRT name'),
 
-    'EMAIL_HOST': (os.environ.get('EMAIL_HOST'), 'SMTP host'),
-    'EMAIL_PORT': (os.environ.get('EMAIL_PORT'), 'SMTP port'),
     'EMAIL_SENDER': (os.environ.get('EMAIL_SENDER'), 'SMTP sender email address'),
 
     'NGEN_LANG': (os.environ.get('NGEN_LANG'), 'NGEN default language'),
     'NGEN_LANG_EXTERNAL': (os.environ.get('NGEN_LANG_EXTERNAL'), 'NGEN language for external reports'),
-
-    'ELASTIC_HOST': (os.environ.get('ELASTIC_HOST'), 'Elastic host'),
-    'ELASTIC_PORT': (os.environ.get('ELASTIC_PORT'), 'Elastic port'),
-
 }

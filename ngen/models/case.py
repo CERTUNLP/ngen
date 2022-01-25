@@ -6,6 +6,7 @@ from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django_lifecycle import hook, LifecycleModelMixin, AFTER_CREATE, AFTER_UPDATE
 
+from .mailer import case_creation
 from .utils import NgenModel
 
 
@@ -36,20 +37,20 @@ class Case(LifecycleModelMixin, NgenModel):
             event_contacts = list(event.network.contacts.all())
             if event_contacts:
                 if event_contacts not in contacts:
-                    contacts.insert(0, list(event.network.contacts.all()))
-            elif event.network.get_ancestors_contacts() and event.network.get_ancestors_contacts()[0] not in contacts:
-                contacts.insert(0, event.network.get_ancestors_contacts()[0])
+                    contacts.insert(0, list(event.network.contacts.filter(priority__code__gte=self.priority.code)))
+            else:
+                network_contacts = event.network.get_ancestors_contacts(self.priority.code)
+                if network_contacts and network_contacts[0] not in contacts:
+                    contacts.insert(0, network_contacts[0])
         return contacts
 
     @hook(AFTER_CREATE)
-    def do_after_create_jobs(self):
-        html_content = get_template('reports/base.html').render({'html': True, 'lang': 'es'})
-        text_content = re.sub(r'\n+', '\n',
-                              strip_tags(get_template('reports/base.html').render({'lang': 'es'})).replace('  ', ''))
-        mail.send_mail('CREATE', text_content, 'dude@aol.com', ['mr@lebowski.com'], html_message=html_content)
+    @hook(AFTER_UPDATE)
+    def after_create(self):
+        case_creation(case=self)
 
     @hook(AFTER_UPDATE, when="state", has_changed=True)
-    def do_after_create_jobs(self):
+    def after_update(self):
         html_content = get_template('reports/base.html').render({'html': True, 'lang': 'es'})
         text_content = re.sub(r'\n+', '\n',
                               strip_tags(get_template('reports/base.html').render({'lang': 'es'})).replace('  ',
@@ -77,7 +78,7 @@ class Event(LifecycleModelMixin, NgenModel):
 
     @hook(AFTER_UPDATE, when="case", has_changed=True)
     @hook(AFTER_CREATE)
-    def do_after_create_jobs(self):
+    def after_create(self):
         if self.case:
             html_content = get_template('reports/base.html').render({'html': True, 'lang': 'es'})
             text_content = re.sub(r'\n+', '\n',

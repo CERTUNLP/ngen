@@ -143,8 +143,8 @@ class Network(NgenTreeModel):
     def lookup_default_network(cls):
         return cls.objects.get(cidr='0.0.0.0/0')
 
-    def get_ancestors_contacts(self):
-        return self.get_ancestors_related(lambda obj: obj.contacts.all())
+    def get_ancestors_contacts(self, priority):
+        return self.get_ancestors_related(lambda obj: obj.contacts.filter(priority__code__gte=priority))
 
     class Meta:
         db_table = 'network'
