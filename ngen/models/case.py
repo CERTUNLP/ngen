@@ -31,15 +31,15 @@ class Case(LifecycleModelMixin, NgenModel):
         db_table = 'case'
         ordering = ['-id']
 
-    def contacts(self):
+    def email_contacts(self):
         contacts = []
         for event in self.events.all():
-            event_contacts = list(event.network.contacts.all())
-            if event_contacts:
-                if event_contacts not in contacts:
-                    contacts.insert(0, list(event.network.contacts.filter(priority__code__gte=self.priority.code)))
+            event_contacts = list(
+                event.network.contacts.filter(type='email').filter(priority__code__gte=self.priority.code))
+            if event_contacts not in contacts:
+                contacts.insert(0, list(event_contacts))
             else:
-                network_contacts = event.network.get_ancestors_contacts(self.priority.code)
+                network_contacts = event.network.ancestors_email_contacts(self.priority.code)
                 if network_contacts and network_contacts[0] not in contacts:
                     contacts.insert(0, network_contacts[0])
         return contacts

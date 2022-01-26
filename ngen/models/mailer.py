@@ -14,7 +14,12 @@ def send_mail(subject, template, from_mail, recipient_list, lang):
 
 
 def case_creation(case):
-    for contact in case.contacts():
-        send_mail(gettext_lazy('[%s][TLP:%s][ID:%s]' % (config.TEAM_NAME, case.tlp, case.id)), 'reports/base.html',
+    for contact in case.email_contacts():
+        send_mail('[%s][TLP:%s][ID:%s]' % (config.TEAM_NAME, gettext_lazy(case.tlp), case.id), 'reports/base.html',
                   config.EMAIL_SENDER,
                   [c.username for c in contact], config.NGEN_LANG)
+
+    if case.assigned:
+        send_mail('[%s][TLP:%s][ID:%s]' % (config.TEAM_NAME, gettext_lazy(case.tlp), case.id), 'reports/base.html',
+                  config.EMAIL_SENDER,
+                  [case.assigned.email], config.NGEN_LANG)
