@@ -193,3 +193,4 @@ CONSTANCE_CONFIG = {
     'NGEN_LANG': (os.environ.get('NGEN_LANG'), 'NGEN default language'),
     'NGEN_LANG_EXTERNAL': (os.environ.get('NGEN_LANG_EXTERNAL'), 'NGEN language for external reports'),
 }
+AUTH_USER_MODEL = 'ngen.User'
