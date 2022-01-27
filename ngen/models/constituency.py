@@ -147,6 +147,9 @@ class Network(NgenTreeModel):
         return self.get_ancestors_related(
             lambda obj: obj.contacts.filter(type='email').filter(priority__code__gte=priority))
 
+    def email_contacts(self, priority):
+        return self.contacts.filter(type='email').filter(priority__code__gte=priority)
+
     class Meta:
         db_table = 'network'
         ordering = ['-cidr']

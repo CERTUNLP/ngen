@@ -34,14 +34,10 @@ class Case(LifecycleModelMixin, NgenModel):
     def email_contacts(self):
         contacts = []
         for event in self.events.all():
-            event_contacts = list(
-                event.network.contacts.filter(type='email').filter(priority__code__gte=self.priority.code))
-            if event_contacts not in contacts:
-                contacts.insert(0, list(event_contacts))
-            else:
-                network_contacts = event.network.ancestors_email_contacts(self.priority.code)
-                if network_contacts and network_contacts[0] not in contacts:
-                    contacts.insert(0, network_contacts[0])
+            event_contacts = event.email_contacts(self.priority.code)
+            for contact in event_contacts:
+                if contact not in contacts:
+                    contacts.insert(0, contact)
         return contacts
 
     @hook(AFTER_CREATE)
@@ -75,6 +71,17 @@ class Event(LifecycleModelMixin, NgenModel):
 
     class Meta:
         db_table = 'event'
+
+    def email_contacts(self, priority):
+        contacts = []
+        event_contacts = list(self.network.email_contacts(priority))
+        if event_contacts:
+            return event_contacts
+        else:
+            network_contacts = self.network.ancestors_email_contacts(priority)
+            if network_contacts:
+                return network_contacts[0]
+        return contacts
 
     @hook(AFTER_UPDATE, when="case", has_changed=True)
     @hook(AFTER_CREATE)
