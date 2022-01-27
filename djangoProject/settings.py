@@ -181,7 +181,7 @@ CONSTANCE_ADDITIONAL_FIELDS = {
     'image_field': ['django.forms.ImageField', {}]
 }
 CONSTANCE_CONFIG = {
-    'TEAM_MAIL': (os.environ.get('TEAM_MAIL'), 'CSIRT team email'),
+    'TEAM_EMAIL': (os.environ.get('TEAM_EMAIL'), 'CSIRT team email'),
     'TEAM_ABUSE': (os.environ.get('TEAM_ABUSE'), 'CSIRT abuse email'),
     'TEAM_URL': (os.environ.get('TEAM_URL'), 'CSIRT site url'),
     'TEAM_SITE': (os.environ.get('TEAM_SITE'), 'CSIRT team site'),
