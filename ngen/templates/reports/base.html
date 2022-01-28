@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="">
 <head>
@@ -27,74 +28,70 @@
                                                 <tr>
                                                     <td>
                                                         <p>
-                                                            {% blocktranslate trimmed %}
-                                                                Dear {{ contact.name }}
-                                                            {% endblocktranslate %}
+                                                            {% translate 'To whom it may concern' %},
                                                         </p>
                                                     </td>
                                                     <td class="expander"></td>
                                                 </tr>
                                                 {% block report_content %}
-                                                    {% if report.problem %}
-                                                        <tr>
-                                                            <td>
-                                                                {{ report.problem }}
-                                                            </td>
-                                                            <td class="expander"></td>
-                                                        </tr>
-                                                    {% endif %}
-                                                    {% if report.derivatedProblem %}
-                                                        <tr>
-                                                            <td>
-                                                                <p class="lead">
-                                                                    {% blocktranslate trimmed %}
-                                                                        Related issues
-                                                                    {% endblocktranslate %}
-                                                                </p>
-                                                                {{ report.derivatedProblem }}
-                                                            </td>
-                                                            <td class="expander"></td>
-                                                        </tr>
-                                                    {% endif %}
-                                                    {% if report.verification %}
-                                                        <tr>
-                                                            <td>
-                                                                <p class="lead">
-                                                                    {% blocktranslate trimmed %}
-                                                                        How to verify the issue
-                                                                    {% endblocktranslate %}
-                                                                </p>
-                                                                {{ report.verification }}
-                                                            </td>
-                                                            <td class="expander"></td>
-                                                        </tr>
-                                                    {% endif %}
-                                                    {% if report.recomendations %}
-                                                        <tr>
-                                                            <td>
-                                                                <p class="lead">
-                                                                    {% blocktranslate trimmed %}
-                                                                        Recommendations
-                                                                    {% endblocktranslate %}
-                                                                </p>
-                                                                {{ report.recomendations }}
-                                                            </td>
-                                                            <td class="expander"></td>
-                                                        </tr>
-                                                    {% endif %}
-                                                    {% if report.moreInformation %}
-                                                        <tr>
-                                                            <td>
-                                                                <p class="lead">
-                                                                    {% blocktranslate trimmed %}
-                                                                        For more information
-                                                                    {% endblocktranslate %}
-                                                                </p>
-                                                                {{ report.moreInformation }}
-                                                            </td>
-                                                            <td class="expander"></td>
-                                                        </tr>
-                                                    {% endif %}
+                                                    {% for event in case.events.all %}
+                                                        {% for report in event.taxonomy.reports.all %}
+                                                            {% if report.lang == lang %}
+                                                                {% if report.problem %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            {{ report.problem }}
+                                                                        </td>
+                                                                        <td class="expander"></td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                                {% if report.derived_problem %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            <p class="lead">
+                                                                                {% translate 'Related issues' %}
+                                                                            </p>
+                                                                            {{ report.derived_problem }}
+                                                                        </td>
+                                                                        <td class="expander"></td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                                {% if report.verification %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            <p class="lead">
+                                                                                {% translate 'How to verify the issue' %}
+                                                                            </p>
+                                                                            {{ report.verification }}
+                                                                        </td>
+                                                                        <td class="expander"></td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                                {% if report.recomendations %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            <p class="lead">
+                                                                                {% translate 'Recommendations' %}
+                                                                            </p>
+                                                                            {{ report.recomendations }}
+                                                                        </td>
+                                                                        <td class="expander"></td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                                {% if report.more_information %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            <p class="lead">
+                                                                                {% translate 'For more information' %}
+                                                                            </p>
+                                                                            {{ report.more_information }}
+                                                                        </td>
+                                                                        <td class="expander"></td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
                                                 {% endblock report_content %}
                                             </table>
                                         </td>
@@ -110,7 +107,8 @@
                                                             {% translate "Please do not hesitate to contact us if you need further assistance." %}
                                                             {% translate "Please remember to reply with the same subject and ID for better tracking of the case." %}
                                                             {% blocktranslate trimmed %}
-                                                                Sincerely {{ team.name }} - {{ team.url }}
+                                                                Sincerely {{ constance.TEAM_NAME }} -
+                                                                {{ constance.TEAM_URL }}
                                                             {% endblocktranslate %}
                                                         </p>
                                                     </td>
