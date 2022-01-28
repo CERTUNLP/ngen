@@ -34,8 +34,13 @@ class Priority(NgenModel):
     unsolve_time = models.IntegerField()
     active = models.IntegerField()
 
+    @classmethod
+    def default_priority(cls):
+        return cls.objects.get(name='Medium')
+
     class Meta:
         db_table = 'priority'
+        ordering = ['code']
 
     def __repr__(self):
         return self.name
@@ -71,6 +76,12 @@ class Tlp(NgenModel):
 
 class User(AbstractUser):
     api_key = models.CharField(max_length=255, blank=True, null=True)
+    priority = models.ForeignKey('Priority', models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'user'
+
+    def save(self, *args, **kwargs):
+        if not self.priority:
+            self.priority = Priority.default_priority()
+        super(User, self).save(*args, **kwargs)

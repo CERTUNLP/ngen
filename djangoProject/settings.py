@@ -178,10 +178,16 @@ EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
 
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_ADDITIONAL_FIELDS = {
-    'image_field': ['django.forms.ImageField', {}]
+    'image_field': ['django.forms.ImageField', {}],
+    'priority_field': ['django.forms.fields.ChoiceField', {
+        'widget': 'django.forms.Select',
+        'choices': (
+            ("Critical", "Critical"), ("High", "High"), ("Medium", "Medium"), ("Low", "Low"), ('Very low', "Very low")),
+    }],
 }
 CONSTANCE_CONFIG = {
     'TEAM_EMAIL': (os.environ.get('TEAM_EMAIL'), 'CSIRT team email'),
+    'TEAM_EMAIL_PRIORITY': (os.environ.get('TEAM_EMAIL_PRIORITY'), 'CSIRT team email', 'priority_field'),
     'TEAM_ABUSE': (os.environ.get('TEAM_ABUSE'), 'CSIRT abuse email'),
     'TEAM_URL': (os.environ.get('TEAM_URL'), 'CSIRT site url'),
     'TEAM_SITE': (os.environ.get('TEAM_SITE'), 'CSIRT team site'),

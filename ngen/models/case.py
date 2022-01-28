@@ -6,6 +6,7 @@ from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django_lifecycle import hook, LifecycleModelMixin, AFTER_CREATE, AFTER_UPDATE
 
+from . import Priority
 from .mailer import case_creation
 from .utils import NgenModel
 
@@ -30,6 +31,11 @@ class Case(LifecycleModelMixin, NgenModel):
     class Meta:
         db_table = 'case'
         ordering = ['-id']
+
+    def save(self, *args, **kwargs):
+        if not self.priority:
+            self.priority = Priority.default_priority()
+        super(Case, self).save(*args, **kwargs)
 
     def email_contacts(self):
         contacts = []
@@ -72,6 +78,11 @@ class Event(LifecycleModelMixin, NgenModel):
     class Meta:
         db_table = 'event'
 
+    def save(self, *args, **kwargs):
+        if not self.priority:
+            self.priority = Priority.default_priority()
+        super(Event, self).save(*args, **kwargs)
+
     def email_contacts(self, priority):
         contacts = []
         event_contacts = list(self.network.email_contacts(priority))
@@ -108,6 +119,11 @@ class CaseTemplate(NgenModel):
 
     class Meta:
         db_table = 'case_template'
+
+    def save(self, *args, **kwargs):
+        if not self.priority:
+            self.priority = Priority.default_priority()
+        super(CaseTemplate, self).save(*args, **kwargs)
 
 
 class IncidentComment(models.Model):

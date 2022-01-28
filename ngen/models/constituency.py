@@ -10,6 +10,7 @@ from model_utils import Choices
 from netfields import NetManager, CidrAddressField
 from tld import is_tld
 
+from . import Priority
 from .utils import NgenModel, NgenTreeModel
 
 
@@ -173,6 +174,11 @@ class Contact(NgenModel):
 
     class Meta:
         db_table = 'contact'
+
+    def save(self, *args, **kwargs):
+        if not self.priority:
+            self.priority = Priority.default_priority()
+        super(Contact, self).save(*args, **kwargs)
 
 
 class NetworkEntity(NgenModel):
