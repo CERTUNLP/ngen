@@ -23,14 +23,14 @@ def email_subject(case):
 
 
 def case_creation(case):
-    send_mail(email_subject(case), 'reports/base.html', config.EMAIL_SENDER,
+    send_mail(email_subject(case), 'reports/newsletter.html', config.EMAIL_SENDER,
               [c.username for c in case.email_contacts()],
               config.NGEN_LANG, case)
 
     if case.assigned and case.assigned.priority.code >= case.priority.code:
-        send_mail(email_subject(case), 'reports/base.html', config.EMAIL_SENDER, [case.assigned.email],
+        send_mail(email_subject(case), 'reports/newsletter.html', config.EMAIL_SENDER, [case.assigned.email],
                   config.NGEN_LANG, case)
 
     if config.TEAM_EMAIL and Priority.objects.get(name=config.TEAM_EMAIL_PRIORITY).code >= case.priority.code:
-        send_mail(email_subject(case), 'reports/base.html', config.EMAIL_SENDER, [config.TEAM_EMAIL],
+        send_mail(email_subject(case), 'reports/newsletter.html', config.EMAIL_SENDER, [config.TEAM_EMAIL],
                   config.NGEN_LANG, case)

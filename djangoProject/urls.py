@@ -18,6 +18,7 @@ from django.urls import include, path
 from rest_framework import routers
 
 from ngen import views
+from ngen.views import AboutView
 
 router = routers.DefaultRouter()
 router.register(r'administration/tlp', views.TlpViewSet)
@@ -41,5 +42,7 @@ router.register(r'user', views.UserViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('about/', AboutView.as_view()),
+
 ]

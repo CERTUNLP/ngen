@@ -1,0 +1,212 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <!-- If you delete this meta tag, the ground will open and swallow you. -->
+    <meta name="viewport" content="width=device-width"/>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>{{ config.TEAM_NAME }}</title>
+    {% if html %}
+        <style type="text/css">
+            {% include 'reports/email.css' %}
+        </style>
+    {% endif %}
+</head>
+
+<body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
+
+<!-- HEADER -->
+<table class="head-wrap" bgcolor="#999999">
+    <tr>
+        <td></td>
+        <td class="header container" align="">
+
+            <!-- /content -->
+            <div class="content">
+                <table bgcolor="#999999">
+                    <tr>
+                        <td><img src="http://placehold.it/200x50/"/></td>
+                        <td align="right"><h6 class="collapse" style="color: {{ case.tlp.rgb }};">
+                            TLP: {{ case.tlp }}</h6></td>
+                    </tr>
+                </table>
+            </div><!-- /content -->
+
+        </td>
+        <td></td>
+    </tr>
+</table><!-- /HEADER -->
+
+<!-- BODY -->
+<table class="body-wrap" bgcolor="">
+    <tr>
+        <td></td>
+        <td class="container" align="" bgcolor="#FFFFFF">
+            <!-- content -->
+            <div class="content">
+                <table>
+                    <tr>
+                        <td>
+                            <h2>Case: {{ case.id }} <small>{{ case.tlp.name }} {{ case.priority }}</small></h2>
+                            <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                tempor incididunt ut labore et.</p>
+
+                            <!-- A Real Hero (and a real human being) -->
+                            {#                                                        <p><img src="http://placehold.it/600x300"/></p><!-- /hero -->#}
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                                incididunt ut labore et dolore magna aliqua. Consectetur adipisicing elit, sed do
+                                eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                        </td>
+                    </tr>
+                </table>
+            </div><!-- /content -->
+
+            {% for event in case.events.all %}
+                {% for report in event.taxonomy.reports.all %}
+                    {% if report.lang == config.NGEN_LANG %}
+                        <div class="content">
+                            <table bgcolor="">
+                                <tr>
+                                    <td class="small" width="1%"
+                                        style="vertical-align: top; padding-right:10px;background: #999999">
+                                    </td>
+                                    <td>
+                                        <h5>Event: {{ event.id }} <small>Taxonomy: {{ event.taxonomy }}</small></h5>
+                                        <div class="content">
+                                            {% if report.problem %}
+                                                <p class="lead">
+                                                    {% translate 'Problem' %}
+                                                </p>
+                                                <p class="">{{ report.problem }}</p>
+                                            {% endif %}
+                                            {% if report.derived_problem %}
+                                                <p class="lead">
+                                                    {% translate 'Related issues' %}
+                                                </p>
+                                                <p class="">{{ report.derived_problem }}</p>
+                                            {% endif %}
+                                            {% if report.verification %}
+                                                <p class="lead">
+                                                    {% translate 'How to verify the issue' %}
+                                                </p>
+                                                <p class=""> {{ report.verification }} </p>
+                                            {% endif %}
+                                            {% if report.recomendations %}
+                                                <p class="lead">
+                                                    {% translate 'Recommendations' %}
+                                                </p>
+                                                <p class=""> {{ report.recomendations }} </p>
+                                            {% endif %}
+                                            {% if report.more_information %}
+                                                <p class="lead">
+                                                    {% translate 'For more information' %}
+                                                </p>
+                                                <p class=""> {{ report.more_information }} </p>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div><!-- /content -->
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+
+            <!-- content -->
+            <div class="content">
+                <table bgcolor="">
+                    <tr>
+                        <td>
+                            <!-- Callout Panel -->
+                            <p class="callout">
+                                {% translate "Please do not hesitate to contact us if you need further assistance." %}
+                                {% translate "Please remember to reply with the same subject and ID for better tracking of the case." %}
+                                <br/>
+                                <b>{% translate 'Sincerely' %} {{ config.TEAM_NAME }} - {{ config.TEAM_URL }}</b>
+                            </p><!-- /callout panel -->
+                        </td>
+                    </tr>
+                </table>
+            </div><!-- /content -->
+            <!-- content -->
+            <div class="content">
+                <table bgcolor="">
+                    <tr>
+                        <td>
+                            <!-- social & contact -->
+                            <table bgcolor="" class="social" width="100%">
+                                <tr>
+                                    <td>
+                                        <!--- column 1 -->
+                                        {#                                        <div class="column">#}
+                                        {#                                            <table bgcolor="" cellpadding="" align="left">#}
+                                        {#                                                <tr>#}
+                                        {#                                                    <td>#}
+                                        {#                                                        <h5 class="">Connect with Us:</h5>#}
+                                        {#                                                        <p class="">#}
+                                        {#                                                            <a href="#" class="soc-btn fb">Facebook</a>#}
+                                        {#                                                            <a href="#" class="soc-btn tw">Twitter</a>#}
+                                        {#                                                            <a href="#" class="soc-btn gp">Google+</a>#}
+                                        {#                                                        </p>#}
+                                        {#                                                    </td>#}
+                                        {#                                                </tr>#}
+                                        {#                                            </table><!-- /column 1 -->#}
+                                        {#                                        </div>#}
+                                        <!--- column 2 -->
+                                        <div class="column">
+                                            <table bgcolor="" cellpadding="" align="left">
+                                                <tr>
+                                                    <td>
+                                                        <h5 class="">Contact Info:</h5>
+                                                        {#                                                        <p>Phone: <strong>408.341.0600</strong><br/>#}
+                                                        {#                                                            Email: <strong><a href="emailto:hseldon@trantor.com">hseldon@trantor.com</a></strong>#}
+                                                        {#                                                        </p>#}
+                                                    </td>
+                                                </tr>
+                                            </table><!-- /column 2 -->
+                                        </div>
+                                        <div class="clear"></div>
+                                    </td>
+                                </tr>
+                            </table><!-- /social & contact -->
+                        </td>
+                    </tr>
+                </table>
+            </div><!-- /content -->
+        </td>
+    </tr>
+</table><!-- /BODY -->
+
+<!-- FOOTER -->
+<table class="footer-wrap">
+    <tr>
+        <td></td>
+        <td class="container">
+            <!-- content -->
+            <div class="content">
+                <table>
+                    <tr>
+                        <td align="center">
+                            <p>
+                                {% blocktranslate trimmed %}
+                                    This report was generated with
+                                {% endblocktranslate %}
+                                <a href="https://github.com/CERTUNLP/ngen">https://github.com/CERTUNLP/ngen</a>
+                                {#                                <a href="#">Privacy</a> |#}
+                                {#                                <a href="#">#}
+                                {#                                    <unsubscribe>Unsubscribe</unsubscribe>#}
+                                {#                                </a>#}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div><!-- /content -->
+        </td>
+        <td></td>
+    </tr>
+</table><!-- /FOOTER -->
+
+</body>
+</html>

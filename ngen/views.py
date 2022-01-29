@@ -1,4 +1,6 @@
+import constance
 import django_filters
+from django.views.generic import TemplateView
 from rest_framework import permissions, filters
 from rest_framework import viewsets
 
@@ -11,6 +13,18 @@ from ngen.serializers import CaseSerializer, NetworkSerializer, TaxonomySerializ
     CaseTemplateSerializer, \
     EventSerializer, ReportSerializer, IncidentStateChangeSerializer, EdgeSerializer, \
     ContactSerializer
+
+
+class AboutView(TemplateView):
+    html = True
+    template_name = "reports/newsletter.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(AboutView, self).get_context_data(**kwargs)
+        context['html'] = True
+        context['case'] = Case.objects.get(pk=194233)
+        context['config'] = constance.config
+        return context
 
 
 class CaseViewSet(viewsets.ModelViewSet):
