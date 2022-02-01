@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.fields import CharField
 
 from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
@@ -19,6 +20,12 @@ class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
+    problem = CharField(style={'base_template': 'textarea.html', 'rows': 10})
+    derived_problem = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+    verification = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+    recommendations = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+    more_information = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+
     class Meta:
         model = Report
         fields = '__all__'

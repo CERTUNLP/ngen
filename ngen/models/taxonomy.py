@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from django_bleach.models import BleachField
 from model_utils import Choices
 from netfields import NetManager
 
@@ -49,11 +50,11 @@ class Report(NgenModel):
     LANG = Choices('en', 'es')
     lang = models.CharField(choices=LANG, default=LANG.en, max_length=2)
     taxonomy = models.ForeignKey('Taxonomy', models.CASCADE, related_name='reports')
-    problem = models.TextField()
-    derived_problem = models.TextField(null=True)
-    verification = models.TextField(null=True)
-    recommendations = models.TextField(null=True)
-    more_information = models.TextField(null=True)
+    problem = BleachField()
+    derived_problem = BleachField(null=True)
+    verification = BleachField(null=True)
+    recommendations = BleachField(null=True)
+    more_information = BleachField(null=True)
 
     class Meta:
         db_table = 'report'

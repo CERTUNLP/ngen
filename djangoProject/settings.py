@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django_filters',
     'treebeard',
     'djcelery_email',
+    'django_bleach',
 ]
 
 MIDDLEWARE = [
@@ -200,3 +201,13 @@ CONSTANCE_CONFIG = {
     'NGEN_LANG_EXTERNAL': (os.environ.get('NGEN_LANG_EXTERNAL'), 'NGEN language for external reports'),
 }
 AUTH_USER_MODEL = 'ngen.User'
+
+BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'strong', 'a', 'ul', 'li', 'div', 'br']
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style']
+# Which CSS properties are allowed in 'style' attributes (assuming style is an allowed attribute)
+BLEACH_ALLOWED_STYLES = [
+    'font-family', 'font-weight', 'text-decoration', 'font-variant']
+# Strip unknown tags if True, replace with HTML escaped characters if False
+BLEACH_STRIP_TAGS = True
+# Strip comments, or leave them in.
+BLEACH_STRIP_COMMENTS = False
