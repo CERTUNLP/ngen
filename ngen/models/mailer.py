@@ -2,6 +2,7 @@ import re
 
 from constance import config
 from django.core import mail
+from django.template import Template, Context
 from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
@@ -11,6 +12,7 @@ from ngen.models import Priority
 
 def send_mail(subject, template, from_mail, recipient_list, lang, case):
     html_content = get_template(template).render({'html': True, 'lang': lang, 'case': case, 'config': config})
+    html_content = Template(html_content).render(Context({'case': case}))
     text_content = re.sub(r'\n+', '\n',
                           strip_tags(
                               get_template(template).render({'lang': lang, 'case': case, 'config': config})).replace(
