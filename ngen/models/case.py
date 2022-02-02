@@ -53,9 +53,9 @@ class Case(LifecycleModelMixin, NgenModel):
 
     @hook(AFTER_UPDATE, when="state", has_changed=True)
     def after_update(self):
-        html_content = get_template('reports/base.html').render({'html': True, 'lang': 'es'})
+        html_content = get_template('reports/newsletter.html').render({'html': True, 'lang': 'es'})
         text_content = re.sub(r'\n+', '\n',
-                              strip_tags(get_template('reports/base.html').render({'lang': 'es'})).replace('  ',
+                              strip_tags(get_template('reports/newsletter.html').render({'lang': 'es'})).replace('  ',
                                                                                                            ''))
         mail.send_mail('CASE_STATE_UPDATE', text_content, 'dude@aol.com', ['mr@lebowski.com'],
                        html_message=html_content)
@@ -98,9 +98,9 @@ class Event(LifecycleModelMixin, NgenModel):
     @hook(AFTER_CREATE)
     def after_create(self):
         if self.case:
-            html_content = get_template('reports/base.html').render({'html': True, 'lang': 'es'})
+            html_content = get_template('reports/newsletter.html').render({'html': True, 'lang': 'es'})
             text_content = re.sub(r'\n+', '\n',
-                                  strip_tags(get_template('reports/base.html').render({'lang': 'es'})).replace('  ',
+                                  strip_tags(get_template('reports/newsletter.html').render({'lang': 'es'})).replace('  ',
                                                                                                                ''))
             mail.send_mail('EVENT_UPDATE', text_content, 'dude@aol.com', ['mr@lebowski.com'], html_message=html_content)
 
