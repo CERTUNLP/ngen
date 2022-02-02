@@ -14,6 +14,11 @@ class CaseSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
+    reports = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='report-detail'
+    )
     class Meta:
         model = Taxonomy
         fields = '__all__'

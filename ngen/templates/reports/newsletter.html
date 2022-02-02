@@ -1,5 +1,6 @@
 {% load i18n %}
-{% load  %}
+{% load report_extras %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -80,31 +81,31 @@
                                                 <p class="lead">
                                                     {% translate 'Problem' %}
                                                 </p>
-                                                <p class="">{{ report.problem |remove_tags:"a span"| safe }}</p>
+                                                <p class="">{{ report.problem | render_report_content:event }}</p>
                                             {% endif %}
                                             {% if report.derived_problem %}
                                                 <p class="lead">
                                                     {% translate 'Related issues' %}
                                                 </p>
-                                                <p class="">{{ report.derived_problem | safe }}</p>
+                                                <p class="">{{ report.derived_problem | render_report_content:event }}</p>
                                             {% endif %}
                                             {% if report.verification %}
                                                 <p class="lead">
                                                     {% translate 'How to verify the issue' %}
                                                 </p>
-                                                <p class=""> {{ report.verification| safe }} </p>
+                                                <p class="">{{ report.verification | render_report_content:event }}</p>
                                             {% endif %}
                                             {% if report.recomendations %}
                                                 <p class="lead">
                                                     {% translate 'Recommendations' %}
                                                 </p>
-                                                <p class=""> {{ report.recomendations | safe }} </p>
+                                                <p class="">{{ report.recomendations | render_report_content:event }}</p>
                                             {% endif %}
                                             {% if report.more_information %}
                                                 <p class="lead">
                                                     {% translate 'For more information' %}
                                                 </p>
-                                                <p class=""> {{ report.more_information| removetags }} </p>
+                                                <p class="">{{ report.more_information | render_report_content:event }}</p>
                                             {% endif %}
                                         </div>
                                     </td>
