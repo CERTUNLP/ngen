@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'treebeard',
     'djcelery_email',
     'django_bleach',
+    'django_extensions',
+
 ]
 
 MIDDLEWARE = [

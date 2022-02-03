@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.fields import CharField
+from rest_framework_extensions.fields import ResourceUriField
 
 from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
@@ -7,6 +8,8 @@ from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
 
 
 class CaseSerializer(serializers.HyperlinkedModelSerializer):
+    events = ResourceUriField(view_name='case-events-list', read_only=True, lookup_url_kwarg='parent_lookup_case')
+
     class Meta:
         model = Case
         # fields = ['id', 'network', 'type', 'feed', 'state', 'reporter']
@@ -19,6 +22,7 @@ class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
         view_name='report-detail'
     )
+
     class Meta:
         model = Taxonomy
         fields = '__all__'

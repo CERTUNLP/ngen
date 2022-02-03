@@ -3,6 +3,7 @@ import django_filters
 from django.views.generic import TemplateView
 from rest_framework import permissions, filters
 from rest_framework import viewsets
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
@@ -27,7 +28,7 @@ class AboutView(TemplateView):
         return context
 
 
-class CaseViewSet(viewsets.ModelViewSet):
+class CaseViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
@@ -96,7 +97,7 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class EventViewSet(viewsets.ModelViewSet):
+class EventViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]

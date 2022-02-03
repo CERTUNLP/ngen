@@ -15,16 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework import routers
+from rest_framework_extensions.routers import ExtendedDefaultRouter
 
 from ngen import views
 from ngen.views import AboutView
 
-router = routers.DefaultRouter()
+router = ExtendedDefaultRouter()
 router.register(r'administration/tlp', views.TlpViewSet)
 router.register(r'administration/feed', views.FeedViewSet)
 router.register(r'administration/priority', views.PriorityViewSet)
-router.register(r'case', views.CaseViewSet)
+router.register(r'case', views.CaseViewSet, basename='case').register(r'events',
+                                                                      views.EventViewSet,
+                                                                      basename='case-events',
+                                                                      parents_query_lookups=['case'])
 router.register(r'state', views.StateViewSet)
 router.register(r'behavior', views.BehaviorViewSet)
 router.register(r'edge', views.EdgeViewSet)
