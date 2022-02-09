@@ -1,14 +1,8 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-02 18:11+0000\n"
+"POT-Creation-Date: 2022-02-09 20:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,11 +18,27 @@ msgstr "Inglés"
 msgid "Spanish"
 msgstr "Español"
 
-msgid "New case"
+msgid "New Case"
 msgstr "Nuevo caso"
 
-msgid "To whom it may concern"
-msgstr "A quien corresponda "
+msgid "Case status updated"
+msgstr "Estado del caso actualizado"
+
+msgid "New event on case"
+msgstr "Nuevo caso en caso"
+
+#, python-format
+msgid "A new event has been added to the case %(id)s"
+msgstr "Un nuevo evento ha sido agregado al caso  %(id)s"
+
+msgid "Event"
+msgstr "Evento"
+
+msgid "Taxonomy"
+msgstr "Taxonomía"
+
+msgid "Problem"
+msgstr "Problema"
 
 msgid "Related issues"
 msgstr "Problemas derivados"
@@ -42,6 +52,9 @@ msgstr "Recomendaciones"
 msgid "For more information"
 msgstr "Para mas información"
 
+msgid "Case"
+msgstr "Caso"
+
 msgid "Please do not hesitate to contact us if you need further assistance."
 msgstr "No dude en consultarnos ante cualquier inquietud."
 
@@ -52,26 +65,19 @@ msgstr ""
 "Recuerde responder con el mismo asunto e ID para un mejor seguimiento del "
 "caso."
 
-#, python-format
-msgid "Sincerely %(constance.TEAM_NAME)s - %(constance.TEAM_URL)s"
-msgstr ""
+msgid "Sincerely"
+msgstr "Un saludo cordial"
+
+msgid "Contact Info"
+msgstr "Info Contacto"
 
 msgid "This report was generated with"
 msgstr "Este reporte ha sido generado con"
 
-msgid "Problem"
+#, python-format
+msgid ""
+"We want to inform you that the state of the case number <strong>%(id)s</"
+"strong> has changed to: \"<strong>%(state)s</strong>\""
 msgstr ""
-
-msgid "Sincerely"
-msgstr "Un saludo cordial"
-
-#~ msgid "Amber"
-#~ msgstr "Ambar"
-
-#, python-format
-#~ msgid "Dear %(contact.name)s"
-#~ msgstr "Estimado %(contact.name)s"
-
-#, python-format
-#~ msgid "Sincerely %(team.name)s - %(team.url)s"
-#~ msgstr "Un saludo cordial, %(team.name)s - %(team.url)s"
+"Queremos informarle que el estado del caso número <strong>%(id)s</strong> ha "
+"cambiado a: \"<strong>%(state)s</strong>\""

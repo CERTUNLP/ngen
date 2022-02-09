@@ -1,0 +1,12 @@
+{% extends "reports/newsletter.html" %}
+{% load i18n %}
+{% block content_header_content %}
+    <p class="lead">
+        {% blocktranslate trimmed with id=case.id %}
+            A new event has been added to the case {{ id }}
+        {% endblocktranslate %}
+    </p>
+{% endblock %}
+{% block content %}
+    {% include "reports/event_detail.html" with event=event %}
+{% endblock %}

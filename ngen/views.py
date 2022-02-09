@@ -38,6 +38,10 @@ class CaseViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
 
 class TaxonomyViewSet(viewsets.ModelViewSet):
+    filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
+    search_fields = ['name', 'description']
+    filterset_fields = ['name']
+    ordering_fields = ['name']
     queryset = Taxonomy.objects.all()
     serializer_class = TaxonomySerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -99,6 +103,10 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
 
 class EventViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = Event.objects.all()
+    filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
+    search_fields = ['case', 'taxonomy', 'network']
+    filterset_fields = ['taxonomy']
+    ordering_fields = ['case', 'taxonomy', 'network']
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 

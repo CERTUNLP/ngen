@@ -1,0 +1,12 @@
+{% extends "reports/newsletter.html" %}
+{% load i18n %}
+{% block content_header_content %}
+    <p class="lead">
+        {% blocktranslate trimmed with id=case.id state=case.state %}
+            We want to inform you that the state of the case number <strong>{{ id }}</strong> has changed
+            to: "<strong>{{ state }}</strong>"
+        {% endblocktranslate %}
+    </p>
+{% endblock %}
+{% block content %}
+{% endblock %}

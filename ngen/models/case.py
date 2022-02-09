@@ -1,13 +1,8 @@
-import re
-
-from django.core import mail
 from django.db import models
-from django.template.loader import get_template
-from django.utils.html import strip_tags
 from django_lifecycle import hook, LifecycleModelMixin, AFTER_CREATE, AFTER_UPDATE
 
 from . import Priority
-from .mailer import case_creation
+from .mailer import case_creation, case_state_change, event_case_assign
 from .utils import NgenModel
 
 
@@ -47,18 +42,12 @@ class Case(LifecycleModelMixin, NgenModel):
         return contacts
 
     @hook(AFTER_CREATE)
-    @hook(AFTER_UPDATE)
     def after_create(self):
         case_creation(case=self)
 
     @hook(AFTER_UPDATE, when="state", has_changed=True)
     def after_update(self):
-        html_content = get_template('reports/newsletter.html').render({'html': True, 'lang': 'es'})
-        text_content = re.sub(r'\n+', '\n',
-                              strip_tags(get_template('reports/newsletter.html').render({'lang': 'es'})).replace('  ',
-                                                                                                           ''))
-        mail.send_mail('CASE_STATE_UPDATE', text_content, 'dude@aol.com', ['mr@lebowski.com'],
-                       html_message=html_content)
+        case_state_change(case=self)
 
 
 class Event(LifecycleModelMixin, NgenModel):
@@ -72,11 +61,12 @@ class Event(LifecycleModelMixin, NgenModel):
     evidence_file_path = models.CharField(max_length=255, null=True)
     notes = models.TextField(null=True)
 
-    network = models.ForeignKey('Network', models.DO_NOTHING, null=True, related_name='events')
+    network = models.ForeignKey('Network', models.DO_NOTHING, related_name='events')
     case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='events')
 
     class Meta:
         db_table = 'event'
+        ordering = ['-id']
 
     def save(self, *args, **kwargs):
         if not self.priority:
@@ -94,15 +84,10 @@ class Event(LifecycleModelMixin, NgenModel):
                 return network_contacts[0]
         return contacts
 
-    @hook(AFTER_UPDATE, when="case", has_changed=True)
-    @hook(AFTER_CREATE)
-    def after_create(self):
-        if self.case:
-            html_content = get_template('reports/newsletter.html').render({'html': True, 'lang': 'es'})
-            text_content = re.sub(r'\n+', '\n',
-                                  strip_tags(get_template('reports/newsletter.html').render({'lang': 'es'})).replace('  ',
-                                                                                                               ''))
-            mail.send_mail('EVENT_UPDATE', text_content, 'dude@aol.com', ['mr@lebowski.com'], html_message=html_content)
+    @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
+    def case_assign(self):
+        if self.case.events.count() >= 1:
+            event_case_assign(self)
 
 
 class CaseTemplate(NgenModel):
