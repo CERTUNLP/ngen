@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-09 20:01+0000\n"
+"POT-Creation-Date: 2022-02-19 17:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,32 @@ msgid "Case status updated"
 msgstr "Estado del caso actualizado"
 
 msgid "New event on case"
-msgstr "Nuevo caso en caso"
+msgstr "Nuevo evento en caso"
+
+msgid "Priority"
+msgstr ""
+
+msgid "Case"
+msgstr "Caso"
+
+msgid "Please do not hesitate to contact us if you need further assistance."
+msgstr "No dude en consultarnos ante cualquier inquietud."
+
+msgid ""
+"Please remember to reply with the same subject and ID for better tracking of "
+"the case."
+msgstr ""
+"Recuerde responder con el mismo asunto e ID para un mejor seguimiento del "
+"caso."
+
+msgid "Sincerely"
+msgstr "Un saludo cordial"
+
+msgid "Contact Info"
+msgstr "Info Contacto"
+
+msgid "This report was generated with"
+msgstr "Este reporte ha sido generado con"
 
 #, python-format
 msgid "A new event has been added to the case %(id)s"
@@ -51,28 +76,6 @@ msgstr "Recomendaciones"
 
 msgid "For more information"
 msgstr "Para mas información"
-
-msgid "Case"
-msgstr "Caso"
-
-msgid "Please do not hesitate to contact us if you need further assistance."
-msgstr "No dude en consultarnos ante cualquier inquietud."
-
-msgid ""
-"Please remember to reply with the same subject and ID for better tracking of "
-"the case."
-msgstr ""
-"Recuerde responder con el mismo asunto e ID para un mejor seguimiento del "
-"caso."
-
-msgid "Sincerely"
-msgstr "Un saludo cordial"
-
-msgid "Contact Info"
-msgstr "Info Contacto"
-
-msgid "This report was generated with"
-msgstr "Este reporte ha sido generado con"
 
 #, python-format
 msgid ""

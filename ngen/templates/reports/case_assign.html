@@ -1,4 +1,4 @@
-{% extends "reports/newsletter.html" %}
+{% extends "reports/base.html" %}
 {% load i18n %}
 {% block content_header_content %}
     <p class="lead">
@@ -8,5 +8,5 @@
     </p>
 {% endblock %}
 {% block content %}
-    {% include "reports/event_detail.html" with event=event %}
+    {% include "reports/event_detail.html" with events=events %}
 {% endblock %}

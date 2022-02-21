@@ -28,8 +28,14 @@
                 <table bgcolor="#999999">
                     <tr>
                         <td><img src="http://placehold.it/200x50/"/></td>
-                        <td align="right"><h6 class="collapse" style="color: {{ case.tlp.rgb }};">
-                            TLP: {{ case.tlp }}</h6></td>
+                        <td align="left">
+                            <h6 class="collapse" style="color: {{ case.tlp.rgb }};">
+                                TLP: {{ case.tlp }}
+                            </h6>
+                            <h6 class="collapse" style="color: {{ case.tlp.rgb }};">
+                                {% translate 'Priority' %}: {{ case.priority }}
+                            </h6>
+                        </td>
                     </tr>
                 </table>
             </div><!-- /content -->
@@ -52,23 +58,21 @@
                             <h2>{% translate 'Case' %}: {{ case.id }}
                                 <small>{{ case.tlp.name }} {{ case.priority }}</small></h2>
                             {% block content_header_content %}
-{#                                <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod#}
-{#                                    tempor incididunt ut labore et.</p>#}
+                                {#                                <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod#}
+                                {#                                    tempor incididunt ut labore et.</p>#}
 
                                 <!-- A Real Hero (and a real human being) -->
                                 {#                                                        <p><img src="http://placehold.it/600x300"/></p><!-- /hero -->#}
-{#                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor#}
-{#                                    incididunt ut labore et dolore magna aliqua. Consectetur adipisicing elit, sed do#}
-{#                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>#}
+                                {#                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor#}
+                                {#                                    incididunt ut labore et dolore magna aliqua. Consectetur adipisicing elit, sed do#}
+                                {#                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>#}
                             {% endblock %}
                         </td>
                     </tr>
                 </table>
             </div><!-- /content -->
             {% block content %}
-                {% for event in case.events.all %}
-                    {% include "reports/event_detail.html" with event=event %}
-                {% endfor %}
+                {% include "reports/event_detail.html" with events=case.events.all %}
             {% endblock %}
             {% block content_footer %}
                 <!-- content -->

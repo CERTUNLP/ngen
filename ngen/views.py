@@ -18,7 +18,7 @@ from ngen.serializers import CaseSerializer, NetworkSerializer, TaxonomySerializ
 
 class AboutView(TemplateView):
     html = True
-    template_name = "reports/newsletter.html"
+    template_name = "reports/base.html"
 
     def get_context_data(self, **kwargs):
         context = super(AboutView, self).get_context_data(**kwargs)
@@ -106,7 +106,7 @@ class EventViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
     search_fields = ['case', 'taxonomy', 'network']
     filterset_fields = ['taxonomy']
-    ordering_fields = ['case', 'taxonomy', 'network']
+    ordering_fields = ['id', 'case', 'taxonomy', 'network']
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
