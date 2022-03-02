@@ -4,7 +4,7 @@ from rest_framework_extensions.fields import ResourceUriField
 
 from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
-    Event, Report, IncidentStateChange, Edge, Contact
+    Event, Report, IncidentStateChange, Edge, Contact, Evidence
 
 
 class CaseSerializer(serializers.HyperlinkedModelSerializer):
@@ -88,7 +88,36 @@ class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class EventBinaryFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Evidence
+        fields = ['evidence']
+        extra_kwargs = {
+            'event': {'required': False},
+        }
+
+
 class EventSerializer(serializers.HyperlinkedModelSerializer):
+    def save_evidence(self, event):
+        request = self.context.get('request')
+        files = request.FILES
+        if files:
+            try:
+                for file in files.getlist('evidence'):
+                    event.evidence.get_or_create(evidence=file)
+            except Exception as e:
+                print(e)
+
+    def update(self, instance, validated_data):
+        event = super().update(instance, validated_data)
+        self.save_evidence(event)
+        return event
+
+    def create(self, validated_data):
+        event = super().create(validated_data)
+        self.save_evidence(event)
+        return event
+
     class Meta:
         model = Event
         fields = '__all__'

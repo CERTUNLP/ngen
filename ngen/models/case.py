@@ -1,4 +1,5 @@
 import re
+import uuid
 from collections import defaultdict
 
 from constance import config
@@ -7,7 +8,7 @@ from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
-from django_lifecycle import hook, LifecycleModelMixin, AFTER_CREATE, AFTER_UPDATE
+from django_lifecycle import hook, LifecycleModelMixin, AFTER_CREATE, AFTER_UPDATE, BEFORE_DELETE
 
 from . import Priority
 from .utils import NgenModel
@@ -123,11 +124,12 @@ class Event(LifecycleModelMixin, NgenModel):
 
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
     feed = models.ForeignKey('Feed', models.DO_NOTHING)
+    network = models.ForeignKey('Network', models.DO_NOTHING, related_name='events')
+
     reporter = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_reporter')
     evidence_file_path = models.CharField(max_length=255, null=True)
     notes = models.TextField(null=True)
 
-    network = models.ForeignKey('Network', models.DO_NOTHING, related_name='events')
     case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='events')
 
     class Meta:
@@ -135,9 +137,16 @@ class Event(LifecycleModelMixin, NgenModel):
         ordering = ['-id']
 
     def save(self, *args, **kwargs):
+        # try:
+        #     event = Event.objects.get(taxonomy=self.taxonomy, feed=self.feed, network=self.network)
+        #     self.merge(event)
+        # except ObjectDoesNotExist:
         if not self.priority:
             self.priority = Priority.default_priority()
         super(Event, self).save(*args, **kwargs)
+
+    def merge(self, event: 'Event'):
+        pass
 
     def email_contacts(self):
         contacts = []
@@ -155,6 +164,40 @@ class Event(LifecycleModelMixin, NgenModel):
     def case_assign(self):
         if self.case.events.count() >= 1:
             self.case.event_case_assign(self)
+
+    @hook(BEFORE_DELETE)
+    def delete_evidence(self):
+        for evidence in self.evidence.all():
+            evidence.delete()
+
+
+class Evidence(NgenModel):
+    def user_directory_path(self, filename):
+        # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+        return 'evidence/%s/%s/%s.%s' % (
+            self.get_related().__class__.__name__, self.get_related().id, uuid.uuid4(), filename.split('.')[1:])
+
+    file = models.FileField(upload_to=user_directory_path, null=True)
+
+    def get_related(self):
+        pass
+
+    class Meta:
+        abstract = True
+
+    def delete(self, using=None, keep_parents=False):
+        super().delete(using, keep_parents)
+        self.file.storage.delete(self.file.name)
+
+
+class EventEvidence(Evidence):
+    event = models.ForeignKey('Event', models.CASCADE, null=True, related_name='evidence')
+
+    def get_related(self):
+        return self.event
+
+    class Meta:
+        db_table = 'event_evidence'
 
 
 class CaseTemplate(NgenModel):
@@ -175,7 +218,7 @@ class CaseTemplate(NgenModel):
     def save(self, *args, **kwargs):
         if not self.priority:
             self.priority = Priority.default_priority()
-        super(CaseTemplate, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class IncidentComment(models.Model):

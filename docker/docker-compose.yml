@@ -11,11 +11,11 @@ services:
             - ./postgres_data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
-    ngen-adminer:
-        image: adminer
-        restart: always
-        ports:
-            - "8080:8080"
+#    ngen-adminer:
+#        image: adminer
+#        restart: always
+#        ports:
+#            - "8080:8080"
     ngen-django:
         image: ngen:latest
         build:
