@@ -9,12 +9,39 @@ from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     Event, Report, IncidentStateChange, Edge, Contact
 
 
-class CaseSerializer(serializers.HyperlinkedModelSerializer):
+class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
+    def save_evidence(self, event):
+        request = self.context.get('request')
+        files = request.FILES
+        if files:
+            try:
+                for file in files.getlist('evidence'):
+                    event.evidence.get_or_create(file=file)
+            except IntegrityError as e:
+                raise ValidationError({'evidence': e})
+
+    def update(self, instance, validated_data):
+        event = super().update(instance, validated_data)
+        self.save_evidence(event)
+        return event
+
+    def create(self, validated_data):
+        event = super().create(validated_data)
+        self.save_evidence(event)
+        return event
+
+
+class EventSerializer(EvidenceSerializerMixin):
+    class Meta:
+        model = Event
+        fields = '__all__'
+
+
+class CaseSerializer(EvidenceSerializerMixin):
     events = ResourceUriField(view_name='case-events-list', read_only=True, lookup_url_kwarg='parent_lookup_case')
 
     class Meta:
         model = Case
-        # fields = ['id', 'network', 'type', 'feed', 'state', 'reporter']
         fields = '__all__'
 
 
@@ -87,34 +114,6 @@ class PrioritySerializer(serializers.HyperlinkedModelSerializer):
 class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CaseTemplate
-        fields = '__all__'
-
-
-class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
-    def save_evidence(self, event):
-        request = self.context.get('request')
-        files = request.FILES
-        if files:
-            try:
-                for file in files.getlist('evidence'):
-                    event.evidence.get_or_create(file=file)
-            except IntegrityError as e:
-                raise ValidationError({'evidence': e})
-
-    def update(self, instance, validated_data):
-        event = super().update(instance, validated_data)
-        self.save_evidence(event)
-        return event
-
-    def create(self, validated_data):
-        event = super().create(validated_data)
-        self.save_evidence(event)
-        return event
-
-
-class EventSerializer(EvidenceSerializerMixin):
-    class Meta:
-        model = Event
         fields = '__all__'
 
 
