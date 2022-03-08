@@ -1,10 +1,12 @@
+from django.db import IntegrityError
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 from rest_framework_extensions.fields import ResourceUriField
 
 from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
-    Event, Report, IncidentStateChange, Edge, Contact, Evidence
+    Event, Report, IncidentStateChange, Edge, Contact
 
 
 class CaseSerializer(serializers.HyperlinkedModelSerializer):
@@ -88,16 +90,7 @@ class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class EventBinaryFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Evidence
-        fields = ['evidence']
-        extra_kwargs = {
-            'event': {'required': False},
-        }
-
-
-class EventSerializer(serializers.HyperlinkedModelSerializer):
+class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
     def save_evidence(self, event):
         request = self.context.get('request')
         files = request.FILES
@@ -105,8 +98,8 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
             try:
                 for file in files.getlist('evidence'):
                     event.evidence.get_or_create(file=file)
-            except Exception as e:
-                print(e)
+            except IntegrityError as e:
+                raise ValidationError({'evidence': e})
 
     def update(self, instance, validated_data):
         event = super().update(instance, validated_data)
@@ -118,6 +111,8 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         self.save_evidence(event)
         return event
 
+
+class EventSerializer(EvidenceSerializerMixin):
     class Meta:
         model = Event
         fields = '__all__'

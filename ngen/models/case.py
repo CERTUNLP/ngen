@@ -7,14 +7,14 @@ from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
-from django_lifecycle import hook, LifecycleModelMixin, AFTER_CREATE, AFTER_UPDATE, BEFORE_DELETE
+from django_lifecycle import hook, LifecycleModelMixin, AFTER_CREATE, AFTER_UPDATE
 
 from . import Priority
-from .utils import NgenModel
+from .utils import NgenModel, NgenEvidenceModel
 from ..storage import HashedFilenameStorage
 
 
-class Case(LifecycleModelMixin, NgenModel):
+class Case(LifecycleModelMixin, NgenEvidenceModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
     date = models.DateTimeField()
@@ -117,7 +117,7 @@ class Case(LifecycleModelMixin, NgenModel):
         self.communicate_team('reports/case_assign.html', gettext_lazy('New event on case'))
 
 
-class Event(LifecycleModelMixin, NgenModel):
+class Event(LifecycleModelMixin, NgenEvidenceModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
     date = models.DateTimeField()
@@ -165,21 +165,12 @@ class Event(LifecycleModelMixin, NgenModel):
         if self.case.events.count() >= 1:
             self.case.event_case_assign(self)
 
-    @hook(BEFORE_DELETE)
-    def delete_evidence(self):
-        for evidence in self.evidence.all():
-            evidence.delete()
-
-    def evidence_path(self):
-        return 'evidence/%s/%s' % (self.__class__.__name__, self.id)
-
 
 class Evidence(NgenModel):
     def directory_path(self, filename=None):
-        # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
         return '%s/%s' % (self.get_related().evidence_path(), filename)
 
-    file = models.FileField(upload_to=directory_path, null=True, storage=HashedFilenameStorage())
+    file = models.FileField(upload_to=directory_path, null=True, storage=HashedFilenameStorage(), unique=True)
 
     def get_related(self):
         raise NotImplementedError()
@@ -190,12 +181,12 @@ class Evidence(NgenModel):
     def __repr__(self):
         return self.file.url
 
-    class Meta:
-        abstract = True
-
     def delete(self, using=None, keep_parents=False):
         super().delete(using, keep_parents)
         self.file.storage.delete(self.file.name)
+
+    class Meta:
+        abstract = True
 
 
 class EventEvidence(Evidence):
@@ -208,14 +199,14 @@ class EventEvidence(Evidence):
         db_table = 'event_evidence'
 
 
-# class CaseEvidence(Evidence):
-#     case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='evidence')
-#
-#     def get_related(self):
-#         return self.case
-#
-#     class Meta:
-#         db_table = 'case_evidence'
+class CaseEvidence(Evidence):
+    case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='evidence')
+
+    def get_related(self):
+        return self.case
+
+    class Meta:
+        db_table = 'case_evidence'
 
 
 class CaseTemplate(NgenModel):
