@@ -1,5 +1,4 @@
 import re
-import uuid
 from collections import defaultdict
 
 from constance import config
@@ -12,6 +11,7 @@ from django_lifecycle import hook, LifecycleModelMixin, AFTER_CREATE, AFTER_UPDA
 
 from . import Priority
 from .utils import NgenModel
+from ..storage import HashedFilenameStorage
 
 
 class Case(LifecycleModelMixin, NgenModel):
@@ -170,17 +170,25 @@ class Event(LifecycleModelMixin, NgenModel):
         for evidence in self.evidence.all():
             evidence.delete()
 
+    def evidence_path(self):
+        return 'evidence/%s/%s' % (self.__class__.__name__, self.id)
+
 
 class Evidence(NgenModel):
-    def user_directory_path(self, filename):
+    def directory_path(self, filename=None):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-        return 'evidence/%s/%s/%s.%s' % (
-            self.get_related().__class__.__name__, self.get_related().id, uuid.uuid4(), filename.split('.')[1:])
+        return '%s/%s' % (self.get_related().evidence_path(), filename)
 
-    file = models.FileField(upload_to=user_directory_path, null=True)
+    file = models.FileField(upload_to=directory_path, null=True, storage=HashedFilenameStorage())
 
     def get_related(self):
-        pass
+        raise NotImplementedError()
+
+    def __str__(self):
+        return self.file.url
+
+    def __repr__(self):
+        return self.file.url
 
     class Meta:
         abstract = True
@@ -198,6 +206,16 @@ class EventEvidence(Evidence):
 
     class Meta:
         db_table = 'event_evidence'
+
+
+# class CaseEvidence(Evidence):
+#     case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='evidence')
+#
+#     def get_related(self):
+#         return self.case
+#
+#     class Meta:
+#         db_table = 'case_evidence'
 
 
 class CaseTemplate(NgenModel):

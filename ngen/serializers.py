@@ -104,7 +104,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         if files:
             try:
                 for file in files.getlist('evidence'):
-                    event.evidence.get_or_create(evidence=file)
+                    event.evidence.get_or_create(file=file)
             except Exception as e:
                 print(e)
 
