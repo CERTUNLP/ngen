@@ -2,11 +2,10 @@ from django.db import IntegrityError
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
-from rest_framework_extensions.fields import ResourceUriField
 
 from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
-    Event, Report, IncidentStateChange, Edge, Contact, CaseEvidence
+    Event, Report, IncidentStateChange, Edge, Contact, CaseEvidence, EventEvidence
 
 
 class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
@@ -32,23 +31,43 @@ class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
 
 
 class EventSerializer(EvidenceSerializerMixin):
+    evidence = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='eventevidence-detail'
+    )
     class Meta:
         model = Event
+        fields = '__all__'
+
+
+class EventEvidenceSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = EventEvidence
+        fields = '__all__'
+
+
+class CaseSerializer(EvidenceSerializerMixin):
+    events = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='event-detail'
+    )
+
+    evidence = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='caseevidence-detail'
+    )
+
+    class Meta:
+        model = Case
         fields = '__all__'
 
 
 class CaseEvidenceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CaseEvidence
-        fields = '__all__'
-
-
-class CaseSerializer(EvidenceSerializerMixin):
-    events = ResourceUriField(view_name='case-events-list', read_only=True, lookup_url_kwarg='parent_lookup_case')
-    evidence = ResourceUriField(view_name='case-evidence-list', read_only=True, lookup_url_kwarg='parent_lookup_case')
-
-    class Meta:
-        model = Case
         fields = '__all__'
 
 

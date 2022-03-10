@@ -15,30 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework_extensions.routers import ExtendedDefaultRouter
+from rest_framework.routers import DefaultRouter
 
 from ngen import views
 from ngen.views import AboutView
 
-router = ExtendedDefaultRouter()
+router = DefaultRouter()
 router.register(r'administration/tlp', views.TlpViewSet)
 router.register(r'administration/feed', views.FeedViewSet)
 router.register(r'administration/priority', views.PriorityViewSet)
-case_register = router.register(r'case', views.CaseViewSet, basename='case')
-case_register.register(r'events',
-                       views.EventViewSet,
-                       basename='case-events',
-                       parents_query_lookups=['case'])
-case_register.register(r'evidence',
-                       views.CaseEvidenceViewSet,
-                       basename='case-evidence',
-                       parents_query_lookups=['case'])
 router.register(r'state', views.StateViewSet)
 router.register(r'behavior', views.BehaviorViewSet)
 router.register(r'edge', views.EdgeViewSet)
 router.register(r'template', views.CaseTemplateViewSet)
-router.register(r'event', views.EventViewSet)
-router.register(r'evidence', views.CaseEvidenceViewSet)
+router.register(r'case', views.CaseViewSet)
+router.register(r'case/evidence', views.CaseEvidenceViewSet)
+router.register(r'case/event', views.EventViewSet)
+router.register(r'event/evidence', views.EventEvidenceViewSet)
 router.register(r'taxonomy', views.TaxonomyViewSet)
 router.register(r'report', views.ReportViewSet)
 router.register(r'network', views.NetworkViewSet)

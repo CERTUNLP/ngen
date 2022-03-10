@@ -23,7 +23,6 @@ django-netfields==1.2.4
 django-picklefield==3.0.1
 django-treebeard==4.5.1
 djangorestframework==3.13.1
-drf-extensions==0.7.1
 kombu==5.2.3
 netaddr==0.8.0
 packaging==21.3
