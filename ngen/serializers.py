@@ -6,7 +6,7 @@ from rest_framework_extensions.fields import ResourceUriField
 
 from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
-    Event, Report, IncidentStateChange, Edge, Contact
+    Event, Report, IncidentStateChange, Edge, Contact, CaseEvidence
 
 
 class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
@@ -37,8 +37,15 @@ class EventSerializer(EvidenceSerializerMixin):
         fields = '__all__'
 
 
+class CaseEvidenceSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = CaseEvidence
+        fields = '__all__'
+
+
 class CaseSerializer(EvidenceSerializerMixin):
     events = ResourceUriField(view_name='case-events-list', read_only=True, lookup_url_kwarg='parent_lookup_case')
+    evidence = ResourceUriField(view_name='case-evidence-list', read_only=True, lookup_url_kwarg='parent_lookup_case')
 
     class Meta:
         model = Case

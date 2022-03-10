@@ -7,13 +7,13 @@ from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
-    Event, Report, IncidentStateChange, Edge, Contact
+    Event, Report, IncidentStateChange, Edge, Contact, CaseEvidence
 from ngen.serializers import CaseSerializer, NetworkSerializer, TaxonomySerializer, FeedSerializer, \
     StateSerializer, BehaviorSerializer, UserSerializer, \
     NetworkEntitySerializer, TlpSerializer, PrioritySerializer, \
     CaseTemplateSerializer, \
     EventSerializer, ReportSerializer, IncidentStateChangeSerializer, EdgeSerializer, \
-    ContactSerializer
+    ContactSerializer, CaseEvidenceSerializer
 
 
 class AboutView(TemplateView):
@@ -26,6 +26,12 @@ class AboutView(TemplateView):
         context['case'] = Case.objects.get(pk=161701)
         context['config'] = constance.config
         return context
+
+
+class CaseEvidenceViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    queryset = CaseEvidence.objects.all()
+    serializer_class = CaseEvidenceSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class CaseViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
