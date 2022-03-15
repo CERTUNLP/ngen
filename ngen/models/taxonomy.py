@@ -14,7 +14,7 @@ class Taxonomy(NgenTreeModel):
     slug = models.SlugField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
     description = models.TextField(null=True)
-    objects = NetManager()
+    node_order_by = ['id']
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name).replace('-', '_')

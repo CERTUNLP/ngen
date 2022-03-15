@@ -36,6 +36,11 @@ class EventSerializer(EvidenceSerializerMixin):
         read_only=True,
         view_name='eventevidence-detail'
     )
+    children = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='event-detail'
+    )
     class Meta:
         model = Event
         fields = '__all__'

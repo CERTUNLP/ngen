@@ -7,14 +7,14 @@ from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
-from django_lifecycle import hook, LifecycleModelMixin, AFTER_CREATE, AFTER_UPDATE
+from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE
 
 from . import Priority
-from .utils import NgenModel, NgenEvidenceModel
+from .utils import NgenModel, NgenEvidenceMixin, NgenTreeModel
 from ..storage import HashedFilenameStorage
 
 
-class Case(LifecycleModelMixin, NgenEvidenceModel):
+class Case(NgenEvidenceMixin, NgenModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
     date = models.DateTimeField()
@@ -117,7 +117,7 @@ class Case(LifecycleModelMixin, NgenEvidenceModel):
         self.communicate_team('reports/case_assign.html', gettext_lazy('New event on case'))
 
 
-class Event(LifecycleModelMixin, NgenEvidenceModel):
+class Event(NgenEvidenceMixin, NgenTreeModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
     date = models.DateTimeField()
@@ -131,21 +131,28 @@ class Event(LifecycleModelMixin, NgenEvidenceModel):
     notes = models.TextField(null=True)
 
     case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='events')
+    node_order_by = ['id']
 
     class Meta:
         db_table = 'event'
         ordering = ['-id']
 
     def save(self, *args, **kwargs):
-        # try:
-        #     event = Event.objects.get(taxonomy=self.taxonomy, feed=self.feed, network=self.network)
-        #     self.merge(event)
-        # except ObjectDoesNotExist:
         if not self.priority:
             self.priority = Priority.default_priority()
         super(Event, self).save(*args, **kwargs)
 
-    def merge(self, event: 'Event'):
+    @hook(BEFORE_CREATE)
+    def merge(self):
+        events = Event.objects.filter(taxonomy=self.taxonomy, feed=self.feed, network=self.network).order_by('id')
+        self.parent = events.first()
+
+    @classmethod
+    def find_problems(cls):
+        pass
+
+    @classmethod
+    def fix_tree(cls):
         pass
 
     def email_contacts(self):
