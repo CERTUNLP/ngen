@@ -14,7 +14,7 @@ from .utils import NgenModel, NgenEvidenceMixin, NgenTreeModel
 from ..storage import HashedFilenameStorage
 
 
-class Case(NgenEvidenceMixin, NgenModel):
+class Case(NgenEvidenceMixin, NgenTreeModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
     date = models.DateTimeField()
@@ -30,6 +30,7 @@ class Case(NgenEvidenceMixin, NgenModel):
 
     report_message_id = models.CharField(max_length=255, null=True)
     raw = models.TextField(null=True)
+    node_order_by = ['id']
 
     class Meta:
         db_table = 'case'
@@ -115,6 +116,14 @@ class Case(NgenEvidenceMixin, NgenModel):
         self.communicate_event(event, 'reports/case_assign.html', gettext_lazy('New event on case'))
         self.communicate_assigned('reports/case_assign.html', gettext_lazy('New event on case'))
         self.communicate_team('reports/case_assign.html', gettext_lazy('New event on case'))
+
+    def merge(self, child):
+        child.parent = self
+        for evidence in child.evidence.all():
+            self.evidence.add(evidence)
+        for event in child.events.all():
+            self.events.add(event)
+        child.save()
 
 
 class Event(NgenEvidenceMixin, NgenTreeModel):
