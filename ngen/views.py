@@ -40,7 +40,7 @@ class EventEvidenceViewSet(viewsets.ModelViewSet):
 
 
 class EventViewSet(viewsets.ModelViewSet):
-    queryset = Event.objects.all()
+    queryset = Event.get_root_nodes()
     filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
     search_fields = ['case', 'taxonomy', 'network']
     filterset_fields = ['taxonomy']
