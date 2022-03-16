@@ -25,14 +25,6 @@ class Taxonomy(NgenTreeModel):
             self.get_children().update(parent=self.parent)
         super(Taxonomy, self).delete()
 
-    @classmethod
-    def find_problems(cls):
-        pass
-
-    @classmethod
-    def fix_tree(cls):
-        pass
-
     def __repr__(self):
         return self.name
 
