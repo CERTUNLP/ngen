@@ -143,9 +143,17 @@ class Event(NgenEvidenceMixin, NgenTreeModel):
         super(Event, self).save(*args, **kwargs)
 
     @hook(BEFORE_CREATE)
-    def merge(self):
+    def auto_merge(self):
         events = Event.objects.filter(taxonomy=self.taxonomy, feed=self.feed, network=self.network).order_by('id')
         self.parent = events.first()
+
+    def merge(self, child):
+        child.parent = self
+        if child.case:
+            child.case = None
+        for evidence in child.evidence.all():
+            self.evidence.add(evidence)
+        child.save()
 
     def add_evidence(self, file):
         if self.parent:
@@ -169,6 +177,11 @@ class Event(NgenEvidenceMixin, NgenTreeModel):
     def case_assign(self):
         if self.case.events.count() >= 1:
             self.case.event_case_assign(self)
+
+    def delete(self):
+        for child in self.children.all():
+            child.delete()
+        super(Event, self).delete()
 
 
 class Evidence(NgenModel):
