@@ -33,6 +33,9 @@ class NgenEvidenceMixin(LifecycleModelMixin):
     def evidence_path(self):
         return 'evidence/%s/%s' % (self.__class__.__name__, self.id)
 
+    def add_evidence(self, file):
+        self.evidence.get_or_create(file=file)
+
 
 class NgenEvidenceModel(NgenModel, NgenEvidenceMixin):
     class Meta:

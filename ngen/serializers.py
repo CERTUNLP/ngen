@@ -9,13 +9,13 @@ from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
 
 
 class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
-    def save_evidence(self, event):
+    def save_evidence(self, instance):
         request = self.context.get('request')
         files = request.FILES
         if files:
             try:
                 for file in files.getlist('evidence'):
-                    event.evidence.get_or_create(file=file)
+                    instance.add_evidence(file)
             except IntegrityError as e:
                 raise ValidationError({'evidence': e})
 
@@ -41,6 +41,7 @@ class EventSerializer(EvidenceSerializerMixin):
         read_only=True,
         view_name='event-detail'
     )
+
     class Meta:
         model = Event
         fields = '__all__'

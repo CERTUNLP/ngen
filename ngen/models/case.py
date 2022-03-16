@@ -147,6 +147,12 @@ class Event(NgenEvidenceMixin, NgenTreeModel):
         events = Event.objects.filter(taxonomy=self.taxonomy, feed=self.feed, network=self.network).order_by('id')
         self.parent = events.first()
 
+    def add_evidence(self, file):
+        if self.parent:
+            self.parent.add_evidence(file)
+        else:
+            self.evidence.get_or_create(file=file)
+
     @classmethod
     def find_problems(cls):
         pass
