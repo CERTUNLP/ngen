@@ -12,6 +12,14 @@ class NgenModel(TimeStampedModel):
 
 
 class NgenTreeModel(NgenModel, AL_Node):
+    @classmethod
+    def find_problems(cls):
+        pass
+
+    @classmethod
+    def fix_tree(cls):
+        pass
+
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True, related_name='children')
 
     def get_ancestors_related(self, related):

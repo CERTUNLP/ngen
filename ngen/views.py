@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from rest_framework import permissions, filters
 from rest_framework import viewsets
 
+from ngen.backends import EventRootFilterBackend
 from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
     Event, Report, IncidentStateChange, Edge, Contact, CaseEvidence, EventEvidence
@@ -40,8 +41,9 @@ class EventEvidenceViewSet(viewsets.ModelViewSet):
 
 
 class EventViewSet(viewsets.ModelViewSet):
-    queryset = Event.get_root_nodes()
-    filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
+    queryset = Event.objects.all()
+    filter_backends = [EventRootFilterBackend, filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend,
+                       filters.OrderingFilter]
     search_fields = ['case', 'taxonomy', 'network']
     filterset_fields = ['taxonomy']
     ordering_fields = ['id', 'case', 'taxonomy', 'network']

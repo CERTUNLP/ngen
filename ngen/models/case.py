@@ -153,14 +153,6 @@ class Event(NgenEvidenceMixin, NgenTreeModel):
         else:
             self.evidence.get_or_create(file=file)
 
-    @classmethod
-    def find_problems(cls):
-        pass
-
-    @classmethod
-    def fix_tree(cls):
-        pass
-
     def email_contacts(self):
         contacts = []
         priority = self.case.priority.code if self.case.priority else self.priority.code
