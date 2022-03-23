@@ -10,13 +10,12 @@ from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE
 
 from . import Priority
-from .utils import NgenModel, NgenEvidenceMixin, NgenTreeModel
+from .utils import NgenModel, NgenEvidenceMixin, NgenTreeModel, NgenPriorityMixin
 from ..storage import HashedFilenameStorage
 
 
-class Case(NgenEvidenceMixin, NgenTreeModel):
+class Case(NgenEvidenceMixin, NgenTreeModel, NgenPriorityMixin):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
-    priority = models.ForeignKey('Priority', models.DO_NOTHING)
     date = models.DateTimeField()
 
     assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='cases_assigned')
@@ -35,11 +34,6 @@ class Case(NgenEvidenceMixin, NgenTreeModel):
     class Meta:
         db_table = 'case'
         ordering = ['-id']
-
-    def save(self, *args, **kwargs):
-        if not self.priority:
-            self.priority = Priority.default_priority()
-        super(Case, self).save(*args, **kwargs)
 
     def email_contacts(self):
         contacts = []
@@ -117,7 +111,7 @@ class Case(NgenEvidenceMixin, NgenTreeModel):
         self.communicate_assigned('reports/case_assign.html', gettext_lazy('New event on case'))
         self.communicate_team('reports/case_assign.html', gettext_lazy('New event on case'))
 
-    def merge(self, child):
+    def merge(self, child: "Case"):
         child.parent = self
         for evidence in child.evidence.all():
             self.evidence.add(evidence)
@@ -126,9 +120,8 @@ class Case(NgenEvidenceMixin, NgenTreeModel):
         child.save()
 
 
-class Event(NgenEvidenceMixin, NgenTreeModel):
+class Event(NgenEvidenceMixin, NgenTreeModel, NgenPriorityMixin):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
-    priority = models.ForeignKey('Priority', models.DO_NOTHING)
     date = models.DateTimeField()
 
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
@@ -145,11 +138,6 @@ class Event(NgenEvidenceMixin, NgenTreeModel):
     class Meta:
         db_table = 'event'
         ordering = ['-id']
-
-    def save(self, *args, **kwargs):
-        if not self.priority:
-            self.priority = Priority.default_priority()
-        super(Event, self).save(*args, **kwargs)
 
     @hook(BEFORE_CREATE)
     def auto_merge(self):
@@ -236,12 +224,11 @@ class CaseEvidence(Evidence):
         db_table = 'case_evidence'
 
 
-class CaseTemplate(NgenModel):
+class CaseTemplate(NgenModel, NgenPriorityMixin):
     taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     feed = models.ForeignKey('Feed', models.DO_NOTHING)
     state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_states')
-    priority = models.ForeignKey('Priority', models.DO_NOTHING)
     network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
 
     active = models.BooleanField(default=True)
@@ -250,11 +237,6 @@ class CaseTemplate(NgenModel):
 
     class Meta:
         db_table = 'case_template'
-
-    def save(self, *args, **kwargs):
-        if not self.priority:
-            self.priority = Priority.default_priority()
-        super().save(*args, **kwargs)
 
 
 class IncidentComment(models.Model):

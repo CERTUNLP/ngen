@@ -10,8 +10,7 @@ from model_utils import Choices
 from netfields import NetManager, CidrAddressField
 from tld import is_tld
 
-from . import Priority
-from .utils import NgenModel, NgenTreeModel
+from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin
 
 
 class Network(NgenTreeModel):
@@ -156,7 +155,7 @@ class Network(NgenTreeModel):
         ordering = ['-cidr']
 
 
-class Contact(NgenModel):
+class Contact(NgenModel, NgenPriorityMixin):
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
     public_key = models.CharField(max_length=4000, null=True)
@@ -164,7 +163,6 @@ class Contact(NgenModel):
     type = models.CharField(choices=TYPE, default=TYPE.email, max_length=20)
     ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
-    priority = models.ForeignKey('Priority', models.DO_NOTHING, null=True)
 
     def __repr__(self):
         return self.username
@@ -174,11 +172,6 @@ class Contact(NgenModel):
 
     class Meta:
         db_table = 'contact'
-
-    def save(self, *args, **kwargs):
-        if not self.priority:
-            self.priority = Priority.default_priority()
-        super(Contact, self).save(*args, **kwargs)
 
 
 class NetworkEntity(NgenModel):

@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db import models
 from django_lifecycle import hook, BEFORE_DELETE, LifecycleModelMixin
 from model_utils.models import TimeStampedModel
@@ -46,5 +47,17 @@ class NgenEvidenceMixin(LifecycleModelMixin):
 
 
 class NgenEvidenceModel(NgenModel, NgenEvidenceMixin):
+    class Meta:
+        abstract = True
+
+
+class NgenPriorityMixin(models.Model):
+    priority = models.ForeignKey('Priority', models.DO_NOTHING)
+
+    def save(self, *args, **kwargs):
+        if not self.priority:
+            self.priority = apps('ngen', 'Priority').default_priority()
+        super().save(*args, **kwargs)
+
     class Meta:
         abstract = True

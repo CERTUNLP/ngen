@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.text import slugify
 
-from .utils import NgenModel
+from .utils import NgenModel, NgenPriorityMixin
 
 
 class Feed(NgenModel):
@@ -74,14 +74,8 @@ class Tlp(NgenModel):
         return self.name
 
 
-class User(AbstractUser):
+class User(AbstractUser, NgenPriorityMixin):
     api_key = models.CharField(max_length=255, blank=True, null=True)
-    priority = models.ForeignKey('Priority', models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'user'
-
-    def save(self, *args, **kwargs):
-        if not self.priority:
-            self.priority = Priority.default_priority()
-        super(User, self).save(*args, **kwargs)
