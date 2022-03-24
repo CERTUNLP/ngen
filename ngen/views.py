@@ -53,6 +53,13 @@ class EventViewSet(viewsets.ModelViewSet):
 
 class CaseViewSet(viewsets.ModelViewSet):
     queryset = Case.objects.all()
+    filter_backends = [
+        # filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter]
+    # search_fields = ['taxonomy', 'network']
+    # filterset_fields = ['taxonomy']
+    ordering_fields = ['id']
     serializer_class = CaseSerializer
     permission_classes = [permissions.IsAuthenticated]
 

@@ -7,6 +7,7 @@ from .utils import NgenModel
 class State(NgenModel):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
+    blocked = models.BooleanField(default=False)
     active = models.IntegerField()
     behavior = models.ForeignKey('Behavior', models.DO_NOTHING)
     description = models.CharField(max_length=250, null=True)

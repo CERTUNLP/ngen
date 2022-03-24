@@ -1,3 +1,4 @@
+from constance import config
 from django.db import IntegrityError
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -8,7 +9,7 @@ from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
     Event, Report, IncidentStateChange, Edge, Contact, CaseEvidence, EventEvidence
 
 
-class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
+class EvidenceSerializerMixin:
     def save_evidence(self, instance):
         request = self.context.get('request')
         files = request.FILES
@@ -30,7 +31,22 @@ class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
         return event
 
 
-class EventSerializer(EvidenceSerializerMixin):
+class MergeSerializerMixin(object):
+    def validate(self, attrs):
+        if self.instance:
+            if self.instance.is_merged():
+                raise ValueError('Merged instances can\'t be modified')
+            if self.instance.is_blocked():
+                for attr in attrs:
+                    if attr not in self.allowed_fields():
+                        attrs.pop(attr)
+        return attrs
+
+    def allowed_fields(self):
+        raise NotImplementedError
+
+
+class EventSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializer, EvidenceSerializerMixin):
     evidence = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -41,6 +57,9 @@ class EventSerializer(EvidenceSerializerMixin):
         read_only=True,
         view_name='event-detail'
     )
+
+    def allowed_fields(self):
+        return config.ALLOWED_FELDS_EVENT
 
     class Meta:
         model = Event
@@ -53,7 +72,7 @@ class EventEvidenceSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class CaseSerializer(EvidenceSerializerMixin):
+class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializer, EvidenceSerializerMixin):
     events = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -65,6 +84,9 @@ class CaseSerializer(EvidenceSerializerMixin):
         read_only=True,
         view_name='caseevidence-detail'
     )
+
+    def allowed_fields(self):
+        return config.ALLOWED_FELDS_CASE
 
     class Meta:
         model = Case

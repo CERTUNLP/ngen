@@ -10,11 +10,11 @@ from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE
 
 from . import Priority
-from .utils import NgenModel, NgenEvidenceMixin, NgenTreeModel, NgenPriorityMixin
+from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel
 from ..storage import HashedFilenameStorage
 
 
-class Case(NgenEvidenceMixin, NgenTreeModel, NgenPriorityMixin):
+class Case(NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
@@ -120,7 +120,7 @@ class Case(NgenEvidenceMixin, NgenTreeModel, NgenPriorityMixin):
         child.save()
 
 
-class Event(NgenEvidenceMixin, NgenTreeModel, NgenPriorityMixin):
+class Event(NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
