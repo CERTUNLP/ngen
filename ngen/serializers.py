@@ -31,7 +31,21 @@ class EvidenceSerializerMixin:
         return event
 
 
-class MergeSerializerMixin(object):
+class MergeSerializerMixin:
+    def get_extra_kwargs(self):
+        extra_kwargs = super().get_extra_kwargs()
+        action = self.context['view'].action
+
+        # if action in ['update', 'partial_update', 'retrieve']:
+        if self.instance.is_blocked():
+            for field in self.instance._meta.fields:
+                if field.name not in self.allowed_fields():
+                    kwargs = extra_kwargs.get(field.name, {})
+                    kwargs['read_only'] = True
+                    extra_kwargs[field.name] = kwargs
+
+        return extra_kwargs
+
     def validate(self, attrs):
         if self.instance:
             if self.instance.is_merged():
@@ -39,6 +53,8 @@ class MergeSerializerMixin(object):
             if self.instance.is_blocked():
                 for attr in list(attrs):
                     if attr not in self.allowed_fields():
+                        if config.ALLOWED_FIELDS_EXCEPTION:
+                            raise ValidationError({attr: '%s of blocked instances can\'t be modified' % attr})
                         attrs.pop(attr)
             return attrs
 

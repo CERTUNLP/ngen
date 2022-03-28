@@ -206,12 +206,15 @@ CONSTANCE_CONFIG = {
 
     'NGEN_LANG': (os.environ.get('NGEN_LANG'), 'NGEN default language'),
     'NGEN_LANG_EXTERNAL': (os.environ.get('NGEN_LANG_EXTERNAL'), 'NGEN language for external reports'),
-    'ALLOWED_FIELD_CASE': (
-        os.environ.get('ALLOWED_FIELD_CASE').split(','),
+    'ALLOWED_FIELDS_CASE': (
+        os.environ.get('ALLOWED_FIELDS_CASE'),
         'Case comma separated fields that could be modified if the instance is blocked'),
-    'ALLOWED_FIELD_EVENT': (
-        os.environ.get('ALLOWED_FIELD_EVENT').split(','),
+    'ALLOWED_FIELDS_EVENT': (
+        os.environ.get('ALLOWED_FIELDS_EVENT'),
         'Event comma separated fields that could be modified if the instance is blocked. '),
+    'ALLOWED_FIELDS_EXCEPTION': (
+        os.environ.get('ALLOWED_FIELDS_EXCEPTION', 'False').lower() in ('true', '1'),
+        'If True, ngen will raise an exception if a blocked field is modified', bool),
 }
 AUTH_USER_MODEL = 'ngen.User'
 
