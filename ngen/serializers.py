@@ -37,10 +37,10 @@ class MergeSerializerMixin(object):
             if self.instance.is_merged():
                 raise ValueError('Merged instances can\'t be modified')
             if self.instance.is_blocked():
-                for attr in attrs:
+                for attr in list(attrs):
                     if attr not in self.allowed_fields():
                         attrs.pop(attr)
-        return attrs
+            return attrs
 
     def allowed_fields(self):
         raise NotImplementedError
@@ -59,7 +59,7 @@ class EventSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializ
     )
 
     def allowed_fields(self):
-        return config.ALLOWED_FELDS_EVENT
+        return config.ALLOWED_FIELDS_EVENT.split(',')
 
     class Meta:
         model = Event
@@ -86,7 +86,7 @@ class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerialize
     )
 
     def allowed_fields(self):
-        return config.ALLOWED_FELDS_CASE
+        return config.ALLOWED_FIELDS_CASE.split(',')
 
     class Meta:
         model = Case
