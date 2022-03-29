@@ -64,15 +64,6 @@ class NgenPriorityMixin(models.Model):
 
 
 class NgenMergeableModel(NgenTreeModel):
-    allowed_fields = []
-
-    # def save(self, *args, **kwargs):
-    #     if self.parent:
-    #         raise ValueError('Merged instances can\'t be modified')
-    #     if self.is_blocked() and self.allowed_fields:
-    #         super().save(update_fields=self.allowed_fields)
-    #     else:
-    #         super().save(*args, **kwargs)
 
     def is_blocked(self):
         return self.state.blocked

@@ -14,7 +14,7 @@ from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeabl
 from ..storage import HashedFilenameStorage
 
 
-class Case(NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
+class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 

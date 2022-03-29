@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 
-from ngen.models import Case, Network, Taxonomy, Feed, State, Behavior, \
+from ngen.models import Case, Network, Taxonomy, Feed, State, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
     Event, Report, IncidentStateChange, Edge, Contact, CaseEvidence, EventEvidence
 
@@ -47,6 +47,7 @@ class MergeSerializerMixin:
         return extra_kwargs
 
     def validate(self, attrs):
+        super().validate(attrs)
         if self.instance:
             if self.instance.is_merged():
                 raise ValueError('Merged instances can\'t be modified')
@@ -100,6 +101,12 @@ class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerialize
         read_only=True,
         view_name='caseevidence-detail'
     )
+
+    def validate(self, attrs):
+        super(CaseSerializer, self).validate(attrs)
+        if not self.instance.state.is_parent_of(attrs['state']):
+            raise ValidationError({'state': 'It\'s not possible to change "%s" to "%s". Possible new states %s' % (
+                self.instance.state, attrs['state'], list(self.instance.state.children.all()))})
 
     def allowed_fields(self):
         return config.ALLOWED_FIELDS_CASE.split(',')
@@ -160,12 +167,6 @@ class IncidentStateChangeSerializer(serializers.HyperlinkedModelSerializer):
 class EdgeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Edge
-        fields = '__all__'
-
-
-class BehaviorSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Behavior
         fields = '__all__'
 
 

@@ -9,7 +9,6 @@ class State(NgenModel):
     name = models.CharField(max_length=100)
     blocked = models.BooleanField(default=False)
     active = models.IntegerField()
-    behavior = models.ForeignKey('Behavior', models.DO_NOTHING)
     description = models.CharField(max_length=250, null=True)
     children = models.ManyToManyField(
         "self",
@@ -91,6 +90,9 @@ class State(NgenModel):
     def is_partner_of(self, ending_node):
         return ending_node in self.partners()
 
+    def is_parent_of(self, ending_node):
+        return ending_node in self.children.all()
+
     class Meta:
         db_table = 'state'
 
@@ -120,28 +122,3 @@ class IncidentStateChange(NgenModel):
 
     class Meta:
         db_table = 'incident_state_change'
-
-
-class Behavior(NgenModel):
-    slug = models.SlugField(max_length=100, unique=True)
-    name = models.CharField(max_length=45, null=True)
-    description = models.CharField(max_length=250, null=True)
-    can_edit_fundamentals = models.IntegerField()
-    can_edit = models.IntegerField()
-    can_enrich = models.IntegerField()
-    can_add_history = models.IntegerField()
-    can_communicate = models.IntegerField()
-    discr = models.CharField(max_length=255)
-
-    def __repr__(self):
-        return self.name
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
-        super(Behavior, self).save(*args, **kwargs)
-
-    class Meta:
-        db_table = 'behavior'
