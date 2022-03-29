@@ -36,13 +36,13 @@ class MergeSerializerMixin:
         extra_kwargs = super().get_extra_kwargs()
         action = self.context['view'].action
 
-        # if action in ['update', 'partial_update', 'retrieve']:
-        if self.instance.is_blocked():
-            for field in self.instance._meta.fields:
-                if field.name not in self.allowed_fields():
-                    kwargs = extra_kwargs.get(field.name, {})
-                    kwargs['read_only'] = True
-                    extra_kwargs[field.name] = kwargs
+        if action in ['update', 'partial_update', 'retrieve']:
+            if self.instance.is_blocked():
+                for field in self.instance._meta.fields:
+                    if field.name not in self.allowed_fields():
+                        kwargs = extra_kwargs.get(field.name, {})
+                        kwargs['read_only'] = True
+                        extra_kwargs[field.name] = kwargs
 
         return extra_kwargs
 
