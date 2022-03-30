@@ -58,7 +58,7 @@ class MergeSerializerMixin:
                         if config.ALLOWED_FIELDS_EXCEPTION:
                             raise ValidationError({attr: gettext('%s of blocked instances can\'t be modified') % attr})
                         attrs.pop(attr)
-            return attrs
+        return attrs
 
     def allowed_fields(self):
         raise NotImplementedError
@@ -104,12 +104,25 @@ class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerialize
     )
 
     def validate_state(self, attrs):
-        if not self.instance.state.is_parent_of(attrs):
+        if self.instance is not None and self.instance.state != attrs and not self.instance.state.is_parent_of(attrs):
             raise ValidationError(
                 {'state': gettext(
                     'It\'s not possible to change the state "%s" to "%s". The new possible states are %s') % (
                               self.instance.state, attrs, list(self.instance.state.children.all()))})
         return attrs
+
+    def get_extra_kwargs(self):
+        extra_kwargs = super().get_extra_kwargs()
+        kwargs = extra_kwargs.get('state', {})
+        action = self.context['view'].action
+
+        if action in ['update', 'partial_update']:
+            kwargs['queryset'] = (
+                    self.instance.state.children.all() | State.objects.filter(pk=self.instance.state.pk)).distinct()
+        else:
+            kwargs['queryset'] = State.get_initial().children.all()
+        extra_kwargs['state'] = kwargs
+        return extra_kwargs
 
     def allowed_fields(self):
         return config.ALLOWED_FIELDS_CASE.split(',')
