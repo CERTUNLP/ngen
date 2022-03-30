@@ -48,10 +48,10 @@ class MergeSerializerMixin:
         return extra_kwargs
 
     def validate(self, attrs):
-        super().validate(attrs)
+        attrs = super().validate(attrs)
         if self.instance:
-            if self.instance.is_merged():
-                raise ValidationError(gettext('Merged instances can\'t be modified'))
+            # if self.instance.is_merged():
+            #     raise ValidationError(gettext('Merged instances can\'t be modified'))
             if self.instance.is_blocked():
                 for attr in list(attrs):
                     if attr not in self.allowed_fields():
@@ -103,13 +103,13 @@ class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerialize
         view_name='caseevidence-detail'
     )
 
-    def validate(self, attrs):
-        if not self.instance.state.is_parent_of(attrs['state']):
+    def validate_state(self, attrs):
+        if not self.instance.state.is_parent_of(attrs):
             raise ValidationError(
                 {'state': gettext(
                     'It\'s not possible to change the state "%s" to "%s". The new possible states are %s') % (
-                              self.instance.state, attrs['state'], list(self.instance.state.children.all()))})
-        return super(CaseSerializer, self).validate(attrs)
+                              self.instance.state, attrs, list(self.instance.state.children.all()))})
+        return attrs
 
     def allowed_fields(self):
         return config.ALLOWED_FIELDS_CASE.split(',')

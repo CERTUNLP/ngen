@@ -66,7 +66,7 @@ class NgenPriorityMixin(models.Model):
 class NgenMergeableModel(NgenTreeModel):
 
     def is_blocked(self):
-        return self.state.blocked
+        return self.state.blocked or self.is_merged()
 
     def is_merged(self):
         return self.parent is not None
