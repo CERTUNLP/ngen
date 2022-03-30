@@ -27,12 +27,11 @@ class Feed(NgenModel):
 
 class Priority(NgenModel):
     name = models.CharField(max_length=255)
-    response_time = models.IntegerField()
+    attend_time = models.IntegerField()
     solve_time = models.IntegerField()
     code = models.IntegerField()
-    unresponse_time = models.IntegerField()
-    unsolve_time = models.IntegerField()
-    active = models.IntegerField()
+    unattended_time = models.IntegerField()
+    unsolved_time = models.IntegerField()
 
     @classmethod
     def default_priority(cls):
