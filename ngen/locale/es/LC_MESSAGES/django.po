@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-10 18:15+0000\n"
+"POT-Creation-Date: 2022-03-29 22:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,8 +27,23 @@ msgstr "Estado del caso actualizado"
 msgid "New event on case"
 msgstr "Nuevo evento en caso"
 
-msgid "Priority"
+msgid "Merged instances can't be modified"
+msgstr "Instancias combinadas no pueden ser modificadas"
+
+#, python-format
+msgid "%s of blocked instances can't be modified"
+msgstr "%s de instancias bloqueadas no pueden ser modificadas"
+
+#, python-format
+msgid ""
+"It's not possible to change the state \"%s\" to \"%s\". The new possible "
+"states are %s"
 msgstr ""
+"No es posible cambiar el estado \"%s\" a \"%s\". Los posibles nuevos estados "
+"son %s"
+
+msgid "Priority"
+msgstr "Prioridad"
 
 msgid "Case"
 msgstr "Caso"

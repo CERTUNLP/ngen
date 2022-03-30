@@ -1,5 +1,6 @@
 from constance import config
 from django.db import IntegrityError
+from django.utils.translation import gettext
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
@@ -50,12 +51,12 @@ class MergeSerializerMixin:
         super().validate(attrs)
         if self.instance:
             if self.instance.is_merged():
-                raise ValueError('Merged instances can\'t be modified')
+                raise ValidationError(gettext('Merged instances can\'t be modified'))
             if self.instance.is_blocked():
                 for attr in list(attrs):
                     if attr not in self.allowed_fields():
                         if config.ALLOWED_FIELDS_EXCEPTION:
-                            raise ValidationError({attr: '%s of blocked instances can\'t be modified' % attr})
+                            raise ValidationError({attr: gettext('%s of blocked instances can\'t be modified') % attr})
                         attrs.pop(attr)
             return attrs
 
@@ -103,10 +104,12 @@ class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerialize
     )
 
     def validate(self, attrs):
-        super(CaseSerializer, self).validate(attrs)
         if not self.instance.state.is_parent_of(attrs['state']):
-            raise ValidationError({'state': 'It\'s not possible to change "%s" to "%s". Possible new states %s' % (
-                self.instance.state, attrs['state'], list(self.instance.state.children.all()))})
+            raise ValidationError(
+                {'state': gettext(
+                    'It\'s not possible to change the state "%s" to "%s". The new possible states are %s') % (
+                              self.instance.state, attrs['state'], list(self.instance.state.children.all()))})
+        return super(CaseSerializer, self).validate(attrs)
 
     def allowed_fields(self):
         return config.ALLOWED_FIELDS_CASE.split(',')
