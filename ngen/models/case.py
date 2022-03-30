@@ -24,7 +24,7 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
     unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unsolved')
 
     ltd_count = models.IntegerField()
-    response_dead_line = models.DateTimeField()
+    attend_dead_line = models.DateTimeField()
     solve_dead_line = models.DateTimeField()
 
     report_message_id = models.CharField(max_length=255, null=True)
