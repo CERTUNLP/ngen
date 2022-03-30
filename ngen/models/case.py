@@ -9,7 +9,7 @@ from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE
 
-from . import Priority
+import ngen
 from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel
 from ..storage import HashedFilenameStorage
 
@@ -55,6 +55,11 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
     def after_create(self):
         self.case_creation()
 
+    @hook(BEFORE_CREATE)
+    def before_create(self):
+        if not self.state:
+            self.state = ngen.models.State.get_default()
+
     @hook(AFTER_UPDATE, when="state", has_changed=True)
     def after_update(self):
         self.case_state_change()
@@ -78,7 +83,7 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
                            config.NGEN_LANG, params)
 
     def communicate_team(self, template: str, subject: str, params: dict = None):
-        if config.TEAM_EMAIL and Priority.objects.get(name=config.TEAM_EMAIL_PRIORITY).code >= self.priority.code:
+        if config.TEAM_EMAIL and ngen.models.Priority.objects.get(name=config.TEAM_EMAIL_PRIORITY).code >= self.priority.code:
             self.send_mail(self.email_subject(subject), template, config.EMAIL_SENDER, [config.TEAM_EMAIL],
                            config.NGEN_LANG, params)
 

@@ -93,6 +93,14 @@ class State(NgenModel):
     def is_parent_of(self, ending_node):
         return ending_node in self.children.all()
 
+    @classmethod
+    def get_initial(cls):
+        return cls.objects.get(name='Initial')
+
+    @classmethod
+    def get_default(cls):
+        return cls.objects.get(name='Staging')
+
     class Meta:
         db_table = 'state'
 
