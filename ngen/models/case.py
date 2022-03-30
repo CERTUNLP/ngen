@@ -20,7 +20,7 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
 
     assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='cases_assigned')
     state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases')
-    unresponded_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unresponded')
+    unattended_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unattended')
     unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unsolved')
 
     ltd_count = models.IntegerField()
@@ -83,7 +83,8 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
                            config.NGEN_LANG, params)
 
     def communicate_team(self, template: str, subject: str, params: dict = None):
-        if config.TEAM_EMAIL and ngen.models.Priority.objects.get(name=config.TEAM_EMAIL_PRIORITY).code >= self.priority.code:
+        if config.TEAM_EMAIL and ngen.models.Priority.objects.get(
+                name=config.TEAM_EMAIL_PRIORITY).code >= self.priority.code:
             self.send_mail(self.email_subject(subject), template, config.EMAIL_SENDER, [config.TEAM_EMAIL],
                            config.NGEN_LANG, params)
 
@@ -237,7 +238,7 @@ class CaseTemplate(NgenModel, NgenPriorityMixin):
     network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
 
     active = models.BooleanField(default=True)
-    unresponded_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unresponded_states')
+    unattended_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unattended_states')
     unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unsolved_states')
 
     class Meta:
