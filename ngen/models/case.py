@@ -23,7 +23,6 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
     unattended_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unattended')
     unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unsolved')
 
-    ltd_count = models.IntegerField()
     attend_dead_line = models.DateTimeField()
     solve_dead_line = models.DateTimeField()
 
