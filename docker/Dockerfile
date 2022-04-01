@@ -6,4 +6,8 @@ WORKDIR /code
 RUN apk add gettext
 COPY requirements.txt /code/
 RUN pip install -r requirements.txt
+# celery beat patch until version 2.3.0 arrives
+RUN pip install django-timezone-field==4.2.3 python-crontab==2.3.4
+RUN pip install django-celery-beat==2.2.1 --no-deps
+
 #COPY ../ /code/

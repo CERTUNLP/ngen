@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
+from celery.schedules import crontab
 from constance import config
 from django.utils.translation import gettext_lazy as _
 
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'django_filters',
     'treebeard',
     'djcelery_email',
+    'django_celery_beat',
     'django_bleach',
     'django_extensions',
     'debug_toolbar',
@@ -183,7 +185,12 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
+CELERY_BEAT_SCHEDULE = {
+    "sample_task": {
+        "task": "ngen.tasks.sample_task",
+        "schedule": crontab(minute="*/1"),
+    },
+}
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_ADDITIONAL_FIELDS = {
     'image_field': ['django.forms.ImageField', {}],

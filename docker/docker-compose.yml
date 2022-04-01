@@ -11,11 +11,11 @@ services:
             - ./postgres_data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
-#    ngen-adminer:
-#        image: adminer
-#        restart: always
-#        ports:
-#            - "8080:8080"
+    #    ngen-adminer:
+    #        image: adminer
+    #        restart: always
+    #        ports:
+    #            - "8080:8080"
     ngen-django:
         image: ngen:latest
         build:
@@ -45,17 +45,17 @@ services:
         depends_on:
             - ngen-django
             - ngen-rabbitmq
-#    ngen-celery-beat:
-#        image: ngen:latest
-#        restart: always
-#        command: celery -A djangoProject beat -l debug
-#        volumes:
-#            - ../:/code
-#        env_file:
-#            - ngen.env
-#        depends_on:
-#            - ngen-django
-#            - ngen-rabbitmq
+    ngen-celery-beat:
+        image: ngen:latest
+        restart: always
+        command: celery -A djangoProject beat -l debug
+        volumes:
+            - ../:/code
+        env_file:
+            - ngen.env
+        depends_on:
+            - ngen-django
+            - ngen-rabbitmq
     ngen-rabbitmq:
         image: rabbitmq:3-management-alpine
         ports:

@@ -1,8 +1,10 @@
-import re
-
 from celery import shared_task
-from django.core import mail
-from django.template.loader import get_template
-from django.utils.html import strip_tags
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
 
 
+@shared_task
+def sample_task():
+    logger.info("The sample task just ran.")
+    print('asdasdasd')
