@@ -55,8 +55,8 @@ class NgenPriorityMixin(models.Model):
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
 
     def save(self, *args, **kwargs):
-        if not self.priority:
-            self.priority = apps('ngen', 'Priority').default_priority()
+        if not self.priority_id:
+            self.priority = apps.get_model('ngen', 'Priority').default_priority()
         super().save(*args, **kwargs)
 
     class Meta:
