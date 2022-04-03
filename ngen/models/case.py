@@ -32,9 +32,16 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
     node_order_by = ['id']
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
     class Meta:
         db_table = 'case'
         ordering = ['-id']
+
+    def __repr__(self):
+        return "<%s: %s>" % (self.__class__.__name__, self.uuid)
+
+    def __str__(self):
+        return self.uuid.__str__()
 
     def email_contacts(self):
         contacts = []
@@ -147,6 +154,12 @@ class Event(NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
     class Meta:
         db_table = 'event'
         ordering = ['-id']
+
+    def __repr__(self):
+        return "<%s: %s>" % (self.__class__.__name__, self.uuid)
+
+    def __str__(self):
+        return self.uuid.__str__()
 
     @hook(BEFORE_CREATE)
     def auto_merge(self):
