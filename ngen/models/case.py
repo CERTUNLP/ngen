@@ -1,4 +1,5 @@
 import re
+import uuid as uuid
 from collections import defaultdict
 
 from constance import config
@@ -30,6 +31,7 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
     raw = models.TextField(null=True)
     node_order_by = ['id']
 
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     class Meta:
         db_table = 'case'
         ordering = ['-id']
@@ -138,6 +140,8 @@ class Event(NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
     notes = models.TextField(null=True)
 
     case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='events')
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
     node_order_by = ['id']
 
     class Meta:
