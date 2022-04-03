@@ -126,12 +126,13 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
         self.communicate_team('reports/case_assign.html', gettext_lazy('New event on case'))
 
     def merge(self, child: "Case"):
-        child.parent = self
-        for evidence in child.evidence.all():
-            self.evidence.add(evidence)
-        for event in child.events.all():
-            self.events.add(event)
-        child.save()
+        if child != self:
+            child.parent = self
+            for evidence in child.evidence.all():
+                self.evidence.add(evidence)
+            for event in child.events.all():
+                self.events.add(event)
+            child.save()
 
 
 class Event(NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
@@ -167,12 +168,13 @@ class Event(NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
         self.parent = events.first()
 
     def merge(self, child):
-        child.parent = self
-        if child.case:
-            child.case = None
-        for evidence in child.evidence.all():
-            self.evidence.add(evidence)
-        child.save()
+        if child != self:
+            child.parent = self
+            if child.case:
+                child.case = None
+            for evidence in child.evidence.all():
+                self.evidence.add(evidence)
+            child.save()
 
     def add_evidence(self, file):
         if self.parent:

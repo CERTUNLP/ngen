@@ -47,6 +47,11 @@ class MergeSerializerMixin:
 
         return extra_kwargs
 
+    def validate_parent(self, attrs):
+        if self.instance == attrs:
+            raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
+        return attrs
+
     def validate(self, attrs):
         attrs = super().validate(attrs)
         if self.instance:
