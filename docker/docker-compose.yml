@@ -34,7 +34,7 @@ services:
             - ngen-postgres
             - ngen-rabbitmq
             - ngen-mail
-    ngen-celery:
+    ngen-celery-worker:
         image: ngen:latest
         restart: always
         command: celery -A djangoProject worker -l debug
