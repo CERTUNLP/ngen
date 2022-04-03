@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django_bleach',
     'django_extensions',
     'debug_toolbar',
+    'auditlog',
 
 ]
 
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'auditlog.middleware.AuditlogMiddleware',
 ]
 
 ROOT_URLCONF = 'djangoProject.urls'

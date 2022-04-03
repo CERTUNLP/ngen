@@ -2,6 +2,8 @@ import re
 import uuid as uuid
 from collections import defaultdict
 
+from auditlog.models import AuditlogHistoryField
+from auditlog.registry import auditlog
 from constance import config
 from django.core import mail
 from django.db import models
@@ -30,6 +32,7 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
     report_message_id = models.CharField(max_length=255, null=True)
     raw = models.TextField(null=True)
     node_order_by = ['id']
+    history = AuditlogHistoryField()
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -286,3 +289,6 @@ class IncidentCommentThread(models.Model):
 
     class Meta:
         db_table = 'incident_comment_thread'
+
+
+auditlog.register(Case)
