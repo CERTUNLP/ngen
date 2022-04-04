@@ -122,7 +122,7 @@ class Edge(NgenModel):
 
 
 class IncidentStateChange(NgenModel):
-    incident_id = models.IntegerField(null=True)
+    case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='state_changes')
     responsible = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
     date = models.DateTimeField(null=True)
     method = models.CharField(max_length=25)
@@ -130,3 +130,6 @@ class IncidentStateChange(NgenModel):
 
     class Meta:
         db_table = 'incident_state_change'
+
+    def __repr__(self):
+        return self.state_edge.__repr__()
