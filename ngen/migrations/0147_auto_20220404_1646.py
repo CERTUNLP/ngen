@@ -3,7 +3,6 @@ import json
 
 from auditlog.models import LogEntry
 from django.db import migrations
-from django.utils.encoding import smart_str
 
 
 def state_change_to_logentry(apps, schema_editor):
@@ -14,7 +13,7 @@ def state_change_to_logentry(apps, schema_editor):
                                                changes=json.dumps(diff))
         logentry.timestamp = state_change.case.created
         logentry.actor_id = state_change.responsible_id
-        logentry.object_repr = str(state_change.case.uuid)
+        logentry.object_repr = str(state_change.case.id)
         logentry.save()
 
 
