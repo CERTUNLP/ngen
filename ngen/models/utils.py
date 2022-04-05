@@ -1,12 +1,14 @@
+from auditlog.models import AuditlogHistoryField
 from django.apps import apps
 from django.db import models
-from django_lifecycle import hook, BEFORE_DELETE, LifecycleModelMixin
+from django_lifecycle import hook, BEFORE_DELETE
 from model_utils.models import TimeStampedModel
 from treebeard.al_tree import AL_Node
 
 
 class NgenModel(TimeStampedModel):
     created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
+    history = AuditlogHistoryField()
 
     class Meta:
         abstract = True
