@@ -12,7 +12,7 @@ class NgenModel(TimeStampedModel):
         abstract = True
 
 
-class NgenTreeModel(NgenModel, AL_Node):
+class NgenTreeModel(AL_Node):
     @classmethod
     def find_problems(cls):
         pass
@@ -33,7 +33,19 @@ class NgenTreeModel(NgenModel, AL_Node):
         abstract = True
 
 
-class NgenEvidenceMixin(LifecycleModelMixin):
+class NgenMergeableModel(NgenTreeModel):
+
+    def is_blocked(self):
+        return self.state.blocked or self.is_merged()
+
+    def is_merged(self):
+        return self.parent is not None
+
+    class Meta:
+        abstract = True
+
+
+class NgenEvidenceMixin(models.Model):
     @hook(BEFORE_DELETE)
     def delete_evidence(self):
         for evidence in self.evidence.all():
@@ -49,11 +61,6 @@ class NgenEvidenceMixin(LifecycleModelMixin):
         abstract = True
 
 
-class NgenEvidenceModel(NgenModel, NgenEvidenceMixin):
-    class Meta:
-        abstract = True
-
-
 class NgenPriorityMixin(models.Model):
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
 
@@ -61,18 +68,6 @@ class NgenPriorityMixin(models.Model):
         if not self.priority_id:
             self.priority = apps.get_model('ngen', 'Priority').default_priority()
         super().save(*args, **kwargs)
-
-    class Meta:
-        abstract = True
-
-
-class NgenMergeableModel(NgenTreeModel):
-
-    def is_blocked(self):
-        return self.state.blocked or self.is_merged()
-
-    def is_merged(self):
-        return self.parent is not None
 
     class Meta:
         abstract = True

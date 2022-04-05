@@ -65,7 +65,8 @@ class MergeSerializerMixin:
                         attrs.pop(attr)
         return attrs
 
-    def allowed_fields(self):
+    @staticmethod
+    def allowed_fields():
         raise NotImplementedError
 
 
@@ -81,7 +82,8 @@ class EventSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializ
         view_name='event-detail'
     )
 
-    def allowed_fields(self):
+    @staticmethod
+    def allowed_fields():
         return config.ALLOWED_FIELDS_EVENT.split(',')
 
     class Meta:
@@ -129,7 +131,8 @@ class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerialize
         extra_kwargs['state'] = kwargs
         return extra_kwargs
 
-    def allowed_fields(self):
+    @staticmethod
+    def allowed_fields():
         return config.ALLOWED_FIELDS_CASE.split(',')
 
     class Meta:

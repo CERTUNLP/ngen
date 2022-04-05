@@ -13,7 +13,7 @@ from tld import is_tld
 from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin
 
 
-class Network(NgenTreeModel):
+class Network(NgenModel, NgenTreeModel):
     cidr = CidrAddressField(null=True, unique=True)
     domain = models.CharField(max_length=255, null=True, unique=True, default=None)
     contacts = models.ManyToManyField('Contact')

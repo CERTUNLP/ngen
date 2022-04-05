@@ -10,14 +10,14 @@ from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
-from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE
+from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, LifecycleModelMixin
 
 import ngen
 from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel
 from ..storage import HashedFilenameStorage
 
 
-class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
+class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
@@ -134,7 +134,7 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
             child.save()
 
 
-class Event(NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
+class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
