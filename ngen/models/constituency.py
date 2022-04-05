@@ -165,10 +165,11 @@ class Contact(NgenModel, NgenPriorityMixin):
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
 
     def __str__(self):
-        return "%s (%s, %s)" % (self.username, self.role, self.priority)
+        return "%s (%s)" % (self.username, self.role)
 
     class Meta:
         db_table = 'contact'
+        ordering = ['username']
 
 
 class NetworkEntity(NgenModel):
