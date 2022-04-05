@@ -164,11 +164,8 @@ class Contact(NgenModel, NgenPriorityMixin):
     ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
 
-    def __repr__(self):
-        return self.username
-
     def __str__(self):
-        return self.username
+        return "%s (%s, %s)" % (self.username, self.role, self.priority)
 
     class Meta:
         db_table = 'contact'
@@ -182,9 +179,6 @@ class NetworkEntity(NgenModel):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name).replace('-', '_')
         super(NetworkEntity, self).save(*args, **kwargs)
-
-    def __repr__(self):
-        return self.name
 
     def __str__(self):
         return self.name
@@ -226,9 +220,6 @@ class Address(ABC):
     def __contains__(self, other: "Address"):
         return self.in_range(other)
 
-    def __repr__(self):
-        return self.address
-
     def __str__(self):
         return self.address
 
@@ -247,9 +238,6 @@ class AddressIp(Address):
 
     def in_range(self, other: Address):
         return other._address > self._address
-
-    def __repr__(self):
-        return self.address.exploded
 
     def __str__(self):
         return self.address.exploded

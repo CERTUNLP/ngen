@@ -45,6 +45,9 @@ class NgenEvidenceMixin(LifecycleModelMixin):
     def add_evidence(self, file):
         self.evidence.get_or_create(file=file)
 
+    class Meta:
+        abstract = True
+
 
 class NgenEvidenceModel(NgenModel, NgenEvidenceMixin):
     class Meta:

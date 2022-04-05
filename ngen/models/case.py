@@ -38,13 +38,9 @@ class Case(NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
 
     class Meta:
         db_table = 'case'
-        ordering = ['-id']
-
-    def __repr__(self):
-        return "<%s: %s>" % (self.__class__.__name__, self.uuid)
 
     def __str__(self):
-        return self.uuid.__str__()
+        return str(self.pk)
 
     def email_contacts(self):
         contacts = []
@@ -159,11 +155,8 @@ class Event(NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
         db_table = 'event'
         ordering = ['-id']
 
-    def __repr__(self):
-        return "<%s: %s>" % (self.__class__.__name__, self.uuid)
-
     def __str__(self):
-        return self.uuid.__str__()
+        return str(self.pk)
 
     @hook(BEFORE_CREATE)
     def auto_merge(self):
@@ -218,9 +211,6 @@ class Evidence(NgenModel):
         raise NotImplementedError()
 
     def __str__(self):
-        return self.file.url
-
-    def __repr__(self):
         return self.file.url
 
     def delete(self, using=None, keep_parents=False):

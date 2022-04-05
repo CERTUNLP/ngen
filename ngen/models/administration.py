@@ -18,18 +18,15 @@ class Feed(NgenModel):
     class Meta:
         db_table = 'feed'
 
-    def __repr__(self):
-        return self.name
-
     def __str__(self):
         return self.name
 
 
 class Priority(NgenModel):
     name = models.CharField(max_length=255)
+    code = models.IntegerField()
     attend_time = models.IntegerField()
     solve_time = models.IntegerField()
-    code = models.IntegerField()
     unattended_time = models.IntegerField()
     unsolved_time = models.IntegerField()
 
@@ -40,9 +37,6 @@ class Priority(NgenModel):
     class Meta:
         db_table = 'priority'
         ordering = ['code']
-
-    def __repr__(self):
-        return self.name
 
     def __str__(self):
         return self.name
@@ -65,9 +59,6 @@ class Tlp(NgenModel):
 
     class Meta:
         db_table = 'tlp'
-
-    def __repr__(self):
-        return self.name
 
     def __str__(self):
         return self.name

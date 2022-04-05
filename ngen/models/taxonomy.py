@@ -25,9 +25,6 @@ class Taxonomy(NgenTreeModel):
             self.get_children().update(parent=self.parent)
         super(Taxonomy, self).delete()
 
-    def __repr__(self):
-        return self.name
-
     def __str__(self):
         return self.name
 
@@ -52,8 +49,5 @@ class Report(NgenModel):
         db_table = 'report'
         unique_together = ['lang', 'taxonomy']
 
-    def __repr__(self):
-        return "%s-%s" % (self.taxonomy.name, self.lang)
-
     def __str__(self):
-        return "%s-%s" % (self.taxonomy.name, self.lang)
+        return "%s (%s)" % (self.taxonomy.name, self.lang)

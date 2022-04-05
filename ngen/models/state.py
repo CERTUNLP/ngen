@@ -17,9 +17,6 @@ class State(NgenModel):
         related_name="parents",
     )
 
-    def __repr__(self):
-        return self.name
-
     def __str__(self):
         return self.name
 
@@ -109,9 +106,6 @@ class Edge(NgenModel):
     parent = models.ForeignKey(State, models.CASCADE, related_name='children_edge')
     child = models.ForeignKey(State, models.CASCADE, related_name='parents_edge')
     discr = models.CharField(max_length=255)
-
-    def __repr__(self):
-        return "%s -> %s" % (self.parent, self.child)
 
     def __str__(self):
         return "%s -> %s" % (self.parent, self.child)
