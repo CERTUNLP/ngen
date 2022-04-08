@@ -8,6 +8,8 @@ class State(NgenModel):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     blocked = models.BooleanField(default=False)
+    attended = models.BooleanField(default=False)
+    solved = models.BooleanField(default=False)
     active = models.IntegerField()
     description = models.CharField(max_length=250, null=True)
     children = models.ManyToManyField(

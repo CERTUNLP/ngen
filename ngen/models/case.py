@@ -24,6 +24,9 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
     unattended_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unattended')
     unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unsolved')
 
+    attend_date = models.DateTimeField(null=True)
+    solve_date = models.DateTimeField(null=True)
+
     attend_dead_line = models.DateTimeField()
     solve_dead_line = models.DateTimeField()
 
@@ -66,7 +69,12 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
 
     @hook(AFTER_UPDATE, when="state", has_changed=True)
     def after_update(self):
-        self.case_state_change()
+        if self.state.attended:
+            self.attend_date = datetime.datetime.now()
+            self.solve_date = None
+        if self.state.solved:
+            self.solve_date = datetime.datetime.now()
+        self.communicate('reports/state_change.html', gettext_lazy('Case status updated'))
 
     def send_mail(self, subject, template: str, from_mail: str, recipient_list: list, lang: str,
                   extra_params: dict = None):
