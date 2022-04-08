@@ -55,8 +55,6 @@ class MergeSerializerMixin:
     def validate(self, attrs):
         attrs = super().validate(attrs)
         if self.instance:
-            # if self.instance.is_merged():
-            #     raise ValidationError(gettext('Merged instances can\'t be modified'))
             if self.instance.is_blocked():
                 for attr in list(attrs):
                     if attr not in self.allowed_fields():
@@ -86,9 +84,41 @@ class EventSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializ
     def allowed_fields():
         return config.ALLOWED_FIELDS_EVENT.split(',')
 
+    @staticmethod
+    def not_allowed_fields():
+        return ['taxonomy', 'feed', 'network']
+
+    def get_extra_kwargs(self):
+        extra_kwargs = super().get_extra_kwargs()
+        action = self.context['view'].action
+
+        if action in ['update', 'partial_update', 'retrieve']:
+            if self.instance.is_merged() or self.instance.is_parent():
+                for field in self.instance._meta.fields:
+                    if field.name in self.not_allowed_fields():
+                        kwargs = extra_kwargs.get(field.name, {})
+                        kwargs['read_only'] = True
+                        extra_kwargs[field.name] = kwargs
+
+        return extra_kwargs
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        if self.instance:
+            if self.instance.is_merged() or self.instance.is_parent():
+                for attr in list(attrs):
+                    if attr in self.not_allowed_fields():
+                        if config.ALLOWED_FIELDS_EXCEPTION:
+                            raise ValidationError(
+                                {attr: gettext('%s of merged events can\'t be modified') % self.not_allowed_fields()})
+                        attrs.pop(attr)
+        return attrs
+
     class Meta:
         model = Event
         fields = '__all__'
+        read_only_fields = ['created_by']
+
 
 
 class EventEvidenceSerializer(serializers.HyperlinkedModelSerializer):
@@ -138,6 +168,7 @@ class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerialize
     class Meta:
         model = Case
         fields = '__all__'
+        read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by']
 
 
 class CaseEvidenceSerializer(serializers.HyperlinkedModelSerializer):

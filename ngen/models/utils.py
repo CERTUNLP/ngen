@@ -31,17 +31,38 @@ class NgenTreeModel(AL_Node):
             contacts.insert(0, list(related(ancestor)))
         return contacts
 
+    @classmethod
+    def get_parents(cls):
+        return cls.objects.filter(parent__isnull=True)
+
     class Meta:
         abstract = True
+
+    def is_child(self):
+        return self.parent is not None
+
+    def is_parent(self):
+        return self.children.exists()
 
 
 class NgenMergeableModel(NgenTreeModel):
 
-    def is_blocked(self):
-        return self.state.blocked or self.is_merged()
+    def is_blocked(self) -> bool:
+        raise NotImplementedError
 
-    def is_merged(self):
-        return self.parent is not None
+    def is_mergeable(self) -> bool:
+        return not self.is_merged() and not self.is_blocked()
+
+    def is_merged(self) -> bool:
+        return self.is_child()
+
+    def merge_condition(self, child: 'NgenMergeableModel') -> bool:
+        return child is not self and child.is_mergeable() and self.is_mergeable()
+
+    def merge(self, child: 'NgenMergeableModel'):
+        if self.merge_condition(child):
+            child.parent = self
+            child.save()
 
     class Meta:
         abstract = True

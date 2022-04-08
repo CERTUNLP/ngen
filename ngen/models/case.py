@@ -1,3 +1,4 @@
+import datetime
 import re
 import uuid as uuid
 from collections import defaultdict
@@ -39,6 +40,9 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
     class Meta:
         db_table = 'case'
 
+    def is_blocked(self):
+        return self.state.blocked
+
     def __str__(self):
         return str(self.pk)
 
@@ -60,7 +64,7 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
 
     @hook(AFTER_CREATE)
     def after_create(self):
-        self.case_creation()
+        self.communicate('reports/base.html', gettext_lazy('New Case'))
 
     @hook(BEFORE_CREATE)
     def before_create(self):
@@ -118,25 +122,10 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
         self.communicate_assigned(template, subject, params)
         self.communicate_team(template, subject, params)
 
-    def case_creation(self):
-        self.communicate('reports/base.html', gettext_lazy('New Case'))
-
-    def case_state_change(self):
-        self.communicate('reports/state_change.html', gettext_lazy('Case status updated'))
-
     def event_case_assign(self, event: 'Event'):
         self.communicate_event(event, 'reports/case_assign.html', gettext_lazy('New event on case'))
         self.communicate_assigned('reports/case_assign.html', gettext_lazy('New event on case'))
         self.communicate_team('reports/case_assign.html', gettext_lazy('New event on case'))
-
-    def merge(self, child: "Case"):
-        if child != self:
-            child.parent = self
-            for evidence in child.evidence.all():
-                self.evidence.add(evidence)
-            for event in child.events.all():
-                self.events.add(event)
-            child.save()
 
 
 class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
@@ -165,23 +154,20 @@ class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableMode
 
     @hook(BEFORE_CREATE)
     def auto_merge(self):
-        events = Event.objects.filter(taxonomy=self.taxonomy, feed=self.feed, network=self.network).order_by('id')
-        self.parent = events.first()
+        event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, network=self.network,
+                                           case__state__blocked=False).order_by('id').last()
+        if event:
+            event.merge(self)
+
+    def is_blocked(self):
+        if self.case:
+            return self.case.is_blocked()
+        return False
 
     def merge(self, child):
-        if child != self:
-            child.parent = self
-            if child.case:
-                child.case = None
-            for evidence in child.evidence.all():
-                self.evidence.add(evidence)
-            child.save()
-
-    def add_evidence(self, file):
-        if self.parent:
-            self.parent.add_evidence(file)
-        else:
-            self.evidence.get_or_create(file=file)
+        if child.case:
+            child.case = None
+        super(Event, self).merge(child)
 
     def email_contacts(self):
         contacts = []
