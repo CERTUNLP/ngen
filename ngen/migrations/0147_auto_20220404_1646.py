@@ -11,7 +11,7 @@ def state_change_to_logentry(apps, schema_editor):
         diff = {'state': (state_change.state_edge.parent.name, state_change.state_edge.child.name)}
         logentry = LogEntry.objects.log_create(state_change.case, action=LogEntry.Action.UPDATE,
                                                changes=json.dumps(diff))
-        logentry.timestamp = state_change.case.created
+        logentry.timestamp = state_change.created
         logentry.actor_id = state_change.responsible_id
         logentry.object_repr = str(state_change.case.id)
         logentry.save()
