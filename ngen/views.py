@@ -7,12 +7,12 @@ from rest_framework import viewsets
 from ngen.backends import EventRootFilterBackend
 from ngen.models import Case, Network, Taxonomy, Feed, State, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
-    Event, Report, IncidentStateChange, Edge, Contact, CaseEvidence, EventEvidence
+    Event, Report, Edge, Contact, CaseEvidence, EventEvidence
 from ngen.serializers import CaseSerializer, NetworkSerializer, TaxonomySerializer, FeedSerializer, \
     StateSerializer, UserSerializer, \
     NetworkEntitySerializer, TlpSerializer, PrioritySerializer, \
     CaseTemplateSerializer, \
-    EventSerializer, ReportSerializer, IncidentStateChangeSerializer, EdgeSerializer, \
+    EventSerializer, ReportSerializer, EdgeSerializer, \
     ContactSerializer, CaseEvidenceSerializer, EventEvidenceSerializer
 
 
@@ -89,12 +89,6 @@ class FeedViewSet(viewsets.ModelViewSet):
 class StateViewSet(viewsets.ModelViewSet):
     queryset = State.objects.all()
     serializer_class = StateSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class IncidentStateChangeViewSet(viewsets.ModelViewSet):
-    queryset = IncidentStateChange.objects.all()
-    serializer_class = IncidentStateChangeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

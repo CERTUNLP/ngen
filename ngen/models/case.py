@@ -235,8 +235,6 @@ class CaseTemplate(NgenModel, NgenPriorityMixin):
     network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
 
     active = models.BooleanField(default=True)
-    unattended_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unattended_states')
-    unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_unsolved_states')
 
     class Meta:
         db_table = 'case_template'

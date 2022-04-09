@@ -7,7 +7,7 @@ from rest_framework.fields import CharField
 
 from ngen.models import Case, Network, Taxonomy, Feed, State, \
     User, NetworkEntity, Tlp, Priority, CaseTemplate, \
-    Event, Report, IncidentStateChange, Edge, Contact, CaseEvidence, EventEvidence
+    Event, Report, Edge, Contact, CaseEvidence, EventEvidence
 
 
 class EvidenceSerializerMixin:
@@ -209,12 +209,6 @@ class FeedSerializer(serializers.HyperlinkedModelSerializer):
 class StateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = State
-        fields = '__all__'
-
-
-class IncidentStateChangeSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = IncidentStateChange
         fields = '__all__'
 
 
