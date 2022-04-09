@@ -231,11 +231,10 @@ class TlpSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PrioritySerializer(serializers.HyperlinkedModelSerializer):
-    def validate_attend_deadline(self, attend_deadline):
-        if self.instance is not None and not (attend_deadline < self.instance.solve_time):
-            raise ValidationError({'attend_deadline': gettext(
-                'The attend time extra must be less than solve time')})
-        return attend_deadline
+    def validate(self, attrs):
+        if self.instance is not None and not (attrs['solve_time'] > attrs['attend_deadline']):
+            raise ValidationError({'solve_time': gettext('The solve time must be greater than attend deadline')})
+        return attrs
 
     class Meta:
         model = Priority
