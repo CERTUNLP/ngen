@@ -7,7 +7,6 @@ from treebeard.al_tree import AL_Node
 
 
 class NgenModel(TimeStampedModel):
-    created_by = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
     history = AuditlogHistoryField()
 
     class Meta:
