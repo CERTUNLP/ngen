@@ -22,14 +22,9 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
 
     assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='cases_assigned')
     state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases')
-    unattended_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unattended')
-    unsolved_state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases_unsolved')
 
     attend_date = models.DateTimeField(null=True)
     solve_date = models.DateTimeField(null=True)
-
-    attend_dead_line = models.DateTimeField()
-    solve_dead_line = models.DateTimeField()
 
     report_message_id = models.CharField(max_length=255, null=True)
     raw = models.TextField(null=True)

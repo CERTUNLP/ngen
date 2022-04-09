@@ -120,7 +120,6 @@ class EventSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializ
         read_only_fields = ['created_by']
 
 
-
 class EventEvidenceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = EventEvidence
@@ -232,6 +231,12 @@ class TlpSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PrioritySerializer(serializers.HyperlinkedModelSerializer):
+    def validate_attend_deadline(self, attend_deadline):
+        if self.instance is not None and not (attend_deadline < self.instance.solve_time):
+            raise ValidationError({'attend_deadline': gettext(
+                'The attend time extra must be less than solve time')})
+        return attend_deadline
+
     class Meta:
         model = Priority
         fields = '__all__'

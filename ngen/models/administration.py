@@ -1,3 +1,6 @@
+from datetime import timedelta
+
+from constance import config
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.text import slugify
@@ -24,11 +27,13 @@ class Feed(NgenModel):
 
 class Priority(NgenModel):
     name = models.CharField(max_length=255)
-    code = models.IntegerField()
-    attend_time = models.IntegerField()
-    solve_time = models.IntegerField()
-    unattended_time = models.IntegerField()
-    unsolved_time = models.IntegerField()
+    severity = models.IntegerField(unique=True)
+
+    attend_time = models.DurationField(default=timedelta(minutes=config.PRIORITY_ATTEND_TIME_DEFAULT))
+    solve_time = models.DurationField(default=timedelta(minutes=config.PRIORITY_SOLVE_TIME_DEFAULT))
+
+    attend_deadline = models.DurationField(default=timedelta(minutes=config.PRIORITY_ATTEND_DEADLINE_DEFAULT))
+    solve_deadline = models.DurationField(default=timedelta(minutes=config.PRIORITY_SOLVE_DEADLINE_DEFAULT))
 
     @classmethod
     def default_priority(cls):
@@ -36,7 +41,7 @@ class Priority(NgenModel):
 
     class Meta:
         db_table = 'priority'
-        ordering = ['code']
+        ordering = ['severity']
 
     def __str__(self):
         return self.name

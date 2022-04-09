@@ -224,6 +224,15 @@ CONSTANCE_CONFIG = {
     'ALLOWED_FIELDS_EXCEPTION': (
         os.environ.get('ALLOWED_FIELDS_EXCEPTION', 'False').lower() in ('true', '1'),
         'If True, ngen will raise an exception if a blocked field is modified', bool),
+    'PRIORITY_ATTEND_TIME_DEFAULT': (
+        int(os.environ.get('PRIORITY_ATTEND_TIME_DEFAULT')), 'Priority default attend time in minutes', int),
+    'PRIORITY_SOLVE_TIME_DEFAULT': (
+        int(os.environ.get('PRIORITY_SOLVE_TIME_DEFAULT')), 'Priority default solve time in minutes', int),
+    'PRIORITY_ATTEND_DEADLINE_DEFAULT': (
+        int(os.environ.get('PRIORITY_ATTEND_DEADLINE_DEFAULT')), 'Priority default attend deadline in minutes', int),
+    'PRIORITY_SOLVE_DEADLINE_DEFAULT': (
+        int(os.environ.get('PRIORITY_SOLVE_DEADLINE_DEFAULT')), 'Priority default solve deadline in minutes', int),
+
 }
 AUTH_USER_MODEL = 'ngen.User'
 
