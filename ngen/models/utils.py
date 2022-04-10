@@ -63,6 +63,11 @@ class NgenMergeableModel(NgenTreeModel):
             child.parent = self
             child.save()
 
+    @hook(BEFORE_DELETE)
+    def delete_children(self):
+        for child in self.get_descendants():
+            child.delete()
+
     class Meta:
         abstract = True
 

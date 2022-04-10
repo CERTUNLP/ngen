@@ -9,7 +9,7 @@ from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
-from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, LifecycleModelMixin
+from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, LifecycleModelMixin, BEFORE_DELETE
 
 import ngen
 from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel
@@ -56,6 +56,11 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
             event_contacts = event.email_contacts()
             contacts[tuple(event_contacts)].append(event)
         return contacts
+
+    @hook(BEFORE_DELETE)
+    def delete_events(self):
+        for event in self.events.all():
+            event.delete()
 
     @hook(AFTER_CREATE)
     def after_create(self):
@@ -135,7 +140,7 @@ class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableMode
     evidence_file_path = models.CharField(max_length=255, null=True)
     notes = models.TextField(null=True)
 
-    case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='events')
+    case = models.ForeignKey('Case', models.DO_NOTHING, null=True, related_name='events')
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     node_order_by = ['id']
@@ -180,11 +185,6 @@ class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableMode
     def case_assign(self):
         if self.case.events.count() >= 1:
             self.case.event_case_assign(self)
-
-    def delete(self):
-        for child in self.children.all():
-            child.delete()
-        super(Event, self).delete()
 
 
 class Evidence(NgenModel):
