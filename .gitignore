@@ -135,3 +135,4 @@ dmypy.json
 /dbname.json
 /postgres_data/
 /ngen-adminer-postgrs.sql
+/docker/redis
