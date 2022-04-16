@@ -188,8 +188,12 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 CELERY_BEAT_SCHEDULE = {
-    "sample_task": {
-        "task": "ngen.tasks.sample_task",
+    "attend_cases": {
+        "task": "ngen.tasks.attend_cases",
+        "schedule": crontab(minute="*/1"),
+    },
+    "solve_cases": {
+        "task": "ngen.tasks.solve_cases",
         "schedule": crontab(minute="*/1"),
     },
 }
