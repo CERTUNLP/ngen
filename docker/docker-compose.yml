@@ -11,11 +11,12 @@ services:
             - ./postgres_data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
-    #    ngen-adminer:
-    #        image: adminer
-    #        restart: always
-    #        ports:
-    #            - "8080:8080"
+    ngen-adminer:
+        image: adminer
+        restart: always
+        command: [ "php", "-d", "upload_max_filesize = 10G", "-d", "post_max_size = 10G", "-S", "[::]:8080", "-t", "/var/www/html" ]
+        ports:
+            - "8080:8080"
     ngen-django:
         image: ngen:latest
         build:
@@ -33,6 +34,7 @@ services:
         depends_on:
             - ngen-postgres
             - ngen-rabbitmq
+            - ngen-redis
             - ngen-mail
     ngen-celery-worker:
         image: ngen:latest
@@ -45,6 +47,7 @@ services:
         depends_on:
             - ngen-django
             - ngen-rabbitmq
+            - ngen-redis
     ngen-celery-beat:
         image: ngen:latest
         restart: always
@@ -56,11 +59,28 @@ services:
         depends_on:
             - ngen-django
             - ngen-rabbitmq
+            - ngen-redis
     ngen-rabbitmq:
         image: rabbitmq:3-management-alpine
         ports:
             - "5672:5672"
             - "15672:15672"
+    ngen-redis:
+        image: 'redis:alpine'
+        ports:
+            - "6379:6379"
+        volumes:
+            - ./redis:/data
+    redis-commander:
+        image: rediscommander/redis-commander:latest
+        environment:
+            - REDIS_HOSTS=local:ngen-redis:6379
+            - HTTP_USER=root
+            - HTTP_PASSWORD=root
+        ports:
+            - "8081:8081"
+        depends_on:
+            - ngen-redis
     ngen-mail:
         image: mailhog/mailhog
         ports:
