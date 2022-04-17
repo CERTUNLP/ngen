@@ -10,6 +10,7 @@ from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, LifecycleModelMixin, BEFORE_DELETE
+from model_utils import Choices
 
 import ngen
 from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel
@@ -31,6 +32,9 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
     node_order_by = ['id']
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
+        'auto_open', gettext_lazy('Auto open')), ('auto_close', gettext_lazy('Auto close')))
+    lifecycle = models.CharField(choices=LIFECYCLE, default=LIFECYCLE.manual, max_length=20)
 
     class Meta:
         db_table = 'case'
@@ -94,13 +98,13 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
         return '[%s][TLP:%s][ID:%s] %s' % (config.TEAM_NAME, gettext_lazy(self.tlp.name), self.id, subject)
 
     def communicate_assigned(self, template: str, subject, params: dict = None):
-        if self.assigned and self.assigned.priority.code >= self.priority.code:
+        if self.assigned and self.assigned.priority.severity >= self.priority.severity:
             self.send_mail(self.email_subject(subject), template, config.EMAIL_SENDER, [self.assigned.email],
                            config.NGEN_LANG, params)
 
     def communicate_team(self, template: str, subject: str, params: dict = None):
         if config.TEAM_EMAIL and ngen.models.Priority.objects.get(
-                name=config.TEAM_EMAIL_PRIORITY).code >= self.priority.code:
+                name=config.TEAM_EMAIL_PRIORITY).severity >= self.priority.severity:
             self.send_mail(self.email_subject(subject), template, config.EMAIL_SENDER, [config.TEAM_EMAIL],
                            config.NGEN_LANG, params)
 
@@ -171,7 +175,7 @@ class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableMode
 
     def email_contacts(self):
         contacts = []
-        priority = self.case.priority.code if self.case.priority else self.priority.code
+        priority = self.case.priority.severity if self.case.priority else self.priority.severity
         event_contacts = list(self.network.email_contacts(priority))
         if event_contacts:
             return event_contacts

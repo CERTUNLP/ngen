@@ -2,12 +2,13 @@ from django.db import models
 from django.utils.text import slugify
 from django_bleach.models import BleachField
 from model_utils import Choices
+from django.utils.translation import gettext_lazy
 
 from .utils import NgenModel, NgenTreeModel
 
 
 class Taxonomy(NgenModel, NgenTreeModel):
-    TYPE = Choices('vulnerability', 'incident')
+    TYPE = Choices(('vulnerability', gettext_lazy('Vulnerability')), ('incident', gettext_lazy('Incident')))
     type = models.CharField(choices=TYPE, default=TYPE.vulnerability, max_length=20)
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)

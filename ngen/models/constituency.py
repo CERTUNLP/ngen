@@ -9,6 +9,7 @@ from django.utils.text import slugify
 from model_utils import Choices
 from netfields import NetManager, CidrAddressField
 from tld import is_tld
+from django.utils.translation import gettext_lazy
 
 from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin
 
@@ -18,7 +19,7 @@ class Network(NgenModel, NgenTreeModel):
     domain = models.CharField(max_length=255, null=True, unique=True, default=None)
     contacts = models.ManyToManyField('Contact')
     active = models.BooleanField(default=True)
-    TYPE = Choices('internal', 'external')
+    TYPE = Choices(('internal', gettext_lazy('Internal')), ('external', gettext_lazy('External')))
     type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
     network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, null=True)
     objects = NetManager()
@@ -159,9 +160,12 @@ class Contact(NgenModel, NgenPriorityMixin):
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
     public_key = models.CharField(max_length=4000, null=True)
-    TYPE = Choices('email', 'telegram', 'phone', 'uri')
+    TYPE = Choices(('email', gettext_lazy('Email')), ('telegram', gettext_lazy('Telegram')),
+                   ('phone', gettext_lazy('Phone')), ('uri', gettext_lazy('URI')))
     type = models.CharField(choices=TYPE, default=TYPE.email, max_length=20)
-    ROLE = Choices('technical', 'administrative', 'abuse', 'notifications', 'noc')
+    ROLE = Choices(('technical', gettext_lazy('Technical')), ('administrative', gettext_lazy('Administrative')),
+                   ('abuse', gettext_lazy('Abuse')), ('notifications', gettext_lazy('Notifications')),
+                   ('noc', gettext_lazy('NOC')))
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
 
     def __str__(self):

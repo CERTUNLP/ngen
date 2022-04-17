@@ -205,6 +205,11 @@ CONSTANCE_ADDITIONAL_FIELDS = {
         'choices': (
             ("Critical", "Critical"), ("High", "High"), ("Medium", "Medium"), ("Low", "Low"), ('Very low', "Very low")),
     }],
+    'case_lifecycle': ['django.forms.fields.ChoiceField', {
+        'widget': 'django.forms.Select',
+        'choices': (
+            ("manual", "Manual"), ("auto", "Auto"), ("auto_open", "Auto open"), ("auto_close", "Auto close")),
+    }],
 }
 CONSTANCE_CONFIG = {
     'TEAM_EMAIL': (os.environ.get('TEAM_EMAIL'), 'CSIRT team email'),
@@ -236,6 +241,7 @@ CONSTANCE_CONFIG = {
         int(os.environ.get('PRIORITY_ATTEND_DEADLINE_DEFAULT')), 'Priority default attend deadline in minutes', int),
     'PRIORITY_SOLVE_DEADLINE_DEFAULT': (
         int(os.environ.get('PRIORITY_SOLVE_DEADLINE_DEFAULT')), 'Priority default solve deadline in minutes', int),
+    'CASE_DEFAULT_LIFECYCLE': (os.environ.get('CASE_DEFAULT_LIFECYCLE'), 'Case default lifecycle', 'case_lifecycle'),
 
 }
 AUTH_USER_MODEL = 'ngen.User'

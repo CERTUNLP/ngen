@@ -15,7 +15,8 @@ def attend_cases():
         deadline=ExpressionWrapper(F('created') + F('priority__attend_time') + F('priority__attend_deadline'),
                                    output_field=DateTimeField())).filter(attend_date__isnull=True,
                                                                          solve_date__isnull=True,
-                                                                         deadline__lte=datetime.datetime.now()).update(
+                                                                         deadline__lte=datetime.datetime.now(),
+                                                                         lifecycle__in=['auto', 'auto_open']).update(
         attend_date=datetime.datetime.now())
 
 
@@ -25,5 +26,6 @@ def solve_cases():
         deadline=ExpressionWrapper(F('attend_date') + F('priority__solve_time') + F('priority__solve_deadline'),
                                    output_field=DateTimeField())).filter(attend_date__isnull=False,
                                                                          solve_date__isnull=True,
-                                                                         deadline__lte=datetime.datetime.now()).update(
+                                                                         deadline__lte=datetime.datetime.now(),
+                                                                         lifecycle__in=['auto', 'auto_close']).update(
         solve_date=datetime.datetime.now())
