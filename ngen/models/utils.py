@@ -1,8 +1,10 @@
 from auditlog.models import AuditlogHistoryField
 from django.apps import apps
 from django.db import models
-from django_lifecycle import hook, BEFORE_DELETE
+from django.utils.translation import gettext
+from django_lifecycle import hook, BEFORE_DELETE, BEFORE_UPDATE
 from model_utils.models import TimeStampedModel
+from rest_framework.exceptions import ValidationError
 from treebeard.al_tree import AL_Node
 
 
@@ -55,13 +57,16 @@ class NgenMergeableModel(NgenTreeModel):
     def is_merged(self) -> bool:
         return self.is_child()
 
-    def merge_condition(self, child: 'NgenMergeableModel') -> bool:
+    def is_mergeable_with(self, child: 'NgenMergeableModel') -> bool:
         return child is not self and child.is_mergeable() and self.is_mergeable()
 
     def merge(self, child: 'NgenMergeableModel'):
-        if self.merge_condition(child):
-            child.parent = self
-            child.save()
+        if self.is_mergeable_with(child):
+            raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
+
+    @hook(BEFORE_UPDATE, when="parent", has_changed=True, is_not=None)
+    def parent_changed(self):
+        self.parent.merge(self)
 
     @hook(BEFORE_DELETE)
     def delete_children(self):

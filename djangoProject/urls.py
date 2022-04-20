@@ -18,7 +18,6 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from ngen import views
-from ngen.views import AboutView
 
 router = DefaultRouter()
 router.register(r'administration/tlp', views.TlpViewSet)
@@ -37,6 +36,9 @@ router.register(r'network', views.NetworkViewSet)
 router.register(r'contact', views.ContactViewSet)
 router.register(r'entity', views.NetworkEntityViewSet)
 router.register(r'user', views.UserViewSet)
+router.register(r'playbook', views.PlaybookViewSet)
+router.register(r'task', views.TaskViewSet)
+router.register(r'todo', views.TodoTaskViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
@@ -44,7 +46,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('about/', AboutView.as_view()),
+    path('about/', views.AboutView.as_view()),
     path('__debug__/', include('debug_toolbar.urls')),
 
 ]

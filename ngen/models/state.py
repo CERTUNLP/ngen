@@ -26,50 +26,14 @@ class State(NgenModel):
         self.slug = slugify(self.name).replace('-', '_')
         super(State, self).save(*args, **kwargs)
 
-    def add_child(self, child, **kwargs):
-        kwargs.update({"parent": self, "child": child})
-        cls = self.children.through(**kwargs)
-        return cls.save()
-
-    def remove_child(self, child=None, delete_node=False):
-        if child is not None and child in self.children.all():
-            self.children.through.objects.filter(parent=self, child=child).delete()
-            if delete_node:
-                child.delete()
-        else:
-            for child in self.children.all():
-                self.children.through.objects.filter(parent=self, child=child).delete()
-                if delete_node:
-                    child.delete()
-
-    def add_parent(self, parent, **kwargs):
-        return parent.add_child(self, **kwargs)
-
-    def remove_parent(self, parent=None, delete_node=False):
-        if parent is not None and parent in self.parents.all():
-            parent.children.through.objects.filter(parent=parent, child=self).delete()
-            if delete_node:
-                parent.delete()
-        else:
-            for parent in self.parents.all():
-                parent.children.through.objects.filter(parent=parent, child=self).delete()
-                if delete_node:
-                    parent.delete()
-
     def siblings(self):
         return self.siblings_with_self().exclude(pk=self.pk)
-
-    def siblings_count(self):
-        return self.siblings().count()
 
     def siblings_with_self(self):
         return self.__class__.objects.filter(parents__in=self.parents.all()).distinct()
 
     def partners(self):
         return self.partners_with_self().exclude(pk=self.pk)
-
-    def partners_count(self):
-        return self.partners().count()
 
     def partners_with_self(self):
         return self.__class__.objects.filter(children__in=self.children.all()).distinct()
@@ -115,17 +79,3 @@ class Edge(NgenModel):
     class Meta:
         db_table = 'edge'
         unique_together = ['parent', 'child']
-
-
-# class IncidentStateChange(NgenModel):
-#     case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='state_changes')
-#     responsible = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='+')
-#     date = models.DateTimeField(null=True)
-#     method = models.CharField(max_length=25)
-#     state_edge = models.ForeignKey('Edge', models.DO_NOTHING, null=True)
-#
-#     class Meta:
-#         db_table = 'incident_state_change'
-#
-#     def __repr__(self):
-#         return self.state_edge.__repr__()

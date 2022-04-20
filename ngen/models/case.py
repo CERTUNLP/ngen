@@ -21,7 +21,7 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
     tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
-    assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='cases_assigned')
+    assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='assigned_cases')
     state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases')
 
     attend_date = models.DateTimeField(null=True)
@@ -133,20 +133,24 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
 
 
 class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
-    tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
+    tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
-    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
-    feed = models.ForeignKey('Feed', models.DO_NOTHING)
-    network = models.ForeignKey('Network', models.DO_NOTHING, related_name='events')
+    taxonomy = models.ForeignKey('ngen.Taxonomy', models.DO_NOTHING)
+    feed = models.ForeignKey('ngen.Feed', models.DO_NOTHING)
+    network = models.ForeignKey('ngen.Network', models.DO_NOTHING, related_name='events')
 
-    reporter = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='events_reporter')
+    reporter = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, related_name='events_reporter')
     evidence_file_path = models.CharField(max_length=255, null=True)
     notes = models.TextField(null=True)
 
     case = models.ForeignKey('Case', models.DO_NOTHING, null=True, related_name='events')
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
+    tasks = models.ManyToManyField(
+        "ngen.Task",
+        through='ngen.TodoTask',
+        related_name="events",
+    )
     node_order_by = ['id']
 
     class Meta:
@@ -168,9 +172,14 @@ class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableMode
             return self.case.is_blocked()
         return False
 
-    def merge(self, child):
+    def merge(self, child: 'Event'):
         if child.case:
             child.case = None
+        for todo in child.todos.filter(completed=True):
+            if self.tasks.contains(todo.task):
+                self.tasks.remove(todo.task)
+                self.todos.add(todo)
+        child.tasks.clear()
         super(Event, self).merge(child)
 
     def email_contacts(self):
@@ -189,6 +198,13 @@ class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableMode
     def case_assign(self):
         if self.case.events.count() >= 1:
             self.case.event_case_assign(self)
+
+    @hook(AFTER_UPDATE, when="taxonomy", has_changed=True)
+    def taxonomy_assign(self):
+        self.todos.exclude(task__playbook__in=self.taxonomy.playbooks.all()).delete()
+        for playbook in self.taxonomy.playbooks.all():
+            for task in playbook.tasks.all():
+                self.tasks.add(task)
 
 
 class Evidence(NgenModel):

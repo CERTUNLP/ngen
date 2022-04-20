@@ -4,16 +4,7 @@ from django.views.generic import TemplateView
 from rest_framework import permissions, filters
 from rest_framework import viewsets
 
-from ngen.backends import EventRootFilterBackend
-from ngen.models import Case, Network, Taxonomy, Feed, State, \
-    User, NetworkEntity, Tlp, Priority, CaseTemplate, \
-    Event, Report, Edge, Contact, CaseEvidence, EventEvidence
-from ngen.serializers import CaseSerializer, NetworkSerializer, TaxonomySerializer, FeedSerializer, \
-    StateSerializer, UserSerializer, \
-    NetworkEntitySerializer, TlpSerializer, PrioritySerializer, \
-    CaseTemplateSerializer, \
-    EventSerializer, ReportSerializer, EdgeSerializer, \
-    ContactSerializer, CaseEvidenceSerializer, EventEvidenceSerializer
+from ngen import models, serializers, backends
 
 
 class AboutView(TemplateView):
@@ -23,36 +14,37 @@ class AboutView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(AboutView, self).get_context_data(**kwargs)
         context['html'] = True
-        context['case'] = Case.objects.get(pk=161701)
+        context['case'] = models.Case.objects.get(pk=161701)
         context['config'] = constance.config
         return context
 
 
 class CaseEvidenceViewSet(viewsets.ModelViewSet):
-    queryset = CaseEvidence.objects.all()
-    serializer_class = CaseEvidenceSerializer
+    queryset = models.CaseEvidence.objects.all()
+    serializer_class = serializers.CaseEvidenceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class EventEvidenceViewSet(viewsets.ModelViewSet):
-    queryset = EventEvidence.objects.all()
-    serializer_class = EventEvidenceSerializer
+    queryset = models.EventEvidence.objects.all()
+    serializer_class = serializers.EventEvidenceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class EventViewSet(viewsets.ModelViewSet):
-    queryset = Event.objects.all()
-    filter_backends = [EventRootFilterBackend, filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend,
+    queryset = models.Event.objects.all()
+    filter_backends = [backends.EventRootFilterBackend, filters.SearchFilter,
+                       django_filters.rest_framework.DjangoFilterBackend,
                        filters.OrderingFilter]
     search_fields = ['case', 'taxonomy', 'network']
     filterset_fields = ['taxonomy']
     ordering_fields = ['id', 'case', 'taxonomy', 'network']
-    serializer_class = EventSerializer
+    serializer_class = serializers.EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class CaseViewSet(viewsets.ModelViewSet):
-    queryset = Case.objects.all()
+    queryset = models.Case.objects.all()
     filter_backends = [
         # filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
@@ -60,7 +52,7 @@ class CaseViewSet(viewsets.ModelViewSet):
     # search_fields = ['taxonomy', 'network']
     # filterset_fields = ['taxonomy']
     ordering_fields = ['id']
-    serializer_class = CaseSerializer
+    serializer_class = serializers.CaseSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -69,56 +61,56 @@ class TaxonomyViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'description']
     filterset_fields = ['name']
     ordering_fields = ['name']
-    queryset = Taxonomy.objects.all()
-    serializer_class = TaxonomySerializer
+    queryset = models.Taxonomy.objects.all()
+    serializer_class = serializers.TaxonomySerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class ReportViewSet(viewsets.ModelViewSet):
-    queryset = Report.objects.all()
-    serializer_class = ReportSerializer
+    queryset = models.Report.objects.all()
+    serializer_class = serializers.ReportSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class FeedViewSet(viewsets.ModelViewSet):
-    queryset = Feed.objects.all()
-    serializer_class = FeedSerializer
+    queryset = models.Feed.objects.all()
+    serializer_class = serializers.FeedSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class StateViewSet(viewsets.ModelViewSet):
-    queryset = State.objects.all()
-    serializer_class = StateSerializer
+    queryset = models.State.objects.all()
+    serializer_class = serializers.StateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class EdgeViewSet(viewsets.ModelViewSet):
-    queryset = Edge.objects.all()
-    serializer_class = EdgeSerializer
+    queryset = models.Edge.objects.all()
+    serializer_class = serializers.EdgeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class TlpViewSet(viewsets.ModelViewSet):
-    queryset = Tlp.objects.all()
-    serializer_class = TlpSerializer
+    queryset = models.Tlp.objects.all()
+    serializer_class = serializers.TlpSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class PriorityViewSet(viewsets.ModelViewSet):
-    queryset = Priority.objects.all()
-    serializer_class = PrioritySerializer
+    queryset = models.Priority.objects.all()
+    serializer_class = serializers.PrioritySerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class CaseTemplateViewSet(viewsets.ModelViewSet):
-    queryset = CaseTemplate.objects.all()
-    serializer_class = CaseTemplateSerializer
+    queryset = models.CaseTemplate.objects.all()
+    serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class NetworkViewSet(viewsets.ModelViewSet):
-    queryset = Network.objects.all()
-    serializer_class = NetworkSerializer
+    queryset = models.Network.objects.all()
+    serializer_class = serializers.NetworkSerializer
     filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend]
     search_fields = ['cidr', 'type', 'domain']
     filterset_fields = ['type']
@@ -126,18 +118,36 @@ class NetworkViewSet(viewsets.ModelViewSet):
 
 
 class NetworkEntityViewSet(viewsets.ModelViewSet):
-    queryset = NetworkEntity.objects.all()
-    serializer_class = NetworkEntitySerializer
+    queryset = models.NetworkEntity.objects.all()
+    serializer_class = serializers.NetworkEntitySerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class ContactViewSet(viewsets.ModelViewSet):
-    queryset = Contact.objects.all()
-    serializer_class = ContactSerializer
+    queryset = models.Contact.objects.all()
+    serializer_class = serializers.ContactSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    queryset = models.User.objects.all()
+    serializer_class = serializers.UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class PlaybookViewSet(viewsets.ModelViewSet):
+    queryset = models.Playbook.objects.all()
+    serializer_class = serializers.PlaybookSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class TaskViewSet(viewsets.ModelViewSet):
+    queryset = models.Task.objects.all()
+    serializer_class = serializers.TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class TodoTaskViewSet(viewsets.ModelViewSet):
+    queryset = models.TodoTask.objects.all()
+    serializer_class = serializers.TodoTaskSerializer
     permission_classes = [permissions.IsAuthenticated]

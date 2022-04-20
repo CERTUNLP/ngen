@@ -5,9 +5,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 
-from ngen.models import Case, Network, Taxonomy, Feed, State, \
-    User, NetworkEntity, Tlp, Priority, CaseTemplate, \
-    Event, Report, Edge, Contact, CaseEvidence, EventEvidence
+from ngen import models
+from ngen.models import utils
 
 
 class EvidenceSerializerMixin:
@@ -38,7 +37,7 @@ class MergeSerializerMixin:
         action = self.context['view'].action
 
         if action in ['update', 'partial_update', 'retrieve']:
-            if self.instance.is_blocked():
+            if self.instance and self.instance.is_blocked():
                 for field in self.instance._meta.fields:
                     if field.name not in self.allowed_fields():
                         kwargs = extra_kwargs.get(field.name, {})
@@ -47,20 +46,19 @@ class MergeSerializerMixin:
 
         return extra_kwargs
 
-    def validate_parent(self, attrs):
-        if self.instance == attrs:
+    def validate_parent(self, parent: 'utils.NgenMergeableModel'):
+        if parent and not parent.is_mergeable_with(self.instance):
             raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
-        return attrs
+        return parent
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        if self.instance:
-            if self.instance.is_blocked():
-                for attr in list(attrs):
-                    if attr not in self.allowed_fields():
-                        if config.ALLOWED_FIELDS_EXCEPTION:
-                            raise ValidationError({attr: gettext('%s of blocked instances can\'t be modified') % attr})
-                        attrs.pop(attr)
+        if self.instance and self.instance.is_blocked():
+            for attr in list(attrs):
+                if attr not in self.allowed_fields():
+                    if config.ALLOWED_FIELDS_EXCEPTION:
+                        raise ValidationError({attr: gettext('%s of blocked instances can\'t be modified') % attr})
+                    attrs.pop(attr)
         return attrs
 
     @staticmethod
@@ -79,6 +77,11 @@ class EventSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializ
         read_only=True,
         view_name='event-detail'
     )
+    todos = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='todotask-detail'
+    )
 
     @staticmethod
     def allowed_fields():
@@ -93,7 +96,7 @@ class EventSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializ
         action = self.context['view'].action
 
         if action in ['update', 'partial_update', 'retrieve']:
-            if self.instance.is_merged() or self.instance.is_parent():
+            if self.instance and (self.instance.is_merged() or self.instance.is_parent()):
                 for field in self.instance._meta.fields:
                     if field.name in self.not_allowed_fields():
                         kwargs = extra_kwargs.get(field.name, {})
@@ -115,14 +118,13 @@ class EventSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializ
         return attrs
 
     class Meta:
-        model = Event
+        model = models.Event
         fields = '__all__'
-        read_only_fields = ['created_by']
 
 
 class EventEvidenceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = EventEvidence
+        model = models.EventEvidence
         fields = '__all__'
 
 
@@ -154,9 +156,10 @@ class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerialize
 
         if action in ['update', 'partial_update']:
             kwargs['queryset'] = (
-                    self.instance.state.children.all() | State.objects.filter(pk=self.instance.state.pk)).distinct()
+                    self.instance.state.children.all() | models.State.objects.filter(
+                pk=self.instance.state.pk)).distinct()
         else:
-            kwargs['queryset'] = State.get_initial().children.all()
+            kwargs['queryset'] = models.State.get_initial().children.all()
         extra_kwargs['state'] = kwargs
         return extra_kwargs
 
@@ -165,14 +168,14 @@ class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerialize
         return config.ALLOWED_FIELDS_CASE.split(',')
 
     class Meta:
-        model = Case
+        model = models.Case
         fields = '__all__'
         read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by']
 
 
 class CaseEvidenceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = CaseEvidence
+        model = models.CaseEvidence
         fields = '__all__'
 
 
@@ -184,7 +187,7 @@ class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
     )
 
     class Meta:
-        model = Taxonomy
+        model = models.Taxonomy
         fields = '__all__'
 
 
@@ -196,31 +199,31 @@ class ReportSerializer(serializers.HyperlinkedModelSerializer):
     more_information = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
 
     class Meta:
-        model = Report
+        model = models.Report
         fields = '__all__'
 
 
 class FeedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Feed
+        model = models.Feed
         fields = '__all__'
 
 
 class StateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = State
+        model = models.State
         fields = '__all__'
 
 
 class EdgeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Edge
+        model = models.Edge
         fields = '__all__'
 
 
 class TlpSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Tlp
+        model = models.Tlp
         fields = '__all__'
 
 
@@ -231,35 +234,60 @@ class PrioritySerializer(serializers.HyperlinkedModelSerializer):
         return attrs
 
     class Meta:
-        model = Priority
+        model = models.Priority
         fields = '__all__'
 
 
 class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = CaseTemplate
+        model = models.CaseTemplate
         fields = '__all__'
 
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Network
+        model = models.Network
         fields = '__all__'
 
 
 class NetworkEntitySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = NetworkEntity
+        model = models.NetworkEntity
         fields = '__all__'
 
 
 class ContactSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Contact
+        model = models.Contact
         fields = '__all__'
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = User
+        model = models.User
+        exclude = ['user_permissions', 'password', 'groups']
+
+
+class PlaybookSerializer(serializers.HyperlinkedModelSerializer):
+    tasks = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='task-detail'
+    )
+
+    class Meta:
+        model = models.Playbook
         fields = '__all__'
+
+
+class TaskSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Task
+        fields = '__all__'
+
+
+class TodoTaskSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.TodoTask
+        fields = '__all__'
+        read_only_fields = ['completed_date', 'task', 'event']
