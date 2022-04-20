@@ -242,6 +242,7 @@ CONSTANCE_CONFIG = {
     'PRIORITY_SOLVE_DEADLINE_DEFAULT': (
         int(os.environ.get('PRIORITY_SOLVE_DEADLINE_DEFAULT')), 'Priority default solve deadline in minutes', int),
     'CASE_DEFAULT_LIFECYCLE': (os.environ.get('CASE_DEFAULT_LIFECYCLE'), 'Case default lifecycle', 'case_lifecycle'),
+    'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT'), 'Default', 'priority_field'),
 
 }
 AUTH_USER_MODEL = 'ngen.User'

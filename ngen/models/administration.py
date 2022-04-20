@@ -37,7 +37,7 @@ class Priority(NgenModel):
 
     @classmethod
     def default_priority(cls):
-        return cls.objects.get(name='Medium')
+        return cls.objects.get(name=config.PRIORITY_DEFAULT)
 
     class Meta:
         db_table = 'priority'
