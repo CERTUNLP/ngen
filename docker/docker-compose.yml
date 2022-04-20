@@ -24,7 +24,7 @@ services:
             dockerfile: docker/Dockerfile
         restart: always
         entrypoint: ./docker/entrypoint.sh
-        command: python manage.py runserver 0.0.0.0:8000
+        command: python manage.py runserver ngen-django:8000
         volumes:
             - ../:/code
         ports:
