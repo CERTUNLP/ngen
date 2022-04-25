@@ -2,6 +2,7 @@ import datetime
 import re
 import uuid as uuid
 from collections import defaultdict
+from pathlib import Path
 
 from constance import config
 from django.core.mail import EmailMultiAlternatives
@@ -95,7 +96,9 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
         # mail.send_mail(subject, text_content, from_mail, recipient_list, html_message=html_content)
         email = EmailMultiAlternatives(subject, text_content, from_mail, recipient_list)
         email.attach_alternative(html_content, "text/html")
-        # email.attach()
+        for evidence in self.get_all_evidence():
+            email.attach(evidence.get_name(), evidence.file.read())
+        email.send()
 
     def email_subject(self, subject: str):
         return '[%s][TLP:%s][ID:%s] %s' % (config.TEAM_NAME, gettext_lazy(self.tlp.name), self.id, subject)
@@ -137,7 +140,7 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
     def get_events_evidence(self):
         evidence = []
         for event in self.events.all():
-            evidence.append(event.get_evidence())
+            evidence = evidence + event.get_evidence()
         return evidence
 
     def get_evidence(self):
@@ -236,6 +239,11 @@ class Evidence(NgenModel):
 
     def __str__(self):
         return self.file.url
+
+    def get_name(self):
+        return '%s(%s):%s:%s' % (
+            self.get_related().__class__.__name__, self.get_related().id, self.get_related().created.date(),
+            Path(self.file.name).name)
 
     def delete(self, using=None, keep_parents=False):
         super().delete(using, keep_parents)
