@@ -26,11 +26,24 @@ class NgenTreeModel(AL_Node):
 
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True, related_name='children')
 
-    def get_ancestors_related(self, related):
-        contacts = []
-        for ancestor in self.get_ancestors():
-            contacts.insert(0, list(related(ancestor)))
-        return contacts
+    def get_ancestors_related(self, callback, flat=False):
+        return self.get_related(self.get_ancestors, callback, flat)
+
+    def get_descendants_related(self, callback, flat=False):
+        return self.get_related(self.get_descendants, callback, flat)
+
+    @staticmethod
+    def get_related(related_callback, callback, flat=False):
+        related = []
+        for ancestor in related_callback():
+            results = callback(ancestor)
+            if results:
+                if flat:
+                    for result in results:
+                        related.insert(0, result)
+                else:
+                    related.insert(0, results)
+        return related
 
     @classmethod
     def get_parents(cls):

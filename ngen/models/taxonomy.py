@@ -40,7 +40,7 @@ class Taxonomy(NgenModel, NgenTreeModel):
 class Report(NgenModel):
     LANG = Choices('en', 'es')
     lang = models.CharField(choices=LANG, default=LANG.en, max_length=2)
-    taxonomy = models.ForeignKey(Taxonomy, models.CASCADE, related_name='reports')
+    taxonomy = models.ForeignKey('ngen.Taxonomy', models.CASCADE, related_name='reports')
     problem = BleachField()
     derived_problem = BleachField(null=True)
     verification = BleachField(null=True)
@@ -69,7 +69,7 @@ class Playbook(NgenModel):
 
 class Task(NgenModel, NgenPriorityMixin):
     name = models.CharField(max_length=140)
-    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name='tasks')
+    playbook = models.ForeignKey('ngen.Playbook', on_delete=models.CASCADE, related_name='tasks')
     description = models.TextField(null=True)
 
     def __str__(self):
@@ -81,7 +81,7 @@ class Task(NgenModel, NgenPriorityMixin):
 
 
 class TodoTask(NgenModel):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='todos')
+    task = models.ForeignKey('ngen.Task', on_delete=models.CASCADE, related_name='todos')
     event = models.ForeignKey('ngen.Event', on_delete=models.CASCADE, related_name='todos')
     completed = models.BooleanField(default=False)
     completed_date = models.DateTimeField(null=True)

@@ -4,7 +4,7 @@ import uuid as uuid
 from collections import defaultdict
 
 from constance import config
-from django.core import mail
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
@@ -18,11 +18,11 @@ from ..storage import HashedFilenameStorage
 
 
 class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
-    tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
+    tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
-    assigned = models.ForeignKey('User', models.DO_NOTHING, null=True, related_name='assigned_cases')
-    state = models.ForeignKey('State', models.DO_NOTHING, related_name='cases')
+    assigned = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, related_name='assigned_cases')
+    state = models.ForeignKey('ngen.State', models.DO_NOTHING, related_name='cases')
 
     attend_date = models.DateTimeField(null=True)
     solve_date = models.DateTimeField(null=True)
@@ -92,7 +92,10 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
         text_content = re.sub(r'\n+', '\n', strip_tags(get_template(template).render(params)).replace('  ', ''))
         params.update({'html': True})
         html_content = get_template(template).render(params)
-        mail.send_mail(subject, text_content, from_mail, recipient_list, html_message=html_content)
+        # mail.send_mail(subject, text_content, from_mail, recipient_list, html_message=html_content)
+        email = EmailMultiAlternatives(subject, text_content, from_mail, recipient_list)
+        email.attach_alternative(html_content, "text/html")
+        # email.attach()
 
     def email_subject(self, subject: str):
         return '[%s][TLP:%s][ID:%s] %s' % (config.TEAM_NAME, gettext_lazy(self.tlp.name), self.id, subject)
@@ -131,6 +134,18 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
         self.communicate_assigned('reports/case_assign.html', gettext_lazy('New event on case'))
         self.communicate_team('reports/case_assign.html', gettext_lazy('New event on case'))
 
+    def get_events_evidence(self):
+        evidence = []
+        for event in self.events.all():
+            evidence.append(event.get_evidence())
+        return evidence
+
+    def get_evidence(self):
+        return list(self.evidence.all()) + self.get_descendants_related(lambda obj: obj.evidence.all(), flat=True)
+
+    def get_all_evidence(self):
+        return self.get_evidence() + self.get_events_evidence()
+
 
 class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
@@ -144,7 +159,7 @@ class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableMode
     evidence_file_path = models.CharField(max_length=255, null=True)
     notes = models.TextField(null=True)
 
-    case = models.ForeignKey('Case', models.DO_NOTHING, null=True, related_name='events')
+    case = models.ForeignKey('ngen.Case', models.DO_NOTHING, null=True, related_name='events')
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     tasks = models.ManyToManyField(
         "ngen.Task",
@@ -206,6 +221,9 @@ class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableMode
             for task in playbook.tasks.all():
                 self.tasks.add(task)
 
+    def get_evidence(self):
+        return list(self.evidence.all()) + self.get_descendants_related(lambda obj: obj.evidence.all(), flat=True)
+
 
 class Evidence(NgenModel):
     def directory_path(self, filename=None):
@@ -228,7 +246,7 @@ class Evidence(NgenModel):
 
 
 class EventEvidence(Evidence):
-    event = models.ForeignKey('Event', models.CASCADE, null=True, related_name='evidence')
+    event = models.ForeignKey('ngen.Event', models.CASCADE, null=True, related_name='evidence')
 
     def get_related(self):
         return self.event
@@ -238,7 +256,7 @@ class EventEvidence(Evidence):
 
 
 class CaseEvidence(Evidence):
-    case = models.ForeignKey('Case', models.CASCADE, null=True, related_name='evidence')
+    case = models.ForeignKey('ngen.Case', models.CASCADE, null=True, related_name='evidence')
 
     def get_related(self):
         return self.case
@@ -248,11 +266,11 @@ class CaseEvidence(Evidence):
 
 
 class CaseTemplate(NgenModel, NgenPriorityMixin):
-    taxonomy = models.ForeignKey('Taxonomy', models.DO_NOTHING)
-    tlp = models.ForeignKey('Tlp', models.DO_NOTHING)
-    feed = models.ForeignKey('Feed', models.DO_NOTHING)
-    state = models.ForeignKey('State', models.DO_NOTHING, related_name='decision_states')
-    network = models.ForeignKey('Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
+    taxonomy = models.ForeignKey('ngen.Taxonomy', models.DO_NOTHING)
+    tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
+    feed = models.ForeignKey('ngen.Feed', models.DO_NOTHING)
+    state = models.ForeignKey('ngen.State', models.DO_NOTHING, related_name='decision_states')
+    network = models.ForeignKey('ngen.Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
 
     active = models.BooleanField(default=True)
 
@@ -261,8 +279,8 @@ class CaseTemplate(NgenModel, NgenPriorityMixin):
 
 
 class IncidentComment(models.Model):
-    thread = models.ForeignKey('IncidentCommentThread', models.DO_NOTHING, blank=True, null=True)
-    author = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    thread = models.ForeignKey('ngen.IncidentCommentThread', models.DO_NOTHING, blank=True, null=True)
+    author = models.ForeignKey('ngen.User', models.DO_NOTHING, blank=True, null=True)
     body = models.TextField()
     ancestors = models.CharField(max_length=1024)
     depth = models.IntegerField()

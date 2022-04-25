@@ -66,7 +66,7 @@ class MergeSerializerMixin:
         raise NotImplementedError
 
 
-class EventSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializer, EvidenceSerializerMixin):
+class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
     evidence = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -128,7 +128,7 @@ class EventEvidenceSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class CaseSerializer(MergeSerializerMixin, serializers.HyperlinkedModelSerializer, EvidenceSerializerMixin):
+class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
     events = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,

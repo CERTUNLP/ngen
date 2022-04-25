@@ -6,10 +6,10 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Length
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy
 from model_utils import Choices
 from netfields import NetManager, CidrAddressField
 from tld import is_tld
-from django.utils.translation import gettext_lazy
 
 from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin
 
@@ -17,11 +17,11 @@ from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin
 class Network(NgenModel, NgenTreeModel):
     cidr = CidrAddressField(null=True, unique=True)
     domain = models.CharField(max_length=255, null=True, unique=True, default=None)
-    contacts = models.ManyToManyField('Contact')
+    contacts = models.ManyToManyField('ngen.Contact')
     active = models.BooleanField(default=True)
     TYPE = Choices(('internal', gettext_lazy('Internal')), ('external', gettext_lazy('External')))
     type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
-    network_entity = models.ForeignKey('NetworkEntity', models.DO_NOTHING, null=True)
+    network_entity = models.ForeignKey('ngen.NetworkEntity', models.DO_NOTHING, null=True)
     objects = NetManager()
     node_order_by = ['parent', '-cidr', 'domain']
     _address = None
@@ -146,10 +146,10 @@ class Network(NgenModel, NgenTreeModel):
 
     def ancestors_email_contacts(self, priority):
         return self.get_ancestors_related(
-            lambda obj: obj.contacts.filter(type='email').filter(priority__code__gte=priority))
+            lambda obj: obj.contacts.filter(type='email').filter(priority__severity__gte=priority))
 
     def email_contacts(self, priority):
-        return self.contacts.filter(type='email').filter(priority__code__gte=priority)
+        return self.contacts.filter(type='email').filter(priority__severity__gte=priority)
 
     class Meta:
         db_table = 'network'
