@@ -143,10 +143,10 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
             evidence = evidence + event.get_evidence()
         return evidence
 
-    def get_evidence(self):
+    def get_case_evidence(self):
         return list(self.evidence.all()) + self.get_descendants_related(lambda obj: obj.evidence.all(), flat=True)
 
-    def get_all_evidence(self):
+    def get_evidence(self):
         return self.get_evidence() + self.get_events_evidence()
 
 

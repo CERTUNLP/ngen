@@ -67,11 +67,7 @@ class MergeSerializerMixin:
 
 
 class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
-    evidence = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='eventevidence-detail'
-    )
+    evidence = serializers.SerializerMethodField(read_only=True)
     children = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -82,6 +78,16 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
         read_only=True,
         view_name='todotask-detail'
     )
+
+    def get_evidence(self, obj):
+        results = obj.get_evidence()
+        serializer = serializers.HyperlinkedIdentityField(view_name='eventevidence-detail')
+        links = []
+        for result in results:
+            links.append(
+                serializer.get_url(obj=result, view_name='eventevidence-detail', request=self.context['request'],
+                                   format=None))
+        return links
 
     @staticmethod
     def allowed_fields():
