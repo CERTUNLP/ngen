@@ -19,15 +19,9 @@ class AboutView(TemplateView):
         return context
 
 
-class CaseEvidenceViewSet(viewsets.ModelViewSet):
-    queryset = models.CaseEvidence.objects.all()
-    serializer_class = serializers.CaseEvidenceSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class EventEvidenceViewSet(viewsets.ModelViewSet):
-    queryset = models.EventEvidence.objects.all()
-    serializer_class = serializers.EventEvidenceSerializer
+class EvidenceViewSet(viewsets.ModelViewSet):
+    queryset = models.Evidence.objects.all()
+    serializer_class = serializers.EvidenceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

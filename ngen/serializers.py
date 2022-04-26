@@ -81,11 +81,11 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
 
     def get_evidence(self, obj):
         results = obj.get_evidence()
-        serializer = serializers.HyperlinkedIdentityField(view_name='eventevidence-detail')
+        serializer = serializers.HyperlinkedIdentityField(view_name='evidence-detail')
         links = []
         for result in results:
             links.append(
-                serializer.get_url(obj=result, view_name='eventevidence-detail', request=self.context['request'],
+                serializer.get_url(obj=result, view_name='evidence-detail', request=self.context['request'],
                                    format=None))
         return links
 
@@ -128,24 +128,23 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
         fields = '__all__'
 
 
-class EventEvidenceSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.EventEvidence
-        fields = '__all__'
-
-
 class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
     events = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
         view_name='event-detail'
     )
+    evidence = serializers.SerializerMethodField(read_only=True)
 
-    evidence = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='caseevidence-detail'
-    )
+    def get_evidence(self, obj):
+        results = obj.get_evidence()
+        serializer = serializers.HyperlinkedIdentityField(view_name='evidence-detail')
+        links = []
+        for result in results:
+            links.append(
+                serializer.get_url(obj=result, view_name='evidence-detail', request=self.context['request'],
+                                   format=None))
+        return links
 
     def validate_state(self, attrs):
         if self.instance is not None and self.instance.state != attrs and not self.instance.state.is_parent_of(attrs):
@@ -179,9 +178,9 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
         read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by']
 
 
-class CaseEvidenceSerializer(serializers.HyperlinkedModelSerializer):
+class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = models.CaseEvidence
+        model = models.Evidence
         fields = '__all__'
 
 

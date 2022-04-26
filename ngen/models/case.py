@@ -5,6 +5,8 @@ from collections import defaultdict
 from pathlib import Path
 
 from constance import config
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.template.loader import get_template
@@ -147,7 +149,7 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
         return list(self.evidence.all()) + self.get_descendants_related(lambda obj: obj.evidence.all(), flat=True)
 
     def get_evidence(self):
-        return self.get_evidence() + self.get_events_evidence()
+        return self.get_case_evidence() + self.get_events_evidence()
 
 
 class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
@@ -233,9 +235,12 @@ class Evidence(NgenModel):
         return '%s/%s' % (self.get_related().evidence_path(), filename)
 
     file = models.FileField(upload_to=directory_path, null=True, storage=HashedFilenameStorage(), unique=True)
+    object_id = models.PositiveIntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_object = GenericForeignKey()
 
     def get_related(self):
-        raise NotImplementedError()
+        return self.content_object
 
     def __str__(self):
         return self.file.url
@@ -250,27 +255,7 @@ class Evidence(NgenModel):
         self.file.storage.delete(self.file.name)
 
     class Meta:
-        abstract = True
-
-
-class EventEvidence(Evidence):
-    event = models.ForeignKey('ngen.Event', models.CASCADE, null=True, related_name='evidence')
-
-    def get_related(self):
-        return self.event
-
-    class Meta:
-        db_table = 'event_evidence'
-
-
-class CaseEvidence(Evidence):
-    case = models.ForeignKey('ngen.Case', models.CASCADE, null=True, related_name='evidence')
-
-    def get_related(self):
-        return self.case
-
-    class Meta:
-        db_table = 'case_evidence'
+        db_table = 'evidence'
 
 
 class CaseTemplate(NgenModel, NgenPriorityMixin):

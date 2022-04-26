@@ -1,5 +1,6 @@
 from auditlog.models import AuditlogHistoryField
 from django.apps import apps
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.translation import gettext
 from django_lifecycle import hook, BEFORE_DELETE, BEFORE_UPDATE
@@ -91,6 +92,8 @@ class NgenMergeableModel(NgenTreeModel):
 
 
 class NgenEvidenceMixin(models.Model):
+    evidence = GenericRelation('ngen.Evidence')
+
     @hook(BEFORE_DELETE)
     def delete_evidence(self):
         for evidence in self.evidence.all():
