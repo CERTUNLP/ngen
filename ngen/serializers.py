@@ -5,6 +5,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 
+import ngen
 from ngen import models
 from ngen.models import utils
 
@@ -189,10 +190,31 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
         read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by']
 
 
+class EvidenceObjectRelatedField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        pass
+
+    def to_representation(self, value):
+        if isinstance(value, ngen.models.Case):
+            serializer = serializers.HyperlinkedIdentityField(view_name='case-detail')
+            return serializer.get_url(obj=value, view_name='case-detail',
+                                      request=self.context['request'],
+                                      format=None)
+        if isinstance(value, ngen.models.Event):
+            serializer = serializers.HyperlinkedIdentityField(view_name='event-detail')
+            return serializer.get_url(obj=value, view_name='event-detail',
+                                      request=self.context['request'],
+                                      format=None)
+        else:
+            raise Exception('Unexpected type of tagged object')
+
+
 class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
+    content_object = EvidenceObjectRelatedField(read_only=True)
+
     class Meta:
         model = models.Evidence
-        fields = '__all__'
+        exclude = ['content_type', 'object_id']
 
 
 class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
