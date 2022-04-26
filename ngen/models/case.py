@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from constance import config
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
@@ -98,7 +98,7 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
         # mail.send_mail(subject, text_content, from_mail, recipient_list, html_message=html_content)
         email = EmailMultiAlternatives(subject, text_content, from_mail, recipient_list)
         email.attach_alternative(html_content, "text/html")
-        for evidence in self.get_all_evidence():
+        for evidence in self.get_evidence():
             email.attach(evidence.get_name(), evidence.file.read())
         email.send()
 
@@ -139,9 +139,12 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
         self.communicate_assigned('reports/case_assign.html', gettext_lazy('New event on case'))
         self.communicate_team('reports/case_assign.html', gettext_lazy('New event on case'))
 
+    def get_events(self):
+        return list(self.events.all()) + self.get_descendants_related(lambda obj: obj.events.all(), flat=True)
+
     def get_events_evidence(self):
         evidence = []
-        for event in self.events.all():
+        for event in self.get_events():
             evidence = evidence + event.get_evidence()
         return evidence
 

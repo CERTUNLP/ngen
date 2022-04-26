@@ -129,12 +129,23 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
 
 
 class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
-    events = serializers.HyperlinkedRelatedField(
+    events = serializers.SerializerMethodField(read_only=True)
+    children = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
-        view_name='event-detail'
+        view_name='case-detail'
     )
     evidence = serializers.SerializerMethodField(read_only=True)
+
+    def get_events(self, obj):
+        results = obj.get_events()
+        serializer = serializers.HyperlinkedIdentityField(view_name='event-detail')
+        links = []
+        for result in results:
+            links.append(
+                serializer.get_url(obj=result, view_name='event-detail', request=self.context['request'],
+                                   format=None))
+        return links
 
     def get_evidence(self, obj):
         results = obj.get_evidence()
