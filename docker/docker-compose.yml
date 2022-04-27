@@ -86,3 +86,27 @@ services:
         ports:
             - "1025:1025" # smtp server
             - "8025:8025" # web ui
+    ngen-elasticsearch:
+        image: elasticsearch:7.9.1
+        environment:
+            - http.host=0.0.0.0
+            - discovery.type=single-node
+            - script.allowed_types=inline
+            - thread_pool.search.queue_size=100000
+            - thread_pool.write.queue_size=10000
+        volumes:
+            - ./elasticsearch:/usr/share/elasticsearch/data #sudo  chown -R 1000:1000 elasticsearch
+        ports:
+            - "9200:9200"
+    ngen-cortex:
+        image: thehiveproject/cortex:3.1-withdeps
+        environment:
+            - es_hostname=ngen-elasticsearch
+            - job_directory=/tmp/cortex-jobs
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /tmp/cortex-jobs:/tmp/cortex-jobs # only works with this and will not work with local volume idk
+        depends_on:
+            - ngen-elasticsearch
+        ports:
+            - "9001:9001"

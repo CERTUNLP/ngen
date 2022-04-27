@@ -136,3 +136,4 @@ dmypy.json
 /postgres_data/
 /ngen-adminer-postgrs.sql
 /docker/redis
+/docker/elasticsearch

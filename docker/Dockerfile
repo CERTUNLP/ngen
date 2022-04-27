@@ -3,7 +3,7 @@ FROM python:3-alpine  as ngen
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 WORKDIR /code
-RUN apk add gettext
+RUN apk add gettext libmagic
 COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 # celery beat patch until version 2.3.0 arrives
