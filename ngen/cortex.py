@@ -34,7 +34,7 @@ default_analyzer_conf = {
         "max_tlp": 2,
         "max_pap": 2
     },
-    "jobCache": 10,
+    "jobCache": 10080,
     "jobTimeout": 30,
 }
 api_user = Api('http://ngen-cortex:9001', api.users.get_key(user.id))
@@ -42,3 +42,6 @@ api_user = Api('http://ngen-cortex:9001', api.users.get_key(user.id))
 for analyzer in api_user.analyzers.definitions():
     if not analyzer.configurationItems and not api_user.analyzers.get_by_name(analyzer.id):
         api_user.analyzers.enable(analyzer.id, default_analyzer_conf)
+
+job = api.analyzers.run_by_id(api.analyzers.get_by_type('domain').pop().id,
+                              {'data': 'edu.ar', 'dataType': 'domain', 'parameters': {'id': 112122}})

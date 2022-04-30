@@ -1,6 +1,7 @@
 from auditlog.registry import auditlog
 
 from .administration import *
+from .artifact import *
 from .case import *
 from .communication import *
 from .constituency import *

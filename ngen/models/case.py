@@ -16,6 +16,7 @@ from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, Li
 from model_utils import Choices
 
 import ngen
+from . import artifact
 from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel
 from ..storage import HashedFilenameStorage
 
@@ -155,7 +156,8 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
         return self.get_case_evidence() + self.get_events_evidence()
 
 
-class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin):
+class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin,
+            artifact.ArtifactRelated):
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
