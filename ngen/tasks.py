@@ -47,6 +47,7 @@ def enrich_artifact(artifact_id):
             for job in jobs:
                 report = cortex.api_user.jobs.get_report(job.id)
                 if report.status in ['Success', 'Failure']:
+                    ngen.models.ArtifactEnrichment.objects.filter(artifact=artifact, name=report.workerName).delete()
                     ngen.models.ArtifactEnrichment.objects.create(artifact=artifact, name=report.workerName,
                                                                   raw=report.report,
                                                                   success=report.report.get('success'))

@@ -52,7 +52,6 @@ class ArtifactRelation(NgenModel):
 
 class ArtifactRelated(models.Model):
     artifact_relation = GenericRelation('ngen.ArtifactRelation', related_query_name='%(class)ss')
-    artifact_types = []
 
     class Meta:
         abstract = True
@@ -81,7 +80,7 @@ class ArtifactRelated(models.Model):
         raise NotImplementedError
 
 
-class ArtifactEnrichment(models.Model):
+class ArtifactEnrichment(NgenModel):
     artifact = models.ForeignKey(Artifact, on_delete=models.CASCADE, related_name='enrichments')
     name = models.CharField(max_length=100)
     success = models.BooleanField(default=True)
@@ -92,3 +91,4 @@ class ArtifactEnrichment(models.Model):
 
     class Meta:
         db_table = 'artifact_enrichment'
+        unique_together = ['artifact', 'name']
