@@ -14,7 +14,7 @@ from pathlib import Path
 
 from celery.schedules import crontab
 from constance import config
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, gettext_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -204,12 +204,21 @@ CONSTANCE_ADDITIONAL_FIELDS = {
     'priority_field': ['django.forms.fields.ChoiceField', {
         'widget': 'django.forms.Select',
         'choices': (
-            ("Critical", "Critical"), ("High", "High"), ("Medium", "Medium"), ("Low", "Low"), ('Very low', "Very low")),
+            ('Critical', gettext_lazy('Critical')), ('High', gettext_lazy('High')),
+            ('Medium', gettext_lazy('Medium')), ('Low', gettext_lazy('Low')),
+            ('Very low', gettext_lazy('Very low'))),
     }],
     'case_lifecycle': ['django.forms.fields.ChoiceField', {
         'widget': 'django.forms.Select',
         'choices': (
-            ("manual", "Manual"), ("auto", "Auto"), ("auto_open", "Auto open"), ("auto_close", "Auto close")),
+            ('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
+                'auto_open', gettext_lazy('Auto open')), ('auto_close', gettext_lazy('Auto close')))
+    }],
+    'allowed_artifacts': ['django.forms.fields.ChoiceField', {
+        'widget': 'django.forms.Select',
+        'choices': (
+            ('ip', 'IP'), ('domain', gettext_lazy('Domain')), (
+                'url', 'Url'), ('hash', 'Hash'), ('file', gettext_lazy('File')), ('domain', gettext_lazy('Domain'))),
     }],
 }
 CONSTANCE_CONFIG = {
@@ -244,6 +253,7 @@ CONSTANCE_CONFIG = {
         int(os.environ.get('PRIORITY_SOLVE_DEADLINE_DEFAULT')), 'Priority default solve deadline in minutes', int),
     'CASE_DEFAULT_LIFECYCLE': (os.environ.get('CASE_DEFAULT_LIFECYCLE'), 'Case default lifecycle', 'case_lifecycle'),
     'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT'), 'Default', 'priority_field'),
+    'ALLOWED_ARTIFACTS_TYPES': (os.environ.get('ALLOWED_ARTIFACTS_TYPES'), 'Allowed artifact types'),
 
 }
 AUTH_USER_MODEL = 'ngen.User'

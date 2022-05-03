@@ -12,16 +12,16 @@ from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
-from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, LifecycleModelMixin, BEFORE_DELETE
+from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE
 from model_utils import Choices
 
 import ngen
-from . import artifact
+from . import ArtifactRelated
 from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel
 from ..storage import HashedFilenameStorage
 
 
-class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, NgenMergeableModel):
+class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
@@ -100,7 +100,7 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
         email = EmailMultiAlternatives(subject, text_content, from_mail, recipient_list)
         email.attach_alternative(html_content, "text/html")
         for evidence in self.get_evidence():
-            email.attach(evidence.get_name(), evidence.file.read())
+            email.attach(evidence.attachment_name, evidence.file.read())
         email.send()
 
     def email_subject(self, subject: str):
@@ -155,9 +155,12 @@ class Case(LifecycleModelMixin, NgenModel, NgenPriorityMixin, NgenEvidenceMixin,
     def get_evidence(self):
         return self.get_case_evidence() + self.get_events_evidence()
 
+    @property
+    def artifacts_dict(self) -> dict:
+        return {'ip': str(Event.objects.first().network.address), 'domain': str(Event.objects.first().network.address)}
 
-class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableModel, NgenPriorityMixin,
-            artifact.ArtifactRelated):
+
+class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated):
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
@@ -234,8 +237,17 @@ class Event(LifecycleModelMixin, NgenModel, NgenEvidenceMixin, NgenMergeableMode
     def get_evidence(self):
         return list(self.evidence.all()) + self.get_descendants_related(lambda obj: obj.evidence.all(), flat=True)
 
+    @property
+    def artifacts_dict(self) -> dict:
+        artifacts_dict = {}
+        if self.network.cidr:
+            artifacts_dict['ip'] = self.network.cidr
+        if self.network.domain:
+            artifacts_dict['domain'] = self.network.domain
+        return artifacts_dict
 
-class Evidence(NgenModel):
+
+class Evidence(NgenModel, ArtifactRelated):
     def directory_path(self, filename=None):
         return '%s/%s' % (self.get_related().evidence_path(), filename)
 
@@ -244,23 +256,32 @@ class Evidence(NgenModel):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     content_object = GenericForeignKey()
 
+    class Meta:
+        db_table = 'evidence'
+
     def get_related(self):
         return self.content_object
 
     def __str__(self):
         return self.file.url
 
-    def get_name(self):
+    @property
+    def attachment_name(self):
         return '%s(%s):%s:%s' % (
             self.get_related().__class__.__name__, self.get_related().id, self.get_related().created.date(),
-            Path(self.file.name).name)
+            self.filename)
+
+    @property
+    def filename(self):
+        return Path(self.file.name).name
 
     def delete(self, using=None, keep_parents=False):
         super().delete(using, keep_parents)
         self.file.storage.delete(self.file.name)
 
-    class Meta:
-        db_table = 'evidence'
+    @property
+    def artifacts_dict(self) -> dict:
+        return {'hash': self.filename.split('.')[0], 'file': self.file.path}
 
 
 class CaseTemplate(NgenModel, NgenPriorityMixin):

@@ -72,9 +72,6 @@ class Network(NgenModel, NgenTreeModel):
         if isinstance(other, Network):
             return self.address == other.address
 
-    def __repr__(self):
-        return self.address.__repr__()
-
     def __str__(self):
         return self.address.__str__()
 

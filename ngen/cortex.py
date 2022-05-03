@@ -43,5 +43,3 @@ for analyzer in api_user.analyzers.definitions():
     if not analyzer.configurationItems and not api_user.analyzers.get_by_name(analyzer.id):
         api_user.analyzers.enable(analyzer.id, default_analyzer_conf)
 
-job = api.analyzers.run_by_id(api.analyzers.get_by_type('domain').pop().id,
-                              {'data': 'edu.ar', 'dataType': 'domain', 'parameters': {'id': 112122}})

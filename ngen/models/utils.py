@@ -3,7 +3,7 @@ from django.apps import apps
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.translation import gettext
-from django_lifecycle import hook, BEFORE_DELETE, BEFORE_UPDATE
+from django_lifecycle import hook, BEFORE_DELETE, BEFORE_UPDATE, LifecycleModelMixin
 from model_utils.models import TimeStampedModel
 from rest_framework.exceptions import ValidationError
 from treebeard.al_tree import AL_Node
@@ -17,15 +17,10 @@ class NgenModel(TimeStampedModel):
 
 
 class NgenTreeModel(AL_Node):
-    @classmethod
-    def find_problems(cls):
-        pass
-
-    @classmethod
-    def fix_tree(cls):
-        pass
-
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True, related_name='children')
+
+    class Meta:
+        abstract = True
 
     def get_ancestors_related(self, callback, flat=False):
         return self.get_related(self.get_ancestors, callback, flat)
@@ -50,17 +45,24 @@ class NgenTreeModel(AL_Node):
     def get_parents(cls):
         return cls.objects.filter(parent__isnull=True)
 
-    class Meta:
-        abstract = True
-
     def is_child(self):
         return self.parent is not None
 
     def is_parent(self):
         return self.children.exists()
 
+    @classmethod
+    def find_problems(cls):
+        pass
 
-class NgenMergeableModel(NgenTreeModel):
+    @classmethod
+    def fix_tree(cls):
+        pass
+
+
+class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
+    class Meta:
+        abstract = True
 
     def is_blocked(self) -> bool:
         raise NotImplementedError
@@ -87,17 +89,17 @@ class NgenMergeableModel(NgenTreeModel):
         for child in self.get_descendants():
             child.delete()
 
-    class Meta:
-        abstract = True
-
 
 class NgenEvidenceMixin(models.Model):
     evidence = GenericRelation('ngen.Evidence')
 
-    @hook(BEFORE_DELETE)
-    def delete_evidence(self):
+    class Meta:
+        abstract = True
+
+    def delete(self, using=None, keep_parents=False):
         for evidence in self.evidence.all():
             evidence.delete()
+        super(NgenEvidenceMixin, self).delete()
 
     def evidence_path(self):
         return 'evidence/%s/%s' % (self.__class__.__name__, self.id)
@@ -105,17 +107,14 @@ class NgenEvidenceMixin(models.Model):
     def add_evidence(self, file):
         self.evidence.get_or_create(file=file)
 
-    class Meta:
-        abstract = True
-
 
 class NgenPriorityMixin(models.Model):
     priority = models.ForeignKey('Priority', models.DO_NOTHING)
+
+    class Meta:
+        abstract = True
 
     def save(self, *args, **kwargs):
         if not self.priority_id:
             self.priority = apps.get_model('ngen', 'Priority').default_priority()
         super().save(*args, **kwargs)
-
-    class Meta:
-        abstract = True

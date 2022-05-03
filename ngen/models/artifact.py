@@ -1,3 +1,4 @@
+from constance import config
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -5,6 +6,7 @@ from django.utils.translation import gettext_lazy
 from model_utils import Choices
 
 from .utils import NgenModel
+from .. import tasks
 
 
 class Artifact(NgenModel):
@@ -15,6 +17,10 @@ class Artifact(NgenModel):
 
     class Meta:
         db_table = 'artifact'
+
+    def save(self, *args, **kwargs):
+        super(Artifact, self).save(*args, **kwargs)
+        tasks.enrich_artifact.delay(self.id)
 
     def __str__(self):
         display = '%s: %s' % (self.type, self.value)
@@ -46,6 +52,7 @@ class ArtifactRelation(NgenModel):
 
 class ArtifactRelated(models.Model):
     artifact_relation = GenericRelation('ngen.ArtifactRelation', related_query_name='%(class)ss')
+    artifact_types = []
 
     class Meta:
         abstract = True
@@ -53,3 +60,35 @@ class ArtifactRelated(models.Model):
     @property
     def artifacts(self):
         return Artifact.objects.filter(artifact_relation__in=self.artifact_relation.all())
+
+    def save(self, *args, **kwargs):
+        self.artifact_update()
+        super(ArtifactRelated, self).save(*args, **kwargs)
+
+    def artifact_update(self):
+        artifacts = []
+        for artifact_type, artifact_value in self.artifacts_dict.items():
+            if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
+                artifact = Artifact.objects.get_or_create(type=artifact_type, value=artifact_value)
+                ArtifactRelation.objects.get_or_create(artifact=artifact[0],
+                                                       content_type=ContentType.objects.get_for_model(self),
+                                                       object_id=self.id)
+                artifacts.append(artifact[0])
+        self.artifact_relation.exclude(artifact__in=artifacts).delete()
+
+    @property
+    def artifacts_dict(self) -> dict:
+        raise NotImplementedError
+
+
+class ArtifactEnrichment(models.Model):
+    artifact = models.ForeignKey(Artifact, on_delete=models.CASCADE, related_name='enrichments')
+    name = models.CharField(max_length=100)
+    success = models.BooleanField(default=True)
+    raw = models.JSONField()
+
+    def __str__(self):
+        return "%s: %s(%s)" % (self.artifact, self.name, self.success)
+
+    class Meta:
+        db_table = 'artifact_enrichment'
