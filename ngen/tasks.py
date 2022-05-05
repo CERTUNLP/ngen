@@ -43,12 +43,22 @@ def enrich_artifact(artifact_id):
         for analyzer in analyzers:
             jobs.append(
                 cortex.api_user.analyzers.run_by_id(analyzer.id, {'data': artifact.value, 'dataType': artifact.type}))
+
         while jobs:
             for job in jobs:
                 report = cortex.api_user.jobs.get_report(job.id)
-                if report.status in ['Success', 'Failure']:
+                if report.status == 'Success' or (
+                        report.status == 'Failure' and config.ARTIFACT_SAVE_ENRICHMENT_FAILURE):
                     ngen.models.ArtifactEnrichment.objects.filter(artifact=artifact, name=report.workerName).delete()
                     ngen.models.ArtifactEnrichment.objects.create(artifact=artifact, name=report.workerName,
                                                                   raw=report.report,
                                                                   success=report.report.get('success'))
-                    jobs.remove(job)
+                for job_artifact in cortex.api_user.jobs.get_artifacts(job.id):
+                    if job_artifact.dataType in config.ALLOWED_ARTIFACTS_TYPES.split(','):
+                        new_artifact = ngen.models.Artifact.objects.get_or_create(type=job_artifact.dataType,
+                                                                                  value=job_artifact.data)
+                        for relation in artifact.artifact_relation.all():
+                            ngen.models.ArtifactRelation.objects.get_or_create(artifact=new_artifact[0],
+                                                                               content_type=relation.content_type,
+                                                                               object_id=relation.object_id)
+                jobs.remove(job)

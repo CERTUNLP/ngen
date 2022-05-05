@@ -1,7 +1,7 @@
 from constance import config
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy
 from model_utils import Choices
 
@@ -20,7 +20,7 @@ class Artifact(NgenModel):
 
     def save(self, *args, **kwargs):
         super(Artifact, self).save(*args, **kwargs)
-        tasks.enrich_artifact.delay(self.id)
+        transaction.on_commit(lambda: tasks.enrich_artifact.delay(self.id))
 
     def __str__(self):
         display = '%s: %s' % (self.type, self.value)
@@ -61,8 +61,8 @@ class ArtifactRelated(models.Model):
         return Artifact.objects.filter(artifact_relation__in=self.artifact_relation.all())
 
     def save(self, *args, **kwargs):
-        self.artifact_update()
         super(ArtifactRelated, self).save(*args, **kwargs)
+        self.artifact_update()
 
     def artifact_update(self):
         artifacts = []
@@ -73,7 +73,7 @@ class ArtifactRelated(models.Model):
                                                        content_type=ContentType.objects.get_for_model(self),
                                                        object_id=self.id)
                 artifacts.append(artifact[0])
-        self.artifact_relation.exclude(artifact__in=artifacts).delete()
+        # self.artifact_relation.exclude(artifact__in=artifacts).delete()
 
     @property
     def artifacts_dict(self) -> dict:

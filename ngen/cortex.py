@@ -28,7 +28,7 @@ except NotFoundError:
 
 default_analyzer_conf = {
     "configuration": {
-        "auto_extract_artifacts": False,
+        "auto_extract_artifacts": True,
         "check_tlp": True,
         "check_pap": True,
         "max_tlp": 2,
@@ -42,4 +42,3 @@ api_user = Api('http://ngen-cortex:9001', api.users.get_key(user.id))
 for analyzer in api_user.analyzers.definitions():
     if not analyzer.configurationItems and not api_user.analyzers.get_by_name(analyzer.id):
         api_user.analyzers.enable(analyzer.id, default_analyzer_conf)
-
