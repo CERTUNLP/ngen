@@ -241,7 +241,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     def artifacts_dict(self) -> dict:
         artifacts_dict = {}
         if self.network.cidr:
-            artifacts_dict['ip'] = self.network.cidr
+            artifacts_dict['ip'] = self.network.cidr.network_address
         if self.network.domain:
             artifacts_dict['domain'] = self.network.domain
         return artifacts_dict

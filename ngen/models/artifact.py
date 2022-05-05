@@ -20,6 +20,9 @@ class Artifact(NgenModel):
 
     def save(self, *args, **kwargs):
         super(Artifact, self).save(*args, **kwargs)
+        self.enrich()
+
+    def enrich(self):
         transaction.on_commit(lambda: tasks.enrich_artifact.delay(self.id))
 
     def __str__(self):
@@ -65,15 +68,15 @@ class ArtifactRelated(models.Model):
         self.artifact_update()
 
     def artifact_update(self):
-        artifacts = []
+        self.artifact_relation.all().delete()
         for artifact_type, artifact_value in self.artifacts_dict.items():
             if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
-                artifact = Artifact.objects.get_or_create(type=artifact_type, value=artifact_value)
-                ArtifactRelation.objects.get_or_create(artifact=artifact[0],
+                artifact, created = Artifact.objects.get_or_create(type=artifact_type, value=artifact_value)
+                ArtifactRelation.objects.get_or_create(artifact=artifact,
                                                        content_type=ContentType.objects.get_for_model(self),
                                                        object_id=self.id)
-                artifacts.append(artifact[0])
-        # self.artifact_relation.exclude(artifact__in=artifacts).delete()
+                if not created:
+                    artifact.enrich()
 
     @property
     def artifacts_dict(self) -> dict:
