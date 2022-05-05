@@ -254,6 +254,9 @@ CONSTANCE_CONFIG = {
     'CASE_DEFAULT_LIFECYCLE': (os.environ.get('CASE_DEFAULT_LIFECYCLE'), 'Case default lifecycle', 'case_lifecycle'),
     'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT'), 'Default', 'priority_field'),
     'ALLOWED_ARTIFACTS_TYPES': (os.environ.get('ALLOWED_ARTIFACTS_TYPES'), 'Allowed artifact types'),
+    'ARTIFACT_SAVE_ENRICHMENT_FAILURE': (
+        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'False').lower() in ('true', '1'), 'Allowed artifact types',
+        bool),
 
 }
 AUTH_USER_MODEL = 'ngen.User'
