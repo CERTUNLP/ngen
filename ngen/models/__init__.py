@@ -1,4 +1,5 @@
 from auditlog.registry import auditlog
+from django.apps import apps
 
 from .administration import *
 from .artifact import *

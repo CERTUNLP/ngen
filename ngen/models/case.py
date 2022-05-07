@@ -17,7 +17,7 @@ from model_utils import Choices
 
 import ngen
 from . import ArtifactRelated
-from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel
+from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel, NgenAddressModel
 from ..storage import HashedFilenameStorage
 
 
@@ -160,13 +160,12 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin):
         return {'ip': str(Event.objects.first().network.address), 'domain': str(Event.objects.first().network.address)}
 
 
-class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated):
+class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated, NgenAddressModel):
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.DO_NOTHING)
     feed = models.ForeignKey('ngen.Feed', models.DO_NOTHING)
-    network = models.ForeignKey('ngen.Network', models.DO_NOTHING, related_name='events')
 
     reporter = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, related_name='events_reporter')
     evidence_file_path = models.CharField(max_length=255, null=True)
@@ -240,10 +239,10 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     @property
     def artifacts_dict(self) -> dict:
         artifacts_dict = {}
-        if self.network.cidr:
-            artifacts_dict['ip'] = self.network.cidr.network_address
-        if self.network.domain:
-            artifacts_dict['domain'] = self.network.domain
+        if self.cidr:
+            artifacts_dict['ip'] = self.cidr.network_address
+        if self.domain:
+            artifacts_dict['domain'] = self.domain
         return artifacts_dict
 
 

@@ -1,12 +1,16 @@
+import ipaddress
+
 from auditlog.models import AuditlogHistoryField
-from django.apps import apps
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.translation import gettext
 from django_lifecycle import hook, BEFORE_DELETE, BEFORE_UPDATE, LifecycleModelMixin
 from model_utils.models import TimeStampedModel
+from netfields import CidrAddressField
 from rest_framework.exceptions import ValidationError
 from treebeard.al_tree import AL_Node
+
+import ngen
 
 
 class NgenModel(TimeStampedModel):
@@ -116,5 +120,90 @@ class NgenPriorityMixin(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.priority_id:
-            self.priority = apps.get_model('ngen', 'Priority').default_priority()
+            self.priority = ngen.models.Priority.default_priority()
         super().save(*args, **kwargs)
+
+
+class NgenAddressModel(models.Model):
+    cidr = CidrAddressField(null=True)
+    domain = models.CharField(max_length=255, null=True, default=None)
+    address = None
+
+    class Meta:
+        abstract = True
+
+    class Address:
+        _address = None
+
+        def __init__(self, address):
+            self.address = address
+
+        @property
+        def address(self):
+            return self._address
+
+        @address.setter
+        def address(self, value):
+            self._address = self.create_address_object(value)
+
+        def __eq__(self, other):
+            return self.address == other.address
+
+        def __contains__(self, other):
+            return self.in_range(other)
+
+        def __str__(self):
+            return self.address
+
+    class AddressIp(Address):
+
+        def address_mask(self):
+            return self._address.prefixlen
+
+        def create_address_object(self, address: str):
+            return ipaddress.ip_network(address)
+
+        def in_range(self, other):
+            return other._address > self._address
+
+        def __str__(self):
+            return self.address.exploded
+
+    class AddressDomain(Address):
+
+        def address_mask(self):
+            return len(self.address.split('.'))
+
+        def create_address_object(self, address):
+            return address
+
+        def in_range(self, other):
+            address_set = set(self.address.split('.'))
+            address_set_other = set(other.address.split('.'))
+
+            if address_set == address_set_other:
+                return True
+
+            if address_set_other > address_set:
+                return address_set & address_set_other == address_set
+
+            return False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.cidr:
+            self.address = self.AddressIp(ipaddress.ip_network(self.cidr))
+        elif self.domain:
+            self.address = self.AddressDomain(self.domain)
+
+    def __eq__(self, other: 'NgenAddressModel'):
+        if isinstance(other, NgenAddressModel):
+            return self.address == other.address
+
+    def __str__(self):
+        return self.address.__str__()
+
+    def __contains__(self, other: 'NgenAddressModel'):
+        # b.address._address.subnet_of(a.address._address)
+        if isinstance(other, NgenAddressModel):
+            return other.address in self.address
