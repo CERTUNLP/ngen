@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-03 23:50+0000\n"
+"POT-Creation-Date: 2022-05-11 21:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,39 @@ msgstr "Inglés"
 msgid "Spanish"
 msgstr "Español"
 
+msgid "Critical"
+msgstr "Crítico"
+
+msgid "High"
+msgstr "Alto"
+
+msgid "Medium"
+msgstr "Medio"
+
+msgid "Low"
+msgstr "Bajo"
+
+msgid "Very low"
+msgstr "Muy bajo"
+
+msgid "Manual"
+msgstr ""
+
+msgid "Auto"
+msgstr ""
+
+msgid "Auto open"
+msgstr ""
+
+msgid "Auto close"
+msgstr ""
+
+msgid "Domain"
+msgstr "Dominio"
+
+msgid "File"
+msgstr "Archivo"
+
 msgid "New Case"
 msgstr "Nuevo caso"
 
@@ -27,11 +60,55 @@ msgstr "Estado del caso actualizado"
 msgid "New event on case"
 msgstr "Nuevo evento en caso"
 
+msgid "Internal"
+msgstr "Interno"
+
+msgid "External"
+msgstr "Externo"
+
+msgid "Email"
+msgstr ""
+
+msgid "Telegram"
+msgstr ""
+
+msgid "Phone"
+msgstr "Teléfono"
+
+msgid "URI"
+msgstr ""
+
+msgid "Technical"
+msgstr "Tecnico"
+
+msgid "Administrative"
+msgstr "Administrativo"
+
+msgid "Abuse"
+msgstr "Abuso"
+
+msgid "Notifications"
+msgstr "Notificaciones"
+
+msgid "NOC"
+msgstr ""
+
+msgid "Vulnerability"
+msgstr "Vulnerabilidad"
+
+msgid "Incident"
+msgstr "Incidente"
+
 msgid "The parent must not be the same instance."
 msgstr "El padre no debe ser la misma intancia"
 
 #, python-format
 msgid "%s of blocked instances can't be modified"
+msgstr "%s de instancias bloqueadas no pueden ser modificadas"
+
+#, fuzzy, python-format
+#| msgid "%s of blocked instances can't be modified"
+msgid "%s of merged events can't be modified"
 msgstr "%s de instancias bloqueadas no pueden ser modificadas"
 
 #, python-format
@@ -41,6 +118,9 @@ msgid ""
 msgstr ""
 "No es posible cambiar el estado \"%s\" a \"%s\". Los posibles nuevos estados "
 "son %s"
+
+msgid "The solve time must be greater than attend deadline"
+msgstr ""
 
 msgid "Priority"
 msgstr "Prioridad"
