@@ -40,6 +40,7 @@ router.register(r'user', views.UserViewSet)
 router.register(r'playbook', views.PlaybookViewSet)
 router.register(r'task', views.TaskViewSet)
 router.register(r'todo', views.TodoTaskViewSet)
+router.register(r'artifact', views.ArtifactViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

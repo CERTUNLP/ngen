@@ -32,9 +32,9 @@ class Artifact(NgenModel):
         return display
 
     @property
-    def related_list(self):
+    def related(self):
         targets = []
-        for artifact_relation in self.artifact_relation.all():
+        for artifact_relation in self.artifact_relation.all().order_by('object_id'):
             targets.append(artifact_relation.related)
         return targets
 
@@ -60,6 +60,10 @@ class ArtifactRelated(models.Model):
         abstract = True
 
     @property
+    def enrichable(self):
+        return True
+
+    @property
     def artifacts(self):
         return Artifact.objects.filter(artifact_relation__in=self.artifact_relation.all())
 
@@ -68,15 +72,16 @@ class ArtifactRelated(models.Model):
         self.artifact_update()
 
     def artifact_update(self):
-        self.artifact_relation.all().delete()
-        for artifact_type, artifact_value in self.artifacts_dict.items():
-            if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
-                artifact, created = Artifact.objects.get_or_create(type=artifact_type, value=artifact_value)
-                ArtifactRelation.objects.get_or_create(artifact=artifact,
-                                                       content_type=ContentType.objects.get_for_model(self),
-                                                       object_id=self.id)
-                if not created:
-                    artifact.enrich()
+        if self.enrichable:
+            self.artifact_relation.all().delete()
+            for artifact_type, artifact_value in self.artifacts_dict.items():
+                if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
+                    artifact, created = Artifact.objects.get_or_create(type=artifact_type, value=artifact_value)
+                    ArtifactRelation.objects.get_or_create(artifact=artifact,
+                                                           content_type=ContentType.objects.get_for_model(self),
+                                                           object_id=self.id)
+                    if not created:
+                        artifact.enrich()
 
     @property
     def artifacts_dict(self) -> dict:

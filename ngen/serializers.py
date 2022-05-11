@@ -5,9 +5,29 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 
-import ngen
 from ngen import models
 from ngen.models import utils
+
+
+class GenericRelationField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        pass
+
+    def to_representation(self, related_list):
+        return self.generic_detail_links(related_list)
+
+    def generic_detail_links(self, related_list, request=None):
+        links = []
+        for related in related_list:
+            links.append(self.generic_detail_link(related, request))
+        return links
+
+    def generic_detail_link(self, related, request=None):
+        view_name = related.__class__.__name__.lower() + '-detail'
+        serializer = serializers.HyperlinkedIdentityField(view_name=view_name)
+        return serializer.get_url(obj=related, view_name=view_name,
+                                  request=self.context.get('request', request),
+                                  format=None)
 
 
 class EvidenceSerializerMixin:
@@ -68,7 +88,7 @@ class MergeSerializerMixin:
 
 
 class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
-    evidence = serializers.SerializerMethodField(read_only=True)
+    evidence_all = GenericRelationField(read_only=True)
     children = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -79,16 +99,11 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
         read_only=True,
         view_name='todotask-detail'
     )
-
-    def get_evidence(self, obj):
-        results = obj.get_evidence()
-        serializer = serializers.HyperlinkedIdentityField(view_name='evidence-detail')
-        links = []
-        for result in results:
-            links.append(
-                serializer.get_url(obj=result, view_name='evidence-detail', request=self.context['request'],
-                                   format=None))
-        return links
+    artifacts = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='artifact-detail'
+    )
 
     @staticmethod
     def allowed_fields():
@@ -139,24 +154,10 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
     evidence = serializers.SerializerMethodField(read_only=True)
 
     def get_events(self, obj):
-        results = obj.get_events()
-        serializer = serializers.HyperlinkedIdentityField(view_name='event-detail')
-        links = []
-        for result in results:
-            links.append(
-                serializer.get_url(obj=result, view_name='event-detail', request=self.context['request'],
-                                   format=None))
-        return links
+        return GenericRelationField(read_only=True).generic_detail_links(obj.get_events(), self.context.get('request'))
 
     def get_evidence(self, obj):
-        results = obj.get_evidence()
-        serializer = serializers.HyperlinkedIdentityField(view_name='evidence-detail')
-        links = []
-        for result in results:
-            links.append(
-                serializer.get_url(obj=result, view_name='evidence-detail', request=self.context['request'],
-                                   format=None))
-        return links
+        return GenericRelationField(read_only=True).generic_detail_links(obj.evidence_all, self.context.get('request'))
 
     def validate_state(self, attrs):
         if self.instance is not None and self.instance.state != attrs and not self.instance.state.is_parent_of(attrs):
@@ -190,27 +191,11 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
         read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by']
 
 
-class EvidenceObjectRelatedField(serializers.RelatedField):
-    def to_internal_value(self, data):
-        pass
-
-    def to_representation(self, value):
-        if isinstance(value, ngen.models.Case):
-            serializer = serializers.HyperlinkedIdentityField(view_name='case-detail')
-            return serializer.get_url(obj=value, view_name='case-detail',
-                                      request=self.context['request'],
-                                      format=None)
-        if isinstance(value, ngen.models.Event):
-            serializer = serializers.HyperlinkedIdentityField(view_name='event-detail')
-            return serializer.get_url(obj=value, view_name='event-detail',
-                                      request=self.context['request'],
-                                      format=None)
-        else:
-            raise Exception('Unexpected type of tagged object')
-
-
 class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
-    content_object = EvidenceObjectRelatedField(read_only=True)
+    related = serializers.SerializerMethodField(read_only=True)
+
+    def get_related(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_link(obj.content_object, self.context.get('request'))
 
     class Meta:
         model = models.Evidence
@@ -329,3 +314,14 @@ class TodoTaskSerializer(serializers.HyperlinkedModelSerializer):
         model = models.TodoTask
         fields = '__all__'
         read_only_fields = ['completed_date', 'task', 'event']
+
+
+class ArtifactSerializer(serializers.HyperlinkedModelSerializer):
+    related = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = models.Artifact
+        fields = '__all__'
+
+    def get_related(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_links(obj.related, self.context.get('request'))

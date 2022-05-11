@@ -145,3 +145,9 @@ class TodoTaskViewSet(viewsets.ModelViewSet):
     queryset = models.TodoTask.objects.all()
     serializer_class = serializers.TodoTaskSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class ArtifactViewSet(viewsets.ModelViewSet):
+    queryset = models.Artifact.objects.all()
+    serializer_class = serializers.ArtifactSerializer
+    permission_classes = [permissions.IsAuthenticated]

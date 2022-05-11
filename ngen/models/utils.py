@@ -132,6 +132,25 @@ class NgenAddressModel(models.Model):
     class Meta:
         abstract = True
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.cidr:
+            self.address = self.AddressIp(self.cidr)
+        elif self.domain:
+            self.address = self.AddressDomain(self.domain)
+
+    def __eq__(self, other: 'NgenAddressModel'):
+        if isinstance(other, NgenAddressModel):
+            return self.address == other.address
+
+    def __str__(self):
+        return self.address.__str__()
+
+    def __contains__(self, other: 'NgenAddressModel'):
+        # b.address._address.subnet_of(a.address._address)
+        if isinstance(other, NgenAddressModel):
+            return other.address in self.address
+
     class Address:
         _address = None
 
@@ -188,22 +207,3 @@ class NgenAddressModel(models.Model):
                 return address_set & address_set_other == address_set
 
             return False
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.cidr:
-            self.address = self.AddressIp(ipaddress.ip_network(self.cidr))
-        elif self.domain:
-            self.address = self.AddressDomain(self.domain)
-
-    def __eq__(self, other: 'NgenAddressModel'):
-        if isinstance(other, NgenAddressModel):
-            return self.address == other.address
-
-    def __str__(self):
-        return self.address.__str__()
-
-    def __contains__(self, other: 'NgenAddressModel'):
-        # b.address._address.subnet_of(a.address._address)
-        if isinstance(other, NgenAddressModel):
-            return other.address in self.address

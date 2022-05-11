@@ -47,7 +47,7 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
                 self.get_children().update(parent=self.parent)
 
             self.parent = Network.lookup_parent(self)
-            children = Network.lookup_parent_children(self)
+            children = Network.lookup_children(self)
 
         super(Network, self).save(*args, **kwargs)
 
@@ -71,7 +71,7 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
         return parent
 
     @classmethod
-    def lookup_parent_children(cls, network):
+    def lookup_children(cls, network):
         children = None
         if network.cidr:
             children = network.parent.get_children().filter(cidr__net_contained=network.cidr.exploded)

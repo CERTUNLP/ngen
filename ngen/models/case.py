@@ -99,7 +99,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin):
         # mail.send_mail(subject, text_content, from_mail, recipient_list, html_message=html_content)
         email = EmailMultiAlternatives(subject, text_content, from_mail, recipient_list)
         email.attach_alternative(html_content, "text/html")
-        for evidence in self.get_evidence():
+        for evidence in self.evidence_all:
             email.attach(evidence.attachment_name, evidence.file.read())
         email.send()
 
@@ -143,21 +143,20 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin):
     def get_events(self):
         return list(self.events.all()) + self.get_descendants_related(lambda obj: obj.events.all(), flat=True)
 
-    def get_events_evidence(self):
+    @property
+    def evidence_events(self):
         evidence = []
         for event in self.get_events():
-            evidence = evidence + event.get_evidence()
+            evidence = evidence + event.evidence_all
         return evidence
 
-    def get_case_evidence(self):
+    @property
+    def evidence_children(self):
         return list(self.evidence.all()) + self.get_descendants_related(lambda obj: obj.evidence.all(), flat=True)
 
-    def get_evidence(self):
-        return self.get_case_evidence() + self.get_events_evidence()
-
     @property
-    def artifacts_dict(self) -> dict:
-        return {'ip': str(Event.objects.first().network.address), 'domain': str(Event.objects.first().network.address)}
+    def evidence_all(self):
+        return self.evidence_children + self.evidence_events
 
 
 class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated, NgenAddressModel):
@@ -185,11 +184,11 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         ordering = ['-id']
 
     def __str__(self):
-        return str(self.pk)
+        return "%s:%s" % (self.pk, self.address)
 
     @hook(BEFORE_CREATE)
     def auto_merge(self):
-        event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, network=self.network,
+        event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, cird=self.cidr, domain=self.domain,
                                            case__state__blocked=False).order_by('id').last()
         if event:
             event.merge(self)
@@ -212,11 +211,12 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     def email_contacts(self):
         contacts = []
         priority = self.case.priority.severity if self.case.priority else self.priority.severity
-        event_contacts = list(self.network.email_contacts(priority))
+        network = ngen.models.Network.lookup_parent(self)
+        event_contacts = list(network.email_contacts(priority))
         if event_contacts:
             return event_contacts
         else:
-            network_contacts = self.network.ancestors_email_contacts(priority)
+            network_contacts = network.ancestors_email_contacts(priority)
             if network_contacts:
                 return network_contacts[0]
         return contacts
@@ -233,7 +233,8 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
             for task in playbook.tasks.all():
                 self.tasks.add(task)
 
-    def get_evidence(self):
+    @property
+    def evidence_all(self):
         return list(self.evidence.all()) + self.get_descendants_related(lambda obj: obj.evidence.all(), flat=True)
 
     @property
@@ -244,6 +245,10 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         if self.domain:
             artifacts_dict['domain'] = self.domain
         return artifacts_dict
+
+    @property
+    def enrichable(self):
+        return self.is_mergeable()
 
 
 class Evidence(NgenModel, ArtifactRelated):
