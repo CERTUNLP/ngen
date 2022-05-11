@@ -5,8 +5,8 @@ from celery.utils.log import get_task_logger
 from constance import config
 from django.db.models import F, DateTimeField, ExpressionWrapper
 
-import ngen.cortex as cortex
 import ngen.models
+from ngen import cortex
 
 logger = get_task_logger(__name__)
 
@@ -53,15 +53,15 @@ def enrich_artifact(artifact_id):
                     ngen.models.ArtifactEnrichment.objects.create(artifact=artifact, name=report.workerName,
                                                                   raw=report.report,
                                                                   success=report.report.get('success'))
-                    for job_artifact in cortex.api_user.jobs.get_artifacts(job.id):
-                        if job_artifact.dataType in config.ALLOWED_ARTIFACTS_TYPES.split(','):
-                            new_artifact, created = ngen.models.Artifact.objects.get_or_create(
-                                type=job_artifact.dataType,
-                                value=job_artifact.data)
-                            for relation in artifact.artifact_relation.all():
-                                ngen.models.ArtifactRelation.objects.get_or_create(artifact=new_artifact,
-                                                                                   content_type=relation.content_type,
-                                                                                   object_id=relation.object_id)
-                            if not created:
-                                new_artifact.enrich()
+                    for job_artifact in ngen.cortex.api_user.jobs.get_artifacts(job.id):
+                        # if job_artifact.dataType in config.ALLOWED_ARTIFACTS_TYPES.split(','):
+                        new_artifact, created = ngen.models.Artifact.objects.get_or_create(
+                            type=job_artifact.dataType,
+                            value=job_artifact.data)
+                        for relation in artifact.artifact_relation.all():
+                            ngen.models.ArtifactRelation.objects.get_or_create(artifact=new_artifact,
+                                                                               content_type=relation.content_type,
+                                                                               object_id=relation.object_id)
+                        if not created:
+                            new_artifact.enrich()
                     jobs.remove(job)

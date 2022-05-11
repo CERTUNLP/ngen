@@ -1,8 +1,10 @@
+from constance import config
 from cortex4py.api import Api
 from cortex4py.exceptions import NotFoundError
 from cortex4py.models import Organization, User
 
-api = Api('http://ngen-cortex:9001', 'ZcW+XONjDexzLsX5K5FBQ1cPfF18Ua3a')
+CORTEX_HOST = 'http://' + config.CORTEX_HOST
+api = Api(CORTEX_HOST, config.CORTEX_APIKEY)
 
 try:
     api.organizations.get_by_id('ngen')
@@ -37,7 +39,7 @@ default_analyzer_conf = {
     "jobCache": 10080,
     "jobTimeout": 30,
 }
-api_user = Api('http://ngen-cortex:9001', api.users.get_key(user.id))
+api_user = Api(CORTEX_HOST, api.users.get_key(user.id))
 
 for analyzer in api_user.analyzers.definitions():
     if not analyzer.configurationItems and not api_user.analyzers.get_by_name(analyzer.id):

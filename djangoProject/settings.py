@@ -104,7 +104,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -257,6 +256,8 @@ CONSTANCE_CONFIG = {
     'ARTIFACT_SAVE_ENRICHMENT_FAILURE': (
         os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'False').lower() in ('true', '1'), 'Allowed artifact types',
         bool),
+    'CORTEX_HOST': (os.environ.get('CORTEX_HOST'), 'Cortex host domain:port'),
+    'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
 
 }
 AUTH_USER_MODEL = 'ngen.User'
