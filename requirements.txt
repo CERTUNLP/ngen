@@ -15,7 +15,7 @@ decorator==5.1.1
 Deprecated==1.2.13
 Django==4.0.4
 django-appconf==1.0.5
-django-auditlog==1.0.0
+django-auditlog==2.0.0
 django-bleach==2.0.0
 # django-celery-beat==2.2.1
 django-celery-email==3.0.0
