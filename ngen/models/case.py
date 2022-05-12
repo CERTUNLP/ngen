@@ -12,7 +12,7 @@ from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
-from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE
+from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE
 from model_utils import Choices
 
 import ngen
@@ -42,9 +42,6 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin):
 
     class Meta:
         db_table = 'case'
-
-    def is_blocked(self):
-        return self.state.blocked
 
     def __str__(self):
         return str(self.pk)
@@ -151,6 +148,10 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin):
     def evidence_all(self):
         return list(self.evidence.all()) + self.evidence_events
 
+    @property
+    def blocked(self):
+        return self.solve_date is not None
+
     def merge(self, child: 'Case'):
         super().merge(child)
         for evidence in child.evidence.all():
@@ -189,17 +190,18 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     @hook(BEFORE_CREATE)
     def auto_merge(self):
         event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, cird=self.cidr, domain=self.domain,
-                                           case__state__blocked=False).order_by('id').last()
+                                           case__solve_date__isnull=True).order_by('id').last()
         if event:
             event.merge(self)
 
-    def is_blocked(self):
+    @property
+    def blocked(self):
         if self.case:
-            return self.case.is_blocked()
+            return self.case.blocked
         return False
 
     def merge(self, child: 'Event'):
-        super(Event, self).merge(child)
+        super().merge(child)
         if child.case:
             child.case = None
         for todo in child.todos.filter(completed=True):
@@ -246,7 +248,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
 
     @property
     def enrichable(self):
-        return self.is_mergeable()
+        return self.mergeable
 
 
 class Evidence(NgenModel, ArtifactRelated):

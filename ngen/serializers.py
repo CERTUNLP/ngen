@@ -56,25 +56,30 @@ class MergeSerializerMixin:
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
         action = self.context['view'].action
-        allowed_fields = self.allowed_fields()
-        if action in ['update', 'partial_update', 'retrieve']:
-            if self.instance and self.instance.is_blocked():
-                for field in self.instance._meta.fields:
-                    if field.name not in allowed_fields:
-                        kwargs = extra_kwargs.get(field.name, {})
-                        kwargs['read_only'] = True
-                        extra_kwargs[field.name] = kwargs
+        if self.instance and not self.instance.mergeable and action in ['update', 'partial_update', 'retrieve']:
+            if self.instance.blocked:
+                allowed_fields = self.allowed_fields()
+            elif self.instance.merged:
+                allowed_fields = []
+            for field in self.instance._meta.fields:
+                if field.name not in allowed_fields:
+                    kwargs = extra_kwargs.get(field.name, {})
+                    kwargs['read_only'] = True
+                    if field.is_relation:
+                        kwargs['queryset'] = None
+                    extra_kwargs[field.name] = kwargs
 
         return extra_kwargs
 
     def validate_parent(self, parent: 'utils.NgenMergeableModel'):
-        if parent and not parent.is_mergeable_with(self.instance):
-            raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
-        return parent
+        if parent and parent.mergeable_with(self.instance):
+            return parent
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        if self.instance and self.instance.is_blocked():
+        if self.instance and self.instance.merged:
+            raise ValidationError(gettext('Merged instances can\'t be modified'))
+        if self.instance and self.instance.blocked:
             allowed_fields = self.allowed_fields()
             for attr in list(attrs):
                 if attr not in allowed_fields:
@@ -122,7 +127,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
         extra_kwargs = super().get_extra_kwargs()
         action = self.context['view'].action
         if action in ['update', 'partial_update', 'retrieve']:
-            if self.instance and (self.instance.is_merged() or self.instance.is_parent()):
+            if self.instance and self.instance.is_parent():
                 for field in self.instance._meta.fields:
                     if field.name in self.not_allowed_fields():
                         kwargs = extra_kwargs.get(field.name, {})
@@ -134,7 +139,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
     def validate(self, attrs):
         attrs = super().validate(attrs)
         if self.instance:
-            if self.instance.is_merged() or self.instance.is_parent():
+            if self.instance.merged or self.instance.is_parent():
                 for attr in list(attrs):
                     if attr in self.not_allowed_fields():
                         if config.ALLOWED_FIELDS_EXCEPTION:
@@ -175,16 +180,17 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
 
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
-        kwargs = extra_kwargs.get('state', {})
-        action = self.context['view'].action
-
-        if action in ['update', 'partial_update']:
-            kwargs['queryset'] = (
-                    self.instance.state.children.all() | models.State.objects.filter(
-                pk=self.instance.state.pk)).distinct()
-        else:
-            kwargs['queryset'] = models.State.get_initial().children.all()
-        extra_kwargs['state'] = kwargs
+        if self.instance:
+            kwargs = extra_kwargs.get('state', {})
+            action = self.context['view'].action
+            if not kwargs.get('read_only', False):
+                if action in ['update', 'partial_update']:
+                    queryset = (self.instance.state.children.all() | models.State.objects.filter(
+                        pk=self.instance.state.pk)).distinct()
+                    kwargs['queryset'] = queryset
+                else:
+                    kwargs['queryset'] = models.State.get_initial().children.all()
+                extra_kwargs['state'] = kwargs
         return extra_kwargs
 
     @staticmethod

@@ -51,13 +51,13 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_bleach',
     'django_extensions',
-    # 'debug_toolbar',
+    'debug_toolbar',
     'auditlog',
 
 ]
 
 MIDDLEWARE = [
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

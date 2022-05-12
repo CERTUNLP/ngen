@@ -68,25 +68,38 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
     class Meta:
         abstract = True
 
-    def is_blocked(self) -> bool:
+    @property
+    def blocked(self) -> bool:
         raise NotImplementedError
 
-    def is_mergeable(self) -> bool:
-        return not self.is_merged() and not self.is_blocked()
+    @property
+    def mergeable(self) -> bool:
+        return not self.merged and not self.blocked
 
-    def is_merged(self) -> bool:
+    @property
+    def merged(self) -> bool:
         return self.is_child()
 
-    def is_mergeable_with(self, child: 'NgenMergeableModel') -> bool:
-        return self != child and child.is_mergeable() and self.is_mergeable()
+    def mergeable_with(self, child: 'NgenMergeableModel') -> bool:
+        if self == child:
+            raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
+        if not self.mergeable:
+            raise ValidationError({'parent': gettext('The parent is not mergeable or is blocked.')})
+        if child.blocked:
+            raise ValidationError(gettext('The child is not mergeable or is blocked.'))
+        return True
 
     def merge(self, child: 'NgenMergeableModel'):
-        if not self.is_mergeable_with(child):
-            raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
+        for child in child.children.all():
+            self.children.add(child)
 
-    @hook(BEFORE_UPDATE, when="parent", has_changed=True, is_not=None)
+    @hook(BEFORE_UPDATE, when="parent", has_changed=True)
     def parent_changed(self):
-        self.parent.merge(self)
+        if self.initial_value('parent') is None:
+            if self.parent.mergeable_with(self):
+                self.parent.merge(self)
+        else:
+            raise ValidationError(gettext('Parent of merged instances can\'t be modified'))
 
     @hook(BEFORE_DELETE)
     def delete_children(self):
