@@ -56,11 +56,11 @@ class MergeSerializerMixin:
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
         action = self.context['view'].action
-
+        allowed_fields = self.allowed_fields()
         if action in ['update', 'partial_update', 'retrieve']:
             if self.instance and self.instance.is_blocked():
                 for field in self.instance._meta.fields:
-                    if field.name not in self.allowed_fields():
+                    if field.name not in allowed_fields:
                         kwargs = extra_kwargs.get(field.name, {})
                         kwargs['read_only'] = True
                         extra_kwargs[field.name] = kwargs
@@ -75,8 +75,9 @@ class MergeSerializerMixin:
     def validate(self, attrs):
         attrs = super().validate(attrs)
         if self.instance and self.instance.is_blocked():
+            allowed_fields = self.allowed_fields()
             for attr in list(attrs):
-                if attr not in self.allowed_fields():
+                if attr not in allowed_fields:
                     if config.ALLOWED_FIELDS_EXCEPTION:
                         raise ValidationError({attr: gettext('%s of blocked instances can\'t be modified') % attr})
                     attrs.pop(attr)
@@ -105,6 +106,10 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
         view_name='artifact-detail'
     )
 
+    class Meta:
+        model = models.Event
+        fields = '__all__'
+
     @staticmethod
     def allowed_fields():
         return config.ALLOWED_FIELDS_EVENT.split(',')
@@ -116,7 +121,6 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
         action = self.context['view'].action
-
         if action in ['update', 'partial_update', 'retrieve']:
             if self.instance and (self.instance.is_merged() or self.instance.is_parent()):
                 for field in self.instance._meta.fields:
@@ -139,13 +143,13 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
                         attrs.pop(attr)
         return attrs
 
-    class Meta:
-        model = models.Event
-        fields = '__all__'
-
 
 class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
-    events = serializers.SerializerMethodField(read_only=True)
+    events = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='event-detail'
+    )
     children = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -153,8 +157,10 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
     )
     evidence = serializers.SerializerMethodField(read_only=True)
 
-    def get_events(self, obj):
-        return GenericRelationField(read_only=True).generic_detail_links(obj.get_events(), self.context.get('request'))
+    class Meta:
+        model = models.Case
+        fields = '__all__'
+        read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by']
 
     def get_evidence(self, obj):
         return GenericRelationField(read_only=True).generic_detail_links(obj.evidence_all, self.context.get('request'))
@@ -185,21 +191,16 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
     def allowed_fields():
         return config.ALLOWED_FIELDS_CASE.split(',')
 
-    class Meta:
-        model = models.Case
-        fields = '__all__'
-        read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by']
-
 
 class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
     related = serializers.SerializerMethodField(read_only=True)
 
-    def get_related(self, obj):
-        return GenericRelationField(read_only=True).generic_detail_link(obj.content_object, self.context.get('request'))
-
     class Meta:
         model = models.Evidence
         exclude = ['content_type', 'object_id']
+
+    def get_related(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_link(obj.content_object, self.context.get('request'))
 
 
 class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
@@ -251,14 +252,14 @@ class TlpSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PrioritySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Priority
+        fields = '__all__'
+
     def validate(self, attrs):
         if self.instance is not None and not (attrs['solve_time'] > attrs['attend_deadline']):
             raise ValidationError({'solve_time': gettext('The solve time must be greater than attend deadline')})
         return attrs
-
-    class Meta:
-        model = models.Priority
-        fields = '__all__'
 
 
 class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):

@@ -78,10 +78,10 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
         return self.is_child()
 
     def is_mergeable_with(self, child: 'NgenMergeableModel') -> bool:
-        return child is not self and child.is_mergeable() and self.is_mergeable()
+        return self != child and child.is_mergeable() and self.is_mergeable()
 
     def merge(self, child: 'NgenMergeableModel'):
-        if self.is_mergeable_with(child):
+        if not self.is_mergeable_with(child):
             raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
 
     @hook(BEFORE_UPDATE, when="parent", has_changed=True, is_not=None)

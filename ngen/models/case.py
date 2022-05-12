@@ -140,23 +140,23 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin):
         self.communicate_assigned('reports/case_assign.html', gettext_lazy('New event on case'))
         self.communicate_team('reports/case_assign.html', gettext_lazy('New event on case'))
 
-    def get_events(self):
-        return list(self.events.all()) + self.get_descendants_related(lambda obj: obj.events.all(), flat=True)
-
     @property
     def evidence_events(self):
         evidence = []
-        for event in self.get_events():
-            evidence = evidence + event.evidence_all
+        for event in self.events.all():
+            evidence = evidence + list(event.evidence.all())
         return evidence
 
     @property
-    def evidence_children(self):
-        return list(self.evidence.all()) + self.get_descendants_related(lambda obj: obj.evidence.all(), flat=True)
-
-    @property
     def evidence_all(self):
-        return self.evidence_children + self.evidence_events
+        return list(self.evidence.all()) + self.evidence_events
+
+    def merge(self, child: 'Case'):
+        super().merge(child)
+        for evidence in child.evidence.all():
+            self.evidence.add(evidence)
+        for event in child.events.all():
+            self.events.add(event)
 
 
 class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated, NgenAddressModel):
@@ -199,6 +199,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         return False
 
     def merge(self, child: 'Event'):
+        super(Event, self).merge(child)
         if child.case:
             child.case = None
         for todo in child.todos.filter(completed=True):
@@ -206,7 +207,8 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
                 self.tasks.remove(todo.task)
                 self.todos.add(todo)
         child.tasks.clear()
-        super(Event, self).merge(child)
+        for evidence in child.evidence.all():
+            self.evidence.add(evidence)
 
     def email_contacts(self):
         contacts = []
@@ -232,10 +234,6 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         for playbook in self.taxonomy.playbooks.all():
             for task in playbook.tasks.all():
                 self.tasks.add(task)
-
-    @property
-    def evidence_all(self):
-        return list(self.evidence.all()) + self.get_descendants_related(lambda obj: obj.evidence.all(), flat=True)
 
     @property
     def artifacts_dict(self) -> dict:
