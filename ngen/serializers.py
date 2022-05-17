@@ -56,7 +56,7 @@ class MergeSerializerMixin:
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
         action = self.context['view'].action
-        if self.instance and not self.instance.mergeable and action in ['update', 'partial_update', 'retrieve']:
+        if action in ['update', 'partial_update', 'retrieve'] and self.instance and not self.instance.mergeable:
             if self.instance.blocked:
                 allowed_fields = self.allowed_fields()
             elif self.instance.merged:
@@ -94,7 +94,11 @@ class MergeSerializerMixin:
 
 
 class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
-    evidence_all = GenericRelationField(read_only=True)
+    evidence = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='evidence-detail'
+    )
     children = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,

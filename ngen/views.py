@@ -27,7 +27,7 @@ class EvidenceViewSet(viewsets.ModelViewSet):
 
 class EventViewSet(viewsets.ModelViewSet):
     queryset = models.Event.objects.all()
-    filter_backends = [backends.EventRootFilterBackend, filters.SearchFilter,
+    filter_backends = [backends.MergedModelFilterBackend, filters.SearchFilter,
                        django_filters.rest_framework.DjangoFilterBackend,
                        filters.OrderingFilter]
     search_fields = ['case', 'taxonomy', 'network']
@@ -40,6 +40,7 @@ class EventViewSet(viewsets.ModelViewSet):
 class CaseViewSet(viewsets.ModelViewSet):
     queryset = models.Case.objects.all()
     filter_backends = [
+        backends.MergedModelFilterBackend,
         # filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter]
