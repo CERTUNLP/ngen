@@ -3,7 +3,7 @@ import datetime
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from constance import config
-from django.db.models import F, DateTimeField, ExpressionWrapper
+from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
 
 import ngen.models
 from ngen import cortex
@@ -31,6 +31,19 @@ def solve_cases():
                                                                          deadline__lte=datetime.datetime.now(),
                                                                          lifecycle__in=['auto', 'auto_close']).update(
         solve_date=datetime.datetime.now())
+
+
+@shared_task
+def case_renotification():
+    a = ngen.models.Case.objects.annotate(
+        deadline=ExpressionWrapper(
+            (F('priority__solve_time') + F('priority__solve_deadline')) * F('notification_count') / 4,
+            output_field=DurationField())).annotate(
+        renotification=ExpressionWrapper((F('attend_date') + F('deadline')), output_field=DateTimeField())).filter(
+        attend_date__isnull=False,
+        solve_date__isnull=True,
+        renotification__lte=datetime.datetime.now(),
+        notification_count__gte=1)
 
 
 @shared_task()

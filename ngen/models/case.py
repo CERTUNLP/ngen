@@ -12,7 +12,7 @@ from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
-from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE
+from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE
 from model_utils import Choices
 
 import ngen
@@ -39,6 +39,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
         'auto_open', gettext_lazy('Auto open')), ('auto_close', gettext_lazy('Auto close')))
     lifecycle = models.CharField(choices=LIFECYCLE, default=LIFECYCLE.manual, max_length=20)
+    notification_count = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
         db_table = 'case'

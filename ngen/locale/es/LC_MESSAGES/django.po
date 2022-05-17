@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-11 21:30+0000\n"
+"POT-Creation-Date: 2022-05-16 17:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -102,6 +102,22 @@ msgstr "Incidente"
 msgid "The parent must not be the same instance."
 msgstr "El padre no debe ser la misma intancia"
 
+#, fuzzy
+#| msgid "The parent must not be the same instance."
+msgid "The parent is not mergeable or is blocked."
+msgstr "El padre no debe ser la misma intancia"
+
+msgid "The child is not mergeable or is blocked."
+msgstr ""
+
+#, fuzzy
+#| msgid "Merged instances can't be modified"
+msgid "Parent of merged instances can't be modified"
+msgstr "Instancias combinadas no pueden ser modificadas"
+
+msgid "Merged instances can't be modified"
+msgstr "Instancias combinadas no pueden ser modificadas"
+
 #, python-format
 msgid "%s of blocked instances can't be modified"
 msgstr "%s de instancias bloqueadas no pueden ser modificadas"
@@ -179,6 +195,3 @@ msgid ""
 msgstr ""
 "Queremos informarle que el estado del caso número <strong>%(id)s</strong> ha "
 "cambiado a: \"<strong>%(state)s</strong>\""
-
-#~ msgid "Merged instances can't be modified"
-#~ msgstr "Instancias combinadas no pueden ser modificadas"
