@@ -2,12 +2,13 @@ import datetime
 import re
 import uuid as uuid
 from collections import defaultdict
+from email.utils import make_msgid
 from pathlib import Path
 
 from constance import config
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, DNS_NAME
 from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
@@ -74,6 +75,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
 
     @hook(BEFORE_CREATE)
     def before_create(self):
+        self.report_message_id = make_msgid(domain=DNS_NAME)
         if not self.state:
             self.state = ngen.models.State.get_default()
 
@@ -97,6 +99,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         # mail.send_mail(subject, text_content, from_mail, recipient_list, html_message=html_content)
         email = EmailMultiAlternatives(subject, text_content, from_mail, recipient_list)
         email.attach_alternative(html_content, "text/html")
+        email.extra_headers['Message-ID'] = self.report_message_id
         for evidence in self.evidence_all:
             email.attach(evidence.attachment_name, evidence.file.read())
         email.send()
