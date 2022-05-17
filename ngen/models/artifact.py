@@ -65,7 +65,7 @@ class ArtifactRelated(models.Model):
 
     @property
     def artifacts(self):
-        return Artifact.objects.filter(artifact_relation__in=self.artifact_relation.all())
+        return Artifact.objects.filter(artifact_relation__in=self.artifact_relation.all()).order_by('id')
 
     def save(self, *args, **kwargs):
         super(ArtifactRelated, self).save(*args, **kwargs)
@@ -74,14 +74,15 @@ class ArtifactRelated(models.Model):
     def artifact_update(self):
         if self.enrichable:
             self.artifact_relation.all().delete()
-            for artifact_type, artifact_value in self.artifacts_dict.items():
+            for artifact_type, artifact_values in self.artifacts_dict.items():
                 if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
-                    artifact, created = Artifact.objects.get_or_create(type=artifact_type, value=artifact_value)
-                    ArtifactRelation.objects.get_or_create(artifact=artifact,
-                                                           content_type=ContentType.objects.get_for_model(self),
-                                                           object_id=self.id)
-                    if not created:
-                        artifact.enrich()
+                    for artifact_value in artifact_values:
+                        artifact, created = Artifact.objects.get_or_create(type=artifact_type, value=artifact_value)
+                        ArtifactRelation.objects.get_or_create(artifact=artifact,
+                                                               content_type=ContentType.objects.get_for_model(self),
+                                                               object_id=self.id)
+                        if not created:
+                            artifact.enrich()
 
     @property
     def artifacts_dict(self) -> dict:

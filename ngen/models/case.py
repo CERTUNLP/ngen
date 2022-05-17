@@ -21,7 +21,7 @@ from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeabl
 from ..storage import HashedFilenameStorage
 
 
-class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin):
+class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, ArtifactRelated):
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
     date = models.DateTimeField()
 
@@ -159,6 +159,14 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin):
         for event in child.events.all():
             self.events.add(event)
 
+    @property
+    def artifacts_dict(self) -> dict:
+        artifacts_dict = {'hashes': [], 'files': []}
+        for evidence in self.evidence.all():
+            artifacts_dict['hashes'].append(evidence.filename.split('.')[0])
+            artifacts_dict['files'].append(evidence.file.path)
+        return artifacts_dict
+
 
 class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated, NgenAddressModel):
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
@@ -239,11 +247,14 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
 
     @property
     def artifacts_dict(self) -> dict:
-        artifacts_dict = {}
+        artifacts_dict = {'hashes': [], 'files': []}
         if self.cidr:
-            artifacts_dict['ip'] = self.cidr.network_address
+            artifacts_dict['ip'] = [self.cidr.network_address]
         if self.domain:
-            artifacts_dict['domain'] = self.domain
+            artifacts_dict['domain'] = [self.domain]
+        for evidence in self.evidence.all():
+            artifacts_dict['hashes'].append(evidence.filename.split('.')[0])
+            artifacts_dict['files'].append(evidence.file.path)
         return artifacts_dict
 
     @property
@@ -251,7 +262,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         return self.mergeable
 
 
-class Evidence(NgenModel, ArtifactRelated):
+class Evidence(NgenModel):
     def directory_path(self, filename=None):
         return '%s/%s' % (self.get_related().evidence_path(), filename)
 
@@ -282,10 +293,6 @@ class Evidence(NgenModel, ArtifactRelated):
     def delete(self, using=None, keep_parents=False):
         super().delete(using, keep_parents)
         self.file.storage.delete(self.file.name)
-
-    @property
-    def artifacts_dict(self) -> dict:
-        return {'hash': self.filename.split('.')[0], 'file': self.file.path}
 
 
 class CaseTemplate(NgenModel, NgenPriorityMixin):
