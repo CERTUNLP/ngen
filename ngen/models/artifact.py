@@ -10,8 +10,10 @@ from .. import tasks
 
 
 class Artifact(NgenModel):
-    TYPE = Choices(('ip', 'IP'), ('domain', gettext_lazy('Domain')), (
-        'url', 'Url'), ('hash', 'Hash'), ('file', gettext_lazy('File')), ('domain', gettext_lazy('Domain')))
+    TYPE = Choices(('ip', 'IP'), ('domain', gettext_lazy('Domain')), ('fqdn', gettext_lazy('FQDN')), (
+        'url', 'Url'), ('mail', gettext_lazy('Mail')), ('hash', 'Hash'), ('file', gettext_lazy('File')),
+                   ('other', gettext_lazy('Other')), ('user-agent', gettext_lazy('User agent')),
+                   ('autonomous-system', gettext_lazy('Autonomous system')))
     type = models.CharField(choices=TYPE, default=TYPE.ip, max_length=20)
     value = models.CharField(blank=False, null=False, max_length=255, default=None)
 

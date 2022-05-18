@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-16 17:56+0000\n"
+"POT-Creation-Date: 2022-05-18 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,11 +54,26 @@ msgstr "Archivo"
 msgid "New Case"
 msgstr "Nuevo caso"
 
+msgid "New event on case"
+msgstr "Nuevo evento en caso"
+
 msgid "Case status updated"
 msgstr "Estado del caso actualizado"
 
-msgid "New event on case"
-msgstr "Nuevo evento en caso"
+msgid "FQDN"
+msgstr ""
+
+msgid "Mail"
+msgstr "Correo"
+
+msgid "Other"
+msgstr "Otro"
+
+msgid "User agent"
+msgstr ""
+
+msgid "Autonomous system"
+msgstr "Sistema autónomo"
 
 msgid "Internal"
 msgstr "Interno"
