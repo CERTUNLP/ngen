@@ -8,5 +8,7 @@
     </p>
 {% endblock %}
 {% block content %}
-    {% include "reports/event_detail.html" with events=events %}
+    {% for event in events %}
+        {% include "reports/event_detail.html" with event=event %}
+    {% endfor %}
 {% endblock %}

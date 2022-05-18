@@ -1,19 +1,15 @@
 import datetime
-import re
 import uuid as uuid
 from collections import defaultdict
 from email.utils import make_msgid
 from pathlib import Path
 
-from constance import config
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.core.mail import EmailMultiAlternatives, DNS_NAME
+from django.core.mail import DNS_NAME
 from django.db import models
-from django.template.loader import get_template
-from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
-from django_lifecycle import hook, AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE
+from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE
 from model_utils import Choices
 
 import ngen
@@ -69,77 +65,19 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         for event in self.events.all():
             event.delete()
 
-    @hook(AFTER_CREATE)
-    def after_create(self):
-        self.communicate('reports/base.html', gettext_lazy('New Case'))
-
     @hook(BEFORE_CREATE)
     def before_create(self):
         self.report_message_id = make_msgid(domain=DNS_NAME)
         if not self.state:
             self.state = ngen.models.State.get_default()
 
-    @hook(AFTER_UPDATE, when="state", has_changed=True)
+    @hook(BEFORE_UPDATE, when="state", has_changed=True)
     def after_update(self):
         if self.state.attended:
             self.attend_date = datetime.datetime.now()
             self.solve_date = None
         if self.state.solved:
             self.solve_date = datetime.datetime.now()
-        self.communicate('reports/state_change.html', gettext_lazy('Case status updated'))
-
-    def send_mail(self, subject, template: str, from_mail: str, recipient_list: list, lang: str,
-                  extra_params: dict = None):
-        params = {'lang': lang, 'case': self, 'config': config}
-        if extra_params:
-            params.update(extra_params)
-        text_content = re.sub(r'\n+', '\n', strip_tags(get_template(template).render(params)).replace('  ', ''))
-        params.update({'html': True})
-        html_content = get_template(template).render(params)
-        # mail.send_mail(subject, text_content, from_mail, recipient_list, html_message=html_content)
-        email = EmailMultiAlternatives(subject, text_content, from_mail, recipient_list)
-        email.attach_alternative(html_content, "text/html")
-        email.extra_headers['Message-ID'] = self.report_message_id
-        for evidence in self.evidence_all:
-            email.attach(evidence.attachment_name, evidence.file.read())
-        email.send()
-
-    def email_subject(self, subject: str):
-        return '[%s][TLP:%s][ID:%s] %s' % (config.TEAM_NAME, gettext_lazy(self.tlp.name), self.id, subject)
-
-    def communicate_assigned(self, template: str, subject, params: dict = None):
-        if self.assigned and self.assigned.priority.severity >= self.priority.severity:
-            self.send_mail(self.email_subject(subject), template, config.EMAIL_SENDER, [self.assigned.email],
-                           config.NGEN_LANG, params)
-
-    def communicate_team(self, template: str, subject: str, params: dict = None):
-        if config.TEAM_EMAIL and ngen.models.Priority.objects.get(
-                name=config.TEAM_EMAIL_PRIORITY).severity >= self.priority.severity:
-            self.send_mail(self.email_subject(subject), template, config.EMAIL_SENDER, [config.TEAM_EMAIL],
-                           config.NGEN_LANG, params)
-
-    def communicate_case(self, template: str, subject: str, params: dict = None):
-        for contacts, events in self.events_by_contacts().items():
-            if params:
-                params.update({'events': events})
-            self.send_mail(self.email_subject(subject), template, config.EMAIL_SENDER,
-                           [c.username for c in contacts],
-                           config.NGEN_LANG, params)
-
-    def communicate_event(self, event: 'Event', template: str, subject: str):
-        self.send_mail(self.email_subject(subject), template, config.EMAIL_SENDER,
-                       [c.username for c in event.email_contacts()],
-                       config.NGEN_LANG, {'events': [event]})
-
-    def communicate(self, template: str, subject: str, params: dict = None):
-        self.communicate_case(template, subject, params)
-        self.communicate_assigned(template, subject, params)
-        self.communicate_team(template, subject, params)
-
-    def event_case_assign(self, event: 'Event'):
-        self.communicate_event(event, 'reports/case_assign.html', gettext_lazy('New event on case'))
-        self.communicate_assigned('reports/case_assign.html', gettext_lazy('New event on case'))
-        self.communicate_team('reports/case_assign.html', gettext_lazy('New event on case'))
 
     @property
     def evidence_events(self):
@@ -170,6 +108,13 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
             artifacts_dict['hashes'].append(evidence.filename.split('.')[0])
             artifacts_dict['files'].append(evidence.file.path)
         return artifacts_dict
+
+    @property
+    def attachments(self):
+        evidence = []
+        for evidence in self.evidence_all:
+            evidence.append({'name': evidence.attachment_name, 'file': evidence.file.read()})
+        return evidence
 
 
 class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated, NgenAddressModel):
@@ -236,11 +181,6 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
             if network_contacts:
                 return network_contacts[0]
         return contacts
-
-    @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
-    def case_assign(self):
-        if self.case.events.count() >= 1:
-            self.case.event_case_assign(self)
 
     @hook(AFTER_UPDATE, when="taxonomy", has_changed=True)
     def taxonomy_assign(self):

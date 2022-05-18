@@ -72,7 +72,9 @@
                 </table>
             </div><!-- /content -->
             {% block content %}
-                {% include "reports/event_detail.html" with events=case.events.all %}
+                {% for event in events %}
+                    {% include "reports/event_detail.html" with event=event %}
+                {% endfor %}
             {% endblock %}
             {% block content_footer %}
                 <!-- content -->

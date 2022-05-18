@@ -4,7 +4,7 @@ from django.apps import apps
 from .administration import *
 from .artifact import *
 from .case import *
-from .communication import *
+from .message import *
 from .constituency import *
 from .state import *
 from .taxonomy import *
