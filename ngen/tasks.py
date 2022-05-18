@@ -48,25 +48,28 @@ def case_renotification():
 
 @shared_task()
 def enrich_artifact(artifact_id):
+    api = cortex.api_user
+    if not api:
+        return 'Cortex down'
     artifact = ngen.models.Artifact.objects.get(pk=artifact_id)
     print("Enrichment for {}".format(artifact))
     if artifact.type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
         jobs = []
         artifact.enrichments.all().delete()
-        analyzers = cortex.api_user.analyzers.get_by_type(artifact.type)
+        analyzers = api.analyzers.get_by_type(artifact.type)
         for analyzer in analyzers:
             jobs.append(
-                cortex.api_user.analyzers.run_by_id(analyzer.id, {'data': artifact.value, 'dataType': artifact.type}))
+                api.analyzers.run_by_id(analyzer.id, {'data': artifact.value, 'dataType': artifact.type}))
 
         while jobs:
             for job in jobs:
-                report = cortex.api_user.jobs.get_report(job.id)
+                report = api.jobs.get_report(job.id)
                 save_if_fail = report.status == 'Failure' and config.ARTIFACT_SAVE_ENRICHMENT_FAILURE
                 if report.status == 'Success' or save_if_fail:
                     ngen.models.ArtifactEnrichment.objects.create(artifact=artifact, name=report.workerName,
                                                                   raw=report.report,
                                                                   success=report.report.get('success'))
-                    for job_artifact in ngen.cortex.api_user.jobs.get_artifacts(job.id):
+                    for job_artifact in api.jobs.get_artifacts(job.id):
                         # if job_artifact.dataType in config.ALLOWED_ARTIFACTS_TYPES.split(','):
                         new_artifact, created = ngen.models.Artifact.objects.get_or_create(
                             type=job_artifact.dataType,
