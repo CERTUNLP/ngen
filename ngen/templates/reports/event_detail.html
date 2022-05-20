@@ -8,7 +8,7 @@
                         style="vertical-align: top; padding-right:10px;background: #999999">
                     </td>
                     <td>
-                        <h5>{% translate 'Event' %}: {{ event.id }}</h5>
+                        <h5>{% translate 'Event' %}: {{ event.uuid }}</h5>
                         <small class="lead"><strong>{% translate 'Taxonomy' %}:</strong>
                             {% if event.taxonomy.parent %}{{ event.taxonomy.parent }} (
                                 {{ event.taxonomy.parent.type }})

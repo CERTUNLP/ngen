@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-18 19:43+0000\n"
+"POT-Creation-Date: 2022-05-20 13:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,15 +51,6 @@ msgstr "Dominio"
 msgid "File"
 msgstr "Archivo"
 
-msgid "New Case"
-msgstr "Nuevo caso"
-
-msgid "New event on case"
-msgstr "Nuevo evento en caso"
-
-msgid "Case status updated"
-msgstr "Estado del caso actualizado"
-
 msgid "FQDN"
 msgstr ""
 
@@ -74,6 +65,15 @@ msgstr ""
 
 msgid "Autonomous system"
 msgstr "Sistema autónomo"
+
+msgid "Case status updated"
+msgstr "Estado del caso actualizado"
+
+msgid "New Case"
+msgstr "Nuevo caso"
+
+msgid "New event on case"
+msgstr "Nuevo evento en caso"
 
 msgid "Internal"
 msgstr "Interno"

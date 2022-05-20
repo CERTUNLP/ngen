@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='case',
             name='notification_count',
-            field=models.PositiveSmallIntegerField(default=0),
+            field=models.PositiveSmallIntegerField(default=1),
         ),
     ]

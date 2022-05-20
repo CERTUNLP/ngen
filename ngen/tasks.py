@@ -4,6 +4,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from constance import config
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
+from django.utils.translation import gettext_lazy
 
 import ngen.models
 from ngen import cortex
@@ -11,9 +12,9 @@ from ngen import cortex
 logger = get_task_logger(__name__)
 
 
-@shared_task()
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def attend_cases():
-    return 'Attended cases: %s' % ngen.models.Case.objects.annotate(
+    ngen.models.Case.objects.annotate(
         deadline=ExpressionWrapper(F('created') + F('priority__attend_time') + F('priority__attend_deadline'),
                                    output_field=DateTimeField())).filter(attend_date__isnull=True,
                                                                          solve_date__isnull=True,
@@ -22,9 +23,9 @@ def attend_cases():
         attend_date=datetime.datetime.now())
 
 
-@shared_task
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def solve_cases():
-    return 'Solved cases: %s' % ngen.models.Case.objects.annotate(
+    ngen.models.Case.objects.annotate(
         deadline=ExpressionWrapper(F('attend_date') + F('priority__solve_time') + F('priority__solve_deadline'),
                                    output_field=DateTimeField())).filter(attend_date__isnull=False,
                                                                          solve_date__isnull=True,
@@ -33,20 +34,24 @@ def solve_cases():
         solve_date=datetime.datetime.now())
 
 
-@shared_task
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def case_renotification():
-    a = ngen.models.Case.objects.annotate(
+    cases = ngen.models.Case.objects.annotate(
         deadline=ExpressionWrapper(
-            (F('priority__solve_time') + F('priority__solve_deadline')) * F('notification_count') / 4,
+            (F('priority__solve_time') + F('priority__solve_deadline')) * (
+                    F('notification_count') / F('priority__notification_amount')),
             output_field=DurationField())).annotate(
-        renotification=ExpressionWrapper((F('attend_date') + F('deadline')), output_field=DateTimeField())).filter(
+        renotification=ExpressionWrapper(F('attend_date') + F('deadline'), output_field=DateTimeField())).filter(
         attend_date__isnull=False,
         solve_date__isnull=True,
         renotification__lte=datetime.datetime.now(),
         notification_count__gte=1)
+    cases.update(notification_count=F('notification_count') + 1)
+    for case in cases:
+        case.communicate(gettext_lazy('Renotification: New Case'), 'reports/base.html')
 
 
-@shared_task()
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def enrich_artifact(artifact_id):
     api = cortex.api_user
     if not api:

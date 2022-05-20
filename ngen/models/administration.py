@@ -28,12 +28,11 @@ class Feed(NgenModel):
 class Priority(NgenModel):
     name = models.CharField(max_length=255)
     severity = models.IntegerField(unique=True)
-
     attend_time = models.DurationField(default=timedelta(minutes=config.PRIORITY_ATTEND_TIME_DEFAULT))
     solve_time = models.DurationField(default=timedelta(minutes=config.PRIORITY_SOLVE_TIME_DEFAULT))
-
     attend_deadline = models.DurationField(default=timedelta(minutes=config.PRIORITY_ATTEND_DEADLINE_DEFAULT))
     solve_deadline = models.DurationField(default=timedelta(minutes=config.PRIORITY_SOLVE_DEADLINE_DEFAULT))
+    notification_amount = models.PositiveSmallIntegerField(default=3)
 
     @classmethod
     def default_priority(cls):

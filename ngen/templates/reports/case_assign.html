@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block content_header_content %}
     <p class="lead">
-        {% blocktranslate trimmed with id=case.id %}
+        {% blocktranslate trimmed with id=case.uuid %}
             A new event has been added to the case {{ id }}
         {% endblocktranslate %}
     </p>
