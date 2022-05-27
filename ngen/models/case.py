@@ -14,7 +14,7 @@ from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, B
 from model_utils import Choices
 
 import ngen
-from . import ArtifactRelated, Priority
+from . import ArtifactRelated, Priority, ArtifactRelation
 from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel, NgenAddressModel
 from ..communication import Communication
 from ..storage import HashedFilenameStorage
@@ -107,6 +107,11 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
             self.evidence.add(evidence)
         for event in child.events.all():
             self.events.add(event)
+        for artifact_relation in child.artifact_relation.all():
+            ArtifactRelation.objects.get_or_create(artifact=artifact_relation.artifact,
+                                                   content_type=ContentType.objects.get_for_model(self),
+                                                   object_id=self.id)
+        child.artifact_relation.all().delete()
 
     @property
     def artifacts_dict(self) -> dict[str, list]:
@@ -207,6 +212,11 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         child.tasks.clear()
         for evidence in child.evidence.all():
             self.evidence.add(evidence)
+        for artifact_relation in child.artifact_relation.all():
+            ArtifactRelation.objects.get_or_create(artifact=artifact_relation.artifact,
+                                                   content_type=ContentType.objects.get_for_model(self),
+                                                   object_id=self.id)
+        child.artifact_relation.all().delete()
 
     def email_contacts(self):
         contacts = []

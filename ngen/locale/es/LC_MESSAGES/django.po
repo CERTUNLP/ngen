@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-20 13:59+0000\n"
+"POT-Creation-Date: 2022-05-26 21:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,6 +65,9 @@ msgstr ""
 
 msgid "Autonomous system"
 msgstr "Sistema autónomo"
+
+msgid "Case closed"
+msgstr ""
 
 msgid "Case status updated"
 msgstr "Estado del caso actualizado"
@@ -152,6 +155,11 @@ msgstr ""
 
 msgid "The solve time must be greater than attend deadline"
 msgstr ""
+
+#, fuzzy
+#| msgid "Notifications"
+msgid "Renotification: New Case"
+msgstr "Notificaciones"
 
 msgid "Priority"
 msgstr "Prioridad"
