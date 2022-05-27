@@ -285,6 +285,12 @@ class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
+    children = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='network-detail'
+    )
+
     class Meta:
         model = models.Network
         fields = '__all__'
