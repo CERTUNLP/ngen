@@ -22,17 +22,16 @@
     <tr>
         <td></td>
         <td class="header container" align="">
-
             <!-- /content -->
             <div class="content">
                 <table bgcolor="#999999">
                     <tr>
                         <td><img src="http://placehold.it/200x50/"/></td>
                         <td align="left">
-                            <h6 class="collapse" style="color: {{ case.tlp.rgb }};">
+                            <h6 class="collapse" style="color: {{ case.tlp.color }};">
                                 TLP: {{ case.tlp }}
                             </h6>
-                            <h6 class="collapse" style="color: {{ case.tlp.rgb }};">
+                            <h6 class="collapse" style="color: {{ case.priority.color }};">
                                 {% translate 'Priority' %}: {{ case.priority }}
                             </h6>
                         </td>
@@ -55,17 +54,18 @@
                 <table>
                     <tr>
                         <td>
-                            <h2>{% translate 'Case' %}: {{ case.uuid }}
-                                <small>{{ case.tlp.name }} {{ case.priority }}</small></h2>
+                            <h3>{% translate 'Case' %}: {{ case.uuid }}
+                                <small>{{ case.tlp.name }} {{ case.priority }}</small></h3>
                             {% block content_header_content %}
-                                {#                                <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod#}
-                                {#                                    tempor incididunt ut labore et.</p>#}
+                                <p class="lead">Lorem ipsum dolor sit amet, consectetur
+                                    adipisicing elit, sed do eiusmod
+                                    tempor incididunt ut labore et.</p>
 
                                 <!-- A Real Hero (and a real human being) -->
-                                {#                                                        <p><img src="http://placehold.it/600x300"/></p><!-- /hero -->#}
-                                {#                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor#}
-                                {#                                    incididunt ut labore et dolore magna aliqua. Consectetur adipisicing elit, sed do#}
-                                {#                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>#}
+                                <p><img src="http://placehold.it/600x300"/></p><!-- /hero -->
+                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                                    incididunt ut labore et dolore magna aliqua. Consectetur adipisicing elit, sed do
+                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
                             {% endblock %}
                         </td>
                     </tr>
@@ -102,22 +102,22 @@
                                 <table bgcolor="" class="social" width="100%">
                                     <tr>
                                         <td>
-                                            <!--- column 1 -->
-                                            {#                                        <div class="column">#}
-                                            {#                                            <table bgcolor="" cellpadding="" align="left">#}
-                                            {#                                                <tr>#}
-                                            {#                                                    <td>#}
-                                            {#                                                        <h5 class="">Connect with Us:</h5>#}
-                                            {#                                                        <p class="">#}
-                                            {#                                                            <a href="#" class="soc-btn fb">Facebook</a>#}
-                                            {#                                                            <a href="#" class="soc-btn tw">Twitter</a>#}
-                                            {#                                                            <a href="#" class="soc-btn gp">Google+</a>#}
-                                            {#                                                        </p>#}
-                                            {#                                                    </td>#}
-                                            {#                                                </tr>#}
-                                            {#                                            </table><!-- /column 1 -->#}
-                                            {#                                        </div>#}
-                                            <!--- column 2 -->
+                                            {#                                            <!--- column 1 -->#}
+                                            {#                                            <div class="column">#}
+                                            {#                                                <table bgcolor="" cellpadding="" align="left">#}
+                                            {#                                                    <tr>#}
+                                            {#                                                        <td>#}
+                                            {#                                                            <h5 class="">Connect with Us:</h5>#}
+                                            {#                                                            <p class="">#}
+                                            {#                                                                <a href="#" class="soc-btn fb">Facebook</a>#}
+                                            {#                                                                <a href="#" class="soc-btn tw">Twitter</a>#}
+                                            {#                                                                <a href="#" class="soc-btn gp">Google+</a>#}
+                                            {#                                                            </p>#}
+                                            {#                                                        </td>#}
+                                            {#                                                    </tr>#}
+                                            {#                                                </table><!-- /column 1 -->#}
+                                            {#                                            </div>#}
+                                            {#                                            <!--- column 2 -->#}
                                             <div class="column">
                                                 <table bgcolor="" cellpadding="" align="left">
                                                     <tr>

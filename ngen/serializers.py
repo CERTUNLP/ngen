@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import jwt
+from colorfield.serializers import ColorField
 from constance import config
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -262,12 +263,16 @@ class EdgeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class TlpSerializer(serializers.HyperlinkedModelSerializer):
+    color = ColorField()
+
     class Meta:
         model = models.Tlp
         fields = '__all__'
 
 
 class PrioritySerializer(serializers.HyperlinkedModelSerializer):
+    color = ColorField()
+
     class Meta:
         model = models.Priority
         fields = '__all__'

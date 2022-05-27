@@ -154,7 +154,6 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
 
     @property
     def team_email(self):
-
         priority = Priority.objects.get(name=config.TEAM_EMAIL_PRIORITY)
         if config.TEAM_EMAIL and priority.severity >= self.priority.severity:
             return config.TEAM_EMAIL

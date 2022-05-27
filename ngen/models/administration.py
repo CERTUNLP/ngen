@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from colorfield.fields import ColorField
 from constance import config
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -25,6 +26,12 @@ class Feed(NgenModel):
         return self.name
 
 
+COLOR_PALETTE = [
+    ("#FFFFFF", "white",),
+    ("#000000", "black",),
+]
+
+
 class Priority(NgenModel):
     name = models.CharField(max_length=255)
     severity = models.IntegerField(unique=True)
@@ -33,6 +40,7 @@ class Priority(NgenModel):
     attend_deadline = models.DurationField(default=timedelta(minutes=config.PRIORITY_ATTEND_DEADLINE_DEFAULT))
     solve_deadline = models.DurationField(default=timedelta(minutes=config.PRIORITY_SOLVE_DEADLINE_DEFAULT))
     notification_amount = models.PositiveSmallIntegerField(default=3)
+    color = ColorField(samples=COLOR_PALETTE)
 
     @classmethod
     def default_priority(cls):
@@ -48,7 +56,7 @@ class Priority(NgenModel):
 
 class Tlp(NgenModel):
     slug = models.SlugField(max_length=100, unique=True)
-    rgb = models.CharField(max_length=45)
+    color = ColorField(samples=COLOR_PALETTE)
     when = models.TextField(max_length=500)
     why = models.TextField(max_length=500, )
     information = models.TextField(max_length=10, )

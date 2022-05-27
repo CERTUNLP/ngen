@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'debug_toolbar',
     'auditlog',
+    'colorfield'
 ]
 
 MIDDLEWARE = [
