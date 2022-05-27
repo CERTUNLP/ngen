@@ -21,6 +21,7 @@ django-bleach==2.0.0
 django-celery-email==3.0.0
 django-celery-results==2.3.1
 django-constance==2.9.0
+django-cors-headers==3.12.0
 django-debug-toolbar==3.4.0
 django-extensions==3.1.5
 django-filter==21.1
@@ -38,6 +39,7 @@ netaddr==0.8.0
 packaging==21.3
 prompt-toolkit==3.0.24
 psycopg2-binary==2.9.3
+PyJWT==2.4.0
 pyparsing==3.0.7
 # python-crontab==2.3.4
 python-dateutil==2.8.2

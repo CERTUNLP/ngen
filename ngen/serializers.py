@@ -1,12 +1,18 @@
+from datetime import datetime, timedelta
+
+import jwt
 from constance import config
+from django.conf import settings
+from django.contrib.auth import authenticate
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.utils.translation import gettext
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 
 from ngen import models
-from ngen.models import utils
+from ngen.models import utils, User, ActiveSession
 
 
 class GenericRelationField(serializers.RelatedField):
@@ -336,3 +342,77 @@ class ArtifactSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_related(self, obj):
         return GenericRelationField(read_only=True).generic_detail_links(obj.related, self.context.get('request'))
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(min_length=4, max_length=128, write_only=True)
+    username = serializers.CharField(max_length=255, required=True)
+    email = serializers.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "password", "email", "is_active"]
+
+    def create(self, validated_data):
+
+        try:
+            User.objects.get(email=validated_data["email"])
+        except ObjectDoesNotExist:
+            return User.objects.create_user(**validated_data)
+
+        raise ValidationError({"success": False, "msg": "Email already taken"})
+
+
+def _generate_jwt_token(user):
+    token = jwt.encode(
+        {"id": user.pk, "exp": datetime.utcnow() + timedelta(days=7)},
+        settings.SECRET_KEY,
+    )
+
+    return token
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.CharField(max_length=255)
+    username = serializers.CharField(max_length=255, read_only=True)
+    password = serializers.CharField(max_length=128, write_only=True)
+
+    def validate(self, data):
+        email = data.get("email", None)
+        password = data.get("password", None)
+
+        if email is None:
+            raise exceptions.ValidationError(
+                {"success": False, "msg": "Email is required to login"}
+            )
+        if password is None:
+            raise exceptions.ValidationError(
+                {"success": False, "msg": "Password is required to log in."}
+            )
+        user = authenticate(username=email, password=password)
+
+        if user is None:
+            raise exceptions.AuthenticationFailed({"success": False, "msg": "Wrong credentials"})
+
+        if not user.is_active:
+            raise exceptions.ValidationError(
+                {"success": False, "msg": "User is not active"}
+            )
+
+        try:
+            session = ActiveSession.objects.get(user=user)
+            if not session.token:
+                raise ValueError
+
+            jwt.decode(session.token, settings.SECRET_KEY, algorithms=["HS256"])
+
+        except (ObjectDoesNotExist, ValueError, jwt.ExpiredSignatureError):
+            session = ActiveSession.objects.create(
+                user=user, token=_generate_jwt_token(user)
+            )
+
+        return {
+            "success": True,
+            "token": session.token,
+            "user": {"_id": user.pk, "username": user.username, "email": user.email},
+        }
