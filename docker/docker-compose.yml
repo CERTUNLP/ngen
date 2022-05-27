@@ -75,8 +75,8 @@ services:
         image: rediscommander/redis-commander:latest
         environment:
             - REDIS_HOSTS=local:ngen-redis:6379
-            - HTTP_USER=root
-            - HTTP_PASSWORD=root
+            - HTTP_USER=ngen
+            - HTTP_PASSWORD=ngen
         ports:
             - "8081:8081"
         depends_on:
