@@ -19,6 +19,7 @@ class Artifact(NgenModel):
 
     class Meta:
         db_table = 'artifact'
+        ordering = ['id']
 
     def save(self, *args, **kwargs):
         super(Artifact, self).save(*args, **kwargs)
@@ -87,7 +88,7 @@ class ArtifactRelated(models.Model):
                             artifact.enrich()
 
     @property
-    def artifacts_dict(self) -> dict:
+    def artifacts_dict(self) -> dict[str, list]:
         raise NotImplementedError
 
 
