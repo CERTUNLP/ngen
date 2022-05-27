@@ -1,7 +1,6 @@
 import datetime
 
 from celery import shared_task
-from celery.utils.log import get_task_logger
 from constance import config
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
 from django.utils.translation import gettext_lazy
@@ -9,29 +8,31 @@ from django.utils.translation import gettext_lazy
 import ngen.models
 from ngen import cortex
 
-logger = get_task_logger(__name__)
-
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def attend_cases():
-    ngen.models.Case.objects.annotate(
+    cases = ngen.models.Case.objects.annotate(
         deadline=ExpressionWrapper(F('created') + F('priority__attend_time') + F('priority__attend_deadline'),
                                    output_field=DateTimeField())).filter(attend_date__isnull=True,
                                                                          solve_date__isnull=True,
                                                                          deadline__lte=datetime.datetime.now(),
-                                                                         lifecycle__in=['auto', 'auto_open']).update(
-        attend_date=datetime.datetime.now())
+                                                                         lifecycle__in=['auto', 'auto_open'])
+    cases.update(attend_date=datetime.datetime.now())
+    for case in cases:
+        case.communicate_open()
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def solve_cases():
-    ngen.models.Case.objects.annotate(
+    cases = ngen.models.Case.objects.annotate(
         deadline=ExpressionWrapper(F('attend_date') + F('priority__solve_time') + F('priority__solve_deadline'),
                                    output_field=DateTimeField())).filter(attend_date__isnull=False,
                                                                          solve_date__isnull=True,
                                                                          deadline__lte=datetime.datetime.now(),
-                                                                         lifecycle__in=['auto', 'auto_close']).update(
-        solve_date=datetime.datetime.now())
+                                                                         lifecycle__in=['auto', 'auto_close'])
+    cases.update(solve_date=datetime.datetime.now())
+    for case in cases:
+        case.communicate_close()
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
@@ -75,14 +76,14 @@ def enrich_artifact(artifact_id):
                                                                   raw=report.report,
                                                                   success=report.report.get('success'))
                     for job_artifact in api.jobs.get_artifacts(job.id):
-                        # if job_artifact.dataType in config.ALLOWED_ARTIFACTS_TYPES.split(','):
-                        new_artifact, created = ngen.models.Artifact.objects.get_or_create(
-                            type=job_artifact.dataType,
-                            value=job_artifact.data)
-                        for relation in artifact.artifact_relation.all():
-                            ngen.models.ArtifactRelation.objects.get_or_create(artifact=new_artifact,
-                                                                               content_type=relation.content_type,
-                                                                               object_id=relation.object_id)
-                        if not created:
-                            new_artifact.enrich()
+                        if job_artifact.dataType in config.ALLOWED_ARTIFACTS_TYPES.split(','):
+                            new_artifact, created = ngen.models.Artifact.objects.get_or_create(
+                                type=job_artifact.dataType,
+                                value=job_artifact.data)
+                            for relation in artifact.artifact_relation.all():
+                                ngen.models.ArtifactRelation.objects.get_or_create(artifact=new_artifact,
+                                                                                   content_type=relation.content_type,
+                                                                                   object_id=relation.object_id)
+                            if not created:
+                                new_artifact.enrich()
                     jobs.remove(job)

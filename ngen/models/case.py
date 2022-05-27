@@ -78,9 +78,19 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         if self.state.attended:
             self.attend_date = datetime.datetime.now()
             self.solve_date = None
-        if self.state.solved:
+            self.communicate_open()
+        elif self.state.solved:
             self.solve_date = datetime.datetime.now()
-        self.communicate(gettext_lazy('Case status updated'), 'reports/state_change.html', )
+            self.communicate_close()
+        else:
+            self.communicate(gettext_lazy('Case status updated'), 'reports/state_change.html', )
+
+    def communicate_close(self):
+        self.communicate(gettext_lazy('Case closed'), 'reports/base.html')
+
+    def communicate_open(self):
+        title = 'Case reopened' if self.history.filter(changes__contains='solve_date":').exists() else 'Case opened'
+        self.communicate(gettext_lazy(title), 'reports/base.html')
 
     @hook(AFTER_CREATE)
     def after_create(self):
@@ -137,13 +147,22 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         return attachments
 
     @property
+    def assigned_email(self):
+        if self.assigned and self.assigned.priority.severity >= self.priority.severity:
+            return self.assigned.email
+        return None
+
+    @property
+    def team_email(self):
+
+        priority = Priority.objects.get(name=config.TEAM_EMAIL_PRIORITY)
+        if config.TEAM_EMAIL and priority.severity >= self.priority.severity:
+            return config.TEAM_EMAIL
+        return None
+
+    @property
     def recipients(self) -> dict[str, list]:
         recipients = defaultdict(list)
-        priority = Priority.objects.get(name=config.TEAM_EMAIL_PRIORITY)
-        if self.assigned and self.assigned.priority.severity >= self.priority.severity:
-            recipients['bcc'].append(self.assigned.email)
-        if config.TEAM_EMAIL and priority.severity >= self.priority.severity:
-            recipients['bcc'].append(config.TEAM_EMAIL)
         recipients['from'] = config.EMAIL_SENDER
         return recipients
 
@@ -152,12 +171,18 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
 
     def communicate(self, title: str, template: str, **kwargs):
         event_by_contacts = kwargs.get('event_by_contacts', self.events_by_contacts().items())
-        for contacts, events in event_by_contacts:
-            template_params = self.template_params
-            recipients = self.recipients
-            template_params.update({'events': events})
-            recipients.update({'to': [c.username for c in contacts]})
-            self.send_mail(self.subject(title), self.render_template(template, extra_params=template_params),
+        template_params = self.template_params
+        recipients = self.recipients
+        if event_by_contacts:
+            for contacts, events in event_by_contacts:
+                template_params.update({'events': events})
+                recipients.update({'to': [c.username for c in contacts]})
+                recipients.update({'bcc': [self.assigned_email, self.team_email]})
+                self.send_mail(self.subject(title), self.render_template(template, extra_params=template_params),
+                               recipients, self.email_attachments, self.email_headers)
+        else:
+            recipients.update({'to': [self.assigned_email, self.team_email]})
+            self.send_mail(self.subject(title), self.render_template(template, extra_params=self.template_params),
                            recipients, self.email_attachments, self.email_headers)
 
 
@@ -255,10 +280,10 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         return self.mergeable
 
     @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
-    def case_assign_communication(self, event):
+    def case_assign_communication(self, event: 'Event'):
         if event.case.events.count() >= 1:
-            event.case.communicate_case(gettext_lazy('New event on case'), 'reports/case_assign.html',
-                                        event_by_contacts={tuple(event.email_contacts()): [event]})
+            event.case.communicate(gettext_lazy('New event on case'), 'reports/case_assign.html',
+                                   event_by_contacts={tuple(event.email_contacts()): [event]})
 
 
 class Evidence(NgenModel):

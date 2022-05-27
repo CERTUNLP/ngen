@@ -175,7 +175,7 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
     class Meta:
         model = models.Case
         fields = '__all__'
-        read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by']
+        read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by', 'notification_count']
 
     def get_evidence(self, obj):
         return GenericRelationField(read_only=True).generic_detail_links(obj.evidence_all, self.context.get('request'))

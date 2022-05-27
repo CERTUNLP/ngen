@@ -32,7 +32,7 @@ class Communication:
 
     def communicate(self, title: str, template: str, **kwargs):
         return self.send_mail(self.subject(title), self.render_template(template, extra_params=self.template_params),
-                              self.recipients, self.email_attachments, self.email_headers, **kwargs)
+                              self.recipients, self.email_attachments, self.email_headers)
 
     def subject(self, title: str = None) -> str:
         raise NotImplementedError
