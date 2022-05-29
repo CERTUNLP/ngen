@@ -1,11 +1,11 @@
-{% load i18n report_extras %}
+{% load i18n ngen_tags %}
 {% for report in event.taxonomy.reports.all %}
     {% if report.lang == config.NGEN_LANG %}
         <div class="content">
             <table bgcolor="">
                 <tr>
                     <td class="small" width="1%"
-                        style="vertical-align: top; padding-right:10px;background: #999999">
+                        style="vertical-align: top">
                     </td>
                     <td>
                         <h5>{% translate 'Event' %}: {{ event.uuid }}</h5>

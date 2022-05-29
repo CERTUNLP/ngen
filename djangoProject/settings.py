@@ -12,8 +12,12 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
+import PIL
+from PIL import Image
 from celery.schedules import crontab
 from constance import config
+from constance.signals import config_updated
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _, gettext_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -262,6 +266,18 @@ CONSTANCE_CONFIG = {
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
 
 }
+
+
+@receiver(config_updated)
+def team_logo_updated(sender, key, old_value, new_value, **kwargs):
+    if key == 'TEAM_LOGO':
+        if os.path.exists(MEDIA_ROOT + '/' + old_value):
+            os.remove(MEDIA_ROOT + '/' + old_value)
+            os.remove(MEDIA_ROOT + '/200_50_' + old_value)
+        image = Image.open(MEDIA_ROOT + '/' + new_value)
+        image.resize((200, 50)).save(MEDIA_ROOT + '/200_50_' + new_value)
+
+
 AUTH_USER_MODEL = 'ngen.User'
 
 BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'strong', 'a', 'ul', 'li', 'div', 'br']

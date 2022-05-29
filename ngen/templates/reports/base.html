@@ -1,4 +1,6 @@
 {% load i18n %}
+{% load i18n ngen_tags %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -26,7 +28,8 @@
             <div class="content">
                 <table bgcolor="#999999">
                     <tr>
-                        <td><img src="http://placehold.it/200x50/"/></td>
+                        <td>
+                            <img src="{% mail_logo %}">
                         <td align="left">
                             <h6 class="collapse" style="color: {{ case.tlp.color }};">
                                 TLP: {{ case.tlp }}
@@ -54,18 +57,19 @@
                 <table>
                     <tr>
                         <td>
-                            <h3>{% translate 'Case' %}: {{ case.uuid }}
-                                <small>{{ case.tlp.name }} {{ case.priority }}</small></h3>
+                            <h3>
+                                {% translate 'Case' %}: {{ case.uuid }}
+                            </h3>
                             {% block content_header_content %}
-                                <p class="lead">Lorem ipsum dolor sit amet, consectetur
-                                    adipisicing elit, sed do eiusmod
-                                    tempor incididunt ut labore et.</p>
-
-                                <!-- A Real Hero (and a real human being) -->
-                                <p><img src="http://placehold.it/600x300"/></p><!-- /hero -->
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                                    incididunt ut labore et dolore magna aliqua. Consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                                {#                                <p class="lead">Lorem ipsum dolor sit amet, consectetur#}
+                                {#                                    adipisicing elit, sed do eiusmod#}
+                                {#                                    tempor incididunt ut labore et.</p>#}
+                                {##}
+                                {#                                <!-- A Real Hero (and a real human being) -->#}
+                                {#                                <p><img src="http://placehold.it/600x300"/></p><!-- /hero -->#}
+                                {#                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor#}
+                                {#                                    incididunt ut labore et dolore magna aliqua. Consectetur adipisicing elit, sed do#}
+                                {#                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>#}
                             {% endblock %}
                         </td>
                     </tr>
