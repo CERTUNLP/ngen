@@ -1,0 +1,13 @@
+{% load i18n %}
+<td align="right">
+    {% if tlp %}
+        <h6 class="collapse" style="color: {{ tlp.color }};">
+            TLP: {{ tlp }}
+        </h6>
+    {% endif %}
+    {% if priority %}
+        <h6 class="collapse" style="color: {{ priority.color }};">
+            {% translate 'Priority' %}: {{ priority }}
+        </h6>
+    {% endif %}
+</td>

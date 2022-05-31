@@ -1,9 +1,8 @@
-{% load i18n %}
 {% load i18n ngen_tags %}
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html lang="{{ lang|default:config.NGEN_LANG }}">
 <head>
     <!-- If you delete this meta tag, the ground will open and swallow you. -->
     <meta name="viewport" content="width=device-width"/>
@@ -20,27 +19,22 @@
 <body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
 
 <!-- HEADER -->
-<table class="head-wrap" bgcolor="#999999">
+{#<table class="head-wrap" bgcolor="#999999">#}
+<table class="head-wrap">
     <tr>
         <td></td>
         <td class="header container" align="">
-            <!-- /content -->
             <div class="content">
-                <table bgcolor="#999999">
+                {#                <table bgcolor="#999999">#}
+                <table>
                     <tr>
                         <td>
-                            <img src="{% mail_logo %}">
-                        <td align="left">
-                            <h6 class="collapse" style="color: {{ case.tlp.color }};">
-                                TLP: {{ case.tlp }}
-                            </h6>
-                            <h6 class="collapse" style="color: {{ case.priority.color }};">
-                                {% translate 'Priority' %}: {{ case.priority }}
-                            </h6>
+                            <img src="{% mail_logo %}" alt="cert logo">
                         </td>
+                        {% include 'reports/header_right.html' with priority=priority %}
                     </tr>
                 </table>
-            </div><!-- /content -->
+            </div>
 
         </td>
         <td></td>
@@ -57,16 +51,12 @@
                 <table>
                     <tr>
                         <td>
-                            <h3>
-                                {% translate 'Case' %}: {{ case.uuid }}
-                            </h3>
                             {% block content_header_content %}
                                 {#                                <p class="lead">Lorem ipsum dolor sit amet, consectetur#}
                                 {#                                    adipisicing elit, sed do eiusmod#}
                                 {#                                    tempor incididunt ut labore et.</p>#}
-                                {##}
                                 {#                                <!-- A Real Hero (and a real human being) -->#}
-                                {#                                <p><img src="http://placehold.it/600x300"/></p><!-- /hero -->#}
+                                {#                                <p><img src="http://placehold.co/600x300"/></p><!-- /hero -->#}
                                 {#                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor#}
                                 {#                                    incididunt ut labore et dolore magna aliqua. Consectetur adipisicing elit, sed do#}
                                 {#                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>#}

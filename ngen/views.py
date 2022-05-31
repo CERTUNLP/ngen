@@ -158,6 +158,12 @@ class ArtifactViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class AnnouncementViewSet(viewsets.ModelViewSet):
+    queryset = models.Announcement.objects.all()
+    serializer_class = serializers.AnnouncementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
 class RegisterViewSet(viewsets.ModelViewSet):
     http_method_names = ["post"]
     permission_classes = (AllowAny,)

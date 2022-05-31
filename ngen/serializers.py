@@ -6,7 +6,6 @@ from constance import config
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import IntegrityError
 from django.utils.translation import gettext
 from rest_framework import serializers, exceptions
 from rest_framework.exceptions import ValidationError
@@ -422,3 +421,16 @@ class LoginSerializer(serializers.Serializer):
             "token": session.token,
             "user": {"_id": user.pk, "username": user.username, "email": user.email},
         }
+
+
+class AnnouncementSerializer(EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
+    body = CharField(style={'base_template': 'textarea.html', 'rows': 10})
+    evidence = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='evidence-detail'
+    )
+
+    class Meta:
+        model = models.Announcement
+        fields = '__all__'

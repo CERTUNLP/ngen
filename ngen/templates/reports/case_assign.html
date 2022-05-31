@@ -1,4 +1,4 @@
-{% extends "reports/base.html" %}
+{% extends "reports/case_base.html" %}
 {% load i18n %}
 {% block content_header_content %}
     <p class="lead">
@@ -6,9 +6,4 @@
             A new event has been added to the case {{ id }}
         {% endblocktranslate %}
     </p>
-{% endblock %}
-{% block content %}
-    {% for event in events %}
-        {% include "reports/event_detail.html" with event=event %}
-    {% endfor %}
 {% endblock %}

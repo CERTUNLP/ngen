@@ -86,15 +86,15 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
             self.communicate(gettext_lazy('Case status updated'), 'reports/state_change.html', )
 
     def communicate_close(self):
-        self.communicate(gettext_lazy('Case closed'), 'reports/base.html')
+        self.communicate(gettext_lazy('Case closed'), 'reports/case_base.html')
 
     def communicate_open(self):
         title = 'Case reopened' if self.history.filter(changes__contains='solve_date":').exists() else 'Case opened'
-        self.communicate(gettext_lazy(title), 'reports/base.html')
+        self.communicate(gettext_lazy(title), 'reports/case_base.html')
 
     @hook(AFTER_CREATE)
     def after_create(self):
-        self.communicate(gettext_lazy('New Case'), 'reports/base.html')
+        self.communicate(gettext_lazy('New Case'), 'reports/case_base.html')
 
     @property
     def evidence_events(self):
@@ -137,7 +137,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
 
     @property
     def template_params(self) -> dict:
-        return {'case': self, 'events': self.events.all()}
+        return {'case': self, 'events': self.events.all(), 'tlp': self.tlp, 'priority': self.priority}
 
     @property
     def email_attachments(self) -> list[dict]:
@@ -159,12 +159,6 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
             return config.TEAM_EMAIL
         return None
 
-    @property
-    def recipients(self) -> dict[str, list]:
-        recipients = defaultdict(list)
-        recipients['from'] = config.EMAIL_SENDER
-        return recipients
-
     def subject(self, title: str = None) -> str:
         return '[%s][TLP:%s][ID:%s] %s' % (config.TEAM_NAME, gettext_lazy(self.tlp.name), self.uuid, title)
 
@@ -172,15 +166,16 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         event_by_contacts = kwargs.get('event_by_contacts', self.events_by_contacts().items())
         template_params = self.template_params
         recipients = self.recipients
+        team_recipients = [self.assigned_email, self.team_email]
         if event_by_contacts:
             for contacts, events in event_by_contacts:
                 template_params.update({'events': events})
                 recipients.update({'to': [c.username for c in contacts]})
-                recipients.update({'bcc': [self.assigned_email, self.team_email]})
+                recipients.update({'bcc': team_recipients})
                 self.send_mail(self.subject(title), self.render_template(template, extra_params=template_params),
                                recipients, self.email_attachments, self.email_headers)
         else:
-            recipients.update({'to': [self.assigned_email, self.team_email]})
+            recipients.update({'to': [recipient for recipient in team_recipients if recipient]})
             self.send_mail(self.subject(title), self.render_template(template, extra_params=self.template_params),
                            recipients, self.email_attachments, self.email_headers)
 

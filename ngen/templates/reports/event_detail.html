@@ -1,6 +1,6 @@
 {% load i18n ngen_tags %}
 {% for report in event.taxonomy.reports.all %}
-    {% if report.lang == config.NGEN_LANG %}
+    {% if report.lang == lang|default:config.NGEN_LANG %}
         <div class="content">
             <table bgcolor="">
                 <tr>

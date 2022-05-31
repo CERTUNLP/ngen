@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 
 from constance import config
 from django.core.mail import EmailMultiAlternatives
@@ -10,13 +11,14 @@ class Communication:
     @staticmethod
     def send_mail(subject, content: dict, recipients: dict[str, list], attachments: list[dict] = None,
                   extra_headers: dict = None):
-        email = EmailMultiAlternatives(subject, content['text'], recipients['from'],
-                                       recipients['to'], bcc=recipients['bcc'], cc=recipients['cc'])
-        email.attach_alternative(content['html'], "text/html")
-        email.extra_headers.update(extra_headers)
-        for attachment in attachments:
-            email.attach(attachment['name'], attachment['file'].read())
-        email.send()
+        if recipients['to']:
+            email = EmailMultiAlternatives(subject, content['text'], recipients['from'],
+                                           recipients['to'], bcc=recipients['bcc'], cc=recipients['cc'])
+            email.attach_alternative(content['html'], "text/html")
+            email.extra_headers.update(extra_headers)
+            for attachment in attachments:
+                email.attach(attachment['name'], attachment['file'].read())
+            email.send()
 
     @staticmethod
     def render_template(template: str, extra_params: dict = None, lang: str = None) -> dict:
@@ -35,11 +37,13 @@ class Communication:
                               self.recipients, self.email_attachments, self.email_headers)
 
     def subject(self, title: str = None) -> str:
-        raise NotImplementedError
+        return title
 
     @property
     def recipients(self) -> dict[str, list]:
-        raise NotImplementedError
+        recipients = defaultdict(list)
+        recipients['from'] = config.EMAIL_SENDER
+        return recipients
 
     @property
     def template_params(self) -> dict:
@@ -47,7 +51,7 @@ class Communication:
 
     @property
     def email_headers(self) -> dict:
-        raise NotImplementedError
+        return {}
 
     @property
     def email_attachments(self) -> list[dict]:

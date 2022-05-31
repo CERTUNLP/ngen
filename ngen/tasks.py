@@ -49,7 +49,7 @@ def case_renotification():
         notification_count__gte=1)
     cases.update(notification_count=F('notification_count') + 1)
     for case in cases:
-        case.communicate(gettext_lazy('Renotification: New Case'), 'reports/base.html')
+        case.communicate(gettext_lazy('Renotification: New Case'), 'reports/case_base.html')
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
