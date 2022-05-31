@@ -20,7 +20,7 @@ from rest_framework.routers import DefaultRouter
 
 from djangoProject import settings
 from ngen import views
-from ngen.views import RegisterViewSet, ActiveSessionViewSet
+from ngen.views import RegisterViewSet, ActiveSessionViewSet, LoginViewSet, LogoutViewSet
 
 router = DefaultRouter()
 router.register(r'administration/tlp', views.TlpViewSet)
@@ -42,17 +42,18 @@ router.register(r'playbook', views.PlaybookViewSet)
 router.register(r'task', views.TaskViewSet)
 router.register(r'todo', views.TodoTaskViewSet)
 router.register(r'artifact', views.ArtifactViewSet)
+router.register(r"announcement", views.AnnouncementViewSet)
 router.register(r"register", RegisterViewSet, basename="register")
 router.register(r"checkSession", ActiveSessionViewSet, basename="check-session")
-# router.register(r"login", LoginViewSet, basename="login")
-# router.register(r"logout", LogoutViewSet, basename="logout")
+router.register(r"login", LoginViewSet, basename="login")
+router.register(r"logout", LogoutViewSet, basename="logout")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('about/', views.AboutView.as_view()),
     path('__debug__/', include('debug_toolbar.urls')),
 ]

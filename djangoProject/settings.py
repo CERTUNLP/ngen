@@ -143,8 +143,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        'rest_framework.authentication.SessionAuthentication',
         "ngen.backends.ActiveSessionAuthentication",
+        'rest_framework.authentication.SessionAuthentication',
     ),
 }
 
@@ -297,4 +297,4 @@ if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
