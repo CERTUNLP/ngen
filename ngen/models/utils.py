@@ -109,6 +109,7 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
 
 class NgenEvidenceMixin(models.Model):
     evidence = GenericRelation('ngen.Evidence')
+    _files = []
 
     class Meta:
         abstract = True
@@ -118,11 +119,24 @@ class NgenEvidenceMixin(models.Model):
             evidence.delete()
         super(NgenEvidenceMixin, self).delete()
 
+    def save(self, **kwargs):
+        super(NgenEvidenceMixin, self).save()
+        for file in self.files:
+            self.add_evidence(file)
+
     def evidence_path(self):
         return 'evidence/%s/%s' % (self.__class__.__name__, self.id)
 
     def add_evidence(self, file):
         self.evidence.get_or_create(file=file)
+
+    @property
+    def files(self):
+        return self._files
+
+    @files.setter
+    def files(self, files):
+        self._files = files
 
 
 class NgenPriorityMixin(models.Model):

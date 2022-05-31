@@ -37,25 +37,20 @@ class GenericRelationField(serializers.RelatedField):
                                   format=None)
 
 
-class EvidenceSerializerMixin:
-    def save_evidence(self, instance):
-        request = self.context.get('request')
-        files = request.FILES
-        if files:
-            try:
-                for file in files.getlist('evidence'):
-                    instance.add_evidence(file)
-            except IntegrityError as e:
-                raise ValidationError({'evidence': e})
+class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
 
     def update(self, instance, validated_data):
+        files = self.context.get('request').FILES
+        if files:
+            validated_data['files'] = files.getlist('evidence')
         event = super().update(instance, validated_data)
-        self.save_evidence(event)
         return event
 
     def create(self, validated_data):
+        files = self.context.get('request').FILES
+        if files:
+            validated_data['files'] = files.getlist('evidence')
         event = super().create(validated_data)
-        self.save_evidence(event)
         return event
 
 
