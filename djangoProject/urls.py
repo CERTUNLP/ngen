@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import comment.api.views as comment_views
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
@@ -20,7 +21,6 @@ from rest_framework.routers import DefaultRouter
 
 from djangoProject import settings
 from ngen import views
-from ngen.views import RegisterViewSet, ActiveSessionViewSet, LoginViewSet, LogoutViewSet
 
 router = DefaultRouter()
 router.register(r'administration/tlp', views.TlpViewSet)
@@ -43,16 +43,20 @@ router.register(r'task', views.TaskViewSet)
 router.register(r'todo', views.TodoTaskViewSet)
 router.register(r'artifact', views.ArtifactViewSet)
 router.register(r"announcement", views.AnnouncementViewSet)
-router.register(r"register", RegisterViewSet, basename="register")
-router.register(r"checkSession", ActiveSessionViewSet, basename="check-session")
-router.register(r"login", LoginViewSet, basename="login")
-router.register(r"logout", LogoutViewSet, basename="logout")
+# router.register(r"comments", views.CommentViewSet)
+router.register(r"register", views.RegisterViewSet, basename="register")
+router.register(r"checkSession", views.ActiveSessionViewSet, basename="check-session")
+router.register(r"login", views.LoginViewSet, basename="login")
+router.register(r"logout", views.LogoutViewSet, basename="logout")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/comments/', comment_views.CommentList.as_view(), name='comment-list'),
+    path('api/comments/create/', comment_views.CommentCreate.as_view(), name='comment-create'),
+    path('api/comments/<int:pk>/', comment_views.CommentDetail.as_view(), name='comment-detail'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('about/', views.AboutView.as_view()),
     path('__debug__/', include('debug_toolbar.urls')),

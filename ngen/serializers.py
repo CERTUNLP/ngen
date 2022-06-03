@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import jwt
 from colorfield.serializers import ColorField
+from comment.models import Comment
 from constance import config
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -115,10 +116,15 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
         read_only=True,
         view_name='artifact-detail'
     )
+    comments = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Event
         fields = '__all__'
+
+    def get_comments(self, obj):
+        comments_qs = Comment.objects.filter_parents_by_object(obj)
+        return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
 
     @staticmethod
     def allowed_fields():
@@ -166,6 +172,7 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
         view_name='case-detail'
     )
     evidence = serializers.SerializerMethodField(read_only=True)
+    comments = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Case
@@ -201,6 +208,10 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
     @staticmethod
     def allowed_fields():
         return config.ALLOWED_FIELDS_CASE.split(',')
+
+    def get_comments(self, obj):
+        comments_qs = Comment.objects.filter_parents_by_object(obj)
+        return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
 
 
 class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
@@ -434,3 +445,9 @@ class AnnouncementSerializer(EvidenceSerializerMixin, serializers.HyperlinkedMod
     class Meta:
         model = models.Announcement
         fields = '__all__'
+
+
+class CommentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Comment
+        exclude = ['content_type', 'object_id']

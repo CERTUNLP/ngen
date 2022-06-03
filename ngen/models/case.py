@@ -4,8 +4,10 @@ from collections import defaultdict
 from email.utils import make_msgid
 from pathlib import Path
 
+from comment.models import Comment
 from constance import config
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import DNS_NAME
 from django.db import models
@@ -39,6 +41,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         'auto_open', gettext_lazy('Auto open')), ('auto_close', gettext_lazy('Auto close')))
     lifecycle = models.CharField(choices=LIFECYCLE, default=LIFECYCLE.manual, max_length=20)
     notification_count = models.PositiveSmallIntegerField(default=1)
+    comments = GenericRelation(Comment)
 
     class Meta:
         db_table = 'case'
@@ -117,6 +120,8 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
             self.evidence.add(evidence)
         for event in child.events.all():
             self.events.add(event)
+        for comment in child.comments.all():
+            self.comments.add(comment)
         for artifact_relation in child.artifact_relation.all():
             ArtifactRelation.objects.get_or_create(artifact=artifact_relation.artifact,
                                                    content_type=ContentType.objects.get_for_model(self),
@@ -199,6 +204,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         related_name="events",
     )
     node_order_by = ['id']
+    comments = GenericRelation(Comment)
 
     class Meta:
         db_table = 'event'
@@ -231,6 +237,8 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         child.tasks.clear()
         for evidence in child.evidence.all():
             self.evidence.add(evidence)
+        for comment in child.comments.all():
+            self.comments.add(comment)
         for artifact_relation in child.artifact_relation.all():
             ArtifactRelation.objects.get_or_create(artifact=artifact_relation.artifact,
                                                    content_type=ContentType.objects.get_for_model(self),
