@@ -334,31 +334,6 @@ class CaseTemplate(NgenModel, NgenPriorityMixin):
         db_table = 'case_template'
 
 
-class IncidentComment(models.Model):
-    thread = models.ForeignKey('ngen.IncidentCommentThread', models.DO_NOTHING, blank=True, null=True)
-    author = models.ForeignKey('ngen.User', models.DO_NOTHING, blank=True, null=True)
-    body = models.TextField()
-    ancestors = models.CharField(max_length=1024)
-    depth = models.IntegerField()
-    created = models.DateTimeField()
-    state = models.IntegerField()
-
-    class Meta:
-        db_table = 'incident_comment'
-
-
-class IncidentCommentThread(models.Model):
-    id = models.CharField(primary_key=True, max_length=255)
-    incident_id = models.IntegerField(unique=True, blank=True, null=True)
-    permalink = models.CharField(max_length=255)
-    is_commentable = models.IntegerField()
-    num_comments = models.IntegerField()
-    last_comment_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'incident_comment_thread'
-
-
 class ActiveSession(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE)
     token = models.CharField(max_length=255)
