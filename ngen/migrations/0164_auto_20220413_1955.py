@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from ngen.models import Case, State
+from ngen.models import State
 
 
 def state_bools(apps, schema_editor):
@@ -23,6 +23,7 @@ def state_translate(name):
 
 
 def state_bool_on_case_dates(apps, schema_editor):
+    Case = apps.get_model('ngen', 'Case')
     for case in Case.objects.all():
         for log in case.history.filter(changes__contains='"state"', action=1).order_by('timestamp'):
             child_state = State.objects.get(name=state_translate(log.changes_dict['state'][1]))

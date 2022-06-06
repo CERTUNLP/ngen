@@ -7,7 +7,7 @@ from ngen.models import State
 def removed_cases(apps, schema_editor):
     # State = apps.get_model('ngen', 'State')
 
-    removed = State.objects.get(name='Removed')
+    removed = State.objects.filter(name='Removed').first()
     if removed:
         for case in removed.cases.all():
             case.delete()

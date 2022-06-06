@@ -4,8 +4,6 @@ import json
 from auditlog.models import LogEntry
 from django.db import migrations
 
-from ngen.models import Case
-
 
 def log_create(case, changes: dict, date):
     logentry = LogEntry.objects.log_create(case, action=LogEntry.Action.UPDATE, changes=json.dumps(changes))
@@ -15,9 +13,11 @@ def log_create(case, changes: dict, date):
 
 
 def empty_state_change_to_logentry(apps, schema_editor):
-    for case in Case.objects.filter(history__isnull=True):
-        log_create(case, {'state': ('Initial', 'Staging')}, case.created)
-        log_create(case, {'state': ('Staging', case.state.name)}, case.modified)
+    Case = apps.get_model('ngen', 'Case')
+    for case in Case.objects.all():
+        if not case.history.all():
+            log_create(case, {'state': ('Initial', 'Staging')}, case.created)
+            log_create(case, {'state': ('Staging', case.state.name)}, case.modified)
 
 
 class Migration(migrations.Migration):

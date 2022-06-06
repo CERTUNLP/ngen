@@ -5,7 +5,7 @@ from django.db import migrations
 
 def remove_undefined_priority(apps, schema_editor):
     Priority = apps.get_model('ngen', 'Priority')
-    priority = Priority.objects.get(name='Undefined')
+    priority = Priority.objects.filter(name='Undefined').first()
     if priority:
         for case in Priority.objects.get(name='Undefined').case_set.all():
             case.priority = Priority.objects.get(name='Very Low')

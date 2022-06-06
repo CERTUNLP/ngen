@@ -5,8 +5,8 @@ from django.db import migrations
 
 def remove_undefined_priority(apps, schema_editor):
     State = apps.get_model('ngen', 'State')
-    State.objects.get(name='Unresolved').delete()
-    undefined = State.objects.get(name='Undefined')
+    State.objects.filter(name='Unresolved').delete()
+    undefined = State.objects.filter(name='Undefined').first()
     if undefined:
         undefined.cases.update(state=State.objects.get(name='Staging'))
         undefined.decision_states.update(state=State.objects.get(name='Staging'))
