@@ -21,6 +21,9 @@ from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeabl
 from ..communication import Communication
 from ..storage import HashedFilenameStorage
 
+LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
+    'auto_open', gettext_lazy('Auto open')), ('auto_close', gettext_lazy('Auto close')))
+
 
 class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, ArtifactRelated, Communication):
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
@@ -37,8 +40,6 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     node_order_by = ['id']
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
-        'auto_open', gettext_lazy('Auto open')), ('auto_close', gettext_lazy('Auto close')))
     lifecycle = models.CharField(choices=LIFECYCLE, default=LIFECYCLE.manual, max_length=20)
     notification_count = models.PositiveSmallIntegerField(default=1)
     comments = GenericRelation(Comment)
@@ -72,12 +73,23 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
 
     @hook(BEFORE_CREATE)
     def before_create(self):
+        if not self.date:
+            self.date = self.created
         self.report_message_id = make_msgid(domain=DNS_NAME)
         if not self.state:
             self.state = ngen.models.State.get_default()
+        if self.state.attended:
+            self.attend_date = datetime.datetime.now()
+            self.solve_date = None
+        elif self.state.solved:
+            self.solve_date = datetime.datetime.now()
+
+    @hook(AFTER_CREATE)
+    def after_create(self):
+        self.communicate(gettext_lazy('New Case'), 'reports/case_base.html')
 
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
-    def after_update(self):
+    def before_update(self):
         if self.state.attended:
             self.attend_date = datetime.datetime.now()
             self.solve_date = None
@@ -94,10 +106,6 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     def communicate_open(self):
         title = 'Case reopened' if self.history.filter(changes__contains='solve_date":').exists() else 'Case opened'
         self.communicate(gettext_lazy(title), 'reports/case_base.html')
-
-    @hook(AFTER_CREATE)
-    def after_create(self):
-        self.communicate(gettext_lazy('New Case'), 'reports/case_base.html')
 
     @property
     def evidence_events(self):
@@ -210,12 +218,37 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     def __str__(self):
         return "%s:%s" % (self.pk, self.address)
 
+    @property
+    def detections_count(self):
+        return self.children.count() + 1
+
     @hook(BEFORE_CREATE)
     def auto_merge(self):
-        event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, cird=self.cidr, domain=self.domain,
+        event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, cidr=self.cidr, domain=self.domain,
                                            case__solve_date__isnull=True).order_by('id').last()
+
         if event:
-            event.merge(self)
+            self.parent = event
+        else:
+            event = self
+
+        template = CaseTemplate.objects.parents_of(event).filter(event_taxonomy=event.taxonomy, event_feed=event.feed,
+                                                                 event_count__lte=event.detections_count).first()
+        if template:
+            event.case = template.create_case()
+
+    @hook(AFTER_UPDATE, when="taxonomy", has_changed=True)
+    def taxonomy_assign(self):
+        self.todos.exclude(task__playbook__in=self.taxonomy.playbooks.all()).delete()
+        for playbook in self.taxonomy.playbooks.all():
+            for task in playbook.tasks.all():
+                self.tasks.add(task)
+
+    @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
+    def case_assign_communication(self, event: 'Event'):
+        if event.case.events.count() >= 1:
+            event.case.communicate(gettext_lazy('New event on case'), 'reports/case_assign.html',
+                                   event_by_contacts={tuple(event.email_contacts()): [event]})
 
     @property
     def blocked(self):
@@ -252,13 +285,6 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
                 return network_contacts[0]
         return contacts
 
-    @hook(AFTER_UPDATE, when="taxonomy", has_changed=True)
-    def taxonomy_assign(self):
-        self.todos.exclude(task__playbook__in=self.taxonomy.playbooks.all()).delete()
-        for playbook in self.taxonomy.playbooks.all():
-            for task in playbook.tasks.all():
-                self.tasks.add(task)
-
     @property
     def artifacts_dict(self) -> dict:
         artifacts_dict = {'hashes': [], 'files': []}
@@ -274,12 +300,6 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     @property
     def enrichable(self):
         return self.mergeable
-
-    @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
-    def case_assign_communication(self, event: 'Event'):
-        if event.case.events.count() >= 1:
-            event.case.communicate(gettext_lazy('New event on case'), 'reports/case_assign.html',
-                                   event_by_contacts={tuple(event.email_contacts()): [event]})
 
 
 class Evidence(NgenModel):
@@ -315,17 +335,44 @@ class Evidence(NgenModel):
         self.file.storage.delete(self.file.name)
 
 
-class CaseTemplate(NgenModel, NgenPriorityMixin):
-    taxonomy = models.ForeignKey('ngen.Taxonomy', models.DO_NOTHING)
-    tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
-    feed = models.ForeignKey('ngen.Feed', models.DO_NOTHING)
-    state = models.ForeignKey('ngen.State', models.DO_NOTHING, related_name='decision_states')
-    network = models.ForeignKey('ngen.Network', models.DO_NOTHING, db_column='network', blank=True, null=True)
+class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
+    event_taxonomy = models.ForeignKey('ngen.Taxonomy', models.DO_NOTHING)
+    event_feed = models.ForeignKey('ngen.Feed', models.DO_NOTHING)
+    event_count = models.PositiveSmallIntegerField(default=1)
+
+    case_tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
+    case_state = models.ForeignKey('ngen.State', models.DO_NOTHING, related_name='decision_states')
+    case_lifecycle = models.CharField(choices=LIFECYCLE, default=LIFECYCLE.auto, max_length=20)
 
     active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'case_template'
+
+    def save(self, *args, **kwargs):
+        if not self.cidr and not self.domain:
+            default_network = ngen.models.Network.objects.default_network()
+            self.cidr = default_network.cidr
+            self.domain = default_network.domain
+        super(CaseTemplate, self).save()
+
+    @property
+    def event_cidr(self):
+        return self.cidr
+
+    @property
+    def event_domain(self):
+        return self.domain
+
+    @property
+    def case_priority(self) -> 'Priority':
+        return self.priority
+
+    def create_case(self) -> 'Case':
+        return Case.objects.create(tlp=self.case_tlp, lifecycle=self.case_lifecycle, state=self.case_state)
+
+    def __str__(self):
+        return str(self.id)
 
 
 class ActiveSession(models.Model):

@@ -3,10 +3,12 @@ import ipaddress
 from auditlog.models import AuditlogHistoryField
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+from django.db.models import Q
+from django.db.models.functions import Length
 from django.utils.translation import gettext
-from django_lifecycle import hook, BEFORE_DELETE, BEFORE_UPDATE, LifecycleModelMixin
+from django_lifecycle import hook, BEFORE_DELETE, BEFORE_UPDATE, LifecycleModelMixin, BEFORE_CREATE
 from model_utils.models import TimeStampedModel
-from netfields import CidrAddressField
+from netfields import CidrAddressField, NetManager
 from rest_framework.exceptions import ValidationError
 from treebeard.al_tree import AL_Node
 
@@ -94,6 +96,7 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
             self.children.add(child)
 
     @hook(BEFORE_UPDATE, when="parent", has_changed=True)
+    @hook(BEFORE_CREATE, when="parent", is_not=None)
     def parent_changed(self):
         if self.initial_value('parent') is None:
             if self.parent.mergeable_with(self):
@@ -151,10 +154,33 @@ class NgenPriorityMixin(models.Model):
         super().save(*args, **kwargs)
 
 
+class AddressManager(NetManager):
+    def cidr_parents_of(self, cidr: str):
+        return self.filter(cidr__net_contains=cidr).order_by('-cidr')
+
+    def domain_parents_of(self, domain: str):
+        query = Q(domain='') | Q(domain=domain)
+        partition = domain.partition('.')[-1]
+        while partition:
+            query |= Q(domain=partition)
+            partition = partition.partition('.')[-1]
+        return self.filter(query).order_by(Length('domain').desc())
+
+    def parents_of(self, address: 'NgenAddressModel'):
+        if address.cidr:
+            return self.cidr_parents_of(str(address.cidr))
+        elif address.domain:
+            return self.domain_parents_of(address.domain)
+
+    def parent_of(self, address: 'NgenAddressModel'):
+        return self.parents_of(address).first()
+
+
 class NgenAddressModel(models.Model):
     cidr = CidrAddressField(null=True)
     domain = models.CharField(max_length=255, null=True, default=None)
     address = None
+    objects = AddressManager()
 
     class Meta:
         abstract = True

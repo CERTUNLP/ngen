@@ -1,12 +1,29 @@
 from django.db import models
-from django.db.models import Q
-from django.db.models.functions import Length
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy
 from model_utils import Choices
-from netfields import NetManager
 
-from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin, NgenAddressModel
+from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin, NgenAddressModel, AddressManager
+
+
+class NetworkManager(AddressManager):
+    def parent_of(self, network: 'Network'):
+        parent = super().parent_of(network)
+        if not parent:
+            parent = self.default_network()
+        return parent
+
+    def default_network(self):
+        return self.get(cidr='0.0.0.0/0')
+
+    def children_of(self, network: 'Network'):
+        children = None
+        if network.cidr:
+            children = network.parent.get_children().filter(cidr__net_contained=str(network.cidr))
+        elif network.domain:
+            children = network.parent.get_children().filter(domain__endswith=network.domain).exclude(
+                domain=network.domain)
+        return children
 
 
 class Network(NgenModel, NgenTreeModel, NgenAddressModel):
@@ -15,7 +32,7 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
     TYPE = Choices(('internal', gettext_lazy('Internal')), ('external', gettext_lazy('External')))
     type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
     network_entity = models.ForeignKey('ngen.NetworkEntity', models.DO_NOTHING, null=True)
-    objects = NetManager()
+    objects = NetworkManager()
     node_order_by = ['parent', '-cidr', 'domain']
 
     class Meta:
@@ -46,43 +63,13 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
             if self.get_children():
                 self.get_children().update(parent=self.parent)
 
-            self.parent = Network.lookup_parent(self)
-            children = Network.lookup_children(self)
+            self.parent = Network.objects.parent_of(self)
+            children = Network.objects.children_of(self)
 
         super(Network, self).save(*args, **kwargs)
 
         if children:
             children.update(parent=self)
-
-    @classmethod
-    def lookup_parent(cls, network):
-        parent = None
-        if network.cidr:
-            parent = Network.objects.filter(cidr__net_contains=network.cidr.exploded).order_by('-cidr').first()
-            if not parent:
-                parent = Network.lookup_default_network()
-        elif network.domain:
-            query = Q(domain='')
-            partition = network.domain.partition('.')[-1]
-            while partition:
-                query |= Q(domain=partition)
-                partition = partition.partition('.')[-1]
-            parent = Network.objects.filter(query).order_by(Length('domain').desc()).first()
-        return parent
-
-    @classmethod
-    def lookup_children(cls, network):
-        children = None
-        if network.cidr:
-            children = network.parent.get_children().filter(cidr__net_contained=network.cidr.exploded)
-        elif network.domain:
-            children = network.parent.get_children().filter(domain__endswith=network.domain).exclude(
-                domain=network.domain)
-        return children
-
-    @classmethod
-    def lookup_default_network(cls):
-        return cls.objects.get(cidr='0.0.0.0/0')
 
     def ancestors_email_contacts(self, priority):
         return self.get_ancestors_related(
