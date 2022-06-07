@@ -13,6 +13,7 @@ from django.core.mail import DNS_NAME
 from django.db import models
 from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
+from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
 
 import ngen
@@ -222,7 +223,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     def detections_count(self):
         return self.children.count() + 1
 
-    @hook(BEFORE_CREATE)
+    @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
         event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, cidr=self.cidr, domain=self.domain,
                                            case__solve_date__isnull=True).order_by('id').last()
@@ -230,12 +231,10 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         if event:
             self.parent = event
         else:
-            event = self
-
-        template = CaseTemplate.objects.parents_of(event).filter(event_taxonomy=event.taxonomy, event_feed=event.feed,
-                                                                 event_count__lte=event.detections_count).first()
-        if template:
-            event.case = template.create_case()
+            template = CaseTemplate.objects.parents_of(self).filter(event_taxonomy=self.taxonomy,
+                                                                    event_feed=self.feed).first()
+            if template:
+                self.case = template.create_case()
 
     @hook(AFTER_UPDATE, when="taxonomy", has_changed=True)
     def taxonomy_assign(self):
@@ -264,7 +263,8 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
             if self.tasks.contains(todo.task):
                 self.tasks.remove(todo.task)
                 self.todos.add(todo)
-        child.tasks.clear()
+            else:
+                todo.delete()
         for evidence in child.evidence.all():
             self.evidence.add(evidence)
         for comment in child.comments.all():
@@ -338,7 +338,6 @@ class Evidence(NgenModel):
 class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
     event_taxonomy = models.ForeignKey('ngen.Taxonomy', models.DO_NOTHING)
     event_feed = models.ForeignKey('ngen.Feed', models.DO_NOTHING)
-    event_count = models.PositiveSmallIntegerField(default=1)
 
     case_tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
     case_state = models.ForeignKey('ngen.State', models.DO_NOTHING, related_name='decision_states')
