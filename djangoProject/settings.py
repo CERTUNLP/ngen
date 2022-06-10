@@ -59,7 +59,9 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'auditlog',
     'colorfield',
-    'comment'
+    'comment',
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
 ]
 
 MIDDLEWARE = [
@@ -303,3 +305,8 @@ CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
 COMMENT_ALLOW_SUBSCRIPTION = True
 COMMENT_ALLOW_TRANSLATION = True
 
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': os.environ.get('ELASTIC_HOST') + ':' + os.environ.get('ELASTIC_PORT')
+    },
+}

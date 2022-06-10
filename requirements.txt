@@ -20,7 +20,9 @@ celery==5.2.7
     #   django-celery-email
     #   django-celery-results
 certifi==2022.5.18.1
-    # via requests
+    # via
+    #   elasticsearch
+    #   requests
 charset-normalizer==2.0.12
     # via requests
 click==8.1.3
@@ -57,6 +59,7 @@ django==4.0.5
     #   django-lifecycle
     #   django-model-utils
     #   django-netfields
+    #   django-nine
     #   django-picklefield
     #   django-treebeard
     #   djangorestframework
@@ -82,6 +85,10 @@ django-cors-headers==3.12.0
     # via -r requirements.in
 django-debug-toolbar==3.4.0
     # via -r requirements.in
+django-elasticsearch-dsl==7.2.2
+    # via django-elasticsearch-dsl-drf
+django-elasticsearch-dsl-drf==0.22.4
+    # via -r requirements.in
 django-extensions==3.1.5
     # via -r requirements.in
 django-filter==21.1
@@ -94,6 +101,8 @@ django-model-utils==4.2.0
     # via -r requirements.in
 django-netfields==1.3.0
     # via -r requirements.in
+django-nine==0.2.5
+    # via django-elasticsearch-dsl-drf
 django-picklefield==3.0.1
     # via -r requirements.in
 django-timezone-field==5.0
@@ -101,7 +110,15 @@ django-timezone-field==5.0
 django-treebeard==4.5.1
     # via -r requirements.in
 djangorestframework==3.13.1
-    # via -r requirements.in
+    # via django-elasticsearch-dsl-drf
+elasticsearch==7.17.4
+    # via
+    #   django-elasticsearch-dsl-drf
+    #   elasticsearch-dsl
+elasticsearch-dsl==7.4.0
+    # via
+    #   django-elasticsearch-dsl
+    #   django-elasticsearch-dsl-drf
 idna==3.3
     # via requests
 kombu==5.2.4
@@ -133,6 +150,7 @@ python-crontab==2.6.0
 python-dateutil==2.8.2
     # via
     #   django-auditlog
+    #   elasticsearch-dsl
     #   python-crontab
 python-magic==0.4.26
     # via cortex4py
@@ -149,7 +167,10 @@ six==1.16.0
     # via
     #   bleach
     #   click-repl
+    #   django-elasticsearch-dsl
+    #   django-elasticsearch-dsl-drf
     #   django-netfields
+    #   elasticsearch-dsl
     #   python-dateutil
 sqlparse==0.4.2
     # via
@@ -168,7 +189,9 @@ typing==3.7.4.3
 tzdata==2022.1
     # via django-celery-beat
 urllib3==1.26.9
-    # via requests
+    # via
+    #   elasticsearch
+    #   requests
 urlman==2.0.1
     # via django-lifecycle
 validators==0.19.0

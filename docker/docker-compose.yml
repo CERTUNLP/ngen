@@ -87,7 +87,7 @@ services:
             - "1025:1025" # smtp server
             - "8025:8025" # web ui
     ngen-elasticsearch:
-        image: elasticsearch:7.9.1
+        image: elasticsearch:7.17.4
         environment:
             - http.host=0.0.0.0
             - discovery.type=single-node

@@ -21,6 +21,7 @@ from rest_framework.routers import DefaultRouter
 
 from djangoProject import settings
 from ngen import views
+from ngen.documents import CaseDocumentViewSet
 
 router = DefaultRouter()
 router.register(r'administration/tlp', views.TlpViewSet)
@@ -48,7 +49,9 @@ router.register(r"register", views.RegisterViewSet, basename="register")
 router.register(r"checkSession", views.ActiveSessionViewSet, basename="check-session")
 router.register(r"login", views.LoginViewSet, basename="login")
 router.register(r"logout", views.LogoutViewSet, basename="logout")
-
+router.register(r'search/case',
+                CaseDocumentViewSet,
+                basename='casedocument')
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
