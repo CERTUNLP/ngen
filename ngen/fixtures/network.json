@@ -1,0 +1,36 @@
+[
+  {
+    "model": "ngen.network",
+    "pk": 434,
+    "fields": {
+      "created": "2019-03-22T16:21:25Z",
+      "modified": "2021-12-05T15:12:42.884Z",
+      "parent": 22688,
+      "cidr": "163.10.0.0/16",
+      "domain": null,
+      "active": true,
+      "type": "internal",
+      "network_entity": 19626,
+      "contacts": [
+        57
+      ]
+    }
+  },
+  {
+    "model": "ngen.network",
+    "pk": 19828,
+    "fields": {
+      "created": "2020-04-16T13:00:22Z",
+      "modified": "2021-12-05T15:12:41.406Z",
+      "parent": 22688,
+      "cidr": null,
+      "domain": "unlp.edu.ar",
+      "active": true,
+      "type": "internal",
+      "network_entity": 19626,
+      "contacts": [
+        57
+      ]
+    }
+  }
+]

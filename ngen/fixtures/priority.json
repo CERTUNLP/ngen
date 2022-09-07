@@ -1,0 +1,82 @@
+[
+  {
+    "model": "ngen.priority",
+    "pk": 1,
+    "fields": {
+      "created": "2019-03-22T16:24:33Z",
+      "modified": "2022-05-27T20:03:30.447Z",
+      "name": "Critical",
+      "severity": 1,
+      "attend_time": "00:00:00",
+      "solve_time": "01:00:00",
+      "attend_deadline": "00:01:00",
+      "solve_deadline": "2 00:00:00",
+      "notification_amount": 3,
+      "color": "#FFFFFF"
+    }
+  },
+  {
+    "model": "ngen.priority",
+    "pk": 2,
+    "fields": {
+      "created": "2019-03-22T16:24:33Z",
+      "modified": "2022-04-09T00:26:25.310Z",
+      "name": "Medium",
+      "severity": 3,
+      "attend_time": "01:00:00",
+      "solve_time": "08:00:00",
+      "attend_deadline": "07:00:00",
+      "solve_deadline": "2 00:00:00",
+      "notification_amount": 3,
+      "color": "#FFFFFF"
+    }
+  },
+  {
+    "model": "ngen.priority",
+    "pk": 3,
+    "fields": {
+      "created": "2019-03-22T16:24:33Z",
+      "modified": "2022-04-09T00:26:44.802Z",
+      "name": "High",
+      "severity": 2,
+      "attend_time": "00:10:00",
+      "solve_time": "04:00:00",
+      "attend_deadline": "03:00:00",
+      "solve_deadline": "2 00:00:00",
+      "notification_amount": 3,
+      "color": "#FFFFFF"
+    }
+  },
+  {
+    "model": "ngen.priority",
+    "pk": 5,
+    "fields": {
+      "created": "2019-03-22T16:24:33Z",
+      "modified": "2022-04-09T00:19:17.743Z",
+      "name": "Very Low",
+      "severity": 5,
+      "attend_time": "1 00:00:00",
+      "solve_time": "7 00:00:00",
+      "attend_deadline": "1 00:00:00",
+      "solve_deadline": "2 00:00:00",
+      "notification_amount": 3,
+      "color": "#FFFFFF"
+    }
+  },
+  {
+    "model": "ngen.priority",
+    "pk": 6,
+    "fields": {
+      "created": "2019-03-22T16:24:33Z",
+      "modified": "2022-04-09T00:33:40.089Z",
+      "name": "Low",
+      "severity": 4,
+      "attend_time": "04:00:00",
+      "solve_time": "2 00:00:00",
+      "attend_deadline": "1 00:00:00",
+      "solve_deadline": "2 00:00:00",
+      "notification_amount": 3,
+      "color": "#FFFFFF"
+    }
+  }
+]

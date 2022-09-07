@@ -1,0 +1,13 @@
+[
+  {
+    "model": "ngen.networkentity",
+    "pk": 19626,
+    "fields": {
+      "created": "2020-04-16T13:09:25Z",
+      "modified": "2020-04-16T13:09:25Z",
+      "name": "Universidad Nacional de La Plata",
+      "slug": "universidad_nacional_de_la_plata",
+      "active": 1
+    }
+  }
+]

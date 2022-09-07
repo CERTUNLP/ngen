@@ -1,0 +1,1626 @@
+[
+  {
+    "model": "ngen.taxonomy",
+    "pk": 0,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Accessible AFP Report",
+      "slug": "accessible_afp_report",
+      "active": false,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 1,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.771Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Blacklist",
+      "slug": "blacklist",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 2,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.771Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Botnet",
+      "slug": "botnet",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 3,
+    "fields": {
+      "created": "2019-04-23T14:40:45Z",
+      "modified": "2021-12-10T15:01:46.772Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Botnet Attack Command",
+      "slug": "botnet_attack_command",
+      "active": false,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 4,
+    "fields": {
+      "created": "2019-04-23T10:45:33Z",
+      "modified": "2021-12-10T15:01:46.772Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Botnet Drone",
+      "slug": "botnet_drone",
+      "active": false,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 5,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.773Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Bruteforce",
+      "slug": "bruteforce",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 6,
+    "fields": {
+      "created": "2017-12-20T00:00:00Z",
+      "modified": "2021-12-10T15:01:46.773Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Bruteforcing SSH",
+      "slug": "bruteforcing_ssh",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 7,
+    "fields": {
+      "created": "2018-02-01T15:21:41Z",
+      "modified": "2021-12-10T15:01:46.774Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Cisco Smart Install",
+      "slug": "cisco_smart_install",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 8,
+    "fields": {
+      "created": "2018-05-03T13:24:46Z",
+      "modified": "2021-12-10T15:01:46.774Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Data Breach",
+      "slug": "data_breach",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 9,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.775Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "DNS zone transfer",
+      "slug": "dns_zone_transfer",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 10,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.775Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "DOS chargen",
+      "slug": "dos_chargen",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 11,
+    "fields": {
+      "created": "2019-04-23T14:26:51Z",
+      "modified": "2021-12-10T15:01:46.776Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "DoS Inbound",
+      "slug": "dos_inbound",
+      "active": false,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 12,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.776Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "DOS NTP",
+      "slug": "dos_ntp",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 13,
+    "fields": {
+      "created": "2019-04-23T14:32:41Z",
+      "modified": "2021-12-10T15:01:46.776Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "DoS Outbound",
+      "slug": "dos_outbound",
+      "active": false,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 14,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.776Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "DOS SNMP",
+      "slug": "dos_snmp",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 15,
+    "fields": {
+      "created": "2018-04-20T11:54:47Z",
+      "modified": "2021-12-10T15:01:46.777Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Drupal Remote Code Execution",
+      "slug": "drupal_remote_code_execution",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 16,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.777Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Heartbleed",
+      "slug": "heartbleed",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 17,
+    "fields": {
+      "created": "2018-05-03T12:59:28Z",
+      "modified": "2021-12-10T15:01:46.777Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "information leakage",
+      "slug": "information_leakage",
+      "active": false,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 18,
+    "fields": {
+      "created": "2019-04-01T15:24:55Z",
+      "modified": "2021-12-10T15:01:46.778Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Mail Leak",
+      "slug": "mail_leak",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 19,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.778Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Malware",
+      "slug": "malware",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 20,
+    "fields": {
+      "created": "2018-08-15T12:34:08Z",
+      "modified": "2021-12-10T15:01:46.779Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "miner",
+      "slug": "miner",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 21,
+    "fields": {
+      "created": "2018-08-15T12:34:20Z",
+      "modified": "2021-12-10T15:01:46.779Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "mining_pool_server",
+      "slug": "mining_pool_server",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 22,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.779Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open Chargen",
+      "slug": "open_chargen",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 23,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2022-02-09T19:38:46.386Z",
+      "parent": 82,
+      "type": "vulnerability",
+      "name": "Open DNS",
+      "slug": "open_dns",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 24,
+    "fields": {
+      "created": "2021-12-09T23:26:53.911Z",
+      "modified": "2021-12-10T15:01:46.780Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Fraud",
+      "slug": "fraud",
+      "active": true,
+      "description": "Fraud."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 25,
+    "fields": {
+      "created": "2021-12-09T23:26:53.911Z",
+      "modified": "2021-12-10T15:01:46.781Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Information Content Security",
+      "slug": "information_content_security",
+      "active": true,
+      "description": "Besides a local abuse of data and systems the information security can be endangered by a successful account or application compromise. Furthermore attacks are possible that intercept and access information during transmission (wiretapping, spoofing or hijacking). Human/configuration/software error can also be the cause."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 26,
+    "fields": {
+      "created": "2021-12-09T23:26:53.912Z",
+      "modified": "2021-12-10T15:01:46.781Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Information Gathering",
+      "slug": "information_gathering",
+      "active": true,
+      "description": "Information Gathering."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 27,
+    "fields": {
+      "created": "2021-12-09T23:26:53.912Z",
+      "modified": "2021-12-10T15:01:46.781Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Intrusion Attempts",
+      "slug": "intrusion_attempts",
+      "active": true,
+      "description": "Intrusion Attempts."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 28,
+    "fields": {
+      "created": "2021-12-09T23:26:53.913Z",
+      "modified": "2021-12-10T15:01:46.782Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Intrusions",
+      "slug": "intrusions",
+      "active": true,
+      "description": "A successful compromise of a system or application (service). This can have been caused remotely by a known or new vulnerability, but also by an unauthorised local access. Also includes being part of a botnet."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 29,
+    "fields": {
+      "created": "2021-12-09T23:26:53.913Z",
+      "modified": "2021-12-10T15:01:46.782Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Malicious Code",
+      "slug": "malicious_code",
+      "active": true,
+      "description": "Software that is intentionally included or inserted in a system for a harmful purpose. A user interaction is normally necessary to activate the code."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 30,
+    "fields": {
+      "created": "2021-12-09T23:26:53.914Z",
+      "modified": "2021-12-10T15:01:46.782Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Vulnerable",
+      "slug": "vulnerable",
+      "active": true,
+      "description": "Open resolvers, world readable printers, vulnerability apparent from Nessus etc scans, virus signatures not up-to-date, etc"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 31,
+    "fields": {
+      "created": "2021-12-09T23:35:59.256Z",
+      "modified": "2021-12-10T15:44:52.588Z",
+      "parent": 28,
+      "type": "vulnerability",
+      "name": "Application Compromise",
+      "slug": "application_compromise",
+      "active": true,
+      "description": "Compromise of an application by exploiting (un-)known software vulnerabilities, e.g. SQL injection."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 32,
+    "fields": {
+      "created": "2021-12-09T23:36:00.249Z",
+      "modified": "2021-12-10T15:44:52.589Z",
+      "parent": 27,
+      "type": "vulnerability",
+      "name": "Login attempts",
+      "slug": "brute_force",
+      "active": true,
+      "description": "Multiple login attempts (Guessing / cracking of passwords, brute force). This IOC refers to a resource, which has been observed to perform brute-force attacks over a given application protocol."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 33,
+    "fields": {
+      "created": "2021-12-09T23:36:01.145Z",
+      "modified": "2021-12-10T15:44:52.590Z",
+      "parent": 28,
+      "type": "vulnerability",
+      "name": "Burglary",
+      "slug": "burglary",
+      "active": true,
+      "description": "Physical intrusion, e.g. into corporate building or data-centre."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 34,
+    "fields": {
+      "created": "2021-12-09T23:36:02.094Z",
+      "modified": "2021-12-10T15:44:52.590Z",
+      "parent": 29,
+      "type": "vulnerability",
+      "name": "C2 Server",
+      "slug": "c2_server",
+      "active": true,
+      "description": "Command-and-control server contacted by malware on infected systems."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 35,
+    "fields": {
+      "created": "2021-12-09T23:36:05.492Z",
+      "modified": "2021-12-10T15:44:52.591Z",
+      "parent": 25,
+      "type": "vulnerability",
+      "name": "Data Loss",
+      "slug": "data_loss",
+      "active": true,
+      "description": "Loss of data, e.g. caused by harddisk failure or physical theft."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 36,
+    "fields": {
+      "created": "2021-12-09T23:36:06.531Z",
+      "modified": "2021-12-10T15:44:52.592Z",
+      "parent": 67,
+      "type": "vulnerability",
+      "name": "Distributed Denial of Service",
+      "slug": "ddos",
+      "active": true,
+      "description": "Distributed Denial of Service attack, e.g. SYN-Flood or UDP-based reflection/amplification attacks."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 37,
+    "fields": {
+      "created": "2021-12-09T23:36:08.365Z",
+      "modified": "2021-12-10T15:44:52.592Z",
+      "parent": 30,
+      "type": "vulnerability",
+      "name": "DDoS amplifier",
+      "slug": "ddos_amplifier",
+      "active": true,
+      "description": "Publicly accessible services that can be abused for conducting DDoS reflection/amplification attacks, e.g. DNS open-resolvers or NTP servers with monlist enabled."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 38,
+    "fields": {
+      "created": "2021-12-09T23:36:10.297Z",
+      "modified": "2021-12-10T15:44:52.593Z",
+      "parent": 67,
+      "type": "vulnerability",
+      "name": "Denial of Service",
+      "slug": "dos",
+      "active": true,
+      "description": "Denial of Service attack, e.g. sending specially crafted requests to a web application which causes the application to crash or slow down."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 39,
+    "fields": {
+      "created": "2021-12-09T23:36:10.305Z",
+      "modified": "2021-12-10T15:44:52.594Z",
+      "parent": 27,
+      "type": "vulnerability",
+      "name": "New attack signature",
+      "slug": "exploit",
+      "active": true,
+      "description": "An attack using an unknown exploit."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 40,
+    "fields": {
+      "created": "2021-12-09T23:36:10.309Z",
+      "modified": "2021-12-10T15:44:52.595Z",
+      "parent": 63,
+      "type": "vulnerability",
+      "name": "Harmful Speech",
+      "slug": "harmful_speech",
+      "active": true,
+      "description": "Discretization or discrimination of somebody, e.g. cyber stalking, racism or threats against one or more individuals."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 41,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:44:52.596Z",
+      "parent": 24,
+      "type": "vulnerability",
+      "name": "Copyright",
+      "slug": "copyright",
+      "active": true,
+      "description": "Offering or Installing copies of unlicensed commercial software or other copyright protected materials (Warez)."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 42,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.786Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open Elasticsearch",
+      "slug": "open_elasticsearch",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 43,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.787Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open IPMI",
+      "slug": "open_ipmi",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 44,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.787Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open ISAKMP",
+      "slug": "open_isakmp",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 45,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.787Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open LDAP",
+      "slug": "open_ldap",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 46,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.788Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open MDNS",
+      "slug": "open_mdns",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 47,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.788Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open memcached",
+      "slug": "open_memcached",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 48,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.788Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open MongoDB",
+      "slug": "open_mongodb",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 49,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.789Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open MSSQL",
+      "slug": "open_mssql",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 50,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.789Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open NetBios",
+      "slug": "open_netbios",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 51,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.789Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open NTP monitor",
+      "slug": "open_ntp_monitor",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 52,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.790Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open NTP version",
+      "slug": "open_ntp_version",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 53,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.790Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open Portmap",
+      "slug": "open_portmap",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 54,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.790Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open QOTD",
+      "slug": "open_qotd",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 55,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.791Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open RDP",
+      "slug": "open_rdp",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 56,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.791Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open Redis",
+      "slug": "open_redis",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 57,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.791Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open SMB",
+      "slug": "open_smb",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 58,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.791Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open SNMP",
+      "slug": "open_snmp",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 59,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.792Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open SSDP",
+      "slug": "open_ssdp",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 60,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.792Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open Telnet",
+      "slug": "open_telnet",
+      "active": false,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 61,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.793Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open TFTP",
+      "slug": "open_tftp",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 62,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.793Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Open VNC",
+      "slug": "open_vnc",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 63,
+    "fields": {
+      "created": "2021-12-09T23:26:53.910Z",
+      "modified": "2021-12-10T15:01:46.793Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Abusive Content",
+      "slug": "abusive_content",
+      "active": true,
+      "description": "Abusive Content."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 64,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.794Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Phishing Mail",
+      "slug": "phishing_mail",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 65,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.794Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Phishing Web",
+      "slug": "phishing_web",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 66,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.794Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Poodle",
+      "slug": "poodle",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 67,
+    "fields": {
+      "created": "2021-12-09T23:26:53.911Z",
+      "modified": "2021-12-10T15:01:46.795Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Availability",
+      "slug": "availability",
+      "active": true,
+      "description": "By this kind of an attack a system is bombarded with so many packets that the operations are delayed or the system crashes. DoS examples are ICMP and SYN floods, Teardrop attacks and mail-bombing. DDoS often is based on DoS attacks originating from botnets, but also other scenarios exist like DNS Amplification attacks. However, the availability also can be affected by local actions (destruction, disruption of power supply, etc.) – or by Act of God, spontaneous failures or human error, without malice or gross neglect being involved."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 68,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.795Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "RPZ Botnet",
+      "slug": "rpz_botnet",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 69,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.795Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "RPZ DBL",
+      "slug": "rpz_dbl",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 70,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.796Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "RPZ Drop",
+      "slug": "rpz_drop",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 71,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.796Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "RPZ Malware",
+      "slug": "rpz_malware",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 72,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.796Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "RPZ Malware Aggressive",
+      "slug": "rpz_malware_aggressive",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 73,
+    "fields": {
+      "created": "2020-08-27T13:09:06Z",
+      "modified": "2021-12-10T15:44:52.587Z",
+      "parent": 34,
+      "type": "vulnerability",
+      "name": "c2c",
+      "slug": "c2c",
+      "active": true,
+      "description": "C2 Server"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 74,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.797Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Scan",
+      "slug": "scan",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 75,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.797Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Shellshock",
+      "slug": "shellshock",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 76,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.798Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "SQL Injection",
+      "slug": "sql_injection",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 77,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.798Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "SSL Poodle",
+      "slug": "ssl_poodle",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 78,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:01:46.798Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Suspicious Behavior",
+      "slug": "suspicious_behavior",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 79,
+    "fields": {
+      "created": "2019-03-22T16:23:40Z",
+      "modified": "2021-12-10T15:01:46.799Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "Undefined",
+      "slug": "undefined",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 80,
+    "fields": {
+      "created": "2019-04-01T14:23:29Z",
+      "modified": "2021-12-10T15:01:46.799Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "XSS",
+      "slug": "xss",
+      "active": true,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 81,
+    "fields": {
+      "created": "2019-04-08T11:25:01Z",
+      "modified": "2021-12-10T15:01:46.799Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "xxe",
+      "slug": "xxe",
+      "active": false,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 82,
+    "fields": {
+      "created": "2021-12-09T23:36:10.312Z",
+      "modified": "2021-12-10T15:44:52.597Z",
+      "parent": 27,
+      "type": "vulnerability",
+      "name": "Exploitation of known Vulnerabilities",
+      "slug": "ids_alert",
+      "active": true,
+      "description": "An attempt to compromise a system or to disrupt any service by exploiting vulnerabilities with a standardised identifier such as CVE name (e.g. buffer overflow, backdoor, cross site scripting, etc.)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 83,
+    "fields": {
+      "created": "2021-12-09T23:36:10.315Z",
+      "modified": "2021-12-10T15:44:52.598Z",
+      "parent": 29,
+      "type": "vulnerability",
+      "name": "Infected System",
+      "slug": "infected_system",
+      "active": true,
+      "description": "System infected with malware, e.g. PC, smartphone or server infected with a rootkit. Most often this refers to a connection to a sinkholed C2 server"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 84,
+    "fields": {
+      "created": "2021-12-09T23:36:10.317Z",
+      "modified": "2021-12-10T15:44:52.599Z",
+      "parent": 30,
+      "type": "vulnerability",
+      "name": "Information disclosure",
+      "slug": "information_disclosure",
+      "active": true,
+      "description": "Publicly accessible services potentially disclosing sensitive information, e.g. SNMP or Redis."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 85,
+    "fields": {
+      "created": "2021-12-09T23:36:10.320Z",
+      "modified": "2021-12-10T15:44:52.600Z",
+      "parent": 29,
+      "type": "vulnerability",
+      "name": "Malware Configuration",
+      "slug": "malware_configuration",
+      "active": true,
+      "description": "URI hosting a malware configuration file, e.g. web-injects for a banking trojan."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 86,
+    "fields": {
+      "created": "2021-12-09T23:36:10.323Z",
+      "modified": "2021-12-10T15:44:52.601Z",
+      "parent": 29,
+      "type": "vulnerability",
+      "name": "Malware Distribution",
+      "slug": "malware_distribution",
+      "active": true,
+      "description": "URI used for malware distribution, e.g. a download URL included in fake invoice malware spam."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 87,
+    "fields": {
+      "created": "2021-12-09T23:36:10.325Z",
+      "modified": "2021-12-10T15:44:52.601Z",
+      "parent": 24,
+      "type": "vulnerability",
+      "name": "Masquerade",
+      "slug": "masquerade",
+      "active": true,
+      "description": "Type of attack in which one entity illegitimately impersonates the identity of another in order to benefit from it."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 88,
+    "fields": {
+      "created": "2021-12-09T23:36:10.328Z",
+      "modified": "2021-12-10T15:44:52.602Z",
+      "parent": 67,
+      "type": "vulnerability",
+      "name": "Misconfiguration",
+      "slug": "misconfiguration",
+      "active": true,
+      "description": "Software misconfiguration resulting in service availability issues, e.g. DNS server with outdated DNSSEC Root Zone KSK."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 89,
+    "fields": {
+      "created": "2021-12-09T23:36:14.795Z",
+      "modified": "2021-12-10T15:44:52.603Z",
+      "parent": 67,
+      "type": "vulnerability",
+      "name": "Outage",
+      "slug": "outage",
+      "active": true,
+      "description": "Outage caused e.g. by air condition failure or natural disaster."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 90,
+    "fields": {
+      "created": "2021-12-09T23:36:14.803Z",
+      "modified": "2021-12-10T15:44:52.604Z",
+      "parent": 24,
+      "type": "vulnerability",
+      "name": "Phishing",
+      "slug": "phishing",
+      "active": true,
+      "description": "Masquerading as another entity in order to persuade the user to reveal private credentials. This IOC most often refers to a URL, which is used to phish user credentials."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 91,
+    "fields": {
+      "created": "2021-12-09T23:36:14.807Z",
+      "modified": "2021-12-10T15:44:52.604Z",
+      "parent": 30,
+      "type": "vulnerability",
+      "name": "Potentially unwanted accessible services",
+      "slug": "potentially_unwanted_accessible",
+      "active": true,
+      "description": "Potentially unwanted publicly accessible services, e.g. Telnet, RDP or VNC."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 92,
+    "fields": {
+      "created": "2021-12-09T23:36:14.810Z",
+      "modified": "2021-12-10T15:44:52.605Z",
+      "parent": 28,
+      "type": "vulnerability",
+      "name": "Privileged Account Compromise",
+      "slug": "privileged_account_compromise",
+      "active": true,
+      "description": "Compromise of a system where the attacker gained administrative privileges."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 93,
+    "fields": {
+      "created": "2021-12-09T23:36:14.813Z",
+      "modified": "2021-12-10T15:44:52.606Z",
+      "parent": 67,
+      "type": "vulnerability",
+      "name": "Sabotage",
+      "slug": "sabotage",
+      "active": true,
+      "description": "Physical sabotage, e.g cutting wires or malicious arson."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 94,
+    "fields": {
+      "created": "2021-12-09T23:36:14.816Z",
+      "modified": "2021-12-10T15:44:52.607Z",
+      "parent": 26,
+      "type": "vulnerability",
+      "name": "Scanning",
+      "slug": "scanner",
+      "active": true,
+      "description": "Attacks that send requests to a system to discover weaknesses. This also includes testing processes to gather information on hosts, services and accounts. Examples: fingerd, DNS querying, ICMP, SMTP (EXPN, RCPT, ...), port scanning."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 95,
+    "fields": {
+      "created": "2021-12-09T23:36:14.818Z",
+      "modified": "2021-12-10T15:44:52.608Z",
+      "parent": 26,
+      "type": "vulnerability",
+      "name": "Sniffing",
+      "slug": "sniffing",
+      "active": true,
+      "description": "Observing and recording of network traffic (wiretapping)."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 96,
+    "fields": {
+      "created": "2021-12-09T23:36:14.821Z",
+      "modified": "2021-12-10T15:44:52.608Z",
+      "parent": 26,
+      "type": "vulnerability",
+      "name": "Social Engineering",
+      "slug": "social_engineering",
+      "active": true,
+      "description": "Gathering information from a human being in a non-technical way (e.g. lies, tricks, bribes, or threats)."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 97,
+    "fields": {
+      "created": "2021-12-09T23:36:17.992Z",
+      "modified": "2021-12-10T15:44:52.609Z",
+      "parent": 25,
+      "type": "vulnerability",
+      "name": "Unauthorised access to information",
+      "slug": "unauthorised_information_access",
+      "active": true,
+      "description": "Unauthorised access to information, e.g. by abusing stolen login credentials for a system or application, intercepting traffic or gaining access to physical documents."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 98,
+    "fields": {
+      "created": "2021-12-09T23:36:18.000Z",
+      "modified": "2021-12-10T15:44:52.614Z",
+      "parent": 25,
+      "type": "vulnerability",
+      "name": "Unauthorised modification of information",
+      "slug": "unauthorised_information_modification",
+      "active": true,
+      "description": "Unauthorised modification of information, e.g. by an attacker abusing stolen login credentials for a system or application or a ransomware encrypting data."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 99,
+    "fields": {
+      "created": "2021-12-09T23:36:18.006Z",
+      "modified": "2021-12-10T15:44:52.614Z",
+      "parent": 24,
+      "type": "vulnerability",
+      "name": "Unauthorised use of resources",
+      "slug": "unauthorised_use_of_resources",
+      "active": true,
+      "description": "Using resources for unauthorised purposes including profit-making ventures, e.g. the use of e-mail to participate in illegal profit chain letters or pyramid schemes."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 100,
+    "fields": {
+      "created": "2021-12-09T23:36:18.009Z",
+      "modified": "2021-12-10T15:44:52.615Z",
+      "parent": 108,
+      "type": "vulnerability",
+      "name": "Undetermined",
+      "slug": "undetermined",
+      "active": true,
+      "description": "The categorisation of the incident is unknown/undetermined."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 101,
+    "fields": {
+      "created": "2021-12-09T23:36:18.012Z",
+      "modified": "2021-12-10T15:44:52.616Z",
+      "parent": 28,
+      "type": "vulnerability",
+      "name": "Unprivileged Account Compromise",
+      "slug": "unprivileged_account_compromise",
+      "active": true,
+      "description": "Compromise of a system using an unprivileged (user/service) account."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 102,
+    "fields": {
+      "created": "2021-12-09T23:36:18.016Z",
+      "modified": "2021-12-10T15:44:52.617Z",
+      "parent": 63,
+      "type": "vulnerability",
+      "name": "(Child) Sexual Exploitation/Sexual/Violent Content",
+      "slug": "violence",
+      "active": true,
+      "description": "Child Sexual Exploitation (CSE), Sexual content, glorification of violence, etc."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 103,
+    "fields": {
+      "created": "2021-12-09T23:36:18.019Z",
+      "modified": "2021-12-10T15:44:52.617Z",
+      "parent": 30,
+      "type": "vulnerability",
+      "name": "Vulnerable system",
+      "slug": "vulnerable_system",
+      "active": true,
+      "description": "A system which is vulnerable to certain attacks. Example: misconfigured client proxy settings (example: WPAD), outdated operating system version, etc."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 104,
+    "fields": {
+      "created": "2021-12-09T23:36:18.021Z",
+      "modified": "2021-12-10T15:44:52.618Z",
+      "parent": 30,
+      "type": "vulnerability",
+      "name": "Weak crypto",
+      "slug": "weak_crypto",
+      "active": true,
+      "description": "Publicly accessible services offering weak crypto, e.g. web servers susceptible to POODLE/FREAK attacks."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 105,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:44:52.619Z",
+      "parent": 31,
+      "type": "vulnerability",
+      "name": "Deface",
+      "slug": "deface",
+      "active": true,
+      "description": "Website defacement is an attack on a website that changes the visual appearance of a website or a web page"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 106,
+    "fields": {
+      "created": "2021-12-09T23:26:53.913Z",
+      "modified": "2021-12-10T15:44:52.619Z",
+      "parent": 106,
+      "type": "vulnerability",
+      "name": "Test",
+      "slug": "test",
+      "active": true,
+      "description": "Meant for testing."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 107,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:44:52.620Z",
+      "parent": 63,
+      "type": "vulnerability",
+      "name": "Spam",
+      "slug": "spam",
+      "active": true,
+      "description": "Or 'Unsolicited Bulk Email', this means that the recipient has not granted verifiable permission for the message to be sent and that the message is sent as part of a larger collection of messages, all having a functionally comparable content. This IOC refers to resources, which make up a SPAM infrastructure, be it a harvesters like address verification, URLs in spam e-mails etc."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 108,
+    "fields": {
+      "created": "2021-12-09T23:26:53.913Z",
+      "modified": "2021-12-10T15:44:52.621Z",
+      "parent": 108,
+      "type": "vulnerability",
+      "name": "Other",
+      "slug": "other",
+      "active": true,
+      "description": "All incidents which don't fit in one of the given categories should be put into this class or the incident is not categorised."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 109,
+    "fields": {
+      "created": "2019-07-04T15:03:22Z",
+      "modified": "2021-12-10T15:44:52.622Z",
+      "parent": 103,
+      "type": "vulnerability",
+      "name": "Bluekeep",
+      "slug": "bluekeep",
+      "active": true,
+      "description": "BlueKeep (CVE-2019-0708) is a security vulnerability that was discovered in Microsoft's Remote Desktop Protocol implementation, which allows for the possibility of remote code execution."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 110,
+    "fields": {
+      "created": "2019-04-26T17:23:35Z",
+      "modified": "2021-12-10T15:44:52.622Z",
+      "parent": 94,
+      "type": "vulnerability",
+      "name": "HTTP Scanner",
+      "slug": "http_scanner",
+      "active": true,
+      "description": "Web Application Vulnerability Scanners are automated tools that scan web applications"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 111,
+    "fields": {
+      "created": "2019-04-26T16:49:53Z",
+      "modified": "2021-12-10T15:44:52.623Z",
+      "parent": 94,
+      "type": "vulnerability",
+      "name": "ICS Scanner",
+      "slug": "ics_scanner",
+      "active": true,
+      "description": "ICS security is the area of concern involving the safeguarding of industrial control systems, the integrated hardware and software designed to monitor and control the operation of machinery and associated devices in industrial environments."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 112,
+    "fields": {
+      "created": "2019-07-01T14:50:53Z",
+      "modified": "2021-12-10T15:44:52.610Z",
+      "parent": 35,
+      "type": "vulnerability",
+      "name": "Leak",
+      "slug": "leak",
+      "active": true,
+      "description": "Information leakage allows an application to reveal sensitive data such as technical details of the application, developer comments, environment, or user-specific data."
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 113,
+    "fields": {
+      "created": "2019-04-01T15:39:31Z",
+      "modified": "2021-12-10T15:44:52.611Z",
+      "parent": 103,
+      "type": "vulnerability",
+      "name": "Local File Include",
+      "slug": "local_file_include",
+      "active": true,
+      "description": "Local File Inclusion (also known as LFI) is the process of including files, that are already locally present on the server, through the exploiting of vulnerable inclusion procedures implemented in the application"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 114,
+    "fields": {
+      "created": "2020-03-17T22:17:49Z",
+      "modified": "2021-12-10T15:44:52.612Z",
+      "parent": 82,
+      "type": "vulnerability",
+      "name": "SMBGhost",
+      "slug": "smbghost",
+      "active": true,
+      "description": "Microsoft es consciente de una vulnerabilidad de ejecución remota de código en la forma en que el protocolo Microsoft Server Message Block 3.1.1 (SMBv3) maneja ciertas solicitudes. Un atacante que aprovechó con éxito la vulnerabilidad podría obtener"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 115,
+    "fields": {
+      "created": "2019-11-14T15:41:49Z",
+      "modified": "2021-12-10T15:44:52.613Z",
+      "parent": 84,
+      "type": "vulnerability",
+      "name": "unencrypted_protocol",
+      "slug": "unencrypted_protocol",
+      "active": true,
+      "description": "Unencrypted communication protocol (HTTP, FTP, etc)"
+    }
+  }
+]

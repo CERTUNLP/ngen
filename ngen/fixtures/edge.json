@@ -1,0 +1,68 @@
+[
+  {
+    "model": "ngen.edge",
+    "pk": 12,
+    "fields": {
+      "created": "2019-06-12T17:04:56Z",
+      "modified": "2019-06-12T17:04:56Z",
+      "parent": 8,
+      "child": 9,
+      "discr": "opening"
+    }
+  },
+  {
+    "model": "ngen.edge",
+    "pk": 14,
+    "fields": {
+      "created": "2019-06-12T17:04:56Z",
+      "modified": "2019-06-12T17:04:56Z",
+      "parent": 11,
+      "child": 9,
+      "discr": "opening"
+    }
+  },
+  {
+    "model": "ngen.edge",
+    "pk": 20,
+    "fields": {
+      "created": "2019-06-12T17:04:56Z",
+      "modified": "2019-06-12T17:04:56Z",
+      "parent": 9,
+      "child": 1,
+      "discr": "closing"
+    }
+  },
+  {
+    "model": "ngen.edge",
+    "pk": 32,
+    "fields": {
+      "created": "2019-06-12T17:04:56Z",
+      "modified": "2019-06-12T17:04:56Z",
+      "parent": 8,
+      "child": 11,
+      "discr": "new"
+    }
+  },
+  {
+    "model": "ngen.edge",
+    "pk": 49,
+    "fields": {
+      "created": "2019-06-12T17:04:56Z",
+      "modified": "2019-06-12T17:04:56Z",
+      "parent": 1,
+      "child": 11,
+      "discr": "reopening"
+    }
+  },
+  {
+    "model": "ngen.edge",
+    "pk": 51,
+    "fields": {
+      "created": "2019-06-12T17:04:56Z",
+      "modified": "2019-06-12T17:04:56Z",
+      "parent": 11,
+      "child": 1,
+      "discr": "closing"
+    }
+  }
+]

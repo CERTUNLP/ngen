@@ -1,0 +1,16 @@
+[
+  {
+    "model": "ngen.contact",
+    "pk": 57,
+    "fields": {
+      "created": "2021-12-07T14:48:44.564Z",
+      "modified": "2021-12-07T14:48:44.575Z",
+      "priority": 6,
+      "name": "Soporte CERT",
+      "username": "soporte@cert.unlp.edu.ar",
+      "public_key": null,
+      "type": "email",
+      "role": "administrative"
+    }
+  }
+]

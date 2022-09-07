@@ -1,0 +1,62 @@
+[
+  {
+    "model": "ngen.state",
+    "pk": 1,
+    "fields": {
+      "created": "2019-03-22T16:21:24Z",
+      "modified": "2019-03-22T16:21:24Z",
+      "slug": "closed",
+      "name": "Closed",
+      "blocked": true,
+      "attended": false,
+      "solved": true,
+      "active": 1,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.state",
+    "pk": 8,
+    "fields": {
+      "created": "2019-12-09T18:12:59Z",
+      "modified": "2022-05-26T22:04:14.929Z",
+      "slug": "initial",
+      "name": "Initial",
+      "blocked": false,
+      "attended": false,
+      "solved": false,
+      "active": 1,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.state",
+    "pk": 9,
+    "fields": {
+      "created": "2019-03-22T16:21:24Z",
+      "modified": "2019-03-29T19:56:32Z",
+      "slug": "open",
+      "name": "Open",
+      "blocked": false,
+      "attended": true,
+      "solved": false,
+      "active": 1,
+      "description": null
+    }
+  },
+  {
+    "model": "ngen.state",
+    "pk": 11,
+    "fields": {
+      "created": "2019-03-22T16:24:23Z",
+      "modified": "2019-03-22T16:24:23Z",
+      "slug": "staging",
+      "name": "Staging",
+      "blocked": false,
+      "attended": false,
+      "solved": false,
+      "active": 1,
+      "description": null
+    }
+  }
+]

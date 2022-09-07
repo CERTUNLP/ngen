@@ -98,15 +98,15 @@ services:
             - ./elasticsearch:/usr/share/elasticsearch/data #sudo  chown -R 1000:1000 elasticsearch
         ports:
             - "9200:9200"
-    ngen-cortex:
-        image: thehiveproject/cortex:3.1-withdeps
-        environment:
-            - es_hostname=ngen-elasticsearch
-            - job_directory=/tmp/cortex-jobs
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-            - /tmp/cortex-jobs:/tmp/cortex-jobs # only works with this and will not work with local volume idk
-        depends_on:
-            - ngen-elasticsearch
-        ports:
-            - "9001:9001"
+#    ngen-cortex:
+#        image: thehiveproject/cortex:3.1-withdeps
+#        environment:
+#            - es_hostname=ngen-elasticsearch
+#            - job_directory=/tmp/cortex-jobs
+#        volumes:
+#            - /var/run/docker.sock:/var/run/docker.sock
+#            - /tmp/cortex-jobs:/tmp/cortex-jobs # only works with this and will not work with local volume idk
+#        depends_on:
+#            - ngen-elasticsearch
+#        ports:
+#            - "9001:9001"
