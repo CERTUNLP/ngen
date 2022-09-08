@@ -1,6 +1,21 @@
 [
   {
     "model": "ngen.network",
+    "pk": 22688,
+    "fields": {
+      "created": "2020-09-06T14:22:09Z",
+      "modified": "2021-12-05T15:12:43.420Z",
+      "parent": null,
+      "cidr": "0.0.0.0/0",
+      "domain": "",
+      "active": true,
+      "type": "internal",
+      "network_entity": 33548,
+      "contacts": []
+    }
+  },
+  {
+    "model": "ngen.network",
     "pk": 434,
     "fields": {
       "created": "2019-03-22T16:21:25Z",
