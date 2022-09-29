@@ -23,7 +23,7 @@ class NgenModel(TimeStampedModel):
 
 
 class NgenTreeModel(AL_Node):
-    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, db_index=True, related_name='children')
+    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, blank=True, db_index=True, related_name='children')
 
     class Meta:
         abstract = True
