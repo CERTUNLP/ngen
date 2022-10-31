@@ -3,6 +3,7 @@ FROM python:3-alpine  as ngen
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 WORKDIR /code
-RUN apk add gettext libmagic
+RUN apk add gettext libmagic gcc musl-dev python3-dev
+
 COPY requirements.txt /code/
 RUN pip install -r requirements.txt

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'comment',
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
