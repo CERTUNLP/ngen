@@ -1,7 +1,7 @@
 version: '3.9'
 services:
     ngen-postgres:
-        image: "postgres:latest"
+        image: postgres:latest
         restart: always
         environment:
             - POSTGRES_USER=postgres
@@ -89,6 +89,7 @@ services:
     ngen-elasticsearch:
         image: elasticsearch:7.17.4
         environment:
+            - ES_JAVA_OPTS=-Xms1g -Xmx1g
             - http.host=0.0.0.0
             - discovery.type=single-node
             - script.allowed_types=inline

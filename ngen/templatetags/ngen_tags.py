@@ -16,7 +16,8 @@ def render_report_content(html, event):
 
 @register.simple_tag
 def mail_logo():
-    return encode_static(MEDIA_ROOT + '/200_50_' + config.TEAM_LOGO)
+    if config.TEAM_LOGO:
+        return encode_static(MEDIA_ROOT + '/200_50_' + config.TEAM_LOGO)
 
 
 @register.simple_tag

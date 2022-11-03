@@ -236,7 +236,7 @@ CONSTANCE_CONFIG = {
     'TEAM_ABUSE': (os.environ.get('TEAM_ABUSE'), 'CSIRT abuse email'),
     'TEAM_URL': (os.environ.get('TEAM_URL'), 'CSIRT site url'),
     'TEAM_SITE': (os.environ.get('TEAM_SITE'), 'CSIRT team site'),
-    'TEAM_LOGO': ('logo.png', 'CSIRT logo', 'image_field'),
+    'TEAM_LOGO': (None, 'CSIRT logo', 'image_field'),
     'TEAM_NAME': (os.environ.get('TEAM_NAME'), 'CSIRT name'),
 
     'EMAIL_SENDER': (os.environ.get('EMAIL_SENDER'), 'SMTP sender email address'),
@@ -274,7 +274,7 @@ CONSTANCE_CONFIG = {
 
 @receiver(config_updated)
 def team_logo_updated(sender, key, old_value, new_value, **kwargs):
-    if key == 'TEAM_LOGO':
+    if key == 'TEAM_LOGO' and new_value:
         old_path = os.path.join(f'{MEDIA_ROOT}', f'{old_value}')
         old_path2 = os.path.join(f'{MEDIA_ROOT}', f'/200_50_{old_value}')
         new_path = os.path.join(f'{MEDIA_ROOT}', f'{new_value}')
