@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+
 FROM python:alpine as ngen
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
