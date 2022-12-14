@@ -1,2 +1,8 @@
-#*postgres_data*
-docker
+postgres_data/
+redis/
+elasticsearch/
+docker/postgres_data/
+docker/elasticsearch/
+docker/redis/
+docker/
+docker/*

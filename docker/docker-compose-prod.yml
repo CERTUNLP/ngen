@@ -18,15 +18,13 @@ services:
         ports:
             - "8080:8080"
     ngen-django:
-        image: ngen-django
+        image: certunlp/ngen-django:latest
         build:
             context: ../
             dockerfile: docker/Dockerfile
         restart: always
         entrypoint: ./docker/entrypoint.sh
         command: python manage.py runserver ngen-django:8000
-        volumes:
-            - ../:/code
         ports:
             - "8000:8000"
         env_file:
@@ -37,11 +35,9 @@ services:
             - ngen-redis
             - ngen-mail
     ngen-celery-worker:
-        image: ngen-django
+        image: certunlp/ngen-django:latest
         restart: always
-        command: celery -A djangoProject worker -l debug
-        volumes:
-            - ../:/code
+        command: celery -A djangoProject worker -l info
         env_file:
             - ngen.env
         depends_on:
@@ -49,11 +45,9 @@ services:
             - ngen-rabbitmq
             - ngen-redis
     ngen-celery-beat:
-        image: ngen-django
+        image: certunlp/ngen-django:latest
         restart: always
-        command: celery -A djangoProject beat -l debug
-        volumes:
-            - ../:/code
+        command: celery -A djangoProject beat -l info
         env_file:
             - ngen.env
         depends_on:
