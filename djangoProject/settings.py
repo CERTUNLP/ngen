@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'constance.backends.database',
     "corsheaders",
     'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework.authtoken',
     'ngen.apps.NgenConfig',
     'django.contrib.postgres',
     'netfields',
@@ -149,6 +151,8 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         # "ngen.backends.ActiveSessionAuthentication",
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
 }
 

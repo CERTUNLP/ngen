@@ -22,6 +22,9 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from rest_framework.authtoken import views as authtokenviews
+
 from djangoProject import settings
 from ngen import views
 from ngen.documents import CaseDocumentViewSet
@@ -76,6 +79,10 @@ urlpatterns = [
     path('api/comments/', comment_views.CommentList.as_view(), name='comment-list'),
     path('api/comments/create/', comment_views.CommentCreate.as_view(), name='comment-create'),
     path('api/comments/<int:pk>/', comment_views.CommentDetail.as_view(), name='comment-detail'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('api/token-auth/', authtokenviews.obtain_auth_token),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('about/', views.AboutView.as_view()),
     path('__debug__/', include('debug_toolbar.urls')),
