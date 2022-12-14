@@ -19,7 +19,7 @@ celery==5.2.7
     #   django-celery-beat
     #   django-celery-email
     #   django-celery-results
-certifi==2022.9.24
+certifi>=2022.12.07
     # via
     #   elasticsearch
     #   requests
@@ -80,7 +80,7 @@ django-celery-beat==2.3.0
     # via -r requirements.in
 django-celery-email==3.0.0
     # via -r requirements.in
-django-celery-results==2.3.1
+django-celery-results>=2.4.0
     # via -r requirements.in
 django-colorfield==0.7.2
     # via -r requirements.in
