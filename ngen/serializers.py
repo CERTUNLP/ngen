@@ -395,17 +395,18 @@ class LoginSerializer(serializers.Serializer):
 
     def validate(self, data):
         email = data.get("email", None)
+        username = data.get("username", None)
         password = data.get("password", None)
 
-        if email is None:
+        if username is None:
             raise exceptions.ValidationError(
-                {"success": False, "msg": "Email is required to login"}
+                {"success": False, "msg": "Username is required to login"}
             )
         if password is None:
             raise exceptions.ValidationError(
                 {"success": False, "msg": "Password is required to log in."}
             )
-        user = authenticate(username=email, password=password)
+        user = authenticate(username=username, password=password)
 
         if user is None:
             raise exceptions.AuthenticationFailed({"success": False, "msg": "Wrong credentials"})

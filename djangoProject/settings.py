@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "corsheaders",
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'rest_framework.authtoken',
     'ngen.apps.NgenConfig',
     'django.contrib.postgres',

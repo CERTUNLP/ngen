@@ -54,7 +54,6 @@ router.register(r"announcement", views.AnnouncementViewSet)
 router.register(r"register", views.RegisterViewSet, basename="register")
 router.register(r"checkSession", views.ActiveSessionViewSet, basename="check-session")
 router.register(r"login", views.LoginViewSet, basename="login")
-router.register(r"logout", views.LogoutViewSet, basename="logout")
 router.register(r'search/case',
                 CaseDocumentViewSet,
                 basename='casedocument')
@@ -84,6 +83,7 @@ urlpatterns = [
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/token-auth/', authtokenviews.obtain_auth_token),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/logout/', views.LogoutView.as_view(), name="logout"),
     path('about/', views.AboutView.as_view()),
     path('__debug__/', include('debug_toolbar.urls')),
     re_path(r'^api/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),

@@ -5,6 +5,8 @@ from rest_framework import permissions, filters, status, mixins
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
 
 from ngen import models, serializers, backends
 from ngen.models import ActiveSession
@@ -197,18 +199,22 @@ class LoginViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
-class LogoutViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
+class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def create(self, request, *args, **kwargs):
-        user = request.user
+    def post(self, request):
+        try:
+            # TODO ver si es necesario revocar el ActiveSession
+            # session = ActiveSession.objects.get(user=user)
+            # session.delete()
 
-        session = ActiveSession.objects.get(user=user)
-        session.delete()
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
 
-        return Response(
-            {"success": True, "msg": "Token revoked"}, status=status.HTTP_200_OK
-        )
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ActiveSessionViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
