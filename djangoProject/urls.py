@@ -84,6 +84,8 @@ urlpatterns = [
     path('api/token-auth/', authtokenviews.obtain_auth_token),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/logout/', views.LogoutView.as_view(), name="logout"),
+    path('api/ctoken/', views.CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/ctoken/refresh/', views.CookieTokenRefreshView.as_view(), name='token_refresh'),
     path('about/', views.AboutView.as_view()),
     path('__debug__/', include('debug_toolbar.urls')),
     re_path(r'^api/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
