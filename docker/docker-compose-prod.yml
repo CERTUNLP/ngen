@@ -19,11 +19,7 @@ services:
             - "8080:8080"
     ngen-django:
         image: certunlp/ngen-django:latest
-        build:
-            context: ../
-            dockerfile: docker/Dockerfile
         restart: always
-        entrypoint: ./docker/entrypoint.sh
         command: python manage.py runserver ngen-django:8000
         ports:
             - "8000:8000"
