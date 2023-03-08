@@ -1,6 +1,8 @@
 from auditlog.registry import auditlog
 from django.apps import apps
 
+from django.contrib.auth import get_user_model
+
 from .administration import *
 from .announcement import *
 from .artifact import *
@@ -14,6 +16,9 @@ from .utils import *
 for model in apps.all_models['ngen'].values():
     if issubclass(model, NgenModel):
         auditlog.register(model)
+
+User = get_user_model()
+auditlog.register(User)
 
 # User creation auth token
 from django.conf import settings
