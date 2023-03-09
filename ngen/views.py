@@ -251,3 +251,20 @@ class CookieTokenRefreshView(TokenRefreshView):
             del response.data['refresh']
         return super().finalize_response(request, response, *args, **kwargs)
     serializer_class = CookieTokenRefreshSerializer
+
+
+class CookieTokenLogoutView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        try:
+            # TODO ver si es necesario revocar el ActiveSession
+            # session = ActiveSession.objects.get(user=user)
+            # session.delete()
+            refresh_token = request.COOKIES.get('refresh_token')
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
