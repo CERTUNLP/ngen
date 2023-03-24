@@ -10,7 +10,7 @@ class State(NgenModel):
     blocked = models.BooleanField(default=False)
     attended = models.BooleanField(default=False)
     solved = models.BooleanField(default=False)
-    active = models.IntegerField()
+    active = models.BooleanField(default=True)
     description = models.CharField(max_length=250, null=True)
     children = models.ManyToManyField(
         "self",
