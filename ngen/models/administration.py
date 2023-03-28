@@ -37,8 +37,6 @@ class Priority(NgenModel):
     severity = models.IntegerField(unique=True)
     attend_time = models.DurationField(default=timedelta(minutes=config.PRIORITY_ATTEND_TIME_DEFAULT))
     solve_time = models.DurationField(default=timedelta(minutes=config.PRIORITY_SOLVE_TIME_DEFAULT))
-    attend_deadline = models.DurationField(default=timedelta(minutes=config.PRIORITY_ATTEND_DEADLINE_DEFAULT))
-    solve_deadline = models.DurationField(default=timedelta(minutes=config.PRIORITY_SOLVE_DEADLINE_DEFAULT))
     notification_amount = models.PositiveSmallIntegerField(default=3)
     color = ColorField(samples=COLOR_PALETTE)
 

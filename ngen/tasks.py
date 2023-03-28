@@ -12,7 +12,7 @@ from ngen import cortex
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def attend_cases():
     cases = ngen.models.Case.objects.annotate(
-        deadline=ExpressionWrapper(F('created') + F('priority__attend_time') + F('priority__attend_deadline'),
+        deadline=ExpressionWrapper(F('created') + F('priority__attend_time'),
                                    output_field=DateTimeField())).filter(attend_date__isnull=True,
                                                                          solve_date__isnull=True,
                                                                          deadline__lte=datetime.datetime.now(),
@@ -25,7 +25,7 @@ def attend_cases():
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def solve_cases():
     cases = ngen.models.Case.objects.annotate(
-        deadline=ExpressionWrapper(F('attend_date') + F('priority__solve_time') + F('priority__solve_deadline'),
+        deadline=ExpressionWrapper(F('attend_date') + F('priority__solve_time'),
                                    output_field=DateTimeField())).filter(attend_date__isnull=False,
                                                                          solve_date__isnull=True,
                                                                          deadline__lte=datetime.datetime.now(),
@@ -39,7 +39,7 @@ def solve_cases():
 def case_renotification():
     cases = ngen.models.Case.objects.annotate(
         deadline=ExpressionWrapper(
-            (F('priority__solve_time') + F('priority__solve_deadline')) * (
+            F('priority__solve_time') * (
                     F('notification_count') / F('priority__notification_amount')),
             output_field=DurationField())).annotate(
         renotification=ExpressionWrapper(F('attend_date') + F('deadline'), output_field=DateTimeField())).filter(

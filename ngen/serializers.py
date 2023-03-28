@@ -238,7 +238,6 @@ class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ['slug']
 
 
-
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
     problem = CharField(style={'base_template': 'textarea.html', 'rows': 10})
     derived_problem = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
@@ -264,6 +263,7 @@ class StateSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         read_only_fields = ['slug']
 
+
 class EdgeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Edge
@@ -286,10 +286,10 @@ class PrioritySerializer(serializers.HyperlinkedModelSerializer):
         model = models.Priority
         fields = '__all__'
 
-    def validate(self, attrs):
-        if self.instance is not None and not (attrs['solve_time'] > attrs['attend_deadline']):
-            raise ValidationError({'solve_time': gettext('The solve time must be greater than attend deadline')})
-        return attrs
+    # def validate(self, attrs):
+        # if self.instance is not None and not (attrs['solve_time'] > attrs['attend_deadline']):
+        #     raise ValidationError({'solve_time': gettext('The solve time must be greater than attend deadline')})
+        # return attrs
 
 
 class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
