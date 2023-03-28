@@ -12,7 +12,7 @@ from .utils import NgenModel, NgenPriorityMixin
 class Feed(NgenModel):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
-    active = models.IntegerField()
+    active = models.BooleanField(default=True)
     description = models.CharField(max_length=250, null=True)
 
     def save(self, *args, **kwargs):
