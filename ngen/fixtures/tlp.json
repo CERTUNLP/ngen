@@ -1,7 +1,6 @@
 [
   {
     "model": "ngen.tlp",
-    "pk": 1,
     "fields": {
       "created": "2019-09-04T13:06:05Z",
       "modified": "2019-09-04T13:06:05Z",
@@ -18,7 +17,6 @@
   },
   {
     "model": "ngen.tlp",
-    "pk": 2,
     "fields": {
       "created": "2019-09-04T13:06:05Z",
       "modified": "2019-09-04T13:06:05Z",
@@ -35,7 +33,6 @@
   },
   {
     "model": "ngen.tlp",
-    "pk": 3,
     "fields": {
       "created": "2019-09-04T13:06:05Z",
       "modified": "2019-09-04T13:06:05Z",
@@ -52,7 +49,6 @@
   },
   {
     "model": "ngen.tlp",
-    "pk": 4,
     "fields": {
       "created": "2019-09-04T13:06:05Z",
       "modified": "2019-09-04T13:06:05Z",

@@ -1,7 +1,6 @@
 [
   {
     "model": "ngen.user",
-    "pk": 28,
     "fields": {
       "password": "pbkdf2_sha256$320000$jwYSUXXesWlbUIbEeHjfJz$w/YI5P3qCdsDvaQygUl150I+MW5x2j3SHMgGuUHK0Lw=",
       "last_login": "2022-09-01T18:48:19.091Z",
