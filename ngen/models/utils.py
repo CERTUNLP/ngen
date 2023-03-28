@@ -204,6 +204,9 @@ class NgenAddressModel(models.Model):
         if isinstance(other, NgenAddressModel):
             return other.address in self.address
 
+    def __hash__(self) -> int:
+        return super().__hash__()
+
     class Address:
         _address = None
 
