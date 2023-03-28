@@ -235,6 +235,8 @@ class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Taxonomy
         fields = '__all__'
+        read_only_fields = ['slug']
+
 
 
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
@@ -253,13 +255,14 @@ class FeedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Feed
         fields = '__all__'
+        read_only_fields = ['slug']
 
 
 class StateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.State
         fields = '__all__'
-
+        read_only_fields = ['slug']
 
 class EdgeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -273,6 +276,7 @@ class TlpSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Tlp
         fields = '__all__'
+        read_only_fields = ['slug']
 
 
 class PrioritySerializer(serializers.HyperlinkedModelSerializer):
@@ -310,6 +314,7 @@ class NetworkEntitySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.NetworkEntity
         fields = '__all__'
+        read_only_fields = ['slug']
 
 
 class ContactSerializer(serializers.HyperlinkedModelSerializer):
