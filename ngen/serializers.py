@@ -286,11 +286,6 @@ class PrioritySerializer(serializers.HyperlinkedModelSerializer):
         model = models.Priority
         fields = '__all__'
 
-    # def validate(self, attrs):
-        # if self.instance is not None and not (attrs['solve_time'] > attrs['attend_deadline']):
-        #     raise ValidationError({'solve_time': gettext('The solve time must be greater than attend deadline')})
-        # return attrs
-
 
 class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
