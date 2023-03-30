@@ -17,9 +17,6 @@ for model in apps.all_models['ngen'].values():
     if issubclass(model, NgenModel):
         auditlog.register(model)
 
-User = get_user_model()
-auditlog.register(User)
-
 # User creation auth token
 from django.conf import settings
 from django.db.models.signals import post_save

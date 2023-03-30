@@ -76,7 +76,7 @@ class Tlp(NgenModel):
         return self.name
 
 
-class User(AbstractUser, NgenPriorityMixin):
+class User(AbstractUser, NgenPriorityMixin, NgenModel):
     api_key = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
