@@ -95,125 +95,6 @@ class MergeSerializerMixin:
         raise NotImplementedError
 
 
-class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
-    evidence = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='evidence-detail'
-    )
-    children = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='event-detail'
-    )
-    todos = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='todotask-detail'
-    )
-    artifacts = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='artifact-detail'
-    )
-    comments = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Event
-        fields = '__all__'
-
-    def get_comments(self, obj):
-        comments_qs = Comment.objects.filter_parents_by_object(obj)
-        return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
-
-    @staticmethod
-    def allowed_fields():
-        return config.ALLOWED_FIELDS_EVENT.split(',')
-
-    @staticmethod
-    def not_allowed_fields():
-        return ['taxonomy', 'feed', 'network']
-
-    def get_extra_kwargs(self):
-        extra_kwargs = super().get_extra_kwargs()
-        action = self.context['view'].action
-        if action in ['update', 'partial_update', 'retrieve']:
-            if self.instance and self.instance.is_parent():
-                for field in self.instance._meta.fields:
-                    if field.name in self.not_allowed_fields():
-                        kwargs = extra_kwargs.get(field.name, {})
-                        kwargs['read_only'] = True
-                        extra_kwargs[field.name] = kwargs
-
-        return extra_kwargs
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        if self.instance:
-            if self.instance.merged or self.instance.is_parent():
-                for attr in list(attrs):
-                    if attr in self.not_allowed_fields():
-                        if config.ALLOWED_FIELDS_EXCEPTION:
-                            raise ValidationError(
-                                {attr: gettext('%s of merged events can\'t be modified') % self.not_allowed_fields()})
-                        attrs.pop(attr)
-        return attrs
-
-
-class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
-    events = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='event-detail'
-    )
-    children = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='case-detail'
-    )
-    evidence = serializers.SerializerMethodField(read_only=True)
-    comments = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Case
-        fields = '__all__'
-        read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by', 'notification_count']
-
-    def get_evidence(self, obj):
-        return GenericRelationField(read_only=True).generic_detail_links(obj.evidence_all, self.context.get('request'))
-
-    def validate_state(self, attrs):
-        if self.instance is not None and self.instance.state != attrs and not self.instance.state.is_parent_of(attrs):
-            raise ValidationError(
-                {'state': gettext(
-                    'It\'s not possible to change the state "%s" to "%s". The new possible states are %s') % (
-                              self.instance.state, attrs, list(self.instance.state.children.all()))})
-        return attrs
-
-    def get_extra_kwargs(self):
-        extra_kwargs = super().get_extra_kwargs()
-        if self.instance:
-            kwargs = extra_kwargs.get('state', {})
-            action = self.context['view'].action
-            if not kwargs.get('read_only', False):
-                if action in ['update', 'partial_update']:
-                    queryset = (self.instance.state.children.all() | models.State.objects.filter(
-                        pk=self.instance.state.pk)).distinct()
-                    kwargs['queryset'] = queryset
-                else:
-                    kwargs['queryset'] = models.State.get_initial().children.all()
-                extra_kwargs['state'] = kwargs
-        return extra_kwargs
-
-    @staticmethod
-    def allowed_fields():
-        return config.ALLOWED_FIELDS_CASE.split(',')
-
-    def get_comments(self, obj):
-        comments_qs = Comment.objects.filter_parents_by_object(obj)
-        return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
-
-
 class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
     related = serializers.SerializerMethodField(read_only=True)
 
@@ -453,3 +334,126 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Comment
         exclude = ['content_type', 'object_id']
+
+
+class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
+    priority = PrioritySerializer(read_only=True)
+    tlp = TlpSerializer(read_only=True)
+    taxonomy = TaxonomySerializer(read_only=True)
+    feed = FeedSerializer(read_only=True)
+    evidence = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='evidence-detail'
+    )
+    children = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='event-detail'
+    )
+    todos = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='todotask-detail'
+    )
+    artifacts = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='artifact-detail'
+    )
+    comments = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Event
+        fields = '__all__'
+
+    def get_comments(self, obj):
+        comments_qs = Comment.objects.filter_parents_by_object(obj)
+        return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
+
+    @staticmethod
+    def allowed_fields():
+        return config.ALLOWED_FIELDS_EVENT.split(',')
+
+    @staticmethod
+    def not_allowed_fields():
+        return ['taxonomy', 'feed', 'network']
+
+    def get_extra_kwargs(self):
+        extra_kwargs = super().get_extra_kwargs()
+        action = self.context['view'].action
+        if action in ['update', 'partial_update', 'retrieve']:
+            if self.instance and self.instance.is_parent():
+                for field in self.instance._meta.fields:
+                    if field.name in self.not_allowed_fields():
+                        kwargs = extra_kwargs.get(field.name, {})
+                        kwargs['read_only'] = True
+                        extra_kwargs[field.name] = kwargs
+
+        return extra_kwargs
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        if self.instance:
+            if self.instance.merged or self.instance.is_parent():
+                for attr in list(attrs):
+                    if attr in self.not_allowed_fields():
+                        if config.ALLOWED_FIELDS_EXCEPTION:
+                            raise ValidationError(
+                                {attr: gettext('%s of merged events can\'t be modified') % self.not_allowed_fields()})
+                        attrs.pop(attr)
+        return attrs
+
+
+class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
+    events = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='event-detail'
+    )
+    children = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='case-detail'
+    )
+    evidence = serializers.SerializerMethodField(read_only=True)
+    comments = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Case
+        fields = '__all__'
+        read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by', 'notification_count']
+
+    def get_evidence(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_links(obj.evidence_all, self.context.get('request'))
+
+    def validate_state(self, attrs):
+        if self.instance is not None and self.instance.state != attrs and not self.instance.state.is_parent_of(attrs):
+            raise ValidationError(
+                {'state': gettext(
+                    'It\'s not possible to change the state "%s" to "%s". The new possible states are %s') % (
+                              self.instance.state, attrs, list(self.instance.state.children.all()))})
+        return attrs
+
+    def get_extra_kwargs(self):
+        extra_kwargs = super().get_extra_kwargs()
+        if self.instance:
+            kwargs = extra_kwargs.get('state', {})
+            action = self.context['view'].action
+            if not kwargs.get('read_only', False):
+                if action in ['update', 'partial_update']:
+                    queryset = (self.instance.state.children.all() | models.State.objects.filter(
+                        pk=self.instance.state.pk)).distinct()
+                    kwargs['queryset'] = queryset
+                else:
+                    kwargs['queryset'] = models.State.get_initial().children.all()
+                extra_kwargs['state'] = kwargs
+        return extra_kwargs
+
+    @staticmethod
+    def allowed_fields():
+        return config.ALLOWED_FIELDS_CASE.split(',')
+
+    def get_comments(self, obj):
+        comments_qs = Comment.objects.filter_parents_by_object(obj)
+        return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
