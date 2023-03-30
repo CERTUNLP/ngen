@@ -146,11 +146,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'DEFAULT_PAGINATION_CLASS': 'ngen.apps.StandardResultsSetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'ngen.pagination.CustomPagination',
     # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        # "ngen.backends.ActiveSessionAuthentication",
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
@@ -261,10 +259,6 @@ CONSTANCE_CONFIG = {
         int(os.environ.get('PRIORITY_ATTEND_TIME_DEFAULT')), 'Priority default attend time in minutes', int),
     'PRIORITY_SOLVE_TIME_DEFAULT': (
         int(os.environ.get('PRIORITY_SOLVE_TIME_DEFAULT')), 'Priority default solve time in minutes', int),
-    'PRIORITY_ATTEND_DEADLINE_DEFAULT': (
-        int(os.environ.get('PRIORITY_ATTEND_DEADLINE_DEFAULT')), 'Priority default attend deadline in minutes', int),
-    'PRIORITY_SOLVE_DEADLINE_DEFAULT': (
-        int(os.environ.get('PRIORITY_SOLVE_DEADLINE_DEFAULT')), 'Priority default solve deadline in minutes', int),
     'CASE_DEFAULT_LIFECYCLE': (os.environ.get('CASE_DEFAULT_LIFECYCLE'), 'Case default lifecycle', 'case_lifecycle'),
     'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT'), 'Default', 'priority_field'),
     'ALLOWED_ARTIFACTS_TYPES': (os.environ.get('ALLOWED_ARTIFACTS_TYPES'), 'Allowed artifact types'),

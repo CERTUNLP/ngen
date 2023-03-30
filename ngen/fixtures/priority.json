@@ -9,8 +9,6 @@
       "severity": 1,
       "attend_time": "00:00:00",
       "solve_time": "01:00:00",
-      "attend_deadline": "00:01:00",
-      "solve_deadline": "2 00:00:00",
       "notification_amount": 3,
       "color": "#FFFFFF"
     }
@@ -25,8 +23,6 @@
       "severity": 3,
       "attend_time": "01:00:00",
       "solve_time": "08:00:00",
-      "attend_deadline": "07:00:00",
-      "solve_deadline": "2 00:00:00",
       "notification_amount": 3,
       "color": "#FFFFFF"
     }
@@ -41,8 +37,6 @@
       "severity": 2,
       "attend_time": "00:10:00",
       "solve_time": "04:00:00",
-      "attend_deadline": "03:00:00",
-      "solve_deadline": "2 00:00:00",
       "notification_amount": 3,
       "color": "#FFFFFF"
     }
@@ -57,8 +51,6 @@
       "severity": 5,
       "attend_time": "1 00:00:00",
       "solve_time": "7 00:00:00",
-      "attend_deadline": "1 00:00:00",
-      "solve_deadline": "2 00:00:00",
       "notification_amount": 3,
       "color": "#FFFFFF"
     }
@@ -73,8 +65,6 @@
       "severity": 4,
       "attend_time": "04:00:00",
       "solve_time": "2 00:00:00",
-      "attend_deadline": "1 00:00:00",
-      "solve_deadline": "2 00:00:00",
       "notification_amount": 3,
       "color": "#FFFFFF"
     }

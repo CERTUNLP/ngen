@@ -1,7 +1,7 @@
 [
   {
     "model": "ngen.networkentity",
-    "pk": 19626,
+    "pk": 1,
     "fields": {
       "created": "2020-04-16T13:09:25Z",
       "modified": "2020-04-16T13:09:25Z",

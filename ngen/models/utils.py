@@ -196,6 +196,9 @@ class NgenAddressModel(models.Model):
         if isinstance(other, NgenAddressModel):
             return self.address == other.address
 
+    def __hash__(self):
+        return super(models.Model).__hash__()
+
     def __str__(self):
         return self.address.__str__()
 

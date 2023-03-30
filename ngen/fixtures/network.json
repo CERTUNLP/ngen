@@ -10,13 +10,13 @@
       "domain": "",
       "active": true,
       "type": "internal",
-      "network_entity": 19626,
+      "network_entity": 1,
       "contacts": []
     }
   },
   {
     "model": "ngen.network",
-    "pk": 434,
+    "pk": 2,
     "fields": {
       "created": "2019-03-22T16:21:25Z",
       "modified": "2021-12-05T15:12:42.884Z",
@@ -25,15 +25,15 @@
       "domain": null,
       "active": true,
       "type": "internal",
-      "network_entity": 19626,
+      "network_entity": 1,
       "contacts": [
-        57
+        1
       ]
     }
   },
   {
     "model": "ngen.network",
-    "pk": 19828,
+    "pk": 3,
     "fields": {
       "created": "2020-04-16T13:00:22Z",
       "modified": "2021-12-05T15:12:41.406Z",
@@ -42,9 +42,9 @@
       "domain": "unlp.edu.ar",
       "active": true,
       "type": "internal",
-      "network_entity": 19626,
+      "network_entity": 1,
       "contacts": [
-        57
+        1
       ]
     }
   }
