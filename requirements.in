@@ -3,7 +3,7 @@ django-auditlog==2.0.0
 django-bleach==3.0.0
 django-celery-beat==2.3.0
 django-celery-email==3.0.0
-django-celery-results==2.3.1
+django-celery-results==2.4.0
 django-colorfield==0.7.2
 django-comments-dab==2.7.1
 django-constance==2.9.0
@@ -23,7 +23,7 @@ pip-chill==1.0.1
 pip-tools==6.6.2
 psycopg2-binary==2.9.5
 pyjwt==2.4.0
-redis==4.3.3
+redis==4.3.6
 ruamel.yaml.clib==0.2.7
 tinycss2==1.1.1
 tld==0.12.6

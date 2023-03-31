@@ -48,8 +48,6 @@ cortex4py==2.1.0
     # via -r requirements.in
 decorator==5.1.1
     # via validators
-deprecated==1.2.13
-    # via redis
 django==4.0.10
     # via
     #   django-appconf
@@ -81,7 +79,7 @@ django-celery-beat==2.3.0
     # via -r requirements.in
 django-celery-email==3.0.0
     # via -r requirements.in
-django-celery-results==2.3.1
+django-celery-results==2.4.0
     # via -r requirements.in
 django-colorfield==0.7.2
     # via -r requirements.in
@@ -179,13 +177,13 @@ python-dateutil==2.8.2
     #   python-crontab
 python-magic==0.4.27
     # via cortex4py
-pytz==2022.7.1
+pytz==2023.3
     # via
     #   celery
     #   django-timezone-field
     #   djangorestframework
     #   drf-yasg
-redis==4.3.3
+redis==4.3.6
     # via -r requirements.in
 requests==2.28.2
     # via
@@ -216,7 +214,7 @@ tld==0.12.6
     # via -r requirements.in
 typing==3.7.4.3
     # via cortex4py
-tzdata==2023.1
+tzdata==2023.3
     # via django-celery-beat
 uritemplate==4.1.1
     # via
@@ -243,8 +241,6 @@ webencodings==0.5.1
     #   tinycss2
 wheel==0.40.0
     # via pip-tools
-wrapt==1.15.0
-    # via deprecated
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
