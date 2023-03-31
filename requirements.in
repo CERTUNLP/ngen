@@ -23,7 +23,7 @@ pip-chill==1.0.1
 pip-tools==6.6.2
 psycopg2-binary==2.9.5
 pyjwt==2.4.0
-redis==4.3.6
+redis==4.4.4
 ruamel.yaml.clib==0.2.7
 tinycss2==1.1.1
 tld==0.12.6
