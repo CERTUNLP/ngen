@@ -337,10 +337,6 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
-    priority = PrioritySerializer(read_only=True)
-    tlp = TlpSerializer(read_only=True)
-    taxonomy = TaxonomySerializer(read_only=True)
-    feed = FeedSerializer(read_only=True)
     evidence = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
