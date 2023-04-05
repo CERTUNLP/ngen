@@ -7,6 +7,7 @@ from constance import config
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.text import slugify
 from django.utils.translation import gettext
 from rest_framework import serializers, exceptions
 from rest_framework.exceptions import ValidationError
@@ -93,6 +94,34 @@ class MergeSerializerMixin:
     @staticmethod
     def allowed_fields():
         raise NotImplementedError
+
+
+class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
+    """
+    A custom field to allow creation of related objects using either a slug or
+    hyperlink.
+    """
+    def __init__(self, **kwargs):
+        self.slug_field = kwargs.pop('slug_field', 'slug')
+        super().__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        """
+        Override the `to_internal_value` method to allow slugs.
+        """
+        try:
+            # Try to get the related object using a hyperlink
+            return super().to_internal_value(data)
+        except serializers.ValidationError:
+            # If that fails, try to get the related object using a slug
+            slug = slugify(data).replace('-', '_')
+            try:
+                queryset = self.get_queryset()
+                return queryset.get(**{self.slug_field: slug})
+            except queryset.model.DoesNotExist:
+                raise serializers.ValidationError(
+                    f"{slug} is not a valid slug for {queryset.model.__name__}."
+                )
 
 
 class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
@@ -337,6 +366,26 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
+    feed = SlugOrHyperlinkedRelatedField(
+        slug_field='slug', 
+        queryset=models.Feed.objects.all(),
+        view_name='feed-detail'
+    )
+    tlp = SlugOrHyperlinkedRelatedField(
+        slug_field='slug', 
+        queryset=models.Tlp.objects.all(),
+        view_name='tlp-detail'
+    )
+    priority = SlugOrHyperlinkedRelatedField(
+        slug_field='slug', 
+        queryset=models.Priority.objects.all(),
+        view_name='priority-detail'
+    )
+    taxonomy = SlugOrHyperlinkedRelatedField(
+        slug_field='slug', 
+        queryset=models.Taxonomy.objects.all(),
+        view_name='taxonomy-detail'
+    )
     evidence = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
