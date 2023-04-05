@@ -31,7 +31,7 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
     active = models.BooleanField(default=True)
     TYPE = Choices(('internal', gettext_lazy('Internal')), ('external', gettext_lazy('External')))
     type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
-    network_entity = models.ForeignKey('ngen.NetworkEntity', models.DO_NOTHING, null=True)
+    network_entity = models.ForeignKey('ngen.NetworkEntity', models.DO_NOTHING, null=True, related_name='networks')
     objects = NetworkManager()
     node_order_by = ['parent', '-cidr', 'domain']
 

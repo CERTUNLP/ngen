@@ -217,6 +217,12 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NetworkEntitySerializer(serializers.HyperlinkedModelSerializer):
+    networks = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='network-detail'
+    )
+
     class Meta:
         model = models.NetworkEntity
         fields = '__all__'
