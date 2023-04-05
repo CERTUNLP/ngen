@@ -195,6 +195,7 @@ class PrioritySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Priority
         fields = '__all__'
+        read_only_fields = ['slug']
 
 
 class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
