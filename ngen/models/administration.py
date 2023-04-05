@@ -33,12 +33,17 @@ COLOR_PALETTE = [
 
 
 class Priority(NgenModel):
+    slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=255)
     severity = models.IntegerField(unique=True)
     attend_time = models.DurationField(default=timedelta(minutes=config.PRIORITY_ATTEND_TIME_DEFAULT))
     solve_time = models.DurationField(default=timedelta(minutes=config.PRIORITY_SOLVE_TIME_DEFAULT))
     notification_amount = models.PositiveSmallIntegerField(default=3)
     color = ColorField(samples=COLOR_PALETTE)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name).replace('-', '_')
+        super(Priority, self).save(*args, **kwargs)
 
     @classmethod
     def default_priority(cls):
