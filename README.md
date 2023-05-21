@@ -32,6 +32,16 @@ $ cd docker
 $ docker compose -f docker-compose-prod.yml up
 ```
 
+> Start with elasticsearch
+
+Note: If you want to disable it set `ELASTIC_ENABLED=false` and remove containers (maybe you need to prune).
+Set `ELASTIC_ENABLED=true` in the file `ngen.env` and:
+
+```bash
+$ cd docker
+$ docker compose --profile elastic up
+```
+
 > Build and push image to dockerhub
 
 ```bash
