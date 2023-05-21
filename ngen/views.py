@@ -268,3 +268,12 @@ class CookieTokenLogoutView(APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class DisabledView(APIView):
+    """ View for disabled endpoints """
+    permission_classes = (IsAuthenticated,)
+
+    def response(self, request):
+        return Response({"Failed": "Service disabled on instalation."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    
+    get = post = put = delete = patch = head = options = response

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+from datetime import timedelta
 
 import PIL
 from PIL import Image
@@ -30,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#j!42e(tj8h#n&nl#cxg#(lu=j9=(pcf*=tep$qv%@1^yst4!*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', False)
+DEBUG = os.environ.get('DJANGO_DEBUG', False).lower() in ('true', '1', 't')
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(',')
 
@@ -63,9 +64,8 @@ INSTALLED_APPS = [
     'auditlog',
     'colorfield',
     'comment',
-    'django_elasticsearch_dsl',
-    'django_elasticsearch_dsl_drf',
     'drf_yasg',
+    # django_elasticsearch_dsl added later
 ]
 
 MIDDLEWARE = [
@@ -253,7 +253,7 @@ CONSTANCE_CONFIG = {
         os.environ.get('ALLOWED_FIELDS_EVENT'),
         'Event comma separated fields that could be modified if the instance is blocked. '),
     'ALLOWED_FIELDS_EXCEPTION': (
-        os.environ.get('ALLOWED_FIELDS_EXCEPTION', 'False').lower() in ('true', '1'),
+        os.environ.get('ALLOWED_FIELDS_EXCEPTION', 'False').lower() in ('true', '1', 't'),
         'If True, ngen will raise an exception if a blocked field is modified', bool),
     'PRIORITY_ATTEND_TIME_DEFAULT': (
         int(os.environ.get('PRIORITY_ATTEND_TIME_DEFAULT')), 'Priority default attend time in minutes', int),
@@ -263,7 +263,7 @@ CONSTANCE_CONFIG = {
     'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT'), 'Default', 'priority_field'),
     'ALLOWED_ARTIFACTS_TYPES': (os.environ.get('ALLOWED_ARTIFACTS_TYPES'), 'Allowed artifact types'),
     'ARTIFACT_SAVE_ENRICHMENT_FAILURE': (
-        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'False').lower() in ('true', '1'), 'Allowed artifact types',
+        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'False').lower() in ('true', '1', 't'), 'Allowed artifact types',
         bool),
     'CORTEX_HOST': (os.environ.get('CORTEX_HOST'), 'Cortex host domain:port'),
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
@@ -315,13 +315,15 @@ CSRF_TRUSTED_ORIGINS = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS').split(',')
 COMMENT_ALLOW_SUBSCRIPTION = True
 COMMENT_ALLOW_TRANSLATION = True
 
-ELASTICSEARCH_DSL = {
-    'default': {
-        'hosts': os.environ.get('ELASTIC_HOST') + ':' + os.environ.get('ELASTIC_PORT')
-    },
-}
+ELASTIC_ENABLED = os.environ.get('ELASTIC_ENABLED', False).lower() in ('true', '1', 't')
+if ELASTIC_ENABLED:
+    ELASTICSEARCH_DSL = {
+        'default': {
+            'hosts': f"{os.environ.get('ELASTIC_HOST')}:{os.environ.get('ELASTIC_PORT')}"
+        },
+    }
+    INSTALLED_APPS += ['django_elasticsearch_dsl', 'django_elasticsearch_dsl_drf']
 
-from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(minutes=15),

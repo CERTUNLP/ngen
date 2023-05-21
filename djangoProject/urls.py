@@ -27,7 +27,6 @@ from rest_framework.authtoken import views as authtokenviews
 
 from djangoProject import settings
 from ngen import views
-from ngen.documents import CaseDocumentViewSet
 
 router = DefaultRouter()
 router.register(r'administration/tlp', views.TlpViewSet)
@@ -54,9 +53,12 @@ router.register(r"announcement", views.AnnouncementViewSet)
 router.register(r"register", views.RegisterViewSet, basename="register")
 router.register(r"checkSession", views.ActiveSessionViewSet, basename="check-session")
 router.register(r"login", views.LoginViewSet, basename="login")
-router.register(r'search/case',
-                CaseDocumentViewSet,
-                basename='casedocument')
+
+if settings.ELASTIC_ENABLED:
+    from ngen.documents import CaseDocumentViewSet
+    router.register(r'search/case',
+                    CaseDocumentViewSet,
+                    basename='casedocument')
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -93,6 +95,11 @@ urlpatterns = [
     re_path(r'^api/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^api/redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
+
+if not settings.ELASTIC_ENABLED:
+    urlpatterns += [ re_path(r'^api/search',
+                        views.DisabledView.as_view(),
+                        name='disabled_view') ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
