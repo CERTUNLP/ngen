@@ -28,7 +28,7 @@ LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('A
 
 class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, ArtifactRelated, Communication):
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
 
     assigned = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, related_name='assigned_cases')
     state = models.ForeignKey('ngen.State', models.DO_NOTHING, related_name='cases')
@@ -193,7 +193,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
 
 class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated, NgenAddressModel):
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
 
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.DO_NOTHING)
     feed = models.ForeignKey('ngen.Feed', models.DO_NOTHING)
