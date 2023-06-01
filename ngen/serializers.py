@@ -446,6 +446,11 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
+
+        # Validate domain or cidr exists
+        if not attrs.get('domain') and not attrs.get('cidr'):
+            raise serializers.ValidationError("domain or cidr is required.")
+        
         if self.instance:
             if self.instance.merged or self.instance.is_parent():
                 for attr in list(attrs):
