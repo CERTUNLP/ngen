@@ -7,6 +7,7 @@ from constance import config
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.text import slugify
 from django.utils.translation import gettext
 from rest_framework import serializers, exceptions
 from rest_framework.exceptions import ValidationError
@@ -95,7 +96,303 @@ class MergeSerializerMixin:
         raise NotImplementedError
 
 
+class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
+    """
+    A custom field to allow creation of related objects using either a slug or
+    hyperlink.
+    """
+    def __init__(self, **kwargs):
+        self.slug_field = kwargs.pop('slug_field', 'slug')
+        super().__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        """
+        Override the `to_internal_value` method to allow slugs.
+        """
+        try:
+            # Try to get the related object using a hyperlink
+            return super().to_internal_value(data)
+        except serializers.ValidationError:
+            # If that fails, try to get the related object using a slug
+            slug = slugify(data).replace('-', '_')
+            try:
+                queryset = self.get_queryset()
+                return queryset.get(**{self.slug_field: slug})
+            except queryset.model.DoesNotExist:
+                raise serializers.ValidationError(
+                    f"{slug} is not a valid slug for {queryset.model.__name__}."
+                )
+
+
+class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
+    related = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = models.Evidence
+        exclude = ['content_type', 'object_id']
+
+    def get_related(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_link(obj.content_object, self.context.get('request'))
+
+
+class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
+    reports = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='report-detail'
+    )
+
+    class Meta:
+        model = models.Taxonomy
+        fields = '__all__'
+        read_only_fields = ['slug']
+
+
+class ReportSerializer(serializers.HyperlinkedModelSerializer):
+    problem = CharField(style={'base_template': 'textarea.html', 'rows': 10})
+    derived_problem = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+    verification = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+    recommendations = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+    more_information = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+
+    class Meta:
+        model = models.Report
+        fields = '__all__'
+
+
+class FeedSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Feed
+        fields = '__all__'
+        read_only_fields = ['slug']
+
+
+class StateSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.State
+        fields = '__all__'
+        read_only_fields = ['slug']
+
+
+class EdgeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Edge
+        fields = '__all__'
+
+
+class TlpSerializer(serializers.HyperlinkedModelSerializer):
+    color = ColorField()
+
+    class Meta:
+        model = models.Tlp
+        fields = '__all__'
+        read_only_fields = ['slug']
+
+
+class PrioritySerializer(serializers.HyperlinkedModelSerializer):
+    color = ColorField()
+
+    class Meta:
+        model = models.Priority
+        fields = '__all__'
+        read_only_fields = ['slug']
+
+
+class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.CaseTemplate
+        fields = '__all__'
+
+
+class NetworkSerializer(serializers.HyperlinkedModelSerializer):
+    children = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='network-detail'
+    )
+
+    class Meta:
+        model = models.Network
+        fields = '__all__'
+
+
+class NetworkEntitySerializer(serializers.HyperlinkedModelSerializer):
+    networks = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='network-detail'
+    )
+
+    class Meta:
+        model = models.NetworkEntity
+        fields = '__all__'
+        read_only_fields = ['slug']
+
+
+class ContactSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Contact
+        fields = '__all__'
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.User
+        exclude = ['user_permissions', 'password', 'groups']
+
+
+class PlaybookSerializer(serializers.HyperlinkedModelSerializer):
+    tasks = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='task-detail'
+    )
+
+    class Meta:
+        model = models.Playbook
+        fields = '__all__'
+
+
+class TaskSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Task
+        fields = '__all__'
+
+
+class TodoTaskSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.TodoTask
+        fields = '__all__'
+        read_only_fields = ['completed_date', 'task', 'event']
+
+
+class ArtifactSerializer(serializers.HyperlinkedModelSerializer):
+    related = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = models.Artifact
+        fields = '__all__'
+
+    def get_related(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_links(obj.related, self.context.get('request'))
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(min_length=4, max_length=128, write_only=True)
+    username = serializers.CharField(max_length=255, required=True)
+    email = serializers.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "password", "email", "is_active"]
+
+    def create(self, validated_data):
+
+        try:
+            User.objects.get(email=validated_data["email"])
+        except ObjectDoesNotExist:
+            return User.objects.create_user(**validated_data)
+
+        raise ValidationError({"success": False, "msg": "Email already taken"})
+
+
+def _generate_jwt_token(user):
+    token = jwt.encode(
+        {"id": user.pk, "exp": datetime.utcnow() + timedelta(days=7)},
+        settings.SECRET_KEY,
+    )
+
+    return token
+
+
+class LoginSerializer(serializers.Serializer):
+    # email = serializers.CharField(max_length=255)
+    # username = serializers.CharField(max_length=255, read_only=True)
+    username = serializers.CharField(max_length=255)
+    password = serializers.CharField(max_length=128, write_only=True)
+
+    def validate(self, data):
+        email = data.get("email", None)
+        username = data.get("username", None)
+        password = data.get("password", None)
+
+        if username is None:
+            raise exceptions.ValidationError(
+                {"success": False, "msg": "Username is required to login"}
+            )
+        if password is None:
+            raise exceptions.ValidationError(
+                {"success": False, "msg": "Password is required to log in."}
+            )
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            raise exceptions.AuthenticationFailed({"success": False, "msg": "Wrong credentials"})
+
+        if not user.is_active:
+            raise exceptions.ValidationError(
+                {"success": False, "msg": "User is not active"}
+            )
+
+        try:
+            session = ActiveSession.objects.get(user=user)
+            if not session.token:
+                raise ValueError
+
+            jwt.decode(session.token, settings.SECRET_KEY, algorithms=["HS256"])
+
+        except (ObjectDoesNotExist, ValueError, jwt.ExpiredSignatureError):
+            session = ActiveSession.objects.create(
+                user=user, token=_generate_jwt_token(user)
+            )
+
+        return {
+            "success": True,
+            "token": session.token,
+            "user": {"_id": user.pk, "username": user.username, "email": user.email},
+        }
+
+
+class AnnouncementSerializer(EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
+    body = CharField(style={'base_template': 'textarea.html', 'rows': 10})
+    evidence = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='evidence-detail'
+    )
+
+    class Meta:
+        model = models.Announcement
+        fields = '__all__'
+
+
+class CommentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Comment
+        exclude = ['content_type', 'object_id']
+
+
 class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
+    feed = SlugOrHyperlinkedRelatedField(
+        slug_field='slug', 
+        queryset=models.Feed.objects.all(),
+        view_name='feed-detail'
+    )
+    tlp = SlugOrHyperlinkedRelatedField(
+        slug_field='slug', 
+        queryset=models.Tlp.objects.all(),
+        view_name='tlp-detail'
+    )
+    priority = SlugOrHyperlinkedRelatedField(
+        slug_field='slug', 
+        queryset=models.Priority.objects.all(),
+        view_name='priority-detail'
+    )
+    taxonomy = SlugOrHyperlinkedRelatedField(
+        slug_field='slug', 
+        queryset=models.Taxonomy.objects.all(),
+        view_name='taxonomy-detail'
+    )
     evidence = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -212,243 +509,3 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
         return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
-
-
-class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
-    related = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = models.Evidence
-        exclude = ['content_type', 'object_id']
-
-    def get_related(self, obj):
-        return GenericRelationField(read_only=True).generic_detail_link(obj.content_object, self.context.get('request'))
-
-
-class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
-    reports = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='report-detail'
-    )
-
-    class Meta:
-        model = models.Taxonomy
-        fields = '__all__'
-        read_only_fields = ['slug']
-
-
-class ReportSerializer(serializers.HyperlinkedModelSerializer):
-    problem = CharField(style={'base_template': 'textarea.html', 'rows': 10})
-    derived_problem = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
-    verification = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
-    recommendations = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
-    more_information = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
-
-    class Meta:
-        model = models.Report
-        fields = '__all__'
-
-
-class FeedSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.Feed
-        fields = '__all__'
-        read_only_fields = ['slug']
-
-
-class StateSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.State
-        fields = '__all__'
-        read_only_fields = ['slug']
-
-
-class EdgeSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.Edge
-        fields = '__all__'
-
-
-class TlpSerializer(serializers.HyperlinkedModelSerializer):
-    color = ColorField()
-
-    class Meta:
-        model = models.Tlp
-        fields = '__all__'
-        read_only_fields = ['slug']
-
-
-class PrioritySerializer(serializers.HyperlinkedModelSerializer):
-    color = ColorField()
-
-    class Meta:
-        model = models.Priority
-        fields = '__all__'
-
-
-class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.CaseTemplate
-        fields = '__all__'
-
-
-class NetworkSerializer(serializers.HyperlinkedModelSerializer):
-    children = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='network-detail'
-    )
-
-    class Meta:
-        model = models.Network
-        fields = '__all__'
-
-
-class NetworkEntitySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.NetworkEntity
-        fields = '__all__'
-        read_only_fields = ['slug']
-
-
-class ContactSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.Contact
-        fields = '__all__'
-
-
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.User
-        exclude = ['user_permissions', 'password', 'groups']
-
-
-class PlaybookSerializer(serializers.HyperlinkedModelSerializer):
-    tasks = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='task-detail'
-    )
-
-    class Meta:
-        model = models.Playbook
-        fields = '__all__'
-
-
-class TaskSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.Task
-        fields = '__all__'
-
-
-class TodoTaskSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.TodoTask
-        fields = '__all__'
-        read_only_fields = ['completed_date', 'task', 'event']
-
-
-class ArtifactSerializer(serializers.HyperlinkedModelSerializer):
-    related = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = models.Artifact
-        fields = '__all__'
-
-    def get_related(self, obj):
-        return GenericRelationField(read_only=True).generic_detail_links(obj.related, self.context.get('request'))
-
-
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(min_length=4, max_length=128, write_only=True)
-    username = serializers.CharField(max_length=255, required=True)
-    email = serializers.EmailField(required=True)
-
-    class Meta:
-        model = User
-        fields = ["id", "username", "password", "email", "is_active"]
-
-    def create(self, validated_data):
-
-        try:
-            User.objects.get(email=validated_data["email"])
-        except ObjectDoesNotExist:
-            return User.objects.create_user(**validated_data)
-
-        raise ValidationError({"success": False, "msg": "Email already taken"})
-
-
-def _generate_jwt_token(user):
-    token = jwt.encode(
-        {"id": user.pk, "exp": datetime.utcnow() + timedelta(days=7)},
-        settings.SECRET_KEY,
-    )
-
-    return token
-
-
-class LoginSerializer(serializers.Serializer):
-    email = serializers.CharField(max_length=255)
-    username = serializers.CharField(max_length=255, read_only=True)
-    password = serializers.CharField(max_length=128, write_only=True)
-
-    def validate(self, data):
-        email = data.get("email", None)
-        username = data.get("username", None)
-        password = data.get("password", None)
-
-        if username is None:
-            raise exceptions.ValidationError(
-                {"success": False, "msg": "Username is required to login"}
-            )
-        if password is None:
-            raise exceptions.ValidationError(
-                {"success": False, "msg": "Password is required to log in."}
-            )
-        user = authenticate(username=username, password=password)
-
-        if user is None:
-            raise exceptions.AuthenticationFailed({"success": False, "msg": "Wrong credentials"})
-
-        if not user.is_active:
-            raise exceptions.ValidationError(
-                {"success": False, "msg": "User is not active"}
-            )
-
-        try:
-            session = ActiveSession.objects.get(user=user)
-            if not session.token:
-                raise ValueError
-
-            jwt.decode(session.token, settings.SECRET_KEY, algorithms=["HS256"])
-
-        except (ObjectDoesNotExist, ValueError, jwt.ExpiredSignatureError):
-            session = ActiveSession.objects.create(
-                user=user, token=_generate_jwt_token(user)
-            )
-
-        return {
-            "success": True,
-            "token": session.token,
-            "user": {"_id": user.pk, "username": user.username, "email": user.email},
-        }
-
-
-class AnnouncementSerializer(EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
-    body = CharField(style={'base_template': 'textarea.html', 'rows': 10})
-    evidence = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='evidence-detail'
-    )
-
-    class Meta:
-        model = models.Announcement
-        fields = '__all__'
-
-
-class CommentSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.Comment
-        exclude = ['content_type', 'object_id']

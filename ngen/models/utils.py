@@ -196,9 +196,6 @@ class NgenAddressModel(models.Model):
         if isinstance(other, NgenAddressModel):
             return self.address == other.address
 
-    def __hash__(self):
-        return super(models.Model).__hash__()
-
     def __str__(self):
         return self.address.__str__()
 
@@ -206,6 +203,9 @@ class NgenAddressModel(models.Model):
         # b.address._address.subnet_of(a.address._address)
         if isinstance(other, NgenAddressModel):
             return other.address in self.address
+
+    def __hash__(self) -> int:
+        return super().__hash__()
 
     class Address:
         _address = None

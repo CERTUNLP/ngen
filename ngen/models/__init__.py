@@ -1,6 +1,8 @@
 from auditlog.registry import auditlog
 from django.apps import apps
 
+from django.contrib.auth import get_user_model
+
 from .administration import *
 from .announcement import *
 from .artifact import *
