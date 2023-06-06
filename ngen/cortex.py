@@ -1,13 +1,13 @@
 from constance import config
 from cortex4py.api import Api
-from cortex4py.exceptions import NotFoundError, ServiceUnavailableError
+from cortex4py.exceptions import NotFoundError, CortexException
 from cortex4py.models import Organization, User
 
 CORTEX_HOST = 'http://' + config.CORTEX_HOST
 try:
     api = Api(CORTEX_HOST, config.CORTEX_APIKEY)
     api.status()
-except ServiceUnavailableError:
+except CortexException:
     api = None
     api_user = None
 
