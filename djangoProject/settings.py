@@ -153,6 +153,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
+    'EXCEPTION_HANDLER': 'ngen.exceptions.django_error_handler',
 }
 
 # Internationalization

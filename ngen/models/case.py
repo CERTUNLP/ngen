@@ -9,6 +9,7 @@ from constance import config
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.core.mail import DNS_NAME
 from django.db import models
 from django.utils.translation import gettext_lazy
@@ -348,11 +349,23 @@ class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
     class Meta:
         db_table = 'case_template'
 
-    def save(self, *args, **kwargs):
-        if not self.cidr and not self.domain:
+    def clean(self):
+        if not self.cidr or not self.domain:
             default_network = ngen.models.Network.objects.default_network()
-            self.cidr = default_network.cidr
-            self.domain = default_network.domain
+            if not self.cidr:
+                self.cidr = default_network.cidr
+            if not self.domain:
+                self.domain = default_network.domain
+
+    def validate_unique(self, exclude=None):
+        super().validate_unique(exclude)
+        qs = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain,
+                     event_taxonomy=self.event_taxonomy, event_feed=self.event_feed)
+        if qs.exists():
+            raise ValidationError('CIDR, Domain, Taxonomy, Feed tuple must be unique')
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
         super(CaseTemplate, self).save()
 
     @property
