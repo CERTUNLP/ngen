@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:alpine as ngen
+FROM python:alpine as ngen-django
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 WORKDIR /code
