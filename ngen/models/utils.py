@@ -177,8 +177,8 @@ class AddressManager(NetManager):
 
 
 class NgenAddressModel(models.Model):
-    cidr = CidrAddressField(null=True)
-    domain = models.CharField(max_length=255, null=True, default=None)
+    cidr = CidrAddressField(null=True, default=None, blank=True)
+    domain = models.CharField(max_length=255, null=True, default=None, blank=True)
     address = None
     objects = AddressManager()
 

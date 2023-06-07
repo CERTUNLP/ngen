@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy
+from django.core.exceptions import ValidationError
 from model_utils import Choices
 
 from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin, NgenAddressModel, AddressManager
@@ -38,7 +39,6 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
     class Meta:
         db_table = 'network'
         ordering = ['-cidr']
-        unique_together = ['cidr', 'domain']
 
     def is_default(self):
         return self.domain == ''
@@ -57,7 +57,22 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
             self.get_children().update(parent=self.parent)
         super(Network, self).delete()
 
+    def clean(self):
+        # cannot be setted parent by user
+        self.parent = None
+        if not self.cidr and not self.domain:
+            raise ValidationError({'cidr': ['CIDR or Domain is required'], 'domain': ['CIDR or Domain is required']})
+        if self.cidr and self.domain:
+            raise ValidationError({'cidr': ['CIDR and Domain are mutually exclusive'], 'domain': ['CIDR and Domain are mutually exclusive']})
+
+    def validate_unique(self, exclude=None):
+        super().validate_unique(exclude)
+        qs = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain).exclude(pk=self.pk)
+        if qs.exists():
+            raise ValidationError('CIDR, Domain tuple must be unique')
+
     def save(self, *args, **kwargs):
+        self.full_clean()
         children = None
         if not self.is_default():
             if self.get_children():

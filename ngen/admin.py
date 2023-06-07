@@ -28,7 +28,11 @@ admin.site.register(ActiveSession)
 
 # constituency
 # admin.site.register(NetworkManager)
-admin.site.register(Network)
+
+class NetworkAdmin(admin.ModelAdmin):
+    readonly_fields = ['parent']
+
+admin.site.register(Network, NetworkAdmin)
 admin.site.register(Contact)
 admin.site.register(NetworkEntity)
 
