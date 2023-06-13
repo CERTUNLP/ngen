@@ -18,7 +18,7 @@ services:
         ports:
             - "8080:8080"
     ngen-django:
-        image: ngen-django
+        image: ngen-django:latest
         build:
             context: ../
             dockerfile: docker/Dockerfile
@@ -37,7 +37,7 @@ services:
             - ngen-redis
             - ngen-mail
     ngen-celery-worker:
-        image: ngen-django
+        image: ngen-django:latest
         restart: always
         command: celery -A djangoProject worker -l debug
         volumes:
@@ -49,7 +49,7 @@ services:
             - ngen-rabbitmq
             - ngen-redis
     ngen-celery-beat:
-        image: ngen-django
+        image: ngen-django:latest
         restart: always
         command: celery -A djangoProject beat -l debug
         volumes:
