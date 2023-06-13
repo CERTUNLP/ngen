@@ -1,5 +1,6 @@
 import constance
 import django_filters
+from django.urls import reverse
 from django.views.generic import TemplateView
 from rest_framework import permissions, filters, status, mixins
 from rest_framework import viewsets
@@ -12,7 +13,6 @@ from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
 
 from ngen import models, serializers, backends
-from ngen.models import ActiveSession
 from ngen.serializers import RegisterSerializer, LoginSerializer
 
 
@@ -236,20 +236,23 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
             raise InvalidToken('No valid token found in cookie \'refresh_token\'')
 
 class CookieTokenObtainPairView(TokenObtainPairView):
-  def finalize_response(self, request, response, *args, **kwargs):
-    if response.data.get('refresh'):
-        cookie_max_age = 3600 * 24 * 14 # 14 days
-        response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True )
-        del response.data['refresh']
-    return super().finalize_response(request, response, *args, **kwargs)
+    def finalize_response(self, request, response, *args, **kwargs):
+        if response.data.get('refresh'):
+            cookie_max_age = 3600 * 24 * 14  # 14 days
+            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True,
+                                path=reverse('ctoken_refresh'))
+            del response.data['refresh']
+        return super().finalize_response(request, response, *args, **kwargs)
 
 class CookieTokenRefreshView(TokenRefreshView):
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get('refresh'):
-            cookie_max_age = 3600 * 24 * 14 # 14 days
-            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True )
+            cookie_max_age = 3600 * 24 * 14  # 14 days
+            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True,
+                                path=reverse('ctoken_refresh'))
             del response.data['refresh']
         return super().finalize_response(request, response, *args, **kwargs)
+
     serializer_class = CookieTokenRefreshSerializer
 
 
