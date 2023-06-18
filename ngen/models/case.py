@@ -372,9 +372,3 @@ class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
 
     def __str__(self):
         return str(self.id)
-
-
-class ActiveSession(models.Model):
-    user = models.ForeignKey("User", on_delete=models.CASCADE)
-    token = models.CharField(max_length=255)
-    date = models.DateTimeField(auto_now_add=True)

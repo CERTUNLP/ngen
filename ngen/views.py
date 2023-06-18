@@ -13,7 +13,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 from ngen import models, serializers, backends
-from ngen.serializers import RegisterSerializer, LoginSerializer
+from ngen.serializers import RegisterSerializer
 
 
 class AboutView(TemplateView):
@@ -190,26 +190,11 @@ class RegisterViewSet(viewsets.ModelViewSet):
         )
 
 
-class LoginViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
-    permission_classes = (AllowAny,)
-    serializer_class = LoginSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-
-        serializer.is_valid(raise_exception=True)
-
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
-
-
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         try:
-            # TODO ver si es necesario revocar el ActiveSession
-            # session = ActiveSession.objects.get(user=user)
-            # session.delete()
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
             token.blacklist()
@@ -217,14 +202,6 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-class ActiveSessionViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
-    http_method_names = ["post"]
-    permission_classes = (IsAuthenticated,)
-
-    def create(self, request, *args, **kwargs):
-        return Response({"success": True}, status.HTTP_200_OK)
 
 
 class CookieTokenRefreshSerializer(TokenRefreshSerializer):
@@ -265,9 +242,6 @@ class CookieTokenLogoutView(APIView):
 
     def post(self, request):
         try:
-            # TODO ver si es necesario revocar el ActiveSession
-            # session = ActiveSession.objects.get(user=user)
-            # session.delete()
             refresh_token = request.COOKIES.get('refresh_token')
             token = RefreshToken(refresh_token)
             token.blacklist()

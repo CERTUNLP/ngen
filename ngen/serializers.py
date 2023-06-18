@@ -14,7 +14,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 
 from ngen import models
-from ngen.models import utils, User, ActiveSession
+from ngen.models import utils, User
 
 
 class GenericRelationField(serializers.RelatedField):
@@ -304,54 +304,6 @@ def _generate_jwt_token(user):
     )
 
     return token
-
-
-class LoginSerializer(serializers.Serializer):
-    # email = serializers.CharField(max_length=255)
-    # username = serializers.CharField(max_length=255, read_only=True)
-    username = serializers.CharField(max_length=255)
-    password = serializers.CharField(max_length=128, write_only=True)
-
-    def validate(self, data):
-        email = data.get("email", None)
-        username = data.get("username", None)
-        password = data.get("password", None)
-
-        if username is None:
-            raise exceptions.ValidationError(
-                {"success": False, "msg": "Username is required to login"}
-            )
-        if password is None:
-            raise exceptions.ValidationError(
-                {"success": False, "msg": "Password is required to log in."}
-            )
-        user = authenticate(username=username, password=password)
-
-        if user is None:
-            raise exceptions.AuthenticationFailed({"success": False, "msg": "Wrong credentials"})
-
-        if not user.is_active:
-            raise exceptions.ValidationError(
-                {"success": False, "msg": "User is not active"}
-            )
-
-        try:
-            session = ActiveSession.objects.get(user=user)
-            if not session.token:
-                raise ValueError
-
-            jwt.decode(session.token, settings.SECRET_KEY, algorithms=["HS256"])
-
-        except (ObjectDoesNotExist, ValueError, jwt.ExpiredSignatureError):
-            session = ActiveSession.objects.create(
-                user=user, token=_generate_jwt_token(user)
-            )
-
-        return {
-            "success": True,
-            "token": session.token,
-            "user": {"_id": user.pk, "username": user.username, "email": user.email},
-        }
 
 
 class AnnouncementSerializer(EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):

@@ -52,8 +52,6 @@ router.register(r'artifact', views.ArtifactViewSet)
 router.register(r"announcement", views.AnnouncementViewSet)
 # router.register(r"comments", views.CommentViewSet)
 router.register(r"register", views.RegisterViewSet, basename="register")
-router.register(r"checkSession", views.ActiveSessionViewSet, basename="check-session")
-router.register(r"login", views.LoginViewSet, basename="login")
 router.register(r'search/case',
                 CaseDocumentViewSet,
                 basename='casedocument')
@@ -87,7 +85,7 @@ urlpatterns = [
     path('api/ctoken/', views.CookieTokenObtainPairView.as_view(), name='ctoken_obtain_pair'),
     path('api/ctoken/refresh/', views.CookieTokenRefreshView.as_view(), name='ctoken_refresh'),
     path('api/ctoken/logout/', views.CookieTokenLogoutView.as_view(), name='ctoken_logout'),
-    path('about/', views.AboutView.as_view()),
+    path('api/about/', views.AboutView.as_view()),
     path('__debug__/', include('debug_toolbar.urls')),
     re_path(r'^api/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^api/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
