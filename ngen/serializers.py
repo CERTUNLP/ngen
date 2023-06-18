@@ -101,6 +101,7 @@ class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
     A custom field to allow creation of related objects using either a slug or
     hyperlink.
     """
+
     def __init__(self, **kwargs):
         self.slug_field = kwargs.pop('slug_field', 'slug')
         super().__init__(**kwargs)
@@ -374,22 +375,22 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
 
 class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
     feed = SlugOrHyperlinkedRelatedField(
-        slug_field='slug', 
+        slug_field='slug',
         queryset=models.Feed.objects.all(),
         view_name='feed-detail'
     )
     tlp = SlugOrHyperlinkedRelatedField(
-        slug_field='slug', 
+        slug_field='slug',
         queryset=models.Tlp.objects.all(),
         view_name='tlp-detail'
     )
     priority = SlugOrHyperlinkedRelatedField(
-        slug_field='slug', 
+        slug_field='slug',
         queryset=models.Priority.objects.all(),
         view_name='priority-detail'
     )
     taxonomy = SlugOrHyperlinkedRelatedField(
-        slug_field='slug', 
+        slug_field='slug',
         queryset=models.Taxonomy.objects.all(),
         view_name='taxonomy-detail'
     )

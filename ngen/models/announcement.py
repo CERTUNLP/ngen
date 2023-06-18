@@ -1,9 +1,66 @@
+import re
+from collections import defaultdict
+
+from constance import config
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
+from django.template.loader import get_template
+from django.utils.html import strip_tags
 from django_bleach.models import BleachField
 from model_utils import Choices
 
 from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin
-from ..communication import Communication
+
+
+class Communication:
+    @staticmethod
+    def send_mail(subject, content: dict, recipients: dict[str, list], attachments: list[dict] = None,
+                  extra_headers: dict = None):
+        if recipients['to']:
+            email = EmailMultiAlternatives(subject, content['text'], recipients['from'],
+                                           recipients['to'], bcc=recipients['bcc'], cc=recipients['cc'])
+            email.attach_alternative(content['html'], "text/html")
+            email.extra_headers.update(extra_headers)
+            for attachment in attachments:
+                email.attach(attachment['name'], attachment['file'].read())
+            email.send()
+
+    @staticmethod
+    def render_template(template: str, extra_params: dict = None, lang: str = None) -> dict:
+        content = {}
+        lang = lang if lang else config.NGEN_LANG
+        params = {'lang': lang, 'config': config}
+        if extra_params:
+            params.update(extra_params)
+        content['text'] = re.sub(r'\n+', '\n', strip_tags(get_template(template).render(params)).replace('  ', ''))
+        params.update({'html': True})
+        content['html'] = get_template(template).render(params)
+        return content
+
+    def communicate(self, title: str, template: str, **kwargs):
+        return self.send_mail(self.subject(title), self.render_template(template, extra_params=self.template_params),
+                              self.recipients, self.email_attachments, self.email_headers)
+
+    def subject(self, title: str = None) -> str:
+        return title
+
+    @property
+    def recipients(self) -> dict[str, list]:
+        recipients = defaultdict(list)
+        recipients['from'] = config.EMAIL_SENDER
+        return recipients
+
+    @property
+    def template_params(self) -> dict:
+        raise NotImplementedError
+
+    @property
+    def email_headers(self) -> dict:
+        return {}
+
+    @property
+    def email_attachments(self) -> list[dict]:
+        raise NotImplementedError
 
 
 class Announcement(NgenModel, NgenPriorityMixin, NgenEvidenceMixin, Communication):

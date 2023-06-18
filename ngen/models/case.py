@@ -17,9 +17,9 @@ from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
 
 import ngen
+from ngen.models.announcement import Communication
 from . import ArtifactRelated, Priority
 from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel, NgenAddressModel
-from ..communication import Communication
 from ..storage import HashedFilenameStorage
 
 LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (

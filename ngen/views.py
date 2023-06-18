@@ -7,10 +7,10 @@ from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenRefreshSerializer
-from rest_framework_simplejwt.exceptions import InvalidToken
 
 from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer, LoginSerializer
@@ -226,14 +226,17 @@ class ActiveSessionViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     def create(self, request, *args, **kwargs):
         return Response({"success": True}, status.HTTP_200_OK)
 
+
 class CookieTokenRefreshSerializer(TokenRefreshSerializer):
     refresh = None
+
     def validate(self, attrs):
         attrs['refresh'] = self.context['request'].COOKIES.get('refresh_token')
         if attrs['refresh']:
             return super().validate(attrs)
         else:
             raise InvalidToken('No valid token found in cookie \'refresh_token\'')
+
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     def finalize_response(self, request, response, *args, **kwargs):
@@ -243,6 +246,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                                 path=reverse('ctoken_refresh'))
             del response.data['refresh']
         return super().finalize_response(request, response, *args, **kwargs)
+
 
 class CookieTokenRefreshView(TokenRefreshView):
     def finalize_response(self, request, response, *args, **kwargs):
