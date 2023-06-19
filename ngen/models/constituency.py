@@ -15,7 +15,9 @@ class NetworkManager(AddressManager):
         return parent
 
     def default_network(self):
-        return self.get(cidr='0.0.0.0/0')
+        qs = self.filter(cidr__in=['0.0.0.0/0', None], domain__in=['', None])
+        if qs.exists():
+            return qs.first()
 
     def children_of(self, network: 'Network'):
         children = None
@@ -28,11 +30,11 @@ class NetworkManager(AddressManager):
 
 
 class Network(NgenModel, NgenTreeModel, NgenAddressModel):
-    contacts = models.ManyToManyField('ngen.Contact')
+    contacts = models.ManyToManyField('ngen.Contact', blank=True)
     active = models.BooleanField(default=True)
     TYPE = Choices(('internal', gettext_lazy('Internal')), ('external', gettext_lazy('External')))
     type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
-    network_entity = models.ForeignKey('ngen.NetworkEntity', models.DO_NOTHING, null=True, related_name='networks')
+    network_entity = models.ForeignKey('ngen.NetworkEntity', models.SET_NULL, null=True, blank=True, related_name='networks')
     objects = NetworkManager()
     node_order_by = ['parent', '-cidr', 'domain']
 
@@ -41,7 +43,7 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
         ordering = ['-cidr']
 
     def is_default(self):
-        return self.domain == ''
+        return self.domain in ['', None] and self.cidr in ['0.0.0.0/0', None]
 
     @classmethod
     def find_problems(cls):
@@ -60,16 +62,25 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
     def clean(self):
         # cannot be setted parent by user
         self.parent = None
-        if not self.cidr and not self.domain:
-            raise ValidationError({'cidr': ['CIDR or Domain is required'], 'domain': ['CIDR or Domain is required']})
-        if self.cidr and self.domain:
+        if self.is_default():
+            self.cidr = '0.0.0.0/0'
+            self.domain = ''
+            qs = Network.objects.filter(cidr=self.cidr, domain=self.domain).exclude(pk=self.pk)
+            if qs.exists():
+                raise ValidationError({'cidr': ['Can only exist one default network']})
+        elif self.cidr != None and self.domain != None:
             raise ValidationError({'cidr': ['CIDR and Domain are mutually exclusive'], 'domain': ['CIDR and Domain are mutually exclusive']})
 
     def validate_unique(self, exclude=None):
         super().validate_unique(exclude)
-        qs = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain).exclude(pk=self.pk)
-        if qs.exists():
-            raise ValidationError('CIDR, Domain tuple must be unique')
+        if self.cidr:
+            qs = self.__class__.objects.filter(cidr=self.cidr).exclude(pk=self.pk)
+            if qs.exists():
+                raise ValidationError({'cidr': ['Already exists a network with this CIDR']})
+        if self.domain:
+            qs = self.__class__.objects.filter(domain=self.domain).exclude(pk=self.pk)
+            if qs.exists():
+                raise ValidationError({'domain': ['Already exists a network with this Domain']})
 
     def save(self, *args, **kwargs):
         self.full_clean()

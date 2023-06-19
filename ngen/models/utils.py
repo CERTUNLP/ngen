@@ -169,11 +169,13 @@ class AddressManager(NetManager):
     def parents_of(self, address: 'NgenAddressModel'):
         if address.cidr:
             return self.cidr_parents_of(str(address.cidr))
-        elif address.domain:
+        if address.domain:
             return self.domain_parents_of(address.domain)
+        return self.none()
 
     def parent_of(self, address: 'NgenAddressModel'):
-        return self.parents_of(address).first()
+        qs = self.parents_of(address)
+        return qs.first() if qs and qs.exists() else None
 
 
 class NgenAddressModel(models.Model):
