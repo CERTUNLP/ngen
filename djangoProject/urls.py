@@ -32,23 +32,23 @@ router = DefaultRouter()
 router.register(r'administration/tlp', views.TlpViewSet)
 router.register(r'administration/feed', views.FeedViewSet)
 router.register(r'administration/priority', views.PriorityViewSet)
-router.register(r'state', views.StateViewSet)
-router.register(r'edge', views.EdgeViewSet)
-router.register(r'template', views.CaseTemplateViewSet)
-router.register(r'case', views.CaseViewSet)
-router.register(r'evidence', views.EvidenceViewSet)
-router.register(r'event', views.EventViewSet)
-router.register(r'taxonomy', views.TaxonomyViewSet)
-router.register(r'report', views.ReportViewSet)
-router.register(r'network', views.NetworkViewSet)
-router.register(r'contact', views.ContactViewSet)
-router.register(r'entity', views.NetworkEntityViewSet)
-router.register(r'user', views.UserViewSet)
-router.register(r'playbook', views.PlaybookViewSet)
-router.register(r'task', views.TaskViewSet)
-router.register(r'todo', views.TodoTaskViewSet)
-router.register(r'artifact', views.ArtifactViewSet)
-router.register(r"announcement", views.AnnouncementViewSet)
+router.register(r'state', views.StateViewSet, basename='state')
+router.register(r'edge', views.EdgeViewSet, basename='edge')
+router.register(r'template', views.CaseTemplateViewSet, basename='template')
+router.register(r'case', views.CaseViewSet, basename='case')
+router.register(r'evidence', views.EvidenceViewSet, basename='evidence')
+router.register(r'event', views.EventViewSet, basename='event')
+router.register(r'taxonomy', views.TaxonomyViewSet, basename='taxonomy')
+router.register(r'report', views.ReportViewSet, basename='report')
+router.register(r'network', views.NetworkViewSet, basename='network')
+router.register(r'contact', views.ContactViewSet, basename='contact')
+router.register(r'entity', views.NetworkEntityViewSet, basename='networkentity')
+router.register(r'user', views.UserViewSet, basename='user')
+router.register(r'playbook', views.PlaybookViewSet, basename='playbook')
+router.register(r'task', views.TaskViewSet, basename='task')
+router.register(r'todo', views.TodoTaskViewSet, basename='todo')
+router.register(r'artifact', views.ArtifactViewSet, basename='artifact')
+router.register(r"announcement", views.AnnouncementViewSet, basename='announcement')
 # router.register(r"comments", views.CommentViewSet)
 router.register(r"register", views.RegisterViewSet, basename="register")
 router.register(r"checkSession", views.ActiveSessionViewSet, basename="check-session")
@@ -80,15 +80,15 @@ urlpatterns = [
     path('api/comments/', comment_views.CommentList.as_view(), name='comment-list'),
     path('api/comments/create/', comment_views.CommentCreate.as_view(), name='comment-create'),
     path('api/comments/<int:pk>/', comment_views.CommentDetail.as_view(), name='comment-detail'),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token-create'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token-verify'),
     path('api/token-auth/', authtokenviews.obtain_auth_token),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/logout/', views.LogoutView.as_view(), name="logout"),
-    path('api/ctoken/', views.CookieTokenObtainPairView.as_view(), name='ctoken_obtain_pair'),
-    path('api/ctoken/refresh/', views.CookieTokenRefreshView.as_view(), name='ctoken_refresh'),
-    path('api/ctoken/logout/', views.CookieTokenLogoutView.as_view(), name='ctoken_logout'),
+    path('api/ctoken/', views.CookieTokenObtainPairView.as_view(), name='ctoken-create'),
+    path('api/ctoken/refresh/', views.CookieTokenRefreshView.as_view(), name='ctoken-refresh'),
+    path('api/ctoken/logout/', views.CookieTokenLogoutView.as_view(), name='ctoken-logout'),
     path('about/', views.AboutView.as_view()),
     path('__debug__/', include('debug_toolbar.urls')),
     re_path(r'^api/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
