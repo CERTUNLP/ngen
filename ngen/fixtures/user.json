@@ -12,7 +12,6 @@
       "is_staff": true,
       "is_active": true,
       "date_joined": "2022-04-02T22:52:32.851Z",
-      "priority": 2,
       "api_key": null,
       "groups": [],
       "user_permissions": []
