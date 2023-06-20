@@ -262,7 +262,10 @@ CONSTANCE_CONFIG = {
     'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT'), 'Default', 'priority_field'),
     'ALLOWED_ARTIFACTS_TYPES': (os.environ.get('ALLOWED_ARTIFACTS_TYPES'), 'Allowed artifact types'),
     'ARTIFACT_SAVE_ENRICHMENT_FAILURE': (
-        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'False').lower() in ('true', '1'), 'Allowed artifact types',
+        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'False').lower() in ('true', '1'), 'Save enrichment even if it fails.',
+        bool),
+    'ARTIFACT_RECURSIVE_ENRICHMENT': (
+        os.environ.get('ARTIFACT_RECURSIVE_ENRICHMENT', 'False').lower() in ('true', '1'), 'Enrich artifacts from artifacts enrichmets',
         bool),
     'CORTEX_HOST': (os.environ.get('CORTEX_HOST'), 'Cortex host domain:port'),
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
