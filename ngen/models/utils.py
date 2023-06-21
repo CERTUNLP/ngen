@@ -156,7 +156,7 @@ class NgenPriorityMixin(models.Model):
 
 class AddressManager(NetManager):
     def cidr_parents_of(self, cidr: str):
-        return self.filter(cidr__net_contains=cidr).order_by('-cidr')
+        return self.filter(cidr__net_contains_or_equals=cidr).order_by('-cidr')
 
     def domain_parents_of(self, domain: str):
         query = Q(domain='') | Q(domain=domain)

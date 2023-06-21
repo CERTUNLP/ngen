@@ -7,6 +7,7 @@ class ConstituencyTest(TestCase):
 
     @classmethod
     def setUp(cls):
+        Network.objects.create(cidr='0.0.0.0/0',domain='')
         Network.objects.create(cidr='163.10.0.0/16')
         Network.objects.create(cidr='163.10.1.0/24')
         Network.objects.create(cidr='163.10.2.0/24')

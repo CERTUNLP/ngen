@@ -9,7 +9,7 @@ from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin, NgenAddressModel
 class NetworkManager(AddressManager):
     def parent_of(self, network: 'Network'):
         parent = super().parent_of(network)
-        if not parent:
+        if not parent and not network.is_default():
             parent = self.default_network()
         return parent
 
@@ -41,7 +41,7 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
         unique_together = ['cidr', 'domain']
 
     def is_default(self):
-        return self.domain == ''
+        return self.domain == '' and self.cidr == '0.0.0.0/0'
 
     @classmethod
     def find_problems(cls):
