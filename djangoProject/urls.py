@@ -50,6 +50,7 @@ router.register(r'task', views.TaskViewSet)
 router.register(r'todo', views.TodoTaskViewSet)
 router.register(r'artifact', views.ArtifactViewSet)
 router.register(r'artifactenrichment', views.ArtifactEnrichmentViewSet)
+router.register(r'audit', views.AuditViewSet)
 
 router.register(r"announcement", views.AnnouncementViewSet)
 # router.register(r"comments", views.CommentViewSet)

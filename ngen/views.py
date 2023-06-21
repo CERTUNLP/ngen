@@ -1,5 +1,6 @@
 import constance
 import django_filters
+from auditlog.models import LogEntry
 from django.urls import reverse
 from django.views.generic import TemplateView
 from rest_framework import permissions, filters, status, mixins
@@ -162,10 +163,19 @@ class ArtifactViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ArtifactSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class ArtifactEnrichmentViewSet(viewsets.ModelViewSet):
     queryset = models.ArtifactEnrichment.objects.all()
     serializer_class = serializers.ArtifactEnrichmentSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class AuditViewSet(viewsets.ModelViewSet):
+    queryset = LogEntry.objects.all()
+    serializer_class = serializers.AuditSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+
 
 class AnnouncementViewSet(viewsets.ModelViewSet):
     queryset = models.Announcement.objects.all()
