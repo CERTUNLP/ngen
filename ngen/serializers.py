@@ -267,8 +267,19 @@ class TodoTaskSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ['completed_date', 'task', 'event']
 
 
+class ArtifactEnrichmentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.ArtifactEnrichment
+        fields = '__all__'
+
+
 class ArtifactSerializer(serializers.HyperlinkedModelSerializer):
     related = serializers.SerializerMethodField(read_only=True)
+    enrichments = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='artifactenrichment-detail'
+    )
 
     class Meta:
         model = models.Artifact

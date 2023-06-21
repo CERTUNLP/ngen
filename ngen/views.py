@@ -162,6 +162,10 @@ class ArtifactViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ArtifactSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+class ArtifactEnrichmentViewSet(viewsets.ModelViewSet):
+    queryset = models.ArtifactEnrichment.objects.all()
+    serializer_class = serializers.ArtifactEnrichmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class AnnouncementViewSet(viewsets.ModelViewSet):
     queryset = models.Announcement.objects.all()

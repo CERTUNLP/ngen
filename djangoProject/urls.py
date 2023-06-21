@@ -49,6 +49,8 @@ router.register(r'playbook', views.PlaybookViewSet)
 router.register(r'task', views.TaskViewSet)
 router.register(r'todo', views.TodoTaskViewSet)
 router.register(r'artifact', views.ArtifactViewSet)
+router.register(r'artifactenrichment', views.ArtifactEnrichmentViewSet)
+
 router.register(r"announcement", views.AnnouncementViewSet)
 # router.register(r"comments", views.CommentViewSet)
 router.register(r"register", views.RegisterViewSet, basename="register")
@@ -71,7 +73,7 @@ schema_view = get_schema_view(
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('api/admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/comments/', comment_views.CommentList.as_view(), name='comment-list'),
     path('api/comments/create/', comment_views.CommentCreate.as_view(), name='comment-create'),
