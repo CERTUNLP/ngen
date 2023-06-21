@@ -176,7 +176,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         return '[%s][TLP:%s][ID:%s] %s' % (config.TEAM_NAME, gettext_lazy(self.tlp.name), self.uuid, title)
 
     def communicate(self, title: str, template: str, **kwargs):
-        event_by_contacts = kwargs.get('event_by_contacts', self.events_by_contacts().items())
+        event_by_contacts = kwargs.get('event_by_contacts', self.events_by_contacts())
         template_params = self.template_params
         recipients = self.recipients
         team_recipients = [self.assigned_email, self.team_email]
