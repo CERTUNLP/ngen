@@ -149,8 +149,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'ngen.pagination.CustomPagination',
     # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 }
 
@@ -277,9 +277,9 @@ CONSTANCE_CONFIG = {
 def team_logo_updated(sender, key, old_value, new_value, **kwargs):
     if key == 'TEAM_LOGO' and new_value:
         old_path = os.path.join(f'{MEDIA_ROOT}', f'{old_value}')
-        old_path2 = os.path.join(f'{MEDIA_ROOT}', f'/200_50_{old_value}')
+        old_path2 = os.path.join(f'{MEDIA_ROOT}', f'200_50_{old_value}')
         new_path = os.path.join(f'{MEDIA_ROOT}', f'{new_value}')
-        new_path2 = os.path.join(f'{MEDIA_ROOT}', f'/200_50_{new_value}')
+        new_path2 = os.path.join(f'{MEDIA_ROOT}', f'200_50_{new_value}')
 
         if os.path.exists(old_path):
             os.remove(old_path)
