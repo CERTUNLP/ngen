@@ -88,6 +88,8 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     @hook(AFTER_CREATE)
     def after_create(self):
         self.communicate(gettext_lazy('New Case'), 'reports/case_base.html')
+        if self.state.attended:
+            self.communicate_open()
 
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
     def before_update(self):
@@ -179,7 +181,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         recipients = self.recipients
         team_recipients = [self.assigned_email, self.team_email]
         if event_by_contacts:
-            for contacts, events in event_by_contacts:
+            for contacts, events in event_by_contacts.items():
                 template_params.update({'events': events})
                 recipients.update({'to': [c.username for c in contacts]})
                 recipients.update({'bcc': team_recipients})
@@ -244,10 +246,10 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
                 self.tasks.add(task)
 
     @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
-    def case_assign_communication(self, event: 'Event'):
-        if event.case.events.count() >= 1:
-            event.case.communicate(gettext_lazy('New event on case'), 'reports/case_assign.html',
-                                   event_by_contacts={tuple(event.email_contacts()): [event]})
+    def case_assign_communication(self):
+        if self.case.events.count() >= 1:
+            self.case.communicate(gettext_lazy('New event on case'), 'reports/case_assign.html',
+                                  event_by_contacts={tuple(self.email_contacts()): [self]})
 
     @property
     def blocked(self):
@@ -275,7 +277,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     def email_contacts(self):
         contacts = []
         priority = self.case.priority.severity if self.case.priority else self.priority.severity
-        network = ngen.models.Network.lookup_parent(self)
+        network = ngen.models.Network.objects.parent_of(self)
         event_contacts = list(network.email_contacts(priority))
         if event_contacts:
             return event_contacts
