@@ -6,11 +6,10 @@ from colorfield.serializers import ColorField
 from comment.models import Comment
 from constance import config
 from django.conf import settings
-from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.text import slugify
 from django.utils.translation import gettext
-from rest_framework import serializers, exceptions
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 
@@ -82,10 +81,6 @@ class MergeSerializerMixin:
                     extra_kwargs[field.name] = kwargs
 
         return extra_kwargs
-
-    def validate_parent(self, parent: 'utils.NgenMergeableModel'):
-        if parent and parent.mergeable_with(self.instance):
-            return parent
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
