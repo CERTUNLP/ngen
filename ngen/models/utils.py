@@ -83,7 +83,7 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
         return self.is_child()
 
     def mergeable_with(self, child: 'NgenMergeableModel') -> bool:
-        if self is child:
+        if self.uuid == child.uuid:
             raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
         if not self.mergeable:
             raise ValidationError({'parent': gettext('The parent is not mergeable or is blocked.')})
