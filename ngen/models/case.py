@@ -231,7 +231,8 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
                                            case__solve_date__isnull=True).order_by('id').last()
 
         if event:
-            self.parent = event
+            if self.parent is None:
+                self.parent = event
         else:
             template = CaseTemplate.objects.parents_of(self).filter(event_taxonomy=self.taxonomy,
                                                                     event_feed=self.feed).first()
