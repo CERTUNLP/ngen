@@ -51,7 +51,6 @@ router.register(r'todo', views.TodoTaskViewSet)
 router.register(r'artifact', views.ArtifactViewSet)
 router.register(r'artifactenrichment', views.ArtifactEnrichmentViewSet)
 router.register(r'audit', views.AuditViewSet)
-
 router.register(r"announcement", views.AnnouncementViewSet)
 # router.register(r"comments", views.CommentViewSet)
 router.register(r"register", views.RegisterViewSet, basename="register")
@@ -82,8 +81,8 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-    path('api/token-auth/', authtokenviews.obtain_auth_token),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/token/simple/', authtokenviews.obtain_auth_token),
+    path('api/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/logout/', views.LogoutView.as_view(), name="logout"),
     path('api/ctoken/', views.CookieTokenObtainPairView.as_view(), name='ctoken_obtain_pair'),
     path('api/ctoken/refresh/', views.CookieTokenRefreshView.as_view(), name='ctoken_refresh'),
