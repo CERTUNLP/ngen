@@ -146,7 +146,11 @@ class TaxonomySerializer(NgenModelSerializer):
         read_only=True,
         view_name='report-detail'
     )
-
+    playbooks = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='playbook-detail'
+    )
     class Meta:
         model = models.Taxonomy
         fields = '__all__'

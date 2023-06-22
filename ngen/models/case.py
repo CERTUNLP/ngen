@@ -239,6 +239,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
             if template:
                 self.case = template.create_case()
 
+    @hook(AFTER_CREATE)
     @hook(AFTER_UPDATE, when="taxonomy", has_changed=True)
     def taxonomy_assign(self):
         self.todos.exclude(task__playbook__in=self.taxonomy.playbooks.all()).delete()
