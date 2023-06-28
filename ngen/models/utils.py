@@ -1,5 +1,4 @@
 import ipaddress
-import re
 
 from auditlog.models import AuditlogHistoryField
 from django.contrib.contenttypes.fields import GenericRelation
@@ -170,24 +169,13 @@ class AddressManager(NetManager):
     def parents_of(self, address: 'NgenAddressModel'):
         if address.cidr:
             return self.cidr_parents_of(str(address.cidr))
-        elif address.domain:
+        if address.domain:
             return self.domain_parents_of(address.domain)
         return self.none()
 
     def parent_of(self, address: 'NgenAddressModel'):
-        return self.parents_of(address)[:1]
-
-    def defaults(self):
-        return self.filter(Q(cidr__prefixlen=0) | Q(domain=''))
-
-    def defaults_ipv4(self):
-        return self.filter(cidr__prefixlen=0, cidr__family=4)
-    
-    def defaults_ipv6(self):
-        return self.filter(cidr__prefixlen=0, cidr__family=6)
-    
-    def defaults_domain(self):
-        return self.filter(domain='')
+        qs = self.parents_of(address)
+        return qs.first() if qs and qs.exists() else None
 
 
 class NgenAddressModel(models.Model):
@@ -202,14 +190,9 @@ class NgenAddressModel(models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.cidr:
-            try:
-                self.address = self.AddressIpv4(self.cidr)
-            except ValueError:
-                self.address = self.AddressIpv6(self.cidr)
-        elif self.domain != None:
+            self.address = self.AddressIp(self.cidr)
+        elif self.domain:
             self.address = self.AddressDomain(self.domain)
-        else:
-            raise ValidationError(gettext('Address must be either a CIDR or a domain.'))
 
     def __eq__(self, other: 'NgenAddressModel'):
         if isinstance(other, NgenAddressModel):
@@ -226,19 +209,10 @@ class NgenAddressModel(models.Model):
     def __hash__(self) -> int:
         return super().__hash__()
 
-    def is_default(self):
-        return self.address.is_default()
-
-    def field_name(self):
-        return self.address.field_name()
-
-    def default(self):
-        return self.address.default()
-
     class Address:
         _address = None
 
-        def __init__(self, address: str):
+        def __init__(self, address):
             self.address = address
 
         @property
@@ -258,50 +232,19 @@ class NgenAddressModel(models.Model):
         def __str__(self):
             return self.address
 
-        def is_default(self):
-            return self.address_mask() == 0
-
     class AddressIp(Address):
 
         def address_mask(self):
             return self._address.prefixlen
 
+        def create_address_object(self, address: str):
+            return ipaddress.ip_network(address)
+
         def in_range(self, other):
             return other._address > self._address
 
         def __str__(self):
-            return self.address.compressed
-
-        def field_name(self):
-            return 'cidr'
-
-    class AddressIpv4(AddressIp):
-
-        def create_address_object(self, address: str):
-            return ipaddress.IPv4Network(address)
-
-        def is_ipv4(self):
-            return True
-            
-        def is_ipv6(self):
-            return False
-        
-        def default(self):
-            return '0.0.0.0/0'
-
-    class AddressIpv6(AddressIp):
-
-        def create_address_object(self, address: str):
-            return ipaddress.IPv6Network(address)
-        
-        def is_ipv4(self):
-            return False
-            
-        def is_ipv6(self):
-            return True
-        
-        def default(self):
-            return '::/0'
+            return self.address.exploded
 
     class AddressDomain(Address):
 
@@ -322,9 +265,3 @@ class NgenAddressModel(models.Model):
                 return address_set & address_set_other == address_set
 
             return False
-
-        def default(self):
-            return ''
-
-        def field_name(self):
-            return 'domain'

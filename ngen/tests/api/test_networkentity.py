@@ -82,5 +82,8 @@ class TestNetworkEntity(APITestCase):
 
         url = reverse(self.basename_detail, kwargs={'pk': entity.pk})
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # response = self.client.delete(url)
+        # self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 

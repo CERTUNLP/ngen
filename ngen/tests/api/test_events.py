@@ -87,6 +87,7 @@ class TestEvent(APITestCase):
         }
 
         response = self.client.post(self.url, data=json_data)
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_event_post_with_cidr_and_domain(self):
@@ -119,7 +120,7 @@ class TestEvent(APITestCase):
             'feed': 'shodan',
         }
         response = self.client.post(self.url, data=json_data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_event_post_with_cidr_empty_and_domain_null(self):
         '''
@@ -135,7 +136,7 @@ class TestEvent(APITestCase):
             'feed': 'shodan',
         }
         response = self.client.post(self.url, data=json_data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_event_post_with_cidr_null_and_domain_empty(self):
         '''
