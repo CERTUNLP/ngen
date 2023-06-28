@@ -24,7 +24,7 @@ def django_error_handler(exc, context):
             try:
                 key = error_message.split('Key (')[1].split(')')[0].strip()
                 value = error_message.split(')=(')[1].split(')')[0].strip()
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={key: [f'Ya existe una entidad de red con {key}={value}.']})
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={key: [f'Ya existe una entidad de red con {key}={value}.'], '_detail': error_message})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': [error_message]})
         else:
