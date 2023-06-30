@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-24 13:46+0000\n"
+"POT-Creation-Date: 2023-06-30 08:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -133,6 +133,9 @@ msgstr ""
 msgid "Parent of merged instances can't be modified"
 msgstr "Instancias combinadas no pueden ser modificadas"
 
+msgid "Address must be either a CIDR or a domain."
+msgstr ""
+
 msgid "Merged instances can't be modified"
 msgstr "Instancias combinadas no pueden ser modificadas"
 
@@ -152,9 +155,6 @@ msgid ""
 msgstr ""
 "No es posible cambiar el estado \"%s\" a \"%s\". Los posibles nuevos estados "
 "son %s"
-
-msgid "The solve time must be greater than attend deadline"
-msgstr ""
 
 #, fuzzy
 #| msgid "Notifications"

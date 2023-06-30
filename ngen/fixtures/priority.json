@@ -19,6 +19,21 @@
     "pk": 2,
     "fields": {
       "created": "2019-03-22T16:24:33Z",
+      "modified": "2022-04-09T00:26:44.802Z",
+      "name": "High",
+      "slug": "high",
+      "severity": 2,
+      "attend_time": "00:10:00",
+      "solve_time": "04:00:00",
+      "notification_amount": 3,
+      "color": "#FFFFFF"
+    }
+  },
+  {
+    "model": "ngen.priority",
+    "pk": 3,
+    "fields": {
+      "created": "2019-03-22T16:24:33Z",
       "modified": "2022-04-09T00:26:25.310Z",
       "name": "Medium",
       "slug": "medium",
@@ -31,15 +46,15 @@
   },
   {
     "model": "ngen.priority",
-    "pk": 3,
+    "pk": 4,
     "fields": {
       "created": "2019-03-22T16:24:33Z",
-      "modified": "2022-04-09T00:26:44.802Z",
-      "name": "High",
-      "slug": "high",
-      "severity": 2,
-      "attend_time": "00:10:00",
-      "solve_time": "04:00:00",
+      "modified": "2022-04-09T00:33:40.089Z",
+      "name": "Low",
+      "slug": "low",
+      "severity": 4,
+      "attend_time": "04:00:00",
+      "solve_time": "2 00:00:00",
       "notification_amount": 3,
       "color": "#FFFFFF"
     }
@@ -55,21 +70,6 @@
       "severity": 5,
       "attend_time": "1 00:00:00",
       "solve_time": "7 00:00:00",
-      "notification_amount": 3,
-      "color": "#FFFFFF"
-    }
-  },
-  {
-    "model": "ngen.priority",
-    "pk": 6,
-    "fields": {
-      "created": "2019-03-22T16:24:33Z",
-      "modified": "2022-04-09T00:33:40.089Z",
-      "name": "Low",
-      "slug": "low",
-      "severity": 4,
-      "attend_time": "04:00:00",
-      "solve_time": "2 00:00:00",
       "notification_amount": 3,
       "color": "#FFFFFF"
     }

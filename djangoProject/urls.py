@@ -48,11 +48,12 @@ router.register(r'playbook', views.PlaybookViewSet, basename='playbook')
 router.register(r'task', views.TaskViewSet, basename='task')
 router.register(r'todo', views.TodoTaskViewSet, basename='todo')
 router.register(r'artifact', views.ArtifactViewSet, basename='artifact')
+router.register(r'artifactenrichment', views.ArtifactEnrichmentViewSet, basename='artifactenrichment')
+router.register(r'audit', views.AuditViewSet, basename='audit')
 router.register(r"announcement", views.AnnouncementViewSet, basename='announcement')
 # router.register(r"comments", views.CommentViewSet)
 router.register(r"register", views.RegisterViewSet, basename="register")
-router.register(r"checkSession", views.ActiveSessionViewSet, basename="check-session")
-router.register(r"login", views.LoginViewSet, basename="login")
+# router.register(r"login", views.LoginViewSet, basename="login")
 
 if settings.ELASTIC_ENABLED:
     from ngen.documents import CaseDocumentViewSet
@@ -75,7 +76,7 @@ schema_view = get_schema_view(
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('api/admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/comments/', comment_views.CommentList.as_view(), name='comment-list'),
     path('api/comments/create/', comment_views.CommentCreate.as_view(), name='comment-create'),
@@ -83,13 +84,13 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token-create'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token-verify'),
-    path('api/token-auth/', authtokenviews.obtain_auth_token),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/token/simple/', authtokenviews.obtain_auth_token, name='token-simple'),
+    path('api/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/logout/', views.LogoutView.as_view(), name="logout"),
     path('api/ctoken/', views.CookieTokenObtainPairView.as_view(), name='ctoken-create'),
     path('api/ctoken/refresh/', views.CookieTokenRefreshView.as_view(), name='ctoken-refresh'),
     path('api/ctoken/logout/', views.CookieTokenLogoutView.as_view(), name='ctoken-logout'),
-    path('about/', views.AboutView.as_view()),
+    path('api/about/', views.AboutView.as_view(), name='about'),
     path('__debug__/', include('debug_toolbar.urls')),
     re_path(r'^api/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^api/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

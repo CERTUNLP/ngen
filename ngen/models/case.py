@@ -18,9 +18,9 @@ from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
 
 import ngen
+from ngen.models.announcement import Communication
 from . import ArtifactRelated, Priority
 from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel, NgenAddressModel
-from ..communication import Communication
 from ..storage import HashedFilenameStorage
 
 LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
@@ -89,6 +89,8 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     @hook(AFTER_CREATE)
     def after_create(self):
         self.communicate(gettext_lazy('New Case'), 'reports/case_base.html')
+        if self.state.attended:
+            self.communicate_open()
 
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
     def before_update(self):
@@ -175,12 +177,12 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         return '[%s][TLP:%s][ID:%s] %s' % (config.TEAM_NAME, gettext_lazy(self.tlp.name), self.uuid, title)
 
     def communicate(self, title: str, template: str, **kwargs):
-        event_by_contacts = kwargs.get('event_by_contacts', self.events_by_contacts().items())
+        event_by_contacts = kwargs.get('event_by_contacts', self.events_by_contacts())
         template_params = self.template_params
         recipients = self.recipients
         team_recipients = [self.assigned_email, self.team_email]
         if event_by_contacts:
-            for contacts, events in event_by_contacts:
+            for contacts, events in event_by_contacts.items():
                 template_params.update({'events': events})
                 recipients.update({'to': [c.username for c in contacts]})
                 recipients.update({'bcc': team_recipients})
@@ -230,13 +232,15 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
                                            case__solve_date__isnull=True).order_by('id').last()
 
         if event:
-            self.parent = event
+            if self.parent is None:
+                self.parent = event
         else:
             template = CaseTemplate.objects.parents_of(self).filter(event_taxonomy=self.taxonomy,
                                                                     event_feed=self.feed).first()
             if template:
                 self.case = template.create_case()
 
+    @hook(AFTER_CREATE)
     @hook(AFTER_UPDATE, when="taxonomy", has_changed=True)
     def taxonomy_assign(self):
         self.todos.exclude(task__playbook__in=self.taxonomy.playbooks.all()).delete()
@@ -245,10 +249,10 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
                 self.tasks.add(task)
 
     @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
-    def case_assign_communication(self, event: 'Event'):
-        if event.case.events.count() >= 1:
-            event.case.communicate(gettext_lazy('New event on case'), 'reports/case_assign.html',
-                                   event_by_contacts={tuple(event.email_contacts()): [event]})
+    def case_assign_communication(self):
+        if self.case.events.count() >= 1:
+            self.case.communicate(gettext_lazy('New event on case'), 'reports/case_assign.html',
+                                  event_by_contacts={tuple(self.email_contacts()): [self]})
 
     @property
     def blocked(self):
@@ -276,7 +280,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     def email_contacts(self):
         contacts = []
         priority = self.case.priority.severity if self.case.priority else self.priority.severity
-        network = ngen.models.Network.lookup_parent(self)
+        network = ngen.models.Network.objects.parent_of(self)
         event_contacts = list(network.email_contacts(priority))
         if event_contacts:
             return event_contacts
@@ -385,9 +389,3 @@ class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
 
     def __str__(self):
         return str(self.id)
-
-
-class ActiveSession(models.Model):
-    user = models.ForeignKey("User", on_delete=models.CASCADE)
-    token = models.CharField(max_length=255)
-    date = models.DateTimeField(auto_now_add=True)

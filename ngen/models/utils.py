@@ -1,5 +1,4 @@
 import ipaddress
-import re
 
 from auditlog.models import AuditlogHistoryField
 from django.contrib.contenttypes.fields import GenericRelation
@@ -12,6 +11,7 @@ from model_utils.models import TimeStampedModel
 from netfields import CidrAddressField, NetManager
 from rest_framework.exceptions import ValidationError
 from treebeard.al_tree import AL_Node
+from constance import config
 
 import ngen
 
@@ -84,7 +84,7 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
         return self.is_child()
 
     def mergeable_with(self, child: 'NgenMergeableModel') -> bool:
-        if self is child:
+        if self.uuid == child.uuid:
             raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
         if not self.mergeable:
             raise ValidationError({'parent': gettext('The parent is not mergeable or is blocked.')})
@@ -157,7 +157,7 @@ class NgenPriorityMixin(models.Model):
 
 class AddressManager(NetManager):
     def cidr_parents_of(self, cidr: str):
-        return self.filter(cidr__net_contains=cidr).order_by('-cidr')
+        return self.filter(cidr__net_contains_or_equals=cidr).order_by('-cidr')
 
     def domain_parents_of(self, domain: str):
         query = Q(domain='') | Q(domain=domain)

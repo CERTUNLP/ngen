@@ -1,19 +1,20 @@
 import constance
 import django_filters
+from auditlog.models import LogEntry
+from django.urls import reverse
 from django.views.generic import TemplateView
 from rest_framework import permissions, filters, status, mixins
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenRefreshSerializer
-from rest_framework_simplejwt.exceptions import InvalidToken
 
 from ngen import models, serializers, backends
-from ngen.models import ActiveSession
-from ngen.serializers import RegisterSerializer, LoginSerializer
+from ngen.serializers import RegisterSerializer
 
 
 class AboutView(TemplateView):
@@ -163,6 +164,19 @@ class ArtifactViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class ArtifactEnrichmentViewSet(viewsets.ModelViewSet):
+    queryset = models.ArtifactEnrichment.objects.all()
+    serializer_class = serializers.ArtifactEnrichmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class AuditViewSet(viewsets.ModelViewSet):
+    queryset = LogEntry.objects.all()
+    serializer_class = serializers.AuditSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+
+
 class AnnouncementViewSet(viewsets.ModelViewSet):
     queryset = models.Announcement.objects.all()
     serializer_class = serializers.AnnouncementSerializer
@@ -190,26 +204,11 @@ class RegisterViewSet(viewsets.ModelViewSet):
         )
 
 
-class LoginViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
-    permission_classes = (AllowAny,)
-    serializer_class = LoginSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-
-        serializer.is_valid(raise_exception=True)
-
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
-
-
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         try:
-            # TODO ver si es necesario revocar el ActiveSession
-            # session = ActiveSession.objects.get(user=user)
-            # session.delete()
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
             token.blacklist()
@@ -219,15 +218,9 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class ActiveSessionViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
-    http_method_names = ["post"]
-    permission_classes = (IsAuthenticated,)
-
-    def create(self, request, *args, **kwargs):
-        return Response({"success": True}, status.HTTP_200_OK)
-
 class CookieTokenRefreshSerializer(TokenRefreshSerializer):
     refresh = None
+
     def validate(self, attrs):
         attrs['refresh'] = self.context['request'].COOKIES.get('refresh_token')
         if attrs['refresh']:
@@ -235,21 +228,26 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
         else:
             raise InvalidToken('No valid token found in cookie \'refresh_token\'')
 
+
 class CookieTokenObtainPairView(TokenObtainPairView):
-  def finalize_response(self, request, response, *args, **kwargs):
-    if response.data.get('refresh'):
-        cookie_max_age = 3600 * 24 * 14 # 14 days
-        response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True )
-        del response.data['refresh']
-    return super().finalize_response(request, response, *args, **kwargs)
+    def finalize_response(self, request, response, *args, **kwargs):
+        if response.data.get('refresh'):
+            cookie_max_age = 3600 * 24 * 14  # 14 days
+            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True,
+                                path=reverse('ctoken-refresh'))
+            del response.data['refresh']
+        return super().finalize_response(request, response, *args, **kwargs)
+
 
 class CookieTokenRefreshView(TokenRefreshView):
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get('refresh'):
-            cookie_max_age = 3600 * 24 * 14 # 14 days
-            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True )
+            cookie_max_age = 3600 * 24 * 14  # 14 days
+            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True,
+                                path=reverse('ctoken-refresh'))
             del response.data['refresh']
         return super().finalize_response(request, response, *args, **kwargs)
+
     serializer_class = CookieTokenRefreshSerializer
 
 
@@ -258,9 +256,6 @@ class CookieTokenLogoutView(APIView):
 
     def post(self, request):
         try:
-            # TODO ver si es necesario revocar el ActiveSession
-            # session = ActiveSession.objects.get(user=user)
-            # session.delete()
             refresh_token = request.COOKIES.get('refresh_token')
             token = RefreshToken(refresh_token)
             token.blacklist()

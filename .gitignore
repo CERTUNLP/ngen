@@ -137,7 +137,8 @@ dmypy.json
 .pyre/
 /.idea/
 /dbname.json
-/postgres_data/
 /ngen-adminer-postgrs.sql
 /docker/redis
 /docker/elasticsearch
+/docker/postgres_data/
+/ngen/locale/es/LC_MESSAGES/django.po

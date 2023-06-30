@@ -1,20 +1,28 @@
 from datetime import datetime, timedelta
 
 import jwt
+from auditlog.models import LogEntry
 from colorfield.serializers import ColorField
 from comment.models import Comment
 from constance import config
 from django.conf import settings
-from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.text import slugify
 from django.utils.translation import gettext
-from rest_framework import serializers, exceptions
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 
 from ngen import models
-from ngen.models import utils, User, ActiveSession
+from ngen.models import utils, User
+
+
+class NgenModelSerializer(serializers.HyperlinkedModelSerializer):
+    history = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='audit-detail'
+    )
 
 
 class GenericRelationField(serializers.RelatedField):
@@ -38,7 +46,7 @@ class GenericRelationField(serializers.RelatedField):
                                   format=None)
 
 
-class EvidenceSerializerMixin(serializers.HyperlinkedModelSerializer):
+class EvidenceSerializerMixin(NgenModelSerializer):
 
     def update(self, instance, validated_data):
         files = self.context.get('request').FILES
@@ -74,10 +82,6 @@ class MergeSerializerMixin:
 
         return extra_kwargs
 
-    def validate_parent(self, parent: 'utils.NgenMergeableModel'):
-        if parent and parent.mergeable_with(self.instance):
-            return parent
-
     def validate(self, attrs):
         attrs = super().validate(attrs)
         if self.instance and self.instance.merged:
@@ -101,6 +105,7 @@ class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
     A custom field to allow creation of related objects using either a slug or
     hyperlink.
     """
+
     def __init__(self, **kwargs):
         self.slug_field = kwargs.pop('slug_field', 'slug')
         super().__init__(**kwargs)
@@ -124,7 +129,7 @@ class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
                 )
 
 
-class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
+class EvidenceSerializer(NgenModelSerializer):
     related = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -135,20 +140,24 @@ class EvidenceSerializer(serializers.HyperlinkedModelSerializer):
         return GenericRelationField(read_only=True).generic_detail_link(obj.content_object, self.context.get('request'))
 
 
-class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
+class TaxonomySerializer(NgenModelSerializer):
     reports = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
         view_name='report-detail'
     )
-
+    playbooks = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='playbook-detail'
+    )
     class Meta:
         model = models.Taxonomy
         fields = '__all__'
         read_only_fields = ['slug']
 
 
-class ReportSerializer(serializers.HyperlinkedModelSerializer):
+class ReportSerializer(NgenModelSerializer):
     problem = CharField(style={'base_template': 'textarea.html', 'rows': 10})
     derived_problem = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
     verification = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
@@ -160,27 +169,27 @@ class ReportSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class FeedSerializer(serializers.HyperlinkedModelSerializer):
+class FeedSerializer(NgenModelSerializer):
     class Meta:
         model = models.Feed
         fields = '__all__'
         read_only_fields = ['slug']
 
 
-class StateSerializer(serializers.HyperlinkedModelSerializer):
+class StateSerializer(NgenModelSerializer):
     class Meta:
         model = models.State
         fields = '__all__'
         read_only_fields = ['slug']
 
 
-class EdgeSerializer(serializers.HyperlinkedModelSerializer):
+class EdgeSerializer(NgenModelSerializer):
     class Meta:
         model = models.Edge
         fields = '__all__'
 
 
-class TlpSerializer(serializers.HyperlinkedModelSerializer):
+class TlpSerializer(NgenModelSerializer):
     color = ColorField()
 
     class Meta:
@@ -189,7 +198,7 @@ class TlpSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ['slug']
 
 
-class PrioritySerializer(serializers.HyperlinkedModelSerializer):
+class PrioritySerializer(NgenModelSerializer):
     color = ColorField()
 
     class Meta:
@@ -198,13 +207,13 @@ class PrioritySerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ['slug']
 
 
-class CaseTemplateSerializer(serializers.HyperlinkedModelSerializer):
+class CaseTemplateSerializer(NgenModelSerializer):
     class Meta:
         model = models.CaseTemplate
         fields = '__all__'
 
 
-class NetworkSerializer(serializers.HyperlinkedModelSerializer):
+class NetworkSerializer(NgenModelSerializer):
     children = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -221,7 +230,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class NetworkEntitySerializer(serializers.HyperlinkedModelSerializer):
+class NetworkEntitySerializer(NgenModelSerializer):
     networks = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -234,19 +243,19 @@ class NetworkEntitySerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ['slug']
 
 
-class ContactSerializer(serializers.HyperlinkedModelSerializer):
+class ContactSerializer(NgenModelSerializer):
     class Meta:
         model = models.Contact
         fields = '__all__'
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(NgenModelSerializer):
     class Meta:
         model = models.User
         exclude = ['user_permissions', 'password', 'groups']
 
 
-class PlaybookSerializer(serializers.HyperlinkedModelSerializer):
+class PlaybookSerializer(NgenModelSerializer):
     tasks = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -258,21 +267,32 @@ class PlaybookSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class TaskSerializer(serializers.HyperlinkedModelSerializer):
+class TaskSerializer(NgenModelSerializer):
     class Meta:
         model = models.Task
         fields = '__all__'
 
 
-class TodoTaskSerializer(serializers.HyperlinkedModelSerializer):
+class TodoTaskSerializer(NgenModelSerializer):
     class Meta:
         model = models.TodoTask
         fields = '__all__'
         read_only_fields = ['completed_date', 'task', 'event']
 
 
-class ArtifactSerializer(serializers.HyperlinkedModelSerializer):
+class ArtifactEnrichmentSerializer(NgenModelSerializer):
+    class Meta:
+        model = models.ArtifactEnrichment
+        fields = '__all__'
+
+
+class ArtifactSerializer(NgenModelSerializer):
     related = serializers.SerializerMethodField(read_only=True)
+    enrichments = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='artifactenrichment-detail'
+    )
 
     class Meta:
         model = models.Artifact
@@ -310,55 +330,7 @@ def _generate_jwt_token(user):
     return token
 
 
-class LoginSerializer(serializers.Serializer):
-    # email = serializers.CharField(max_length=255)
-    # username = serializers.CharField(max_length=255, read_only=True)
-    username = serializers.CharField(max_length=255)
-    password = serializers.CharField(max_length=128, write_only=True)
-
-    def validate(self, data):
-        email = data.get("email", None)
-        username = data.get("username", None)
-        password = data.get("password", None)
-
-        if username is None:
-            raise exceptions.ValidationError(
-                {"success": False, "msg": "Username is required to login"}
-            )
-        if password is None:
-            raise exceptions.ValidationError(
-                {"success": False, "msg": "Password is required to log in."}
-            )
-        user = authenticate(username=username, password=password)
-
-        if user is None:
-            raise exceptions.AuthenticationFailed({"success": False, "msg": "Wrong credentials"})
-
-        if not user.is_active:
-            raise exceptions.ValidationError(
-                {"success": False, "msg": "User is not active"}
-            )
-
-        try:
-            session = ActiveSession.objects.get(user=user)
-            if not session.token:
-                raise ValueError
-
-            jwt.decode(session.token, settings.SECRET_KEY, algorithms=["HS256"])
-
-        except (ObjectDoesNotExist, ValueError, jwt.ExpiredSignatureError):
-            session = ActiveSession.objects.create(
-                user=user, token=_generate_jwt_token(user)
-            )
-
-        return {
-            "success": True,
-            "token": session.token,
-            "user": {"_id": user.pk, "username": user.username, "email": user.email},
-        }
-
-
-class AnnouncementSerializer(EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
+class AnnouncementSerializer(EvidenceSerializerMixin, NgenModelSerializer):
     body = CharField(style={'base_template': 'textarea.html', 'rows': 10})
     evidence = serializers.HyperlinkedRelatedField(
         many=True,
@@ -371,30 +343,30 @@ class AnnouncementSerializer(EvidenceSerializerMixin, serializers.HyperlinkedMod
         fields = '__all__'
 
 
-class CommentSerializer(serializers.HyperlinkedModelSerializer):
+class CommentSerializer(NgenModelSerializer):
     class Meta:
         model = models.Comment
         exclude = ['content_type', 'object_id']
 
 
-class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
+class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSerializer):
     feed = SlugOrHyperlinkedRelatedField(
-        slug_field='slug', 
+        slug_field='slug',
         queryset=models.Feed.objects.all(),
         view_name='feed-detail'
     )
     tlp = SlugOrHyperlinkedRelatedField(
-        slug_field='slug', 
+        slug_field='slug',
         queryset=models.Tlp.objects.all(),
         view_name='tlp-detail'
     )
     priority = SlugOrHyperlinkedRelatedField(
-        slug_field='slug', 
+        slug_field='slug',
         queryset=models.Priority.objects.all(),
         view_name='priority-detail'
     )
     taxonomy = SlugOrHyperlinkedRelatedField(
-        slug_field='slug', 
+        slug_field='slug',
         queryset=models.Taxonomy.objects.all(),
         view_name='taxonomy-detail'
     )
@@ -463,7 +435,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers
         return attrs
 
 
-class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.HyperlinkedModelSerializer):
+class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSerializer):
     events = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -515,3 +487,15 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, serializers.
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
         return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
+
+
+class AuditSerializer(NgenModelSerializer):
+    related = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = LogEntry
+        exclude = ['content_type', 'object_id']
+
+    def get_related(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_link(
+            obj.content_type.get_object_for_this_type(pk=obj.object_id), self.context.get('request'))

@@ -149,9 +149,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'ngen.pagination.CustomPagination',
     # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
     ),
     'EXCEPTION_HANDLER': 'ngen.exceptions.django_error_handler',
 }
@@ -178,10 +178,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '/static/'
+STATIC_URL = '/api/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+MEDIA_URL = '/api/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -261,14 +261,16 @@ CONSTANCE_CONFIG = {
     'PRIORITY_SOLVE_TIME_DEFAULT': (
         int(os.environ.get('PRIORITY_SOLVE_TIME_DEFAULT')), 'Priority default solve time in minutes', int),
     'CASE_DEFAULT_LIFECYCLE': (os.environ.get('CASE_DEFAULT_LIFECYCLE'), 'Case default lifecycle', 'case_lifecycle'),
-    'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT'), 'Default', 'priority_field'),
+    'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT'), 'Default priority', 'priority_field'),
     'ALLOWED_ARTIFACTS_TYPES': (os.environ.get('ALLOWED_ARTIFACTS_TYPES'), 'Allowed artifact types'),
     'ARTIFACT_SAVE_ENRICHMENT_FAILURE': (
-        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'False').lower() in ('true', '1', 't'), 'Allowed artifact types',
+        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'False').lower() in ('true', '1', 't'), 'Save enrichment even if it fails.',
+        bool),
+    'ARTIFACT_RECURSIVE_ENRICHMENT': (
+        os.environ.get('ARTIFACT_RECURSIVE_ENRICHMENT', 'False').lower() in ('true', '1', 't'), 'Enrich artifacts from artifacts enrichmets',
         bool),
     'CORTEX_HOST': (os.environ.get('CORTEX_HOST'), 'Cortex host domain:port'),
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
-
 }
 
 
@@ -276,9 +278,9 @@ CONSTANCE_CONFIG = {
 def team_logo_updated(sender, key, old_value, new_value, **kwargs):
     if key == 'TEAM_LOGO' and new_value:
         old_path = os.path.join(f'{MEDIA_ROOT}', f'{old_value}')
-        old_path2 = os.path.join(f'{MEDIA_ROOT}', f'/200_50_{old_value}')
+        old_path2 = os.path.join(f'{MEDIA_ROOT}', f'200_50_{old_value}')
         new_path = os.path.join(f'{MEDIA_ROOT}', f'{new_value}')
-        new_path2 = os.path.join(f'{MEDIA_ROOT}', f'/200_50_{new_value}')
+        new_path2 = os.path.join(f'{MEDIA_ROOT}', f'200_50_{new_value}')
 
         if os.path.exists(old_path):
             os.remove(old_path)
@@ -364,3 +366,4 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

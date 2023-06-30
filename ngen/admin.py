@@ -24,7 +24,6 @@ admin.site.register(Case)
 admin.site.register(Event)
 admin.site.register(Evidence)
 admin.site.register(CaseTemplate)
-admin.site.register(ActiveSession)
 
 # constituency
 # admin.site.register(NetworkManager)

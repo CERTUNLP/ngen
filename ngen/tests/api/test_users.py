@@ -14,6 +14,8 @@ class TestLogin(APITestCase):
     This will handle login testcases
     '''
 
+    fixtures = ["priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json", "edge.json", "report.json", "network_entity.json", "network.json", "contact.json"]
+
     def setUp(self):
         self.user_data = {
             "first_name" : "John",
