@@ -141,4 +141,3 @@ dmypy.json
 /docker/redis
 /docker/elasticsearch
 /docker/postgres_data/
-/ngen/locale/es/LC_MESSAGES/django.po
