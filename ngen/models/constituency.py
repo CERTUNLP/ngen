@@ -8,16 +8,8 @@ from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin, NgenAddressModel
 
 
 class NetworkManager(AddressManager):
-    def parent_of(self, network: 'Network'):
-        parent = super().parent_of(network)
-        if not parent:
-            parent = self.default_network()
-        return parent
-
-    def default_network(self):
-        qs = self.filter(cidr__in=['0.0.0.0/0', None], domain__in=['', None])
-        if qs.exists():
-            return qs.first()
+    def default_network(self, network):
+        return self.filter(**{network.field_name(): network.default()})
 
     def children_of(self, network: 'Network'):
         children = None
@@ -27,6 +19,15 @@ class NetworkManager(AddressManager):
             children = network.parent.get_children().filter(domain__endswith=network.domain).exclude(
                 domain=network.domain)
         return children
+
+    def default_ipv4(self):
+        return self.defaults_ipv4()[:1]
+
+    def default_ipv6(self):
+        return self.defaults_ipv6()[:1]
+
+    def default_domain(self):
+        return self.defaults_domain()[:1]
 
 
 class Network(NgenModel, NgenTreeModel, NgenAddressModel):
@@ -41,9 +42,6 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
     class Meta:
         db_table = 'network'
         ordering = ['-cidr']
-
-    def is_default(self):
-        return self.domain in ['', None] and self.cidr in ['0.0.0.0/0', None]
 
     @classmethod
     def find_problems(cls):
@@ -62,25 +60,16 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
     def clean(self):
         # cannot be setted parent by user
         self.parent = None
-        if self.is_default():
-            self.cidr = '0.0.0.0/0'
-            self.domain = ''
-            qs = Network.objects.filter(cidr=self.cidr, domain=self.domain).exclude(pk=self.pk)
-            if qs.exists():
-                raise ValidationError({'cidr': ['Can only exist one default network']})
+        if self.cidr == None and self.domain == None:
+            raise ValidationError({'cidr': ['CIDR or Domain must be setted'], 'domain': ['CIDR or Domain must be setted']})
         elif self.cidr != None and self.domain != None:
             raise ValidationError({'cidr': ['CIDR and Domain are mutually exclusive'], 'domain': ['CIDR and Domain are mutually exclusive']})
 
     def validate_unique(self, exclude=None):
         super().validate_unique(exclude)
-        if self.cidr:
-            qs = self.__class__.objects.filter(cidr=self.cidr).exclude(pk=self.pk)
-            if qs.exists():
-                raise ValidationError({'cidr': ['Already exists a network with this CIDR']})
-        if self.domain:
-            qs = self.__class__.objects.filter(domain=self.domain).exclude(pk=self.pk)
-            if qs.exists():
-                raise ValidationError({'domain': ['Already exists a network with this Domain']})
+        qs = self.__class__.objects.filter(**{self.field_name(): self.address}).exclude(pk=self.pk)
+        if qs.exists():
+            raise ValidationError({'cidr': [f'Already exists a network with this {self.field_name()}']})
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -89,7 +78,7 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
             if self.get_children():
                 self.get_children().update(parent=self.parent)
 
-            self.parent = Network.objects.parent_of(self)
+            self.parent = Network.objects.parent_of(self).first()
             children = Network.objects.children_of(self)
 
         super(Network, self).save(*args, **kwargs)
