@@ -5,7 +5,7 @@ from cortex4py.models import Organization, User
 
 CORTEX_HOST = f'http://{config.CORTEX_HOST}'
 try:
-    api = Api(CORTEX_HOST, config.CORTEX_APIKEY)
+    api = Api(CORTEX_HOST, str(config.CORTEX_APIKEY))
     api.status()
 except CortexException:
     api = None
