@@ -15,6 +15,7 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
+from ngen.utils import get_settings
 
 
 class AboutView(TemplateView):
@@ -264,6 +265,7 @@ class CookieTokenLogoutView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class DisabledView(APIView):
     """ View for disabled endpoints """
     permission_classes = (IsAuthenticated,)
@@ -272,3 +274,45 @@ class DisabledView(APIView):
         return Response({"Failed": "Service disabled on instalation."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
     
     get = post = put = delete = patch = head = options = response
+
+
+class ConstanceViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.ConstanceSerializer
+    permission_classes = (IsAuthenticated,)
+    queryset = get_settings()
+    lookup_field = 'key'
+    lookup_value_regex = '[A-Za-z_][A-Za-z0-9_]*'
+
+    def create(self, request):
+        """POST - Add new user"""
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED, data={'message': 'POST method is not allowed. Use PATCH or PUT method instead to /path/<key> endpoint.'})
+
+    def retrieve(self, request, key=None):
+        """GET - Show <key> user"""
+        api_result = get_settings()
+        result = next((item for item in api_result if item["key"] == key), None)
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={'message': 'Key not found.'})
+        return Response(result)
+
+    def partial_update(self, request, key=None):
+        """PATCH - Update <key> user"""
+        data = request.data.copy()
+        data['key'] = key
+        if not key in [item['key'] for item in self.queryset]:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={'message': 'Key not found.'})
+        serializer = serializers.ConstanceSerializer(data=data)
+        if serializer.is_valid():
+            if key is None:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Key not provided.'})
+            serializer.create(serializer.validated_data)
+            return Response(status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, key=None):
+        """PUT - Update <key> user"""
+        return self.partial_update(request, key)
+
+    def destroy(self, request, key=None):
+        """DETELE - Delete <key> user"""
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED, data={'message': 'DELETE method is not allowed.'})

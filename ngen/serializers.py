@@ -14,7 +14,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 
 from ngen import models
-from ngen.models import utils, User
+from ngen.models import User
+from ngen.utils import get_settings
 
 
 class NgenModelSerializer(serializers.HyperlinkedModelSerializer):
@@ -499,3 +500,58 @@ class AuditSerializer(NgenModelSerializer):
     def get_related(self, obj):
         return GenericRelationField(read_only=True).generic_detail_link(
             obj.content_type.get_object_for_this_type(pk=obj.object_id), self.context.get('request'))
+
+
+class ConstanceValueField(serializers.Field):
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data):
+        return data
+
+
+class ConstanceSerializer(serializers.Serializer):
+    key = serializers.CharField()
+    default = serializers.SerializerMethodField()
+    help_text = serializers.SerializerMethodField()
+    value_type = serializers.SerializerMethodField()
+    value = ConstanceValueField()
+    settings = None
+
+    def get_settings(self):
+        if not self.settings:
+            self.settings = get_settings()
+        return self.settings
+
+    def get_default(self, obj):
+        value = next((item for item in self.get_settings() if item["key"] == obj['key']), None)
+        return value['default'] if value else None
+
+    def get_help_text(self, obj):
+        value = next((item for item in self.get_settings() if item["key"] == obj['key']), None)
+        return value['help_text'] if value else None
+
+    def get_value_type(self, obj):
+        value = next((item for item in self.get_settings() if item["key"] == obj['key']), None)
+        return value['value_type'] if value else None
+
+    def is_valid(self, raise_exception=False):
+        super().is_valid()
+        if not 'value' in self.validated_data:
+            raise ValidationError('No value provided')
+        return True
+
+    def create(self, validated_data):
+        key = validated_data.get('key')
+        value = validated_data.get('value')
+    
+        try:
+            setattr(config, key, '' if value is None else value)
+        except AttributeError:
+            raise serializers.ValidationError('Invalid key')
+        except ValidationError:
+            raise serializers.ValidationError('Invalid value')
+        return validated_data
+
+    def update(self, instance, validated_data):
+        return self.create(validated_data)

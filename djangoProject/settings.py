@@ -272,6 +272,7 @@ CONSTANCE_CONFIG = {
     'CORTEX_HOST': (os.environ.get('CORTEX_HOST'), 'Cortex host domain:port'),
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
 }
+CONSTANCE_CONFIG_PASSWORDS = ['CORTEX_APIKEY']
 
 
 @receiver(config_updated)
