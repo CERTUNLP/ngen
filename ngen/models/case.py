@@ -16,6 +16,7 @@ from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
 from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
+from auditlog.models import LogEntry
 
 import ngen
 from ngen.models.announcement import Communication
@@ -31,6 +32,8 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
     date = models.DateTimeField(auto_now_add=True)
 
+    casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.DO_NOTHING, null=True, blank=True, related_name='cases_created')
+    user_creator = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, blank=True, related_name='cases_created')
     assigned = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, related_name='assigned_cases')
     state = models.ForeignKey('ngen.State', models.DO_NOTHING, related_name='cases')
 
@@ -373,7 +376,7 @@ class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
         return self.priority
 
     def create_case(self) -> 'Case':
-        return Case.objects.create(tlp=self.case_tlp, lifecycle=self.case_lifecycle, state=self.case_state)
+        return Case.objects.create(tlp=self.case_tlp, lifecycle=self.case_lifecycle, state=self.case_state, casetemplate_creator=self)
 
     def __str__(self):
         return str(self.id)

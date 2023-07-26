@@ -454,6 +454,15 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSer
     )
     evidence = serializers.SerializerMethodField(read_only=True)
     comments = serializers.SerializerMethodField()
+    user_creator = serializers.HyperlinkedRelatedField(
+        default=serializers.CreateOnlyDefault(serializers.CurrentUserDefault()),
+        queryset=models.User.objects.all(),
+        view_name='user-detail'
+    )
+    template_creator = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='casetemplate-detail'
+    )
 
     class Meta:
         model = models.Case
