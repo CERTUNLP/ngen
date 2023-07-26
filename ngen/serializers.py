@@ -22,7 +22,7 @@ class NgenModelSerializer(serializers.HyperlinkedModelSerializer):
     history = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
-        view_name='audit-detail'
+        view_name='logentry-detail'
     )
 
 
