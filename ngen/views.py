@@ -171,6 +171,15 @@ class ArtifactEnrichmentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class ArtifactRelationViewSet(viewsets.ModelViewSet):
+    """
+    Relation between an artifact and an object of the model (event, case, network, etc.)
+    """
+    queryset = models.ArtifactRelation.objects.all()
+    serializer_class = serializers.ArtifactRelationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
 class AuditViewSet(viewsets.ModelViewSet):
     queryset = LogEntry.objects.all()
     serializer_class = serializers.AuditSerializer

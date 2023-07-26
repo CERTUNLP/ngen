@@ -33,11 +33,11 @@ class GenericRelationField(serializers.RelatedField):
     def to_representation(self, related_list):
         return self.generic_detail_links(related_list)
 
+    def generic_detail_link(self, related, request=None):
+        return self.generic_detail_link(related, request)
+
     def generic_detail_links(self, related_list, request=None):
-        links = []
-        for related in related_list:
-            links.append(self.generic_detail_link(related, request))
-        return links
+        return [self.generic_detail_link(related, request) for related in related_list]
 
     def generic_detail_link(self, related, request=None):
         view_name = related.__class__.__name__.lower() + '-detail'
@@ -301,6 +301,21 @@ class ArtifactSerializer(NgenModelSerializer):
 
     def get_related(self, obj):
         return GenericRelationField(read_only=True).generic_detail_links(obj.related, self.context.get('request'))
+
+
+class ArtifactRelationSerializer(NgenModelSerializer):
+    related = serializers.SerializerMethodField(read_only=True)
+    content_type = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = models.ArtifactRelation
+        fields = '__all__'
+
+    def get_related(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_link(obj.related, self.context.get('request'))
+
+    def get_content_type(self, obj):
+        return str(obj.content_type)
 
 
 class RegisterSerializer(serializers.ModelSerializer):
