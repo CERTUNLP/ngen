@@ -41,6 +41,7 @@ class ConstituencyTest(TestCase):
                       Network.objects.get(cidr='163.10.2.0/24').get_children().all())
         self.assertIn(Network.objects.get(cidr='163.10.2.3/32'),
                       Network.objects.get(cidr='163.10.2.0/24').get_children().all())
+        self.assertEqual(self.default_ipv4.get_parent(), None)
 
     def test_cidr6_tree(self):
         self.assertIn(Network.objects.get(cidr='2001:db8:3c4d:0015:0000:0000:1a2f:1a2b/128'),
@@ -50,6 +51,7 @@ class ConstituencyTest(TestCase):
         self.assertIn(Network.objects.get(cidr='2001:db8:3c4d::/48'),
                       Network.objects.get(cidr='2001:db8::/32').get_children().all())
         self.assertEqual(Network.objects.get(cidr='2001:db8::/32').get_parent(), self.default_ipv6)
+        self.assertEqual(self.default_ipv6.get_parent(), None)
 
     def test_domain_tree(self):
         self.assertIn(Network.objects.get(domain='servicios.cert.unlp.edu.ar'),
@@ -61,6 +63,7 @@ class ConstituencyTest(TestCase):
         self.assertIn(Network.objects.get(domain='edu.ar'),
                       Network.objects.get(domain='ar').get_children().all())
         self.assertEqual(Network.objects.get(domain='ar').get_parent(), self.default_domain)
+        self.assertEqual(self.default_domain.get_parent(), None)
 
     def test_defaults(self):
         """

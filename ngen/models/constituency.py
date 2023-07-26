@@ -64,8 +64,9 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
 
     def clean(self):
         super().clean()
-        new_children_parent = self.parent
-        self.get_children().update(parent=new_children_parent)
+        if not self._state.adding:
+            # Is not new. Needed by django admin because it validates with None object
+            self.get_children().update(parent=self.parent)
         self.parent = Network.objects.parent_of(self).exclude(pk=self.pk).first()
 
     def validate_unique(self, exclude=None):
