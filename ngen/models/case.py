@@ -353,15 +353,6 @@ class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
     class Meta:
         db_table = 'case_template'
 
-    def clean(self):
-        super().clean()
-        if not self.cidr or not self.domain:
-            default_network = ngen.models.Network.objects.default_network()
-            if not self.cidr:
-                self.cidr = default_network.cidr
-            if not self.domain:
-                self.domain = default_network.domain
-
     def validate_unique(self, exclude=None):
         super().validate_unique(exclude)
         qs = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain,
