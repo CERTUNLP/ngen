@@ -91,7 +91,7 @@ class TestEvent(APITestCase):
 
     def test_event_post_with_cidr_and_domain(self):
         '''
-        This will test successfull event post
+        This will test bad request event post
         '''
         json_data = {
             'cidr': '2.2.2.2',
@@ -103,7 +103,7 @@ class TestEvent(APITestCase):
             'feed': 'shodan',
         }
         response = self.client.post(self.url, data=json_data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_event_post_with_cidr_null_and_domain_null(self):
         '''
@@ -171,7 +171,7 @@ class TestEvent(APITestCase):
 
     def test_event_post_with_cidr_wildcard_and_domain_empty(self):
         '''
-        This will test successfull event post
+        This will test bad request event post
         '''
         json_data = {
             'cidr': '0.0.0.0/0',
@@ -183,7 +183,7 @@ class TestEvent(APITestCase):
             'feed': 'shodan',
         }
         response = self.client.post(self.url, data=json_data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_event_post_fields_not_editable(self):
         '''

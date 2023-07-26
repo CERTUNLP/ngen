@@ -9,9 +9,10 @@ from django.utils.translation import gettext
 from django_lifecycle import hook, BEFORE_DELETE, BEFORE_UPDATE, LifecycleModelMixin, BEFORE_CREATE
 from model_utils.models import TimeStampedModel
 from netfields import CidrAddressField, NetManager
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 from treebeard.al_tree import AL_Node
 from constance import config
+import re
 
 import ngen
 
@@ -160,7 +161,7 @@ class AddressManager(NetManager):
         return self.filter(cidr__net_contains_or_equals=cidr).order_by('-cidr')
 
     def domain_parents_of(self, domain: str):
-        query = Q(domain='') | Q(domain=domain)
+        query = Q(domain='*') | Q(domain=domain)
         partition = domain.partition('.')[-1]
         while partition:
             query |= Q(domain=partition)
@@ -169,16 +170,16 @@ class AddressManager(NetManager):
 
     def parents_of(self, address: 'NgenAddressModel'):
         if address.cidr:
-            return self.cidr_parents_of(str(address.cidr))
+            return self.cidr_parents_of(str(address.address))
         elif address.domain:
-            return self.domain_parents_of(address.domain)
+            return self.domain_parents_of(str(address.address))
         return self.none()
 
     def parent_of(self, address: 'NgenAddressModel'):
-        return self.parents_of(address)[:1]
+        return self.parents_of(address)
 
     def defaults(self):
-        return self.filter(Q(cidr__prefixlen=0) | Q(domain=''))
+        return self.filter(Q(cidr__prefixlen=0) | Q(domain='*'))
 
     def defaults_ipv4(self):
         return self.filter(cidr__prefixlen=0, cidr__family=4)
@@ -187,7 +188,7 @@ class AddressManager(NetManager):
         return self.filter(cidr__prefixlen=0, cidr__family=6)
     
     def defaults_domain(self):
-        return self.filter(domain='')
+        return self.filter(domain='*')
 
 
 class NgenAddressModel(models.Model):
@@ -201,22 +202,45 @@ class NgenAddressModel(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.assign_address()
+
+    def assign_address(self):
         if self.cidr:
             try:
                 self.address = self.AddressIpv4(self.cidr)
             except ValueError:
                 self.address = self.AddressIpv6(self.cidr)
+            self.cidr = self.address.sanitized()
+            return self.address
         elif self.domain != None:
             self.address = self.AddressDomain(self.domain)
-        else:
+            self.domain = self.address.sanitized()
+            return self.address
+        return None
+
+    def clean(self):
+        # Should be called by subclasses if they override clean()
+        if not self.cidr and self.domain == None:
+            raise ValidationError({'cidr': ['CIDR or Domain must be setted'], 'domain': ['CIDR or Domain must be setted']})
+        elif self.cidr and self.domain != None:
+            raise ValidationError({'cidr': ['CIDR and Domain are mutually exclusive'], 'domain': ['CIDR and Domain are mutually exclusive']})
+
+        if not self.assign_address():
             raise ValidationError(gettext('Address must be either a CIDR or a domain.'))
+
+        if not self.address.is_valid():
+            raise ValidationError({self.field_name(): [f'Must be a valid {self.field_name()}']})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __eq__(self, other: 'NgenAddressModel'):
         if isinstance(other, NgenAddressModel):
             return self.address == other.address
 
     def __str__(self):
-        return self.address.__str__()
+        return self.address.network_string()
 
     def __contains__(self, other: 'NgenAddressModel'):
         # b.address._address.subnet_of(a.address._address)
@@ -234,6 +258,9 @@ class NgenAddressModel(models.Model):
 
     def default(self):
         return self.address.default()
+
+    def network_address(self):
+        return self.address.network_address
 
     class Address:
         _address = None
@@ -275,6 +302,18 @@ class NgenAddressModel(models.Model):
         def field_name(self):
             return 'cidr'
 
+        def sanitized(self):
+            return self.address.compressed
+
+        def network_string(self):
+            return self.address.compressed
+
+        def is_valid(self):
+            return self.address != None
+
+        def network_address(self):
+            return self.address.network_address
+
     class AddressIpv4(AddressIp):
 
         def create_address_object(self, address: str):
@@ -306,10 +345,16 @@ class NgenAddressModel(models.Model):
     class AddressDomain(Address):
 
         def address_mask(self):
+            if self.address in ['*', '']:
+                return 0
             return len(self.address.split('.'))
 
         def create_address_object(self, address):
-            return address
+            # return address.replace('*','').strip().lower().split('/')[0]
+            a = address.replace('*','').strip().strip('.').lower().split('/')[0]
+            if a == '':
+                return '*'
+            return a
 
         def in_range(self, other):
             address_set = set(self.address.split('.'))
@@ -324,7 +369,30 @@ class NgenAddressModel(models.Model):
             return False
 
         def default(self):
-            return ''
+            return '*'
 
         def field_name(self):
             return 'domain'
+
+        def sanitized(self):
+            return self.create_address_object(self.address)
+
+        def network_string(self):
+            if self.is_default():
+                return '*'
+            return f'*.{self.address}'
+
+        def network_with_mask(self):
+            return f'{self.address}/{self.address_mask()}'
+
+        def is_valid(self):
+            domain_regex = r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$'
+            return self.address == '*' or re.match(domain_regex, self.address) != None
+
+        def network_address(self):
+            return self.address
+
+        # def __str__(self):
+            # if self.is_default():
+            #     return '*/0'
+            # return f'{self.address}/{self.address_mask()}'

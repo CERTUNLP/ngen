@@ -384,12 +384,17 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSe
     todos = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
-        view_name='todotask-detail'
+        view_name='todo-detail'
     )
     artifacts = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
         view_name='artifact-detail'
+    )
+    reporter = serializers.HyperlinkedRelatedField(
+        default=serializers.CreateOnlyDefault(serializers.CurrentUserDefault()),
+        queryset=models.User.objects.all(),
+        view_name='user-detail'
     )
     comments = serializers.SerializerMethodField()
 

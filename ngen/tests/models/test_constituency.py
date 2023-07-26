@@ -10,7 +10,7 @@ class ConstituencyTest(TestCase):
         example_entity = NetworkEntity.objects.create(name='Example Entity')
         self.default_ipv4 = Network.objects.create(cidr='0.0.0.0/0')
         self.default_ipv6 = Network.objects.create(cidr='::/0')
-        self.default_domain = Network.objects.create(domain='')
+        self.default_domain = Network.objects.create(domain='*')
         Network.objects.create(cidr='163.10.0.0/16', network_entity=example_entity)
         Network.objects.create(cidr='163.10.1.0/24', network_entity=example_entity)
         Network.objects.create(cidr='163.10.2.0/24', network_entity=example_entity)
@@ -71,20 +71,20 @@ class ConstituencyTest(TestCase):
                        Network.objects.defaults())
         self.assertIn(Network.objects.get(cidr='::/0'),
                        Network.objects.defaults())
-        self.assertIn(Network.objects.get(domain=''),
+        self.assertIn(Network.objects.get(domain='*'),
                        Network.objects.defaults())
         self.assertEqual(Network.objects.get(cidr='0.0.0.0/0'),
                        Network.objects.default_ipv4().first())
         self.assertEqual(Network.objects.get(cidr='::/0'),
                        Network.objects.default_ipv6().first())
-        self.assertEqual(Network.objects.get(domain=''),
+        self.assertEqual(Network.objects.get(domain='*'),
                        Network.objects.default_domain().first())
         self.assertEqual(self.default_ipv4, Network.objects.default_ipv4().first())
         self.assertEqual(self.default_ipv6, Network.objects.default_ipv6().first())
         self.assertEqual(self.default_domain, Network.objects.default_domain().first())
         self.assertEqual(Network.objects.get(cidr='0.0.0.0/0'), self.default_ipv4)
         self.assertEqual(Network.objects.get(cidr='::/0'), self.default_ipv6)
-        self.assertEqual(Network.objects.get(domain=''), self.default_domain)
+        self.assertEqual(Network.objects.get(domain='*'), self.default_domain)
         self.assertEqual(Network.objects.defaults().count(), 3)
 
     def test_network_default_not_duplicated(self):
@@ -93,7 +93,7 @@ class ConstituencyTest(TestCase):
         """
         self.assertRaises(ValidationError, Network.objects.create, cidr='0.0.0.0/0')
         self.assertRaises(ValidationError, Network.objects.create, cidr='::/0')
-        self.assertRaises(ValidationError, Network.objects.create, domain='')
+        self.assertRaises(ValidationError, Network.objects.create, domain='*')
 
     def test_network_not_duplicated(self):
         self.assertRaises(ValidationError, Network.objects.create, cidr='163.10.0.0/16', network_entity=NetworkEntity.objects.first())
@@ -101,3 +101,30 @@ class ConstituencyTest(TestCase):
 
     def test_network_cidr_domain_mix(self):
         self.assertRaises(ValidationError, Network.objects.create, cidr='1.1.0.0/16',  domain='test.edu.ar', network_entity=NetworkEntity.objects.first())
+
+    def test_network_ipv4_update(self):
+        test1 = Network.objects.create(cidr='10.0.0.0/24')
+        test1_parent = test1.get_parent()
+        test1.cidr = '10.0.0.1'
+        test1.save()
+        self.assertEqual(test1_parent, self.default_ipv4)
+        self.assertEqual(test1_parent, test1.get_parent())
+        self.assertNotEqual(test1, test1.get_parent())
+
+    def test_network_ipv6_update(self):
+        test1 = Network.objects.create(cidr='2222::/64')
+        test1_parent = test1.get_parent()
+        test1.cidr = '2222::1'
+        test1.save()
+        self.assertEqual(test1_parent, self.default_ipv6)
+        self.assertEqual(test1_parent, test1.get_parent())
+        self.assertNotEqual(test1, test1.get_parent())
+
+    def test_network_domain_update(self):
+        test1 = Network.objects.create(domain='test.com')
+        test1_parent = test1.get_parent()
+        test1.domain = 'www.test.com'
+        test1.save()
+        self.assertEqual(test1_parent, self.default_domain)
+        self.assertEqual(test1_parent, test1.get_parent())
+        self.assertNotEqual(test1, test1.get_parent())

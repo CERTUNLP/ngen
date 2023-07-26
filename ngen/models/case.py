@@ -201,11 +201,11 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.DO_NOTHING)
     feed = models.ForeignKey('ngen.Feed', models.DO_NOTHING)
 
-    reporter = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, related_name='events_reporter')
-    evidence_file_path = models.CharField(max_length=255, null=True)
-    notes = models.TextField(null=True)
+    reporter = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, blank=True, related_name='events_reporter')
+    evidence_file_path = models.CharField(max_length=255, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
 
-    case = models.ForeignKey('ngen.Case', models.DO_NOTHING, null=True, related_name='events')
+    case = models.ForeignKey('ngen.Case', models.DO_NOTHING, null=True, blank=True, related_name='events')
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     tasks = models.ManyToManyField(
         "ngen.Task",
@@ -294,7 +294,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     def artifacts_dict(self) -> dict:
         artifacts_dict = {'hashes': [], 'files': []}
         if self.cidr:
-            artifacts_dict['ip'] = [self.cidr.network_address]
+            artifacts_dict['ip'] = [self.address.network_address]
         if self.domain:
             artifacts_dict['domain'] = [self.domain]
         for evidence in self.evidence.all():
@@ -354,6 +354,7 @@ class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
         db_table = 'case_template'
 
     def clean(self):
+        super().clean()
         if not self.cidr or not self.domain:
             default_network = ngen.models.Network.objects.default_network()
             if not self.cidr:
@@ -367,10 +368,6 @@ class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
                      event_taxonomy=self.event_taxonomy, event_feed=self.event_feed)
         if qs.exists():
             raise ValidationError('CIDR, Domain, Taxonomy, Feed tuple must be unique')
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super(CaseTemplate, self).save()
 
     @property
     def event_cidr(self):

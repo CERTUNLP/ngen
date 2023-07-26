@@ -21,7 +21,17 @@ admin.site.register(ArtifactEnrichment)
 
 # case
 admin.site.register(Case)
-admin.site.register(Event)
+
+class EventAdmin(admin.ModelAdmin):
+    readonly_fields = ['parent']
+
+    def save_model(self, request, obj, form, change):
+        print(obj.reporter, request.user)
+        if not obj.reporter:
+            obj.reporter = request.user
+        super().save_model(request, obj, form, change)
+
+admin.site.register(Event, EventAdmin)
 admin.site.register(Evidence)
 admin.site.register(CaseTemplate)
 
@@ -32,6 +42,7 @@ class NetworkAdmin(admin.ModelAdmin):
     readonly_fields = ['parent']
 
 admin.site.register(Network, NetworkAdmin)
+# admin.site.register(Network)
 admin.site.register(Contact)
 admin.site.register(NetworkEntity)
 
