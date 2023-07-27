@@ -64,7 +64,7 @@ INSTALLED_APPS = [
     'auditlog',
     'colorfield',
     'comment',
-    'drf_yasg',
+    'drf_spectacular',
     # django_elasticsearch_dsl added later
 ]
 
@@ -154,6 +154,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication'
     ),
     'EXCEPTION_HANDLER': 'ngen.exceptions.django_error_handler',
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # Internationalization
