@@ -254,9 +254,9 @@ class ContactSerializer(NgenModelSerializer):
 
 class UserSerializer(NgenModelSerializer):
     user_permissions = serializers.HyperlinkedRelatedField(
-        queryset=Permission.objects.prefetch_related('content_type').all(),
         many=True,
-        view_name='permission-detail'
+        view_name='permission-detail',
+        read_only=True
     )
 
     class Meta:
