@@ -53,6 +53,9 @@ router.register(r"announcement", views.AnnouncementViewSet, basename='announceme
 router.register(r'constance', views.ConstanceViewSet, basename='constance')
 # router.register(r"comments", views.CommentViewSet)
 router.register(r"register", views.RegisterViewSet, basename="register")
+router.register(r'groups', views.GroupViewSet, basename='group')
+router.register(r'permissions', views.PermissionViewSet, basename='permission')
+router.register(r'contenttypes', views.ContentTypeViewSet, basename='contenttype')
 # router.register(r"login", views.LoginViewSet, basename="login")
 
 if settings.ELASTIC_ENABLED:

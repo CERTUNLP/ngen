@@ -12,6 +12,8 @@ from django.utils.translation import gettext
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 
 from ngen import models
 from ngen.models import User
@@ -251,9 +253,70 @@ class ContactSerializer(NgenModelSerializer):
 
 
 class UserSerializer(NgenModelSerializer):
+    user_permissions = serializers.HyperlinkedRelatedField(
+        queryset=Permission.objects.prefetch_related('content_type').all(),
+        many=True,
+        view_name='permission-detail'
+    )
+
     class Meta:
         model = models.User
-        exclude = ['user_permissions', 'password', 'groups']
+        fields = '__all__'
+
+    def to_representation(self, obj):
+        rep = super(UserSerializer, self).to_representation(obj)
+        if 'password' in rep:
+            if rep.get('password'):
+                rep['password'] = '********'
+            else:
+                rep['password'] = None
+        return rep
+
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        instance = self.Meta.model(**validated_data)
+        if password is not None:
+            instance.set_password(password)
+        instance.save()
+        return instance
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            if attr == 'password':
+                instance.set_password(value)
+            else:
+                setattr(instance, attr, value)
+        instance.save()
+        return instance
+
+
+class GroupSerializer(NgenModelSerializer):
+    permissions = serializers.HyperlinkedRelatedField(
+        queryset=Permission.objects.prefetch_related('content_type').all(),
+        many=True,
+        view_name='permission-detail'
+    )
+
+    class Meta:
+        model = Group
+        fields = '__all__'
+
+
+class PermissionSerializer(NgenModelSerializer):
+    content_type = serializers.HyperlinkedRelatedField(
+        queryset=ContentType.objects.all().prefetch_related('permission_set'),
+        view_name='contenttype-detail'
+    )
+
+    class Meta:
+        model = Permission
+        fields = '__all__'
+
+
+class ContentTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContentType
+        fields = '__all__'
 
 
 class PlaybookSerializer(NgenModelSerializer):
@@ -524,11 +587,14 @@ class AuditSerializer(NgenModelSerializer):
 
     class Meta:
         model = LogEntry
-        exclude = ['content_type', 'object_id']
+        fields = '__all__'
 
     def get_related(self, obj):
-        return GenericRelationField(read_only=True).generic_detail_link(
-            obj.content_type.get_object_for_this_type(pk=obj.object_id), self.context.get('request'))
+        try:
+            new_obj = obj.content_type.get_object_for_this_type(pk=obj.object_id)
+            return GenericRelationField(read_only=True).generic_detail_link(new_obj, self.context.get('request'))
+        except ObjectDoesNotExist:
+            return None
 
 
 class ConstanceValueField(serializers.Field):

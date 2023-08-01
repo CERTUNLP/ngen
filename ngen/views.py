@@ -3,8 +3,7 @@ import django_filters
 from auditlog.models import LogEntry
 from django.urls import reverse
 from django.views.generic import TemplateView
-from rest_framework import permissions, filters, status, mixins
-from rest_framework import viewsets
+from rest_framework import permissions, filters, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,6 +11,8 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 
 from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
@@ -139,6 +140,21 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = serializers.GroupSerializer
+
+
+class PermissionViewSet(viewsets.ModelViewSet):
+    queryset = Permission.objects.all()
+    serializer_class = serializers.PermissionSerializer
+
+
+class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ContentType.objects.all()
+    serializer_class = serializers.ContentTypeSerializer
 
 
 class PlaybookViewSet(viewsets.ModelViewSet):
