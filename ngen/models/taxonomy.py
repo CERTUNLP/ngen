@@ -86,7 +86,7 @@ class TodoTask(NgenModel):
     completed = models.BooleanField(default=False)
     completed_date = models.DateTimeField(null=True)
     note = models.TextField(null=True)
-    assigned_to = models.ForeignKey('ngen.User', null=True, related_name="assigned_tasks", on_delete=models.DO_NOTHING)
+    assigned_to = models.ForeignKey('ngen.User', null=True, related_name="assigned_tasks", on_delete=models.PROTECT)
 
     def save(self, **kwargs):
         if self.completed:

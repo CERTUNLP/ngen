@@ -68,8 +68,8 @@ class Announcement(NgenModel, NgenPriorityMixin, NgenEvidenceMixin, Communicatio
     body = BleachField(null=True)
     LANG = Choices('en', 'es')
     lang = models.CharField(choices=LANG, default=LANG.en, max_length=2)
-    tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
-    network = models.ForeignKey('ngen.Network', models.DO_NOTHING)
+    tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
+    network = models.ForeignKey('ngen.Network', models.PROTECT)
 
     class Meta:
         db_table = 'announcement'

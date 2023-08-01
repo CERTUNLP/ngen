@@ -29,13 +29,13 @@ LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('A
 
 
 class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, ArtifactRelated, Communication):
-    tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
+    tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
 
-    casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.DO_NOTHING, null=True, blank=True, related_name='cases_created')
-    user_creator = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, blank=True, related_name='cases_created')
-    assigned = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, related_name='assigned_cases')
-    state = models.ForeignKey('ngen.State', models.DO_NOTHING, related_name='cases')
+    casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.PROTECT, null=True, blank=True, related_name='cases_created')
+    user_creator = models.ForeignKey('ngen.User', models.PROTECT, null=True, blank=True, related_name='cases_created')
+    assigned = models.ForeignKey('ngen.User', models.PROTECT, null=True, related_name='assigned_cases')
+    state = models.ForeignKey('ngen.State', models.PROTECT, related_name='cases')
 
     attend_date = models.DateTimeField(null=True)
     solve_date = models.DateTimeField(null=True)
@@ -198,17 +198,17 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
 
 
 class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated, NgenAddressModel):
-    tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
+    tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
 
-    taxonomy = models.ForeignKey('ngen.Taxonomy', models.DO_NOTHING)
-    feed = models.ForeignKey('ngen.Feed', models.DO_NOTHING)
+    taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
+    feed = models.ForeignKey('ngen.Feed', models.PROTECT)
 
-    reporter = models.ForeignKey('ngen.User', models.DO_NOTHING, null=True, blank=True, related_name='events_reporter')
+    reporter = models.ForeignKey('ngen.User', models.PROTECT, null=True, blank=True, related_name='events_reporter')
     evidence_file_path = models.CharField(max_length=255, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
 
-    case = models.ForeignKey('ngen.Case', models.DO_NOTHING, null=True, blank=True, related_name='events')
+    case = models.ForeignKey('ngen.Case', models.PROTECT, null=True, blank=True, related_name='events')
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     tasks = models.ManyToManyField(
         "ngen.Task",
@@ -344,11 +344,11 @@ class Evidence(NgenModel):
 
 
 class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
-    event_taxonomy = models.ForeignKey('ngen.Taxonomy', models.DO_NOTHING)
-    event_feed = models.ForeignKey('ngen.Feed', models.DO_NOTHING)
+    event_taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
+    event_feed = models.ForeignKey('ngen.Feed', models.PROTECT)
 
-    case_tlp = models.ForeignKey('ngen.Tlp', models.DO_NOTHING)
-    case_state = models.ForeignKey('ngen.State', models.DO_NOTHING, related_name='decision_states')
+    case_tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
+    case_state = models.ForeignKey('ngen.State', models.PROTECT, related_name='decision_states')
     case_lifecycle = models.CharField(choices=LIFECYCLE, default=LIFECYCLE.auto, max_length=20)
 
     active = models.BooleanField(default=True)

@@ -145,7 +145,7 @@ class NgenEvidenceMixin(models.Model):
 
 
 class NgenPriorityMixin(models.Model):
-    priority = models.ForeignKey('Priority', models.DO_NOTHING)
+    priority = models.ForeignKey('Priority', models.PROTECT)
 
     class Meta:
         abstract = True
