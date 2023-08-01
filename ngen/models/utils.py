@@ -101,7 +101,7 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
     @hook(BEFORE_CREATE, when="parent", was=None)
     def parent_changed(self):
         if self.initial_value('parent') is None:
-            if self.parent and self.parent.mergeable_with(self):
+            if self.parent and self.parent.mergeable_with(self) and not self._state.adding:
                 self.parent.merge(self)
         else:
             raise ValidationError(gettext('Parent of merged instances can\'t be modified'))
