@@ -116,7 +116,7 @@ class Contact(NgenModel, NgenPriorityMixin):
 
 class NetworkEntity(NgenModel):
     name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=255, unique=True)
     active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
