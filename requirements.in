@@ -1,7 +1,7 @@
 cortex4py==2.1.0
 # django-constance dependency to 4.1 required, can be canched to 4.2 when django-constance 3.0.0 is released
 django==4.1.10
-django-auditlog==2.0.0
+django-auditlog==2.3.0
 django-bleach==3.0.0
 django-celery-beat==2.5.0
 django-celery-email==3.0.0

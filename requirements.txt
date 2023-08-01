@@ -52,6 +52,7 @@ django==4.1.10
     # via
     #   -r requirements.in
     #   django-appconf
+    #   django-auditlog
     #   django-bleach
     #   django-celery-beat
     #   django-celery-email
@@ -73,7 +74,7 @@ django==4.1.10
     #   drf-spectacular
 django-appconf==1.0.5
     # via django-celery-email
-django-auditlog==2.0.0
+django-auditlog==2.3.0
     # via -r requirements.in
 django-bleach==3.0.0
     # via -r requirements.in

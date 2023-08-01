@@ -79,7 +79,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'auditlog.middleware.AuditlogMiddleware',
+    'ngen.middleware.AuditlogMiddleware',
 ]
 
 ROOT_URLCONF = 'djangoProject.urls'
