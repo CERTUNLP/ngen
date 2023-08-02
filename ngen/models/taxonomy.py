@@ -11,11 +11,11 @@ from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin
 
 class Taxonomy(NgenModel, NgenTreeModel):
     TYPE = Choices(('vulnerability', gettext_lazy('Vulnerability')), ('incident', gettext_lazy('Incident')))
-    type = models.CharField(choices=TYPE, default=TYPE.vulnerability, max_length=20)
+    type = models.CharField(choices=TYPE, max_length=20)
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
-    description = models.TextField(null=True)
+    description = models.TextField(null=True, blank=True, default='')
     node_order_by = ['id']
 
     def save(self, *args, **kwargs):
