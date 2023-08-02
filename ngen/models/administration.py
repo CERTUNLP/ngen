@@ -13,7 +13,7 @@ class Feed(NgenModel):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
-    description = models.CharField(max_length=250, null=True, blank=True)
+    description = models.CharField(max_length=250, null=True, blank=True, default='')
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name).replace('-', '_')
@@ -80,7 +80,7 @@ class Tlp(NgenModel):
 
 
 class User(AbstractUser, NgenPriorityMixin, NgenModel):
-    api_key = models.CharField(max_length=255, blank=True, null=True)
+    api_key = models.CharField(max_length=255, blank=True, null=True, default=None)
 
     class Meta:
         db_table = 'user'

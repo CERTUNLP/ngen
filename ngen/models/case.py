@@ -32,9 +32,9 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
 
-    casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.PROTECT, null=True, blank=True, related_name='cases_created')
-    user_creator = models.ForeignKey('ngen.User', models.PROTECT, null=True, blank=True, related_name='cases_created')
-    assigned = models.ForeignKey('ngen.User', models.PROTECT, null=True, related_name='assigned_cases')
+    casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.PROTECT, null=True, blank=True, related_name='cases_created', default=None)
+    user_creator = models.ForeignKey('ngen.User', models.PROTECT, null=True, blank=True, related_name='cases_created', default=None)
+    assigned = models.ForeignKey('ngen.User', models.PROTECT, null=True, related_name='assigned_cases', default=None)
     state = models.ForeignKey('ngen.State', models.PROTECT, related_name='cases')
 
     attend_date = models.DateTimeField(null=True)
@@ -204,9 +204,9 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
     feed = models.ForeignKey('ngen.Feed', models.PROTECT)
 
-    reporter = models.ForeignKey('ngen.User', models.PROTECT, null=True, blank=True, related_name='events_reporter')
+    reporter = models.ForeignKey('ngen.User', models.PROTECT, related_name='events_reporter')
     evidence_file_path = models.CharField(max_length=255, null=True, blank=True)
-    notes = models.TextField(null=True, blank=True)
+    notes = models.TextField(null=True, blank=True, default='')
 
     case = models.ForeignKey('ngen.Case', models.PROTECT, null=True, blank=True, related_name='events')
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)

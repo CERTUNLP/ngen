@@ -11,7 +11,7 @@ class State(NgenModel):
     attended = models.BooleanField(default=False)
     solved = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
-    description = models.CharField(max_length=250, null=True, blank=True)
+    description = models.CharField(max_length=250, null=True, blank=True, default='')
     children = models.ManyToManyField(
         "self",
         symmetrical=False,
