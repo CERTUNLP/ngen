@@ -8,7 +8,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth.hashers import make_password
-from ngen.models import User
+from ngen.models import User, Event, Case, CaseTemplate
 
 from ngen.tests.api.test_authentication import BaseAPITestCase
 
@@ -190,3 +190,44 @@ class TestEvent(APITestCase):
         This will test successfull event post
         '''
         pass # TODO
+
+    def test_event_post_that_matches_with_case_template(self):
+        '''
+        This will test a successful Event POST that matches with a Case Template,
+        therefore creating a Case
+        '''
+
+        initial_case_count = Case.objects.count()
+
+        case_template = CaseTemplate.objects.create(
+            priority_id=2,
+            cidr=None,
+            domain='*',
+            event_taxonomy_id=90,
+            event_feed_id=11,
+            case_tlp_id=4,
+            case_state_id=9,
+            case_lifecycle='auto_open',
+            active=True
+        )
+
+        json_data = {
+            'domain': 'info.unlp.edu.ar',
+            'notes': 'Some notes',
+            'priority': 'critical',
+            'tlp': 'amber',
+            'taxonomy': 'phishing',
+            'feed': 'shodan',
+        }
+
+        response = self.client.post(self.url, data=json_data)
+        new_case_count = Case.objects.count()
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response.data['case'],
+            f'http://testserver/api/case/{Case.objects.last().id}/'
+        )
+        self.assertEqual(new_case_count, initial_case_count + 1)
+        self.assertEqual(Event.objects.last().case, Case.objects.last())
+        self.assertEqual(Case.objects.last().casetemplate_creator, case_template)

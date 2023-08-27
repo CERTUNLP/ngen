@@ -1,32 +1,175 @@
+"""
+Django Unit Tests for Event model
+"""
+import uuid
 from django.test import TestCase
-from django.core.exceptions import ValidationError
 
-from ngen.models import Event, Network, User, NetworkEntity, Taxonomy, Feed, Tlp, State, Priority, Edge, Report, Contact
+from ngen.models import (
+    Event,
+    User,
+    Taxonomy,
+    Feed,
+    Tlp,
+    Priority,
+    CaseTemplate,
+    Playbook,
+    Task,
+    State,
+    Case,
+)
 
 
-# class EventTest(TestCase):
-#     fixtures = ["priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json", "edge.json", "report.json", "network_entity.json", "network.json", "contact.json"]
+class EventTest(TestCase):
+    """
+    This will handle Event model tests
+    """
 
-#     def setUp(self):
-#         self.taxonomy = Taxonomy.objects.get(pk=1)
-#         self.feed = Feed.objects.get(pk=1)
-#         self.tlp = Tlp.objects.get(pk=1)
-#         print(self.tlp)
-#         print(self.feed)
-#         print(self.taxonomy)
+    def setUp(self):
+        """
+        Event model test setup
+        """
+        self.taxonomy = Taxonomy.objects.create(
+            type="incident", name="Phising", slug="phising"
+        )
+        self.feed = Feed.objects.create(slug="shodan", name="Shodan")
+        self.tlp = Tlp.objects.create(
+            slug="white",
+            when="Given some circumstance",
+            why="Some reason",
+            information="Some information",
+            description="Some description",
+            name="White",
+            code=0,
+        )
+        self.priority = Priority.objects.create(name="Medium", severity=3)
+        self.user = User.objects.create(
+            username="test", password="test", priority=self.priority
+        )
+        self.playbook = Playbook.objects.create(
+            name="Test playbook",
+        )
+        self.task = Task.objects.create(
+            name="Test task",
+            description="Test description",
+            playbook=self.playbook,
+            priority=self.priority,
+        )
+        self.state = State.objects.create(name="Open")
 
-#     # def test_create_event(self):
-#     #     Event.objects.create(taxonomy=self.taxonomy, feed=self.feed)
+        self.case_template = CaseTemplate.objects.create(
+            priority=self.priority,
+            cidr=None,
+            domain="info.unlp.edu.ar",
+            event_taxonomy=self.taxonomy,
+            event_feed=self.feed,
+            case_tlp=self.tlp,
+            case_state=self.state,
+            case_lifecycle="auto_open",
+            active=True,
+        )
 
-# tlp
-# date
-# taxonomy
-# feed
-# reporter
-# evidence_file_path
-# notes
-# case
-# uuid
-# tasks
-# node_order_by
-# comments
+        self.event = Event.objects.create(
+            domain="info.unlp.edu.ar",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            notes="Some notes",
+            priority=self.priority,
+        )
+
+        self.event.tasks.add(self.task)
+
+    def test_event_creation(self):
+        """
+        This will test Event creation
+        """
+        self.assertTrue(isinstance(self.event, Event))
+
+    def test_cidr(self):
+        """
+        This will test Event cidr attribute
+        """
+        self.assertEqual(self.event.cidr, None)
+
+    def test_domain(self):
+        """
+        This will test Event domain attribute
+        """
+        self.assertEqual(self.event.domain, "info.unlp.edu.ar")
+
+    def test_taxonomy(self):
+        """
+        This will test Event taxonomy attribute
+        """
+        self.assertEqual(self.event.taxonomy, self.taxonomy)
+
+    def test_feed(self):
+        """
+        This will test Event feed attribute
+        """
+        self.assertEqual(self.event.feed, self.feed)
+
+    def test_tlp(self):
+        """
+        This will test Event tlp attribute
+        """
+        self.assertEqual(self.event.tlp, self.tlp)
+
+    def test_priority(self):
+        """
+        This will test Event priority attribute
+        """
+        self.assertEqual(self.event.priority, self.priority)
+
+    def test_reporter(self):
+        """
+        This will test Event reporter attribute
+        """
+        self.assertEqual(self.event.reporter, self.user)
+
+    def test_evidence_file_path(self):
+        """
+        This will test Event reporter attribute
+        """
+        self.assertEqual(self.event.evidence_file_path, None)
+
+    def test_notes(self):
+        """
+        This will test Event notes attribute
+        """
+        self.assertEqual(self.event.notes, "Some notes")
+
+    def test_node_order_by(self):
+        """
+        This will test Event node_order_by attribute
+        """
+        self.assertEqual(self.event.node_order_by, ["id"])
+
+    def test_tasks(self):
+        """
+        This will test Event taskjs attribute
+        """
+        self.assertEqual(self.event.tasks.count(), 1)
+        self.assertEqual(self.event.tasks.last(), self.task)
+
+    def test_comments(self):
+        """
+        This will test Event comments attribute
+        """
+        self.assertEqual(self.event.comments.count(), 0)
+
+    def test_uuid(self):
+        """
+        This will test Event uuid attribute
+        """
+        self.assertNotEqual(self.event.uuid, None)
+        self.assertTrue(isinstance(self.event.uuid, uuid.UUID))
+
+    def test_case(self):
+        """
+        This will test Event case attribute,
+        given that a Case was created because the Event matched with a Case Template
+        """
+        case = Case.objects.get(casetemplate_creator=self.case_template)
+        self.assertEqual(self.event.case, case)
