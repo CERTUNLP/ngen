@@ -27,17 +27,26 @@ class MyToken(Token):
 
 class TestEvent(APITestCase):
     '''
-    This will handle event testcases
+    This will handle Event testcases
     '''
 
     fixtures = ["priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json", "edge.json", "report.json", "network_entity.json", "network.json", "contact.json"]
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         basename = 'event'
-        self.url = reverse(f'{basename}-list')
-        url_login_jwt = reverse("token-create")
-        json_login = {"username": "ngen", "password": "ngen"}
-        resp = self.client.post(url_login_jwt, data=json_login, format="json")
+        cls.url = reverse(f'{basename}-list')
+        cls.url_login_jwt = reverse("token-create")
+        cls.json_login = {"username": "ngen", "password": "ngen"}
+
+        cls.base_url = 'http://testserver'
+        cls.priority_url = cls.base_url + reverse('priority-detail', kwargs={'pk': 2}) # 'high'
+        cls.tlp_url = cls.base_url + reverse('tlp-detail', kwargs={'pk': 2}) # 'amber'
+        cls.taxonomy_url = cls.base_url + reverse('taxonomy-detail', kwargs={'pk': 41}) # 'phishing'
+        cls.feed_url = cls.base_url + reverse('feed-detail', kwargs={'pk': 1})
+
+    def setUp(self):
+        resp = self.client.post(self.url_login_jwt, data=self.json_login, format="json")
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
     
     def test_event_post_with_cidr(self):
@@ -48,10 +57,10 @@ class TestEvent(APITestCase):
             'cidr': '2.2.2.2',
             # 'domain': 'bbb',
             'notes': 'estas son notas',
-            'priority': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/priority/2/', # '2',
-            'tlp': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/tlp/2/', #'amber',
-            'taxonomy': 'http://backngen.servicios.cert.unlp.edu.ar/api/taxonomy/41/', #'phishing',
-            'feed': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/feed/1/',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
         }
         response = self.client.post(self.url, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -64,10 +73,10 @@ class TestEvent(APITestCase):
             # 'cidr': '2.2.2.2',
             'domain': 'info.unlp.edu.ar',
             'notes': 'estas son notas',
-            'priority': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/priority/2/', # '2',
-            'tlp': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/tlp/2/', #'amber',
-            'taxonomy': 'http://backngen.servicios.cert.unlp.edu.ar/api/taxonomy/41/', #'phishing',
-            'feed': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/feed/1/',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
         }
         response = self.client.post(self.url, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -97,10 +106,10 @@ class TestEvent(APITestCase):
             'cidr': '2.2.2.2',
             'domain': 'info.unlp.edu.ar',
             'notes': 'estas son notas',
-            'priority': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/priority/2/', # '2',
-            'tlp': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/tlp/2/', #'amber',
-            'taxonomy': 'http://backngen.servicios.cert.unlp.edu.ar/api/taxonomy/41/', #'phishing',
-            'feed': 'shodan',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
         }
         response = self.client.post(self.url, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -113,10 +122,10 @@ class TestEvent(APITestCase):
             # 'cidr': '',
             # 'domain': 'info.unlp.edu.ar',
             'notes': 'estas son notas',
-            'priority': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/priority/2/', # '2',
-            'tlp': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/tlp/2/', #'amber',
-            'taxonomy': 'http://backngen.servicios.cert.unlp.edu.ar/api/taxonomy/41/', #'phishing',
-            'feed': 'shodan',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
         }
         response = self.client.post(self.url, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -129,10 +138,10 @@ class TestEvent(APITestCase):
             'cidr': '',
             # 'domain': 'info.unlp.edu.ar',
             'notes': 'estas son notas',
-            'priority': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/priority/2/', # '2',
-            'tlp': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/tlp/2/', #'amber',
-            'taxonomy': 'http://backngen.servicios.cert.unlp.edu.ar/api/taxonomy/41/', #'phishing',
-            'feed': 'shodan',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
         }
         response = self.client.post(self.url, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -145,10 +154,10 @@ class TestEvent(APITestCase):
             # 'cidr': '',
             'domain': '',
             'notes': 'estas son notas',
-            'priority': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/priority/2/', # '2',
-            'tlp': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/tlp/2/', #'amber',
-            'taxonomy': 'http://backngen.servicios.cert.unlp.edu.ar/api/taxonomy/41/', #'phishing',
-            'feed': 'shodan',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
         }
         response = self.client.post(self.url, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -161,10 +170,10 @@ class TestEvent(APITestCase):
             'cidr': '',
             'domain': '',
             'notes': 'estas son notas',
-            'priority': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/priority/2/', # '2',
-            'tlp': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/tlp/2/', #'amber',
-            'taxonomy': 'http://backngen.servicios.cert.unlp.edu.ar/api/taxonomy/41/', #'phishing',
-            'feed': 'shodan',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
         }
         response = self.client.post(self.url, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -177,10 +186,10 @@ class TestEvent(APITestCase):
             'cidr': '0.0.0.0/0',
             'domain': '',
             'notes': 'estas son notas',
-            'priority': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/priority/2/', # '2',
-            'tlp': 'http://backngen.servicios.cert.unlp.edu.ar/api/administration/tlp/2/', #'amber',
-            'taxonomy': 'http://backngen.servicios.cert.unlp.edu.ar/api/taxonomy/41/', #'phishing',
-            'feed': 'shodan',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
         }
         response = self.client.post(self.url, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -226,7 +235,7 @@ class TestEvent(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             response.data['case'],
-            f'http://testserver/api/case/{Case.objects.last().id}/'
+            f'{self.base_url}/api/case/{Case.objects.last().id}/'
         )
         self.assertEqual(new_case_count, initial_case_count + 1)
         self.assertEqual(Event.objects.last().case, Case.objects.last())
