@@ -1,0 +1,14 @@
+[
+  {
+    "model": "ngen.casetemplate",
+    "pk": 1,
+    "fields": {
+        "domain": "info.unlp.edu.ar",
+        "priority": 1,
+        "event_taxonomy": 1,
+        "event_feed": 1,
+        "case_tlp": 1,
+        "case_state": 9
+    }
+  }
+]
