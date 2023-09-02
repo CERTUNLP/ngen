@@ -1,24 +1,15 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from django.urls import include, path, reverse
-from rest_framework.test import APITestCase, URLPatternsTestCase
+from django.urls import reverse
+from rest_framework.test import APITestCase
 from rest_framework import status
 
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from django.contrib.auth.hashers import make_password
-from ngen.models import User, Event, Case, CaseTemplate
+from ngen.models import Event, Case, CaseTemplate
 
-from ngen.tests.api.test_authentication import BaseAPITestCase
-
-from rest_framework_simplejwt.tokens import (
-    AccessToken,
-    RefreshToken,
-    SlidingToken,
-    Token,
-    UntypedToken,
-)
+from rest_framework_simplejwt.tokens import Token
 
 class MyToken(Token):
     token_type = "test"
@@ -30,7 +21,10 @@ class TestEvent(APITestCase):
     This will handle Event testcases
     '''
 
-    fixtures = ["priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json", "edge.json", "report.json", "network_entity.json", "network.json", "contact.json"]
+    fixtures = [
+        "priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json",
+        "edge.json", "report.json", "network_entity.json", "network.json", "contact.json"
+    ]
 
     @classmethod
     def setUpTestData(cls):
@@ -48,7 +42,7 @@ class TestEvent(APITestCase):
     def setUp(self):
         resp = self.client.post(self.url_login_jwt, data=self.json_login, format="json")
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
-    
+
     def test_event_post_with_cidr(self):
         '''
         This will test successfull event post
