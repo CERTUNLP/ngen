@@ -3,8 +3,8 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework.test import APITestCase
-from ngen.models import Event, Case, CaseTemplate
 from rest_framework_simplejwt.tokens import Token
+from ngen.models import Event, Case, CaseTemplate, Taxonomy, Priority, Tlp, User, Feed
 
 class MyToken(Token):
     token_type = "test"
@@ -24,7 +24,8 @@ class TestEvent(APITestCase):
     @classmethod
     def setUpTestData(cls):
         basename = 'event'
-        cls.url = reverse(f'{basename}-list')
+        cls.url_list = reverse(f'{basename}-list')
+        cls.url_detail = lambda pk: reverse(f'{basename}-detail', kwargs={'pk': pk})
         cls.url_login_jwt = reverse("token-create")
         cls.json_login = {"username": "ngen", "password": "ngen"}
 
@@ -34,9 +35,64 @@ class TestEvent(APITestCase):
         cls.taxonomy_url = cls.base_url + reverse('taxonomy-detail', kwargs={'pk': 41}) # 'phishing'
         cls.feed_url = cls.base_url + reverse('feed-detail', kwargs={'pk': 1})
 
+        cls.priority = Priority.objects.get(pk=2)
+        cls.tlp = Tlp.objects.get(pk=2)
+        cls.taxonomy = Taxonomy.objects.get(pk=41)
+        cls.feed = Feed.objects.get(pk=1)
+        cls.tlp = Tlp.objects.get(pk=2)
+        cls.user = User.objects.get(pk=1)
+
     def setUp(self):
         resp = self.client.post(self.url_login_jwt, data=self.json_login, format="json")
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
+
+    def test_event_get_list(self):
+        '''
+        This will test successful Event GET list
+        '''
+
+        events = [
+            Event.objects.create(
+                domain="info.unlp.edu.ar",
+                taxonomy=self.taxonomy,
+                feed=self.feed,
+                tlp=self.tlp,
+                reporter=self.user,
+                notes="Some notes",
+                priority=self.priority,
+            ),
+            Event.objects.create(
+                domain="*",
+                taxonomy=self.taxonomy,
+                feed=self.feed,
+                tlp=self.tlp,
+                reporter=self.user,
+                notes="Some notes",
+                priority=self.priority,
+            )
+        ]
+
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], len(events))
+
+    def test_event_get_detail(self):
+        '''
+        This will test successful Event GET detail
+        '''
+
+        event = Event.objects.create(
+            domain="*",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            notes="Some notes",
+            priority=self.priority,
+        )
+
+        response = self.client.get(self.url_detail(event.pk))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_event_post_with_cidr(self):
         '''
@@ -51,7 +107,7 @@ class TestEvent(APITestCase):
             'taxonomy': self.taxonomy_url,
             'feed': self.feed_url
         }
-        response = self.client.post(self.url, data=json_data)
+        response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_event_post_with_domain(self):
@@ -67,7 +123,7 @@ class TestEvent(APITestCase):
             'taxonomy': self.taxonomy_url,
             'feed': self.feed_url
         }
-        response = self.client.post(self.url, data=json_data)
+        response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_event_post_with_slugs(self):
@@ -84,7 +140,7 @@ class TestEvent(APITestCase):
             'feed': 'shodan',
         }
 
-        response = self.client.post(self.url, data=json_data)
+        response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_event_post_with_cidr_and_domain(self):
@@ -100,7 +156,7 @@ class TestEvent(APITestCase):
             'taxonomy': self.taxonomy_url,
             'feed': self.feed_url
         }
-        response = self.client.post(self.url, data=json_data)
+        response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_event_post_with_cidr_null_and_domain_null(self):
@@ -116,7 +172,7 @@ class TestEvent(APITestCase):
             'taxonomy': self.taxonomy_url,
             'feed': self.feed_url
         }
-        response = self.client.post(self.url, data=json_data)
+        response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_event_post_with_cidr_empty_and_domain_null(self):
@@ -132,7 +188,7 @@ class TestEvent(APITestCase):
             'taxonomy': self.taxonomy_url,
             'feed': self.feed_url
         }
-        response = self.client.post(self.url, data=json_data)
+        response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_event_post_with_cidr_null_and_domain_empty(self):
@@ -148,7 +204,7 @@ class TestEvent(APITestCase):
             'taxonomy': self.taxonomy_url,
             'feed': self.feed_url
         }
-        response = self.client.post(self.url, data=json_data)
+        response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_event_post_with_cidr_empty_and_domain_empty(self):
@@ -164,7 +220,7 @@ class TestEvent(APITestCase):
             'taxonomy': self.taxonomy_url,
             'feed': self.feed_url
         }
-        response = self.client.post(self.url, data=json_data)
+        response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_event_post_with_cidr_wildcard_and_domain_empty(self):
@@ -180,7 +236,7 @@ class TestEvent(APITestCase):
             'taxonomy': self.taxonomy_url,
             'feed': self.feed_url
         }
-        response = self.client.post(self.url, data=json_data)
+        response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_event_post_fields_not_editable(self):
@@ -218,14 +274,86 @@ class TestEvent(APITestCase):
             'feed': 'shodan',
         }
 
-        response = self.client.post(self.url, data=json_data)
+        response = self.client.post(self.url_list, data=json_data)
         new_case_count = Case.objects.count()
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             response.data['case'],
-            f'{self.base_url}/api/case/{Case.objects.last().id}/'
+            self.base_url + reverse('case-detail', kwargs={'pk': Case.objects.last().pk})
         )
         self.assertEqual(new_case_count, initial_case_count + 1)
         self.assertEqual(Event.objects.last().case, Case.objects.last())
         self.assertEqual(Case.objects.last().casetemplate_creator, case_template)
+
+    def test_event_patch(self):
+        '''
+        This will test successful Event PATCH
+        '''
+
+        event = Event.objects.create(
+            domain="*",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            notes="Some notes",
+            priority=self.priority,
+        )
+
+        another_priority_url = self.base_url + reverse('priority-detail', kwargs={'pk': 1})
+
+        json_data = {
+            'priority': another_priority_url
+        }
+
+        response = self.client.patch(self.url_detail(event.pk), data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_event_put(self):
+        '''
+        This will test successful Event PUT
+        '''
+
+        event = Event.objects.create(
+            domain="*",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            notes="Some notes",
+            priority=self.priority,
+        )
+
+        json_data = {
+            'domain': 'info.unlp.edu.ar',
+            'notes': 'Some notes',
+            'priority': 'low',
+            'tlp': 'amber',
+            'taxonomy': 'phishing',
+            'feed': 'shodan',
+        }
+
+        response = self.client.put(self.url_detail(event.pk), data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_event_delete(self):
+        '''
+        This will test successful Event DELETE
+        '''
+
+        event = Event.objects.create(
+            domain="*",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            notes="Some notes",
+            priority=self.priority,
+        )
+        event_pk = event.pk
+
+        response = self.client.delete(self.url_detail(event_pk))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        with self.assertRaises(Case.DoesNotExist):
+            Case.objects.get(pk=event_pk)
