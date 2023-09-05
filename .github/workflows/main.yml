@@ -16,7 +16,8 @@ jobs:
     - name: Build docker containers
       run: |
         cd docker
-        docker compose up --build
+        docker-compose build
+        docker-compose up -d
     - name: Run tests
       run: |
         docker exec -it docker-ngen-django-1 ./manage.py test ngen.tests
