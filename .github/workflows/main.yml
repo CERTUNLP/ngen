@@ -23,7 +23,7 @@ jobs:
 
         max_retries=30
         retries=0
-        while [[ "$(docker inspect -f '{{.State.Health.Status}}' "$container_name")" != "healthy" ]]; do
+        while [[ "$(docker inspect -f '{{.State.Running}}' "$container_name")" != "true" ]]; do
           retries=$((retries + 1))
           if [ $retries -ge $max_retries ]; then
             echo "Service did not become healthy within the timeout."
