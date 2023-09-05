@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      container_name: docker_ngen-django-1
+      container_name: docker_ngen-django_1
     steps:
     - uses: actions/checkout@v2
     - name: Build docker containers
@@ -33,4 +33,4 @@ jobs:
         done
     - name: Run tests
       run: |
-        docker exec -it $container_name ./manage.py test ngen.tests
+        docker exec -it "$container_name" ./manage.py test ngen.tests
