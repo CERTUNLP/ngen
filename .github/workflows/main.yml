@@ -18,6 +18,10 @@ jobs:
         cd docker
         docker-compose build
         docker-compose up -d
+        until docker inspect -f '{{.State.Status}}' docker-ngen-django-1 | grep -q "running"; do
+          echo "Esperando a que el contenedor esté listo..."
+          sleep 3
+        done
     - name: Run tests
       run: |
         docker exec -it docker-ngen-django-1 ./manage.py test ngen.tests
