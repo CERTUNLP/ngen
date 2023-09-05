@@ -11,6 +11,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      container_name: docker_ngen-django-1
     steps:
     - uses: actions/checkout@v2
     - name: Build docker containers
@@ -18,10 +20,17 @@ jobs:
         cd docker
         docker-compose build
         docker-compose up -d
-        until docker inspect -f '{{.State.Status}}' docker-ngen-django-1 | grep -q "running"; do
-          echo "Esperando a que el contenedor esté listo..."
-          sleep 3
+
+        max_retries=30
+        retries=0
+        while [[ "$(docker inspect -f '{{.State.Health.Status}}' $container_name)" != "healthy" ]]; do
+          retries=$((retries + 1))
+          if [ $retries -ge $max_retries ]; then
+            echo "Service did not become healthy within the timeout."
+            exit 1
+          fi
+          sleep 2
         done
     - name: Run tests
       run: |
-        docker exec -it docker-ngen-django-1 ./manage.py test ngen.tests
+        docker exec -it $container_name ./manage.py test ngen.tests
