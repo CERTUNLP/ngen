@@ -18,6 +18,7 @@ from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
 from ngen.models import StringIdentifier
+from ngen.filters import TaxonomyFilter
 
 
 class AboutView(TemplateView):
@@ -65,12 +66,15 @@ class CaseViewSet(viewsets.ModelViewSet):
 
 
 class TaxonomyViewSet(viewsets.ModelViewSet):
-    filter_backends = [filters.SearchFilter,
-                       django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
-    search_fields = ['name', 'description']
-    filterset_fields = ['name']
-    ordering_fields = ['name']
     queryset = models.Taxonomy.objects.all()
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['name', 'description']
+    filterset_class = TaxonomyFilter
+    ordering_fields = ['id', 'created', 'modified', 'name']
     serializer_class = serializers.TaxonomySerializer
     permission_classes = [permissions.IsAuthenticated]
 
