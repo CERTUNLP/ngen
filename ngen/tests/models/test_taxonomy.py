@@ -22,17 +22,27 @@ class TaxonomyTestCase(TestCase):
         #self.aNode = Taxonomy.objects.create(type='vulnerability' name= 'Node')
     
     
+
+   
+
     def test_duplicated_taxonomy(self):
         """
-        Test that taxonomies are not duplicated. Usar AssertRaise
+        Test that taxonomies are not duplicated. This test does not work because slugs unique key constraint is preventing
+        a taxonomy with same name and different slug to exist.
         """
-        try:
+        with self.assertRaises(UniqueViolation):
             # Create taxonomies with the same name and different slugs
             taxonomy1 = Taxonomy.objects.create(type='vulnerability', name='Ejemplo', slug='parent-test-1')
-            taxonomy2 = Taxonomy.objects.create(type='vulnerability', name='EJemplo', slug='parent-test-2')
-        except ValidationError:
-            # Expected exception, transaction will be rolled back
-            pass
+            taxonomy2 = Taxonomy.objects.create(type='vulnerability', name='Ejemplo', slug='parent-test-2')
+    
+    def test_unique_slug_creation(self):
+        """
+        Test: Slugs are created correctly and are unique. Can't create two slugs with the same name.
+        """
+        with self.assertRaises(UniqueViolation):
+            # Create taxonomies with the same slugs
+            Slug1 = Taxonomy.objects.create(type='vulnerability', name="Test Name", slug="slug1")
+            Slug2 = Taxonomy.objects.create(type='incident', name="Test Name2", slug="slug1")
 
     def test_node_deletion(self):
         """
@@ -96,33 +106,3 @@ class TaxonomyTestCase(TestCase):
         """
         self.parent.parent = self.child2
         self.assertRaises(Exception, self.parent.save) # ToDo: Espero excepcion especifica para cuando se produce un ciclo
-
-    def test_unique_slug_creation(self):
-        """
-        Test: Slugs are created correctly and are unique
-        """
-        try:
-            # Create two instances with the same name
-            Slug1 = Taxonomy.objects.create(type='vulnerability', name="Test Name", slug="slug1")
-            Slug2 = Taxonomy.objects.create(type='incident', name="Test Name2", slug="slug1")
-            slug2.save()
-            self.fail("Expected IntegrityError but none was raised")
-        # Check that the slugs are unique
-        except UniqueViolation:
-            pass  # Expected exception was raised psycopg2.errors.UniqueViolation:
-
-      
-
-
-
-
-"""
-Tests para probar:
-
-
-Borrar hijos -> self.assertEqual(hijo, (lista v)None)//
-self.assertEqual(self.default_ipv6.get_parent(), None)
-Desconectar hijos
-
->Cosas que encontrè: No funciona bien el Search en las taxonomias
-"""
