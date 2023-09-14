@@ -1,4 +1,5 @@
 import ipaddress
+import re
 
 from auditlog.models import AuditlogHistoryField
 from django.contrib.contenttypes.fields import GenericRelation
@@ -12,9 +13,102 @@ from netfields import CidrAddressField, NetManager
 from django.core.exceptions import ValidationError
 from treebeard.al_tree import AL_Node
 from constance import config
-import re
+from enum import Enum
+from urllib.parse import urlparse
 
 import ngen
+
+
+class StringType(Enum):
+    IP4HOST = (1, None)
+    IP4NET = (2, None)
+    IP4DEFAULT = (3, None)
+    IP6HOST = (4, None)
+    IP6NET = (5, None)
+    IP6DEFAULT = (6, None)
+    DOMAIN = (
+        7, r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$')
+    URL = (8, r'\bhttps?://[^\s/$.?#].[^\s]*\b')
+    EMAIL = (9, r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b')
+    HASH = (6, None)
+    FILE = (9, None)
+    USERAGENT = (10, None)
+    ASN = (11, None)
+    SYSTEM = (12, None)
+    OTHER = (13, None)
+    UNKNOWN = (14, None)
+
+    def get_regex_pattern(self):
+        return self.value[1]
+
+    @classmethod
+    def get_cidr_types(cls):
+        return [StringType.IP4HOST, StringType.IP4NET, StringType.IP4DEFAULT,
+                StringType.IP6HOST, StringType.IP6NET, StringType.IP6DEFAULT]
+
+    @classmethod
+    def identify(cls, string_value):
+        g = StringType.guess(string_value)
+        id = {
+            'original_string': string_value,
+            'original_type': g,
+            'address_string': None,
+            'adddess_type': cls.UNKNOWN,
+            'is_cidr': False,
+            'is_domain': False,
+        }
+
+        if g in cls.get_cidr_types() + [StringType.DOMAIN]:
+            id['address_string'] = string_value
+            id['adddess_type'] = g
+        elif g == StringType.URL:
+            id['address_string'] = urlparse(string_value).hostname
+            id['adddess_type'] = StringType.guess(id['address_string'])
+        elif g == StringType.EMAIL:
+            id['address_string'] = string_value.split('@')[1]
+            id['adddess_type'] = StringType.DOMAIN
+
+        if id['adddess_type'] in cls.get_cidr_types():
+            id['is_cidr'] = True
+        elif id['adddess_type'] == StringType.DOMAIN:
+            id['is_domain'] = True
+
+        return id
+
+    @classmethod
+    def match_regex(cls, typ, input_string):
+        regex = typ.get_regex_pattern()
+        if not regex:
+            return None
+        return re.match(regex, input_string) != None
+
+    @classmethod
+    def guess(cls, input_string):
+        try:
+            cidr = ipaddress.ip_network(input_string)
+            if cidr.version == 4:
+                if cidr.prefixlen == 32:
+                    return cls.IP4HOST
+                elif cidr.prefixlen == 0:
+                    cidr.prefixlen
+                    return cls.IP4DEFAULT
+                else:
+                    return cls.IP4NET
+            else:
+                if cidr.prefixlen == 128:
+                    return cls.IP6HOST
+                elif cidr.prefixlen == 0:
+                    return cls.IP6DEFAULT
+                else:
+                    return cls.IP6NET
+        except ValueError:
+            for address_type in cls:
+                pattern = address_type.get_regex_pattern()
+                if pattern:
+                    if re.match(pattern, input_string):
+                        return address_type
+
+        return cls.UNKNOWN
 
 
 class NgenModel(TimeStampedModel):
@@ -25,7 +119,8 @@ class NgenModel(TimeStampedModel):
 
 
 class NgenTreeModel(AL_Node):
-    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, blank=True, db_index=True, related_name='children')
+    parent = models.ForeignKey('self', models.DO_NOTHING, null=True,
+                               blank=True, db_index=True, related_name='children')
 
     class Meta:
         abstract = True
@@ -86,11 +181,14 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
 
     def mergeable_with(self, child: 'NgenMergeableModel') -> bool:
         if self.uuid == child.uuid:
-            raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
+            raise ValidationError(
+                {'parent': gettext('The parent must not be the same instance.')})
         if not self.mergeable:
-            raise ValidationError({'parent': gettext('The parent is not mergeable or is blocked.')})
+            raise ValidationError(
+                {'parent': gettext('The parent is not mergeable or is blocked.')})
         if child.blocked:
-            raise ValidationError(gettext('The child is not mergeable or is blocked.'))
+            raise ValidationError(
+                gettext('The child is not mergeable or is blocked.'))
         return True
 
     def merge(self, child: 'NgenMergeableModel'):
@@ -104,7 +202,8 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
             if self.parent and self.parent.mergeable_with(self) and not self._state.adding:
                 self.parent.merge(self)
         else:
-            raise ValidationError(gettext('Parent of merged instances can\'t be modified'))
+            raise ValidationError(
+                gettext('Parent of merged instances can\'t be modified'))
 
     @hook(BEFORE_DELETE)
     def delete_children(self):
@@ -183,19 +282,22 @@ class AddressManager(NetManager):
 
     def defaults_ipv4(self):
         return self.filter(cidr__prefixlen=0, cidr__family=4)
-    
+
     def defaults_ipv6(self):
         return self.filter(cidr__prefixlen=0, cidr__family=6)
-    
+
     def defaults_domain(self):
         return self.filter(domain='*')
 
 
 class NgenAddressModel(models.Model):
     cidr = CidrAddressField(null=True, default=None, blank=True)
-    domain = models.CharField(max_length=255, null=True, default=None, blank=True)
-    address = None
+    domain = models.CharField(
+        max_length=255, null=True, default=None, blank=True)
+    address_value = models.CharField(
+        max_length=255, null=False, default='', blank=True)
     objects = AddressManager()
+    address = None
 
     class Meta:
         abstract = True
@@ -205,6 +307,13 @@ class NgenAddressModel(models.Model):
         self.assign_address()
 
     def assign_address(self):
+        if self.address_value:
+            id_dict = StringType.identify(self.address_value)
+            if id_dict['is_cidr']:
+                self.cidr = id_dict['address_string']
+            elif id_dict['is_domain']:
+                self.domain = id_dict['address_string']
+
         if self.cidr:
             try:
                 self.address = self.AddressIpv4(self.cidr)
@@ -218,18 +327,38 @@ class NgenAddressModel(models.Model):
             return self.address
         return None
 
+    def validate_addresses(self):
+        if not self.address_value and not self.cidr and self.domain == None:
+            msg = 'cidr or domain must be setted'
+            raise ValidationError({'cidr': [msg], 'domain': [msg]})
+        elif self.cidr and self.domain != None:
+            msg = 'cidr and domain are mutually exclusive'
+            raise ValidationError(
+                {'address_value': [msg], 'cidr': [msg], 'domain': [msg]})
+
+        if self.address_value:
+            if self.cidr:
+                if not str(self.cidr) in self.address_value:
+                    msg = 'cidr is not in address_value'
+                    raise ValidationError(
+                        {'cidr': [msg], 'address_value': [msg]})
+            if self.domain:
+                if not self.domain in self.address_value:
+                    msg = 'domain is not in address_value'
+                    raise ValidationError(
+                        {'domain': [msg], 'address_value': [msg]})
+
     def clean(self):
         # Should be called by subclasses if they override clean()
-        if not self.cidr and self.domain == None:
-            raise ValidationError({'cidr': ['CIDR or Domain must be setted'], 'domain': ['CIDR or Domain must be setted']})
-        elif self.cidr and self.domain != None:
-            raise ValidationError({'cidr': ['CIDR and Domain are mutually exclusive'], 'domain': ['CIDR and Domain are mutually exclusive']})
+        self.validate_addresses()
 
         if not self.assign_address():
-            raise ValidationError(gettext('Address must be either a CIDR or a domain.'))
+            raise ValidationError(
+                gettext('Address must be either a cidr or a domain.'))
 
         if not self.address.is_valid():
-            raise ValidationError({self.field_name(): [f'Must be a valid {self.field_name()}']})
+            raise ValidationError(
+                {self.field_name(): [f'Must be a valid {self.field_name()}']})
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -321,10 +450,10 @@ class NgenAddressModel(models.Model):
 
         def is_ipv4(self):
             return True
-            
+
         def is_ipv6(self):
             return False
-        
+
         def default(self):
             return '0.0.0.0/0'
 
@@ -332,13 +461,13 @@ class NgenAddressModel(models.Model):
 
         def create_address_object(self, address: str):
             return ipaddress.IPv6Network(address)
-        
+
         def is_ipv4(self):
             return False
-            
+
         def is_ipv6(self):
             return True
-        
+
         def default(self):
             return '::/0'
 
@@ -351,7 +480,8 @@ class NgenAddressModel(models.Model):
 
         def create_address_object(self, address):
             # return address.replace('*','').strip().lower().split('/')[0]
-            a = address.replace('*','').strip().strip('.').lower().split('/')[0]
+            a = address.replace(
+                '*', '').strip().strip('.').lower().split('/')[0]
             if a == '':
                 return '*'
             return a
@@ -386,8 +516,7 @@ class NgenAddressModel(models.Model):
             return f'{self.address}/{self.address_mask()}'
 
         def is_valid(self):
-            domain_regex = r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$'
-            return self.address == '*' or re.match(domain_regex, self.address) != None
+            return self.address == '*' or StringType.match_regex(StringType.DOMAIN, self.address)
 
         def network_address(self):
             return self.address
