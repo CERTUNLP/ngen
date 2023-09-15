@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import Token
 from ngen.models import Event, Case, CaseTemplate, Taxonomy, Priority, Tlp, User, Feed
 
+
 class MyToken(Token):
     token_type = "test"
     lifetime = timedelta(days=1)
@@ -25,14 +26,18 @@ class TestEvent(APITestCase):
     def setUpTestData(cls):
         basename = 'event'
         cls.url_list = reverse(f'{basename}-list')
-        cls.url_detail = lambda pk: reverse(f'{basename}-detail', kwargs={'pk': pk})
+        cls.url_detail = lambda pk: reverse(
+            f'{basename}-detail', kwargs={'pk': pk})
         cls.url_login_jwt = reverse("token-create")
         cls.json_login = {"username": "ngen", "password": "ngen"}
 
         cls.base_url = 'http://testserver'
-        cls.priority_url = cls.base_url + reverse('priority-detail', kwargs={'pk': 2}) # 'high'
-        cls.tlp_url = cls.base_url + reverse('tlp-detail', kwargs={'pk': 2}) # 'amber'
-        cls.taxonomy_url = cls.base_url + reverse('taxonomy-detail', kwargs={'pk': 41}) # 'phishing'
+        cls.priority_url = cls.base_url + \
+            reverse('priority-detail', kwargs={'pk': 2})  # 'high'
+        cls.tlp_url = cls.base_url + \
+            reverse('tlp-detail', kwargs={'pk': 2})  # 'amber'
+        cls.taxonomy_url = cls.base_url + \
+            reverse('taxonomy-detail', kwargs={'pk': 41})  # 'phishing'
         cls.feed_url = cls.base_url + reverse('feed-detail', kwargs={'pk': 1})
 
         cls.priority = Priority.objects.get(pk=2)
@@ -40,11 +45,13 @@ class TestEvent(APITestCase):
         cls.taxonomy = Taxonomy.objects.get(pk=41)
         cls.feed = Feed.objects.get(pk=1)
         cls.tlp = Tlp.objects.get(pk=2)
-        cls.user = User.objects.get(pk=1)
+        cls.user = User.objects.get(username='ngen')
 
     def setUp(self):
-        resp = self.client.post(self.url_login_jwt, data=self.json_login, format="json")
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
+        resp = self.client.post(
+            self.url_login_jwt, data=self.json_login, format="json")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
 
     def test_event_get_list(self):
         '''
@@ -243,7 +250,7 @@ class TestEvent(APITestCase):
         '''
         This will test successfull Event POST
         '''
-        pass # TODO
+        pass  # TODO
 
     def test_event_post_that_matches_with_case_template(self):
         '''
@@ -280,11 +287,13 @@ class TestEvent(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             response.data['case'],
-            self.base_url + reverse('case-detail', kwargs={'pk': Case.objects.last().pk})
+            self.base_url + reverse('case-detail',
+                                    kwargs={'pk': Case.objects.last().pk})
         )
         self.assertEqual(new_case_count, initial_case_count + 1)
         self.assertEqual(Event.objects.last().case, Case.objects.last())
-        self.assertEqual(Case.objects.last().casetemplate_creator, case_template)
+        self.assertEqual(
+            Case.objects.last().casetemplate_creator, case_template)
 
     def test_event_patch(self):
         '''
@@ -301,7 +310,8 @@ class TestEvent(APITestCase):
             priority=self.priority,
         )
 
-        another_priority_url = self.base_url + reverse('priority-detail', kwargs={'pk': 1})
+        another_priority_url = self.base_url + \
+            reverse('priority-detail', kwargs={'pk': 1})
 
         json_data = {
             'priority': another_priority_url
