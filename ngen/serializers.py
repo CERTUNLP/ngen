@@ -88,13 +88,15 @@ class MergeSerializerMixin:
     def validate(self, attrs):
         attrs = super().validate(attrs)
         if self.instance and self.instance.merged:
-            raise ValidationError(gettext('Merged instances can\'t be modified'))
+            raise ValidationError(
+                gettext('Merged instances can\'t be modified'))
         if self.instance and self.instance.blocked:
             allowed_fields = self.allowed_fields()
             for attr in list(attrs):
                 if attr not in allowed_fields:
                     if config.ALLOWED_FIELDS_EXCEPTION:
-                        raise ValidationError({attr: gettext('%s of blocked instances can\'t be modified') % attr})
+                        raise ValidationError(
+                            {attr: gettext('%s of blocked instances can\'t be modified') % attr})
                     attrs.pop(attr)
         return attrs
 
@@ -154,6 +156,7 @@ class TaxonomySerializer(NgenModelSerializer):
         read_only=True,
         view_name='playbook-detail'
     )
+
     class Meta:
         model = models.Taxonomy
         fields = '__all__'
@@ -162,10 +165,14 @@ class TaxonomySerializer(NgenModelSerializer):
 
 class ReportSerializer(NgenModelSerializer):
     problem = CharField(style={'base_template': 'textarea.html', 'rows': 10})
-    derived_problem = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
-    verification = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
-    recommendations = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
-    more_information = CharField(style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+    derived_problem = CharField(
+        style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+    verification = CharField(
+        style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+    recommendations = CharField(
+        style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
+    more_information = CharField(
+        style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
 
     class Meta:
         model = models.Report
@@ -382,7 +389,8 @@ class ArtifactRelationSerializer(NgenModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(min_length=4, max_length=128, write_only=True)
+    password = serializers.CharField(
+        min_length=4, max_length=128, write_only=True)
     username = serializers.CharField(max_length=255, required=True)
     email = serializers.EmailField(required=True)
 
@@ -470,7 +478,8 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSe
         view_name='artifact-detail'
     )
     reporter = serializers.HyperlinkedRelatedField(
-        default=serializers.CreateOnlyDefault(serializers.CurrentUserDefault()),
+        default=serializers.CreateOnlyDefault(
+            serializers.CurrentUserDefault()),
         queryset=models.User.objects.all(),
         view_name='user-detail'
     )
@@ -533,7 +542,8 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSer
     evidence = serializers.SerializerMethodField(read_only=True)
     comments = serializers.SerializerMethodField()
     user_creator = serializers.HyperlinkedRelatedField(
-        default=serializers.CreateOnlyDefault(serializers.CurrentUserDefault()),
+        default=serializers.CreateOnlyDefault(
+            serializers.CurrentUserDefault()),
         queryset=models.User.objects.all(),
         view_name='user-detail'
     )
@@ -545,7 +555,8 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSer
     class Meta:
         model = models.Case
         fields = '__all__'
-        read_only_fields = ['attend_date', 'solve_date', 'report_message_id', 'raw', 'created_by', 'notification_count']
+        read_only_fields = ['attend_date', 'solve_date',
+                            'report_message_id', 'raw', 'created_by', 'notification_count']
 
     def get_evidence(self, obj):
         return GenericRelationField(read_only=True).generic_detail_links(obj.evidence_all, self.context.get('request'))
@@ -555,7 +566,7 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSer
             raise ValidationError(
                 {'state': gettext(
                     'It\'s not possible to change the state "%s" to "%s". The new possible states are %s') % (
-                              self.instance.state, attrs, list(self.instance.state.children.all()))})
+                    self.instance.state, attrs, list(self.instance.state.children.all()))})
         return attrs
 
     def get_extra_kwargs(self):
@@ -591,7 +602,8 @@ class AuditSerializer(NgenModelSerializer):
 
     def get_related(self, obj):
         try:
-            new_obj = obj.content_type.get_object_for_this_type(pk=obj.object_id)
+            new_obj = obj.content_type.get_object_for_this_type(
+                pk=obj.object_id)
             return GenericRelationField(read_only=True).generic_detail_link(new_obj, self.context.get('request'))
         except ObjectDoesNotExist:
             return None
@@ -619,15 +631,18 @@ class ConstanceSerializer(serializers.Serializer):
         return self.settings
 
     def get_default(self, obj):
-        value = next((item for item in self.get_settings() if item["key"] == obj['key']), None)
+        value = next((item for item in self.get_settings()
+                     if item["key"] == obj['key']), None)
         return value['default'] if value else None
 
     def get_help_text(self, obj):
-        value = next((item for item in self.get_settings() if item["key"] == obj['key']), None)
+        value = next((item for item in self.get_settings()
+                     if item["key"] == obj['key']), None)
         return value['help_text'] if value else None
 
     def get_value_type(self, obj):
-        value = next((item for item in self.get_settings() if item["key"] == obj['key']), None)
+        value = next((item for item in self.get_settings()
+                     if item["key"] == obj['key']), None)
         return value['value_type'] if value else None
 
     def is_valid(self, raise_exception=False):
@@ -639,7 +654,7 @@ class ConstanceSerializer(serializers.Serializer):
     def create(self, validated_data):
         key = validated_data.get('key')
         value = validated_data.get('value')
-    
+
         try:
             setattr(config, key, '' if value is None else value)
         except AttributeError:
@@ -650,3 +665,24 @@ class ConstanceSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         return self.create(validated_data)
+
+
+class StringIdentifierSerializer(serializers.Serializer):
+    input_string = serializers.CharField(required=True)
+
+    class Meta:
+        model = models.StringIdentifier
+        fields = '__all__'
+        read_only_fields = ['input_type',
+                            'address_string', 'address_type', 'all_types']
+
+    def get_all_types(self, obj):
+        return models.StringType._member_names_
+
+    def create(self, validated_data):
+        return models.StringIdentifier(**validated_data).__dict__
+
+    def list(self):
+        return {'all_types': models.StringType._member_names_,
+                'all_network_types': models.StringIdentifier.all_network_types(),
+                'all_artifact_types': models.StringIdentifier.all_artifact_types()}

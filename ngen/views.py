@@ -17,6 +17,7 @@ from django.contrib.contenttypes.models import ContentType
 from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
+from ngen.models import StringIdentifier
 
 
 class AboutView(TemplateView):
@@ -64,7 +65,8 @@ class CaseViewSet(viewsets.ModelViewSet):
 
 
 class TaxonomyViewSet(viewsets.ModelViewSet):
-    filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
+    filter_backends = [filters.SearchFilter,
+                       django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
     search_fields = ['name', 'description']
     filterset_fields = ['name']
     ordering_fields = ['name']
@@ -118,7 +120,8 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
 class NetworkViewSet(viewsets.ModelViewSet):
     queryset = models.Network.objects.all()
     serializer_class = serializers.NetworkSerializer
-    filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter,
+                       django_filters.rest_framework.DjangoFilterBackend]
     search_fields = ['cidr', 'type', 'domain']
     filterset_fields = ['type']
     permission_classes = [permissions.IsAuthenticated]
@@ -200,7 +203,6 @@ class AuditViewSet(viewsets.ModelViewSet):
     queryset = LogEntry.objects.all()
     serializer_class = serializers.AuditSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
 
 
 class AnnouncementViewSet(viewsets.ModelViewSet):
@@ -252,7 +254,8 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
         if attrs['refresh']:
             return super().validate(attrs)
         else:
-            raise InvalidToken('No valid token found in cookie \'refresh_token\'')
+            raise InvalidToken(
+                'No valid token found in cookie \'refresh_token\'')
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
@@ -295,10 +298,9 @@ class DisabledView(APIView):
     """ View for disabled endpoints """
     permission_classes = (IsAuthenticated,)
 
-    def response(self, request):
-        return Response({"Failed": "Service disabled on instalation."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
-    
-    get = post = put = delete = patch = head = options = response
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        return response
 
 
 class ConstanceViewSet(viewsets.ModelViewSet):
@@ -309,19 +311,20 @@ class ConstanceViewSet(viewsets.ModelViewSet):
     lookup_value_regex = '[A-Za-z_][A-Za-z0-9_]*'
 
     def create(self, request):
-        """POST - Add new user"""
+        """POST - Add new"""
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED, data={'message': 'POST method is not allowed. Use PATCH or PUT method instead to /path/<key> endpoint.'})
 
     def retrieve(self, request, key=None):
-        """GET - Show <key> user"""
+        """GET - Show <key>"""
         api_result = get_settings()
-        result = next((item for item in api_result if item["key"] == key), None)
+        result = next(
+            (item for item in api_result if item["key"] == key), None)
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND, data={'message': 'Key not found.'})
         return Response(result)
 
     def partial_update(self, request, key=None):
-        """PATCH - Update <key> user"""
+        """PATCH - Update <key>"""
         data = request.data.copy()
         data['key'] = key
         if not key in [item['key'] for item in self.queryset]:
@@ -335,9 +338,26 @@ class ConstanceViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, key=None):
-        """PUT - Update <key> user"""
+        """PUT - Update <key>"""
         return self.partial_update(request, key)
 
     def destroy(self, request, key=None):
-        """DETELE - Delete <key> user"""
+        """DETELE - Delete <key>"""
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED, data={'message': 'DELETE method is not allowed.'})
+
+
+class StringIdentifierViewSet(viewsets.ViewSet):
+    serializer_class = serializers.StringIdentifierSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        serializer = serializers.StringIdentifierSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        string_identifier = serializer.save()
+
+        return Response(string_identifier, status=status.HTTP_201_CREATED)
+
+    def list(self, request, format=None):
+        return Response(serializers.StringIdentifierSerializer().list(),
+                        status=status.HTTP_200_OK)
