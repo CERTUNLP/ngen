@@ -14,13 +14,14 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Announcement)
 
 # artifact
-# admin.site.register(Artifact)
+admin.site.register(Artifact)
 admin.site.register(ArtifactRelation)
 # admin.site.register(ArtifactRelated)
 admin.site.register(ArtifactEnrichment)
 
 # case
 admin.site.register(Case)
+
 
 class EventAdmin(admin.ModelAdmin):
     readonly_fields = ['parent']
@@ -31,6 +32,7 @@ class EventAdmin(admin.ModelAdmin):
             obj.reporter = request.user
         super().save_model(request, obj, form, change)
 
+
 admin.site.register(Event, EventAdmin)
 admin.site.register(Evidence)
 admin.site.register(CaseTemplate)
@@ -38,8 +40,10 @@ admin.site.register(CaseTemplate)
 # constituency
 # admin.site.register(NetworkManager)
 
+
 class NetworkAdmin(admin.ModelAdmin):
     readonly_fields = ['parent']
+
 
 admin.site.register(Network, NetworkAdmin)
 # admin.site.register(Network)
