@@ -1,4 +1,5 @@
 import ipaddress
+import re
 
 from auditlog.models import AuditlogHistoryField
 from django.contrib.contenttypes.fields import GenericRelation
@@ -12,9 +13,166 @@ from netfields import CidrAddressField, NetManager
 from django.core.exceptions import ValidationError
 from treebeard.al_tree import AL_Node
 from constance import config
-import re
+from enum import Enum
+from urllib.parse import urlparse
 
 import ngen
+
+
+class StringType(str, Enum):
+    IP4HOST = 'IP4HOST'
+    IP4NET = 'IP4NET'
+    IP4DEFAULT = 'IP4DEFAULT'
+    IP6HOST = 'IP6HOST'
+    IP6NET = 'IP6NET'
+    IP6DEFAULT = 'IP6DEFAULT'
+    IP = 'IP'
+    CIDR = 'CIDR'
+    FQDN = 'FQDN'
+    DOMAIN = 'DOMAIN'
+    URL = 'URL'
+    EMAIL = 'EMAIL'
+    HASH = 'HASH'
+    FILE = 'FILE'
+    USERAGENT = 'USERAGENT'
+    ASN = 'ASN'
+    SYSTEM = 'SYSTEM'
+    OTHER = 'OTHER'
+    UNKNOWN = 'UNKNOWN'
+
+
+class StringIdentifier():
+    regex_map = {
+        StringType.DOMAIN: r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$',
+        StringType.URL: r'\bhttps?://[^\s/$.?#].[^\s]*\b',
+        StringType.EMAIL: r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b',
+    }
+    network_map = {
+        StringType.IP4HOST: StringType.CIDR,
+        StringType.IP4NET: StringType.CIDR,
+        StringType.IP4DEFAULT: StringType.CIDR,
+        StringType.IP6HOST: StringType.CIDR,
+        StringType.IP6NET: StringType.CIDR,
+        StringType.IP6DEFAULT: StringType.CIDR,
+        StringType.IP: StringType.CIDR,
+        StringType.CIDR: StringType.CIDR,
+        StringType.FQDN: StringType.DOMAIN,
+        StringType.DOMAIN: StringType.DOMAIN,
+        StringType.URL: StringType.UNKNOWN,
+        StringType.EMAIL: StringType.UNKNOWN,
+        StringType.HASH: StringType.UNKNOWN,
+        StringType.FILE: StringType.UNKNOWN,
+        StringType.USERAGENT: StringType.UNKNOWN,
+        StringType.ASN: StringType.UNKNOWN,
+        StringType.SYSTEM: StringType.UNKNOWN,
+        StringType.OTHER: StringType.UNKNOWN,
+        StringType.UNKNOWN: StringType.UNKNOWN,
+    }
+    artifact_map = {
+        StringType.IP4HOST: StringType.IP,
+        StringType.IP4NET: StringType.IP,
+        StringType.IP4DEFAULT: StringType.IP,
+        StringType.IP6HOST: StringType.IP,
+        StringType.IP6NET: StringType.IP,
+        StringType.IP6DEFAULT: StringType.IP,
+        StringType.IP: StringType.IP,
+        StringType.CIDR: StringType.IP,
+        StringType.FQDN: StringType.FQDN,
+        StringType.DOMAIN: StringType.DOMAIN,
+        StringType.URL: StringType.URL,
+        StringType.EMAIL: StringType.EMAIL,
+        StringType.HASH: StringType.HASH,
+        StringType.FILE: StringType.FILE,
+        StringType.USERAGENT: StringType.USERAGENT,
+        StringType.ASN: StringType.ASN,
+        StringType.SYSTEM: StringType.SYSTEM,
+        StringType.OTHER: StringType.OTHER,
+        StringType.UNKNOWN: StringType.OTHER,
+    }
+
+    def __init__(self, input_string: str, **kwargs):
+        self.input_string = input_string
+        self.input_type = StringType.UNKNOWN
+        self.parsed_string = None
+        self.parsed_type = StringType.UNKNOWN
+        self.network_type = StringType.UNKNOWN
+        self.artifact_type = StringType.UNKNOWN
+        self._identify(self.input_string)
+
+    def _identify(self, input_string: str):
+        self.input_string = input_string
+        g = StringIdentifier.guess(input_string)
+        self.input_type = g
+
+        if g in StringIdentifier.get_network_address_types():
+            self.parsed_string = input_string
+            self.parsed_type = g
+        elif g == StringType.URL:
+            self.parsed_string = urlparse(input_string).hostname
+            self.parsed_type = StringIdentifier.guess(self.parsed_string)
+        elif g == StringType.EMAIL:
+            self.parsed_string = input_string.split('@')[1]
+            self.parsed_type = StringType.DOMAIN
+
+        self.network_type = StringIdentifier.map_type_network(
+            self.parsed_type)
+        self.artifact_type = StringIdentifier.map_type_artifact(
+            self.input_type)
+
+    @classmethod
+    def match_regex(cls, typ, input_string):
+        return re.match(cls.regex_map[typ], input_string) != None
+
+    @classmethod
+    def all_network_types(cls):
+        seen = set()
+        return [x for x in cls.network_map.values() if not (x in seen or seen.add(x))]
+
+    @classmethod
+    def all_artifact_types(cls):
+        seen = set()
+        return [x for x in cls.artifact_map.values() if not (x in seen or seen.add(x))]
+
+    @classmethod
+    def get_network_address_types(cls):
+        return [StringType.IP4HOST, StringType.IP4NET, StringType.IP4DEFAULT,
+                StringType.IP6HOST, StringType.IP6NET, StringType.IP6DEFAULT,
+                StringType.IP, StringType.CIDR, StringType.DOMAIN,
+                StringType.FQDN]
+
+    @classmethod
+    def guess(cls, input_string):
+        try:
+            cidr = ipaddress.ip_network(input_string)
+            if cidr.version == 4:
+                if cidr.prefixlen == 32:
+                    return StringType.IP4HOST
+                elif cidr.prefixlen == 0:
+                    cidr.prefixlen
+                    return StringType.IP4DEFAULT
+                else:
+                    return StringType.IP4NET
+            else:
+                if cidr.prefixlen == 128:
+                    return StringType.IP6HOST
+                elif cidr.prefixlen == 0:
+                    return StringType.IP6DEFAULT
+                else:
+                    return StringType.IP6NET
+        except ValueError:
+            for typ, pattern in cls.regex_map.items():
+                if re.match(pattern, input_string):
+                    return typ
+
+        return StringType.UNKNOWN
+
+    @classmethod
+    def map_type_network(cls, string_type):
+        return cls.network_map[string_type]
+
+    @classmethod
+    def map_type_artifact(cls, string_type):
+        return cls.artifact_map[string_type]
 
 
 class NgenModel(TimeStampedModel):
@@ -25,7 +183,8 @@ class NgenModel(TimeStampedModel):
 
 
 class NgenTreeModel(AL_Node):
-    parent = models.ForeignKey('self', models.DO_NOTHING, null=True, blank=True, db_index=True, related_name='children')
+    parent = models.ForeignKey('self', models.DO_NOTHING, null=True,
+                               blank=True, db_index=True, related_name='children')
 
     class Meta:
         abstract = True
@@ -86,11 +245,14 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
 
     def mergeable_with(self, child: 'NgenMergeableModel') -> bool:
         if self.uuid == child.uuid:
-            raise ValidationError({'parent': gettext('The parent must not be the same instance.')})
+            raise ValidationError(
+                {'parent': gettext('The parent must not be the same instance.')})
         if not self.mergeable:
-            raise ValidationError({'parent': gettext('The parent is not mergeable or is blocked.')})
+            raise ValidationError(
+                {'parent': gettext('The parent is not mergeable or is blocked.')})
         if child.blocked:
-            raise ValidationError(gettext('The child is not mergeable or is blocked.'))
+            raise ValidationError(
+                gettext('The child is not mergeable or is blocked.'))
         return True
 
     def merge(self, child: 'NgenMergeableModel'):
@@ -104,7 +266,8 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
             if self.parent and self.parent.mergeable_with(self) and not self._state.adding:
                 self.parent.merge(self)
         else:
-            raise ValidationError(gettext('Parent of merged instances can\'t be modified'))
+            raise ValidationError(
+                gettext('Parent of merged instances can\'t be modified'))
 
     @hook(BEFORE_DELETE)
     def delete_children(self):
@@ -183,19 +346,22 @@ class AddressManager(NetManager):
 
     def defaults_ipv4(self):
         return self.filter(cidr__prefixlen=0, cidr__family=4)
-    
+
     def defaults_ipv6(self):
         return self.filter(cidr__prefixlen=0, cidr__family=6)
-    
+
     def defaults_domain(self):
         return self.filter(domain='*')
 
 
 class NgenAddressModel(models.Model):
     cidr = CidrAddressField(null=True, default=None, blank=True)
-    domain = models.CharField(max_length=255, null=True, default=None, blank=True)
-    address = None
+    domain = models.CharField(
+        max_length=255, null=True, default=None, blank=True)
+    address_value = models.CharField(
+        max_length=255, null=False, default='', blank=True)
     objects = AddressManager()
+    address = None
 
     class Meta:
         abstract = True
@@ -205,6 +371,13 @@ class NgenAddressModel(models.Model):
         self.assign_address()
 
     def assign_address(self):
+        if self.address_value:
+            sid = StringIdentifier(self.address_value)
+            if sid.network_type == StringType.CIDR:
+                self.cidr = sid.parsed_string
+            elif sid.network_type == StringType.DOMAIN:
+                self.domain = sid.parsed_string
+
         if self.cidr:
             try:
                 self.address = self.AddressIpv4(self.cidr)
@@ -218,18 +391,38 @@ class NgenAddressModel(models.Model):
             return self.address
         return None
 
+    def validate_addresses(self):
+        if not self.address_value and not self.cidr and self.domain == None:
+            msg = 'cidr or domain must be setted'
+            raise ValidationError({'cidr': [msg], 'domain': [msg]})
+        elif self.cidr and self.domain != None:
+            msg = 'cidr and domain are mutually exclusive'
+            raise ValidationError(
+                {'address_value': [msg], 'cidr': [msg], 'domain': [msg]})
+
+        if self.address_value:
+            if self.cidr:
+                if not str(self.cidr) in self.address_value:
+                    msg = 'cidr is not in address_value'
+                    raise ValidationError(
+                        {'cidr': [msg], 'address_value': [msg]})
+            if self.domain:
+                if not self.domain in self.address_value:
+                    msg = 'domain is not in address_value'
+                    raise ValidationError(
+                        {'domain': [msg], 'address_value': [msg]})
+
     def clean(self):
         # Should be called by subclasses if they override clean()
-        if not self.cidr and self.domain == None:
-            raise ValidationError({'cidr': ['CIDR or Domain must be setted'], 'domain': ['CIDR or Domain must be setted']})
-        elif self.cidr and self.domain != None:
-            raise ValidationError({'cidr': ['CIDR and Domain are mutually exclusive'], 'domain': ['CIDR and Domain are mutually exclusive']})
+        self.validate_addresses()
 
         if not self.assign_address():
-            raise ValidationError(gettext('Address must be either a CIDR or a domain.'))
+            raise ValidationError(
+                gettext('Address must be either a cidr or a domain.'))
 
         if not self.address.is_valid():
-            raise ValidationError({self.field_name(): [f'Must be a valid {self.field_name()}']})
+            raise ValidationError(
+                {self.field_name(): [f'Must be a valid {self.field_name()}']})
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -321,10 +514,10 @@ class NgenAddressModel(models.Model):
 
         def is_ipv4(self):
             return True
-            
+
         def is_ipv6(self):
             return False
-        
+
         def default(self):
             return '0.0.0.0/0'
 
@@ -332,13 +525,13 @@ class NgenAddressModel(models.Model):
 
         def create_address_object(self, address: str):
             return ipaddress.IPv6Network(address)
-        
+
         def is_ipv4(self):
             return False
-            
+
         def is_ipv6(self):
             return True
-        
+
         def default(self):
             return '::/0'
 
@@ -351,7 +544,8 @@ class NgenAddressModel(models.Model):
 
         def create_address_object(self, address):
             # return address.replace('*','').strip().lower().split('/')[0]
-            a = address.replace('*','').strip().strip('.').lower().split('/')[0]
+            a = address.replace(
+                '*', '').strip().strip('.').lower().split('/')[0]
             if a == '':
                 return '*'
             return a
@@ -386,8 +580,7 @@ class NgenAddressModel(models.Model):
             return f'{self.address}/{self.address_mask()}'
 
         def is_valid(self):
-            domain_regex = r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$'
-            return self.address == '*' or re.match(domain_regex, self.address) != None
+            return self.address == '*' or StringIdentifier.match_regex(StringType.DOMAIN, self.address)
 
         def network_address(self):
             return self.address
