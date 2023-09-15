@@ -19,68 +19,126 @@ from urllib.parse import urlparse
 import ngen
 
 
-class StringType(Enum):
-    IP4HOST = (1, None)
-    IP4NET = (2, None)
-    IP4DEFAULT = (3, None)
-    IP6HOST = (4, None)
-    IP6NET = (5, None)
-    IP6DEFAULT = (6, None)
-    DOMAIN = (
-        7, r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$')
-    URL = (8, r'\bhttps?://[^\s/$.?#].[^\s]*\b')
-    EMAIL = (9, r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b')
-    HASH = (6, None)
-    FILE = (9, None)
-    USERAGENT = (10, None)
-    ASN = (11, None)
-    SYSTEM = (12, None)
-    OTHER = (13, None)
-    UNKNOWN = (14, None)
+class StringType(str, Enum):
+    IP4HOST = 'IP4HOST'
+    IP4NET = 'IP4NET'
+    IP4DEFAULT = 'IP4DEFAULT'
+    IP6HOST = 'IP6HOST'
+    IP6NET = 'IP6NET'
+    IP6DEFAULT = 'IP6DEFAULT'
+    IP = 'IP'
+    CIDR = 'CIDR'
+    FQDN = 'FQDN'
+    DOMAIN = 'DOMAIN'
+    URL = 'URL'
+    EMAIL = 'EMAIL'
+    HASH = 'HASH'
+    FILE = 'FILE'
+    USERAGENT = 'USERAGENT'
+    ASN = 'ASN'
+    SYSTEM = 'SYSTEM'
+    OTHER = 'OTHER'
+    UNKNOWN = 'UNKNOWN'
 
-    def get_regex_pattern(self):
-        return self.value[1]
 
-    @classmethod
-    def get_cidr_types(cls):
-        return [StringType.IP4HOST, StringType.IP4NET, StringType.IP4DEFAULT,
-                StringType.IP6HOST, StringType.IP6NET, StringType.IP6DEFAULT]
+class StringIdentifier():
+    regex_map = {
+        StringType.DOMAIN: r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$',
+        StringType.URL: r'\bhttps?://[^\s/$.?#].[^\s]*\b',
+        StringType.EMAIL: r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b',
+    }
+    network_map = {
+        StringType.IP4HOST: StringType.CIDR,
+        StringType.IP4NET: StringType.CIDR,
+        StringType.IP4DEFAULT: StringType.CIDR,
+        StringType.IP6HOST: StringType.CIDR,
+        StringType.IP6NET: StringType.CIDR,
+        StringType.IP6DEFAULT: StringType.CIDR,
+        StringType.IP: StringType.CIDR,
+        StringType.CIDR: StringType.CIDR,
+        StringType.FQDN: StringType.DOMAIN,
+        StringType.DOMAIN: StringType.DOMAIN,
+        StringType.URL: StringType.UNKNOWN,
+        StringType.EMAIL: StringType.UNKNOWN,
+        StringType.HASH: StringType.UNKNOWN,
+        StringType.FILE: StringType.UNKNOWN,
+        StringType.USERAGENT: StringType.UNKNOWN,
+        StringType.ASN: StringType.UNKNOWN,
+        StringType.SYSTEM: StringType.UNKNOWN,
+        StringType.OTHER: StringType.UNKNOWN,
+        StringType.UNKNOWN: StringType.UNKNOWN,
+    }
+    artifact_map = {
+        StringType.IP4HOST: StringType.IP,
+        StringType.IP4NET: StringType.IP,
+        StringType.IP4DEFAULT: StringType.IP,
+        StringType.IP6HOST: StringType.IP,
+        StringType.IP6NET: StringType.IP,
+        StringType.IP6DEFAULT: StringType.IP,
+        StringType.IP: StringType.IP,
+        StringType.CIDR: StringType.IP,
+        StringType.FQDN: StringType.FQDN,
+        StringType.DOMAIN: StringType.DOMAIN,
+        StringType.URL: StringType.URL,
+        StringType.EMAIL: StringType.EMAIL,
+        StringType.HASH: StringType.HASH,
+        StringType.FILE: StringType.FILE,
+        StringType.USERAGENT: StringType.USERAGENT,
+        StringType.ASN: StringType.ASN,
+        StringType.SYSTEM: StringType.SYSTEM,
+        StringType.OTHER: StringType.OTHER,
+        StringType.UNKNOWN: StringType.OTHER,
+    }
 
-    @classmethod
-    def identify(cls, string_value):
-        g = StringType.guess(string_value)
-        id = {
-            'original_string': string_value,
-            'original_type': g,
-            'address_string': None,
-            'adddess_type': cls.UNKNOWN,
-            'is_cidr': False,
-            'is_domain': False,
-        }
+    def __init__(self, input_string: str, **kwargs):
+        self.input_string = input_string
+        self.input_type = StringType.UNKNOWN
+        self.parsed_string = None
+        self.parsed_type = StringType.UNKNOWN
+        self.network_type = StringType.UNKNOWN
+        self.artifact_type = StringType.UNKNOWN
+        self._identify(self.input_string)
 
-        if g in cls.get_cidr_types() + [StringType.DOMAIN]:
-            id['address_string'] = string_value
-            id['adddess_type'] = g
+    def _identify(self, input_string: str):
+        self.input_string = input_string
+        g = StringIdentifier.guess(input_string)
+        self.input_type = g
+
+        if g in StringIdentifier.get_network_address_types():
+            self.parsed_string = input_string
+            self.parsed_type = g
         elif g == StringType.URL:
-            id['address_string'] = urlparse(string_value).hostname
-            id['adddess_type'] = StringType.guess(id['address_string'])
+            self.parsed_string = urlparse(input_string).hostname
+            self.parsed_type = StringIdentifier.guess(self.parsed_string)
         elif g == StringType.EMAIL:
-            id['address_string'] = string_value.split('@')[1]
-            id['adddess_type'] = StringType.DOMAIN
+            self.parsed_string = input_string.split('@')[1]
+            self.parsed_type = StringType.DOMAIN
 
-        if id['adddess_type'] in cls.get_cidr_types():
-            id['is_cidr'] = True
-        elif id['adddess_type'] == StringType.DOMAIN:
-            id['is_domain'] = True
-
-        return id
+        self.network_type = StringIdentifier.map_type_network(
+            self.parsed_type)
+        self.artifact_type = StringIdentifier.map_type_artifact(
+            self.input_type)
 
     @classmethod
     def match_regex(cls, typ, input_string):
-        regex = typ.get_regex_pattern()
-        if not regex:
-            return None
-        return re.match(regex, input_string) != None
+        return re.match(cls.regex_map[typ], input_string) != None
+
+    @classmethod
+    def all_network_types(cls):
+        seen = set()
+        return [x for x in cls.network_map.values() if not (x in seen or seen.add(x))]
+
+    @classmethod
+    def all_artifact_types(cls):
+        seen = set()
+        return [x for x in cls.artifact_map.values() if not (x in seen or seen.add(x))]
+
+    @classmethod
+    def get_network_address_types(cls):
+        return [StringType.IP4HOST, StringType.IP4NET, StringType.IP4DEFAULT,
+                StringType.IP6HOST, StringType.IP6NET, StringType.IP6DEFAULT,
+                StringType.IP, StringType.CIDR, StringType.DOMAIN,
+                StringType.FQDN]
 
     @classmethod
     def guess(cls, input_string):
@@ -88,27 +146,33 @@ class StringType(Enum):
             cidr = ipaddress.ip_network(input_string)
             if cidr.version == 4:
                 if cidr.prefixlen == 32:
-                    return cls.IP4HOST
+                    return StringType.IP4HOST
                 elif cidr.prefixlen == 0:
                     cidr.prefixlen
-                    return cls.IP4DEFAULT
+                    return StringType.IP4DEFAULT
                 else:
-                    return cls.IP4NET
+                    return StringType.IP4NET
             else:
                 if cidr.prefixlen == 128:
-                    return cls.IP6HOST
+                    return StringType.IP6HOST
                 elif cidr.prefixlen == 0:
-                    return cls.IP6DEFAULT
+                    return StringType.IP6DEFAULT
                 else:
-                    return cls.IP6NET
+                    return StringType.IP6NET
         except ValueError:
-            for address_type in cls:
-                pattern = address_type.get_regex_pattern()
-                if pattern:
-                    if re.match(pattern, input_string):
-                        return address_type
+            for typ, pattern in cls.regex_map.items():
+                if re.match(pattern, input_string):
+                    return typ
 
-        return cls.UNKNOWN
+        return StringType.UNKNOWN
+
+    @classmethod
+    def map_type_network(cls, string_type):
+        return cls.network_map[string_type]
+
+    @classmethod
+    def map_type_artifact(cls, string_type):
+        return cls.artifact_map[string_type]
 
 
 class NgenModel(TimeStampedModel):
@@ -308,11 +372,11 @@ class NgenAddressModel(models.Model):
 
     def assign_address(self):
         if self.address_value:
-            id_dict = StringType.identify(self.address_value)
-            if id_dict['is_cidr']:
-                self.cidr = id_dict['address_string']
-            elif id_dict['is_domain']:
-                self.domain = id_dict['address_string']
+            sid = StringIdentifier(self.address_value)
+            if sid.network_type == StringType.CIDR:
+                self.cidr = sid.parsed_string
+            elif sid.network_type == StringType.DOMAIN:
+                self.domain = sid.parsed_string
 
         if self.cidr:
             try:
@@ -516,7 +580,7 @@ class NgenAddressModel(models.Model):
             return f'{self.address}/{self.address_mask()}'
 
         def is_valid(self):
-            return self.address == '*' or StringType.match_regex(StringType.DOMAIN, self.address)
+            return self.address == '*' or StringIdentifier.match_regex(StringType.DOMAIN, self.address)
 
         def network_address(self):
             return self.address
