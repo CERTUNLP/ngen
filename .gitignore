@@ -134,7 +134,6 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
-/.vscode/
 .pyre/
 /.idea/
 /dbname.json
