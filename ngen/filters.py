@@ -4,7 +4,7 @@ Filters for ngen models.
 """
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
-from ngen.models import Taxonomy
+from ngen.models import Taxonomy, Event
 
 
 class BaseFilter(django_filters.FilterSet):
@@ -46,4 +46,24 @@ class TaxonomyFilter(BaseFilter):
             'active': ['exact'],
             'type': ['exact'],
             'parent': ['exact', 'isnull'],
+        }
+
+class EventFilter(BaseFilter):
+    """
+    Event model filter.
+    Allows to filter by:
+
+    """
+    class Meta:
+        model = Event
+        fields = {
+            'date': ['exact'],
+            'feed': ['exact'],
+            'tlp': ['exact'],
+            'priority': ['exact'],
+            'taxonomy': ['exact'],
+            'parent': ['exact', 'isnull'],
+            'case': ['exact', 'isnull'],
+            'reporter': ['exact'],
+            'uuid': ['exact']
         }
