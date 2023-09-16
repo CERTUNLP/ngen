@@ -1,30 +1,120 @@
 from django.test import TestCase
-from ngen.models import State, Edge, NgenModel, Case  
+from django.db.models import deletion
+from ngen.models import State, Edge, Taxonomy, NgenModel, Case, Tlp, User, CaseTemplate, Priority, NgenPriorityMixin, config
 
 class StateTestCase(TestCase):
 
     def setUp(self):
-        # Create multiple States for testing
+        '''
+        State setup.
+        '''
+        # Create the default Priority instance
+        default_priority, created = Priority.objects.get_or_create(
+            name=config.PRIORITY_DEFAULT,
+             severity=1
+            )
+        default_priority.save()
+        self.tlp = Tlp.objects.create(name='Test TLP', code='123')
+        self.user_creator = User.objects.create(username='creator')
+        self.assigned_user = User.objects.create(username='assigned')
+        self.state = State.objects.create(name='State')
         self.first_state = State.objects.create(name='First State', active=True)
-        self.second_state = State.objects.create(name='Second State', active=True)        
-    def test_state_creation(self):
-        state = State.objects.create(
-            name='Test State',
-            blocked=False,
-            attended=False,
-            solved=False,
-            active=True,
-            description='This is a test state'
-        )
-        self.assertEqual(state.__str__(), 'Test State')
-        self.assertEqual(state.slug, 'test_state')
+        self.second_state = State.objects.create(name='Second State', active=True)  
+        self.case_template = None
 
+    def test_state_creation(self):
+        '''
+        Test State creation
+        '''
+        self.assertEqual(self.state.__str__(), 'State')
+        self.assertEqual(self.state.slug, 'state')
+
+    def test_state_update(self):
+        '''
+        Test State update
+        '''
+        # Updating State object
+        self.state.name = 'Updated State'
+        self.state.description = 'This is an updated state'
+        self.state.save()
+
+        # Retrieve the updated state from the database
+        updated_state = State.objects.get(pk=self.state.pk)
+
+        # Assertions to check if the state was updated correctly
+        self.assertEqual(updated_state.name, 'Updated State')
+        self.assertEqual(updated_state.description, 'This is an updated state')
+
+    def test_state_deletion(self): 
+        '''
+        Test State deletion. This also tests that if you delete a State that is present in an Edge, the edge also gets deleted.
+        '''
+        state_to_delete = State.objects.create(name='State to Delete', active=True)
+        another_state = State.objects.create(name='Another State', active=True)
+
+        # Create an edge between the two states
+        edge = Edge.objects.create(parent=state_to_delete, child=another_state, discr='Test Edge')
+
+        # Check that the edge exists
+        self.assertTrue(Edge.objects.filter(parent=state_to_delete, child=another_state).exists())
+
+        # Delete the state
+        state_to_delete.delete()
+
+        #Check that the state is deleted
+        self.assertFalse(State.objects.filter(name='State to Delete').exists())
+
+        # Check that the edge is also deleted
+        self.assertFalse(Edge.objects.filter(parent=state_to_delete, child=another_state).exists())
+
+
+    def test_state_permanency(self):
+        case = Case.objects.create(
+        tlp=self.tlp,  
+        casetemplate_creator=self.case_template,  
+        user_creator=self.user_creator,  
+        assigned=self.assigned_user,  
+        state=self.state,  
+        attend_date=None, 
+        solve_date=None, 
+        report_message_id=None,  
+        raw=None,  
+        uuid='13075770-ad80-4d1e-8df7-f88c58365b92',  
+        lifecycle='manual',  
+        notification_count=1,
+        )
+        # Try to delete test_state
+        with self.assertRaises(deletion.ProtectedError):
+            self.state.delete()
 
     def test_edge_creation(self):
+        '''
+        Test Edge creation
+        '''
         edge = Edge.objects.create(parent=self.first_state, child=self.second_state, discr='Test Edge')
         self.assertEqual(edge.__str__(), 'First State -> Second State')
 
+    def test_edge_update(self):
+        '''
+        Test Edge update
+        '''    
+    # Create an Edge object
+        edge = Edge.objects.create(parent=self.first_state, child=self.second_state, discr='Test Edge')
+
+    # Update the Edge object
+        edge.discr = 'Updated Edge'
+        edge.save()
+
+    # Retrieve the updated edge from the database
+        updated_edge = Edge.objects.get(pk=edge.pk)
+
+    # Assertions to check if the edge was updated correctly
+        self.assertEqual(updated_edge.discr, 'Updated Edge')                
+
     def test_edge_deletion(self):
+        '''
+        Test Edge deletion
+        '''
         # Create an edge
         edge = Edge.objects.create(parent=self.first_state, child=self.second_state, discr='Test Edge')
 
@@ -44,28 +134,7 @@ class StateTestCase(TestCase):
         self.assertFalse(self.first_state.is_parent_of(self.second_state))
 
 
-    def test_state_deletion(self):
-        # Create a state
-        state_to_delete = State.objects.create(name='State to Delete', active=True)
 
-        # Create another state
-        another_state = State.objects.create(name='Another State', active=True)
-
-        # Create an edge between the two states
-        edge = Edge.objects.create(parent=state_to_delete, child=another_state, discr='Test Edge')
-
-        # Check that the edge exists
-        self.assertTrue(Edge.objects.filter(parent=state_to_delete, child=another_state).exists())
-
-
-        # Delete the state
-        state_to_delete.delete()
-
-        #Check that the state is deleted
-        self.assertFalse(State.objects.filter(name='State to Delete').exists())
-
-        # Check that the edge is also deleted
-        self.assertFalse(Edge.objects.filter(parent=state_to_delete, child=another_state).exists())
 
 """
         # Create a test Case for state testing
@@ -85,5 +154,8 @@ class StateTestCase(TestCase):
         notification_count=1,  # Set notification_count as needed
         
 )
-#./manage.py test ngen.tests.models.test_state
+#
+sudo docker exec -it docker-ngen-django-1 sh
+./manage.py test ngen.tests.models.test_state
+./manage.py test ngen.tests.api.test_state
 """
