@@ -676,11 +676,11 @@ class StringIdentifierSerializer(serializers.Serializer):
         read_only_fields = ['input_type',
                             'address_string', 'address_type', 'all_types']
 
-    def get_all_types(self, obj):
-        return models.StringType._member_names_
-
     def create(self, validated_data):
-        return models.StringIdentifier(**validated_data).__dict__
+        rf = ['parsed_obj']
+        data = {k: v for k, v in models.StringIdentifier(
+            **validated_data).__dict__.items() if k not in rf}
+        return data
 
     def list(self):
         return {'all_types': models.StringType._member_names_,

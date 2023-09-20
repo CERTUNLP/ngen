@@ -97,6 +97,7 @@ class StringIdentifier():
         self.parsed_type = StringType.UNKNOWN
         self.network_type = StringType.UNKNOWN
         self.artifact_type = StringType.UNKNOWN
+        self.parsed_obj = None
         self._identify(self.input_string)
 
     def _identify(self, input_string: str):
@@ -113,6 +114,10 @@ class StringIdentifier():
         elif g == StringType.EMAIL:
             self.parsed_string = input_string.split('@')[1]
             self.parsed_type = StringType.DOMAIN
+
+        if self.parsed_string and self.parsed_type in self.__class__.get_cidr_address_types():
+            self.parsed_obj = ipaddress.ip_network(self.parsed_string)
+            self.parsed_string = self.parsed_obj.compressed
 
         self.network_type = StringIdentifier.map_type_network(
             self.parsed_type)
@@ -135,10 +140,17 @@ class StringIdentifier():
 
     @classmethod
     def get_network_address_types(cls):
+        return cls.get_cidr_address_types() + cls.get_domain_address_types()
+
+    @classmethod
+    def get_cidr_address_types(cls):
         return [StringType.IP4HOST, StringType.IP4NET, StringType.IP4DEFAULT,
                 StringType.IP6HOST, StringType.IP6NET, StringType.IP6DEFAULT,
-                StringType.IP, StringType.CIDR, StringType.DOMAIN,
-                StringType.FQDN]
+                StringType.IP, StringType.CIDR]
+
+    @classmethod
+    def get_domain_address_types(cls):
+        return [StringType.DOMAIN, StringType.FQDN]
 
     @classmethod
     def guess(cls, input_string):
@@ -362,6 +374,7 @@ class NgenAddressModel(models.Model):
         max_length=255, null=False, default='', blank=True)
     objects = AddressManager()
     address = None
+    sid = None
 
     class Meta:
         abstract = True
@@ -372,11 +385,11 @@ class NgenAddressModel(models.Model):
 
     def assign_address(self):
         if self.address_value:
-            sid = StringIdentifier(self.address_value)
-            if sid.network_type == StringType.CIDR:
-                self.cidr = sid.parsed_string
-            elif sid.network_type == StringType.DOMAIN:
-                self.domain = sid.parsed_string
+            self.sid = StringIdentifier(self.address_value)
+            if self.sid.network_type == StringType.CIDR:
+                self.cidr = self.sid.parsed_string
+            elif self.sid.network_type == StringType.DOMAIN:
+                self.domain = self.sid.parsed_string
 
         if self.cidr:
             try:
@@ -393,7 +406,7 @@ class NgenAddressModel(models.Model):
 
     def validate_addresses(self):
         if not self.address_value and not self.cidr and self.domain == None:
-            msg = 'cidr or domain must be setted'
+            msg = 'At least cidr or domain must be setted'
             raise ValidationError({'cidr': [msg], 'domain': [msg]})
         elif self.cidr and self.domain != None:
             msg = 'cidr and domain are mutually exclusive'
@@ -401,13 +414,14 @@ class NgenAddressModel(models.Model):
                 {'address_value': [msg], 'cidr': [msg], 'domain': [msg]})
 
         if self.address_value:
+            self.sid = StringIdentifier(self.address_value)
             if self.cidr:
-                if not str(self.cidr) in self.address_value:
+                if ipaddress.ip_network(self.cidr) != self.sid.parsed_obj:
                     msg = 'cidr is not in address_value'
                     raise ValidationError(
                         {'cidr': [msg], 'address_value': [msg]})
-            if self.domain:
-                if not self.domain in self.address_value:
+            elif self.domain:
+                if not self.domain == self.sid.parsed_string:
                     msg = 'domain is not in address_value'
                     raise ValidationError(
                         {'domain': [msg], 'address_value': [msg]})
