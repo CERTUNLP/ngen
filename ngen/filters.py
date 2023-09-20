@@ -26,6 +26,37 @@ class BaseFilter(django_filters.FilterSet):
     modified_range = DateFromToRangeFilter(field_name='modified')
 
 
+class NgenAddressModelFilter(BaseFilter):
+    """
+    NgenAddressModel model filter.
+    Allows to filter by:
+        - cidr (exact)
+        - domain (exact)
+        - is_subnet_of (net_contained_or_equal)
+        - is_subdomain_of (domain_is_subdomain_of)
+    """
+    cidr = django_filters.CharFilter(field_name='cidr', lookup_expr='exact')
+    domain = django_filters.CharFilter(
+        field_name='domain', lookup_expr='exact')
+
+    is_subnet_of = django_filters.CharFilter(
+        field_name='cidr',
+        lookup_expr='net_contained_or_equal',
+        label='Is subnet of'
+    )
+    is_subdomain_of = django_filters.CharFilter(
+        field_name='domain',
+        method='domain_is_subdomain_of',
+        label='Is subdomain of'
+    )
+
+    def domain_is_subdomain_of(self, queryset, name, value):
+        """
+        Filter by subdomain.
+        """
+        return queryset.filter(domain__endswith=f'.{value}')
+
+
 class TaxonomyFilter(BaseFilter):
     """
     Taxonomy model filter.
@@ -37,6 +68,7 @@ class TaxonomyFilter(BaseFilter):
         - type (exact)
         - parent (exact, isnull)
     """
+
     class Meta:
         model = Taxonomy
         fields = {
@@ -48,12 +80,23 @@ class TaxonomyFilter(BaseFilter):
             'parent': ['exact', 'isnull'],
         }
 
-class EventFilter(BaseFilter):
+
+class EventFilter(NgenAddressModelFilter):
     """
     Event model filter.
     Allows to filter by:
-
+        - date (exact)
+        - feed (exact)
+        - tlp (exact)
+        - priority (exact)
+        - taxonomy (exact)
+        - parent (exact, isnull)
+        - case (exact, isnull)
+        - reporter (exact)
+        - uuid (exact)
+        - inherits NgenAddressModelFilter
     """
+
     class Meta:
         model = Event
         fields = {
