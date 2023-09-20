@@ -4,7 +4,7 @@ Filters for ngen models.
 """
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
-from ngen.models import Taxonomy, Event
+from ngen.models import Taxonomy, Event, Case
 
 
 class BaseFilter(django_filters.FilterSet):
@@ -109,4 +109,42 @@ class EventFilter(NgenAddressModelFilter):
             'case': ['exact', 'isnull'],
             'reporter': ['exact'],
             'uuid': ['exact']
+        }
+
+
+class CaseFilter(BaseFilter):
+    """
+    Event model filter.
+    Allows to filter by:
+        - date (exact, range)
+        - attend_date (exact, range)
+        - solve_date (exact, range)
+        - lifecycle (exact)
+        - priority (exact)
+        - tlp (exact)
+        - casetemplate_creator (exact)
+        - uuid (exact)
+        - parent (exact, isnull)
+        - assigned (exact, isnull)
+        - state (exact)
+    """
+
+    date_range = DateFromToRangeFilter(field_name='created')
+    attend_date_range = DateFromToRangeFilter(field_name='attend_date')
+    solve_date_range = DateFromToRangeFilter(field_name='solve_date')
+
+    class Meta:
+        model = Case
+        fields = {
+            'date': ['exact'],
+            'attend_date': ['exact'],
+            'solve_date': ['exact'],
+            'lifecycle': ['exact'],
+            'priority': ['exact'],
+            'tlp': ['exact'],
+            'casetemplate_creator': ['exact'],
+            'uuid': ['exact'],
+            'parent': ['exact', 'isnull'],
+            'assigned': ['exact', 'isnull'],
+            'state': ['exact'],
         }

@@ -18,7 +18,7 @@ from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
 from ngen.models import StringIdentifier
-from ngen.filters import TaxonomyFilter, EventFilter
+from ngen.filters import TaxonomyFilter, EventFilter, CaseFilter
 
 
 class AboutView(TemplateView):
@@ -46,7 +46,7 @@ class EventViewSet(viewsets.ModelViewSet):
                        filters.OrderingFilter]
     search_fields = ['taxonomy__name', 'feed__name']
     filterset_class = EventFilter
-    ordering_fields = ['id', 'date', 'priority']
+    ordering_fields = ['id', 'date', 'priority', 'reporter']
     serializer_class = serializers.EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -55,12 +55,10 @@ class CaseViewSet(viewsets.ModelViewSet):
     queryset = models.Case.objects.all()
     filter_backends = [
         backends.MergedModelFilterBackend,
-        # filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter]
-    # search_fields = ['taxonomy', 'network']
-    # filterset_fields = ['taxonomy']
-    ordering_fields = ['id']
+    filterset_class = CaseFilter
+    ordering_fields = ['id', 'date', 'attend_date', 'priority']
     serializer_class = serializers.CaseSerializer
     permission_classes = [permissions.IsAuthenticated]
 
