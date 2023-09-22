@@ -212,7 +212,9 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute="*/1"),
     },
 }
-CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+CONSTANCE_BACKEND = 'constance.backends.redisd.CachingRedisBackend'
+CONSTANCE_REDIS_CONNECTION = os.environ.get('CONSTANCE_REDIS_CONNECTION', 'redis://ngen-redis:6379/1')
+CONSTANCE_REDIS_CACHE_TIMEOUT = os.environ.get('CONSTANCE_REDIS_CACHE_TIMEOUT', 60)
 CONSTANCE_ADDITIONAL_FIELDS = {
     'image_field': ['django.forms.ImageField', {}],
     'priority_field': ['django.forms.fields.ChoiceField', {
