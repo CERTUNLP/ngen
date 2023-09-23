@@ -33,7 +33,7 @@ class NgenAddressModelFilter(BaseFilter):
         - cidr (exact)
         - domain (exact)
         - is_subnet_of (net_contained_or_equal)
-        - is_subdomain_of (domain_is_subdomain_of)
+        - is_subdomain_of (domain_is_equal_or_subdomain_of)
     """
     cidr = django_filters.CharFilter(field_name='cidr', lookup_expr='exact')
     domain = django_filters.CharFilter(
@@ -54,7 +54,7 @@ class NgenAddressModelFilter(BaseFilter):
         """
         Filter by subdomain.
         """
-        return queryset.filter(domain__endswith=f'.{value}')
+        return queryset.filter(domain__endswith=value)
 
 
 class TaxonomyFilter(BaseFilter):
@@ -129,7 +129,7 @@ class CaseFilter(BaseFilter):
         - state (exact)
     """
 
-    date_range = DateFromToRangeFilter(field_name='created')
+    date_range = DateFromToRangeFilter(field_name='date')
     attend_date_range = DateFromToRangeFilter(field_name='attend_date')
     solve_date_range = DateFromToRangeFilter(field_name='solve_date')
 
