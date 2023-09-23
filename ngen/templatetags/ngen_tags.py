@@ -1,6 +1,7 @@
 import base64
 
 from constance import config
+from djangoProject import settings
 from django import template
 from django.template import Template, Context
 
@@ -16,8 +17,7 @@ def render_report_content(html, event):
 
 @register.simple_tag
 def mail_logo():
-    if config.TEAM_LOGO:
-        return encode_static(MEDIA_ROOT + '/200_50_' + config.TEAM_LOGO)
+    return encode_static(settings.LOGO_PATH_200_50)
 
 
 @register.simple_tag

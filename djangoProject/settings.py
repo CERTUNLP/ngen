@@ -10,15 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+import shutil
 from pathlib import Path
 from datetime import timedelta
 
-import PIL
-from PIL import Image
 from celery.schedules import crontab
-from constance import config
-from constance.signals import config_updated
-from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _, gettext_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -178,10 +174,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/api/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 MEDIA_URL = '/api/media/'
 
 # Default primary key field type
@@ -213,6 +209,7 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+CONSTANCE_FILE_ROOT = 'config'
 CONSTANCE_ADDITIONAL_FIELDS = {
     'image_field': ['django.forms.ImageField', {}],
     'priority_field': ['django.forms.fields.ChoiceField', {
@@ -241,7 +238,9 @@ CONSTANCE_CONFIG = {
     'TEAM_ABUSE': (os.environ.get('TEAM_ABUSE'), 'CSIRT abuse email'),
     'TEAM_URL': (os.environ.get('TEAM_URL'), 'CSIRT site url'),
     'TEAM_SITE': (os.environ.get('TEAM_SITE'), 'CSIRT team site'),
-    'TEAM_LOGO': (None, 'CSIRT logo', 'image_field'),
+    'TEAM_LOGO': (os.path.join(CONSTANCE_FILE_ROOT, 'teamlogo.png'), 'Team logo will be saved at \
+                  /api/media/teamlogo.png and generated image of 200x50 pixels \
+                  max for email logo at /api/media/teamlogo_200_50.png', 'image_field'),
     'TEAM_NAME': (os.environ.get('TEAM_NAME'), 'CSIRT name'),
 
     'EMAIL_SENDER': (os.environ.get('EMAIL_SENDER'), 'SMTP sender email address'),
@@ -275,23 +274,16 @@ CONSTANCE_CONFIG = {
 }
 CONSTANCE_CONFIG_PASSWORDS = ['CORTEX_APIKEY']
 
+os.makedirs(os.path.join(MEDIA_ROOT, CONSTANCE_FILE_ROOT), exist_ok=True)
+LOGO_PATH = os.path.join(f'{MEDIA_ROOT}', CONSTANCE_CONFIG['TEAM_LOGO'][0])
+origin_path = os.path.join(f'{STATIC_ROOT}', 'img', 'teamlogo.png')
+if not os.path.exists(LOGO_PATH) and os.path.exists(origin_path):
+    shutil.copy(origin_path, LOGO_PATH)
 
-@receiver(config_updated)
-def team_logo_updated(sender, key, old_value, new_value, **kwargs):
-    if key == 'TEAM_LOGO' and new_value:
-        old_path = os.path.join(f'{MEDIA_ROOT}', f'{old_value}')
-        old_path2 = os.path.join(f'{MEDIA_ROOT}', f'200_50_{old_value}')
-        new_path = os.path.join(f'{MEDIA_ROOT}', f'{new_value}')
-        new_path2 = os.path.join(f'{MEDIA_ROOT}', f'200_50_{new_value}')
-
-        if os.path.exists(old_path):
-            os.remove(old_path)
-
-        if os.path.exists(old_path2):
-            os.remove(old_path2)
-
-        image = Image.open(new_path)
-        image.resize((200, 50)).save(new_path2)
+LOGO_PATH_200_50 = os.path.join(f'{MEDIA_ROOT}', CONSTANCE_FILE_ROOT, 'teamlogo_200_50.png')
+origin_path = os.path.join(f'{STATIC_ROOT}', 'img', 'teamlogo_200_50.png')
+if not os.path.exists(LOGO_PATH_200_50) and os.path.exists(origin_path):
+    shutil.copy(origin_path, LOGO_PATH_200_50)
 
 
 AUTH_USER_MODEL = 'ngen.User'
