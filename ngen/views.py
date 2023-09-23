@@ -44,7 +44,7 @@ class EventViewSet(viewsets.ModelViewSet):
     filter_backends = [backends.MergedModelFilterBackend, filters.SearchFilter,
                        django_filters.rest_framework.DjangoFilterBackend,
                        filters.OrderingFilter]
-    search_fields = ['taxonomy__name', 'feed__name']
+    search_fields = ['taxonomy__name', 'feed__name', 'address_value', 'cidr', 'domain']
     filterset_class = EventFilter
     ordering_fields = ['id', 'date', 'priority', 'reporter']
     serializer_class = serializers.EventSerializer
