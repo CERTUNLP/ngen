@@ -26,7 +26,7 @@ class BaseFilter(django_filters.FilterSet):
     modified_range = DateFromToRangeFilter(field_name='modified')
 
 
-class NgenAddressModelFilter(BaseFilter):
+class NgenAddressModelFilter(django_filters.FilterSet):
     """
     NgenAddressModel model filter.
     Allows to filter by:
@@ -81,7 +81,7 @@ class TaxonomyFilter(BaseFilter):
         }
 
 
-class EventFilter(NgenAddressModelFilter):
+class EventFilter(BaseFilter, NgenAddressModelFilter):
     """
     Event model filter.
     Allows to filter by:
