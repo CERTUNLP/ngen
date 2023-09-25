@@ -15,7 +15,7 @@ class Artifact(NgenModel):
                    ('other', gettext_lazy('Other')), ('user-agent', gettext_lazy('User agent')),
                    ('autonomous-system', gettext_lazy('Autonomous system')))
     type = models.CharField(choices=TYPE, default=TYPE.ip, max_length=20)
-    value = models.CharField(blank=False, null=False, max_length=255, default=None)
+    value = models.CharField(blank=False, null=False, max_length=255, default=None, unique=True)
 
     class Meta:
         db_table = 'artifact'
