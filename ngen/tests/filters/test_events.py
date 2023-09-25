@@ -3,31 +3,26 @@ Django Event filter tests. Tests search_fields and filterset_class.
 """
 import pytz
 from django.utils import timezone
-from rest_framework.test import APITestCase
-from django.urls import reverse
+from ngen.tests.filters.base_filter_test import BaseFilterTest
 from ngen.filters import EventFilter
 
 from ngen.models import Event, Tlp, Priority, Taxonomy, Feed, User, Case
 
 
-class EventFilterTest(APITestCase):
+class EventFilterTest(BaseFilterTest):
     """
     Event filter test class.
     """
 
     fixtures = [
         "priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json",
-        "edge.json", "report.json", "network_entity.json", "network.json", "contact.json",
         "case_template.json",
     ]
 
     @classmethod
     def setUpTestData(cls):
-        basename = "event"
-        cls.url_list = reverse(f"{basename}-list")
-        cls.url_login_jwt = reverse("token-create")
-        cls.json_login = {"username": "ngen", "password": "ngen"}
-        cls.search_url = lambda query: f"{cls.url_list}?search={query}"
+        cls.basename = "event"
+        super().setUpTestData()
 
         cls.feed_1 = Feed.objects.get(pk=1)
         cls.feed_2 = Feed.objects.get(pk=2)
@@ -109,16 +104,6 @@ class EventFilterTest(APITestCase):
             query_params,
             queryset=cls.queryset
         )
-
-    def authenticate(self):
-        """
-        Authenticate user. Only needed for SearchFilter tests.
-        """
-
-        response = self.client.post(
-            self.url_login_jwt, data=self.json_login, format="json")
-        self.client.credentials(
-            HTTP_AUTHORIZATION="Bearer " + response.data["access"])
 
     def test_search_filter(self):
         """
