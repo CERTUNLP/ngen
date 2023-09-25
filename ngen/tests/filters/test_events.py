@@ -1,6 +1,7 @@
 """
 Django Event filter tests. Tests search_fields and filterset_class.
 """
+import datetime
 import pytz
 from django.utils import timezone
 from ngen.tests.filters.base_filter_test import BaseFilterTest
@@ -51,6 +52,7 @@ class EventFilterTest(BaseFilterTest):
         )
         # bypass date auto_now_add
         cls.event_1.date = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
+        cls.event_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
         cls.event_1.save()
 
         cls.event_2 = Event.objects.create(
@@ -180,26 +182,25 @@ class EventFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_after": "2024-01-01",
-            "created_before": "2024-01-02"
+            "created_range_after": "2024-01-01",
+            "created_range_before": "2024-01-02"
         }
 
         filtered_queryset = self.filter(params).qs
 
-        self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.event_1, self.event_2, self.event_3, self.event_4, self.event_5],
-            ordered=False
-        )
+        self.assertQuerysetEqual(filtered_queryset, [self.event_1])
 
     def test_filter_by_modified_range(self):
         """
         Test filter by modified range.
         """
 
+        today = today = datetime.datetime.today()
+        tomorrow = today + datetime.timedelta(days=1)
+
         params = {
-            "modified_after": "2024-01-01",
-            "modified_before": "2024-01-02"
+            "modified_range_after": today.isoformat(),
+            "modified_range_before": tomorrow.isoformat()
         }
 
         filtered_queryset = self.filter(params).qs
