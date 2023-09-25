@@ -304,13 +304,14 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         contacts = []
         priority = self.case.priority.severity if self.case.priority else self.priority.severity
         network = ngen.models.Network.objects.parent_of(self).first()
-        event_contacts = list(network.email_contacts(priority))
-        if event_contacts:
-            return event_contacts
-        else:
-            network_contacts = network.ancestors_email_contacts(priority)
-            if network_contacts:
-                return network_contacts[0]
+        if network:
+            event_contacts = list(network.email_contacts(priority))
+            if event_contacts:
+                return event_contacts
+            else:
+                network_contacts = network.ancestors_email_contacts(priority)
+                if network_contacts:
+                    return network_contacts[0]
         return contacts
 
     @property
