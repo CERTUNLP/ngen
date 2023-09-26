@@ -3,6 +3,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from model_utils import Choices
 
 from .utils import NgenModel
@@ -15,7 +16,7 @@ class Artifact(NgenModel):
                    ('other', gettext_lazy('Other')), ('user-agent', gettext_lazy('User agent')),
                    ('autonomous-system', gettext_lazy('Autonomous system')))
     type = models.CharField(choices=TYPE, default=TYPE.ip, max_length=20)
-    value = models.CharField(blank=False, null=False, max_length=255, default=None, unique=True)
+    value = models.CharField(blank=False, null=False, max_length=255, unique=True)
 
     class Meta:
         db_table = 'artifact'
@@ -44,9 +45,9 @@ class Artifact(NgenModel):
 
 class ArtifactRelation(NgenModel):
     artifact = models.ForeignKey('ngen.Artifact', on_delete=models.CASCADE, related_name='artifact_relation')
-    object_id = models.PositiveIntegerField()
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='artifact_relation')
-    related = GenericForeignKey()
+    object_id = models.PositiveIntegerField()
+    related = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
         db_table = 'artifact_relation'
@@ -54,6 +55,23 @@ class ArtifactRelation(NgenModel):
 
     def __str__(self):
         return "%s -> %s: %s" % (self.artifact, self.content_type.name, self.related)
+
+    def clean(self):
+        super().clean()
+        try:
+            # Check if related object exists
+            obj = self.content_type.get_object_for_this_type(id=self.object_id)
+            parent = getattr(obj, 'parent', None)
+            if parent:
+                # If object has parent, add artifact to his parent also
+                ar = ArtifactRelation(artifact=self.artifact, content_type=self.content_type, object_id=parent.id)
+                ar.save()
+        except ObjectDoesNotExist as e:
+            raise ValidationError("Related object not exists.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class ArtifactRelated(models.Model):
