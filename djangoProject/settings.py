@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'colorfield',
     'comment',
     'drf_spectacular',
+    'generic_relations',
     # django_elasticsearch_dsl added later
 ]
 
@@ -274,25 +275,6 @@ CONSTANCE_CONFIG = {
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
 }
 CONSTANCE_CONFIG_PASSWORDS = ['CORTEX_APIKEY']
-
-
-@receiver(config_updated)
-def team_logo_updated(sender, key, old_value, new_value, **kwargs):
-    if key == 'TEAM_LOGO' and new_value:
-        old_path = os.path.join(f'{MEDIA_ROOT}', f'{old_value}')
-        old_path2 = os.path.join(f'{MEDIA_ROOT}', f'200_50_{old_value}')
-        new_path = os.path.join(f'{MEDIA_ROOT}', f'{new_value}')
-        new_path2 = os.path.join(f'{MEDIA_ROOT}', f'200_50_{new_value}')
-
-        if os.path.exists(old_path):
-            os.remove(old_path)
-
-        if os.path.exists(old_path2):
-            os.remove(old_path2)
-
-        image = Image.open(new_path)
-        image.resize((200, 50)).save(new_path2)
-
 
 AUTH_USER_MODEL = 'ngen.User'
 
