@@ -61,8 +61,8 @@ router.register(r'stringidentifier', views.StringIdentifierViewSet,
 # router.register(r"comments", views.CommentViewSet)
 router.register(r"register", views.RegisterViewSet, basename="register")
 router.register(r'groups', views.GroupViewSet, basename='group')
-router.register(r'permissions', views.PermissionViewSet, basename='permission')
-router.register(r'contenttypes', views.ContentTypeViewSet,
+router.register(r'permission', views.PermissionViewSet, basename='permission')
+router.register(r'contenttype', views.ContentTypeViewSet,
                 basename='contenttype')
 # router.register(r"login", views.LoginViewSet, basename="login")
 
@@ -77,10 +77,10 @@ if settings.ELASTIC_ENABLED:
 urlpatterns = [
     path('api/admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/comments/', comment_views.CommentList.as_view(), name='comment-list'),
-    path('api/comments/create/',
+    path('api/comment/', comment_views.CommentList.as_view(), name='comment-list'),
+    path('api/comment/create/',
          comment_views.CommentCreate.as_view(), name='comment-create'),
-    path('api/comments/<int:pk>/',
+    path('api/comment/<int:pk>/',
          comment_views.CommentDetail.as_view(), name='comment-detail'),
     path('api/token/', TokenObtainPairView.as_view(), name='token-create'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
