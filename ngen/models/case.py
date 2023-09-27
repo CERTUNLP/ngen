@@ -1,4 +1,3 @@
-import datetime
 import uuid as uuid
 from collections import defaultdict
 from email.utils import make_msgid
@@ -13,6 +12,7 @@ from django.core.exceptions import ValidationError
 from django.core.mail import DNS_NAME
 from django.db import models
 from django.utils.translation import gettext_lazy
+from django.utils import timezone
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
 from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
@@ -91,10 +91,10 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         if not self.state:
             self.state = ngen.models.State.get_default()
         if self.state.attended:
-            self.attend_date = datetime.datetime.now()
+            self.attend_date = timezone.now()
             self.solve_date = None
         elif self.state.solved:
-            self.solve_date = datetime.datetime.now()
+            self.solve_date = timezone.now()
 
     @hook(AFTER_CREATE)
     def after_create(self):
@@ -109,11 +109,11 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
     def before_update(self):
         if self.state.attended:
-            self.attend_date = datetime.datetime.now()
+            self.attend_date = timezone.now()
             self.solve_date = None
             self.communicate_open()
         elif self.state.solved:
-            self.solve_date = datetime.datetime.now()
+            self.solve_date = timezone.now()
             self.communicate_close()
         else:
             self.communicate_update()
