@@ -100,9 +100,11 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     def after_create(self):
         if self._temp_events:
             self.events.add(*self._temp_events)
-        self.communicate_new()
         if self.state.attended:
-            self.communicate_open()
+            self.communicate_new_open()
+        else:
+            self.communicate_new()
+
 
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
     def before_update(self):
@@ -117,7 +119,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
             self.communicate_update()
 
     def communicate_new(self):
-        self.communicate(gettext_lazy('New Case'), 'reports/case_base.html')
+        self.communicate(gettext_lazy('New case'), 'reports/case_base.html')
 
     def communicate_close(self):
         self.communicate(gettext_lazy('Case closed'), 'reports/case_base.html')
@@ -125,6 +127,9 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     def communicate_open(self):
         title = 'Case reopened' if self.history.filter(changes__contains='solve_date":').exists() else 'Case opened'
         self.communicate(gettext_lazy(title), 'reports/case_base.html')
+
+    def communicate_new_open(self):
+        self.communicate(gettext_lazy('New open case'), 'reports/case_base.html')
 
     def communicate_update(self):
         self.communicate(gettext_lazy('Case status updated'), 'reports/state_change.html', )
