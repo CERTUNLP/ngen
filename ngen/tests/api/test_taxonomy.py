@@ -101,7 +101,7 @@ class TaxonomyAPITestCase(APITestCase):
         # Assertions for a successful delete (status code 204)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         
-        self.assertFalse(Taxonomy.objects.filter(id=Taxonomy.id).exists())
+        self.assertFalse(Taxonomy.objects.filter(id=taxonomy.id).exists())
 
 
         """
