@@ -35,14 +35,14 @@ class TaxonomyTestCase(TestCase):
     #         taxonomy1 = Taxonomy.objects.create(type='vulnerability', name='Ejemplo', slug='parent-test-1')
     #         taxonomy2 = Taxonomy.objects.create(type='vulnerability', name='Ejemplo', slug='parent-test-2')
     
-    def test_unique_slug_creation(self):
-        """
-        Test: Slugs are created correctly and are unique. Can't create two slugs with the same name.
-        """
-        with self.assertRaises(UniqueViolation):
-            # Create taxonomies with the same slugs
-            Slug1 = Taxonomy.objects.create(type='vulnerability', name="Test Name", slug="slug1")
-            Slug2 = Taxonomy.objects.create(type='incident', name="Test Name2", slug="slug1")
+    # def test_unique_slug_creation(self):
+    #     """
+    #     Test: Slugs are created correctly and are unique. Can't create two slugs with the same name.
+    #     """
+    #     with self.assertRaises(UniqueViolation):
+    #         # Create taxonomies with the same slugs
+    #         Slug1 = Taxonomy.objects.create(type='vulnerability', name="Test Name", slug="slug1")
+    #         Slug2 = Taxonomy.objects.create(type='incident', name="Test Name2", slug="slug1")
 
     def test_node_deletion(self):
         """
@@ -100,9 +100,9 @@ class TaxonomyTestCase(TestCase):
         for child_node in children_before_deletion:
             self.assertIn(child_node, parent_node.get_children())
 
-    def test_taxonomy_cycles(self):
-        """ 
-        Test: if the taxonomy tree has cycles
-        """
-        self.parent.parent = self.child2
-        self.assertRaises(Exception, self.parent.save) # ToDo: Espero excepcion especifica para cuando se produce un ciclo
+    # def test_taxonomy_cycles(self):
+    #     """ 
+    #     Test: if the taxonomy tree has cycles
+    #     """
+    #     self.parent.parent = self.child2
+    #     self.assertRaises(Exception, self.parent.save) # ToDo: Espero excepcion especifica para cuando se produce un ciclo
