@@ -46,11 +46,18 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     lifecycle = models.CharField(choices=LIFECYCLE, default=LIFECYCLE.manual, max_length=20)
-    notification_count = models.PositiveSmallIntegerField(default=1)
+    notification_count = models.PositiveSmallIntegerField(default=0)
     comments = GenericRelation(Comment)
+
+    _temp_events = []
 
     class Meta:
         db_table = 'case'
+
+    def __init__(self, *args, **kwargs):
+        """ Case should receive `events` list to communicate with events on new event """
+        self._temp_events = kwargs.pop('events', [])
+        super().__init__(*args, **kwargs)
 
     def __str__(self):
         return str(self.pk)
@@ -91,9 +98,13 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
 
     @hook(AFTER_CREATE)
     def after_create(self):
-        self.communicate(gettext_lazy('New Case'), 'reports/case_base.html')
+        if self._temp_events:
+            self.events.add(*self._temp_events)
         if self.state.attended:
-            self.communicate_open()
+            self.communicate_new_open()
+        else:
+            self.communicate_new()
+
 
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
     def before_update(self):
@@ -105,7 +116,10 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
             self.solve_date = datetime.datetime.now()
             self.communicate_close()
         else:
-            self.communicate(gettext_lazy('Case status updated'), 'reports/state_change.html', )
+            self.communicate_update()
+
+    def communicate_new(self):
+        self.communicate(gettext_lazy('New case'), 'reports/case_base.html')
 
     def communicate_close(self):
         self.communicate(gettext_lazy('Case closed'), 'reports/case_base.html')
@@ -113,6 +127,12 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
     def communicate_open(self):
         title = 'Case reopened' if self.history.filter(changes__contains='solve_date":').exists() else 'Case opened'
         self.communicate(gettext_lazy(title), 'reports/case_base.html')
+
+    def communicate_new_open(self):
+        self.communicate(gettext_lazy('New open case'), 'reports/case_base.html')
+
+    def communicate_update(self):
+        self.communicate(gettext_lazy('Case status updated'), 'reports/state_change.html', )
 
     @property
     def evidence_events(self):
@@ -195,6 +215,10 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
             recipients.update({'to': [recipient for recipient in team_recipients if recipient]})
             self.send_mail(self.subject(title), self.render_template(template, extra_params=self.template_params),
                            recipients, self.email_attachments, self.email_headers)
+        # Increment and save notification_count
+        # TODO: make communication a class with objects that can be audited
+        self.notification_count += 1
+        self.save()
 
 
 class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated, NgenAddressModel):
@@ -237,11 +261,15 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         if event:
             if self.parent is None:
                 self.parent = event
-        else:
+
+    @hook(AFTER_CREATE)
+    def create_case(self):
+        """ Check if case should be created and create it """
+        if not self.parent:
             template = CaseTemplate.objects.parents_of(self).filter(event_taxonomy=self.taxonomy,
                                                                     event_feed=self.feed).first()
             if template:
-                self.case = template.create_case()
+                self.case = template.create_case(events=[self])
 
     @hook(AFTER_CREATE)
     @hook(AFTER_UPDATE, when="taxonomy", has_changed=True)
@@ -283,14 +311,15 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
     def email_contacts(self):
         contacts = []
         priority = self.case.priority.severity if self.case.priority else self.priority.severity
-        network = ngen.models.Network.objects.parent_of(self)
-        event_contacts = list(network.email_contacts(priority))
-        if event_contacts:
-            return event_contacts
-        else:
-            network_contacts = network.ancestors_email_contacts(priority)
-            if network_contacts:
-                return network_contacts[0]
+        network = ngen.models.Network.objects.parent_of(self).first()
+        if network:
+            event_contacts = list(network.email_contacts(priority))
+            if event_contacts:
+                return event_contacts
+            else:
+                network_contacts = network.ancestors_email_contacts(priority)
+                if network_contacts:
+                    return network_contacts[0]
         return contacts
 
     @property
@@ -375,8 +404,8 @@ class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
     def case_priority(self) -> 'Priority':
         return self.priority
 
-    def create_case(self) -> 'Case':
-        return Case.objects.create(tlp=self.case_tlp, lifecycle=self.case_lifecycle, state=self.case_state, casetemplate_creator=self)
+    def create_case(self, events:list=[]) -> 'Case':
+        return Case.objects.create(tlp=self.case_tlp, lifecycle=self.case_lifecycle, state=self.case_state, casetemplate_creator=self, events=events)
 
     def __str__(self):
         return str(self.id)
