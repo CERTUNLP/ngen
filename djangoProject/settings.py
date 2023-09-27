@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'colorfield',
     'comment',
     'drf_spectacular',
+    'generic_relations',
     # django_elasticsearch_dsl added later
 ]
 
@@ -208,7 +209,10 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute="*/1"),
     },
 }
-CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
+CONSTANCE_BACKEND = 'constance.backends.redisd.CachingRedisBackend'
+CONSTANCE_REDIS_CONNECTION = os.environ.get('CONSTANCE_REDIS_CONNECTION', 'redis://ngen-redis:6379/1')
+CONSTANCE_REDIS_CACHE_TIMEOUT = int(os.environ.get('CONSTANCE_REDIS_CACHE_TIMEOUT', 60))
 CONSTANCE_FILE_ROOT = 'config'
 CONSTANCE_ADDITIONAL_FIELDS = {
     'image_field': ['django.forms.ImageField', {}],
@@ -284,7 +288,6 @@ LOGO_PATH_200_50 = os.path.join(f'{MEDIA_ROOT}', CONSTANCE_FILE_ROOT, 'teamlogo_
 origin_path = os.path.join(f'{STATIC_ROOT}', 'img', 'teamlogo_200_50.png')
 if not os.path.exists(LOGO_PATH_200_50) and os.path.exists(origin_path):
     shutil.copy(origin_path, LOGO_PATH_200_50)
-
 
 AUTH_USER_MODEL = 'ngen.User'
 

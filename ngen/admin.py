@@ -4,6 +4,20 @@ from django.contrib.auth.admin import UserAdmin
 from ngen.models import User
 from ngen.models import *
 
+
+
+
+class NetworkAdmin(admin.ModelAdmin):
+    readonly_fields = ['parent']
+
+class EventAdmin(admin.ModelAdmin):
+    readonly_fields = ['parent']
+
+    def save_model(self, request, obj, form, change):
+        if not obj.reporter:
+            obj.reporter = request.user
+        super().save_model(request, obj, form, change)
+
 # administration
 admin.site.register(Feed)
 admin.site.register(Priority)
@@ -16,37 +30,16 @@ admin.site.register(Announcement)
 # artifact
 admin.site.register(Artifact)
 admin.site.register(ArtifactRelation)
-# admin.site.register(ArtifactRelated)
 admin.site.register(ArtifactEnrichment)
 
 # case
 admin.site.register(Case)
-
-
-class EventAdmin(admin.ModelAdmin):
-    readonly_fields = ['parent']
-
-    def save_model(self, request, obj, form, change):
-        print(obj.reporter, request.user)
-        if not obj.reporter:
-            obj.reporter = request.user
-        super().save_model(request, obj, form, change)
-
-
 admin.site.register(Event, EventAdmin)
 admin.site.register(Evidence)
 admin.site.register(CaseTemplate)
 
 # constituency
-# admin.site.register(NetworkManager)
-
-
-class NetworkAdmin(admin.ModelAdmin):
-    readonly_fields = ['parent']
-
-
 admin.site.register(Network, NetworkAdmin)
-# admin.site.register(Network)
 admin.site.register(Contact)
 admin.site.register(NetworkEntity)
 
@@ -63,12 +56,3 @@ admin.site.register(Report)
 admin.site.register(Playbook)
 admin.site.register(Task)
 admin.site.register(TodoTask)
-
-# utils
-# admin.site.register(NgenModel)
-# admin.site.register(NgenTreeModel)
-# admin.site.register(NgenMergeableModel)
-# admin.site.register(NgenEvidenceMixin)
-# admin.site.register(NgenPriorityMixin)
-# admin.site.register(AddressManager)
-# admin.site.register(NgenAddressModel)

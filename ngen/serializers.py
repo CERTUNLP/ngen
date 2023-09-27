@@ -14,6 +14,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from generic_relations.relations import GenericRelatedField
 
 from ngen import models
 from ngen.models import User
@@ -35,13 +36,14 @@ class GenericRelationField(serializers.RelatedField):
     def to_representation(self, related_list):
         return self.generic_detail_links(related_list)
 
-    def generic_detail_link(self, related, request=None):
-        return self.generic_detail_link(related, request)
+    # def generic_detail_link(self, related, request=None):
+    #     return self.generic_detail_link(related, request)
 
     def generic_detail_links(self, related_list, request=None):
         return [self.generic_detail_link(related, request) for related in related_list]
 
     def generic_detail_link(self, related, request=None):
+        print(related)
         view_name = related.__class__.__name__.lower() + '-detail'
         serializer = serializers.HyperlinkedIdentityField(view_name=view_name)
         return serializer.get_url(obj=related, view_name=view_name,
@@ -374,17 +376,28 @@ class ArtifactSerializer(NgenModelSerializer):
 
 
 class ArtifactRelationSerializer(NgenModelSerializer):
-    related = serializers.SerializerMethodField(read_only=True)
-    content_type = serializers.SerializerMethodField(read_only=True)
+    content_type_description = serializers.SerializerMethodField()
+    content_type = serializers.HyperlinkedRelatedField(
+        view_name='contenttype-detail',
+        read_only=True
+    )
+    related = GenericRelatedField({
+        models.Event: serializers.HyperlinkedRelatedField(
+            queryset = models.Event.objects.all(),
+            view_name='event-detail',
+        ),
+        models.Case: serializers.HyperlinkedRelatedField(
+            queryset = models.Case.objects.all(),
+            view_name='case-detail',
+        ),
+    })
 
     class Meta:
         model = models.ArtifactRelation
-        fields = '__all__'
+        fields = ('url','artifact', 'related', 'content_type', 'content_type_description', 'object_id')
+        read_only_fields = ('content_type', 'object_id', 'content_type_description')
 
-    def get_related(self, obj):
-        return GenericRelationField(read_only=True).generic_detail_link(obj.related, self.context.get('request'))
-
-    def get_content_type(self, obj):
+    def get_content_type_description(self, obj):
         return str(obj.content_type)
 
 
