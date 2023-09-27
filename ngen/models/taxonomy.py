@@ -1,8 +1,7 @@
-from datetime import datetime
-
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy
+from django.utils import timezone
 from django_bleach.models import BleachField
 from model_utils import Choices
 
@@ -90,7 +89,7 @@ class TodoTask(NgenModel):
 
     def save(self, **kwargs):
         if self.completed:
-            self.completed_date = datetime.now()
+            self.completed_date = timezone.now()
         super().save()
 
     class Meta:

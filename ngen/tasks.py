@@ -1,9 +1,8 @@
-import datetime
-
 from celery import shared_task
 from constance import config
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
 from django.utils.translation import gettext_lazy
+from django.utils import timezone
 
 import ngen.models
 from ngen import cortex
@@ -15,9 +14,9 @@ def attend_cases():
         deadline=ExpressionWrapper(F('created') + F('priority__attend_time'),
                                    output_field=DateTimeField())).filter(attend_date__isnull=True,
                                                                          solve_date__isnull=True,
-                                                                         deadline__lte=datetime.datetime.now(),
+                                                                         deadline__lte=timezone.now(),
                                                                          lifecycle__in=['auto', 'auto_open'])
-    cases.update(attend_date=datetime.datetime.now())
+    cases.update(attend_date=timezone.now())
     for case in cases:
         case.communicate_open()
 
@@ -28,9 +27,9 @@ def solve_cases():
         deadline=ExpressionWrapper(F('attend_date') + F('priority__solve_time'),
                                    output_field=DateTimeField())).filter(attend_date__isnull=False,
                                                                          solve_date__isnull=True,
-                                                                         deadline__lte=datetime.datetime.now(),
+                                                                         deadline__lte=timezone.now(),
                                                                          lifecycle__in=['auto', 'auto_close'])
-    cases.update(solve_date=datetime.datetime.now())
+    cases.update(solve_date=timezone.now())
     for case in cases:
         case.communicate_close()
 
@@ -45,7 +44,7 @@ def case_renotification():
         renotification=ExpressionWrapper(F('attend_date') + F('deadline'), output_field=DateTimeField())).filter(
         attend_date__isnull=False,
         solve_date__isnull=True,
-        renotification__lte=datetime.datetime.now(),
+        renotification__lte=timezone.now(),
         notification_count__gte=1)
     cases.update(notification_count=F('notification_count') + 1)
     for case in cases:
