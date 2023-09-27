@@ -6,4 +6,4 @@ class NgenConfig(AppConfig):
     name = "ngen"
 
     def ready(self):
-        from ngen.signals
+        from . import signals

@@ -284,10 +284,12 @@ origin_path = os.path.join(f'{STATIC_ROOT}', 'img', 'teamlogo.png')
 if not os.path.exists(LOGO_PATH) and os.path.exists(origin_path):
     shutil.copy(origin_path, LOGO_PATH)
 
-LOGO_PATH_200_50 = os.path.join(f'{MEDIA_ROOT}', CONSTANCE_FILE_ROOT, 'teamlogo_200_50.png')
+
+LOGO_WIDE_SIZE = (200, 50)
+LOGO_WIDE_PATH = os.path.join(f'{MEDIA_ROOT}', CONSTANCE_FILE_ROOT, 'teamlogo_200_50.png')
 origin_path = os.path.join(f'{STATIC_ROOT}', 'img', 'teamlogo_200_50.png')
-if not os.path.exists(LOGO_PATH_200_50) and os.path.exists(origin_path):
-    shutil.copy(origin_path, LOGO_PATH_200_50)
+if not os.path.exists(LOGO_WIDE_PATH) and os.path.exists(origin_path):
+    shutil.copy(origin_path, LOGO_WIDE_PATH)
 
 AUTH_USER_MODEL = 'ngen.User'
 

@@ -30,9 +30,8 @@ def team_logo_updated(sender, key, old_value, new_value, **kwargs):
                 os.remove(new_file)
 
             image = Image.open(settings.LOGO_PATH)
-            # A max size of 200 x 50
-            image.thumbnail((200,50))
-            image.save(settings.LOGO_PATH_200_50)
+            image.thumbnail(settings.LOGO_WIDE_SIZE)
+            image.save(settings.LOGO_WIDE_PATH)
 
             config.TEAM_LOGO = settings.CONSTANCE_CONFIG['TEAM_LOGO'][0]
 

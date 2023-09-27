@@ -17,7 +17,7 @@ def render_report_content(html, event):
 
 @register.simple_tag
 def mail_logo():
-    return encode_static(settings.LOGO_PATH_200_50)
+    return encode_static(settings.LOGO_WIDE_PATH)
 
 
 @register.simple_tag
