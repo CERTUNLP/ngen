@@ -136,26 +136,3 @@ class StateTestCase(TestCase):
 
 
 
-"""
-        # Create a test Case for state testing
-        case = Case.objects.create(
-        tlp=tlp_instance,  # Replace with the actual Tlp object
-        date=datetime.now(),  # Set the date as needed
-        casetemplate_creator=None,  # Set this field if necessary
-        user_creator=creator_user,  # Set the creator user
-        assigned=assigned_user,  # Set the assigned user
-        state=state,  # Set the state
-        attend_date=None,  # Set attend_date if needed
-        solve_date=None,  # Set solve_date if needed
-        report_message_id=None,  # Set report_message_id if needed
-        raw=None,  # Set raw data if needed
-        uuid=None,  # Set the UUID if needed
-        lifecycle='manual',  # Set the lifecycle as needed
-        notification_count=1,  # Set notification_count as needed
-        
-)
-#
-sudo docker exec -it docker-ngen-django-1 sh
-./manage.py test ngen.tests.models.test_state
-./manage.py test ngen.tests.api.test_state
-"""
