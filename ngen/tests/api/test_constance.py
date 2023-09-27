@@ -47,19 +47,18 @@ class TestConstance(APITestCase):
         self.assertGreaterEqual(len(response.data), 1)
         self.assertGreaterEqual(response.data['count'], 1)
 
-    def test_constance_get_team_email(self):
+    def test_constance_get_team_abuse(self):
         '''
         This will test successfull constance get team email
         '''
-        # url = reverse(self.basename_detail, kwargs={'key': 'TEAM_EMAIL'})
-        response = self.client.get(self.url_detail(key='TEAM_EMAIL'))
+        response = self.client.get(self.url_detail(key='TEAM_ABUSE'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertGreaterEqual(len(response.data), 1)
-        self.assertEqual(response.data['key'], "TEAM_EMAIL")
-        self.assertEqual(response.data['value'], "team@ngen.com")
+        self.assertEqual(response.data['key'], "TEAM_ABUSE")
+        self.assertEqual(response.data['value'], "abuse@ngen.com")
         self.assertEqual(response.data['value_type'], "str")
-        self.assertEqual(response.data['help_text'], "CSIRT team email")
-        self.assertEqual(response.data['default'], "team@ngen.com")
+        self.assertEqual(response.data['help_text'], "CSIRT abuse email")
+        self.assertEqual(response.data['default'], "abuse@ngen.com")
 
     def test_constance_post(self):
         '''
@@ -75,7 +74,6 @@ class TestConstance(APITestCase):
         This will test sucessfull constance put with get param
         '''
         new_value = "test_new_put@test.com"
-        # url = reverse(self.basename_detail, kwargs={'key': 'TEAM_EMAIL'})
         response = self.client.put(self.url_detail(
             key='TEAM_EMAIL'), {"value": new_value})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
