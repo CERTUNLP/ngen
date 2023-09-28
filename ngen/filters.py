@@ -135,8 +135,8 @@ class CaseFilter(BaseFilter):
     attend_date_range = DateFromToRangeFilter(field_name='attend_date')
     solve_date_range = DateFromToRangeFilter(field_name='solve_date')
 
-    cidr = django_filters.CharFilter(label='Event cidr', method='filter_by_cidr')
-    domain = django_filters.CharFilter(label='Event domain', method='filter_by_domain')
+    event_cidr = django_filters.CharFilter(label='Event cidr', method='filter_by_cidr')
+    event_domain = django_filters.CharFilter(label='Event domain', method='filter_by_domain')
 
     def filter_by_cidr(self, queryset, name, value):
         """
