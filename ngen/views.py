@@ -18,6 +18,7 @@ from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
 from ngen.models import StringIdentifier
+from ngen.filters import TaxonomyFilter, EventFilter, CaseFilter
 
 
 class AboutView(TemplateView):
@@ -43,9 +44,9 @@ class EventViewSet(viewsets.ModelViewSet):
     filter_backends = [backends.MergedModelFilterBackend, filters.SearchFilter,
                        django_filters.rest_framework.DjangoFilterBackend,
                        filters.OrderingFilter]
-    search_fields = ['case', 'taxonomy', 'network']
-    filterset_fields = ['taxonomy']
-    ordering_fields = ['id', 'case', 'taxonomy', 'network']
+    search_fields = ['taxonomy__name', 'feed__name', 'address_value', 'cidr', 'domain']
+    filterset_class = EventFilter
+    ordering_fields = ['id', 'date', 'priority', 'reporter']
     serializer_class = serializers.EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -54,23 +55,24 @@ class CaseViewSet(viewsets.ModelViewSet):
     queryset = models.Case.objects.all()
     filter_backends = [
         backends.MergedModelFilterBackend,
-        # filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter]
-    # search_fields = ['taxonomy', 'network']
-    # filterset_fields = ['taxonomy']
-    ordering_fields = ['id']
+    filterset_class = CaseFilter
+    ordering_fields = ['id', 'date', 'attend_date', 'priority']
     serializer_class = serializers.CaseSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class TaxonomyViewSet(viewsets.ModelViewSet):
-    filter_backends = [filters.SearchFilter,
-                       django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
-    search_fields = ['name', 'description']
-    filterset_fields = ['name']
-    ordering_fields = ['name']
     queryset = models.Taxonomy.objects.all()
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['name', 'description']
+    filterset_class = TaxonomyFilter
+    ordering_fields = ['id', 'created', 'modified', 'name']
     serializer_class = serializers.TaxonomySerializer
     permission_classes = [permissions.IsAuthenticated]
 
