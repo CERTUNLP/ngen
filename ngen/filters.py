@@ -4,7 +4,7 @@ Filters for ngen models.
 """
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
-from ngen.models import Taxonomy, Event, Case
+from ngen.models import Taxonomy, Event, Case, Feed
 
 
 class BaseFilter(django_filters.FilterSet):
@@ -165,4 +165,23 @@ class CaseFilter(BaseFilter):
             'parent': ['exact', 'isnull'],
             'assigned': ['exact', 'isnull'],
             'state': ['exact'],
+        }
+
+class FeedFilter(BaseFilter):
+    """
+    Feed model filter.
+    Allows to filter by:
+        - name (icontains)
+        - slug (icontains)
+        - description (icontains)
+        - active (exact)
+    """
+
+    class Meta:
+        model = Feed
+        fields = {
+            'name': ['icontains'],
+            'slug': ['icontains'],
+            'description': ['icontains'],
+            'active': ['exact']
         }

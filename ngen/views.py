@@ -18,7 +18,7 @@ from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
 from ngen.models import StringIdentifier
-from ngen.filters import TaxonomyFilter, EventFilter, CaseFilter
+from ngen.filters import TaxonomyFilter, EventFilter, CaseFilter, FeedFilter
 
 
 class AboutView(TemplateView):
@@ -84,7 +84,15 @@ class ReportViewSet(viewsets.ModelViewSet):
 
 
 class FeedViewSet(viewsets.ModelViewSet):
-    queryset = models.Feed.objects.all()
+    queryset = models.Feed.objects.all().order_by('id')
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['name', 'description']
+    filterset_class = FeedFilter
+    ordering_fields = ['id', 'created', 'modified', 'name' 'slug']
     serializer_class = serializers.FeedSerializer
     permission_classes = [permissions.IsAuthenticated]
 
