@@ -1,5 +1,5 @@
 """
-Django Case filter tests. Tests search_fields and filterset_class.
+Django Feed filter tests. Tests search_fields and filterset_class.
 """
 import datetime
 import pytz
