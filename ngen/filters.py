@@ -4,7 +4,7 @@ Filters for ngen models.
 """
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
-from ngen.models import Taxonomy, Event, Case, Feed
+from ngen.models import Taxonomy, Event, Case, Feed, Tlp
 
 
 class BaseFilter(django_filters.FilterSet):
@@ -184,4 +184,31 @@ class FeedFilter(BaseFilter):
             'slug': ['icontains'],
             'description': ['icontains'],
             'active': ['exact']
+        }
+
+class TlpFilter(BaseFilter):
+    """
+    Tlp model filter.
+    Allows to filter by:
+        - when (icontains)
+        - why (icontains)
+        - information (icontains)
+        - description (icontains)
+        - encrypt (exact)
+        - name (icontains)
+        - slug (icontains)
+        - code (exact)
+    """
+
+    class Meta:
+        model = Tlp
+        fields = {
+            'when': ['icontains'],
+            'why': ['icontains'],
+            'information': ['icontains'],
+            'description': ['icontains'],
+            'encrypt': ['exact'],
+            'name': ['icontains'],
+            'slug': ['icontains'],
+            'code': ['exact']
         }

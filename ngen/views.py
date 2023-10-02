@@ -18,7 +18,7 @@ from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
 from ngen.models import StringIdentifier
-from ngen.filters import TaxonomyFilter, EventFilter, CaseFilter, FeedFilter
+from ngen.filters import TaxonomyFilter, EventFilter, CaseFilter, FeedFilter, TlpFilter
 
 
 class AboutView(TemplateView):
@@ -92,7 +92,7 @@ class FeedViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ['name', 'description']
     filterset_class = FeedFilter
-    ordering_fields = ['id', 'created', 'modified', 'name' 'slug']
+    ordering_fields = ['id', 'created', 'modified', 'name', 'slug']
     serializer_class = serializers.FeedSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -110,7 +110,15 @@ class EdgeViewSet(viewsets.ModelViewSet):
 
 
 class TlpViewSet(viewsets.ModelViewSet):
-    queryset = models.Tlp.objects.all()
+    queryset = models.Tlp.objects.all().order_by('id')
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['name']
+    filterset_class = TlpFilter
+    ordering_fields = ['id', 'created', 'modified', 'name', 'slug', 'code']
     serializer_class = serializers.TlpSerializer
     permission_classes = [permissions.IsAuthenticated]
 
