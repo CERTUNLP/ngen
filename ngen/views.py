@@ -18,7 +18,7 @@ from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
 from ngen.models import StringIdentifier
-from ngen.filters import TaxonomyFilter, EventFilter, CaseFilter, FeedFilter, TlpFilter
+from ngen.filters import PriorityFilter, TaxonomyFilter, EventFilter, CaseFilter, FeedFilter, TlpFilter
 
 
 class AboutView(TemplateView):
@@ -125,6 +125,14 @@ class TlpViewSet(viewsets.ModelViewSet):
 
 class PriorityViewSet(viewsets.ModelViewSet):
     queryset = models.Priority.objects.all()
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['name']
+    filterset_class = PriorityFilter
+    ordering_fields = ['id', 'created', 'modified', 'name', 'slug', 'severity']
     serializer_class = serializers.PrioritySerializer
     permission_classes = [permissions.IsAuthenticated]
 

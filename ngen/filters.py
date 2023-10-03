@@ -4,7 +4,7 @@ Filters for ngen models.
 """
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
-from ngen.models import Taxonomy, Event, Case, Feed, Tlp
+from ngen.models import Taxonomy, Event, Case, Feed, Tlp, Priority
 
 
 class BaseFilter(django_filters.FilterSet):
@@ -211,4 +211,27 @@ class TlpFilter(BaseFilter):
             'name': ['icontains'],
             'slug': ['icontains'],
             'code': ['exact']
+        }
+
+class PriorityFilter(BaseFilter):
+    """
+    Priority model filter.
+    Allows to filter by:
+        - name (icontains)
+        - slug (icontains)
+        - severity (exact)
+        - attend_time (exact)
+        - solve_time (exact)
+        - notification_amount (exact)
+    """
+
+    class Meta:
+        model = Priority
+        fields = {
+            'name': ['icontains'],
+            'slug': ['icontains'],
+            'severity': ['exact'],
+            'attend_time': ['exact'],
+            'solve_time': ['exact'],
+            'notification_amount': ['exact']
         }
