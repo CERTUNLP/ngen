@@ -221,22 +221,15 @@ tinycss2==1.1.1
     #   bleach
 tld==0.12.6
     # via -r requirements.in
-tomli==2.0.1
-    # via
-    #   build
-    #   pip-tools
-    #   pyproject-hooks
 typing==3.7.4.3
     # via cortex4py
-typing-extensions==4.8.0
-    # via asgiref
 tzdata==2023.3
     # via
     #   celery
     #   django-celery-beat
 uritemplate==4.1.1
     # via drf-spectacular
-urllib3==1.26.16
+urllib3==1.26.17
     # via
     #   elasticsearch
     #   requests
