@@ -131,7 +131,7 @@ class TlpFilterTest(BaseFilterTest):
             [self.tlp_1, self.tlp_2, self.tlp_3],
             ordered=False
         )
-    
+
     def test_filter_by_when(self):
         """
         Test filter by when.
@@ -241,7 +241,7 @@ class TlpFilterTest(BaseFilterTest):
 
         self.assertQuerysetEqual(
             filtered_queryset, [self.tlp_1, self.tlp_3], ordered=False)
-    
+
     def test_filter_by_name(self):
         """
         Test filter by name.
