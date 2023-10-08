@@ -18,7 +18,9 @@ from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
 from ngen.models import StringIdentifier
-from ngen.filters import PriorityFilter, TaxonomyFilter, EventFilter, CaseFilter, FeedFilter, TlpFilter
+from ngen.filters import (
+    PriorityFilter, TaxonomyFilter, EventFilter, CaseFilter, FeedFilter, TlpFilter, UserFilter
+)
 
 
 class AboutView(TemplateView):
@@ -166,7 +168,15 @@ class ContactViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = models.User.objects.all()
+    queryset = models.User.objects.all().order_by('id')
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['username', 'email', 'first_name', 'last_name']
+    filterset_class = UserFilter
+    ordering_fields = ['id', 'created', 'modified', 'username', 'email', 'priority']
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 

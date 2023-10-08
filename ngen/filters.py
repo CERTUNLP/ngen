@@ -4,7 +4,7 @@ Filters for ngen models.
 """
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
-from ngen.models import Taxonomy, Event, Case, Feed, Tlp, Priority
+from ngen.models import Taxonomy, Event, Case, Feed, Tlp, Priority, User
 
 
 class BaseFilter(django_filters.FilterSet):
@@ -135,8 +135,10 @@ class CaseFilter(BaseFilter):
     attend_date_range = DateFromToRangeFilter(field_name='attend_date')
     solve_date_range = DateFromToRangeFilter(field_name='solve_date')
 
-    event_cidr = django_filters.CharFilter(label='Event cidr', method='filter_by_cidr')
-    event_domain = django_filters.CharFilter(label='Event domain', method='filter_by_domain')
+    event_cidr = django_filters.CharFilter(
+        label='Event cidr', method='filter_by_cidr')
+    event_domain = django_filters.CharFilter(
+        label='Event domain', method='filter_by_domain')
 
     def filter_by_cidr(self, queryset, name, value):
         """
@@ -149,7 +151,6 @@ class CaseFilter(BaseFilter):
         Filter by domain, matches a domain or subdomains.
         """
         return queryset.filter(events__domain__endswith=value)
-
 
     class Meta:
         model = Case
@@ -166,6 +167,7 @@ class CaseFilter(BaseFilter):
             'assigned': ['exact', 'isnull'],
             'state': ['exact'],
         }
+
 
 class FeedFilter(BaseFilter):
     """
@@ -185,6 +187,7 @@ class FeedFilter(BaseFilter):
             'description': ['icontains'],
             'active': ['exact']
         }
+
 
 class TlpFilter(BaseFilter):
     """
@@ -213,6 +216,7 @@ class TlpFilter(BaseFilter):
             'code': ['exact']
         }
 
+
 class PriorityFilter(BaseFilter):
     """
     Priority model filter.
@@ -234,4 +238,34 @@ class PriorityFilter(BaseFilter):
             'attend_time': ['exact'],
             'solve_time': ['exact'],
             'notification_amount': ['exact']
+        }
+
+
+class UserFilter(BaseFilter):
+    """
+    User model filter.
+    Allows to filter by:
+        - username (icontains)
+        - email (icontains)
+        - first_name (icontains)
+        - last_name (icontains)
+        - is_superuser (exact)
+        - is_staff (exact)
+        - is_active (exact)
+        - date_joined (exact)
+        - last_login (exact)
+    """
+
+    class Meta:
+        model = User
+        fields = {
+            'username': ['icontains'],
+            'email': ['icontains'],
+            'first_name': ['icontains'],
+            'last_name': ['icontains'],
+            'is_superuser': ['exact'],
+            'is_staff': ['exact'],
+            'is_active': ['exact'],
+            'date_joined': ['exact'],
+            'last_login': ['exact'],
         }
