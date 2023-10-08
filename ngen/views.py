@@ -19,7 +19,7 @@ from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
 from ngen.models import StringIdentifier
 from ngen.filters import (
-    PriorityFilter, TaxonomyFilter, EventFilter, CaseFilter, FeedFilter, TlpFilter, UserFilter
+    CaseTemplateFilter, PriorityFilter, TaxonomyFilter, EventFilter, CaseFilter, FeedFilter, TlpFilter, UserFilter
 )
 
 
@@ -140,7 +140,15 @@ class PriorityViewSet(viewsets.ModelViewSet):
 
 
 class CaseTemplateViewSet(viewsets.ModelViewSet):
-    queryset = models.CaseTemplate.objects.all()
+    queryset = models.CaseTemplate.objects.all().order_by('id')
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['cidr', 'domain']
+    filterset_class = CaseTemplateFilter
+    ordering_fields = ['id', 'created', 'modified', 'cidr', 'domain', 'priority']
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
