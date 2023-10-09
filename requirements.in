@@ -1,17 +1,17 @@
 cortex4py==2.1.0
-# django-constance dependency to 4.1 required, can be canched to 4.2 when django-constance 3.0.0 is released
+# django-constance dependency to 4.1 required, can be chanched to 4.2 when django-constance 3.0.0 is released
 django==4.1.10
 django-auditlog==2.3.0
 django-bleach==3.0.0
 django-celery-beat==2.5.0
 django-celery-email==3.0.0
 django-celery-results==2.4.0
-django-colorfield==0.7.2
+django-colorfield==0.10.1
 django-comments-dab==2.7.1
 django-constance==3.1.0
 django-cors-headers==3.12.0
 django-debug-toolbar==3.4.0
-django-elasticsearch-dsl-drf==0.22.4
+django-elasticsearch-dsl-drf==0.22.5
 django-extensions==3.1.5
 django-filter==21.1
 django-jsonfield-backport==1.0.5
@@ -23,7 +23,7 @@ django-treebeard==4.5.1
 drf-spectacular==0.26.4
 pip-chill==1.0.1
 pip-tools==7.3.0
-psycopg2-binary==2.9.5
+psycopg2-binary==2.9.9
 pyjwt==2.4.0
 redis==4.4.4
 tinycss2==1.1.1
@@ -31,3 +31,5 @@ tld==0.12.6
 validators==0.19.0
 djangorestframework-simplejwt==5.2.2
 rest-framework-generic-relations==2.1.0
+urllib3==1.26.17
+pillow==10.0.1
