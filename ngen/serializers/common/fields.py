@@ -16,7 +16,6 @@ class GenericRelationField(serializers.RelatedField):
         return [self.generic_detail_link(related, request) for related in related_list]
 
     def generic_detail_link(self, related, request=None):
-        print(related)
         view_name = related.__class__.__name__.lower() + '-detail'
         serializer = serializers.HyperlinkedIdentityField(view_name=view_name)
         return serializer.get_url(obj=related, view_name=view_name,
