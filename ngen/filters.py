@@ -1,4 +1,4 @@
-# pylint: disable=locally-disabled, missing-class-docstring, too-few-public-methods
+# pylint: disable=locally-disabled, missing-class-docstring, too-few-public-methods, unused-argument
 """
 Filters for ngen models.
 """
@@ -66,7 +66,9 @@ class TaxonomyFilter(BaseFilter):
         - description (icontains)
         - active (exact)
         - type (exact)
-        - parent (exact, isnull)
+        - playbooks (exact)
+        - parent (exact, isnull),
+        - children (exact, isnull)
     """
 
     class Meta:
@@ -77,7 +79,9 @@ class TaxonomyFilter(BaseFilter):
             'description': ['icontains'],
             'active': ['exact'],
             'type': ['exact'],
+            'playbooks': ['exact'],
             'parent': ['exact', 'isnull'],
+            'children': ['exact', 'isnull']
         }
 
 
