@@ -2,10 +2,10 @@ from rest_framework import serializers
 from rest_framework.fields import CharField
 
 from ngen import models
-from ngen.serializers.utils.mixins import NgenModelSerializer
+from ngen.serializers.common.mixins import AuditSerializerMixin
 
 
-class TaxonomySerializer(NgenModelSerializer):
+class TaxonomySerializer(AuditSerializerMixin):
     reports = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -23,7 +23,7 @@ class TaxonomySerializer(NgenModelSerializer):
         read_only_fields = ['slug']
 
 
-class ReportSerializer(NgenModelSerializer):
+class ReportSerializer(AuditSerializerMixin):
     problem = CharField(style={'base_template': 'textarea.html', 'rows': 10})
     derived_problem = CharField(
         style={'base_template': 'textarea.html', 'rows': 10}, allow_null=True)
@@ -39,7 +39,7 @@ class ReportSerializer(NgenModelSerializer):
         fields = '__all__'
 
 
-class PlaybookSerializer(NgenModelSerializer):
+class PlaybookSerializer(AuditSerializerMixin):
     tasks = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -51,13 +51,13 @@ class PlaybookSerializer(NgenModelSerializer):
         fields = '__all__'
 
 
-class TaskSerializer(NgenModelSerializer):
+class TaskSerializer(AuditSerializerMixin):
     class Meta:
         model = models.Task
         fields = '__all__'
 
 
-class TodoTaskSerializer(NgenModelSerializer):
+class TodoTaskSerializer(AuditSerializerMixin):
     class Meta:
         model = models.TodoTask
         fields = '__all__'

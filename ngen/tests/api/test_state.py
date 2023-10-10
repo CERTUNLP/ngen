@@ -1,4 +1,4 @@
-from ngen.models import State, NgenModel, User  
+from ngen.models import State, AuditModelMixin, User
 from datetime import datetime, timedelta
 from django.urls import include, path, reverse
 from rest_framework.test import APITestCase, URLPatternsTestCase

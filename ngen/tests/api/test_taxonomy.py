@@ -1,5 +1,5 @@
 
-from ngen.models import Taxonomy, NgenModel, NgenTreeModel, User  
+from ngen.models import Taxonomy, AuditModelMixin, TreeModelMixin, User
 from datetime import datetime, timedelta
 from django.urls import include, path, reverse
 from rest_framework.test import APITestCase, URLPatternsTestCase

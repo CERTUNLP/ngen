@@ -16,19 +16,18 @@ from django.utils import timezone
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
 from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
-from auditlog.models import LogEntry
 
 import ngen
 from ngen.models.announcement import Communication
-from . import ArtifactRelated, Priority
-from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel, NgenAddressModel
+from . import Priority
+from .common.mixins import MergeModelMixin, AddressModelMixin, ArtifactRelatedMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin
 from ..storage import HashedFilenameStorage
 
 LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
     'auto_open', gettext_lazy('Auto open')), ('auto_close', gettext_lazy('Auto close')))
 
 
-class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, ArtifactRelated, Communication):
+class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMixin, ArtifactRelatedMixin, Communication):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -221,7 +220,7 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         self.save()
 
 
-class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated, NgenAddressModel):
+class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin, AddressModelMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -339,7 +338,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         return self.mergeable
 
 
-class Evidence(NgenModel):
+class Evidence(AuditModelMixin):
     def directory_path(self, filename=None):
         return '%s/%s' % (self.get_related().evidence_path(), filename)
 
@@ -372,7 +371,7 @@ class Evidence(NgenModel):
         self.file.storage.delete(self.file.name)
 
 
-class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
+class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin):
     event_taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
     event_feed = models.ForeignKey('ngen.Feed', models.PROTECT)
 

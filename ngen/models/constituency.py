@@ -4,7 +4,8 @@ from django.utils.translation import gettext_lazy
 from django.core.exceptions import ValidationError
 from model_utils import Choices
 
-from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin, NgenAddressModel, AddressManager
+from .common.mixins import AddressManager
+from ngen.models.common.mixins import AuditModelMixin, PriorityModelMixin, AddressModelMixin, TreeModelMixin
 
 
 class NetworkManager(AddressManager):
@@ -35,7 +36,7 @@ class NetworkManager(AddressManager):
         return self.defaults_domain()[:1]
 
 
-class Network(NgenModel, NgenTreeModel, NgenAddressModel):
+class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin):
     contacts = models.ManyToManyField('ngen.Contact', blank=True)
     active = models.BooleanField(default=True)
     TYPE = Choices(('internal', gettext_lazy('Internal')), ('external', gettext_lazy('External')))
@@ -91,7 +92,7 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
         return self.contacts.filter(type='email').filter(priority__severity__gte=priority)
 
 
-class Contact(NgenModel, NgenPriorityMixin):
+class Contact(AuditModelMixin, PriorityModelMixin):
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
     public_key = models.CharField(max_length=4000, null=True)
@@ -114,7 +115,7 @@ class Contact(NgenModel, NgenPriorityMixin):
         ordering = ['username']
 
 
-class NetworkEntity(NgenModel):
+class NetworkEntity(AuditModelMixin):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
     active = models.BooleanField(default=True)

@@ -1,7 +1,10 @@
+from constance import config
+from django.utils.translation import gettext
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
-class NgenModelSerializer(serializers.HyperlinkedModelSerializer):
+class AuditSerializerMixin(serializers.HyperlinkedModelSerializer):
     history = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -9,7 +12,7 @@ class NgenModelSerializer(serializers.HyperlinkedModelSerializer):
     )
 
 
-class EvidenceSerializerMixin(NgenModelSerializer):
+class EvidenceSerializerMixin(AuditSerializerMixin):
 
     def update(self, instance, validated_data):
         files = self.context.get('request').FILES

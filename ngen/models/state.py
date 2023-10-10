@@ -1,10 +1,10 @@
 from django.db import models
 from django.utils.text import slugify
 
-from .utils import NgenModel
+from ngen.models.common.mixins import AuditModelMixin
 
 
-class State(NgenModel):
+class State(AuditModelMixin):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     blocked = models.BooleanField(default=False)
@@ -68,7 +68,7 @@ class State(NgenModel):
         db_table = 'state'
 
 
-class Edge(NgenModel):
+class Edge(AuditModelMixin):
     parent = models.ForeignKey(State, models.CASCADE, related_name='children_edge')
     child = models.ForeignKey(State, models.CASCADE, related_name='parents_edge')
     discr = models.CharField(max_length=255)

@@ -1,17 +1,17 @@
 from colorfield.serializers import ColorField
 
 from ngen import models
-from ngen.serializers.utils.mixins import NgenModelSerializer
+from ngen.serializers.common.mixins import AuditSerializerMixin
 
 
-class FeedSerializer(NgenModelSerializer):
+class FeedSerializer(AuditSerializerMixin):
     class Meta:
         model = models.Feed
         fields = '__all__'
         read_only_fields = ['slug']
 
 
-class TlpSerializer(NgenModelSerializer):
+class TlpSerializer(AuditSerializerMixin):
     color = ColorField()
 
     class Meta:
@@ -20,7 +20,7 @@ class TlpSerializer(NgenModelSerializer):
         read_only_fields = ['slug']
 
 
-class PrioritySerializer(NgenModelSerializer):
+class PrioritySerializer(AuditSerializerMixin):
     color = ColorField()
 
     class Meta:

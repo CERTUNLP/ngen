@@ -1,4 +1,4 @@
-from ngen.models import NgenModel, User, administration, Priority, Tlp, Feed, config
+from ngen.models import AuditModelMixin, User, administration, Priority, Tlp, Feed, config
 from datetime import datetime, timedelta
 from django.urls import include, path, reverse
 from rest_framework.test import APITestCase, URLPatternsTestCase

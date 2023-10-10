@@ -1,200 +1,31 @@
 import ipaddress
-import re
 
 from auditlog.models import AuditlogHistoryField
+from constance import config
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Length
 from django.utils.translation import gettext
-from django_lifecycle import hook, BEFORE_DELETE, BEFORE_UPDATE, LifecycleModelMixin, BEFORE_CREATE
+from django_lifecycle import LifecycleModelMixin, hook, BEFORE_UPDATE, BEFORE_CREATE, BEFORE_DELETE
 from model_utils.models import TimeStampedModel
-from netfields import CidrAddressField, NetManager
-from django.core.exceptions import ValidationError
+from netfields import NetManager, CidrAddressField
 from treebeard.al_tree import AL_Node
-from constance import config
-from enum import Enum
-from urllib.parse import urlparse
 
 import ngen
+from .parsing import StringIdentifier, StringType
 
 
-class StringType(str, Enum):
-    IP4HOST = 'IP4HOST'
-    IP4NET = 'IP4NET'
-    IP4DEFAULT = 'IP4DEFAULT'
-    IP6HOST = 'IP6HOST'
-    IP6NET = 'IP6NET'
-    IP6DEFAULT = 'IP6DEFAULT'
-    IP = 'IP'
-    CIDR = 'CIDR'
-    FQDN = 'FQDN'
-    DOMAIN = 'DOMAIN'
-    URL = 'URL'
-    EMAIL = 'EMAIL'
-    HASH = 'HASH'
-    FILE = 'FILE'
-    USERAGENT = 'USERAGENT'
-    ASN = 'ASN'
-    SYSTEM = 'SYSTEM'
-    OTHER = 'OTHER'
-    UNKNOWN = 'UNKNOWN'
-
-
-class StringIdentifier():
-    regex_map = {
-        StringType.DOMAIN: r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$',
-        StringType.URL: r'\bhttps?://[^\s/$.?#].[^\s]*\b',
-        StringType.EMAIL: r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b',
-    }
-    network_map = {
-        StringType.IP4HOST: StringType.CIDR,
-        StringType.IP4NET: StringType.CIDR,
-        StringType.IP4DEFAULT: StringType.CIDR,
-        StringType.IP6HOST: StringType.CIDR,
-        StringType.IP6NET: StringType.CIDR,
-        StringType.IP6DEFAULT: StringType.CIDR,
-        StringType.IP: StringType.CIDR,
-        StringType.CIDR: StringType.CIDR,
-        StringType.FQDN: StringType.DOMAIN,
-        StringType.DOMAIN: StringType.DOMAIN,
-        StringType.URL: StringType.UNKNOWN,
-        StringType.EMAIL: StringType.UNKNOWN,
-        StringType.HASH: StringType.UNKNOWN,
-        StringType.FILE: StringType.UNKNOWN,
-        StringType.USERAGENT: StringType.UNKNOWN,
-        StringType.ASN: StringType.UNKNOWN,
-        StringType.SYSTEM: StringType.UNKNOWN,
-        StringType.OTHER: StringType.UNKNOWN,
-        StringType.UNKNOWN: StringType.UNKNOWN,
-    }
-    artifact_map = {
-        StringType.IP4HOST: StringType.IP,
-        StringType.IP4NET: StringType.IP,
-        StringType.IP4DEFAULT: StringType.IP,
-        StringType.IP6HOST: StringType.IP,
-        StringType.IP6NET: StringType.IP,
-        StringType.IP6DEFAULT: StringType.IP,
-        StringType.IP: StringType.IP,
-        StringType.CIDR: StringType.IP,
-        StringType.FQDN: StringType.FQDN,
-        StringType.DOMAIN: StringType.DOMAIN,
-        StringType.URL: StringType.URL,
-        StringType.EMAIL: StringType.EMAIL,
-        StringType.HASH: StringType.HASH,
-        StringType.FILE: StringType.FILE,
-        StringType.USERAGENT: StringType.USERAGENT,
-        StringType.ASN: StringType.ASN,
-        StringType.SYSTEM: StringType.SYSTEM,
-        StringType.OTHER: StringType.OTHER,
-        StringType.UNKNOWN: StringType.OTHER,
-    }
-
-    def __init__(self, input_string: str, **kwargs):
-        self.input_string = input_string
-        self.input_type = StringType.UNKNOWN
-        self.parsed_string = None
-        self.parsed_type = StringType.UNKNOWN
-        self.network_type = StringType.UNKNOWN
-        self.artifact_type = StringType.UNKNOWN
-        self.parsed_obj = None
-        self._identify(self.input_string)
-
-    def _identify(self, input_string: str):
-        self.input_string = input_string
-        g = StringIdentifier.guess(input_string)
-        self.input_type = g
-
-        if g in StringIdentifier.get_network_address_types():
-            self.parsed_string = input_string
-            self.parsed_type = g
-        elif g == StringType.URL:
-            self.parsed_string = urlparse(input_string).hostname
-            self.parsed_type = StringIdentifier.guess(self.parsed_string)
-        elif g == StringType.EMAIL:
-            self.parsed_string = input_string.split('@')[1]
-            self.parsed_type = StringType.DOMAIN
-
-        if self.parsed_string and self.parsed_type in self.__class__.get_cidr_address_types():
-            self.parsed_obj = ipaddress.ip_network(self.parsed_string)
-            self.parsed_string = self.parsed_obj.compressed
-
-        self.network_type = StringIdentifier.map_type_network(
-            self.parsed_type)
-        self.artifact_type = StringIdentifier.map_type_artifact(
-            self.input_type)
-
-    @classmethod
-    def match_regex(cls, typ, input_string):
-        return re.match(cls.regex_map[typ], input_string) != None
-
-    @classmethod
-    def all_network_types(cls):
-        seen = set()
-        return [x for x in cls.network_map.values() if not (x in seen or seen.add(x))]
-
-    @classmethod
-    def all_artifact_types(cls):
-        seen = set()
-        return [x for x in cls.artifact_map.values() if not (x in seen or seen.add(x))]
-
-    @classmethod
-    def get_network_address_types(cls):
-        return cls.get_cidr_address_types() + cls.get_domain_address_types()
-
-    @classmethod
-    def get_cidr_address_types(cls):
-        return [StringType.IP4HOST, StringType.IP4NET, StringType.IP4DEFAULT,
-                StringType.IP6HOST, StringType.IP6NET, StringType.IP6DEFAULT,
-                StringType.IP, StringType.CIDR]
-
-    @classmethod
-    def get_domain_address_types(cls):
-        return [StringType.DOMAIN, StringType.FQDN]
-
-    @classmethod
-    def guess(cls, input_string):
-        try:
-            cidr = ipaddress.ip_network(input_string)
-            if cidr.version == 4:
-                if cidr.prefixlen == 32:
-                    return StringType.IP4HOST
-                elif cidr.prefixlen == 0:
-                    cidr.prefixlen
-                    return StringType.IP4DEFAULT
-                else:
-                    return StringType.IP4NET
-            else:
-                if cidr.prefixlen == 128:
-                    return StringType.IP6HOST
-                elif cidr.prefixlen == 0:
-                    return StringType.IP6DEFAULT
-                else:
-                    return StringType.IP6NET
-        except ValueError:
-            for typ, pattern in cls.regex_map.items():
-                if re.match(pattern, input_string):
-                    return typ
-
-        return StringType.UNKNOWN
-
-    @classmethod
-    def map_type_network(cls, string_type):
-        return cls.network_map[string_type]
-
-    @classmethod
-    def map_type_artifact(cls, string_type):
-        return cls.artifact_map[string_type]
-
-
-class NgenModel(TimeStampedModel):
+class AuditModelMixin(TimeStampedModel):
     history = AuditlogHistoryField()
 
     class Meta:
         abstract = True
 
 
-class NgenTreeModel(AL_Node):
+class TreeModelMixin(AL_Node):
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True,
                                blank=True, db_index=True, related_name='children')
 
@@ -239,7 +70,7 @@ class NgenTreeModel(AL_Node):
         pass
 
 
-class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
+class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
     class Meta:
         abstract = True
 
@@ -255,7 +86,7 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
     def merged(self) -> bool:
         return self.is_child()
 
-    def mergeable_with(self, child: 'NgenMergeableModel') -> bool:
+    def mergeable_with(self, child: 'MergeModelMixin') -> bool:
         if self.uuid == child.uuid:
             raise ValidationError(
                 {'parent': gettext('The parent must not be the same instance.')})
@@ -267,7 +98,7 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
                 gettext('The child is not mergeable or is blocked.'))
         return True
 
-    def merge(self, child: 'NgenMergeableModel'):
+    def merge(self, child: 'MergeModelMixin'):
         for child in child.children.all():
             self.children.add(child)
 
@@ -287,7 +118,7 @@ class NgenMergeableModel(LifecycleModelMixin, NgenTreeModel):
             child.delete()
 
 
-class NgenEvidenceMixin(models.Model):
+class EvidenceModelMixin(models.Model):
     evidence = GenericRelation('ngen.Evidence')
     _files = []
 
@@ -297,10 +128,10 @@ class NgenEvidenceMixin(models.Model):
     def delete(self, using=None, keep_parents=False):
         for evidence in self.evidence.all():
             evidence.delete()
-        super(NgenEvidenceMixin, self).delete()
+        super(EvidenceModelMixin, self).delete()
 
     def save(self, **kwargs):
-        super(NgenEvidenceMixin, self).save()
+        super(EvidenceModelMixin, self).save()
         for file in self.files:
             self.add_evidence(file)
 
@@ -319,7 +150,7 @@ class NgenEvidenceMixin(models.Model):
         self._files = files
 
 
-class NgenPriorityMixin(models.Model):
+class PriorityModelMixin(models.Model):
     priority = models.ForeignKey('Priority', models.PROTECT)
 
     class Meta:
@@ -343,14 +174,14 @@ class AddressManager(NetManager):
             partition = partition.partition('.')[-1]
         return self.filter(query).order_by(Length('domain').desc())
 
-    def parents_of(self, address: 'NgenAddressModel'):
+    def parents_of(self, address: 'AddressModelMixin'):
         if address.cidr:
             return self.cidr_parents_of(str(address.address))
         elif address.domain:
             return self.domain_parents_of(str(address.address))
         return self.none()
 
-    def parent_of(self, address: 'NgenAddressModel'):
+    def parent_of(self, address: 'AddressModelMixin'):
         return self.parents_of(address)
 
     def defaults(self):
@@ -366,7 +197,7 @@ class AddressManager(NetManager):
         return self.filter(domain='*')
 
 
-class NgenAddressModel(models.Model):
+class AddressModelMixin(models.Model):
     cidr = CidrAddressField(null=True, default=None, blank=True)
     domain = models.CharField(
         max_length=255, null=True, default=None, blank=True)
@@ -442,16 +273,16 @@ class NgenAddressModel(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
-    def __eq__(self, other: 'NgenAddressModel'):
-        if isinstance(other, NgenAddressModel):
+    def __eq__(self, other: 'AddressModelMixin'):
+        if isinstance(other, AddressModelMixin):
             return self.address == other.address
 
     def __str__(self):
         return self.address.network_string()
 
-    def __contains__(self, other: 'NgenAddressModel'):
+    def __contains__(self, other: 'AddressModelMixin'):
         # b.address._address.subnet_of(a.address._address)
-        if isinstance(other, NgenAddressModel):
+        if isinstance(other, AddressModelMixin):
             return other.address in self.address
 
     def __hash__(self) -> int:
@@ -603,3 +434,39 @@ class NgenAddressModel(models.Model):
             # if self.is_default():
             #     return '*/0'
             # return f'{self.address}/{self.address_mask()}'
+
+
+class ArtifactRelatedMixin(models.Model):
+    artifact_relation = GenericRelation('ngen.ArtifactRelation', related_query_name='%(class)ss')
+
+    class Meta:
+        abstract = True
+
+    @property
+    def enrichable(self):
+        return True
+
+    @property
+    def artifacts(self):
+        return ngen.models.Artifact.objects.filter(artifact_relation__in=self.artifact_relation.all()).order_by('id')
+
+    def save(self, *args, **kwargs):
+        super(ArtifactRelatedMixin, self).save(*args, **kwargs)
+        self.artifact_update()
+
+    def artifact_update(self):
+        if self.enrichable:
+            self.artifact_relation.all().delete()
+            for artifact_type, artifact_values in self.artifacts_dict.items():
+                if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
+                    for artifact_value in artifact_values:
+                        artifact, created = ngen.models.Artifact.objects.get_or_create(type=artifact_type, value=artifact_value)
+                        ngen.models.ArtifactRelation.objects.get_or_create(artifact=artifact,
+                                                               content_type=ContentType.objects.get_for_model(self),
+                                                               object_id=self.id)
+                        if not created:
+                            artifact.enrich()
+
+    @property
+    def artifacts_dict(self) -> dict[str, list]:
+        raise NotImplementedError

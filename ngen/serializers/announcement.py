@@ -2,10 +2,10 @@ from rest_framework import serializers
 from rest_framework.fields import CharField
 
 from ngen import models
-from ngen.serializers.utils.mixins import NgenModelSerializer, EvidenceSerializerMixin
+from ngen.serializers.common.mixins import AuditSerializerMixin, EvidenceSerializerMixin
 
 
-class AnnouncementSerializer(EvidenceSerializerMixin, NgenModelSerializer):
+class AnnouncementSerializer(EvidenceSerializerMixin, AuditSerializerMixin):
     body = CharField(style={'base_template': 'textarea.html', 'rows': 10})
     evidence = serializers.HyperlinkedRelatedField(
         many=True,
@@ -18,7 +18,7 @@ class AnnouncementSerializer(EvidenceSerializerMixin, NgenModelSerializer):
         fields = '__all__'
 
 
-class CommentSerializer(NgenModelSerializer):
+class CommentSerializer(AuditSerializerMixin):
     class Meta:
         model = models.Comment
         exclude = ['content_type', 'object_id']

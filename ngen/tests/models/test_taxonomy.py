@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
-from ngen.models import Taxonomy, NgenModel, NgenTreeModel  # Import your models
+from ngen.models import Taxonomy, AuditModelMixin, TreeModelMixin  # Import your models
 from django.db.utils import IntegrityError
 from psycopg2.errors import UniqueViolation
 

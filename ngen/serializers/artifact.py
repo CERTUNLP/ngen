@@ -2,17 +2,17 @@ from generic_relations.relations import GenericRelatedField
 from rest_framework import serializers
 
 from ngen import models
-from ngen.serializers.utils.fields import GenericRelationField
-from ngen.serializers.utils.mixins import NgenModelSerializer
+from ngen.serializers.common.fields import GenericRelationField
+from ngen.serializers.common.mixins import AuditSerializerMixin
 
 
-class ArtifactEnrichmentSerializer(NgenModelSerializer):
+class ArtifactEnrichmentSerializer(AuditSerializerMixin):
     class Meta:
         model = models.ArtifactEnrichment
         fields = '__all__'
 
 
-class ArtifactSerializer(NgenModelSerializer):
+class ArtifactSerializer(AuditSerializerMixin):
     related = serializers.SerializerMethodField(read_only=True)
     enrichments = serializers.HyperlinkedRelatedField(
         many=True,
@@ -28,7 +28,7 @@ class ArtifactSerializer(NgenModelSerializer):
         return GenericRelationField(read_only=True).generic_detail_links(obj.related, self.context.get('request'))
 
 
-class ArtifactRelationSerializer(NgenModelSerializer):
+class ArtifactRelationSerializer(AuditSerializerMixin):
     content_type_description = serializers.SerializerMethodField()
     content_type = serializers.HyperlinkedRelatedField(
         view_name='contenttype-detail',

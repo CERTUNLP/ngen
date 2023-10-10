@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
 from ngen import models
-from ngen.serializers.utils.mixins import NgenModelSerializer
+from ngen.serializers.common.mixins import AuditSerializerMixin
 
 
-class NetworkSerializer(NgenModelSerializer):
+class NetworkSerializer(AuditSerializerMixin):
     children = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -21,7 +21,7 @@ class NetworkSerializer(NgenModelSerializer):
         fields = '__all__'
 
 
-class NetworkEntitySerializer(NgenModelSerializer):
+class NetworkEntitySerializer(AuditSerializerMixin):
     networks = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -34,7 +34,7 @@ class NetworkEntitySerializer(NgenModelSerializer):
         read_only_fields = ['slug']
 
 
-class ContactSerializer(NgenModelSerializer):
+class ContactSerializer(AuditSerializerMixin):
     class Meta:
         model = models.Contact
         fields = '__all__'

@@ -1,15 +1,15 @@
 from ngen import models
-from ngen.serializers import NgenModelSerializer
+from ngen.serializers import AuditSerializerMixin
 
 
-class StateSerializer(NgenModelSerializer):
+class StateSerializer(AuditSerializerMixin):
     class Meta:
         model = models.State
         fields = '__all__'
         read_only_fields = ['slug']
 
 
-class EdgeSerializer(NgenModelSerializer):
+class EdgeSerializer(AuditSerializerMixin):
     class Meta:
         model = models.Edge
         fields = '__all__'

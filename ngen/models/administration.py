@@ -2,14 +2,13 @@ from datetime import timedelta
 
 from colorfield.fields import ColorField
 from constance import config
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.text import slugify
 
-from .utils import NgenModel, NgenPriorityMixin
+from ngen.models.common.mixins import AuditModelMixin
 
 
-class Feed(NgenModel):
+class Feed(AuditModelMixin):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
@@ -32,7 +31,7 @@ COLOR_PALETTE = [
 ]
 
 
-class Priority(NgenModel):
+class Priority(AuditModelMixin):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=255)
     severity = models.IntegerField(unique=True)
@@ -57,7 +56,7 @@ class Priority(NgenModel):
         return self.name
 
 
-class Tlp(NgenModel):
+class Tlp(AuditModelMixin):
     slug = models.SlugField(max_length=100, unique=True)
     color = ColorField(samples=COLOR_PALETTE)
     when = models.TextField(max_length=500)
@@ -77,10 +76,3 @@ class Tlp(NgenModel):
 
     def __str__(self):
         return self.name
-
-
-class User(AbstractUser, NgenPriorityMixin, NgenModel):
-    api_key = models.CharField(max_length=255, blank=True, null=True, default=None)
-
-    class Meta:
-        db_table = 'user'

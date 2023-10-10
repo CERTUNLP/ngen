@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.db.models import deletion
-from ngen.models import State, Edge, Taxonomy, NgenModel, Case, Tlp, User, CaseTemplate, Priority, NgenPriorityMixin, config
+from ngen.models import State, Edge, Taxonomy, AuditModelMixin, Case, Tlp, User, CaseTemplate, Priority, PriorityModelMixin, config
 
 class StateTestCase(TestCase):
 

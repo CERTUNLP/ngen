@@ -5,11 +5,11 @@ from django.utils.translation import gettext
 from constance import config
 
 from ngen import models
-from ngen.serializers.utils.fields import GenericRelationField, SlugOrHyperlinkedRelatedField
-from ngen.serializers.utils.mixins import NgenModelSerializer, MergeSerializerMixin, EvidenceSerializerMixin
+from ngen.serializers.common.fields import GenericRelationField, SlugOrHyperlinkedRelatedField
+from ngen.serializers.common.mixins import AuditSerializerMixin, MergeSerializerMixin, EvidenceSerializerMixin
 
 
-class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSerializer):
+class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
     feed = SlugOrHyperlinkedRelatedField(
         slug_field='slug',
         queryset=models.Feed.objects.all(),
@@ -101,7 +101,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSe
         return attrs
 
 
-class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSerializer):
+class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
     events = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
@@ -166,13 +166,13 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, NgenModelSer
         return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
 
 
-class CaseTemplateSerializer(NgenModelSerializer):
+class CaseTemplateSerializer(AuditSerializerMixin):
     class Meta:
         model = models.CaseTemplate
         fields = '__all__'
 
 
-class EvidenceSerializer(NgenModelSerializer):
+class EvidenceSerializer(AuditSerializerMixin):
     related = serializers.SerializerMethodField(read_only=True)
 
     class Meta:

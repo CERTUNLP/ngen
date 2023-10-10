@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group, Permission
 
 from ngen.models import User
-from ngen.serializers import NgenModelSerializer
+from .common.mixins import AuditSerializerMixin
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -28,7 +28,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         raise ValidationError({"success": False, "msg": "Email already taken"})
 
 
-class UserSerializer(NgenModelSerializer):
+class UserSerializer(AuditSerializerMixin):
     user_permissions = serializers.HyperlinkedRelatedField(
         many=True,
         view_name='permission-detail',
@@ -66,7 +66,7 @@ class UserSerializer(NgenModelSerializer):
         return instance
 
 
-class GroupSerializer(NgenModelSerializer):
+class GroupSerializer(AuditSerializerMixin):
     permissions = serializers.HyperlinkedRelatedField(
         queryset=Permission.objects.prefetch_related('content_type').all(),
         many=True,
@@ -78,7 +78,7 @@ class GroupSerializer(NgenModelSerializer):
         fields = '__all__'
 
 
-class PermissionSerializer(NgenModelSerializer):
+class PermissionSerializer(AuditSerializerMixin):
     content_type = serializers.HyperlinkedRelatedField(
         queryset=ContentType.objects.all().prefetch_related('permission_set'),
         view_name='contenttype-detail'

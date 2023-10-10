@@ -1,4 +1,3 @@
-import jwt
 from auditlog.models import LogEntry
 from constance import config
 from django.core.exceptions import ObjectDoesNotExist
@@ -6,10 +5,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
 
-from ngen import models
+import ngen.models.common.parsing
 from ngen.utils import get_settings
-from ngen.serializers.utils.fields import GenericRelationField, ConstanceValueField
-from ngen.serializers.utils.mixins import NgenModelSerializer
+from ngen.serializers.common.fields import GenericRelationField, ConstanceValueField
+from ngen.serializers.common.mixins import AuditSerializerMixin
 
 
 class ContentTypeSerializer(serializers.ModelSerializer):
@@ -18,7 +17,7 @@ class ContentTypeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AuditSerializer(NgenModelSerializer):
+class AuditSerializer(AuditSerializerMixin):
     related = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -88,18 +87,18 @@ class StringIdentifierSerializer(serializers.Serializer):
     input_string = serializers.CharField(required=True)
 
     class Meta:
-        model = models.StringIdentifier
+        model = ngen.models.common.parsing.StringIdentifier
         fields = '__all__'
         read_only_fields = ['input_type',
                             'address_string', 'address_type', 'all_types']
 
     def create(self, validated_data):
         rf = ['parsed_obj']
-        data = {k: v for k, v in models.StringIdentifier(
+        data = {k: v for k, v in ngen.models.common.parsing.StringIdentifier(
             **validated_data).__dict__.items() if k not in rf}
         return data
 
     def list(self):
-        return {'all_types': models.StringType._member_names_,
-                'all_network_types': models.StringIdentifier.all_network_types(),
-                'all_artifact_types': models.StringIdentifier.all_artifact_types()}
+        return {'all_types': ngen.models.common.parsing.StringType._member_names_,
+                'all_network_types': ngen.models.common.parsing.StringIdentifier.all_network_types(),
+                'all_artifact_types': ngen.models.common.parsing.StringIdentifier.all_artifact_types()}
