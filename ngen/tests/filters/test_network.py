@@ -77,7 +77,6 @@ class NetworkFilterTest(BaseFilterTest):
         # Searching by domain
         query = "info.unlp"
         response = self.client.get(self.search_url(query))
-        print(response.data)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
             self.get_id_from_url(response.data["results"][0]["url"]),
