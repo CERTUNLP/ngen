@@ -1,10 +1,10 @@
-# pylint: disable=locally-disabled, missing-class-docstring, too-few-public-methods
+# pylint: disable=locally-disabled, missing-class-docstring, too-few-public-methods, unused-argument
 """
 Filters for ngen models.
 """
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
-from ngen.models import Taxonomy, Event, Case
+from ngen.models import Taxonomy, Event, Case, Feed, Tlp, Priority, User, CaseTemplate, Network
 
 
 class BaseFilter(django_filters.FilterSet):
@@ -66,7 +66,9 @@ class TaxonomyFilter(BaseFilter):
         - description (icontains)
         - active (exact)
         - type (exact)
-        - parent (exact, isnull)
+        - playbooks (exact)
+        - parent (exact, isnull),
+        - children (exact, isnull)
     """
 
     class Meta:
@@ -77,7 +79,9 @@ class TaxonomyFilter(BaseFilter):
             'description': ['icontains'],
             'active': ['exact'],
             'type': ['exact'],
+            'playbooks': ['exact'],
             'parent': ['exact', 'isnull'],
+            'children': ['exact', 'isnull']
         }
 
 
@@ -135,8 +139,10 @@ class CaseFilter(BaseFilter):
     attend_date_range = DateFromToRangeFilter(field_name='attend_date')
     solve_date_range = DateFromToRangeFilter(field_name='solve_date')
 
-    event_cidr = django_filters.CharFilter(label='Event cidr', method='filter_by_cidr')
-    event_domain = django_filters.CharFilter(label='Event domain', method='filter_by_domain')
+    event_cidr = django_filters.CharFilter(
+        label='Event cidr', method='filter_by_cidr')
+    event_domain = django_filters.CharFilter(
+        label='Event domain', method='filter_by_domain')
 
     def filter_by_cidr(self, queryset, name, value):
         """
@@ -149,7 +155,6 @@ class CaseFilter(BaseFilter):
         Filter by domain, matches a domain or subdomains.
         """
         return queryset.filter(events__domain__endswith=value)
-
 
     class Meta:
         model = Case
@@ -165,4 +170,158 @@ class CaseFilter(BaseFilter):
             'parent': ['exact', 'isnull'],
             'assigned': ['exact', 'isnull'],
             'state': ['exact'],
+        }
+
+
+class FeedFilter(BaseFilter):
+    """
+    Feed model filter.
+    Allows to filter by:
+        - name (icontains)
+        - slug (icontains)
+        - description (icontains)
+        - active (exact)
+    """
+
+    class Meta:
+        model = Feed
+        fields = {
+            'name': ['icontains'],
+            'slug': ['icontains'],
+            'description': ['icontains'],
+            'active': ['exact']
+        }
+
+
+class TlpFilter(BaseFilter):
+    """
+    Tlp model filter.
+    Allows to filter by:
+        - when (icontains)
+        - why (icontains)
+        - information (icontains)
+        - description (icontains)
+        - encrypt (exact)
+        - name (icontains)
+        - slug (icontains)
+        - code (exact)
+    """
+
+    class Meta:
+        model = Tlp
+        fields = {
+            'when': ['icontains'],
+            'why': ['icontains'],
+            'information': ['icontains'],
+            'description': ['icontains'],
+            'encrypt': ['exact'],
+            'name': ['icontains'],
+            'slug': ['icontains'],
+            'code': ['exact']
+        }
+
+
+class PriorityFilter(BaseFilter):
+    """
+    Priority model filter.
+    Allows to filter by:
+        - name (icontains)
+        - slug (icontains)
+        - severity (exact)
+        - attend_time (exact)
+        - solve_time (exact)
+        - notification_amount (exact)
+    """
+
+    class Meta:
+        model = Priority
+        fields = {
+            'name': ['icontains'],
+            'slug': ['icontains'],
+            'severity': ['exact'],
+            'attend_time': ['exact'],
+            'solve_time': ['exact'],
+            'notification_amount': ['exact']
+        }
+
+
+class UserFilter(BaseFilter):
+    """
+    User model filter.
+    Allows to filter by:
+        - username (icontains)
+        - email (icontains)
+        - first_name (icontains)
+        - last_name (icontains)
+        - is_superuser (exact)
+        - is_staff (exact)
+        - is_active (exact)
+        - date_joined (exact)
+        - last_login (exact)
+    """
+
+    class Meta:
+        model = User
+        fields = {
+            'username': ['icontains'],
+            'email': ['icontains'],
+            'first_name': ['icontains'],
+            'last_name': ['icontains'],
+            'is_superuser': ['exact'],
+            'is_staff': ['exact'],
+            'is_active': ['exact'],
+            'date_joined': ['exact'],
+            'last_login': ['exact'],
+        }
+
+
+class CaseTemplateFilter(BaseFilter, NgenAddressModelFilter):
+    """
+    Template model filter.
+    Allows to filter by:
+        - case_lifecycle (exact)
+        - active (exact)
+        - priority (exact)
+        - event_taxonomy (exact)
+        - event_feed (exact)
+        - case_tlp (exact)
+        - case_state (exact)
+        - inherits NgenAddressModelFilter
+    """
+
+    class Meta:
+        model = CaseTemplate
+        fields = {
+            'case_lifecycle': ['exact'],
+            'active': ['exact'],
+            'priority': ['exact'],
+            'event_taxonomy': ['exact'],
+            'event_feed': ['exact'],
+            'case_tlp': ['exact'],
+            'case_state': ['exact'],
+        }
+
+
+class NetworkFilter(BaseFilter, NgenAddressModelFilter):
+    """
+    Template model filter.
+    Allows to filter by:
+        - active (exact)
+        - type (exact)
+        - network_entity (exact)
+        - contacts (exact)
+        - parent (exact, isnull)
+        - children (exact, isnull)
+        - inherits NgenAddressModelFilter
+    """
+
+    class Meta:
+        model = Network
+        fields = {
+            'active': ['exact'],
+            'type': ['exact'],
+            'network_entity': ['exact'],
+            'contacts': ['exact'],
+            'parent': ['exact', 'isnull'],
+            'children': ['exact', 'isnull']
         }

@@ -119,12 +119,12 @@ class EventFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-            response.data["results"][0]["uuid"],
-            str(self.event_1.uuid)
+            self.get_id_from_url(response.data["results"][0]["url"]),
+            self.event_1.id
         )
         self.assertEqual(
-            response.data["results"][1]["uuid"],
-            str(self.event_4.uuid)
+            self.get_id_from_url(response.data["results"][1]["url"]),
+            self.event_4.id
         )
 
         # Searching by feed name
@@ -132,12 +132,12 @@ class EventFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-            response.data["results"][0]["uuid"],
-            str(self.event_2.uuid)
+            self.get_id_from_url(response.data["results"][0]["url"]),
+            self.event_2.id
         )
         self.assertEqual(
-            response.data["results"][1]["uuid"],
-            str(self.event_4.uuid)
+            self.get_id_from_url(response.data["results"][1]["url"]),
+            self.event_4.id
         )
 
         # Searching by cidr
@@ -145,8 +145,8 @@ class EventFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            response.data["results"][0]["uuid"],
-            str(self.event_4.uuid)
+            self.get_id_from_url(response.data["results"][0]["url"]),
+            self.event_4.id
         )
 
         # Searching by domain
@@ -154,8 +154,8 @@ class EventFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            response.data["results"][0]["uuid"],
-            str(self.event_1.uuid)
+            self.get_id_from_url(response.data["results"][0]["url"]),
+            self.event_1.id
         )
 
         # Searching with no results

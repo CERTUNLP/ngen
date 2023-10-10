@@ -61,56 +61,57 @@ class CaseFilterTest(BaseFilterTest):
         )
 
         cls.case_1 = Case.objects.create(
-            uuid= "00000000-0000-0000-0000-000000000001",
+            uuid="00000000-0000-0000-0000-000000000001",
             priority=cls.priority_1,
             tlp=cls.tlp_1,
             casetemplate_creator=cls.case_template_1,
             state=cls.state_2,
-            lifecycle = "manual",
+            lifecycle="manual",
         )
-        cls.case_1.date = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC) # bypass date auto_now_add
+        cls.case_1.date = timezone.datetime(
+            2024, 1, 1, tzinfo=pytz.UTC)  # bypass date auto_now_add
         cls.case_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
         cls.case_1.attend_date = timezone.datetime(2024, 1, 2, tzinfo=pytz.UTC)
         cls.case_1.solve_date = timezone.datetime(2024, 1, 3, tzinfo=pytz.UTC)
         cls.case_1.save()
 
         cls.case_2 = Case.objects.create(
-            uuid= "00000000-0000-0000-0000-000000000002",
+            uuid="00000000-0000-0000-0000-000000000002",
             priority=cls.priority_2,
             tlp=cls.tlp_2,
             casetemplate_creator=cls.case_template_1,
             state=cls.state_1,
-            lifecycle = "manual",
+            lifecycle="manual",
             assigned=cls.user_1
         )
         cls.case_2.events.set([cls.event_1])
 
         cls.case_3 = Case.objects.create(
-            uuid= "00000000-0000-0000-0000-000000000003",
+            uuid="00000000-0000-0000-0000-000000000003",
             priority=cls.priority_3,
             tlp=cls.tlp_3,
             casetemplate_creator=cls.case_template_1,
             state=cls.state_1,
-            lifecycle = "auto"
+            lifecycle="auto"
         )
         cls.case_3.events.set([cls.event_2])
 
         cls.case_4 = Case.objects.create(
-            uuid= "00000000-0000-0000-0000-000000000004",
+            uuid="00000000-0000-0000-0000-000000000004",
             priority=cls.priority_1,
             tlp=cls.tlp_2,
             casetemplate_creator=cls.case_template_1,
             state=cls.state_1,
-            lifecycle = "auto",
+            lifecycle="auto",
         )
 
         cls.case_5 = Case.objects.create(
-            uuid= "00000000-0000-0000-0000-000000000005",
+            uuid="00000000-0000-0000-0000-000000000005",
             priority=cls.priority_2,
             tlp=cls.tlp_3,
             casetemplate_creator=cls.case_template_2,
             state=cls.state_1,
-            lifecycle = "auto",
+            lifecycle="auto",
             parent=cls.case_1
         )
 
@@ -338,7 +339,7 @@ class CaseFilterTest(BaseFilterTest):
 
         filtered_queryset = self.filter(params).qs
 
-        self.assertQuerysetEqual(filtered_queryset, [self.case_1], ordered=False)
+        self.assertQuerysetEqual(filtered_queryset, [self.case_1])
 
     def test_filter_by_event_cidr(self):
         """

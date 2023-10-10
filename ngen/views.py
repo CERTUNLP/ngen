@@ -18,7 +18,17 @@ from ngen import models, serializers, backends
 from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
 from ngen.models import StringIdentifier
-from ngen.filters import TaxonomyFilter, EventFilter, CaseFilter
+from ngen.filters import (
+    CaseTemplateFilter,
+    NetworkFilter,
+    PriorityFilter,
+    TaxonomyFilter,
+    EventFilter,
+    CaseFilter,
+    FeedFilter,
+    TlpFilter,
+    UserFilter
+)
 
 
 class AboutView(TemplateView):
@@ -44,7 +54,8 @@ class EventViewSet(viewsets.ModelViewSet):
     filter_backends = [backends.MergedModelFilterBackend, filters.SearchFilter,
                        django_filters.rest_framework.DjangoFilterBackend,
                        filters.OrderingFilter]
-    search_fields = ['taxonomy__name', 'feed__name', 'address_value', 'cidr', 'domain']
+    search_fields = ['taxonomy__name', 'feed__name',
+                     'address_value', 'cidr', 'domain']
     filterset_class = EventFilter
     ordering_fields = ['id', 'date', 'priority', 'reporter']
     serializer_class = serializers.EventSerializer
@@ -84,7 +95,15 @@ class ReportViewSet(viewsets.ModelViewSet):
 
 
 class FeedViewSet(viewsets.ModelViewSet):
-    queryset = models.Feed.objects.all()
+    queryset = models.Feed.objects.all().order_by('id')
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['name', 'description']
+    filterset_class = FeedFilter
+    ordering_fields = ['id', 'created', 'modified', 'name', 'slug']
     serializer_class = serializers.FeedSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -102,19 +121,44 @@ class EdgeViewSet(viewsets.ModelViewSet):
 
 
 class TlpViewSet(viewsets.ModelViewSet):
-    queryset = models.Tlp.objects.all()
+    queryset = models.Tlp.objects.all().order_by('id')
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['name']
+    filterset_class = TlpFilter
+    ordering_fields = ['id', 'created', 'modified', 'name', 'slug', 'code']
     serializer_class = serializers.TlpSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class PriorityViewSet(viewsets.ModelViewSet):
     queryset = models.Priority.objects.all()
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['name']
+    filterset_class = PriorityFilter
+    ordering_fields = ['id', 'created', 'modified', 'name', 'slug', 'severity']
     serializer_class = serializers.PrioritySerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class CaseTemplateViewSet(viewsets.ModelViewSet):
-    queryset = models.CaseTemplate.objects.all()
+    queryset = models.CaseTemplate.objects.all().order_by('id')
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['cidr', 'domain']
+    filterset_class = CaseTemplateFilter
+    ordering_fields = ['id', 'created',
+                       'modified', 'cidr', 'domain', 'priority']
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -123,9 +167,12 @@ class NetworkViewSet(viewsets.ModelViewSet):
     queryset = models.Network.objects.all()
     serializer_class = serializers.NetworkSerializer
     filter_backends = [filters.SearchFilter,
-                       django_filters.rest_framework.DjangoFilterBackend]
+                       django_filters.rest_framework.DjangoFilterBackend,
+                       filters.OrderingFilter
+    ]
     search_fields = ['cidr', 'type', 'domain']
-    filterset_fields = ['type']
+    filterset_class = NetworkFilter
+    ordering_fields = ['id', 'created', 'modified', 'cidr', 'domain', 'type']
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -142,7 +189,16 @@ class ContactViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = models.User.objects.all()
+    queryset = models.User.objects.all().order_by('id')
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['username', 'email', 'first_name', 'last_name']
+    filterset_class = UserFilter
+    ordering_fields = ['id', 'created', 'modified',
+                       'username', 'email', 'priority']
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
