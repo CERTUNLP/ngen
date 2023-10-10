@@ -4,7 +4,7 @@ Filters for ngen models.
 """
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
-from ngen.models import Taxonomy, Event, Case, Feed, Tlp, Priority, User, CaseTemplate
+from ngen.models import Taxonomy, Event, Case, Feed, Tlp, Priority, User, CaseTemplate, Network
 
 
 class BaseFilter(django_filters.FilterSet):
@@ -295,4 +295,29 @@ class CaseTemplateFilter(BaseFilter, NgenAddressModelFilter):
             'event_feed': ['exact'],
             'case_tlp': ['exact'],
             'case_state': ['exact'],
+        }
+
+
+class NetworkFilter(BaseFilter, NgenAddressModelFilter):
+    """
+    Template model filter.
+    Allows to filter by:
+        - active (exact)
+        - type (exact)
+        - network_entity (exact)
+        - contacts (exact)
+        - parent (exact, isnull)
+        - children (exact, isnull)
+        - inherits NgenAddressModelFilter
+    """
+
+    class Meta:
+        model = Network
+        fields = {
+            'active': ['exact'],
+            'type': ['exact'],
+            'network_entity': ['exact'],
+            'contacts': ['exact'],
+            'parent': ['exact', 'isnull'],
+            'children': ['exact', 'isnull']
         }

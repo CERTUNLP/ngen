@@ -19,7 +19,15 @@ from ngen.serializers import RegisterSerializer
 from ngen.utils import get_settings
 from ngen.models import StringIdentifier
 from ngen.filters import (
-    CaseTemplateFilter, PriorityFilter, TaxonomyFilter, EventFilter, CaseFilter, FeedFilter, TlpFilter, UserFilter
+    CaseTemplateFilter,
+    NetworkFilter,
+    PriorityFilter,
+    TaxonomyFilter,
+    EventFilter,
+    CaseFilter,
+    FeedFilter,
+    TlpFilter,
+    UserFilter
 )
 
 
@@ -46,7 +54,8 @@ class EventViewSet(viewsets.ModelViewSet):
     filter_backends = [backends.MergedModelFilterBackend, filters.SearchFilter,
                        django_filters.rest_framework.DjangoFilterBackend,
                        filters.OrderingFilter]
-    search_fields = ['taxonomy__name', 'feed__name', 'address_value', 'cidr', 'domain']
+    search_fields = ['taxonomy__name', 'feed__name',
+                     'address_value', 'cidr', 'domain']
     filterset_class = EventFilter
     ordering_fields = ['id', 'date', 'priority', 'reporter']
     serializer_class = serializers.EventSerializer
@@ -148,7 +157,8 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ['cidr', 'domain']
     filterset_class = CaseTemplateFilter
-    ordering_fields = ['id', 'created', 'modified', 'cidr', 'domain', 'priority']
+    ordering_fields = ['id', 'created',
+                       'modified', 'cidr', 'domain', 'priority']
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -157,9 +167,12 @@ class NetworkViewSet(viewsets.ModelViewSet):
     queryset = models.Network.objects.all()
     serializer_class = serializers.NetworkSerializer
     filter_backends = [filters.SearchFilter,
-                       django_filters.rest_framework.DjangoFilterBackend]
+                       django_filters.rest_framework.DjangoFilterBackend,
+                       filters.OrderingFilter
+    ]
     search_fields = ['cidr', 'type', 'domain']
-    filterset_fields = ['type']
+    filterset_class = NetworkFilter
+    ordering_fields = ['id', 'created', 'modified', 'cidr', 'domain', 'type']
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -184,7 +197,8 @@ class UserViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ['username', 'email', 'first_name', 'last_name']
     filterset_class = UserFilter
-    ordering_fields = ['id', 'created', 'modified', 'username', 'email', 'priority']
+    ordering_fields = ['id', 'created', 'modified',
+                       'username', 'email', 'priority']
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
