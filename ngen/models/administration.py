@@ -3,9 +3,9 @@ from datetime import timedelta
 from colorfield.fields import ColorField
 from constance import config
 from django.db import models
-from django.utils.text import slugify
 
 from ngen.models.common.mixins import AuditModelMixin
+from ngen.utils import slugify_underscore
 
 
 class Feed(AuditModelMixin):
@@ -15,7 +15,7 @@ class Feed(AuditModelMixin):
     description = models.CharField(max_length=250, null=True, blank=True, default='')
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
+        self.slug = slugify_underscore(self.name)
         super(Feed, self).save(*args, **kwargs)
 
     class Meta:
@@ -41,7 +41,7 @@ class Priority(AuditModelMixin):
     color = ColorField(samples=COLOR_PALETTE)
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
+        self.slug = slugify_underscore(self.name)
         super(Priority, self).save(*args, **kwargs)
 
     @classmethod
@@ -68,7 +68,7 @@ class Tlp(AuditModelMixin):
     code = models.IntegerField()
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
+        self.slug = slugify_underscore(self.name)
         super(Tlp, self).save(*args, **kwargs)
 
     class Meta:

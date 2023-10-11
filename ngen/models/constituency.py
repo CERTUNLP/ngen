@@ -1,11 +1,11 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.text import slugify
 from django.utils.translation import gettext_lazy
 from model_utils import Choices
 
 from ngen.models.common.mixins import AuditModelMixin, PriorityModelMixin, AddressModelMixin, TreeModelMixin
 from .common.mixins import AddressManager
+from ngen.utils import slugify_underscore
 
 
 class NetworkManager(AddressManager):
@@ -122,7 +122,7 @@ class NetworkEntity(AuditModelMixin):
     active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
+        self.slug = slugify_underscore(self.name)
         super(NetworkEntity, self).save(*args, **kwargs)
 
     def __str__(self):

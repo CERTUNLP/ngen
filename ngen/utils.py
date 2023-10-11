@@ -1,4 +1,5 @@
 from constance import settings, config
+from django.utils.text import slugify
 
 from project import settings as project_settings
 
@@ -14,3 +15,7 @@ def get_settings():
                 'value_type': type(default).__name__}
         setting_list.append(data)
     return setting_list
+
+
+def slugify_underscore(text):
+    return slugify(text).replace('-', '_')

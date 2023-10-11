@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 
 from ngen.models.common.mixins import AuditModelMixin
+from ngen.utils import slugify_underscore
 
 
 class State(AuditModelMixin):
@@ -23,7 +24,7 @@ class State(AuditModelMixin):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
+        self.slug = slugify_underscore(self.name)
         super(State, self).save(*args, **kwargs)
 
     def siblings(self):

@@ -1,5 +1,6 @@
-from django.utils.text import slugify
 from rest_framework import serializers
+
+from ngen.utils import slugify_underscore
 
 
 class GenericRelationField(serializers.RelatedField):
@@ -42,7 +43,7 @@ class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
             return super().to_internal_value(data)
         except serializers.ValidationError:
             # If that fails, try to get the related object using a slug
-            slug = slugify(data).replace('-', '_')
+            slug = slugify_underscore(data)
             try:
                 queryset = self.get_queryset()
                 return queryset.get(**{self.slug_field: slug})

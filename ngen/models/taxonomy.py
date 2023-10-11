@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils import timezone
-from django.utils.text import slugify
 from django.utils.translation import gettext_lazy
 from django_bleach.models import BleachField
 from model_utils import Choices
 
 from ngen.models.common.mixins import AuditModelMixin, TreeModelMixin, PriorityModelMixin
+from ngen.utils import slugify_underscore
 
 
 class Taxonomy(AuditModelMixin, TreeModelMixin):
@@ -18,7 +18,7 @@ class Taxonomy(AuditModelMixin, TreeModelMixin):
     node_order_by = ['id']
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
+        self.slug = slugify_underscore(self.name)
         super(Taxonomy, self).save(*args, **kwargs)
 
     def delete(self):
