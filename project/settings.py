@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 import shutil
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
 
 from celery.schedules import crontab
 from django.utils.translation import gettext_lazy as _, gettext_lazy
@@ -84,8 +84,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -242,37 +241,35 @@ CONSTANCE_CONFIG = {
     'TEAM_ABUSE': (os.environ.get('TEAM_ABUSE'), 'CSIRT abuse email'),
     'TEAM_URL': (os.environ.get('TEAM_URL'), 'CSIRT site url'),
     'TEAM_SITE': (os.environ.get('TEAM_SITE'), 'CSIRT team site'),
-    'TEAM_LOGO': (os.path.join(CONSTANCE_FILE_ROOT, 'teamlogo.png'), 'Team logo will be saved at \
-                  /api/media/teamlogo.png and generated image of 200x50 pixels \
-                  max for email logo at /api/media/teamlogo_200_50.png', 'image_field'),
+    'TEAM_LOGO': (os.path.join(CONSTANCE_FILE_ROOT, 'teamlogo.png'),
+                  'Team logo will be saved at /api/media/teamlogo.png \
+                  and generated image of 200x50 pixels max for email \
+                  logo at /api/media/teamlogo_200_50.png',
+                  'image_field'),
     'TEAM_NAME': (os.environ.get('TEAM_NAME'), 'CSIRT name'),
-
     'EMAIL_SENDER': (os.environ.get('EMAIL_SENDER'), 'SMTP sender email address'),
-
     'NGEN_LANG': (os.environ.get('NGEN_LANG'), 'NGEN default language'),
     'NGEN_LANG_EXTERNAL': (os.environ.get('NGEN_LANG_EXTERNAL'), 'NGEN language for external reports'),
-    'ALLOWED_FIELDS_CASE': (
-        os.environ.get('ALLOWED_FIELDS_CASE'),
-        'Case comma separated fields that could be modified if the instance is blocked'),
-    'ALLOWED_FIELDS_EVENT': (
-        os.environ.get('ALLOWED_FIELDS_EVENT'),
-        'Event comma separated fields that could be modified if the instance is blocked. '),
-    'ALLOWED_FIELDS_EXCEPTION': (
-        os.environ.get('ALLOWED_FIELDS_EXCEPTION', 'false').lower() in ('true', '1', 't'),
-        'If True, ngen will raise an exception if a blocked field is modified', bool),
+    'ALLOWED_FIELDS_CASE': (os.environ.get('ALLOWED_FIELDS_CASE'),
+                            'Case comma separated fields that could be modified if the instance is blocked'),
+    'ALLOWED_FIELDS_EVENT': (os.environ.get('ALLOWED_FIELDS_EVENT'),
+                             'Event comma separated fields that could be modified if the instance is blocked. '),
+    'ALLOWED_FIELDS_EXCEPTION': (os.environ.get('ALLOWED_FIELDS_EXCEPTION', 'false').lower() in ('true', '1', 't'),
+                                 'If True, ngen will raise an exception if a blocked field is modified', bool),
     'PRIORITY_ATTEND_TIME_DEFAULT': (
         int(os.environ.get('PRIORITY_ATTEND_TIME_DEFAULT', 10080)), 'Priority default attend time in minutes', int),
     'PRIORITY_SOLVE_TIME_DEFAULT': (
         int(os.environ.get('PRIORITY_SOLVE_TIME_DEFAULT', 10080)), 'Priority default solve time in minutes', int),
-    'CASE_DEFAULT_LIFECYCLE': (os.environ.get('CASE_DEFAULT_LIFECYCLE', 'manual'), 'Case default lifecycle', 'case_lifecycle'),
+    'CASE_DEFAULT_LIFECYCLE': (
+        os.environ.get('CASE_DEFAULT_LIFECYCLE', 'manual'), 'Case default lifecycle', 'case_lifecycle'),
     'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT', 'Medium'), 'Default priority', 'priority_field'),
     'ALLOWED_ARTIFACTS_TYPES': (os.environ.get('ALLOWED_ARTIFACTS_TYPES'), 'Allowed artifact types'),
     'ARTIFACT_SAVE_ENRICHMENT_FAILURE': (
-        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'false').lower() in ('true', '1', 't'), 'Save enrichment even if it fails.',
-        bool),
+        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'false').lower() in ('true', '1', 't'),
+        'Save enrichment even if it fails.', bool),
     'ARTIFACT_RECURSIVE_ENRICHMENT': (
-        os.environ.get('ARTIFACT_RECURSIVE_ENRICHMENT', 'false').lower() in ('true', '1', 't'), 'Enrich artifacts from artifacts enrichmets',
-        bool),
+        os.environ.get('ARTIFACT_RECURSIVE_ENRICHMENT', 'false').lower() in ('true', '1', 't'),
+        'Enrich artifacts from artifacts enrichmets', bool),
     'CORTEX_HOST': (os.environ.get('CORTEX_HOST'), 'Cortex host domain:port'),
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
 }
@@ -283,7 +280,6 @@ LOGO_PATH = os.path.join(f'{MEDIA_ROOT}', CONSTANCE_CONFIG['TEAM_LOGO'][0])
 origin_path = os.path.join(f'{STATIC_ROOT}', 'img', 'teamlogo.png')
 if not os.path.exists(LOGO_PATH) and os.path.exists(origin_path):
     shutil.copy(origin_path, LOGO_PATH)
-
 
 LOGO_WIDE_SIZE = (200, 50)
 LOGO_WIDE_PATH = os.path.join(f'{MEDIA_ROOT}', CONSTANCE_FILE_ROOT, 'teamlogo_200_50.png')
@@ -331,7 +327,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(minutes=15),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": True, # check if this is needed and performance impact
+    "UPDATE_LAST_LOGIN": True,  # check if this is needed and performance impact
 
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
