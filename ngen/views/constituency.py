@@ -11,7 +11,7 @@ class NetworkViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter,
                        django_filters.rest_framework.DjangoFilterBackend,
                        filters.OrderingFilter
-    ]
+                       ]
     search_fields = ['cidr', 'type', 'domain']
     filterset_class = NetworkFilter
     ordering_fields = ['id', 'created', 'modified', 'cidr', 'domain', 'type']
