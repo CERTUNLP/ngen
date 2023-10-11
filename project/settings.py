@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#j!42e(tj8h#n&nl#cxg#(lu=j9=(pcf*=tep$qv%@1^yst4!*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', False).lower() in ('true', '1', 't')
+DEBUG = os.environ.get('DJANGO_DEBUG', 'false').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
 
 # Application definition
 
@@ -258,20 +258,20 @@ CONSTANCE_CONFIG = {
         os.environ.get('ALLOWED_FIELDS_EVENT'),
         'Event comma separated fields that could be modified if the instance is blocked. '),
     'ALLOWED_FIELDS_EXCEPTION': (
-        os.environ.get('ALLOWED_FIELDS_EXCEPTION', 'False').lower() in ('true', '1', 't'),
+        os.environ.get('ALLOWED_FIELDS_EXCEPTION', 'false').lower() in ('true', '1', 't'),
         'If True, ngen will raise an exception if a blocked field is modified', bool),
     'PRIORITY_ATTEND_TIME_DEFAULT': (
-        int(os.environ.get('PRIORITY_ATTEND_TIME_DEFAULT')), 'Priority default attend time in minutes', int),
+        int(os.environ.get('PRIORITY_ATTEND_TIME_DEFAULT', 10080)), 'Priority default attend time in minutes', int),
     'PRIORITY_SOLVE_TIME_DEFAULT': (
-        int(os.environ.get('PRIORITY_SOLVE_TIME_DEFAULT')), 'Priority default solve time in minutes', int),
-    'CASE_DEFAULT_LIFECYCLE': (os.environ.get('CASE_DEFAULT_LIFECYCLE'), 'Case default lifecycle', 'case_lifecycle'),
-    'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT'), 'Default priority', 'priority_field'),
+        int(os.environ.get('PRIORITY_SOLVE_TIME_DEFAULT', 10080)), 'Priority default solve time in minutes', int),
+    'CASE_DEFAULT_LIFECYCLE': (os.environ.get('CASE_DEFAULT_LIFECYCLE', 'manual'), 'Case default lifecycle', 'case_lifecycle'),
+    'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT', 'Medium'), 'Default priority', 'priority_field'),
     'ALLOWED_ARTIFACTS_TYPES': (os.environ.get('ALLOWED_ARTIFACTS_TYPES'), 'Allowed artifact types'),
     'ARTIFACT_SAVE_ENRICHMENT_FAILURE': (
-        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'False').lower() in ('true', '1', 't'), 'Save enrichment even if it fails.',
+        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'false').lower() in ('true', '1', 't'), 'Save enrichment even if it fails.',
         bool),
     'ARTIFACT_RECURSIVE_ENRICHMENT': (
-        os.environ.get('ARTIFACT_RECURSIVE_ENRICHMENT', 'False').lower() in ('true', '1', 't'), 'Enrich artifacts from artifacts enrichmets',
+        os.environ.get('ARTIFACT_RECURSIVE_ENRICHMENT', 'false').lower() in ('true', '1', 't'), 'Enrich artifacts from artifacts enrichmets',
         bool),
     'CORTEX_HOST': (os.environ.get('CORTEX_HOST'), 'Cortex host domain:port'),
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
@@ -311,13 +311,13 @@ if DEBUG:
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = os.environ.get('DJANGO_CORS_ALLOWED_ORIGINS').split(',')
-CSRF_TRUSTED_ORIGINS = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS').split(',')
+CORS_ALLOWED_ORIGINS = os.environ.get('DJANGO_CORS_ALLOWED_ORIGINS', '').split(',')
+CSRF_TRUSTED_ORIGINS = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
 
 COMMENT_ALLOW_SUBSCRIPTION = True
 COMMENT_ALLOW_TRANSLATION = True
 
-ELASTIC_ENABLED = os.environ.get('ELASTIC_ENABLED', False).lower() in ('true', '1', 't')
+ELASTIC_ENABLED = os.environ.get('ELASTIC_ENABLED', 'false').lower() in ('true', '1', 't')
 if ELASTIC_ENABLED:
     ELASTICSEARCH_DSL = {
         'default': {
