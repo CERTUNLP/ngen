@@ -1,14 +1,14 @@
 from auditlog.models import LogEntry
 from constance import config
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from django.contrib.contenttypes.models import ContentType
 
 import ngen.models.common.parsing
-from ngen.utils import get_settings
 from ngen.serializers.common.fields import GenericRelationField, ConstanceValueField
 from ngen.serializers.common.mixins import AuditSerializerMixin
+from ngen.utils import get_settings
 
 
 class ContentTypeSerializer(serializers.ModelSerializer):

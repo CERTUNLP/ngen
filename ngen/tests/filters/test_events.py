@@ -2,12 +2,13 @@
 Django Event filter tests. Tests search_fields and filterset_class.
 """
 import datetime
+
 import pytz
 from django.utils import timezone
-from ngen.tests.filters.base_filter_test import BaseFilterTest
-from ngen.filters import EventFilter
 
+from ngen.filters import EventFilter
 from ngen.models import Event, Tlp, Priority, Taxonomy, Feed, User, Case
+from ngen.tests.filters.base_filter_test import BaseFilterTest
 
 
 class EventFilterTest(BaseFilterTest):

@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from django.utils.text import slugify
+from rest_framework import serializers
 
 
 class GenericRelationField(serializers.RelatedField):

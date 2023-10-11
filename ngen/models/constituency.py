@@ -1,11 +1,11 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy
-from django.core.exceptions import ValidationError
 from model_utils import Choices
 
-from .common.mixins import AddressManager
 from ngen.models.common.mixins import AuditModelMixin, PriorityModelMixin, AddressModelMixin, TreeModelMixin
+from .common.mixins import AddressManager
 
 
 class NetworkManager(AddressManager):
@@ -41,7 +41,8 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin):
     active = models.BooleanField(default=True)
     TYPE = Choices(('internal', gettext_lazy('Internal')), ('external', gettext_lazy('External')))
     type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
-    network_entity = models.ForeignKey('ngen.NetworkEntity', models.SET_NULL, null=True, blank=True, related_name='networks')
+    network_entity = models.ForeignKey('ngen.NetworkEntity', models.SET_NULL, null=True, blank=True,
+                                       related_name='networks')
     objects = NetworkManager()
     node_order_by = ['parent', '-cidr', 'domain']
 

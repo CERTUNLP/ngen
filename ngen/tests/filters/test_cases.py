@@ -1,12 +1,14 @@
 """
 Django Case filter tests. Tests filterset_class.
 """
-import pytz
 import datetime
+
+import pytz
 from django.utils import timezone
-from ngen.tests.filters.base_filter_test import BaseFilterTest
+
 from ngen.filters import CaseFilter
 from ngen.models import Tlp, Priority, Taxonomy, Feed, User, Case, CaseTemplate, State, Event
+from ngen.tests.filters.base_filter_test import BaseFilterTest
 
 
 class CaseFilterTest(BaseFilterTest):

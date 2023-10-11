@@ -11,7 +11,6 @@ from django_elasticsearch_dsl_drf.pagination import QueryFriendlyPageNumberPagin
 from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 from elasticsearch_dsl import analyzer
-from rest_framework import serializers
 
 from ngen.models import Case
 

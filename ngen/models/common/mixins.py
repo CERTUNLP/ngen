@@ -431,9 +431,9 @@ class AddressModelMixin(models.Model):
             return self.address
 
         # def __str__(self):
-            # if self.is_default():
-            #     return '*/0'
-            # return f'{self.address}/{self.address_mask()}'
+        # if self.is_default():
+        #     return '*/0'
+        # return f'{self.address}/{self.address_mask()}'
 
 
 class ArtifactRelatedMixin(models.Model):
@@ -460,10 +460,12 @@ class ArtifactRelatedMixin(models.Model):
             for artifact_type, artifact_values in self.artifacts_dict.items():
                 if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
                     for artifact_value in artifact_values:
-                        artifact, created = ngen.models.Artifact.objects.get_or_create(type=artifact_type, value=artifact_value)
-                        ngen.models.ArtifactRelation.objects.get_or_create(artifact=artifact,
-                                                               content_type=ContentType.objects.get_for_model(self),
-                                                               object_id=self.id)
+                        artifact, created = ngen.models.Artifact.objects.get_or_create(type=artifact_type,
+                                                                                       value=artifact_value)
+                        ngen.models.ArtifactRelation.objects.get_or_create(
+                            artifact=artifact,
+                            content_type=ContentType.objects.get_for_model(self),
+                            object_id=self.id)
                         if not created:
                             artifact.enrich()
 

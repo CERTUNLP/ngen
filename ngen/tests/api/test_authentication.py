@@ -1,22 +1,9 @@
-from datetime import datetime, timedelta
-
-from django.urls import include, path, reverse
-from rest_framework.test import APITestCase, URLPatternsTestCase
-from rest_framework import status
-
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from django.contrib.auth.hashers import make_password
+
 from ngen.models import User
 
-from rest_framework_simplejwt.tokens import (
-    AccessToken,
-    RefreshToken,
-    SlidingToken,
-    Token,
-    UntypedToken,
-)
 
 class BaseAPITestCase(APITestCase):
     '''
@@ -25,15 +12,15 @@ class BaseAPITestCase(APITestCase):
 
     def setUp(self):
         self.user_data = {
-            "first_name" : "John",
-            "last_name" : "Doe",
-            'email' : "email@gmail.com",
-            'username' : "johnuser",
-            'password' : "password"
-            }
+            "first_name": "John",
+            "last_name": "Doe",
+            'email': "email@gmail.com",
+            'username': "johnuser",
+            'password': "password"
+        }
         self.url = reverse('token-create')
         User.objects.create_user(**self.user_data)
-    
+
     def get_token(self, username=None, password=None, access=True):
         username = self.username if (username is None) else username
         password = self.password if (password is None) else password

@@ -1,8 +1,8 @@
+from comment.models import Comment
+from constance import config
+from django.utils.translation import gettext
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from comment.models import Comment
-from django.utils.translation import gettext
-from constance import config
 
 from ngen import models
 from ngen.serializers.common.fields import GenericRelationField, SlugOrHyperlinkedRelatedField

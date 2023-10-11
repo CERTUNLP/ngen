@@ -171,7 +171,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
         self.assertQuerysetEqual(
             filtered_queryset,
             [self.casetemplate_1, self.casetemplate_2,
-                self.casetemplate_3, self.casetemplate_4],
+             self.casetemplate_3, self.casetemplate_4],
             ordered=False
         )
 

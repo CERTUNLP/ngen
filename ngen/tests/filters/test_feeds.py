@@ -2,11 +2,13 @@
 Django Feed filter tests. Tests search_fields and filterset_class.
 """
 import datetime
+
 import pytz
 from django.utils import timezone
-from ngen.tests.filters.base_filter_test import BaseFilterTest
+
 from ngen.filters import FeedFilter
 from ngen.models import Feed
+from ngen.tests.filters.base_filter_test import BaseFilterTest
 
 
 class FeedFilterTest(BaseFilterTest):

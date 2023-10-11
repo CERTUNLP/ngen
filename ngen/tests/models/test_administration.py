@@ -1,25 +1,27 @@
-from django.test import TestCase
-from ngen.models import Feed, Priority, Tlp, User, config
-from django.utils import timezone
 from datetime import timedelta
+
+from django.test import TestCase
+
+from ngen.models import Feed, Priority, Tlp, User, config
+
 
 class TestAdministration(TestCase):
     def setUp(self):
         default_priority, created = Priority.objects.get_or_create(
             name=config.PRIORITY_DEFAULT,
-             severity=1
-            )
+            severity=1
+        )
         self.priority = Priority.objects.create(
             name='Test Priority',
             severity=2,
             attend_time=timedelta(minutes=config.PRIORITY_ATTEND_TIME_DEFAULT),
             solve_time=timedelta(minutes=config.PRIORITY_SOLVE_TIME_DEFAULT),
             notification_amount=3,
-            color='#FF0000'  
+            color='#FF0000'
         )
         self.feed = Feed.objects.create(name='Test Feed', active=True)
         self.tlp = Tlp.objects.create(
-            color='#FF0000', 
+            color='#FF0000',
             when='Test when text',
             why='Test why text',
             information='Test info',
@@ -29,8 +31,6 @@ class TestAdministration(TestCase):
             code=123
         )
         self.user = User.objects.create(username='testuser', email='test@example.com', priority=self.priority)
-
-
 
         '''
         ------------------------------------------------------------------------------------------------------
@@ -50,8 +50,8 @@ class TestAdministration(TestCase):
         '''
         self.assertEqual(str(self.priority), 'Test Priority')
         self.assertEqual(self.priority.severity, 2)
-        self.assertEqual(self.priority.attend_time, timedelta(minutes=config.PRIORITY_ATTEND_TIME_DEFAULT)) 
-        #AttributeError: 'Settings' object has no attribute 'PRIORITY_ATTEND_TIME_DEFAULT'
+        self.assertEqual(self.priority.attend_time, timedelta(minutes=config.PRIORITY_ATTEND_TIME_DEFAULT))
+        # AttributeError: 'Settings' object has no attribute 'PRIORITY_ATTEND_TIME_DEFAULT'
         self.assertEqual(self.priority.solve_time, timedelta(minutes=config.PRIORITY_SOLVE_TIME_DEFAULT))
         self.assertEqual(self.priority.notification_amount, 3)
         self.assertEqual(self.priority.color, '#FF0000')
@@ -69,19 +69,17 @@ class TestAdministration(TestCase):
         self.assertEqual(self.tlp.description, 'Test description')
         self.assertFalse(self.tlp.encrypt)
 
-
     def test_user_model(self):
         '''
         Test user model Creation
         '''
         self.assertEqual(str(self.user), 'testuser')
         self.assertIsNone(self.user.api_key)
-       
+
         '''
         END TEST CREATIONS
         ------------------------------------------------------------------------------------------------------
         '''
-
 
     def test_user_priority(self):
         '''
@@ -89,4 +87,3 @@ class TestAdministration(TestCase):
         '''
         self.assertEqual(self.user.priority.name, 'Test Priority')
         self.assertEqual(self.user.priority.severity, 2)
-

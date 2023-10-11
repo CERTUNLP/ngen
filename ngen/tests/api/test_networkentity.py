@@ -1,21 +1,12 @@
-from datetime import datetime, timedelta
-
-from django.urls import include, path, reverse
-from rest_framework.test import APITestCase, URLPatternsTestCase
-from rest_framework import status
+from datetime import timedelta
 
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import Token
+
 from ngen.models import NetworkEntity, Network
 
-from rest_framework_simplejwt.tokens import (
-    AccessToken,
-    RefreshToken,
-    SlidingToken,
-    Token,
-    UntypedToken,
-)
 
 class MyToken(Token):
     token_type = "test"
@@ -27,7 +18,8 @@ class TestNetworkEntity(APITestCase):
     This will handle entity testcases
     '''
 
-    fixtures = ["priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json", "edge.json", "report.json", "network_entity.json", "network.json", "contact.json"]
+    fixtures = ["priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json", "edge.json",
+                "report.json", "network_entity.json", "network.json", "contact.json"]
 
     def setUp(self):
         self.basename_list = 'networkentity-list'
@@ -74,7 +66,7 @@ class TestNetworkEntity(APITestCase):
         }
         entity = NetworkEntity.objects.create(**json_data)
         network_data = {
-            "cidr":  '1.1.1.4',
+            "cidr": '1.1.1.4',
             "type": 'internal',
             "network_entity": entity,
         }
@@ -83,4 +75,3 @@ class TestNetworkEntity(APITestCase):
         url = reverse(self.basename_detail, kwargs={'pk': entity.pk})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-

@@ -1,18 +1,12 @@
-from ngen.models import AuditModelMixin, User, administration, Priority, Tlp, Feed, config
-from datetime import datetime, timedelta
-from django.urls import include, path, reverse
-from rest_framework.test import APITestCase, URLPatternsTestCase
-from rest_framework import status
-from django.contrib.auth.hashers import make_password
-from ngen.tests.api.test_authentication import BaseAPITestCase
+from datetime import timedelta
 
-from rest_framework_simplejwt.tokens import (
-    AccessToken,
-    RefreshToken,
-    SlidingToken,
-    Token,
-    UntypedToken,
-)
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import Token
+
+from ngen.models import Priority, Tlp, Feed, config
+
 
 class MyToken(Token):
     token_type = "test"
@@ -26,23 +20,21 @@ class TestAdministration(APITestCase):
 
     fixtures = ["priority.json", "tlp.json", "user.json",
                 "feed.json"
-    ]
-
+                ]
 
     def setUp(self):
         url_login_jwt = reverse("token-create")
         json_login = {"username": "ngen", "password": "ngen"}
         resp = self.client.post(url_login_jwt, data=json_login, format="json")
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
-        
 
- #--------------------------------------------------------TLP----------------------------------------------------------       
+    # --------------------------------------------------------TLP----------------------------------------------------------
 
     def test_list_tlp(self):
         """
         Test TLP listing
         """
-        response = self.client.get('/api/administration/tlp/')         
+        response = self.client.get('/api/administration/tlp/')
         # Assertions for a successful response (status code 200)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -53,17 +45,17 @@ class TestAdministration(APITestCase):
         # Simulating POST data
         TLP_data = {
             "color": "#FF0000",
-            "when": "false",       
-            "why": "false",         
-            "information": "false", 
-            "description": "false", 
-            "encrypt": False,       
+            "when": "false",
+            "why": "false",
+            "information": "false",
+            "description": "false",
+            "encrypt": False,
             "name": "Test TLP",
-            "code": 122,        
+            "code": 122,
         }
 
         # POST the data 
-        response = self.client.post('/api/administration/tlp/', TLP_data, format='json')  
+        response = self.client.post('/api/administration/tlp/', TLP_data, format='json')
 
         # Assertions for a successful creation (status code 201)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -106,7 +98,6 @@ class TestAdministration(APITestCase):
         tlp.refresh_from_db()
         self.assertEqual(tlp.name, 'Updated TLP')
 
-
     def test_delete_tlp(self):
         """
         Test API TLP deletion
@@ -132,9 +123,10 @@ class TestAdministration(APITestCase):
         # Assertions to check the object is deleted from the database
         with self.assertRaises(Tlp.DoesNotExist):
             tlp.refresh_from_db()
- #----------------------------------------------------END-TLP----------------------------------------------------------   
-  
- #------------------------------------------------------FEED----------------------------------------------------------- 
+
+    # ----------------------------------------------------END-TLP----------------------------------------------------------
+
+    # ------------------------------------------------------FEED-----------------------------------------------------------
     def test_create_feed(self):
         """
         Test API Feed creation
@@ -201,7 +193,7 @@ class TestAdministration(APITestCase):
         with self.assertRaises(Feed.DoesNotExist):
             feed.refresh_from_db()
 
-#--------------------------------------------------END-FEED----------------------------------------------------------- 
+    # --------------------------------------------------END-FEED-----------------------------------------------------------
 
     def test_list_priorities(self):
         """
@@ -224,13 +216,10 @@ class TestAdministration(APITestCase):
 
         # Assertions for a successful listing (status code 200)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
-
 
         # Assertions to check the list number equals to # of db objects
         response_data = response.data
         self.assertEqual(response_data['count'], Priority.objects.count())
-
 
     def test_create_priority(self):
         """
