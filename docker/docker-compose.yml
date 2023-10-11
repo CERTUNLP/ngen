@@ -39,7 +39,7 @@ services:
     ngen-celery-worker:
         image: ngen-django:latest
         restart: on-failure
-        command: celery -A djangoProject worker -l debug
+        command: celery -A project worker -l debug
         volumes:
             - ../:/code
         env_file:
@@ -51,7 +51,7 @@ services:
     ngen-celery-beat:
         image: ngen-django:latest
         restart: on-failure
-        command: celery -A djangoProject beat -l debug
+        command: celery -A project beat -l debug
         volumes:
             - ../:/code
         env_file:

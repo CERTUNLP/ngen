@@ -1,4 +1,4 @@
-"""djangoProject URL Configuration
+"""project URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -23,7 +23,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework.authtoken import views as authtokenviews
 
-from djangoProject import settings
+from project import settings
 from ngen import views
 
 router = DefaultRouter()

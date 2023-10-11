@@ -19,15 +19,8 @@ class NetworkViewSet(viewsets.ModelViewSet):
 
 
 class NetworkEntityViewSet(viewsets.ModelViewSet):
-    queryset = models.Network.objects.all()
-    serializer_class = serializers.NetworkSerializer
-    filter_backends = [filters.SearchFilter,
-                       django_filters.rest_framework.DjangoFilterBackend,
-                       filters.OrderingFilter
-    ]
-    search_fields = ['cidr', 'type', 'domain']
-    filterset_class = NetworkFilter
-    ordering_fields = ['id', 'created', 'modified', 'cidr', 'domain', 'type']
+    queryset = models.NetworkEntity.objects.all()
+    serializer_class = serializers.NetworkEntitySerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

@@ -1,5 +1,7 @@
 from constance import settings, config
-from djangoProject import settings as project_settings
+
+from project import settings as project_settings
+
 
 def get_settings():
     setting_list = []

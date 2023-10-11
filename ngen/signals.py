@@ -1,15 +1,14 @@
 import os
 import shutil
+
 from PIL import Image
+from constance import config
+from constance.signals import config_updated
+from django.conf import settings
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
-from django.conf import settings
-from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-from constance.signals import config_updated
-from constance import config
 
-from djangoProject.settings import MEDIA_ROOT
 from ngen.models import ArtifactRelation
 
 

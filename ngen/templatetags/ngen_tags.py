@@ -1,11 +1,11 @@
 import base64
 
 from constance import config
-from djangoProject import settings
+from project import settings
 from django import template
 from django.template import Template, Context
 
-from djangoProject.settings import MEDIA_ROOT
+from project.settings import MEDIA_ROOT
 
 register = template.Library()
 
