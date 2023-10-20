@@ -1,10 +1,11 @@
 from django.db import models
 from django.utils.text import slugify
 
-from .utils import NgenModel
+from ngen.models.common.mixins import AuditModelMixin
+from ngen.utils import slugify_underscore
 
 
-class State(NgenModel):
+class State(AuditModelMixin):
     slug = models.SlugField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     blocked = models.BooleanField(default=False)
@@ -23,7 +24,7 @@ class State(NgenModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
+        self.slug = slugify_underscore(self.name)
         super(State, self).save(*args, **kwargs)
 
     def siblings(self):
@@ -68,7 +69,7 @@ class State(NgenModel):
         db_table = 'state'
 
 
-class Edge(NgenModel):
+class Edge(AuditModelMixin):
     parent = models.ForeignKey(State, models.CASCADE, related_name='children_edge')
     child = models.ForeignKey(State, models.CASCADE, related_name='parents_edge')
     discr = models.CharField(max_length=255)

@@ -3,13 +3,8 @@ Django Unit Tests for Case model
 """
 from django.test import TestCase
 
-from ngen.models import (
-    Tlp,
-    Priority,
-    CaseTemplate,
-    State,
-    Case,
-)
+from ngen.models import Tlp, Priority, CaseTemplate, State, Case
+
 
 class CaseTest(TestCase):
     """
@@ -18,7 +13,7 @@ class CaseTest(TestCase):
 
     fixtures = ["priority.json", "tlp.json", "user.json", "state.json",
                 "feed.json", "taxonomy.json", "case_template.json"
-    ]
+                ]
 
     def setUp(self):
         """

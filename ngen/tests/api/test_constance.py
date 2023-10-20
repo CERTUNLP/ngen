@@ -1,12 +1,9 @@
 from datetime import timedelta
 
 from django.urls import reverse
-from rest_framework.test import APITestCase
 from rest_framework import status
-
-from rest_framework_simplejwt.tokens import (
-    Token,
-)
+from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import Token
 
 
 class MyToken(Token):
@@ -20,6 +17,7 @@ class TestConstance(APITestCase):
     '''
 
     fixtures = ["priority.json", "user.json"]
+
     # fixtures = ["priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json",
     # "edge.json", "report.json", "network_entity.json", "network.json", "contact.json"]
 

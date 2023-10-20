@@ -33,7 +33,7 @@ services:
     ngen-celery-worker:
         image: certunlp/ngen-django:latest
         restart: always
-        command: celery -A djangoProject worker -l info
+        command: celery -A project worker -l info
         env_file:
             - ngen.env
         depends_on:
@@ -43,7 +43,7 @@ services:
     ngen-celery-beat:
         image: certunlp/ngen-django:latest
         restart: always
-        command: celery -A djangoProject beat -l info
+        command: celery -A project beat -l info
         env_file:
             - ngen.env
         depends_on:

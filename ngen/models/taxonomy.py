@@ -1,14 +1,14 @@
 from django.db import models
-from django.utils.text import slugify
-from django.utils.translation import gettext_lazy
 from django.utils import timezone
+from django.utils.translation import gettext_lazy
 from django_bleach.models import BleachField
 from model_utils import Choices
 
-from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin
+from ngen.models.common.mixins import AuditModelMixin, TreeModelMixin, PriorityModelMixin
+from ngen.utils import slugify_underscore
 
 
-class Taxonomy(NgenModel, NgenTreeModel):
+class Taxonomy(AuditModelMixin, TreeModelMixin):
     TYPE = Choices(('vulnerability', gettext_lazy('Vulnerability')), ('incident', gettext_lazy('Incident')))
     type = models.CharField(choices=TYPE, max_length=20)
     name = models.CharField(max_length=100)
@@ -18,7 +18,7 @@ class Taxonomy(NgenModel, NgenTreeModel):
     node_order_by = ['id']
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
+        self.slug = slugify_underscore(self.name)
         super(Taxonomy, self).save(*args, **kwargs)
 
     def delete(self):
@@ -36,7 +36,7 @@ class Taxonomy(NgenModel, NgenTreeModel):
         db_table = 'taxonomy'
 
 
-class Report(NgenModel):
+class Report(AuditModelMixin):
     LANG = Choices('en', 'es')
     lang = models.CharField(choices=LANG, default=LANG.en, max_length=2)
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.CASCADE, related_name='reports')
@@ -54,7 +54,7 @@ class Report(NgenModel):
         return "%s (%s)" % (self.taxonomy.name, self.lang)
 
 
-class Playbook(NgenModel):
+class Playbook(AuditModelMixin):
     name = models.CharField(max_length=60)
     taxonomy = models.ManyToManyField('Taxonomy', related_name='playbooks')
 
@@ -66,7 +66,7 @@ class Playbook(NgenModel):
         ordering = ["name"]
 
 
-class Task(NgenModel, NgenPriorityMixin):
+class Task(AuditModelMixin, PriorityModelMixin):
     name = models.CharField(max_length=140)
     playbook = models.ForeignKey('ngen.Playbook', on_delete=models.CASCADE, related_name='tasks')
     description = models.TextField(null=True)
@@ -79,7 +79,7 @@ class Task(NgenModel, NgenPriorityMixin):
         ordering = ["priority__severity"]
 
 
-class TodoTask(NgenModel):
+class TodoTask(AuditModelMixin):
     task = models.ForeignKey('ngen.Task', on_delete=models.CASCADE, related_name='todos')
     event = models.ForeignKey('ngen.Event', on_delete=models.CASCADE, related_name='todos')
     completed = models.BooleanField(default=False)

@@ -1,14 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from ngen.models import User
 from ngen.models import *
-
-
 
 
 class NetworkAdmin(admin.ModelAdmin):
     readonly_fields = ['parent']
+
 
 class EventAdmin(admin.ModelAdmin):
     readonly_fields = ['parent']
@@ -17,6 +15,7 @@ class EventAdmin(admin.ModelAdmin):
         if not obj.reporter:
             obj.reporter = request.user
         super().save_model(request, obj, form, change)
+
 
 # administration
 admin.site.register(Feed)

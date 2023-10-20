@@ -2,12 +2,13 @@
 Django Taxonomy filter tests. Tests search_fields and filterset_class.
 """
 import datetime
+
 import pytz
 from django.utils import timezone
-from ngen.tests.filters.base_filter_test import BaseFilterTest
-from ngen.filters import TaxonomyFilter
 
+from ngen.filters import TaxonomyFilter
 from ngen.models import Taxonomy, Playbook
+from ngen.tests.filters.base_filter_test import BaseFilterTest
 
 
 class TaxonomyFilterTest(BaseFilterTest):
@@ -73,7 +74,6 @@ class TaxonomyFilterTest(BaseFilterTest):
         # Searching by name
         query = "bot"
         response = self.client.get(self.search_url(query))
-        print(response.data)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
             self.get_id_from_url(response.data["results"][0]["url"]),

@@ -2,11 +2,13 @@
 Django Tlp filter tests. Tests search_fields and filterset_class.
 """
 import datetime
+
 import pytz
 from django.utils import timezone
-from ngen.tests.filters.base_filter_test import BaseFilterTest
+
 from ngen.filters import TlpFilter
 from ngen.models import Tlp
+from ngen.tests.filters.base_filter_test import BaseFilterTest
 
 
 class TlpFilterTest(BaseFilterTest):

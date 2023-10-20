@@ -2,21 +2,10 @@
 Django Unit Tests for Event model
 """
 import uuid
+
 from django.test import TestCase
 
-from ngen.models import (
-    Event,
-    User,
-    Taxonomy,
-    Feed,
-    Tlp,
-    Priority,
-    CaseTemplate,
-    Playbook,
-    Task,
-    State,
-    Case,
-)
+from ngen.models import Event, User, Taxonomy, Feed, Tlp, Priority, CaseTemplate, Playbook, Task, State, Case
 
 
 class EventTest(TestCase):

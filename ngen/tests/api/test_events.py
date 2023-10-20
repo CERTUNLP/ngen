@@ -1,9 +1,10 @@
 from datetime import timedelta
+
 from django.urls import reverse
-from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import Token
+
 from ngen.models import Event, Case, CaseTemplate, Taxonomy, Priority, Tlp, User, Feed
 
 
@@ -33,11 +34,11 @@ class TestEvent(APITestCase):
 
         cls.base_url = 'http://testserver'
         cls.priority_url = cls.base_url + \
-            reverse('priority-detail', kwargs={'pk': 2})  # 'high'
+                           reverse('priority-detail', kwargs={'pk': 2})  # 'high'
         cls.tlp_url = cls.base_url + \
-            reverse('tlp-detail', kwargs={'pk': 2})  # 'amber'
+                      reverse('tlp-detail', kwargs={'pk': 2})  # 'amber'
         cls.taxonomy_url = cls.base_url + \
-            reverse('taxonomy-detail', kwargs={'pk': 41})  # 'phishing'
+                           reverse('taxonomy-detail', kwargs={'pk': 41})  # 'phishing'
         cls.feed_url = cls.base_url + reverse('feed-detail', kwargs={'pk': 1})
 
         cls.priority = Priority.objects.get(pk=2)
@@ -311,7 +312,7 @@ class TestEvent(APITestCase):
         )
 
         another_priority_url = self.base_url + \
-            reverse('priority-detail', kwargs={'pk': 1})
+                               reverse('priority-detail', kwargs={'pk': 1})
 
         json_data = {
             'priority': another_priority_url

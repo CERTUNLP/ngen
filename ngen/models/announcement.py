@@ -9,7 +9,7 @@ from django.utils.html import strip_tags
 from django_bleach.models import BleachField
 from model_utils import Choices
 
-from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin
+from ngen.models.common.mixins import AuditModelMixin, EvidenceModelMixin, PriorityModelMixin
 
 
 class Communication:
@@ -63,7 +63,7 @@ class Communication:
         raise NotImplementedError
 
 
-class Announcement(NgenModel, NgenPriorityMixin, NgenEvidenceMixin, Communication):
+class Announcement(AuditModelMixin, PriorityModelMixin, EvidenceModelMixin, Communication):
     title = models.CharField(max_length=255)
     body = BleachField(null=True)
     LANG = Choices('en', 'es')

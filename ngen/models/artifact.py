@@ -1,16 +1,15 @@
-from constance import config
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from model_utils import Choices
 
-from .utils import NgenModel
+from ngen.models.common.mixins import AuditModelMixin
 from .. import tasks
 
 
-class Artifact(NgenModel):
+class Artifact(AuditModelMixin):
     TYPE = Choices(('ip', 'IP'), ('domain', gettext_lazy('Domain')), ('fqdn', gettext_lazy('FQDN')), (
         'url', 'Url'), ('mail', gettext_lazy('Mail')), ('hash', 'Hash'), ('file', gettext_lazy('File')),
                    ('other', gettext_lazy('Other')), ('user-agent', gettext_lazy('User agent')),
@@ -43,7 +42,7 @@ class Artifact(NgenModel):
         return targets
 
 
-class ArtifactRelation(NgenModel):
+class ArtifactRelation(AuditModelMixin):
     artifact = models.ForeignKey('ngen.Artifact', on_delete=models.CASCADE, related_name='artifact_relation')
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='artifact_relation')
     object_id = models.PositiveIntegerField()
@@ -74,43 +73,7 @@ class ArtifactRelation(NgenModel):
         super().save(*args, **kwargs)
 
 
-class ArtifactRelated(models.Model):
-    artifact_relation = GenericRelation('ngen.ArtifactRelation', related_query_name='%(class)ss')
-
-    class Meta:
-        abstract = True
-
-    @property
-    def enrichable(self):
-        return True
-
-    @property
-    def artifacts(self):
-        return Artifact.objects.filter(artifact_relation__in=self.artifact_relation.all()).order_by('id')
-
-    def save(self, *args, **kwargs):
-        super(ArtifactRelated, self).save(*args, **kwargs)
-        self.artifact_update()
-
-    def artifact_update(self):
-        if self.enrichable:
-            self.artifact_relation.all().delete()
-            for artifact_type, artifact_values in self.artifacts_dict.items():
-                if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
-                    for artifact_value in artifact_values:
-                        artifact, created = Artifact.objects.get_or_create(type=artifact_type, value=artifact_value)
-                        ArtifactRelation.objects.get_or_create(artifact=artifact,
-                                                               content_type=ContentType.objects.get_for_model(self),
-                                                               object_id=self.id)
-                        if not created:
-                            artifact.enrich()
-
-    @property
-    def artifacts_dict(self) -> dict[str, list]:
-        raise NotImplementedError
-
-
-class ArtifactEnrichment(NgenModel):
+class ArtifactEnrichment(AuditModelMixin):
     artifact = models.ForeignKey(Artifact, on_delete=models.CASCADE, related_name='enrichments')
     name = models.CharField(max_length=100)
     success = models.BooleanField(default=True)

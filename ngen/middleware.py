@@ -2,6 +2,7 @@ from auditlog.context import set_actor
 from auditlog.middleware import AuditlogMiddleware as _AuditlogMiddleware
 from django.utils.functional import SimpleLazyObject
 
+
 # https://github.com/jazzband/django-auditlog/issues/115
 class AuditlogMiddleware(_AuditlogMiddleware):
     def __call__(self, request):

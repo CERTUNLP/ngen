@@ -1,10 +1,11 @@
-from django.db import models
-from django.utils.text import slugify
-from django.utils.translation import gettext_lazy
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils.translation import gettext_lazy
 from model_utils import Choices
 
-from .utils import NgenModel, NgenTreeModel, NgenPriorityMixin, NgenAddressModel, AddressManager
+from ngen.models.common.mixins import AuditModelMixin, PriorityModelMixin, AddressModelMixin, TreeModelMixin
+from .common.mixins import AddressManager
+from ngen.utils import slugify_underscore
 
 
 class NetworkManager(AddressManager):
@@ -35,12 +36,13 @@ class NetworkManager(AddressManager):
         return self.defaults_domain()[:1]
 
 
-class Network(NgenModel, NgenTreeModel, NgenAddressModel):
+class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin):
     contacts = models.ManyToManyField('ngen.Contact', blank=True)
     active = models.BooleanField(default=True)
     TYPE = Choices(('internal', gettext_lazy('Internal')), ('external', gettext_lazy('External')))
     type = models.CharField(choices=TYPE, default=TYPE.internal, max_length=20)
-    network_entity = models.ForeignKey('ngen.NetworkEntity', models.SET_NULL, null=True, blank=True, related_name='networks')
+    network_entity = models.ForeignKey('ngen.NetworkEntity', models.SET_NULL, null=True, blank=True,
+                                       related_name='networks')
     objects = NetworkManager()
     node_order_by = ['parent', '-cidr', 'domain']
 
@@ -91,7 +93,7 @@ class Network(NgenModel, NgenTreeModel, NgenAddressModel):
         return self.contacts.filter(type='email').filter(priority__severity__gte=priority)
 
 
-class Contact(NgenModel, NgenPriorityMixin):
+class Contact(AuditModelMixin, PriorityModelMixin):
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
     public_key = models.CharField(max_length=4000, null=True)
@@ -114,13 +116,13 @@ class Contact(NgenModel, NgenPriorityMixin):
         ordering = ['username']
 
 
-class NetworkEntity(NgenModel):
+class NetworkEntity(AuditModelMixin):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
     active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name).replace('-', '_')
+        self.slug = slugify_underscore(self.name)
         super(NetworkEntity, self).save(*args, **kwargs)
 
     def __str__(self):

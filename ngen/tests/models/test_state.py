@@ -1,6 +1,8 @@
-from django.test import TestCase
 from django.db.models import deletion
-from ngen.models import State, Edge, Taxonomy, NgenModel, Case, Tlp, User, CaseTemplate, Priority, NgenPriorityMixin, config
+from django.test import TestCase
+
+from ngen.models import State, Edge, Case, Tlp, User, Priority, config
+
 
 class StateTestCase(TestCase):
 
@@ -11,15 +13,15 @@ class StateTestCase(TestCase):
         # Create the default Priority instance
         default_priority, created = Priority.objects.get_or_create(
             name=config.PRIORITY_DEFAULT,
-             severity=1
-            )
+            severity=1
+        )
         default_priority.save()
         self.tlp = Tlp.objects.create(name='Test TLP', code='123')
         self.user_creator = User.objects.create(username='creator')
         self.assigned_user = User.objects.create(username='assigned')
         self.state = State.objects.create(name='State')
         self.first_state = State.objects.create(name='First State', active=True)
-        self.second_state = State.objects.create(name='Second State', active=True)  
+        self.second_state = State.objects.create(name='Second State', active=True)
         self.case_template = None
 
     def test_state_creation(self):
@@ -45,7 +47,7 @@ class StateTestCase(TestCase):
         self.assertEqual(updated_state.name, 'Updated State')
         self.assertEqual(updated_state.description, 'This is an updated state')
 
-    def test_state_deletion(self): 
+    def test_state_deletion(self):
         '''
         Test State deletion. This also tests that if you delete a State that is present in an Edge, the edge also gets deleted.
         '''
@@ -61,27 +63,26 @@ class StateTestCase(TestCase):
         # Delete the state
         state_to_delete.delete()
 
-        #Check that the state is deleted
+        # Check that the state is deleted
         self.assertFalse(State.objects.filter(name='State to Delete').exists())
 
         # Check that the edge is also deleted
         self.assertFalse(Edge.objects.filter(parent=state_to_delete, child=another_state).exists())
 
-
     def test_state_permanency(self):
         case = Case.objects.create(
-        tlp=self.tlp,  
-        casetemplate_creator=self.case_template,  
-        user_creator=self.user_creator,  
-        assigned=self.assigned_user,  
-        state=self.state,  
-        attend_date=None, 
-        solve_date=None, 
-        report_message_id=None,  
-        raw=None,  
-        uuid='13075770-ad80-4d1e-8df7-f88c58365b92',  
-        lifecycle='manual',  
-        notification_count=1,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            user_creator=self.user_creator,
+            assigned=self.assigned_user,
+            state=self.state,
+            attend_date=None,
+            solve_date=None,
+            report_message_id=None,
+            raw=None,
+            uuid='13075770-ad80-4d1e-8df7-f88c58365b92',
+            lifecycle='manual',
+            notification_count=1,
         )
         # Try to delete test_state
         with self.assertRaises(deletion.ProtectedError):
@@ -97,19 +98,19 @@ class StateTestCase(TestCase):
     def test_edge_update(self):
         '''
         Test Edge update
-        '''    
-    # Create an Edge object
+        '''
+        # Create an Edge object
         edge = Edge.objects.create(parent=self.first_state, child=self.second_state, discr='Test Edge')
 
-    # Update the Edge object
+        # Update the Edge object
         edge.discr = 'Updated Edge'
         edge.save()
 
-    # Retrieve the updated edge from the database
+        # Retrieve the updated edge from the database
         updated_edge = Edge.objects.get(pk=edge.pk)
 
-    # Assertions to check if the edge was updated correctly
-        self.assertEqual(updated_edge.discr, 'Updated Edge')                
+        # Assertions to check if the edge was updated correctly
+        self.assertEqual(updated_edge.discr, 'Updated Edge')
 
     def test_edge_deletion(self):
         '''
@@ -132,7 +133,3 @@ class StateTestCase(TestCase):
 
         # Check if the states are no longer connected
         self.assertFalse(self.first_state.is_parent_of(self.second_state))
-
-
-
-

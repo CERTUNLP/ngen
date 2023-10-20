@@ -11,29 +11,32 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.mail import DNS_NAME
 from django.db import models
-from django.utils.translation import gettext_lazy
 from django.utils import timezone
+from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
 from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
-from auditlog.models import LogEntry
 
 import ngen
 from ngen.models.announcement import Communication
-from . import ArtifactRelated, Priority
-from .utils import NgenModel, NgenEvidenceMixin, NgenPriorityMixin, NgenMergeableModel, NgenAddressModel
+from . import Priority
+from .common.mixins import MergeModelMixin, AddressModelMixin, ArtifactRelatedMixin, AuditModelMixin, \
+    EvidenceModelMixin, PriorityModelMixin
 from ..storage import HashedFilenameStorage
 
 LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
     'auto_open', gettext_lazy('Auto open')), ('auto_close', gettext_lazy('Auto close')))
 
 
-class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, ArtifactRelated, Communication):
+class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMixin, ArtifactRelatedMixin,
+           Communication):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
 
-    casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.PROTECT, null=True, blank=True, related_name='cases_created', default=None)
-    user_creator = models.ForeignKey('ngen.User', models.PROTECT, null=True, blank=True, related_name='cases_created', default=None)
+    casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.PROTECT, null=True, blank=True,
+                                             related_name='cases_created', default=None)
+    user_creator = models.ForeignKey('ngen.User', models.PROTECT, null=True, blank=True, related_name='cases_created',
+                                     default=None)
     assigned = models.ForeignKey('ngen.User', models.PROTECT, null=True, related_name='assigned_cases', default=None)
     state = models.ForeignKey('ngen.State', models.PROTECT, related_name='cases')
 
@@ -104,7 +107,6 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
             self.communicate_new_open()
         else:
             self.communicate_new()
-
 
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
     def before_update(self):
@@ -221,7 +223,8 @@ class Case(NgenMergeableModel, NgenModel, NgenPriorityMixin, NgenEvidenceMixin, 
         self.save()
 
 
-class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin, ArtifactRelated, NgenAddressModel):
+class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin,
+            AddressModelMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -339,7 +342,7 @@ class Event(NgenMergeableModel, NgenModel, NgenEvidenceMixin, NgenPriorityMixin,
         return self.mergeable
 
 
-class Evidence(NgenModel):
+class Evidence(AuditModelMixin):
     def directory_path(self, filename=None):
         return '%s/%s' % (self.get_related().evidence_path(), filename)
 
@@ -372,7 +375,7 @@ class Evidence(NgenModel):
         self.file.storage.delete(self.file.name)
 
 
-class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
+class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin):
     event_taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
     event_feed = models.ForeignKey('ngen.Feed', models.PROTECT)
 
@@ -388,7 +391,7 @@ class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
     def validate_unique(self, exclude=None):
         super().validate_unique(exclude)
         qs = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain,
-                     event_taxonomy=self.event_taxonomy, event_feed=self.event_feed)
+                                           event_taxonomy=self.event_taxonomy, event_feed=self.event_feed)
         if qs.exists():
             raise ValidationError('CIDR, Domain, Taxonomy, Feed tuple must be unique')
 
@@ -404,8 +407,9 @@ class CaseTemplate(NgenModel, NgenPriorityMixin, NgenAddressModel):
     def case_priority(self) -> 'Priority':
         return self.priority
 
-    def create_case(self, events:list=[]) -> 'Case':
-        return Case.objects.create(tlp=self.case_tlp, lifecycle=self.case_lifecycle, state=self.case_state, casetemplate_creator=self, events=events)
+    def create_case(self, events: list = []) -> 'Case':
+        return Case.objects.create(tlp=self.case_tlp, lifecycle=self.case_lifecycle, state=self.case_state,
+                                   casetemplate_creator=self, events=events)
 
     def __str__(self):
         return str(self.id)
