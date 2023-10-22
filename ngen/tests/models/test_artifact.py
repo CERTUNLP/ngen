@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from ngen.models import Artifact, ArtifactRelated, ArtifactRelation, Event, Taxonomy, Feed, Tlp, Priority, User
+from ngen.models import Artifact, ArtifactRelation, Event, Taxonomy, Feed, Tlp, Priority, User
 from django.utils import timezone
 from datetime import timedelta
 from django.db.utils import IntegrityError
