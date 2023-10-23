@@ -7,7 +7,7 @@ from django_filters import DateFilter, DateFromToRangeFilter
 
 from ngen.models import (
     Taxonomy, Event, Case, Feed,
-    Tlp, Priority, User, CaseTemplate, Network, Contact
+    Tlp, Priority, User, CaseTemplate, Network, Contact, Playbook
 )
 
 
@@ -350,4 +350,20 @@ class ContactFilter(BaseFilter):
             'type': ['exact'],
             'role': ['exact'],
             'priority': ['exact'],
+        }
+
+
+class PlaybookFilter(BaseFilter):
+    """
+    Playbook model filter.
+    Allows to filter by:
+        - name (icontains)
+        - taxonomy (exact)
+    """
+
+    class Meta:
+        model = Playbook
+        fields = {
+            'name': ['icontains'],
+            'taxonomy': ['exact'],
         }

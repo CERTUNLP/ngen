@@ -2,7 +2,7 @@ import django_filters
 from rest_framework import permissions, filters, viewsets
 
 from ngen import models, serializers
-from ngen.filters import TaxonomyFilter
+from ngen.filters import TaxonomyFilter, PlaybookFilter
 
 
 class TaxonomyViewSet(viewsets.ModelViewSet):
@@ -21,6 +21,14 @@ class TaxonomyViewSet(viewsets.ModelViewSet):
 
 class PlaybookViewSet(viewsets.ModelViewSet):
     queryset = models.Playbook.objects.all()
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['name']
+    filterset_class = PlaybookFilter
+    ordering_fields = ['id', 'created', 'modified', 'name', 'taxonomy__name']
     serializer_class = serializers.PlaybookSerializer
     permission_classes = [permissions.IsAuthenticated]
 
