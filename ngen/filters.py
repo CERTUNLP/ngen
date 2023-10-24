@@ -6,7 +6,7 @@ import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
 
 from ngen.models import (
-    Taxonomy, Event, Case, Feed,
+    Taxonomy, Event, Case, Feed, State,
     Tlp, Priority, User, CaseTemplate, Network, Contact, Playbook
 )
 
@@ -366,4 +366,32 @@ class PlaybookFilter(BaseFilter):
         fields = {
             'name': ['icontains'],
             'taxonomy': ['exact'],
+        }
+
+
+class StateFilter(BaseFilter):
+    """
+    State model filter.
+    Allows to filter by:
+        - slug (icontains)
+        - name (icontains)
+        - blocked (exact)
+        - attended (exact)
+        - solved (exact)
+        - active (exact)
+        - description (icontains)
+        - children (exact, isnull)
+    """
+
+    class Meta:
+        model = State
+        fields = {
+            'slug': ['icontains'],
+            'name': ['icontains'],
+            'blocked': ['exact'],
+            'attended': ['exact'],
+            'solved': ['exact'],
+            'active': ['exact'],
+            'description': ['icontains'],
+            'children': ['exact', 'isnull'],
         }
