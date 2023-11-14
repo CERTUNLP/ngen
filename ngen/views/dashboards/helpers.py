@@ -8,7 +8,7 @@ from ngen.models import Event, Feed
 
 def get_feed_data():
     """
-    Get the amount of Feeds involved in events.
+    Get the amount of Feeds involved in events and the total amount of events.
     """
     feed_count = Feed.objects.annotate(event_count=Count("event")).order_by(
         "-event_count"

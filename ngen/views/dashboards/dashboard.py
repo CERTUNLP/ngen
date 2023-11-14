@@ -14,6 +14,7 @@ class DashboardView(APIView):
     """
 
     permission_classes = (IsAuthenticated,)
+    QUERY_LIMIT = 10
 
     def get(self, request):
         """
@@ -33,12 +34,16 @@ class DashboardView(APIView):
 
         current_user = User.objects.get(pk=request.user.id)
 
-        cases = Case.objects.filter(created__range=(date_from, date_to))
+        cases = Case.objects.filter(created__range=(date_from, date_to))[
+            : self.QUERY_LIMIT
+        ]
 
         if not current_user.is_superuser:
             cases = cases.filter(assigned_to=current_user)
 
-        events = Event.objects.filter(created__range=(date_from, date_to))
+        events = Event.objects.filter(
+            created__range=(date_from, date_to), parent__isnull=True
+        )[: self.QUERY_LIMIT]
 
         feed_data = helpers.get_feed_data()
 
