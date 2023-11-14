@@ -202,6 +202,16 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         return '[%s][TLP:%s][ID:%s] %s' % (config.TEAM_NAME, gettext_lazy(self.tlp.name), self.uuid, title)
 
     def communicate(self, title: str, template: str, **kwargs):
+        """
+        Send email to a list of recipients in 'event_by_contacts' param
+        or those returned by 'event_by_contacts' method on 'to' mail header.
+        Also send a copy to assigned user and team email if they are set.
+
+        :param title: title of the email
+        :param template: template to be rendered
+        :param kwargs: extra params to be passed to template
+        :return: None
+        """
         event_by_contacts = kwargs.get('event_by_contacts', self.events_by_contacts())
         template_params = self.template_params
         recipients = self.recipients
@@ -217,10 +227,9 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
             recipients.update({'to': [recipient for recipient in team_recipients if recipient]})
             self.send_mail(self.subject(title), self.render_template(template, extra_params=self.template_params),
                            recipients, self.email_attachments, self.email_headers)
-        # Increment and save notification_count
+        # Increment notification_count
         # TODO: make communication a class with objects that can be audited
         self.notification_count += 1
-        self.save()
 
 
 class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin,
