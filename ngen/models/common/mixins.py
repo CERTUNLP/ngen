@@ -389,8 +389,7 @@ class AddressModelMixin(models.Model):
 
         def create_address_object(self, address):
             # return address.replace('*','').strip().lower().split('/')[0]
-            a = address.replace(
-                '*', '').strip().strip('.').lower().split('/')[0]
+            a = address.replace('*', '').strip().strip('.').lower().split('/')[0]
             if a == '':
                 return '*'
             return a
@@ -419,7 +418,7 @@ class AddressModelMixin(models.Model):
         def network_string(self):
             if self.is_default():
                 return '*'
-            return f'*.{self.address}'
+            return f'{self.address}'
 
         def network_with_mask(self):
             return f'{self.address}/{self.address_mask()}'
