@@ -7,7 +7,7 @@ from django_filters import DateFilter, DateFromToRangeFilter
 
 from ngen.models import (
     Taxonomy, Event, Case, Feed, State,
-    Tlp, Priority, User, CaseTemplate, Network, Contact, Playbook
+    Tlp, Priority, User, CaseTemplate, Network, Contact, Playbook, NetworkEntity
 )
 
 
@@ -394,4 +394,22 @@ class StateFilter(BaseFilter):
             'active': ['exact'],
             'description': ['icontains'],
             'children': ['exact', 'isnull'],
+        }
+
+
+class NetworkEntityFilter(BaseFilter):
+    """
+    NetworkEntity model filter.
+    Allows to filter by:
+        - slug (icontains)
+        - name (icontains)
+        - active (exact)
+    """
+
+    class Meta:
+        model = NetworkEntity
+        fields = {
+            'slug': ['icontains'],
+            'name': ['icontains'],
+            'active': ['exact'],
         }

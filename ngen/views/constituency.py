@@ -2,7 +2,7 @@ import django_filters
 from rest_framework import permissions, filters, viewsets
 
 from ngen import models, serializers
-from ngen.filters import NetworkFilter, ContactFilter
+from ngen.filters import NetworkFilter, ContactFilter, NetworkEntityFilter
 
 
 class NetworkViewSet(viewsets.ModelViewSet):
@@ -21,6 +21,11 @@ class NetworkViewSet(viewsets.ModelViewSet):
 class NetworkEntityViewSet(viewsets.ModelViewSet):
     queryset = models.NetworkEntity.objects.all()
     serializer_class = serializers.NetworkEntitySerializer
+    filter_backends = [filters.SearchFilter,
+                       django_filters.rest_framework.DjangoFilterBackend,
+                       filters.OrderingFilter
+                       ]
+    filterset_class = NetworkEntityFilter
     permission_classes = [permissions.IsAuthenticated]
 
 
