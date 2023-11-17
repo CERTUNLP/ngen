@@ -2,10 +2,10 @@ import time
 from datetime import datetime, timedelta
 from ngen.models import User, Case, Event
 from ngen.serializers import DashboardSerializer
+from ngen.views.dashboards.dashboard_presenter import DashboardPresenter
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from ngen.views.dashboards import helpers
 
 
 class DashboardView(APIView):
@@ -14,51 +14,33 @@ class DashboardView(APIView):
     """
 
     permission_classes = (IsAuthenticated,)
-    QUERY_LIMIT = 10
 
     def get(self, request):
         """
         GET endpoint for the dashboard.
         """
         start_time = time.time()
-        date_from = helpers.parse_date(
-            helpers.get_query_param(request, "date_from")
-        ) or datetime.now() - timedelta(days=30)
-        date_to = (
-            helpers.parse_date(helpers.get_query_param(request, "date_to"))
-            or datetime.now()
-        )
+        dashboard_presenter = DashboardPresenter(request)
 
-        if date_from > date_to:
-            return Response({"error": "date_from must be before date_to"}, status=400)
-
-        current_user = User.objects.get(pk=request.user.id)
-
-        cases = Case.objects.filter(created__range=(date_from, date_to))[
-            : self.QUERY_LIMIT
-        ]
-
-        if not current_user.is_superuser:
-            cases = cases.filter(assigned_to=current_user)
-
-        events = Event.objects.filter(
-            created__range=(date_from, date_to), parent__isnull=True
-        )
-
-        feeds = helpers.get_feed_data()
-
-        network_entities = helpers.get_network_entity_data()
+        if not dashboard_presenter.are_dates_valid():
+            return Response(
+                {"error": "Invalid dates. 'date_from' must be before 'date_to'"},
+                status=400,
+            )
 
         serialized_data = DashboardSerializer(
             {
-                "date_from": date_from,
-                "date_to": date_to,
-                "cases": cases,
-                "events": events,
-                "feeds": feeds,
-                "network_entities": network_entities,
+                "date_from": dashboard_presenter.date_from,
+                "date_to": dashboard_presenter.date_to,
+                "cases": dashboard_presenter.cases_limited,
+                "events": dashboard_presenter.events_limited,
+                "feeds": dashboard_presenter.feeds,
             },
-            context={"request": request, "events": events},
+            context={
+                "request": request,
+                "events": dashboard_presenter.events,
+                "network_entities": dashboard_presenter.network_entities,
+            },
         ).data
 
         end_time = time.time()

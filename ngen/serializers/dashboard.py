@@ -75,9 +75,8 @@ class DashboardSerializer(serializers.Serializer):
         """
         Add the network_entities field to the representation.
         """
-
         network_entity_serializer = NetworkEntityDashboardSerializer(
-            instance=NetworkEntity.objects.all(), many=True, context=self.context
+            instance=self.context["network_entities"], many=True, context=self.context
         )
 
         representation = super().to_representation(instance)

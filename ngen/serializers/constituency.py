@@ -40,7 +40,7 @@ class NetworkEntitySerializerReduced(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.NetworkEntity
-        fields = ["url", "name", "slug", "active", "events"]
+        fields = ["url", "name", "slug", "active", "networks", "events"]
 
 
 class ContactSerializer(AuditSerializerMixin):
