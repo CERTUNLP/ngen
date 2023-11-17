@@ -43,23 +43,26 @@ class DashboardView(APIView):
 
         events = Event.objects.filter(
             created__range=(date_from, date_to), parent__isnull=True
-        )[: self.QUERY_LIMIT]
+        )
 
-        feed_data = helpers.get_feed_data()
+        feeds = helpers.get_feed_data()
+
+        network_entities = helpers.get_network_entity_data()
 
         serialized_data = DashboardSerializer(
             {
                 "date_from": date_from,
                 "date_to": date_to,
-                "feed_data": feed_data,
                 "cases": cases,
                 "events": events,
+                "feeds": feeds,
+                "network_entities": network_entities,
             },
-            context={"request": request},
-        )
+            context={"request": request, "events": events},
+        ).data
 
         end_time = time.time()
         execution_time = end_time - start_time
         print(f"Execution time: {execution_time} seconds")
 
-        return Response(serialized_data.data, status=200)
+        return Response(serialized_data, status=200)

@@ -3,12 +3,12 @@ Helper methods for the dashboard.
 """
 from datetime import datetime
 from django.db.models import Count
-from ngen.models import Event, Feed
+from ngen.models import Event, Feed, NetworkEntity
 
 
 def get_feed_data():
     """
-    Get the amount of Feeds involved in events and the total amount of events.
+    Get the Feeds, the number of events they are involved in and the total amount of events.
     """
     feed_count = Feed.objects.annotate(event_count=Count("event")).order_by(
         "-event_count"
@@ -23,6 +23,13 @@ def get_feed_data():
     feed_data = {"total_events": total_events, "feeds_in_events": feed_in_events}
 
     return feed_data
+
+
+def get_network_entity_data():
+    """
+    Get Network Entities with their networks prefetched.
+    """
+    return NetworkEntity.objects.prefetch_related("networks").all()
 
 
 def get_query_param(request, param_name, default=None, data_type=str):
