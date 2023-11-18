@@ -1,5 +1,5 @@
 """
-Django Case filter tests. Tests filterset_class.
+Django Case filter tests. Tests search_fields and filterset_class.
 """
 import datetime
 
@@ -123,6 +123,36 @@ class CaseFilterTest(BaseFilterTest):
             query_params,
             queryset=cls.queryset
         )
+
+    def test_search_filter(self):
+        """
+        SearchFilter tests.
+        """
+
+        self.authenticate()
+
+        # Searching by cidr
+        query = "10.0.1.0"
+        response = self.client.get(self.search_url(query))
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(
+            self.get_id_from_url(response.data["results"][0]["url"]),
+            self.case_3.id
+        )
+
+        # Searching by domain
+        query = "unlp.edu.ar"
+        response = self.client.get(self.search_url(query))
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(
+            self.get_id_from_url(response.data["results"][0]["url"]),
+            self.case_2.id
+        )
+
+        # Searching with no results
+        query = "no results"
+        response = self.client.get(self.search_url(query))
+        self.assertEqual(response.data["count"], 0)
 
     def test_filter_by_id(self):
         """
