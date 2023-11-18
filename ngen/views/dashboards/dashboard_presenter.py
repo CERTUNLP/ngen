@@ -23,7 +23,7 @@ class DashboardPresenter:
         self.date_from = self.get_date_from()
         self.date_to = self.get_date_to()
 
-        self.current_user = User.objects.get(pk=request.user.id)
+        self.current_user = self.get_current_user()
         self.cases = self.get_cases()
         self.cases_limited = self.cases[: self.QUERY_LIMIT]
         self.events = self.get_events()
@@ -47,6 +47,12 @@ class DashboardPresenter:
             self.parse_date(self.get_query_param(self.request, "date_to"))
             or datetime.now()
         )
+
+    def get_current_user(self):
+        """
+        Get the current user.
+        """
+        return User.objects.get(pk=self.request.user.id)
 
     def get_cases(self):
         """
@@ -86,7 +92,7 @@ class DashboardPresenter:
             )
 
         feeds = {
-            "total_events": total_events_count,
+            "total_events_count": total_events_count,
             "feeds_in_events": feed_in_events,
         }
 

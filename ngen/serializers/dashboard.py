@@ -22,7 +22,7 @@ class FeedDashboardSerializer(serializers.Serializer):
     Serializer for the feed data, including the total amount of events.
     """
 
-    total_events = serializers.IntegerField()
+    total_events_count = serializers.IntegerField()
     feeds_in_events = FeedsInEventsSerializer(many=True)
 
 
