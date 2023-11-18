@@ -76,10 +76,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
 
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
-        try:
-            action = self.context['view'].action
-        except KeyError:
-            action = None
+        action = self.context['view'].action
         if action in ['update', 'partial_update', 'retrieve']:
             if self.instance and self.instance.is_parent():
                 for field in self.instance._meta.fields:
