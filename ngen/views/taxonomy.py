@@ -26,7 +26,7 @@ class PlaybookViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter
     ]
-    search_fields = ['name']
+    search_fields = ['name', 'taxonomy__name']
     filterset_class = PlaybookFilter
     ordering_fields = ['id', 'created', 'modified', 'name', 'taxonomy__name']
     serializer_class = serializers.PlaybookSerializer
