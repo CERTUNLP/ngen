@@ -296,6 +296,7 @@ class CaseTemplateFilter(BaseFilter, NgenAddressModelFilter):
     class Meta:
         model = CaseTemplate
         fields = {
+            'address_value': ['icontains'],
             'case_lifecycle': ['exact'],
             'active': ['exact'],
             'priority': ['exact'],

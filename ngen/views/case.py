@@ -48,7 +48,7 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["cidr", "domain"]
+    search_fields = ["cidr", "domain", "address_value"]
     filterset_class = CaseTemplateFilter
     ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority"]
     serializer_class = serializers.CaseTemplateSerializer
