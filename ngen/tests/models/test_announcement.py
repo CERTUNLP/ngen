@@ -15,42 +15,37 @@ class AnnouncementTestCase(TestCase):
 
     def setUp(self):
         """SetUp for case and event creation in the tests"""
-        # default_priority, created = Priority.objects.get_or_create(
-        #     name=config.PRIORITY_DEFAULT,
-        #     severity=1
-        # )
-        self.priority = Priority.objects.get(pk=2)
-        self.tlp = Tlp.objects.get(pk=2)
-        self.state = State.objects.get(pk=9)
-        self.case_template = CaseTemplate.objects.get(pk=1)
+        self.priority = Priority.objects.get(name="High")
+        self.tlp = Tlp.objects.get(name="Green")
+        self.state = State.objects.get(name="Open") 
+        self.case_template = CaseTemplate.objects.get(pk=1) #Missing
         self.taxonomy = Taxonomy.objects.create(
             type="incident", name="Phising", slug="phising"
         )
         self.feed = Feed.objects.get(slug="shodan", name="Shodan")
-        self.tlpE = Tlp.objects.get(pk=2)
-        self.priorityE = Priority.objects.get(pk=2)
         self.user= User.objects.create(
-            username="test", password="test", priority=self.priority
+            username="test", 
+            password="test", 
+            priority=self.priority
         )
-        self.playbookE = Playbook.objects.create(
+        self.playbook = Playbook.objects.create(
             name="Test playbook",
         )
-        self.taskE = Task.objects.create(
+        self.task = Task.objects.create(
             name="Test task",
             description="Test description",
-            playbook=self.playbookE,
-            priority=self.priorityE,
+            playbook=self.playbook,
+            priority=self.priority,
         )
-        self.stateE = State.objects.get(pk=9)
 
-        self.case_templateE = CaseTemplate.objects.create(
+        self.case_template = CaseTemplate.objects.create(
             priority=self.priority,
             cidr=None,
             domain="info.unlp.edu.ar",
             event_taxonomy=self.taxonomy,
             event_feed=self.feed,
             case_tlp=self.tlp,
-            case_state=State.objects.get(pk=9),
+            case_state=self.state,
             case_lifecycle="auto_open",
             active=True,
         )
@@ -61,13 +56,13 @@ class AnnouncementTestCase(TestCase):
 
     def test_case_creation_email(self):
         """
-        Creating a case, then testing case creation email.
+        Creating an open case, then testing the email sending functionality
         """
         self.case = Case.objects.create(
-        priority=self.priority,
+        priority=self.priority, #High
         tlp=self.tlp,
         casetemplate_creator=self.case_template,
-        state=self.state
+        state=self.state #Open
         )
         
         self.assertEqual(len(mail.outbox), 1) # Test if the email is being sent.
@@ -75,7 +70,7 @@ class AnnouncementTestCase(TestCase):
 #----------------------------------------------------------------------------------
     def test_case_new_email(self):
         """
-        Creating a case, then testing new case email.
+        Creating an open case, then testing "new open case" email. (Esto había que cambiarlo)
         """
         self.case = Case.objects.create(
         priority=self.priority,
@@ -85,46 +80,42 @@ class AnnouncementTestCase(TestCase):
         )
         
         self.assertEqual(len(mail.outbox), 1) # Test if the email is being sent. 
-        self.assertIn("New open case", mail.outbox[0].subject)   
+        self.assertIn("New open case", mail.outbox[0].subject)   # Change to NewCase?
 #----------------------------------------------------------------------------------
     def test_case_close_email(self):
         """
-        Creating a case, then testing case closed email.
-        """
-        self.case = Case.objects.create(
-        priority=self.priority,
-        tlp=self.tlp,
-        casetemplate_creator=self.case_templateE,
-        state=State.objects.get(pk=1)
-        )
-        self.case.save()
-        # Update and close the case
-        self.case.state = State.objects.get(name='Closed')
-        self.case.save()
-        #ToDo: Find why it's not updating
-        # Check if the state is closed
-        self.assertEqual(self.case.state.name, 'Closed')
-
-
-        self.assertEqual(len(mail.outbox), 1) # Test if the email is being sent.  
-        self.assertIn("Case closed", mail.outbox[0].subject)
-#----------------------------------------------------------------------------------
-    def test_case_open_email(self):
-        """
-        Creating a case, then testing case opening email. (Reopen and open)
+        Creating an open case, then testing case closed email.
         """
         self.case = Case.objects.create(
         priority=self.priority,
         tlp=self.tlp,
         casetemplate_creator=self.case_template,
-        state=self.state
+        state=State.objects.get(name="Open") 
         )
-        title = 'Case reopened' if self.case.history.filter(changes__contains='solve_date":').exists() else 'Case opened'
+        # Update and close the case
+        self.case.state=State.objects.get(name="Closed")        
+        self.case.save()
+        self.assertEqual(self.case.state.name, 'Closed')
+        self.assertEqual(len(mail.outbox), 2) # Test if inbox has 2 emails, one for open and other for close.
+        self.assertIn("Case closed", mail.outbox[1].subject) #Check for the title of the second email.
+#----------------------------------------------------------------------------------
+
+    def test_case_open_email(self):
+        """
+        Creating a case on initial, then testing "New open case" email.
+        """
+        self.case = Case.objects.create(
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=State.objects.get(name="Initial")
+        )
+        self.case.state = State.objects.get(name='Open')
+        self.case.save()
         self.assertEqual(len(mail.outbox), 1) # Test if the email is being sent. 
-        self.assertIn(title, mail.outbox[0].subject)   
-#----------------------------------------------------------------------------------       
-    def test_case_new_open_email(self):
-        pass
+        self.assertIn("Case opened", mail.outbox[0].subject)   
+        self.assertIn("New case", mail.outbox[0].subject) 
+        
 #----------------------------------------------------------------------------------
     def test_case_update_email(self):
         """
@@ -136,17 +127,28 @@ class AnnouncementTestCase(TestCase):
         casetemplate_creator=self.case_template,
         state=self.state
         )
-        
-        self.assertEqual(len(mail.outbox), 1) # Test if the email is being sent.   
-        self.assertIn("Case status updated", mail.outbox[0].subject)
+        self.case.state=State.objects.get(name='Staging') #Change to staging to force update from hook.
+        self.case.before_update()
+        self.assertEqual(len(mail.outbox), 3) # New open case > Case Opened > X attended X solved for update
+
+        # self.assertIn("Case status updated", mail.outbox[2].subject)
+        print(mail.outbox[0].subject)
+        print(mail.outbox[1].subject)
 
 
 
-#-------------------------------EVENT-TESTS----------------------------------------
+# #-------------------------------EVENT-TESTS----------------------------------------
     def test_event_creation_email_delivery(self):
         """
         Creating an event, then testing event creation email.
         """
+        self.case = Case.objects.create(
+        priority=self.priority, #High
+        tlp=self.tlp,
+        casetemplate_creator=self.case_template,
+        state=self.state #Open
+        )
+        #Duda, el email es del caso
         self.event = Event.objects.create(
             domain="info.unlp.edu.ar",
             taxonomy=self.taxonomy,
@@ -155,14 +157,21 @@ class AnnouncementTestCase(TestCase):
             reporter=self.user,
             notes="Some notes",
             priority=self.priority,
+            case=self.case
         )
         
         self.assertEqual(len(mail.outbox), 1) # Test if the email is being sent.
-#----------------------------------------------------------------------------------
+        print(mail.outbox[0].body)
+        print(mail.outbox[0].attachments)
+        sent_email = mail.outbox[0]
+        self.assertEqual(len(sent_email.attachments), 1)
+
+# #----------------------------------------------------------------------------------
 
 
 
-
+#crear case template > crear evento > revisar que se haya creado el caso ': el correo adentro deberia tener el evento
+#cuadno el caso tiene un evento asociado deberia contenter al evento
 
 
 
@@ -262,4 +271,5 @@ class AnnouncementTestCase(TestCase):
     #         self.case.communicate(gettext_lazy('New event on case'), 'reports/case_assign.html',
     #                               event_by_contacts={tuple(self.email_contacts()): [self]})
 
-                              
+                              #No usar PK
+# Probar TODOSSS los casos
