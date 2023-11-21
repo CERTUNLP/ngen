@@ -54,6 +54,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
 
         cls.casetemplate_2 = CaseTemplate.objects.create(
             domain="unlp.edu.ar",
+            address_value="unlp.edu.ar",
             event_taxonomy=cls.taxonomy_2,
             event_feed=cls.feed_2,
             case_tlp=cls.tlp_2,
@@ -324,3 +325,16 @@ class CaseTemplateFilterTest(BaseFilterTest):
             [self.casetemplate_1, self.casetemplate_2],
             ordered=False
         )
+
+    def test_filter_by_address_value(self):
+        """
+        Test filter by address_value.
+        """
+
+        params = {
+            "address_value__icontains": "unlp.edu.ar"
+        }
+
+        filtered_queryset = self.filter(params).qs
+
+        self.assertQuerysetEqual(filtered_queryset, [self.casetemplate_2])

@@ -23,11 +23,11 @@ class PlaybookFilterTest(BaseFilterTest):
         cls.basename = "playbook"
         super().setUpTestData()
 
-        cls.taxonomy_1 = Taxonomy.objects.get(pk=1)
-        cls.taxonomy_2 = Taxonomy.objects.get(pk=2)
+        cls.taxonomy_1 = Taxonomy.objects.get(pk=90)
+        cls.taxonomy_2 = Taxonomy.objects.get(pk=41)
 
         cls.playbook_1 = Playbook.objects.create(
-            name="Phishing playbook"
+            name="Phish playbook"
         )
         cls.playbook_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
         cls.playbook_1.save()
@@ -54,6 +54,15 @@ class PlaybookFilterTest(BaseFilterTest):
 
         # Searching by name
         query = "phish"
+        response = self.client.get(self.search_url(query))
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(
+            self.get_id_from_url(response.data["results"][0]["url"]),
+            self.playbook_1.id
+        )
+
+        # Searching by taxonomy name
+        query = "ing"
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
