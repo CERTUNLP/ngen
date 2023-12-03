@@ -1,5 +1,4 @@
 from django.db.models import Q
-from ngen.models.constituency import NetworkEntity
 from rest_framework import serializers
 from ngen.serializers import (
     EventSerializerReduced,
@@ -41,17 +40,18 @@ class NetworkEntityDashboardSerializer(NetworkEntitySerializerReduced):
 
         events = self.context.get("events")
 
-        domain_list = [
-            domain
-            for domain in network_entity.networks.values_list("domain", flat=True)
-            if domain is not None
-        ]
+        domain_list = []
+        cidr_list = []
 
-        cidr_list = [
-            cidr
-            for cidr in network_entity.networks.values_list("cidr", flat=True)
-            if cidr is not None
-        ]
+        for network in network_entity.networks.all():
+            domain = network.domain
+            cidr = network.cidr
+
+            if domain is not None:
+                domain_list.append(domain)
+
+            if cidr is not None:
+                cidr_list.append(cidr)
 
         entity_events = events.filter(Q(domain__in=domain_list) | Q(cidr__in=cidr_list))
 

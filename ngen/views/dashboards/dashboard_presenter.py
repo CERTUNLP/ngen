@@ -70,7 +70,7 @@ class DashboardPresenter:
         Get events.
         """
         events = Event.objects.filter(
-            created__range=(self.date_from, self.date_to), parent__isnull=True
+            date__range=(self.date_from, self.date_to), parent__isnull=True
         )
 
         return events

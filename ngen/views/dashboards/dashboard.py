@@ -1,6 +1,4 @@
 import time
-from datetime import datetime, timedelta
-from ngen.models import User, Case, Event
 from ngen.serializers import DashboardSerializer
 from ngen.views.dashboards.dashboard_presenter import DashboardPresenter
 from rest_framework.views import APIView
