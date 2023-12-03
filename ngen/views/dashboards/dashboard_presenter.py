@@ -20,70 +20,97 @@ class DashboardPresenter:
     def __init__(self, request):
         self.request = request
 
-        self.date_from = self.get_date_from()
-        self.date_to = self.get_date_to()
+        self.date_from = None
+        self.date_to = None
 
-        self.current_user = self.get_current_user()
-        self.cases = self.get_cases()
-        self.cases_limited = self.cases[: self.QUERY_LIMIT]
-        self.events = self.get_events()
-        self.events_limited = self.events[: self.QUERY_LIMIT]
-        self.feeds = self.get_feeds()
-        self.network_entities = self.get_network_entities()
+        self.current_user = None
+        self.cases = None
+        self.cases_limited = None
+        self.events = None
+        self.events_limited = None
+        self.feeds = None
+        self.network_entities = None
 
     def get_date_from(self):
         """
         Get the date_from
         """
-        return self.parse_date(
-            self.get_query_param(self.request, "date_from")
-        ) or datetime.now() - timedelta(days=30)
+        if not self.date_from:
+            self.date_from = self.parse_date(
+                self.get_query_param("date_from")
+            ) or datetime.now() - timedelta(days=30)
+
+        return self.date_from
 
     def get_date_to(self):
         """
         Get the date_to
         """
-        return (
-            self.parse_date(self.get_query_param(self.request, "date_to"))
-            or datetime.now()
-        )
+        if not self.date_to:
+            self.date_to = (
+                self.parse_date(self.get_query_param("date_to")) or datetime.now()
+            )
+
+        return self.date_to
 
     def get_current_user(self):
         """
         Get the current user.
         """
-        return User.objects.get(pk=self.request.user.id)
+        if not self.current_user:
+            self.current_user = User.objects.get(pk=self.request.user.id)
+
+        return self.current_user
 
     def get_cases(self):
         """
         Get cases.
         """
-        cases = Case.objects.filter(created__range=(self.date_from, self.date_to))
+        if not self.cases:
+            self.cases = Case.objects.filter(
+                date__range=(self.get_date_from(), self.get_date_to())
+            )
 
-        if not self.current_user.is_superuser:
-            cases = cases.filter(assigned_to=self.current_user)
+            if not self.get_current_user().is_superuser:
+                self.cases = self.cases.filter(assigned_to=self.current_user)
 
-        return cases
+        return self.cases
+
+    def get_cases_limited(self):
+        """
+        Get cases limited to self.QUERY_LIMIT.
+        """
+
+        return self.get_cases()[: self.QUERY_LIMIT]
 
     def get_events(self):
         """
         Get events.
         """
-        events = Event.objects.filter(
-            date__range=(self.date_from, self.date_to), parent__isnull=True
-        )
+        if not self.events:
+            self.events = Event.objects.filter(
+                date__range=(self.get_date_from(), self.get_date_to()),
+                parent__isnull=True,
+            )
 
-        return events
+        return self.events
+
+    def get_events_limited(self):
+        """
+        Get events limited to self.QUERY_LIMIT.
+        """
+
+        return self.get_events()[: self.QUERY_LIMIT]
 
     def get_feeds(self):
         """
         Get the Feeds, the number of events they are involved in and the total amount of events.
         """
         feed_count = Feed.objects.annotate(
-            event_count=Count("event", filter=Q(event__in=self.events))
+            event_count=Count("event", filter=Q(event__in=self.get_events()))
         ).order_by("-event_count")
 
-        total_events_count = self.events.count()
+        total_events_count = self.get_events().count()
 
         feed_in_events = []
         for feed in feed_count:
@@ -102,19 +129,24 @@ class DashboardPresenter:
         """
         Get Network Entities with their networks prefetched.
         """
-        return NetworkEntity.objects.prefetch_related("networks").all()
+        if not self.network_entities:
+            self.network_entities = NetworkEntity.objects.prefetch_related(
+                "networks"
+            ).all()
+
+        return self.network_entities
 
     def are_dates_valid(self):
         """
         Check if the dates are valid.
         """
-        return self.date_from <= self.date_to
+        return self.get_date_from() <= self.get_date_to()
 
-    def get_query_param(self, request, param_name, default=None, data_type=str):
+    def get_query_param(self, param_name, default=None, data_type=str):
         """
         Get a certain query parameter from the request.
         """
-        value = request.GET.get(param_name, default)
+        value = self.request.GET.get(param_name, default)
 
         if value is not None:
             try:

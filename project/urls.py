@@ -23,6 +23,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from ngen import views
+from ngen.views import dashboards
 from project import settings
 
 router = DefaultRouter()
@@ -85,7 +86,26 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    path('api/dashboard/', views.DashboardView.as_view(), name='dashboard'),
+    path(
+        'api/dashboard/events',
+        dashboards.events.DashboardEventsView.as_view(),
+        name='dashboard-events'
+    ),
+    path(
+        'api/dashboard/cases',
+        dashboards.cases.DashboardCasesView.as_view(),
+        name='dashboard-cases'
+    ),
+    path(
+        'api/dashboard/feeds',
+        dashboards.feeds.DashboardFeedsView.as_view(),
+        name='dashboard-feeds'
+    ),
+    path(
+        'api/dashboard/network_entities',
+        dashboards.network_entities.DashboardNetworkEntitiesView.as_view(),
+        name='dashboard-network-entities'
+    ),
 ]
 
 if not settings.ELASTIC_ENABLED:

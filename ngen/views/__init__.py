@@ -4,7 +4,7 @@ from .announcement import *
 from .artifact import *
 from .case import *
 from .constituency import *
-from .dashboards.dashboard import *
+from .dashboards import *
 from .state import *
 from .taxonomy import *
 from .tools import *
