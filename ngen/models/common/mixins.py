@@ -229,17 +229,17 @@ class AddressModelMixin(models.Model):
                 self.address = self.AddressIpv6(self.cidr)
             self.cidr = self.address.sanitized()
             return self.address
-        elif self.domain != None:
+        elif self.domain:
             self.address = self.AddressDomain(self.domain)
             self.domain = self.address.sanitized()
             return self.address
         return None
 
     def validate_addresses(self):
-        if not self.address_value and not self.cidr and self.domain == None:
+        if not self.address_value and not self.cidr and not self.domain:
             msg = 'At least cidr or domain must be setted'
             raise ValidationError({'cidr': [msg], 'domain': [msg]})
-        elif self.cidr and self.domain != None:
+        elif self.cidr and self.domain:
             msg = 'cidr and domain are mutually exclusive'
             raise ValidationError(
                 {'address_value': [msg], 'cidr': [msg], 'domain': [msg]})
@@ -383,7 +383,7 @@ class AddressModelMixin(models.Model):
     class AddressDomain(Address):
 
         def address_mask(self):
-            if self.address in ['*', '']:
+            if self.address in ['*', '.']:
                 return 0
             return len(self.address.split('.'))
 
