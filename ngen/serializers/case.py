@@ -104,7 +104,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
 class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
     events = serializers.HyperlinkedRelatedField(
         many=True,
-        read_only=True,
+        queryset=models.Event.objects.all(),
         view_name='event-detail'
     )
     children = serializers.HyperlinkedRelatedField(
