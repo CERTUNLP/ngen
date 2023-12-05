@@ -32,6 +32,7 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
            Communication):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=255, null=True, blank=True, default='')
 
     casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.PROTECT, null=True, blank=True,
                                              related_name='cases_created', default=None)
