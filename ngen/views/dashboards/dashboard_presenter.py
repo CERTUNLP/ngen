@@ -20,8 +20,8 @@ class DashboardPresenter:
     def __init__(self, request):
         self.request = request
 
-        self.date_from = None
-        self.date_to = None
+        self.date_from = self.get_date_from()
+        self.date_to = self.get_date_to()
 
         self.current_user = None
         self.cases = None
@@ -35,23 +35,21 @@ class DashboardPresenter:
         """
         Get the date_from
         """
-        if not self.date_from:
-            self.date_from = self.parse_date(
-                self.get_query_param("date_from")
-            ) or datetime.now() - timedelta(days=30)
+        param_date = self.get_query_param("date_from")
+        if not param_date:
+            return datetime.now() - timedelta(days=30)
 
-        return self.date_from
+        return self.parse_date(param_date, "date_from")
 
     def get_date_to(self):
         """
         Get the date_to
         """
-        if not self.date_to:
-            self.date_to = (
-                self.parse_date(self.get_query_param("date_to")) or datetime.now()
-            )
+        param_date = self.get_query_param("date_to")
+        if not param_date:
+            return datetime.now()
 
-        return self.date_to
+        return self.parse_date(param_date, "date_to")
 
     def get_current_user(self):
         """
@@ -67,9 +65,7 @@ class DashboardPresenter:
         Get cases.
         """
         if not self.cases:
-            self.cases = Case.objects.filter(
-                date__range=(self.get_date_from(), self.get_date_to())
-            )
+            self.cases = Case.objects.filter(date__range=(self.date_from, self.date_to))
 
             if not self.get_current_user().is_superuser:
                 self.cases = self.cases.filter(assigned_to=self.current_user)
@@ -89,7 +85,7 @@ class DashboardPresenter:
         """
         if not self.events:
             self.events = Event.objects.filter(
-                date__range=(self.get_date_from(), self.get_date_to()),
+                date__range=(self.date_from, self.date_to),
                 parent__isnull=True,
             )
 
@@ -136,11 +132,11 @@ class DashboardPresenter:
 
         return self.network_entities
 
-    def are_dates_valid(self):
+    def is_date_range_valid(self):
         """
-        Check if the dates are valid.
+        Check if the date range is valid.
         """
-        return self.get_date_from() <= self.get_date_to()
+        return self.date_from <= self.date_to
 
     def get_query_param(self, param_name, default=None, data_type=str):
         """
@@ -155,11 +151,15 @@ class DashboardPresenter:
                 return None
         return value
 
-    def parse_date(self, date_string, date_format="%Y-%m-%d") -> datetime or None:
+    def parse_date(
+        self, date_string, param_name, date_format="%Y-%m-%dT%H:%M:%SZ"
+    ) -> datetime:
         """
         Return a datetime object from a date string.
         """
         try:
             return datetime.strptime(date_string, date_format)
-        except (ValueError, TypeError):
-            return None
+        except ValueError as exc:
+            raise ValueError(
+                f"Invalid '{param_name}' format. Use YYYY-MM-DDTHH:MM:SSZ"
+            ) from exc

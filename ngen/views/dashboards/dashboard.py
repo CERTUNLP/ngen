@@ -18,11 +18,14 @@ class DashboardView(APIView):
         """
         Parent GET method to initialize presenter and validate dates.
         """
-        self.dashboard_presenter = DashboardPresenter(request)
+        try:
+            self.dashboard_presenter = DashboardPresenter(request)
+        except ValueError as exc:
+            return Response({"error": str(exc)}, status=400)
 
-        if not self.dashboard_presenter.are_dates_valid():
+        if not self.dashboard_presenter.is_date_range_valid():
             return Response(
-                {"error": "Invalid dates. 'date_from' must be before 'date_to'"},
+                {"error": "Invalid date range. 'date_from' must be before 'date_to'"},
                 status=400,
             )
 
