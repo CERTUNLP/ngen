@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ngen.models import Case, Priority, Tlp, State, CaseTemplate
+from ngen.models import Case, Priority, Tlp, State, CaseTemplate, Event, Taxonomy, Feed, User
 
 
 class TestCase(APITestCase):
@@ -10,8 +10,8 @@ class TestCase(APITestCase):
     This will handle Case testcases
     '''
 
-    fixtures = ["priority.json", "tlp.json", "user.json", "state.json",
-                "feed.json", "taxonomy.json", "case_template.json"
+    fixtures = ["priority.json", "tlp.json", "user.json", "state.json", "feed.json",
+                "taxonomy.json", "case_template.json", "user.json"
                 ]
 
     @classmethod
@@ -32,6 +32,9 @@ class TestCase(APITestCase):
         cls.priority = Priority.objects.get(pk=2)
         cls.tlp = Tlp.objects.get(pk=2)
         cls.state = State.objects.get(pk=9)
+        cls.taxonomy = Taxonomy.objects.get(pk=1)
+        cls.feed = Feed.objects.get(pk=1)
+        cls.user = User.objects.get(username='ngen')
         cls.case_template = CaseTemplate.objects.get(pk=1)
 
     def setUp(self):
@@ -77,7 +80,32 @@ class TestCase(APITestCase):
         response = self.client.get(self.url_detail(case.pk))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_case_post(self):
+    def test_case_post_with_valid_events(self):
+        '''
+        This will test successful Case POST
+        '''
+
+        _ = Event.objects.create(
+            domain='test.com',
+            priority=self.priority,
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user
+        )
+        event_url = self.base_url + reverse('event-detail', kwargs={'pk': 1})
+
+        json_data = {
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'state': self.state_url,
+            'casetemplate_creator': self.case_template_url,
+            'events': [event_url]
+        }
+        response = self.client.post(self.url_list, data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_case_post_with_empty_events(self):
         '''
         This will test successful Case POST
         '''
@@ -86,10 +114,26 @@ class TestCase(APITestCase):
             'priority': self.priority_url,
             'tlp': self.tlp_url,
             'state': self.state_url,
-            'casetemplate_creator': self.case_template_url
+            'casetemplate_creator': self.case_template_url,
+            'events': []
         }
         response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_case_post_with_invalid_events(self):
+        '''
+        This will test successful Case POST
+        '''
+
+        json_data = {
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'state': self.state_url,
+            'casetemplate_creator': self.case_template_url,
+            'events': ['http://testserver/event/123123/']
+        }
+        response = self.client.post(self.url_list, data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_case_patch(self):
         '''
