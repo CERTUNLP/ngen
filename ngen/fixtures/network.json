@@ -37,7 +37,7 @@
       "modified": "2021-12-05T15:12:43.420Z",
       "parent": null,
       "cidr": null,
-      "domain": "",
+      "domain": "*",
       "active": true,
       "type": "internal",
       "network_entity": null,

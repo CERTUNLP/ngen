@@ -213,7 +213,7 @@ class TestEvent(APITestCase):
             'feed': self.feed_url
         }
         response = self.client.post(self.url_list, data=json_data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_event_post_with_cidr_empty_and_domain_empty(self):
         '''
@@ -229,7 +229,7 @@ class TestEvent(APITestCase):
             'feed': self.feed_url
         }
         response = self.client.post(self.url_list, data=json_data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_event_post_with_cidr_wildcard_and_domain_empty(self):
         '''
@@ -238,6 +238,22 @@ class TestEvent(APITestCase):
         json_data = {
             'cidr': '0.0.0.0/0',
             'domain': '',
+            'notes': 'estas son notas',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
+        }
+        response = self.client.post(self.url_list, data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_event_post_with_cidr_wildcard_and_domain_wildcard(self):
+        '''
+        This will test bad request Event POST
+        '''
+        json_data = {
+            'cidr': '0.0.0.0/0',
+            'domain': '*',
             'notes': 'estas son notas',
             'priority': self.priority_url,
             'tlp': self.tlp_url,
