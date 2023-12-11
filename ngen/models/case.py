@@ -107,10 +107,18 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         if self.state.attended:
             self.communicate_new_open()
         else:
-            self.communicate_new()
+            if config.CASE_REPORT_NEW_CASES:
+                self.communicate_new()
 
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
     def before_update(self):
+        old = self.__class__.objects.get(pk=self.pk)
+        edge = ngen.models.Edge.objects.filter(parent=old.state, child=self.state).first()
+        if not edge:
+            raise ValidationError(
+                {'state': gettext_lazy(
+                    "It\'s not possible to change the state %s to %s. The new possible states are %s") % (
+                              old.state, self.state, ', '.join([str(s) for s in old.state.children.all()]))})
         if self.state.attended:
             self.attend_date = timezone.now()
             self.solve_date = None
@@ -119,7 +127,8 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
             self.solve_date = timezone.now()
             self.communicate_close()
         else:
-            self.communicate_update()
+            if old.state.attended != self.state.attended or old.state.solved != self.state.solved:
+                self.communicate_update()
 
     def communicate_new(self):
         self.communicate(gettext_lazy('New case'), 'reports/case_base.html')
@@ -132,7 +141,7 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         self.communicate(gettext_lazy(title), 'reports/case_base.html')
 
     def communicate_new_open(self):
-        self.communicate(gettext_lazy('New open case'), 'reports/case_base.html')
+        self.communicate(gettext_lazy('Case opened'), 'reports/case_base.html')
 
     def communicate_update(self):
         self.communicate(gettext_lazy('Case status updated'), 'reports/state_change.html', )

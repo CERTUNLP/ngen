@@ -100,6 +100,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
                         attrs.pop(attr)
         return attrs
 
+
 class EventSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
 
     @staticmethod
@@ -124,6 +125,7 @@ class EventSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audi
             "reporter",
         ]
 
+
 class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
     events = serializers.HyperlinkedRelatedField(
         many=True,
@@ -143,6 +145,11 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSeriali
         queryset=models.User.objects.all(),
         view_name='user-detail'
     )
+    state = SlugOrHyperlinkedRelatedField(
+        slug_field='slug',
+        queryset=models.State.objects.all(),
+        view_name='state-detail'
+    )
     template_creator = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='casetemplate-detail'
@@ -157,29 +164,6 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSeriali
     def get_evidence(self, obj):
         return GenericRelationField(read_only=True).generic_detail_links(obj.evidence_all, self.context.get('request'))
 
-    def validate_state(self, attrs):
-        if self.instance is not None and self.instance.state != attrs and not self.instance.state.is_parent_of(attrs):
-            raise ValidationError(
-                {'state': gettext(
-                    'It\'s not possible to change the state "%s" to "%s". The new possible states are %s') % (
-                              self.instance.state, attrs, list(self.instance.state.children.all()))})
-        return attrs
-
-    def get_extra_kwargs(self):
-        extra_kwargs = super().get_extra_kwargs()
-        if self.instance:
-            kwargs = extra_kwargs.get('state', {})
-            action = self.context['view'].action
-            if not kwargs.get('read_only', False):
-                if action in ['update', 'partial_update']:
-                    queryset = (self.instance.state.children.all() | models.State.objects.filter(
-                        pk=self.instance.state.pk)).distinct()
-                    kwargs['queryset'] = queryset
-                else:
-                    kwargs['queryset'] = models.State.get_initial().children.all()
-                extra_kwargs['state'] = kwargs
-        return extra_kwargs
-
     @staticmethod
     def allowed_fields():
         return config.ALLOWED_FIELDS_CASE.split(',')
@@ -187,6 +171,7 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSeriali
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
         return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
+
 
 class CaseSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
 
@@ -209,6 +194,7 @@ class CaseSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audit
             "lifecycle",
             "state",
         ]
+
 
 class CaseTemplateSerializer(AuditSerializerMixin):
     class Meta:

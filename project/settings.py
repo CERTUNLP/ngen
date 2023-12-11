@@ -262,6 +262,9 @@ CONSTANCE_CONFIG = {
         int(os.environ.get('PRIORITY_SOLVE_TIME_DEFAULT', 10080)), 'Priority default solve time in minutes', int),
     'CASE_DEFAULT_LIFECYCLE': (
         os.environ.get('CASE_DEFAULT_LIFECYCLE', 'manual'), 'Case default lifecycle', 'case_lifecycle'),
+    'CASE_REPORT_NEW_CASES': (
+        os.environ.get('CASE_REPORT_NEW_CASES', 'false').lower() in ('true', '1', 't'),
+        'Send report on new cases.', bool),
     'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT', 'Medium'), 'Default priority', 'priority_field'),
     'ALLOWED_ARTIFACTS_TYPES': (os.environ.get('ALLOWED_ARTIFACTS_TYPES'), 'Allowed artifact types'),
     'ARTIFACT_SAVE_ENRICHMENT_FAILURE': (
