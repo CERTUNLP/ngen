@@ -32,7 +32,10 @@ class EvidenceSerializerMixin(AuditSerializerMixin):
 class MergeSerializerMixin:
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
-        action = self.context['view'].action
+        try:
+            action = self.context['view'].action
+        except KeyError:
+            action = None
         if action in ['update', 'partial_update', 'retrieve'] and self.instance and not self.instance.mergeable:
             if self.instance.blocked:
                 allowed_fields = self.allowed_fields()

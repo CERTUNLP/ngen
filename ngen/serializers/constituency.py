@@ -33,6 +33,15 @@ class NetworkEntitySerializer(AuditSerializerMixin):
         fields = '__all__'
         read_only_fields = ['slug']
 
+class NetworkEntitySerializerReduced(serializers.HyperlinkedModelSerializer):
+    networks = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name="network-detail"
+    )
+
+    class Meta:
+        model = models.NetworkEntity
+        fields = ["url", "name", "slug", "active", "networks", "events"]
+
 
 class ContactSerializer(AuditSerializerMixin):
     class Meta:

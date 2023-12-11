@@ -100,6 +100,29 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
                         attrs.pop(attr)
         return attrs
 
+class EventSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
+
+    @staticmethod
+    def allowed_fields():
+        return config.ALLOWED_FIELDS_EVENT.split(',')
+
+    class Meta:
+        model = models.Event
+        fields = [
+            "url",
+            "uuid",
+            "created",
+            "modified",
+            "feed",
+            "tlp",
+            "priority",
+            "taxonomy",
+            "cidr",
+            "domain",
+            "address_value",
+            "date",
+            "reporter",
+        ]
 
 class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
     events = serializers.HyperlinkedRelatedField(
@@ -165,6 +188,27 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSeriali
         comments_qs = Comment.objects.filter_parents_by_object(obj)
         return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
 
+class CaseSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
+
+    @staticmethod
+    def allowed_fields():
+        return config.ALLOWED_FIELDS_CASE.split(',')
+
+    class Meta:
+        model = models.Case
+        fields = [
+            "url",
+            "uuid",
+            "created",
+            "modified",
+            "tlp",
+            "priority",
+            "date",
+            "attend_date",
+            "solve_date",
+            "lifecycle",
+            "state",
+        ]
 
 class CaseTemplateSerializer(AuditSerializerMixin):
     class Meta:
