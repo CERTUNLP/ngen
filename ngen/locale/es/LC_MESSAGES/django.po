@@ -69,9 +69,6 @@ msgstr "Sistema autónomo"
 msgid "New case"
 msgstr "Nuevo caso"
 
-msgid "New open case"
-msgstr "Nuevo caso abierto"
-
 msgid "Case status updated"
 msgstr "Estado del caso actualizado"
 
