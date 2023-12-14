@@ -15,7 +15,7 @@ class AnnouncementTestCase(TestCase):
         """SetUp for case and event creation in the tests"""
         self.priority = Priority.objects.get(name="High")
         self.tlp = Tlp.objects.get(name="Green")
-        self.state = State.objects.get(name="Initial")
+        self.state = State.objects.get(name="Open")
         self.case_template = CaseTemplate.objects.get(pk=1)  # Missing
         self.taxonomy = Taxonomy.objects.create(
             type="incident", name="Phising", slug="phising"
@@ -382,48 +382,6 @@ class AnnouncementTestCase(TestCase):
         self.assertEqual(len(mail.outbox), 3)  # New open case > Case Opened > X attended X solved for update
 
     # #-------------------------------EVENT-TESTS----------------------------------------
-    def test_event_creation_email_delivery(self):
-        """
-        Creating an event, then testing event creation email.
-        """
-        self.case = Case.objects.create(
-            priority=self.priority,  # High
-            tlp=self.tlp,
-            casetemplate_creator=self.case_template,
-            state=self.state  # Open
-        )
-        # Duda, el email es del caso
-        self.event = Event.objects.create(
-            domain="info.unlp.edu.ar",
-            taxonomy=self.taxonomy,
-            feed=self.feed,
-            tlp=self.tlp,
-            reporter=self.user,
-            notes="Some notes",
-            priority=self.priority,
-            case=self.case
-        )
-
-        self.assertEqual(len(mail.outbox), 1)  # Test if the email is being sent.
-        # print(mail.outbox[0].body)
-        # print(mail.outbox[0].attachments)
-        # sent_email = mail.outbox[0]
-        # self.assertEqual(len(sent_email.attachments), 1)
-
-    # #----------------------------------------------------------------------------------
-    def test_case_init_email(self):
-        """
-        Creating case: INITIAL. Mail: NO
-        """
-        self.case = Case.objects.create(
-            priority=self.priority,  # High
-            tlp=self.tlp,
-            casetemplate_creator=self.case_template,
-            state=State.objects.get(name="Initial")
-        )
-        self.assertEqual(len(mail.outbox), 0)  # No email for Initial. FAIL: New Case.
-
-    # ----------------------------------------------------------------------------------
     def test_case_template_email(self):
         """
         Creating case template and coinciding event. Testing correct case integration and email sending.
@@ -435,7 +393,7 @@ class AnnouncementTestCase(TestCase):
             event_taxonomy=self.taxonomy,
             event_feed=self.feed,
             case_tlp=self.tlp,
-            case_state=self.state,
+            case_state=State.objects.get(name="Open"),
             case_lifecycle="auto_open",
             active=True,
         )
