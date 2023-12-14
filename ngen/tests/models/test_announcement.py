@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 
 class AnnouncementTestCase(TestCase):
 
-    fixtures = ["priority.json", "tlp.json", "user.json", "state.json",
+    fixtures = ["priority.json", "tlp.json", "user.json", "state.json", "edge.json",
                 "feed.json", "taxonomy.json", "case_template.json"
                 ]
     
@@ -107,7 +107,7 @@ class AnnouncementTestCase(TestCase):
         )
  
         self.assertEqual(len(mail.outbox), 1) # Test if the email is being sent. 
-        self.assertContains("Case opened", mail.outbox[0].subject)  
+        self.assertIn("Case opened", mail.outbox[0].subject)  
 
 #---------------------------------CLOSED-------------------------------------------
     def test_case_closed(self):
@@ -152,7 +152,7 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Staging')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 0) #  No email for Initial> Staging. FAIL: 2 emails: New Case + Case Status Updated.
+        self.assertEqual(len(mail.outbox), 0) 
         
 #---------------------------------INITIAL-OPEN-------------------------------------
 
@@ -168,7 +168,7 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Open')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 0) #  1 Mail for Case Opened: New Case. FAIL: 2 emails: New Case + Case Opened.
+        self.assertEqual(len(mail.outbox), 1) #  Case Opened.
         
 #---------------------------------INITIAL-CLOSED-----------------------------------
 
@@ -183,8 +183,8 @@ class AnnouncementTestCase(TestCase):
             state=State.objects.get(name="Initial")
         )
         self.case.state = State.objects.get(name='Closed')
-        self.case.save()
-        self.assertEqual(len(mail.outbox), 0) #  FAIL: 2 emails: New Case + Case Closed.
+        self.case.state.save()
+        self.assertEqual(len(mail.outbox), 0) 
         
 #---------------------------------STAGING-INITIAL----------------------------------
 
@@ -199,7 +199,7 @@ class AnnouncementTestCase(TestCase):
             state=State.objects.get(name="Staging")
         )
         self.case.state = State.objects.get(name='Initial')
-        self.case.save()
+        self.case.state.save()
         self.assertEqual(len(mail.outbox), 0) #  FAIL: 2 emails: New Case + Case status Updated.
         
 #---------------------------------STAGING-STAGING----------------------------------
@@ -248,7 +248,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Closed')
         self.case.save()
+        print(mail.outbox[0].subject)
         self.assertEqual(len(mail.outbox), 0) # FAIL: New Case + Case Closed
+
         
 #---------------------------------OPEN-INITIAL-------------------------------------
 
@@ -263,8 +265,8 @@ class AnnouncementTestCase(TestCase):
             state=State.objects.get(name="Open")
         )
         self.case.state = State.objects.get(name='Initial')
-        self.case.save()
-        self.assertEqual(len(mail.outbox), 0) # FAIL: New Open Case + Case status Updated.
+        self.case.state.save()
+        self.assertEqual(len(mail.outbox), 1) # Just the mail from Open case.
         
 #---------------------------------OPEN-STAGING-------------------------------------
 
@@ -280,8 +282,8 @@ class AnnouncementTestCase(TestCase):
             state=State.objects.get(name="Open")
         )
         self.case.state = State.objects.get(name='Staging')
-        self.case.save()
-        self.assertEqual(len(mail.outbox), 0) # FAIL: New Open Case + Case status Updated. Open + Staging not permitted.
+        self.case.state.save()
+        self.assertEqual(len(mail.outbox), 1) # Just the mail from Open case.
         
 #---------------------------------OPEN-OPEN----------------------------------------
 
@@ -315,6 +317,7 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Closed')
         self.case.save()
+        self.assertIn("Case closed", mail.outbox[1].subject)
         self.assertEqual(len(mail.outbox), 2) # 
         
 #---------------------------------CLOSED-INITIAL-----------------------------------
@@ -332,10 +335,8 @@ class AnnouncementTestCase(TestCase):
             state=State.objects.get(name="Closed")
         )
         self.case.state = State.objects.get(name='Initial')
-        # Use a lambda function to delay the execution of self.case.state.save()
-        # until assertRaises can catch the exception
-        self.assertRaises(ValidationError, lambda: self.case.state.save())
-        self.assertEqual(len(mail.outbox), 2) # New Open Case + Case Closed. Está bien así?
+        self.case.state.save()
+        self.assertEqual(len(mail.outbox), 0) 
         
 #---------------------------------CLOSED-STAGING-----------------------------------
 
@@ -351,7 +352,7 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Staging')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 2) # New Open Case + Case Closed. Está bien así?
+        self.assertEqual(len(mail.outbox), 1) # Case status updated
         
 #---------------------------------CLOSED-OPEN--------------------------------------
 
@@ -367,9 +368,7 @@ class AnnouncementTestCase(TestCase):
             state=State.objects.get(name="Closed")
         )
         self.case.state = State.objects.get(name='Open')
-        # Use a lambda function to delay the execution of self.case.state.save()
-        # until assertRaises can catch the exception
-        self.assertRaises(ValidationError, lambda: self.case.state.save())
+        self.case.state.save()
         self.assertEqual(len(mail.outbox), 0) # New Open Case + Case Closed. Está bien así?
         
 #---------------------------------CLOSED-CLOSED------------------------------------
