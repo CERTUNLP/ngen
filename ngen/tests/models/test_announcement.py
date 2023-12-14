@@ -1,38 +1,29 @@
-from django.test import TestCase, override_settings
-from django.urls import reverse
-from django.test import Client
 from django.core import mail
-from ngen.models import Communication, Evidence, Announcement, ContentType, Tlp, Network, NetworkEntity, Priority, Taxonomy, Event, Feed, State, Case, CaseTemplate, User, Task, Playbook, config
-from datetime import timedelta
-from django.template.loader import get_template
-from django.conf import settings
+from ngen.models import Evidence, ContentType, Tlp, Priority, \
+    Taxonomy, Event, Feed, State, Case, CaseTemplate, User, Task, Playbook
+
 from django.core.files.uploadedfile import SimpleUploadedFile
-import os
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, Client
-from django.core.exceptions import ValidationError
-   
+from django.test import TestCase
+
 
 class AnnouncementTestCase(TestCase):
-
     fixtures = ["priority.json", "tlp.json", "user.json", "state.json", "edge.json",
                 "feed.json", "taxonomy.json", "case_template.json"
                 ]
-    
 
     def setUp(self):
         """SetUp for case and event creation in the tests"""
         self.priority = Priority.objects.get(name="High")
         self.tlp = Tlp.objects.get(name="Green")
-        self.state=State.objects.get(name="Initial") 
-        self.case_template = CaseTemplate.objects.get(pk=1) #Missing
+        self.state = State.objects.get(name="Initial")
+        self.case_template = CaseTemplate.objects.get(pk=1)  # Missing
         self.taxonomy = Taxonomy.objects.create(
             type="incident", name="Phising", slug="phising"
         )
         self.feed = Feed.objects.get(slug="shodan", name="Shodan")
-        self.user= User.objects.create(
-            username="test", 
-            password="test", 
+        self.user = User.objects.create(
+            username="test",
+            password="test",
             priority=self.priority
         )
         self.playbook = Playbook.objects.create(
@@ -57,72 +48,67 @@ class AnnouncementTestCase(TestCase):
         #     active=True,
         # )
 
+    # ------------------------------CASE-TESTS------------------------------------------
 
-
-#------------------------------CASE-TESTS------------------------------------------
-
-#---------------------------------INITIAL------------------------------------------
+    # ---------------------------------INITIAL------------------------------------------
 
     def test_case_initial(self):
         """
         Creating case: INITIAL. Mail: NO
         """
         self.case = Case.objects.create(
-        priority=self.priority, #High
-        tlp=self.tlp,
-        casetemplate_creator=self.case_template,
-        state=State.objects.get(name="Initial") 
-        )           
-        self.assertEqual(len(mail.outbox), 0) # No email for Initial. 
+            priority=self.priority,  # High
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=State.objects.get(name="Initial")
+        )
+        self.assertEqual(len(mail.outbox), 0)  # No email for Initial.
 
-        
+    # ---------------------------------STAGING------------------------------------------
 
-
-#---------------------------------STAGING------------------------------------------
-    
     def test_case_staging(self):
         """
         Creating case: STAGING. Mail: NO
         """
         self.case = Case.objects.create(
-        priority=self.priority, #High
-        tlp=self.tlp,
-        casetemplate_creator=self.case_template,
-        state=State.objects.get(name="Staging") 
+            priority=self.priority,  # High
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=State.objects.get(name="Staging")
         )
-        
-        self.assertEqual(len(mail.outbox), 0) # No email for Staging. 
 
-#---------------------------------OPEN---------------------------------------------
+        self.assertEqual(len(mail.outbox), 0)  # No email for Staging.
+
+    # ---------------------------------OPEN---------------------------------------------
 
     def test_case_open(self):
         """
         Creating case: OPEN. Mail: YES
         """
         self.case = Case.objects.create(
-        priority=self.priority,
-        tlp=self.tlp,
-        casetemplate_creator=self.case_template,
-        state=State.objects.get(name="Open")
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=State.objects.get(name="Open")
         )
- 
-        self.assertEqual(len(mail.outbox), 1) # Test if the email is being sent. 
-        self.assertIn("Case opened", mail.outbox[0].subject)  
 
-#---------------------------------CLOSED-------------------------------------------
+        self.assertEqual(len(mail.outbox), 1)  # Test if the email is being sent.
+        self.assertIn("Case opened", mail.outbox[0].subject)
+
+    # ---------------------------------CLOSED-------------------------------------------
     def test_case_closed(self):
         """
         Creating case: CLOSED. Mail: NO
         """
         self.case = Case.objects.create(
-        priority=self.priority,
-        tlp=self.tlp,
-        casetemplate_creator=self.case_template,
-        state=State.objects.get(name="Closed") 
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=State.objects.get(name="Closed")
         )
-        self.assertEqual(len(mail.outbox), 0) # No email for Closed. 
+        self.assertEqual(len(mail.outbox), 0)  # No email for Closed.
 
-#---------------------------------INITIAL-INITIAL----------------------------------
+    # ---------------------------------INITIAL-INITIAL----------------------------------
 
     def test_case_initial_initial(self):
         """
@@ -136,9 +122,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Initial')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 0) #  No email for Initial> Initial. FAIL: New Case.
+        self.assertEqual(len(mail.outbox), 0)  # No email for Initial> Initial. FAIL: New Case.
 
-#---------------------------------INITIAL-STAGING----------------------------------
+    # ---------------------------------INITIAL-STAGING----------------------------------
 
     def test_case_initial_staging(self):
         """
@@ -152,9 +138,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Staging')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 0) 
-        
-#---------------------------------INITIAL-OPEN-------------------------------------
+        self.assertEqual(len(mail.outbox), 0)
+
+    # ---------------------------------INITIAL-OPEN-------------------------------------
 
     def test_case_initial_open(self):
         """
@@ -168,9 +154,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Open')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 1) #  Case Opened.
-        
-#---------------------------------INITIAL-CLOSED-----------------------------------
+        self.assertEqual(len(mail.outbox), 1)  # Case Opened.
+
+    # ---------------------------------INITIAL-CLOSED-----------------------------------
 
     def test_case_initial_closed(self):
         """
@@ -184,9 +170,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Closed')
         self.case.state.save()
-        self.assertEqual(len(mail.outbox), 0) 
-        
-#---------------------------------STAGING-INITIAL----------------------------------
+        self.assertEqual(len(mail.outbox), 0)
+
+    # ---------------------------------STAGING-INITIAL----------------------------------
 
     def test_case_staging_initial(self):
         """
@@ -200,9 +186,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Initial')
         self.case.state.save()
-        self.assertEqual(len(mail.outbox), 0) #  FAIL: 2 emails: New Case + Case status Updated.
-        
-#---------------------------------STAGING-STAGING----------------------------------
+        self.assertEqual(len(mail.outbox), 0)  # FAIL: 2 emails: New Case + Case status Updated.
+
+    # ---------------------------------STAGING-STAGING----------------------------------
 
     def test_case_staging_staging(self):
         """
@@ -216,9 +202,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Staging')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 0) # FAIL:  New Case 
-        
-#---------------------------------STAGING-OPEN-------------------------------------
+        self.assertEqual(len(mail.outbox), 0)  # FAIL:  New Case
+
+    # ---------------------------------STAGING-OPEN-------------------------------------
 
     def test_case_staging_open(self):
         """
@@ -232,9 +218,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Open')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 1) # FAIL: New Case + Case opened
-        
-#---------------------------------STAGING-CLOSED-----------------------------------
+        self.assertEqual(len(mail.outbox), 1)  # FAIL: New Case + Case opened
+
+    # ---------------------------------STAGING-CLOSED-----------------------------------
 
     def test_case_staging_closed(self):
         """
@@ -248,11 +234,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Closed')
         self.case.save()
-        print(mail.outbox[0].subject)
-        self.assertEqual(len(mail.outbox), 0) # FAIL: New Case + Case Closed
+        self.assertEqual(len(mail.outbox), 0)  # FAIL: New Case + Case Closed
 
-        
-#---------------------------------OPEN-INITIAL-------------------------------------
+    # ---------------------------------OPEN-INITIAL-------------------------------------
 
     def test_case_open_initial(self):
         """
@@ -266,10 +250,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Initial')
         self.case.state.save()
-        self.assertEqual(len(mail.outbox), 1) # Just the mail from Open case.
-        
-#---------------------------------OPEN-STAGING-------------------------------------
+        self.assertEqual(len(mail.outbox), 1)  # Just the mail from Open case.
 
+    # ---------------------------------OPEN-STAGING-------------------------------------
 
     def test_case_open_staging(self):
         """
@@ -283,10 +266,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Staging')
         self.case.state.save()
-        self.assertEqual(len(mail.outbox), 1) # Just the mail from Open case.
-        
-#---------------------------------OPEN-OPEN----------------------------------------
+        self.assertEqual(len(mail.outbox), 1)  # Just the mail from Open case.
 
+    # ---------------------------------OPEN-OPEN----------------------------------------
 
     def test_case_open_open(self):
         """
@@ -300,10 +282,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Open')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 1) # 1 email will be the creation open email. 
-        
-#---------------------------------OPEN-CLOSED--------------------------------------
+        self.assertEqual(len(mail.outbox), 1)  # 1 email will be the creation open email.
 
+    # ---------------------------------OPEN-CLOSED--------------------------------------
 
     def test_case_open_closed(self):
         """
@@ -318,11 +299,9 @@ class AnnouncementTestCase(TestCase):
         self.case.state = State.objects.get(name='Closed')
         self.case.save()
         self.assertIn("Case closed", mail.outbox[1].subject)
-        self.assertEqual(len(mail.outbox), 2) # 
-        
-#---------------------------------CLOSED-INITIAL-----------------------------------
+        self.assertEqual(len(mail.outbox), 2)  #
 
-
+    # ---------------------------------CLOSED-INITIAL-----------------------------------
 
     def test_case_closed_initial(self):
         """
@@ -336,9 +315,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Initial')
         self.case.state.save()
-        self.assertEqual(len(mail.outbox), 0) 
-        
-#---------------------------------CLOSED-STAGING-----------------------------------
+        self.assertEqual(len(mail.outbox), 0)
+
+    # ---------------------------------CLOSED-STAGING-----------------------------------
 
     def test_case_closed_staging(self):
         """
@@ -352,10 +331,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Staging')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 1) # Case status updated
-        
-#---------------------------------CLOSED-OPEN--------------------------------------
+        self.assertEqual(len(mail.outbox), 1)  # Case status updated
 
+    # ---------------------------------CLOSED-OPEN--------------------------------------
 
     def test_case_closed_open(self):
         """
@@ -369,9 +347,9 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Open')
         self.case.state.save()
-        self.assertEqual(len(mail.outbox), 0) # New Open Case + Case Closed. Está bien así?
-        
-#---------------------------------CLOSED-CLOSED------------------------------------
+        self.assertEqual(len(mail.outbox), 0)  # New Open Case + Case Closed. Está bien así?
+
+    # ---------------------------------CLOSED-CLOSED------------------------------------
 
     def test_case_closed_closed(self):
         """
@@ -385,37 +363,36 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name='Closed')
         self.case.save()
-        self.assertEqual(len(mail.outbox), 0) # New Open Case + Case Closed. Está bien así?
-        
-#----------------------------------------------------------------------------------
+        self.assertEqual(len(mail.outbox), 0)  # New Open Case + Case Closed. Está bien así?
+
+    # ----------------------------------------------------------------------------------
 
     def test_case_update_email(self):
         """
         Creating a case, then testing case update email.
         """
         self.case = Case.objects.create(
-        priority=self.priority,
-        tlp=self.tlp,
-        casetemplate_creator=self.case_template,
-        state=self.state
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state
         )
-        self.case.state=State.objects.get(name='Staging') #Change to staging to force update from hook.
-        self.case.before_update()
-        self.assertEqual(len(mail.outbox), 3) # New open case > Case Opened > X attended X solved for update
+        self.case.state = State.objects.get(name='Staging')  # Change to staging to force update from hook.
+        self.case.save()
+        self.assertEqual(len(mail.outbox), 3)  # New open case > Case Opened > X attended X solved for update
 
-
-# #-------------------------------EVENT-TESTS----------------------------------------
+    # #-------------------------------EVENT-TESTS----------------------------------------
     def test_event_creation_email_delivery(self):
         """
         Creating an event, then testing event creation email.
         """
         self.case = Case.objects.create(
-        priority=self.priority, #High
-        tlp=self.tlp,
-        casetemplate_creator=self.case_template,
-        state=self.state #Open
+            priority=self.priority,  # High
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state  # Open
         )
-        #Duda, el email es del caso
+        # Duda, el email es del caso
         self.event = Event.objects.create(
             domain="info.unlp.edu.ar",
             taxonomy=self.taxonomy,
@@ -426,27 +403,27 @@ class AnnouncementTestCase(TestCase):
             priority=self.priority,
             case=self.case
         )
-        
-        self.assertEqual(len(mail.outbox), 1) # Test if the email is being sent.
-        #print(mail.outbox[0].body)
-        #print(mail.outbox[0].attachments)
+
+        self.assertEqual(len(mail.outbox), 1)  # Test if the email is being sent.
+        # print(mail.outbox[0].body)
+        # print(mail.outbox[0].attachments)
         # sent_email = mail.outbox[0]
         # self.assertEqual(len(sent_email.attachments), 1)
 
-# #----------------------------------------------------------------------------------
+    # #----------------------------------------------------------------------------------
     def test_case_init_email(self):
         """
         Creating case: INITIAL. Mail: NO
         """
         self.case = Case.objects.create(
-        priority=self.priority, #High
-        tlp=self.tlp,
-        casetemplate_creator=self.case_template,
-        state=State.objects.get(name="Initial") 
-        )       
-        self.assertEqual(len(mail.outbox), 0) # No email for Initial. FAIL: New Case.
+            priority=self.priority,  # High
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=State.objects.get(name="Initial")
+        )
+        self.assertEqual(len(mail.outbox), 0)  # No email for Initial. FAIL: New Case.
 
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
     def test_case_template_email(self):
         """
         Creating case template and coinciding event. Testing correct case integration and email sending.
@@ -481,23 +458,22 @@ class AnnouncementTestCase(TestCase):
             file=self.evidence_file,
             object_id=self.event.id,
             content_type=ContentType.objects.get_for_model(Event),
-        )        
+        )
         self.event.refresh_from_db()
         last_case = Case.objects.order_by('-id').first()
         print(last_case)
         self.assertEqual(last_case, self.event.case)
-        self.assertEqual(len(mail.outbox), 1) # No manda el email. No se crea el caso?
-        self.assertEqual(self.evidence.attachment_name, f'Event({self.event.id}):{self.event.created.date()}:{self.evidence.filename}')
-         
-            
+        self.assertEqual(len(mail.outbox), 1)  # No manda el email. No se crea el caso?
+        self.assertEqual(self.evidence.attachment_name,
+                         f'Event({self.event.id}):{self.event.created.date()}:{self.evidence.filename}')
 
 # ----------------------------------------------------------------------------------
-    # def test_send_mail_with_attachments(self):
-    #     # Assert the number of sent emails
-    #     self.assertEqual(len(mail.outbox), 1)
-    #     # Get the sent email
-    #     sent_email = mail.outbox[0]
-    #     # Assert attachments
-    #     for attachment in attachments:
-    #         self.assertIn(attachment['name'], sent_email.attachments)
-    #         self.assertEqual(sent_email.attachments[attachment['name']], attachment['file'])
+# def test_send_mail_with_attachments(self):
+#     # Assert the number of sent emails
+#     self.assertEqual(len(mail.outbox), 1)
+#     # Get the sent email
+#     sent_email = mail.outbox[0]
+#     # Assert attachments
+#     for attachment in attachments:
+#         self.assertIn(attachment['name'], sent_email.attachments)
+#         self.assertEqual(sent_email.attachments[attachment['name']], attachment['file'])
