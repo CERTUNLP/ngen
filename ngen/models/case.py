@@ -125,7 +125,8 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
             self.communicate_open()
         elif self.state.solved:
             self.solve_date = timezone.now()
-            self.communicate_close()
+            if old.state.attended and not old.state.solved:
+                self.communicate_close()
         else:
             if old.state.attended != self.state.attended or old.state.solved != self.state.solved:
                 self.communicate_update()
