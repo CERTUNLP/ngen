@@ -193,7 +193,18 @@ class CaseSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audit
             "solve_date",
             "lifecycle",
             "state",
+            "assigned",
         ]
+
+class CaseSerializerReducedWithEventsCount(CaseSerializerReduced):
+    events_count = serializers.SerializerMethodField()
+
+    class Meta(CaseSerializerReduced.Meta):
+        fields = CaseSerializerReduced.Meta.fields + ["events_count"]
+
+    def get_events_count(self, obj):
+        return obj.events.count()
+
 
 
 class CaseTemplateSerializer(AuditSerializerMixin):

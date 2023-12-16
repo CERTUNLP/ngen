@@ -2,7 +2,7 @@ from django.db.models import Q
 from rest_framework import serializers
 from ngen.serializers import (
     EventSerializerReduced,
-    CaseSerializerReduced,
+    CaseSerializerReducedWithEventsCount,
     NetworkEntitySerializerReduced,
 )
 
@@ -29,7 +29,7 @@ class CaseDashboardSerializer(DashboardSerializer):
     Serializer for the cases.
     """
 
-    cases = CaseSerializerReduced(many=True)
+    cases = CaseSerializerReducedWithEventsCount(many=True)
 
 
 class FeedsInEventsSerializer(serializers.Serializer):
