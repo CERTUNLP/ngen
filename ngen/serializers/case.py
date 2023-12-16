@@ -206,7 +206,6 @@ class CaseSerializerReducedWithEventsCount(CaseSerializerReduced):
         return obj.events.count()
 
 
-
 class CaseTemplateSerializer(AuditSerializerMixin):
     class Meta:
         model = models.CaseTemplate
