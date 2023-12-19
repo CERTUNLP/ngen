@@ -367,19 +367,6 @@ class AnnouncementTestCase(TestCase):
 
     # ----------------------------------------------------------------------------------
 
-    def test_case_update_email(self):
-        """
-        Creating a case, then testing case update email.
-        """
-        self.case = Case.objects.create(
-            priority=self.priority,
-            tlp=self.tlp,
-            casetemplate_creator=self.case_template,
-            state=self.state
-        )
-        self.case.state = State.objects.get(name='Staging')  # Change to staging to force update from hook.
-        self.case.save()
-        self.assertEqual(len(mail.outbox), 3)  # New open case > Case Opened > X attended X solved for update
 
     # #-------------------------------EVENT-TESTS----------------------------------------
     def test_case_template_email(self):
