@@ -410,8 +410,8 @@ class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin):
 
     def validate_unique(self, exclude=None):
         super().validate_unique(exclude)
-        qs = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain,
-                                           event_taxonomy=self.event_taxonomy, event_feed=self.event_feed)
+        qs = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain, event_taxonomy=self.event_taxonomy,
+                                           event_feed=self.event_feed).exclude(pk=self.pk)
         if qs.exists():
             raise ValidationError('CIDR, Domain, Taxonomy, Feed tuple must be unique')
 

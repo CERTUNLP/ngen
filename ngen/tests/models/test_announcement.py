@@ -1,6 +1,6 @@
 from django.core import mail
 from ngen.models import Evidence, ContentType, Tlp, Priority, \
-    Taxonomy, Event, Feed, State, Case, CaseTemplate, User, Task, Playbook
+    Taxonomy, Event, Feed, State, Case, CaseTemplate, User, Task, Playbook, config
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -13,6 +13,7 @@ class AnnouncementTestCase(TestCase):
 
     def setUp(self):
         """SetUp for case and event creation in the tests"""
+        print(config.TEAM_EMAIL, config.PRIORITY_DEFAULT)
         self.priority = Priority.objects.get(name="High")
         self.tlp = Tlp.objects.get(name="Green")
         self.state = State.objects.get(name="Open")
@@ -376,7 +377,7 @@ class AnnouncementTestCase(TestCase):
         self.case_template = CaseTemplate.objects.create(
             priority=self.priority,
             cidr=None,
-            domain="info.unlp.edu.ar",
+            domain="unlp.edu.ar",
             event_taxonomy=self.taxonomy,
             event_feed=self.feed,
             case_tlp=self.tlp,
@@ -384,7 +385,7 @@ class AnnouncementTestCase(TestCase):
             case_lifecycle="auto_open",
             active=True,
         )
-        self.case_template.refresh_from_db()
+        self.case_template.save()
         self.event = Event.objects.create(
             domain="info.unlp.edu.ar",
             taxonomy=self.taxonomy,
@@ -404,7 +405,7 @@ class AnnouncementTestCase(TestCase):
             object_id=self.event.id,
             content_type=ContentType.objects.get_for_model(Event),
         )
-        self.event.refresh_from_db()
+        self.event.save()
         last_case = Case.objects.order_by('-id').first()
         print(last_case)
         self.assertEqual(last_case, self.event.case)
