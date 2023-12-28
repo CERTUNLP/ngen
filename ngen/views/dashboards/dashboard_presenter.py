@@ -65,7 +65,8 @@ class DashboardPresenter:
         Get cases.
         """
         if not self.cases:
-            self.cases = Case.objects.filter(date__range=(self.date_from, self.date_to))
+            cases = Case.objects.prefetch_related("events")
+            self.cases = cases.filter(date__range=(self.date_from, self.date_to))
 
             if not self.get_current_user().is_superuser:
                 self.cases = self.cases.filter(assigned_to=self.current_user)
