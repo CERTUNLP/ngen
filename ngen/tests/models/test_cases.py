@@ -24,12 +24,14 @@ class CaseTest(TestCase):
         self.tlp = Tlp.objects.get(pk=2)
         self.state = State.objects.get(pk=9)
         self.case_template = CaseTemplate.objects.get(pk=1)
+        self.name = 'Test Case'
 
         self.case = Case.objects.create(
             priority=self.priority,
             tlp=self.tlp,
             casetemplate_creator=self.case_template,
-            state=self.state
+            state=self.state,
+            name=self.name
         )
 
     def test_case_creation(self):
@@ -61,3 +63,9 @@ class CaseTest(TestCase):
         This will test Case state attribute
         """
         self.assertEqual(self.case.state, self.state)
+
+    def test_name(self):
+        """
+        This will test Case name attribute
+        """
+        self.assertEqual(self.case.name, self.name)
