@@ -16,7 +16,7 @@ class AboutView(TemplateView):
     template_name = "reports/base.html"
 
     def get_context_data(self, **kwargs):
-        context = super(AboutView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['html'] = True
         context['case'] = models.Case.objects.get(pk=161701)
         context['config'] = constance.config

@@ -16,7 +16,7 @@ class UserFilterTest(BaseFilterTest):
     User filter test class.
     """
 
-    fixtures = ['user.json', 'priority.json']
+    fixtures = ['priority.json', 'user.json']
 
     @classmethod
     def setUpTestData(cls):
@@ -25,6 +25,7 @@ class UserFilterTest(BaseFilterTest):
 
         cls.user_1 = User.objects.create(
             username="user_one",
+            password="password",
             email="one@gmail.com",
             first_name="First Name One",
             last_name="Last Name One",
@@ -39,6 +40,7 @@ class UserFilterTest(BaseFilterTest):
 
         cls.user_2 = User.objects.create(
             username="user_two",
+            password="password",
             email="two@gmail.com",
             first_name="First Name Two",
             last_name="Last Name Two",
@@ -51,6 +53,7 @@ class UserFilterTest(BaseFilterTest):
 
         cls.user_3 = User.objects.create(
             username="user_three",
+            password="password",
             email="three@outlook.com",
             first_name="First Name Three",
             last_name="Last Name Three",

@@ -4,19 +4,13 @@ from colorfield.fields import ColorField
 from constance import config
 from django.db import models
 
-from ngen.models.common.mixins import AuditModelMixin
-from ngen.utils import slugify_underscore
+from ngen.models.common.mixins import AuditModelMixin, SlugModelMixin, ValidationModelMixin
 
 
-class Feed(AuditModelMixin):
-    slug = models.SlugField(max_length=100, unique=True)
-    name = models.CharField(max_length=100)
+class Feed(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
+    name = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
     description = models.CharField(max_length=250, null=True, blank=True, default='')
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify_underscore(self.name)
-        super(Feed, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'feed'
@@ -31,8 +25,7 @@ COLOR_PALETTE = [
 ]
 
 
-class Priority(AuditModelMixin):
-    slug = models.SlugField(max_length=100, unique=True)
+class Priority(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
     name = models.CharField(max_length=255)
     severity = models.IntegerField(unique=True)
     attend_time = models.DurationField(default=timedelta(minutes=config.PRIORITY_ATTEND_TIME_DEFAULT))
@@ -40,14 +33,16 @@ class Priority(AuditModelMixin):
     notification_amount = models.PositiveSmallIntegerField(default=3)
     color = ColorField(samples=COLOR_PALETTE)
 
-    def save(self, *args, **kwargs):
-        self.slug = slugify_underscore(self.name)
-        super(Priority, self).save(*args, **kwargs)
-
     @classmethod
     def default_priority(cls):
         return cls.objects.get(name=config.PRIORITY_DEFAULT)
 
+    # @classmethod
+    # def default_priority(cls):
+    #     priority, created = cls.objects.get_or_create(name='UNDEFINED',
+    #                                                   defaults=dict(severity=0, notification_amount=0, color="#FFFFFF"))
+    #     return priority
+    #
     class Meta:
         db_table = 'priority'
         ordering = ['severity']
@@ -56,20 +51,15 @@ class Priority(AuditModelMixin):
         return self.name
 
 
-class Tlp(AuditModelMixin):
-    slug = models.SlugField(max_length=100, unique=True)
+class Tlp(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
     color = ColorField(samples=COLOR_PALETTE)
     when = models.TextField(max_length=500)
-    why = models.TextField(max_length=500, )
-    information = models.TextField(max_length=10, )
-    description = models.TextField(max_length=150)
+    why = models.TextField(max_length=500)
+    information = models.TextField(max_length=10)
+    description = models.TextField(max_length=255)
     encrypt = models.BooleanField(default=False)
     name = models.CharField(max_length=45)
     code = models.IntegerField()
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify_underscore(self.name)
-        super(Tlp, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'tlp'

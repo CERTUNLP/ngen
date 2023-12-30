@@ -4,22 +4,17 @@ from django.utils.translation import gettext_lazy
 from django_bleach.models import BleachField
 from model_utils import Choices
 
-from ngen.models.common.mixins import AuditModelMixin, TreeModelMixin, PriorityModelMixin
-from ngen.utils import slugify_underscore
+from ngen.models.common.mixins import AuditModelMixin, TreeModelMixin, PriorityModelMixin, SlugModelMixin, \
+    ValidationModelMixin
 
 
-class Taxonomy(AuditModelMixin, TreeModelMixin):
+class Taxonomy(AuditModelMixin, TreeModelMixin, SlugModelMixin, ValidationModelMixin):
     TYPE = Choices(('vulnerability', gettext_lazy('Vulnerability')), ('incident', gettext_lazy('Incident')))
     type = models.CharField(choices=TYPE, max_length=20)
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, unique=True)
+    name = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
     description = models.TextField(null=True, blank=True, default='')
     node_order_by = ['id']
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify_underscore(self.name)
-        super(Taxonomy, self).save(*args, **kwargs)
 
     def delete(self):
         if self.get_children():
@@ -36,7 +31,7 @@ class Taxonomy(AuditModelMixin, TreeModelMixin):
         db_table = 'taxonomy'
 
 
-class Report(AuditModelMixin):
+class Report(AuditModelMixin, ValidationModelMixin):
     LANG = Choices('en', 'es')
     lang = models.CharField(choices=LANG, default=LANG.en, max_length=2)
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.CASCADE, related_name='reports')
@@ -54,7 +49,7 @@ class Report(AuditModelMixin):
         return "%s (%s)" % (self.taxonomy.name, self.lang)
 
 
-class Playbook(AuditModelMixin):
+class Playbook(AuditModelMixin, ValidationModelMixin):
     name = models.CharField(max_length=60)
     taxonomy = models.ManyToManyField('Taxonomy', related_name='playbooks')
 
@@ -66,7 +61,7 @@ class Playbook(AuditModelMixin):
         ordering = ["name"]
 
 
-class Task(AuditModelMixin, PriorityModelMixin):
+class Task(AuditModelMixin, PriorityModelMixin, ValidationModelMixin):
     name = models.CharField(max_length=140)
     playbook = models.ForeignKey('ngen.Playbook', on_delete=models.CASCADE, related_name='tasks')
     description = models.TextField(null=True)
@@ -79,7 +74,7 @@ class Task(AuditModelMixin, PriorityModelMixin):
         ordering = ["priority__severity"]
 
 
-class TodoTask(AuditModelMixin):
+class TodoTask(AuditModelMixin, ValidationModelMixin):
     task = models.ForeignKey('ngen.Task', on_delete=models.CASCADE, related_name='todos')
     event = models.ForeignKey('ngen.Event', on_delete=models.CASCADE, related_name='todos')
     completed = models.BooleanField(default=False)

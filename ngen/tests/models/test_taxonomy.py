@@ -93,9 +93,9 @@ class TaxonomyTestCase(TestCase):
         for child_node in children_before_deletion:
             self.assertIn(child_node, parent_node.get_children())
 
-    # def test_taxonomy_cycles(self):
-    #     """ 
-    #     Test: if the taxonomy tree has cycles
-    #     """
-    #     self.parent.parent = self.child2
-    #     self.assertRaises(Exception, self.parent.save) # ToDo: Espero excepcion especifica para cuando se produce un ciclo
+    def test_taxonomy_cycles(self):
+        """
+        Test: if the taxonomy tree has cycles
+        """
+        self.parent.parent = self.child2
+        self.assertRaises(Exception, self.parent.save) # ToDo: Espero excepcion especifica para cuando se produce un ciclo

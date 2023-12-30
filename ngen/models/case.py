@@ -21,7 +21,7 @@ import ngen
 from ngen.models.announcement import Communication
 from . import Priority
 from .common.mixins import MergeModelMixin, AddressModelMixin, ArtifactRelatedMixin, AuditModelMixin, \
-    EvidenceModelMixin, PriorityModelMixin
+    EvidenceModelMixin, PriorityModelMixin, ValidationModelMixin
 from ..storage import HashedFilenameStorage
 
 LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
@@ -29,7 +29,7 @@ LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('A
 
 
 class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMixin, ArtifactRelatedMixin,
-           Communication):
+           Communication, ValidationModelMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255, null=True, blank=True, default='')
@@ -38,14 +38,14 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
                                              related_name='cases_created', default=None)
     user_creator = models.ForeignKey('ngen.User', models.PROTECT, null=True, blank=True, related_name='cases_created',
                                      default=None)
-    assigned = models.ForeignKey('ngen.User', models.PROTECT, null=True, related_name='assigned_cases', default=None)
+    assigned = models.ForeignKey('ngen.User', models.PROTECT, null=True, related_name='assigned_cases', blank=True, default=None)
     state = models.ForeignKey('ngen.State', models.PROTECT, related_name='cases')
 
-    attend_date = models.DateTimeField(null=True)
-    solve_date = models.DateTimeField(null=True)
+    attend_date = models.DateTimeField(null=True, blank=True, default=None)
+    solve_date = models.DateTimeField(null=True, blank=True, default=None)
 
-    report_message_id = models.CharField(max_length=255, null=True)
-    raw = models.TextField(null=True)
+    report_message_id = models.CharField(max_length=255, null=True, blank=True, default=None)
+    raw = models.TextField(null=True, blank=True, default='')
     node_order_by = ['id']
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -243,7 +243,7 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
 
 
 class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin,
-            AddressModelMixin):
+            AddressModelMixin, ValidationModelMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -361,7 +361,7 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
         return self.mergeable
 
 
-class Evidence(AuditModelMixin):
+class Evidence(AuditModelMixin, ValidationModelMixin):
     def directory_path(self, filename=None):
         return '%s/%s' % (self.get_related().evidence_path(), filename)
 
@@ -394,7 +394,7 @@ class Evidence(AuditModelMixin):
         self.file.storage.delete(self.file.name)
 
 
-class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin):
+class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, ValidationModelMixin):
     event_taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
     event_feed = models.ForeignKey('ngen.Feed', models.PROTECT)
 
