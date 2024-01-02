@@ -385,7 +385,14 @@ class AnnouncementTestCase(TestCase):
             case_lifecycle="auto_open",
             active=True,
         )
-        self.case_template.save()
+        # self.case_test = CaseTemplate.objects.get(pk=1)
+        # print(self.case_test.domain)
+        # print(self.case_test.event_taxonomy)
+        # print(self.case_test.case_tlp)
+        # print(self.case_test.case_state)
+        
+        # self.case_template.save()
+
         self.event = Event.objects.create(
             domain="info.unlp.edu.ar",
             taxonomy=self.taxonomy,
@@ -407,7 +414,7 @@ class AnnouncementTestCase(TestCase):
         )
         self.event.save()
         last_case = Case.objects.order_by('-id').first()
-        print(last_case)
+        print("The case created has ID",last_case," and state",last_case.state)
         self.assertEqual(last_case, self.event.case)
         self.assertEqual(len(mail.outbox), 1)  # No manda el email. No se crea el caso?
         self.assertEqual(self.evidence.attachment_name,
