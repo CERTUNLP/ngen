@@ -31,7 +31,7 @@ class PriorityFilterTest(BaseFilterTest):
             solve_time=datetime.timedelta(minutes=10),
             notification_amount=100
         )
-        cls.priority_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
+        cls.priority_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.priority_1.save()
 
         cls.priority_2 = Priority.objects.create(
@@ -99,8 +99,8 @@ class PriorityFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02"
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs

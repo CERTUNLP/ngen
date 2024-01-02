@@ -50,7 +50,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
             active=False
         )
         CaseTemplate.objects.filter(id=cls.casetemplate_1.id).update(created=timezone.datetime(
-            2024, 1, 1, tzinfo=pytz.UTC))
+            2000, 1, 1, tzinfo=pytz.UTC))
 
         cls.casetemplate_2 = CaseTemplate.objects.create(
             domain="unlp.edu.ar",
@@ -146,8 +146,8 @@ class CaseTemplateFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02"
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs

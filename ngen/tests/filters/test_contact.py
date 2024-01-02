@@ -34,7 +34,7 @@ class ContactFilterTest(BaseFilterTest):
             role="administrative",
             priority=cls.priority_1
         )
-        cls.contact_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
+        cls.contact_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.contact_1.save()
 
         cls.contact_2 = Contact.objects.create(
@@ -118,8 +118,8 @@ class ContactFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02"
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs

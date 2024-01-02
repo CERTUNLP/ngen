@@ -34,7 +34,7 @@ class TaxonomyFilterTest(BaseFilterTest):
             active=True,
             description="First taxonomy"
         )
-        cls.taxonomy_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
+        cls.taxonomy_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.taxonomy_1.save()
         cls.taxonomy_1.playbooks.set([cls.playbook_1])
         cls.playbook_1.taxonomy.set([cls.taxonomy_1])
@@ -113,8 +113,8 @@ class TaxonomyFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02"
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs

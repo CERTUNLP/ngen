@@ -52,8 +52,8 @@ class EventFilterTest(BaseFilterTest):
             priority=cls.priority_1,
         )
         # bypass date auto_now_add
-        cls.event_1.date = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
-        cls.event_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
+        cls.event_1.date = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
+        cls.event_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.event_1.save()
 
         cls.event_2 = Event.objects.create(
@@ -183,8 +183,8 @@ class EventFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02"
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs
@@ -218,7 +218,7 @@ class EventFilterTest(BaseFilterTest):
         """
 
         params = {
-            "date": "2024-01-01"
+            "date": "2000-01-01"
         }
 
         filtered_queryset = self.filter(params).qs

@@ -33,7 +33,7 @@ class TlpFilterTest(BaseFilterTest):
             slug="tlp_one",
             code=0
         )
-        cls.tlp_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
+        cls.tlp_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.tlp_1.save()
 
         cls.tlp_2 = Tlp.objects.create(
@@ -105,8 +105,8 @@ class TlpFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02"
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs

@@ -34,7 +34,7 @@ class NetworkFilterTest(BaseFilterTest):
             type="internal",
             network_entity=cls.entity_1
         )
-        cls.network_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
+        cls.network_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.network_1.save()
         cls.network_1.contacts.set([cls.contact_1])
 
@@ -121,8 +121,8 @@ class NetworkFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02"
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs

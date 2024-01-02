@@ -71,10 +71,10 @@ class CaseFilterTest(BaseFilterTest):
             lifecycle="manual",
         )
         cls.case_1.date = timezone.datetime(
-            2024, 1, 1, tzinfo=pytz.UTC)  # bypass date auto_now_add
-        cls.case_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
-        cls.case_1.attend_date = timezone.datetime(2024, 1, 2, tzinfo=pytz.UTC)
-        cls.case_1.solve_date = timezone.datetime(2024, 1, 3, tzinfo=pytz.UTC)
+            2000, 1, 1, tzinfo=pytz.UTC)  # bypass date auto_now_add
+        cls.case_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
+        cls.case_1.attend_date = timezone.datetime(2000, 1, 2, tzinfo=pytz.UTC)
+        cls.case_1.solve_date = timezone.datetime(2000, 1, 3, tzinfo=pytz.UTC)
         cls.case_1.save()
 
         cls.case_2 = Case.objects.create(
@@ -173,8 +173,8 @@ class CaseFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02"
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs
@@ -208,7 +208,7 @@ class CaseFilterTest(BaseFilterTest):
         """
 
         params = {
-            "date": "2024-01-01"
+            "date": "2000-01-01"
         }
 
         filtered_queryset = self.filter(params).qs
@@ -221,7 +221,7 @@ class CaseFilterTest(BaseFilterTest):
         """
 
         params = {
-            "attend_date": "2024-01-02"
+            "attend_date": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs
@@ -234,7 +234,7 @@ class CaseFilterTest(BaseFilterTest):
         """
 
         params = {
-            "solve_date": "2024-01-03"
+            "solve_date": "2000-01-03"
         }
 
         filtered_queryset = self.filter(params).qs

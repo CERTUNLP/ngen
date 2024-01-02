@@ -32,7 +32,7 @@ class StateFilterTest(BaseFilterTest):
             active=True,
             description="Initial state"
         )
-        cls.state_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
+        cls.state_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.state_1.save()
 
         cls.state_2 = State.objects.create(
@@ -113,8 +113,8 @@ class StateFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02"
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs
