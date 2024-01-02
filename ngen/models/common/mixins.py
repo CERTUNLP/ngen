@@ -41,8 +41,11 @@ class SlugModelMixin(ValidationModelMixin, models.Model):
     class Meta:
         abstract = True
 
+    def _slug_field(self):
+        return 'name'
+
     def clean(self):
-        self.slug = slugify_underscore(self.name)
+        self.slug = slugify_underscore(getattr(self, self._slug_field()))
         super().clean()
 
 
