@@ -26,18 +26,18 @@ class EventFilterTest(BaseFilterTest):
         cls.basename = "event"
         super().setUpTestData()
 
-        cls.feed_1 = Feed.objects.get(pk=1)
-        cls.feed_2 = Feed.objects.get(pk=2)
-        cls.feed_3 = Feed.objects.get(pk=3)
-        cls.tlp_1 = Tlp.objects.get(pk=1)
-        cls.tlp_2 = Tlp.objects.get(pk=2)
-        cls.tlp_3 = Tlp.objects.get(pk=3)
-        cls.priority_1 = Priority.objects.get(pk=1)
-        cls.priority_2 = Priority.objects.get(pk=2)
-        cls.priority_3 = Priority.objects.get(pk=3)
-        cls.taxonomy_1 = Taxonomy.objects.get(pk=1)
-        cls.taxonomy_2 = Taxonomy.objects.get(pk=2)
-        cls.taxonomy_3 = Taxonomy.objects.get(pk=3)
+        cls.feed_1 = Feed.objects.get(slug="americas")
+        cls.feed_2 = Feed.objects.get(slug="bro")
+        cls.feed_3 = Feed.objects.get(slug="censys")
+        cls.tlp_1 = Tlp.objects.get(slug="white")
+        cls.tlp_2 = Tlp.objects.get(slug="green")
+        cls.tlp_3 = Tlp.objects.get(slug="amber")
+        cls.priority_1 = Priority.objects.get(slug="critical")
+        cls.priority_2 = Priority.objects.get(slug="high")
+        cls.priority_3 = Priority.objects.get(slug="medium")
+        cls.taxonomy_1 = Taxonomy.objects.get(slug="accessible_afp_report")
+        cls.taxonomy_2 = Taxonomy.objects.get(slug="blacklist")
+        cls.taxonomy_3 = Taxonomy.objects.get(slug="botnet")
         cls.user_1 = User.objects.get(username="ngen")
         cls.user_2 = User.objects.create(username="ngen2", password="ngen2")
 
@@ -89,16 +89,27 @@ class EventFilterTest(BaseFilterTest):
             priority=cls.priority_3,
         )
 
+        # with parent event_2
         cls.event_5 = Event.objects.create(
             uuid="00000000-0000-0000-0000-000000000005",
-            cidr="10.0.0.0/24",
+            domain="unlp.edu.ar",
             taxonomy=cls.taxonomy_2,
-            feed=cls.feed_1,
-            tlp=cls.tlp_1,
+            feed=cls.feed_2,
+            tlp=cls.tlp_2,
+            reporter=cls.user_1,
+            notes="Some notes",
+            priority=cls.priority_2,
+        )
+
+        cls.event_6 = Event.objects.create(
+            uuid="00000000-0000-0000-0000-000000000006",
+            cidr="10.0.0.0/24",
+            taxonomy=cls.taxonomy_3,
+            feed=cls.feed_2,
+            tlp=cls.tlp_2,
             reporter=cls.user_2,
             notes="Some notes",
             priority=cls.priority_3,
-            parent=cls.event_1
         )
 
         cls.queryset = Event.objects.all()
@@ -118,6 +129,7 @@ class EventFilterTest(BaseFilterTest):
         # Searching by taxonomy name
         query = "black"  # matches with taxonomy 1: "Blacklist"
         response = self.client.get(self.search_url(query))
+        print(response.data)
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
             self.get_id_from_url(response.data["results"][0]["url"]),
