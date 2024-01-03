@@ -35,9 +35,9 @@ class EventFilterTest(BaseFilterTest):
         cls.priority_1 = Priority.objects.get(slug="critical")
         cls.priority_2 = Priority.objects.get(slug="high")
         cls.priority_3 = Priority.objects.get(slug="medium")
-        cls.taxonomy_1 = Taxonomy.objects.get(slug="accessible_afp_report")
-        cls.taxonomy_2 = Taxonomy.objects.get(slug="blacklist")
-        cls.taxonomy_3 = Taxonomy.objects.get(slug="botnet")
+        cls.taxonomy_1 = Taxonomy.objects.get(slug="blacklist")
+        cls.taxonomy_2 = Taxonomy.objects.get(slug="botnet")
+        cls.taxonomy_3 = Taxonomy.objects.get(slug="botnet_attack_command")
         cls.user_1 = User.objects.get(username="ngen")
         cls.user_2 = User.objects.create(username="ngen2", password="ngen2")
 
@@ -89,24 +89,23 @@ class EventFilterTest(BaseFilterTest):
             priority=cls.priority_3,
         )
 
-        # with parent event_2
         cls.event_5 = Event.objects.create(
             uuid="00000000-0000-0000-0000-000000000005",
-            domain="unlp.edu.ar",
-            taxonomy=cls.taxonomy_2,
-            feed=cls.feed_2,
-            tlp=cls.tlp_2,
+            domain="info.unlp.edu.ar",
+            taxonomy=cls.taxonomy_1,
+            feed=cls.feed_1,
+            tlp=cls.tlp_1,
             reporter=cls.user_1,
             notes="Some notes",
-            priority=cls.priority_2,
+            priority=cls.priority_1,
         )
 
         cls.event_6 = Event.objects.create(
             uuid="00000000-0000-0000-0000-000000000006",
             cidr="10.0.0.0/24",
-            taxonomy=cls.taxonomy_3,
-            feed=cls.feed_2,
-            tlp=cls.tlp_2,
+            taxonomy=cls.taxonomy_2,
+            feed=cls.feed_1,
+            tlp=cls.tlp_1,
             reporter=cls.user_2,
             notes="Some notes",
             priority=cls.priority_3,
@@ -129,7 +128,6 @@ class EventFilterTest(BaseFilterTest):
         # Searching by taxonomy name
         query = "black"  # matches with taxonomy 1: "Blacklist"
         response = self.client.get(self.search_url(query))
-        print(response.data)
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
             self.get_id_from_url(response.data["results"][0]["url"]),
@@ -220,7 +218,7 @@ class EventFilterTest(BaseFilterTest):
 
         self.assertQuerysetEqual(
             filtered_queryset,
-            [self.event_1, self.event_2, self.event_3, self.event_4, self.event_5],
+            [self.event_1, self.event_2, self.event_3, self.event_4, self.event_5, self.event_6],
             ordered=False
         )
 
@@ -297,7 +295,7 @@ class EventFilterTest(BaseFilterTest):
 
         self.assertQuerysetEqual(
             filtered_queryset,
-            [self.event_1, self.event_4],
+            [self.event_1, self.event_4, self.event_5],
             ordered=False
         )
 
@@ -322,7 +320,7 @@ class EventFilterTest(BaseFilterTest):
 
         self.assertQuerysetEqual(
             filtered_queryset,
-            [self.event_1, self.event_2, self.event_3, self.event_4],
+            [self.event_1, self.event_2, self.event_3, self.event_4, self.event_6],
             ordered=False
         )
 
@@ -347,7 +345,7 @@ class EventFilterTest(BaseFilterTest):
 
         self.assertQuerysetEqual(
             filtered_queryset,
-            [self.event_2, self.event_3, self.event_4, self.event_5],
+            [self.event_2, self.event_3, self.event_4, self.event_5, self.event_6],
             ordered=False
         )
 
@@ -364,7 +362,7 @@ class EventFilterTest(BaseFilterTest):
 
         self.assertQuerysetEqual(
             filtered_queryset,
-            [self.event_1, self.event_2, self.event_3, self.event_4],
+            [self.event_1, self.event_2, self.event_3, self.event_4, self.event_5],
             ordered=False
         )
 
@@ -402,7 +400,7 @@ class EventFilterTest(BaseFilterTest):
 
         self.assertQuerysetEqual(
             filtered_queryset,
-            [self.event_4, self.event_5],
+            [self.event_4, self.event_6],
             ordered=False
         )
 
@@ -427,6 +425,6 @@ class EventFilterTest(BaseFilterTest):
 
         self.assertQuerysetEqual(
             filtered_queryset,
-            [self.event_1, self.event_2],
+            [self.event_1, self.event_2, self.event_5],
             ordered=False
         )
