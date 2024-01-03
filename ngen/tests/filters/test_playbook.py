@@ -23,12 +23,10 @@ class PlaybookFilterTest(BaseFilterTest):
         cls.basename = "playbook"
         super().setUpTestData()
 
-        cls.taxonomy_1 = Taxonomy.objects.get(pk=90)
-        cls.taxonomy_2 = Taxonomy.objects.get(pk=41)
+        cls.taxonomy_1 = Taxonomy.objects.get(slug="phishing")
+        cls.taxonomy_2 = Taxonomy.objects.get(slug="copyright")
 
-        cls.playbook_1 = Playbook.objects.create(
-            name="Phish playbook"
-        )
+        cls.playbook_1 = Playbook.objects.create(name="Phish playbook")
         cls.playbook_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
         cls.playbook_1.save()
         cls.playbook_1.taxonomy.set([cls.taxonomy_1])

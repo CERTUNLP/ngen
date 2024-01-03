@@ -33,20 +33,16 @@ class TestEvent(APITestCase):
         cls.json_login = {"username": "ngen", "password": "ngen"}
 
         cls.base_url = 'http://testserver'
-        cls.priority_url = cls.base_url + \
-                           reverse('priority-detail', kwargs={'pk': 2})  # 'high'
-        cls.tlp_url = cls.base_url + \
-                      reverse('tlp-detail', kwargs={'pk': 2})  # 'amber'
-        cls.taxonomy_url = cls.base_url + \
-                           reverse('taxonomy-detail', kwargs={'pk': 41})  # 'phishing'
+        cls.priority_url = cls.base_url + reverse('priority-detail', kwargs={'pk': 2})  # 'high'
+        cls.tlp_url = cls.base_url + reverse('tlp-detail', kwargs={'pk': 2})  # 'amber'
+        cls.taxonomy_url = cls.base_url + reverse('taxonomy-detail', kwargs={'pk': 42})  # 'copyright'
         cls.feed_url = cls.base_url + reverse('feed-detail', kwargs={'pk': 1})
 
-        cls.priority = Priority.objects.get(pk=2)
-        cls.tlp = Tlp.objects.get(pk=2)
-        cls.taxonomy = Taxonomy.objects.get(pk=41)
-        cls.feed = Feed.objects.get(pk=1)
-        cls.tlp = Tlp.objects.get(pk=2)
-        cls.user = User.objects.get(username='ngen')
+        cls.priority = Priority.objects.get(slug="high")
+        cls.taxonomy = Taxonomy.objects.get(slug="copyright")
+        cls.feed = Feed.objects.get(slug="americas")
+        cls.tlp = Tlp.objects.get(slug="green")
+        cls.user = User.objects.get(username="ngen")
 
     def setUp(self):
         resp = self.client.post(
@@ -281,10 +277,10 @@ class TestEvent(APITestCase):
             priority_id=2,
             cidr=None,
             domain='*',
-            event_taxonomy_id=90,
+            event_taxonomy_id=91,
             event_feed_id=11,
             case_tlp_id=4,
-            case_state_id=9,
+            case_state_id=3,
             case_lifecycle='auto_open',
             active=True
         )
