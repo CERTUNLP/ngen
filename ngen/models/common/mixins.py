@@ -489,8 +489,8 @@ class ArtifactRelatedMixin(models.Model):
             for artifact_type, artifact_values in self.artifacts_dict.items():
                 if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
                     for artifact_value in artifact_values:
-                        artifact, created = ngen.models.Artifact.objects.get_or_create(type=artifact_type,
-                                                                                       value=artifact_value)
+                        artifact, created = ngen.models.Artifact.objects.get_or_create(value=artifact_value,
+                                                                                       defaults={'type': artifact_type})
                         ngen.models.ArtifactRelation.objects.get_or_create(
                             artifact=artifact,
                             content_type=ContentType.objects.get_for_model(self),
