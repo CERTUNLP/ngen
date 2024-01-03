@@ -8,7 +8,7 @@
       "slug": "americas",
       "name": "Americas",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -20,7 +20,7 @@
       "slug": "bro",
       "name": "Bro",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -44,7 +44,7 @@
       "slug": "cert_unlp",
       "name": "Cert UNLP",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -56,7 +56,7 @@
       "slug": "dorkbot",
       "name": "Dorkbot",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -68,7 +68,7 @@
       "slug": "external_report",
       "name": "External report",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -80,7 +80,7 @@
       "slug": "have_i_been_pwned",
       "name": "Have I Been Pwned",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -92,7 +92,7 @@
       "slug": "netflow",
       "name": "Netflow",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -104,7 +104,7 @@
       "slug": "rpz",
       "name": "RPZ",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -116,7 +116,7 @@
       "slug": "shadowserver",
       "name": "Shadowserver",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -128,7 +128,7 @@
       "slug": "shodan",
       "name": "Shodan",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -140,7 +140,7 @@
       "slug": "spamcop",
       "name": "SpamCop",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -152,7 +152,7 @@
       "slug": "spamhaus",
       "name": "SpamHaus",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -164,7 +164,7 @@
       "slug": "spampot",
       "name": "SpamPot",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -176,7 +176,7 @@
       "slug": "team_cymru",
       "name": "Team Cymru",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -188,7 +188,7 @@
       "slug": "undefined",
       "name": "Undefined",
       "active": true,
-      "description": null
+      "description": ""
     }
   },
   {
@@ -200,7 +200,7 @@
       "slug": "unlp_user",
       "name": "UNLP User",
       "active": true,
-      "description": null
+      "description": ""
     }
   }
 ]
