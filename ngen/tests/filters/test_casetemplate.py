@@ -33,9 +33,9 @@ class CaseTemplateFilterTest(BaseFilterTest):
         cls.priority_1 = Priority.objects.get(slug="critical")
         cls.priority_2 = Priority.objects.get(slug="high")
         cls.priority_3 = Priority.objects.get(slug="medium")
-        cls.taxonomy_1 = Taxonomy.objects.get(slug="accessible_afp_report")
-        cls.taxonomy_2 = Taxonomy.objects.get(slug="blacklist")
-        cls.taxonomy_3 = Taxonomy.objects.get(slug="botnet")
+        cls.taxonomy_1 = Taxonomy.objects.get(slug="blacklist")
+        cls.taxonomy_2 = Taxonomy.objects.get(slug="botnet")
+        cls.taxonomy_3 = Taxonomy.objects.get(slug="botnet_attack_command")
         cls.state_1 = State.objects.get(slug="open")
         cls.state_2 = State.objects.get(slug="staging")
 
