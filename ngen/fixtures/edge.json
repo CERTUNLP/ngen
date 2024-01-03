@@ -1,68 +1,68 @@
 [
   {
     "model": "ngen.edge",
-    "pk": 12,
+    "pk": 1,
     "fields": {
       "created": "2019-06-12T17:04:56Z",
       "modified": "2019-06-12T17:04:56Z",
-      "parent": 8,
-      "child": 9,
-      "discr": "opening"
-    }
-  },
-  {
-    "model": "ngen.edge",
-    "pk": 14,
-    "fields": {
-      "created": "2019-06-12T17:04:56Z",
-      "modified": "2019-06-12T17:04:56Z",
-      "parent": 11,
-      "child": 9,
-      "discr": "opening"
-    }
-  },
-  {
-    "model": "ngen.edge",
-    "pk": 20,
-    "fields": {
-      "created": "2019-06-12T17:04:56Z",
-      "modified": "2019-06-12T17:04:56Z",
-      "parent": 9,
-      "child": 1,
-      "discr": "closing"
-    }
-  },
-  {
-    "model": "ngen.edge",
-    "pk": 32,
-    "fields": {
-      "created": "2019-06-12T17:04:56Z",
-      "modified": "2019-06-12T17:04:56Z",
-      "parent": 8,
-      "child": 11,
+      "parent": 1,
+      "child": 2,
       "discr": "new"
     }
   },
   {
     "model": "ngen.edge",
-    "pk": 49,
+    "pk": 2,
     "fields": {
       "created": "2019-06-12T17:04:56Z",
       "modified": "2019-06-12T17:04:56Z",
       "parent": 1,
-      "child": 11,
-      "discr": "reopening"
+      "child": 3,
+      "discr": "opening"
     }
   },
   {
     "model": "ngen.edge",
-    "pk": 51,
+    "pk": 3,
     "fields": {
       "created": "2019-06-12T17:04:56Z",
       "modified": "2019-06-12T17:04:56Z",
-      "parent": 11,
-      "child": 1,
+      "parent": 1,
+      "child": 4,
       "discr": "closing"
+    }
+  },
+  {
+    "model": "ngen.edge",
+    "pk": 4,
+    "fields": {
+      "created": "2019-06-12T17:04:56Z",
+      "modified": "2019-06-12T17:04:56Z",
+      "parent": 2,
+      "child": 3,
+      "discr": "opening"
+    }
+  },
+  {
+    "model": "ngen.edge",
+    "pk": 5,
+    "fields": {
+      "created": "2019-06-12T17:04:56Z",
+      "modified": "2019-06-12T17:04:56Z",
+      "parent": 3,
+      "child": 4,
+      "discr": "closing"
+    }
+  },
+  {
+    "model": "ngen.edge",
+    "pk": 5,
+    "fields": {
+      "created": "2019-06-12T17:04:56Z",
+      "modified": "2019-06-12T17:04:56Z",
+      "parent": 4,
+      "child": 2,
+      "discr": "reopening"
     }
   }
 ]
