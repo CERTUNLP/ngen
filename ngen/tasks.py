@@ -1,8 +1,8 @@
 from celery import shared_task
 from constance import config
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
-from django.utils.translation import gettext_lazy
 from django.utils import timezone
+from django.utils.translation import gettext_lazy
 
 import ngen.models
 from ngen import cortex
@@ -77,9 +77,9 @@ def enrich_artifact(artifact_id):
                     if config.ARTIFACT_RECURSIVE_ENRICHMENT:
                         for job_artifact in api.jobs.get_artifacts(job.id):
                             if job_artifact.dataType in config.ALLOWED_ARTIFACTS_TYPES.split(','):
-                                new_artifact, created = ngen.models.Artifact.objects.get_or_create(
-                                    type=job_artifact.dataType,
-                                    value=job_artifact.data)
+                                new_artifact, created = ngen.models.Artifact.objects.get_or_create(value=job_artifact.data,
+                                                                                               defaults={
+                                                                                                   'type': job_artifact.dataType})
                                 for relation in artifact.artifact_relation.all():
                                     ngen.models.ArtifactRelation.objects.get_or_create(artifact=new_artifact,
                                                                                        content_type=relation.content_type,
