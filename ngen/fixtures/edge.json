@@ -27,9 +27,9 @@
     "fields": {
       "created": "2019-06-12T17:04:56Z",
       "modified": "2019-06-12T17:04:56Z",
-      "parent": 1,
-      "child": 4,
-      "discr": "closing"
+      "parent": 2,
+      "child": 3,
+      "discr": "opening"
     }
   },
   {
@@ -39,8 +39,8 @@
       "created": "2019-06-12T17:04:56Z",
       "modified": "2019-06-12T17:04:56Z",
       "parent": 2,
-      "child": 3,
-      "discr": "opening"
+      "child": 4,
+      "discr": "closing"
     }
   },
   {
@@ -56,7 +56,7 @@
   },
   {
     "model": "ngen.edge",
-    "pk": 5,
+    "pk": 6,
     "fields": {
       "created": "2019-06-12T17:04:56Z",
       "modified": "2019-06-12T17:04:56Z",
