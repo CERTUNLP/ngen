@@ -275,6 +275,8 @@ CONSTANCE_CONFIG = {
         'Enrich artifacts from artifacts enrichmets', bool),
     'CORTEX_HOST': (os.environ.get('CORTEX_HOST'), 'Cortex host domain:port'),
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
+    'PAGE_SIZE': (int(os.environ.get('PAGE_SIZE', 10)), 'Default page size', int),
+    'PAGE_SIZE_MAX': (int(os.environ.get('PAGE_SIZE_MAX', 100)), 'Max page size (use with caution)', int),
 }
 CONSTANCE_CONFIG_PASSWORDS = ['CORTEX_APIKEY']
 
