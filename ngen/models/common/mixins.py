@@ -97,7 +97,7 @@ class TreeModelMixin(AL_Node, ValidationModelMixin):
         # Check loops. This is not really performant, but it works
         elem = self.parent
         while elem:
-            if elem == self:
+            if elem.pk == self.pk:
                 raise ValidationError({'parent': [gettext('Parent can\'t be a descendant of the instance.')]})
             elem = elem.parent
         super().clean()
