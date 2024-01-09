@@ -5,11 +5,11 @@ from django.db import models, transaction
 from django.utils.translation import gettext_lazy
 from model_utils import Choices
 
-from ngen.models.common.mixins import AuditModelMixin
+from ngen.models.common.mixins import AuditModelMixin, ValidationModelMixin
 from .. import tasks
 
 
-class Artifact(AuditModelMixin):
+class Artifact(AuditModelMixin, ValidationModelMixin):
     TYPE = Choices(('ip', 'IP'), ('domain', gettext_lazy('Domain')), ('fqdn', gettext_lazy('FQDN')), (
         'url', 'Url'), ('mail', gettext_lazy('Mail')), ('hash', 'Hash'), ('file', gettext_lazy('File')),
                    ('other', gettext_lazy('Other')), ('user-agent', gettext_lazy('User agent')),
@@ -42,7 +42,7 @@ class Artifact(AuditModelMixin):
         return targets
 
 
-class ArtifactRelation(AuditModelMixin):
+class ArtifactRelation(AuditModelMixin, ValidationModelMixin):
     artifact = models.ForeignKey('ngen.Artifact', on_delete=models.CASCADE, related_name='artifact_relation')
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='artifact_relation')
     object_id = models.PositiveIntegerField()
@@ -73,9 +73,9 @@ class ArtifactRelation(AuditModelMixin):
         super().save(*args, **kwargs)
 
 
-class ArtifactEnrichment(AuditModelMixin):
+class ArtifactEnrichment(AuditModelMixin, ValidationModelMixin):
     artifact = models.ForeignKey(Artifact, on_delete=models.CASCADE, related_name='enrichments')
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=255)
     success = models.BooleanField(default=True)
     raw = models.JSONField()
 

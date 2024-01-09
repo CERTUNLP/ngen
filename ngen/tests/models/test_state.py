@@ -16,9 +16,10 @@ class StateTestCase(TestCase):
             severity=1
         )
         default_priority.save()
-        self.tlp = Tlp.objects.create(name='Test TLP', code='123')
-        self.user_creator = User.objects.create(username='creator')
-        self.assigned_user = User.objects.create(username='assigned')
+        self.tlp = Tlp.objects.create(name='Test TLP', code='123', color='#FFFFFF', when='Test When', why='Test Why',
+                                      information='Test Information', description='Test Description')
+        self.user_creator = User.objects.create(username='creator', password='creator')
+        self.assigned_user = User.objects.create(username='assigned', password='assigned')
         self.state = State.objects.create(name='State')
         self.first_state = State.objects.create(name='First State', active=True)
         self.second_state = State.objects.create(name='Second State', active=True)

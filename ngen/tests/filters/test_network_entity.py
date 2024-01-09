@@ -16,7 +16,7 @@ class NetworkEntityFilterTest(BaseFilterTest):
     Network Entity filter test class.
     """
 
-    fixtures = ["user.json", "priority.json"]
+    fixtures = ['priority.json', 'user.json']
 
     @classmethod
     def setUpTestData(cls):

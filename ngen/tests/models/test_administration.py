@@ -30,7 +30,8 @@ class TestAdministration(TestCase):
             name='Test TLP',
             code=123
         )
-        self.user = User.objects.create(username='testuser', email='test@example.com', priority=self.priority)
+        self.user = User.objects.create(username='testuser', password='testuser', email='test@example.com',
+                                        priority=self.priority)
 
         '''
         ------------------------------------------------------------------------------------------------------

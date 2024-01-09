@@ -15,6 +15,7 @@ from netfields import NetManager, CidrAddressField
 from treebeard.al_tree import AL_Node
 
 import ngen
+from ngen.utils import slugify_underscore
 from .parsing import StringIdentifier, StringType
 
 
@@ -25,7 +26,30 @@ class AuditModelMixin(TimeStampedModel):
         abstract = True
 
 
-class TreeModelMixin(AL_Node):
+class ValidationModelMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+
+class SlugModelMixin(ValidationModelMixin, models.Model):
+    slug = models.SlugField(max_length=255, unique=True)
+
+    class Meta:
+        abstract = True
+
+    def _slug_field(self):
+        return 'name'
+
+    def clean(self):
+        self.slug = slugify_underscore(getattr(self, self._slug_field()))
+        super().clean()
+
+
+class TreeModelMixin(AL_Node, ValidationModelMixin):
     parent = models.ForeignKey('self', models.DO_NOTHING, null=True,
                                blank=True, db_index=True, related_name='children')
 
@@ -68,6 +92,15 @@ class TreeModelMixin(AL_Node):
     @classmethod
     def fix_tree(cls):
         pass
+
+    def clean(self):
+        # Check loops. This is not really performant, but it works
+        elem = self.parent
+        while elem:
+            if elem == self:
+                raise ValidationError({'parent': [gettext('Parent can\'t be a descendant of the instance.')]})
+            elem = elem.parent
+        super().clean()
 
 
 class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
@@ -128,10 +161,10 @@ class EvidenceModelMixin(models.Model):
     def delete(self, using=None, keep_parents=False):
         for evidence in self.evidence.all():
             evidence.delete()
-        super(EvidenceModelMixin, self).delete()
+        super().delete()
 
     def save(self, **kwargs):
-        super(EvidenceModelMixin, self).save()
+        super().save()
         for file in self.files:
             self.add_evidence(file)
 
@@ -150,16 +183,16 @@ class EvidenceModelMixin(models.Model):
         self._files = files
 
 
-class PriorityModelMixin(models.Model):
-    priority = models.ForeignKey('Priority', models.PROTECT)
+class PriorityModelMixin(ValidationModelMixin, models.Model):
+    priority = models.ForeignKey('Priority', models.PROTECT, null=True, blank=True)
 
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
-        if not self.priority_id:
+    def clean(self):
+        if not self.priority:
             self.priority = ngen.models.Priority.default_priority()
-        super().save(*args, **kwargs)
+        super().clean()
 
 
 class AddressManager(NetManager):
@@ -197,7 +230,7 @@ class AddressManager(NetManager):
         return self.filter(domain='*')
 
 
-class AddressModelMixin(models.Model):
+class AddressModelMixin(ValidationModelMixin, models.Model):
     cidr = CidrAddressField(null=True, default=None, blank=True)
     domain = models.CharField(
         max_length=255, null=True, default=None, blank=True)
@@ -268,10 +301,7 @@ class AddressModelMixin(models.Model):
         if not self.address.is_valid():
             raise ValidationError(
                 {self.field_name(): [f'Must be a valid {self.field_name()}']})
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
+        super().clean()
 
     def __eq__(self, other: 'AddressModelMixin'):
         if isinstance(other, AddressModelMixin):
@@ -450,7 +480,7 @@ class ArtifactRelatedMixin(models.Model):
         return ngen.models.Artifact.objects.filter(artifact_relation__in=self.artifact_relation.all()).order_by('id')
 
     def save(self, *args, **kwargs):
-        super(ArtifactRelatedMixin, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self.artifact_update()
 
     def artifact_update(self):

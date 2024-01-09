@@ -40,7 +40,7 @@ class UserSerializer(AuditSerializerMixin):
         fields = '__all__'
 
     def to_representation(self, obj):
-        rep = super(UserSerializer, self).to_representation(obj)
+        rep = super().to_representation(obj)
         if 'password' in rep:
             if rep.get('password'):
                 rep['password'] = '********'

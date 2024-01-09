@@ -16,7 +16,7 @@ class ContactFilterTest(BaseFilterTest):
     Contact filter test class.
     """
 
-    fixtures = ['user.json', 'priority.json']
+    fixtures = ['priority.json', 'user.json']
 
     @classmethod
     def setUpTestData(cls):

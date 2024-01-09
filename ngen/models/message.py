@@ -1,16 +1,14 @@
 from django.db import models
 
+from ngen.models.common.mixins import AuditModelMixin, ValidationModelMixin
 
-class Message(models.Model):
+class Message(AuditModelMixin, ValidationModelMixin):
     data = models.JSONField()
-    updated_at = models.DateTimeField(blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
     response = models.JSONField(blank=True, null=True)
     pending = models.IntegerField()
     case = models.ForeignKey('ngen.Case', models.PROTECT, blank=True, null=True)
     discr = models.CharField(max_length=255)
     created_by = models.ForeignKey('ngen.User', models.PROTECT, blank=True, null=True)
-    deletedat = models.DateTimeField(db_column='deletedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         db_table = 'message'

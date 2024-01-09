@@ -1,13 +1,10 @@
 from django.db import models
-from django.utils.text import slugify
 
-from ngen.models.common.mixins import AuditModelMixin
-from ngen.utils import slugify_underscore
+from ngen.models.common.mixins import AuditModelMixin, SlugModelMixin, ValidationModelMixin
 
 
-class State(AuditModelMixin):
-    slug = models.SlugField(max_length=100, unique=True)
-    name = models.CharField(max_length=100)
+class State(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
+    name = models.CharField(max_length=255)
     blocked = models.BooleanField(default=False)
     attended = models.BooleanField(default=False)
     solved = models.BooleanField(default=False)
@@ -22,10 +19,6 @@ class State(AuditModelMixin):
 
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify_underscore(self.name)
-        super(State, self).save(*args, **kwargs)
 
     def siblings(self):
         return self.siblings_with_self().exclude(pk=self.pk)
@@ -69,7 +62,7 @@ class State(AuditModelMixin):
         db_table = 'state'
 
 
-class Edge(AuditModelMixin):
+class Edge(AuditModelMixin, ValidationModelMixin):
     parent = models.ForeignKey(State, models.CASCADE, related_name='children_edge')
     child = models.ForeignKey(State, models.CASCADE, related_name='parents_edge')
     discr = models.CharField(max_length=255)

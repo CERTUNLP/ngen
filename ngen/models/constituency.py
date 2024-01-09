@@ -3,9 +3,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy
 from model_utils import Choices
 
-from ngen.models.common.mixins import AuditModelMixin, PriorityModelMixin, AddressModelMixin, TreeModelMixin
-from .common.mixins import AddressManager
-from ngen.utils import slugify_underscore
+from ngen.models.common.mixins import AuditModelMixin, PriorityModelMixin, AddressModelMixin, TreeModelMixin, \
+    SlugModelMixin, ValidationModelMixin, AddressManager
 
 
 class NetworkManager(AddressManager):
@@ -36,7 +35,7 @@ class NetworkManager(AddressManager):
         return self.defaults_domain()[:1]
 
 
-class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin):
+class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationModelMixin):
     contacts = models.ManyToManyField('ngen.Contact', blank=True)
     active = models.BooleanField(default=True)
     TYPE = Choices(('internal', gettext_lazy('Internal')), ('external', gettext_lazy('External')))
@@ -62,7 +61,7 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin):
     def delete(self):
         if self.get_children():
             self.get_children().update(parent=self.parent)
-        super(Network, self).delete()
+        super().delete()
 
     def clean(self):
         super().clean()
@@ -82,6 +81,7 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin):
             raise ValidationError({'__all__': [f'Network must have a valid address (cidr/domain)']})
 
     def save(self, *args, **kwargs):
+        self.full_clean()
         super().save(*args, **kwargs)
         Network.objects.children_of(self).update(parent=self)
 
@@ -93,10 +93,10 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin):
         return self.contacts.filter(type='email').filter(priority__severity__gte=priority)
 
 
-class Contact(AuditModelMixin, PriorityModelMixin):
+class Contact(AuditModelMixin, PriorityModelMixin, ValidationModelMixin):
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
-    public_key = models.CharField(max_length=4000, null=True)
+    public_key = models.CharField(max_length=4000, null=True, blank=True)
     TYPE = Choices(('email', gettext_lazy('Email')), ('telegram', gettext_lazy('Telegram')),
                    ('phone', gettext_lazy('Phone')), ('uri', gettext_lazy('URI')))
     type = models.CharField(choices=TYPE, default=TYPE.email, max_length=20)
@@ -116,14 +116,9 @@ class Contact(AuditModelMixin, PriorityModelMixin):
         ordering = ['username']
 
 
-class NetworkEntity(AuditModelMixin):
+class NetworkEntity(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
     name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True)
     active = models.BooleanField(default=True)
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify_underscore(self.name)
-        super(NetworkEntity, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name

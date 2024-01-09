@@ -13,10 +13,9 @@ class HashedFilenameStorage(FileSystemStorage):
         # This class will be the one that uniquifies.
         try:
             new_kwargs = dict(kwargs, uniquify_names=False)
-            super(HashedFilenameStorage, self).__init__(*args,
-                                                        **new_kwargs)
+            super().__init__(*args, **new_kwargs)
         except TypeError:
-            super(HashedFilenameStorage, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
 
     def _get_content_name(self, name, content, chunk_size=None):
         dir_name, file_name = os.path.split(name)
@@ -65,9 +64,7 @@ class HashedFilenameStorage(FileSystemStorage):
             return name
 
         try:
-            return super(HashedFilenameStorage, self)._save(
-                name, content, *args, **kwargs
-            )
+            return super()._save(name, content, *args, **kwargs)
         except OSError as e:
             if e.errno == EEXIST:
                 # We have a safe storage layer and file exists.
@@ -77,7 +74,7 @@ class HashedFilenameStorage(FileSystemStorage):
         return name
 
     def delete(self, name):
-        super(HashedFilenameStorage, self).delete(name)
+        super().delete(name)
         dirname = os.path.dirname(self.path(name))
         try:
             if os.path.isdir(dirname) and not os.listdir(dirname):
