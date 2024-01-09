@@ -37,12 +37,6 @@ class Priority(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
     def default_priority(cls):
         return cls.objects.get(name=config.PRIORITY_DEFAULT)
 
-    # @classmethod
-    # def default_priority(cls):
-    #     priority, created = cls.objects.get_or_create(name='UNDEFINED',
-    #                                                   defaults=dict(severity=0, notification_amount=0, color="#FFFFFF"))
-    #     return priority
-    #
     class Meta:
         db_table = 'priority'
         ordering = ['severity']

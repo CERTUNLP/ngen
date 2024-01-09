@@ -193,10 +193,6 @@ class PriorityModelMixin(ValidationModelMixin, models.Model):
         if not self.priority:
             self.priority = ngen.models.Priority.default_priority()
         super().clean()
-    #
-    # def save(self, *args, **kwargs):
-    #     self.full_clean()
-    #     super().save(*args, **kwargs)
 
 
 class AddressManager(NetManager):
@@ -306,10 +302,6 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
             raise ValidationError(
                 {self.field_name(): [f'Must be a valid {self.field_name()}']})
         super().clean()
-    #
-    # def save(self, *args, **kwargs):
-    #     self.full_clean()
-    #     super().save(*args, **kwargs)
 
     def __eq__(self, other: 'AddressModelMixin'):
         if isinstance(other, AddressModelMixin):
