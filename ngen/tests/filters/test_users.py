@@ -31,10 +31,10 @@ class UserFilterTest(BaseFilterTest):
             is_staff=True,
             is_superuser=True,
             is_active=True,
-            date_joined=timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC),
-            last_login=timezone.datetime(2024, 1, 2, tzinfo=pytz.UTC)
+            date_joined=timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC),
+            last_login=timezone.datetime(2000, 1, 2, tzinfo=pytz.UTC)
         )
-        cls.user_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
+        cls.user_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.user_1.save()
 
         cls.user_2 = User.objects.create(
@@ -45,8 +45,8 @@ class UserFilterTest(BaseFilterTest):
             is_staff=True,
             is_superuser=False,
             is_active=False,
-            date_joined=timezone.datetime(2024, 1, 2, tzinfo=pytz.UTC),
-            last_login=timezone.datetime(2024, 1, 3, tzinfo=pytz.UTC)
+            date_joined=timezone.datetime(2000, 1, 2, tzinfo=pytz.UTC),
+            last_login=timezone.datetime(2000, 1, 3, tzinfo=pytz.UTC)
         )
 
         cls.user_3 = User.objects.create(
@@ -57,8 +57,8 @@ class UserFilterTest(BaseFilterTest):
             is_staff=False,
             is_superuser=False,
             is_active=True,
-            date_joined=timezone.datetime(2024, 1, 3, tzinfo=pytz.UTC),
-            last_login=timezone.datetime(2024, 1, 4, tzinfo=pytz.UTC)
+            date_joined=timezone.datetime(2000, 1, 3, tzinfo=pytz.UTC),
+            last_login=timezone.datetime(2000, 1, 4, tzinfo=pytz.UTC)
         )
 
         cls.queryset = User.objects.exclude(
@@ -140,8 +140,8 @@ class UserFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02"
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02"
         }
 
         filtered_queryset = self.filter(params).qs
@@ -336,7 +336,7 @@ class UserFilterTest(BaseFilterTest):
         """
 
         params = {
-            "date_joined": "2024-01-01"
+            "date_joined": "2000-01-01"
         }
 
         filtered_queryset = self.filter(params).qs
@@ -350,7 +350,7 @@ class UserFilterTest(BaseFilterTest):
         """
 
         params = {
-            "last_login": "2024-01-04"
+            "last_login": "2000-01-04"
         }
 
         filtered_queryset = self.filter(params).qs

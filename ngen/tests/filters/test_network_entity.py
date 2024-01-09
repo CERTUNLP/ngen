@@ -28,7 +28,7 @@ class NetworkEntityFilterTest(BaseFilterTest):
             slug="universidad_nacional_de_la_plata",
             active=True,
         )
-        cls.network_entity_1.created = timezone.datetime(2024, 1, 1, tzinfo=pytz.UTC)
+        cls.network_entity_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.network_entity_1.save()
 
         cls.network_entity_2 = NetworkEntity.objects.create(
@@ -103,8 +103,8 @@ class NetworkEntityFilterTest(BaseFilterTest):
         """
 
         params = {
-            "created_range_after": "2024-01-01",
-            "created_range_before": "2024-01-02",
+            "created_range_after": "2000-01-01",
+            "created_range_before": "2000-01-02",
         }
 
         filtered_queryset = self.filter(params).qs
