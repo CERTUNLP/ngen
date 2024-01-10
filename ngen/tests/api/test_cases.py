@@ -26,15 +26,15 @@ class TestCase(APITestCase):
         cls.base_url = 'http://testserver'
         cls.priority_url = cls.base_url + reverse('priority-detail', kwargs={'pk': 2})  # 'high'
         cls.tlp_url = cls.base_url + reverse('tlp-detail', kwargs={'pk': 2})  # 'amber'
-        cls.state_url = cls.base_url + reverse('state-detail', kwargs={'pk': 9})  # open
+        cls.state_url = cls.base_url + reverse('state-detail', kwargs={'pk': 3})  # open
         cls.case_template_url = cls.base_url + reverse('casetemplate-detail', kwargs={'pk': 1})
 
-        cls.priority = Priority.objects.get(pk=2)
-        cls.tlp = Tlp.objects.get(pk=2)
-        cls.state = State.objects.get(pk=9)
-        cls.taxonomy = Taxonomy.objects.get(pk=1)
-        cls.feed = Feed.objects.get(pk=1)
-        cls.user = User.objects.get(username='ngen')
+        cls.priority = Priority.objects.get(slug="high")
+        cls.feed = Feed.objects.get(slug="americas")
+        cls.tlp = Tlp.objects.get(slug="green")
+        cls.state = State.objects.get(slug="open")
+        cls.taxonomy = Taxonomy.objects.get(slug="accessible_afp_report")
+        cls.user = User.objects.get(username="ngen")
         cls.case_template = CaseTemplate.objects.get(pk=1)
 
     def setUp(self):

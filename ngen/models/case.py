@@ -348,7 +348,7 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     def artifacts_dict(self) -> dict:
         artifacts_dict = {'hashes': [], 'files': []}
         if self.cidr:
-            artifacts_dict['ip'] = [self.address.network_address]
+            artifacts_dict['ip'] = [self.address.network_address().compressed]
         if self.domain:
             artifacts_dict['domain'] = [self.domain]
         for evidence in self.evidence.all():

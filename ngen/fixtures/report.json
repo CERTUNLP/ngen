@@ -1,12 +1,12 @@
 [
   {
     "model": "ngen.report",
-    "pk": 0,
+    "pk": 1,
     "fields": {
       "created": "2019-04-26T16:06:43Z",
       "modified": "2022-04-05T19:23:16.295Z",
       "lang": "en",
-      "taxonomy": 0,
+      "taxonomy": 1,
       "problem": "The hosts {{event.network}} have the Apple Filing Protocol (AFP) running and accessible on the Internet.",
       "derived_problem": null,
       "verification": null,
@@ -16,27 +16,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 1,
+    "pk": 2,
     "fields": {
       "created": "2019-04-23T14:27:44Z",
       "modified": "2022-02-01T22:16:41.235Z",
       "lang": "en",
-      "taxonomy": 11,
-      "problem": "DoS Inbound",
-      "derived_problem": "DoS Inbound",
-      "verification": "DoS Inbound",
-      "recommendations": "DoS Inbound",
-      "more_information": "DoS Inbound"
-    }
-  },
-  {
-    "model": "ngen.report",
-    "pk": 2,
-    "fields": {
-      "created": "2019-04-23T14:27:21Z",
-      "modified": "2022-02-01T22:16:41.237Z",
-      "lang": "es",
-      "taxonomy": 11,
+      "taxonomy": 12,
       "problem": "DoS Inbound",
       "derived_problem": "DoS Inbound",
       "verification": "DoS Inbound",
@@ -48,10 +33,25 @@
     "model": "ngen.report",
     "pk": 3,
     "fields": {
+      "created": "2019-04-23T14:27:21Z",
+      "modified": "2022-02-01T22:16:41.237Z",
+      "lang": "es",
+      "taxonomy": 12,
+      "problem": "DoS Inbound",
+      "derived_problem": "DoS Inbound",
+      "verification": "DoS Inbound",
+      "recommendations": "DoS Inbound",
+      "more_information": "DoS Inbound"
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 4,
+    "fields": {
       "created": "2019-04-03T12:39:27Z",
       "modified": "2022-02-01T22:16:41.239Z",
       "lang": "en",
-      "taxonomy": 18,
+      "taxonomy": 19,
       "problem": "your mail has been leeked",
       "derived_problem": "your password is online",
       "verification": "check evidence",
@@ -61,12 +61,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 4,
+    "pk": 5,
     "fields": {
       "created": "2018-08-15T14:18:21Z",
       "modified": "2022-02-01T22:16:41.244Z",
       "lang": "en",
-      "taxonomy": 20,
+      "taxonomy": 21,
       "problem": "test",
       "derived_problem": null,
       "verification": null,
@@ -76,12 +76,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 5,
+    "pk": 6,
     "fields": {
       "created": "2017-12-21T11:57:53Z",
       "modified": "2022-02-01T22:16:41.257Z",
       "lang": "es",
-      "taxonomy": 19,
+      "taxonomy": 20,
       "problem": "Nos comunicamos con Ud. porque porque hemos sido informados que el host {{event.network}} se encuentra infectado con un malware.",
       "derived_problem": "Encontrándose infectado el equipo existen diversas consecuencias, entre las que podemos listar:\n\n<ul>\n<li><p>Consumo excesivo del ancho de banda por parte del host.</p></li>\n<li><p>Compromiso de otros equipos.</p></li>\n<li><p>Compromiso de información propia de los usuarios.</p></li>\n<li><p>Ejecute órdenes de una botnet.</p></li>\n</ul>",
       "verification": null,
@@ -91,12 +91,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 6,
+    "pk": 7,
     "fields": {
       "created": "2018-08-15T12:43:38Z",
       "modified": "2022-02-01T22:16:41.259Z",
       "lang": "es",
-      "taxonomy": 20,
+      "taxonomy": 21,
       "problem": "Lo contactamos porque hemos detectado que el host/servidor {{event.network}} está realizando minería de criptomonedas. \nSi bien esto puede deberse a un proceso que usted haya ejecutado, es muy probable que alguien haya logrado acceder al mismo y programar la ejecucion de dicha tarea.",
       "derived_problem": "La PC podría estar infectada o haber sido comprometida de alguna forma para que un tercero ejecute comandos.",
       "verification": "Verificar los procesos que se están ejecutando en el host.",
@@ -106,12 +106,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 7,
+    "pk": 8,
     "fields": {
       "created": "2018-08-15T14:18:04Z",
       "modified": "2022-02-01T22:16:41.260Z",
       "lang": "en",
-      "taxonomy": 21,
+      "taxonomy": 22,
       "problem": "Test",
       "derived_problem": "Test",
       "verification": null,
@@ -121,12 +121,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 8,
+    "pk": 9,
     "fields": {
       "created": "2019-04-26T16:07:49Z",
       "modified": "2022-02-01T22:16:41.261Z",
       "lang": "es",
-      "taxonomy": 0,
+      "taxonomy": 1,
       "problem": "El host {{event.network}} tiene el servicio de Apple Filing Protocol (AFP) corriendo de manera accesible desde Internet.",
       "derived_problem": null,
       "verification": null,
@@ -136,12 +136,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 9,
+    "pk": 10,
     "fields": {
       "created": "2017-12-21T11:57:57Z",
       "modified": "2022-02-01T22:16:41.262Z",
       "lang": "en",
-      "taxonomy": 1,
+      "taxonomy": 2,
       "problem": "We would like to inform you that we have detected that the host {{event.network}} under your administration has been detected in blacklists. For more information please view the attached file.",
       "derived_problem": "Emails sent to certain destinations could be filtered if they contain the IP  {{event.network}}.",
       "verification": "You can verify the existence of you IP in different blacklists accessing the following site\n\n<div>\n\nhttp://whatismyipaddress.com/blacklist-check\n\n\n</div>",
@@ -151,12 +151,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 10,
+    "pk": 11,
     "fields": {
       "created": "2017-12-21T11:57:52Z",
       "modified": "2022-02-01T22:16:41.263Z",
       "lang": "es",
-      "taxonomy": 1,
+      "taxonomy": 2,
       "problem": "Nos comunicamos con usted para informarle que hemos detectado que el Host {{event.network}} el cual esta bajo su administración, ha sido detectado en blacklists, las cuales se encuentran en el archivo adjunto.",
       "derived_problem": "Servicios brindados por la IP {{event.network}} puede verse afectados por la existencia de dicha IP en la blacklist reportada.",
       "verification": "Puede comprobar la existencia de su IP en diferentes blacklist consultando el sitio\n\n<div>\n\nhttp://whatismyipaddress.com/blacklist-check\n\n\n</div>",
@@ -166,12 +166,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 11,
+    "pk": 12,
     "fields": {
       "created": "2019-07-04T15:11:09Z",
       "modified": "2022-02-01T22:16:41.265Z",
       "lang": "es",
-      "taxonomy": 109,
+      "taxonomy": 110,
       "problem": "Lo contactamos para informarle que el host {{event.network}} es vulnerable a Bluekeep, permitiendo a un atacante la ejecución de código remota.",
       "derived_problem": "El host remoto se ve afectado por una vulnerabilidad de ejecución remota de código en Remote Desktop Protocol (RDP). Un atacante remoto no autenticado puede explotar esto, a través de una serie de solicitudes especialmente diseñadas, para ejecutar código arbitrario en su máquina.",
       "verification": "Utilizando el comprobador: https://github.com/zerosum0x0/CVE-2019-0708",
@@ -181,27 +181,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 12,
+    "pk": 13,
     "fields": {
       "created": "2019-04-23T14:41:33Z",
       "modified": "2022-02-01T22:16:41.267Z",
       "lang": "en",
-      "taxonomy": 3,
-      "problem": "Botnet Attack Command",
-      "derived_problem": "Botnet Attack Command",
-      "verification": "Botnet Attack Command",
-      "recommendations": "Botnet Attack Command",
-      "more_information": "Botnet Attack Command"
-    }
-  },
-  {
-    "model": "ngen.report",
-    "pk": 13,
-    "fields": {
-      "created": "2019-04-23T14:41:36Z",
-      "modified": "2022-02-01T22:16:41.269Z",
-      "lang": "es",
-      "taxonomy": 3,
+      "taxonomy": 4,
       "problem": "Botnet Attack Command",
       "derived_problem": "Botnet Attack Command",
       "verification": "Botnet Attack Command",
@@ -213,10 +198,25 @@
     "model": "ngen.report",
     "pk": 14,
     "fields": {
+      "created": "2019-04-23T14:41:36Z",
+      "modified": "2022-02-01T22:16:41.269Z",
+      "lang": "es",
+      "taxonomy": 4,
+      "problem": "Botnet Attack Command",
+      "derived_problem": "Botnet Attack Command",
+      "verification": "Botnet Attack Command",
+      "recommendations": "Botnet Attack Command",
+      "more_information": "Botnet Attack Command"
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 15,
+    "fields": {
       "created": "2019-04-23T10:46:33Z",
       "modified": "2022-02-01T22:16:41.271Z",
       "lang": "en",
-      "taxonomy": 4,
+      "taxonomy": 5,
       "problem": "botnet drone",
       "derived_problem": "botnet drone",
       "verification": "botnet drone",
@@ -226,12 +226,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 15,
+    "pk": 16,
     "fields": {
       "created": "2017-12-21T11:57:57Z",
       "modified": "2022-02-01T22:16:41.245Z",
       "lang": "en",
-      "taxonomy": 2,
+      "taxonomy": 3,
       "problem": "We would like to inform you that we have detected that the host {{event.network}} is currently infected with malware and part of a BotNet.",
       "derived_problem": "The consequences of the host being infected may vary, we can list the following:\n\n<ul>\n<li><p>Excessive consumption of bandwidth by the host.</p></li>\n<li><p>Compromising other hosts.</p></li>\n<li><p>Compromising user information.</p></li>\n<li><p>etc</p></li>\n</ul>",
       "verification": "The verification can be achieved analyzing the existing network traffic of the infected host or network, using tools such as:\n\n<div>\n\ntcpdump\n\n\n</div>\n\nor\n\n<div>\n\nwireshark\n\n\n</div>",
@@ -241,12 +241,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 16,
+    "pk": 17,
     "fields": {
       "created": "2017-12-21T11:57:52Z",
       "modified": "2022-02-01T22:16:41.276Z",
       "lang": "es",
-      "taxonomy": 2,
+      "taxonomy": 3,
       "problem": "Nos comunicamos con Ud. para informarle que se detectó que el host {{event.network}} se encuentra infectado con un malware el cual participa en la formación de una Botnet.",
       "derived_problem": "Encontrándose infectado el equipo, existen diversas consecuencias entre las que podemos listas:\n\n<ul>\n<li><p>Consumo excesivo del ancho de banda por parte del host.</p></li>\n<li><p>Compromiso de otros equipos.</p></li>\n<li><p>Compromiso de información propia de los usuarios.</p></li>\n<li><p>etc</p></li>\n</ul>",
       "verification": "Se puede realizar una verificación del problema a través del análisis del tráfico existente en la red o sobre el host afectado, utilizando herramientas como \n\n<div>\n\ntcpdump\n\n\n</div>\n\no \n\n<div>\n\nwireshark\n\n\n</div>",
@@ -256,12 +256,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 17,
+    "pk": 18,
     "fields": {
       "created": "2017-12-21T11:57:57Z",
       "modified": "2022-02-01T22:16:41.308Z",
       "lang": "en",
-      "taxonomy": 5,
+      "taxonomy": 6,
       "problem": "We would like to inform you that we have detected that the host {{event.network}} is involved in brute forcing attacks, most likely due the host being compromised.",
       "derived_problem": "This type of attacks are commonly linked to a malware trying to infect other devices inside or outside the network, or possibly an attacker realizing a network scan. Whichever the case, there direct consequences are:\n\n<ul>\n<li><p>Excessive consumption of bandwidth by the host.</p></li>\n<li><p>Compromising other hosts.</p></li>\n<li><p>etc</p></li>\n</ul>",
       "verification": "The verification can be achieved analyzing the existing network traffic of the infected host or network, using tools such as:\n\n<div>\n\ntcpdump\n\n\n</div>\n\nor\n\n<div>\n\nwireshark\n\n\n</div>",
@@ -271,12 +271,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 18,
+    "pk": 19,
     "fields": {
       "created": "2019-04-26T17:26:05Z",
       "modified": "2022-02-01T22:16:41.311Z",
       "lang": "es",
-      "taxonomy": 110,
+      "taxonomy": 111,
       "problem": "Lo contactamos para informarle que el host {{event.network}} ha sido observado escaneando aplicaciones web en busca de vulnerabilidades.",
       "derived_problem": "El host podría estar comprometido.",
       "verification": null,
@@ -286,12 +286,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 19,
+    "pk": 20,
     "fields": {
       "created": "2019-04-26T16:53:55Z",
       "modified": "2022-02-01T22:16:41.313Z",
       "lang": "en",
-      "taxonomy": 111,
+      "taxonomy": 112,
       "problem": "We would like to inform you that we have been notified that the host {{event.network}} has been observed performing scanning activity against Industrial Control System (ICS) sensors.",
       "derived_problem": "The host under your administration could be compromised.",
       "verification": null,
@@ -301,12 +301,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 20,
+    "pk": 21,
     "fields": {
       "created": "2019-04-26T17:00:09Z",
       "modified": "2022-02-01T22:16:41.314Z",
       "lang": "es",
-      "taxonomy": 111,
+      "taxonomy": 112,
       "problem": "Lo contactamos para informarle que el host {{event.network}} estuvo realizando actividades de descubrimiento/scanning contra sensores de Sistemas de Control Industrial (ICS).",
       "derived_problem": "El host podría estar comprometido.",
       "verification": null,
@@ -316,12 +316,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 21,
+    "pk": 22,
     "fields": {
       "created": "2017-12-21T11:57:52Z",
       "modified": "2022-02-01T22:16:41.317Z",
       "lang": "es",
-      "taxonomy": 5,
+      "taxonomy": 6,
       "problem": "Se detectaron ataques de fuerza bruta provenientes del host {{event.network}}, los cuales probablemente se deban a que el equipo ha sido comprometido.",
       "derived_problem": "Este tipo de ataques suelen estar vinculados a un malware que busca infectar otros dispositivos, de la red o no, o a un atacante que utiliza el mismo para realizar un reconocimiento de la red.\nEn cualquiera de los dos casos, existen consecuencias directas de su realización:\n\n<ul>\n<li><p>Consumo excesivo del ancho de banda por parte del host</p></li>\n<li><p>Compromiso de otros equipos</p></li>\n<li><p>etc</p></li>\n</ul>",
       "verification": "Se puede realizar una verificación del problema a través del análisis del tráfico existente en la red o sobre el host afectado, utilizando herramientas como \n\n<div>\n\ntcpdump\n\n\n</div>\n\no \n\n<div>\n\nwireshark\n\n\n</div>",
@@ -331,12 +331,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 22,
+    "pk": 23,
     "fields": {
       "created": "2017-12-21T11:57:58Z",
       "modified": "2022-02-01T22:16:41.319Z",
       "lang": "en",
-      "taxonomy": 19,
+      "taxonomy": 20,
       "problem": "We would like to inform you that we have been informed that the host {{event.network}} is currently infected with malware.",
       "derived_problem": "Being the host infected, we can list the following consequences:\n\n<ul>\n<li><p>Excessive consumption of bandwidth by the host.</p></li>\n<li><p>Compromising other hosts.</p></li>\n<li><p>Compromising user information.</p></li>\n<li><p>Forming part of a BotNet.</p></li>\n</ul>",
       "verification": null,
@@ -346,12 +346,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 23,
+    "pk": 24,
     "fields": {
       "created": "2018-02-01T15:47:21Z",
       "modified": "2022-02-01T22:16:41.321Z",
       "lang": "en",
-      "taxonomy": 7,
+      "taxonomy": 8,
       "problem": "This report identifies hosts that have the Cisco Smart Install feature running and accessible to the internet at large. This feature can be used to read or potentially modify a switch's configuration.",
       "derived_problem": "Information leaking, modify configuration, update firmware and even run commands.",
       "verification": "Test with Nmap at port 4786. There is more tools to exploit this vulnerability. From swith you can use command `show vstack config` to test if feature is enabled.",
@@ -361,12 +361,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 24,
+    "pk": 25,
     "fields": {
       "created": "2018-02-01T15:36:19Z",
       "modified": "2022-02-01T22:16:41.323Z",
       "lang": "es",
-      "taxonomy": 7,
+      "taxonomy": 8,
       "problem": "Lo contactamos porque hemos sido informados que el dispositivo con IP {{event.network}} tiene habilitado y accesible desde internet la característica \"Cisco Smart Install\".",
       "derived_problem": "Podría ser posible leer y modificar la configuración del dispositivo, actualizar el firmware e incluso ejecutar comandos.",
       "verification": "Realizar un Nmap al puerto 4786. Tener en cuenta que existen otras herramientas desarrolladas para explotar esta vulnerabilidad.\nDesde el switch se puede utilizar el comando `show vstack config` para verificar si se encuentra habilitado.",
@@ -376,12 +376,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 25,
+    "pk": 26,
     "fields": {
       "created": "2017-12-21T11:57:57Z",
       "modified": "2022-02-01T22:16:41.324Z",
       "lang": "en",
-      "taxonomy": 41,
+      "taxonomy": 42,
       "problem": "We have been notified that the host {{event.network}} is distributing copyrighted material. This is due to an improper use of a P2P network.",
       "derived_problem": "Legal actions could be taken against the owner of the host responsible.",
       "verification": null,
@@ -391,12 +391,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 26,
+    "pk": 27,
     "fields": {
       "created": "2017-12-21T11:57:52Z",
       "modified": "2022-02-01T22:16:41.274Z",
       "lang": "es",
-      "taxonomy": 41,
+      "taxonomy": 42,
       "problem": "Nos notificaron que el host {{event.network}} está distribuyendo material con copyright. Esto se debe probablemente a que se está utilizando indebidamente una red P2P.",
       "derived_problem": "La recepción de acciones legales tomadas contra el responsable del host.",
       "verification": null,
@@ -406,12 +406,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 27,
+    "pk": 28,
     "fields": {
       "created": "2018-05-03T13:28:52Z",
       "modified": "2022-02-01T22:16:41.325Z",
       "lang": "en",
-      "taxonomy": 8,
+      "taxonomy": 9,
       "problem": "Data Breach",
       "derived_problem": "A data breach is the intentional or unintentional release of secure or private/confidential information to an untrusted environment. Other terms for this phenomenon include unintentional information disclosure, data leak and also data spill. For example username and password exposed.",
       "verification": "Check evidence",
@@ -421,12 +421,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 28,
+    "pk": 29,
     "fields": {
       "created": "2018-05-03T13:30:56Z",
       "modified": "2022-02-01T22:16:41.326Z",
       "lang": "es",
-      "taxonomy": 8,
+      "taxonomy": 9,
       "problem": "Fuga de información.",
       "derived_problem": "Pueden verse comprometidas datos sensibles del usuario. Un ejemplo son las credenciales de usuario (username y password) que apliquen a otros sistemas ante una fuga de información.",
       "verification": "Revisar la evidencia que se adjunta.",
@@ -436,12 +436,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 29,
+    "pk": 30,
     "fields": {
       "created": "2017-12-21T11:57:58Z",
       "modified": "2022-02-01T22:16:41.328Z",
       "lang": "en",
-      "taxonomy": 105,
+      "taxonomy": 106,
       "problem": "We would like to inform you that we have detected that web page hosted with IP {{event.network}} has suffered a defacement's attack. This is an attack on a website that changes the visual appearance of the site or a webpage performed by an attacker.",
       "derived_problem": "The changes in the existing information of the server indicates that the attackers succeeded to obtain restricted privileges on the server. As a result, the server may be exposed to other types of problems, such as:\n\n<ul>\n<li><p>Malware.</p></li>\n<li><p>Be used to perform more sophisticated attacks.</p></li>\n<li><p>Obtaining more privileges.</p></li>\n<li><p>etc.</p></li>\n</ul>",
       "verification": "The defacement's attack can be observed in the URL\n\n<div>\n\nhttp://{{event.network}}/\n\n\n</div>",
@@ -451,12 +451,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 30,
+    "pk": 31,
     "fields": {
       "created": "2018-05-03T13:23:16Z",
       "modified": "2022-02-01T22:16:41.316Z",
       "lang": "en",
-      "taxonomy": 17,
+      "taxonomy": 18,
       "problem": "Information leakage",
       "derived_problem": "Information leakage happens whenever a system that is designed to be closed to an eavesdropper reveals some information to unauthorized parties nonetheless. For example username and password exposed.",
       "verification": "Check evidence",
@@ -466,12 +466,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 31,
+    "pk": 32,
     "fields": {
       "created": "2017-12-21T11:57:52Z",
       "modified": "2022-02-01T22:16:41.330Z",
       "lang": "es",
-      "taxonomy": 105,
+      "taxonomy": 106,
       "problem": "Nos ponemos en contacto con Ud. para informarle que el sitio web que se encuentra en {{event.network}} sufrió un ataque de defacement, el cual consiste en la modificación del contenido propio del portal por terceros.",
       "derived_problem": "La modificación de la información existente en el servidor indica la obtención de privilegios sobre el mismo por parte de los atacantes. A raíz de esta situación, el servidor puede encontrarse expuesto a otros tipos de problemas, como ser:\n\n<ul>\n<li><p>Alojamiento de malware.</p></li>\n<li><p>Servir como origen de ataques más sofisticados.</p></li>\n<li><p>Obtención de mayores privilegios sobre el mismo.</p></li>\n<li><p>etc.</p></li>\n</ul>",
       "verification": "El defacement puede ser observado a través de la URL \n\n<div>\n\nhttp://{{event.network}}/\n\n\n</div>",
@@ -481,12 +481,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 32,
+    "pk": 33,
     "fields": {
       "created": "2017-12-21T11:57:58Z",
       "modified": "2022-02-01T22:16:41.332Z",
       "lang": "en",
-      "taxonomy": 9,
+      "taxonomy": 10,
       "problem": "LWe would like to inform you that we have detected that the DNS server with IP {{event.network}} has zone transfer active in some zones, visible at least from our CERT network.",
       "derived_problem": "<p>Problemas derivados</p>\n\nThe server under your administration could be used in DNS amplification attacks.",
       "verification": "Use the following command:\n\n<div>\n\ndig &lt;zona&gt;.unlp.edu.ar @{{event.network}} axfr\n\n\n</div>",
@@ -496,12 +496,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 33,
+    "pk": 34,
     "fields": {
       "created": "2017-12-21T11:57:52Z",
       "modified": "2022-02-01T22:16:41.334Z",
       "lang": "es",
-      "taxonomy": 9,
+      "taxonomy": 10,
       "problem": "Lo contactamos porque hemos detectado que el servidor DNS con IP {{event.network}}\ntiene habilitada la transferencia de alguna de sus zonas, al menos desde la\nred de nuestro CERT.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de\namplificación DNS.",
       "verification": "Utilizando el comando:\n\n<div>\n\ndig &lt;zona&gt;.unlp.edu.ar @{{event.network}} axfr\n\n\n</div>",
@@ -511,12 +511,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 34,
+    "pk": 35,
     "fields": {
       "created": "2017-12-21T11:57:58Z",
       "modified": "2022-02-01T22:16:41.336Z",
       "lang": "en",
-      "taxonomy": 10,
+      "taxonomy": 11,
       "problem": "We would like to inform you that we have been notified that the host {{event.network}} is being used to perform Denial of Service attacks (DOS), through the <strong>chargen</strong> service (UDP port 19).",
       "derived_problem": null,
       "verification": "The verification can be achieved analyzing the existing network traffic and observing UDP datagrams from and towards the port 19. Alternatively, it can be verified by manually connecting to the service using the following command:\n\n<div>\n\nncat -u {{event.network}} 19\n\n\n</div>",
@@ -526,12 +526,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 35,
+    "pk": 36,
     "fields": {
       "created": "2017-12-21T11:57:52Z",
       "modified": "2022-02-01T22:16:41.338Z",
       "lang": "es",
-      "taxonomy": 10,
+      "taxonomy": 11,
       "problem": "Le contactamos porque se nos informó que el host con IP {{event.network}} está siendo utilizado para realizar ataques de Denegación de Servicio (DOS) a través del servicio <strong>chargen</strong>.",
       "derived_problem": null,
       "verification": "El problema puede ser verificado mediante el monitoreo de red que permita observar trafico UDP hacia y desde el puerto 19.\nAlternativamente puede verificarlo conectándose manualmente a dicho servicio mediante el comando:\n\n<div>\n\nncat -u {{event.network}} 19\n\n\n</div>",
@@ -541,12 +541,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 36,
+    "pk": 37,
     "fields": {
       "created": "2017-12-21T11:57:58Z",
       "modified": "2022-02-01T22:16:41.342Z",
       "lang": "en",
-      "taxonomy": 12,
+      "taxonomy": 13,
       "problem": "We would like to inform you that we have been notified that the host {{event.network}} is being used to perform Denial of Service attacks (DOS), through the <strong>NTP service</strong> (UDP port 123).",
       "derived_problem": null,
       "verification": "The verification can be achieved analyzing the server response to the commands <strong>NTP readvar</strong> and/or <strong>NTP monlist</strong>. To manually verify if the service responds to these types of commands, use the following commands:\n\n\n<div>\n\nntpq -c readvar [{{event.network}}]\nntpdc -n -c monlist [{{event.network}}]\n\n\n</div>",
@@ -556,12 +556,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 37,
+    "pk": 38,
     "fields": {
       "created": "2017-12-21T11:57:52Z",
       "modified": "2022-02-01T22:16:41.344Z",
       "lang": "es",
-      "taxonomy": 12,
+      "taxonomy": 13,
       "problem": "Le contactamos porque se nos informó que el host con IP {{event.network}} está siendo utilizado para realizar ataques de Denegación de Servicio (DOS) a través del servicio NTP (UDP 123).",
       "derived_problem": null,
       "verification": "Probablemente su servidor responde a comandos del tipo <strong>NTP readvar</strong>  y/o a comandos <strong>NTP monlist</strong>.\nPara testear manualmente si el servicio responde a este tipo de consultas puede utilizar los respectivos comandos:\n\n<div>\n\nntpq -c readvar [{{event.network}}]\nntpdc -n -c monlist [{{event.network}}]\n\n\n</div>",
@@ -571,27 +571,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 38,
+    "pk": 39,
     "fields": {
       "created": "2019-04-23T14:33:25Z",
       "modified": "2022-02-01T22:16:41.240Z",
       "lang": "en",
-      "taxonomy": 13,
-      "problem": "Dos Outbound",
-      "derived_problem": "Dos Outbound",
-      "verification": "Dos Outbound",
-      "recommendations": "Dos Outbound",
-      "more_information": "Dos Outbound"
-    }
-  },
-  {
-    "model": "ngen.report",
-    "pk": 39,
-    "fields": {
-      "created": "2019-04-23T14:33:29Z",
-      "modified": "2022-02-01T22:16:41.242Z",
-      "lang": "es",
-      "taxonomy": 13,
+      "taxonomy": 14,
       "problem": "Dos Outbound",
       "derived_problem": "Dos Outbound",
       "verification": "Dos Outbound",
@@ -603,10 +588,25 @@
     "model": "ngen.report",
     "pk": 40,
     "fields": {
+      "created": "2019-04-23T14:33:29Z",
+      "modified": "2022-02-01T22:16:41.242Z",
+      "lang": "es",
+      "taxonomy": 14,
+      "problem": "Dos Outbound",
+      "derived_problem": "Dos Outbound",
+      "verification": "Dos Outbound",
+      "recommendations": "Dos Outbound",
+      "more_information": "Dos Outbound"
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 41,
+    "fields": {
       "created": "2017-12-21T11:57:58Z",
       "modified": "2022-02-01T22:16:41.347Z",
       "lang": "en",
-      "taxonomy": 14,
+      "taxonomy": 15,
       "problem": "We would like to inform you that we have been notified that the host {{event.network}} is being used to perform Denial of Service attacks (DOS), through the <strong>SNMP service</strong> (UDP port 161).",
       "derived_problem": null,
       "verification": "The verification can be achieved analyzing the existing network traffic and observing a mayor UDP traffic consumption corresponding to spoofed SNMP queries received.",
@@ -616,12 +616,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 41,
+    "pk": 42,
     "fields": {
       "created": "2017-12-21T11:57:52Z",
       "modified": "2022-02-01T22:16:41.348Z",
       "lang": "es",
-      "taxonomy": 14,
+      "taxonomy": 15,
       "problem": "Le contactamos porque se nos informó que el host con IP {{event.network}} está siendo utilizado para realizar ataques de Denegación de Servicio (DOS) a través del servicio SNMP (UDP 161).",
       "derived_problem": null,
       "verification": "Mediante el monitoreo de red debería observar grandes cantidades de tráfico UDP correspondientes a consultas SNMP spoofeadas recibidas.",
@@ -631,28 +631,13 @@
   },
   {
     "model": "ngen.report",
-    "pk": 42,
+    "pk": 43,
     "fields": {
       "created": "2018-04-20T12:33:24Z",
       "modified": "2022-02-01T22:16:41.350Z",
       "lang": "en",
-      "taxonomy": 15,
+      "taxonomy": 16,
       "problem": "Hemos detectado que el host {{event.network}} tiene una version de Drupal insegura. Se trata de una vulnerabilidad que permite ejecutar código remoto arbitrario sin autentificación previa debido a un problema que afecta a múltiples instancias con configuraciones predeterminadas en el núcleo de Drupal versión 6.x 7.x 8.x. .\nSe debe actualizar inmediatamente a una versión de Drupal segura.",
-      "derived_problem": "La vulnerabilidad permite a un atacante efectuar varios vectores de ataque con el fin de tomar el control de un sitio Web Drupal por completo.",
-      "verification": "https://github.com/pimps/CVE-2018-7600 (validar vulnerabilidad)",
-      "recommendations": "Se debe actualizar inmediatamente a una versión de Drupal segura.",
-      "more_information": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-7600"
-    }
-  },
-  {
-    "model": "ngen.report",
-    "pk": 43,
-    "fields": {
-      "created": "2018-04-20T11:59:45Z",
-      "modified": "2022-02-01T22:16:41.352Z",
-      "lang": "es",
-      "taxonomy": 15,
-      "problem": "Hemos detectado que el host  {{event.network}} tiene una version de Drupal insegura.\n\nSe trata de una vulnerabilidad que permite ejecutar código remoto arbitrario sin autentificación previa debido a un problema que afecta a múltiples instancias con configuraciones predeterminadas en el núcleo de Drupal versión 6.x 7.x 8.x. .",
       "derived_problem": "La vulnerabilidad permite a un atacante efectuar varios vectores de ataque con el fin de tomar el control de un sitio Web Drupal por completo.",
       "verification": "https://github.com/pimps/CVE-2018-7600 (validar vulnerabilidad)",
       "recommendations": "Se debe actualizar inmediatamente a una versión de Drupal segura.",
@@ -663,10 +648,25 @@
     "model": "ngen.report",
     "pk": 44,
     "fields": {
+      "created": "2018-04-20T11:59:45Z",
+      "modified": "2022-02-01T22:16:41.352Z",
+      "lang": "es",
+      "taxonomy": 16,
+      "problem": "Hemos detectado que el host  {{event.network}} tiene una version de Drupal insegura.\n\nSe trata de una vulnerabilidad que permite ejecutar código remoto arbitrario sin autentificación previa debido a un problema que afecta a múltiples instancias con configuraciones predeterminadas en el núcleo de Drupal versión 6.x 7.x 8.x. .",
+      "derived_problem": "La vulnerabilidad permite a un atacante efectuar varios vectores de ataque con el fin de tomar el control de un sitio Web Drupal por completo.",
+      "verification": "https://github.com/pimps/CVE-2018-7600 (validar vulnerabilidad)",
+      "recommendations": "Se debe actualizar inmediatamente a una versión de Drupal segura.",
+      "more_information": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-7600"
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 45,
+    "fields": {
       "created": "2017-12-21T11:57:58Z",
       "modified": "2022-02-01T22:16:41.353Z",
       "lang": "en",
-      "taxonomy": 16,
+      "taxonomy": 17,
       "problem": "We would like to inform you that we have detected that the host {{event.network}} has possible been attacked trough the OpenSSL vulnerability, known as \"<a href=\"http://heartbleed.com/\">Heartbleed</a>\".",
       "derived_problem": "This vulnerability allows an attacker to read part of the memory of a client or server, possibly compromising sensible data.",
       "verification": "To verify the vulnerability, access the following site and follow the instructions\n\n<div>\n\nhttps://filippo.io/Heartbleed/\n\n\n</div>",
@@ -676,12 +676,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 45,
+    "pk": 46,
     "fields": {
       "created": "2017-12-21T11:57:53Z",
       "modified": "2022-02-01T22:16:41.357Z",
       "lang": "es",
-      "taxonomy": 16,
+      "taxonomy": 17,
       "problem": "Se detectó que el servidor {{event.network}} posiblemente ha sido atacado mediante la\nvulnerabilidad de OpenSSL conocida como\n\"<a href=\"http://heartbleed.com/\">Heartbleed</a>\".",
       "derived_problem": "Esta vulnerabilidad permite a un atacante leer la memoria de un servidor o\nun cliente, permitiéndole por ejemplo, conseguir las claves privadas SSL de\nun servidor.",
       "verification": "Para comprobar que el servicio es vulnerable, acceda al siguiente sitio\nweb y siga las instrucciones. \n\n<div>\n\nhttps://filippo.io/Heartbleed/\n\n\n</div>",
@@ -691,12 +691,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 46,
+    "pk": 47,
     "fields": {
       "created": "2019-04-26T17:27:41Z",
       "modified": "2022-02-01T22:16:41.249Z",
       "lang": "en",
-      "taxonomy": 110,
+      "taxonomy": 111,
       "problem": "We would like to inform you that we have been notified that the host {{event.network}} has been observed performing scanning activity against web systems.",
       "derived_problem": "The host under your administration could be compromised.",
       "verification": null,
@@ -706,12 +706,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 47,
+    "pk": 48,
     "fields": {
       "created": "2018-05-03T13:03:39Z",
       "modified": "2022-02-01T22:16:41.248Z",
       "lang": "es",
-      "taxonomy": 17,
+      "taxonomy": 18,
       "problem": "Fuga de Información",
       "derived_problem": "Pueden verse comprometidas datos sensibles del usuario. Un ejemplo son las credenciales de usuario (username y password) que apliquen a otros sistemas ante una fuga de información.",
       "verification": "Revisar la evidencia que se adjunta.",
@@ -721,12 +721,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 48,
+    "pk": 49,
     "fields": {
       "created": "2019-04-03T12:32:22Z",
       "modified": "2022-02-01T22:16:41.359Z",
       "lang": "es",
-      "taxonomy": 18,
+      "taxonomy": 19,
       "problem": "Lo contactamos porque hemos encontrado información de cuentas vinculadas a su organización publicadas en Internet posiblemente con sus respectivas contraseñas.",
       "derived_problem": "Es posible que usuarios de su organización hayan sido víctimas de ataques de phishing o utilicen sus cuentas en sitios que hayan sido vulnerados y filtradas sus bases de datos con información del usuario comprometida.",
       "verification": null,
@@ -736,12 +736,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 49,
+    "pk": 50,
     "fields": {
       "created": "2018-08-15T12:41:55Z",
       "modified": "2022-02-01T22:16:41.360Z",
       "lang": "es",
-      "taxonomy": 21,
+      "taxonomy": 22,
       "problem": "Lo contactamos porque hemos detectado que el host/servidor {{event.network}} está hosteando un servicio de criptomonedas. \nSi bien esto puede deberse a un proceso que usted haya ejecutado, es muy probable que alguien haya logrado acceder al mismo y programar la ejecucion de dicha tarea.",
       "derived_problem": "La PC podría estar infectada o haber sido comprometida de alguna forma para que un tercero ejecute comandos.",
       "verification": "Verificar los procesos que se están ejecutando en el host.",
@@ -751,12 +751,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 50,
+    "pk": 51,
     "fields": {
       "created": "2019-04-23T11:36:42Z",
       "modified": "2022-02-01T22:16:41.362Z",
       "lang": "en",
-      "taxonomy": 22,
+      "taxonomy": 23,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio Chargen abierto y accesible desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de amplificación para causar ataques de denegación de servicio (DOS, DDOS).",
       "verification": null,
@@ -766,12 +766,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 51,
+    "pk": 52,
     "fields": {
       "created": "2017-12-21T11:57:53Z",
       "modified": "2022-02-01T22:16:41.363Z",
       "lang": "es",
-      "taxonomy": 22,
+      "taxonomy": 23,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio Chargen abierto y accesible desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de amplificación para causar ataques de denegación de servicio (DOS, DDOS).",
       "verification": null,
@@ -781,12 +781,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 52,
+    "pk": 53,
     "fields": {
       "created": "2017-12-21T11:57:58Z",
       "modified": "2022-02-01T22:16:41.365Z",
       "lang": "en",
-      "taxonomy": 23,
+      "taxonomy": 24,
       "problem": "We would like to inform you that we have been notified that the <strong>host/servidor</strong> {{event.network}} provides insecure <strong>DNS</strong> services. The service  <a href=\"https://www.us-cert.gov/ncas/alerts/TA13-088A\">responds to recursive queries</a> originated outside your network.",
       "derived_problem": "The host under your administration could be used to perform <a href=\"https://www.us-cert.gov/ncas/alerts/TA14-017A\">amplification</a> attacks. This could allow attacks such as:\n\n<ul>\n<li><p>Dos (Denial of service)</p></li>\n<li><p>DDOS (Distributed denial of service)</p></li>\n</ul>\n\nAdditionally , the host could be exposed to DNS cache poisoning or <strong>Pharming</strong>..",
       "verification": "Use the following command:\n\n<div>\n\ndig +short test.openresolver.com TXT @{{event.network}}\n\n\n</div>\n\nor use the following web page:\n\n<div>\n\nhttp://openresolver.com/?ip={{event.network}}\n\n\n</div>",
@@ -796,12 +796,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 53,
+    "pk": 54,
     "fields": {
       "created": "2017-12-21T11:57:53Z",
       "modified": "2022-02-01T22:16:41.368Z",
       "lang": "es",
-      "taxonomy": 23,
+      "taxonomy": 24,
       "problem": "Lo contactamos porque hemos sido informados que el <strong>host/servidor</strong> {{event.network}} brinda servicios de DNS de manera insegura. \nEn particular, la configuración de dicho servicio \n<a href=\"https://www.us-cert.gov/ncas/alerts/TA13-088A\">responde consultas recursivas</a> realizadas desde fuera de la red de la UNLP.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de\n<a href=\"https://www.us-cert.gov/ncas/alerts/TA14-017A\">amplificación</a>. Esto\npermitiría realizar ataques a terceros de tipo:\n\n<ul>\n<li><p>DoS (Denegación de servicio)</p></li>\n<li><p>DDoS (Denegación de servicio distribuida)</p></li>\n</ul>\n\nAdicionalmente, el servidor podría verse expuesto a ataques de\nenvenenamiento de caché de DNS o <strong>Pharming</strong>.",
       "verification": "Utilizando el comando:\n\n<div>\n\ndig +short test.openresolver.com TXT @{{event.network}}\n\n\n</div>\n\no vía web a través de la siguiente página:\n\n<div>\n\nhttp://openresolver.com/?ip={{event.network}}\n\n\n</div>",
@@ -811,12 +811,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 54,
+    "pk": 55,
     "fields": {
       "created": "2017-12-21T11:57:53Z",
       "modified": "2022-02-01T22:16:41.371Z",
       "lang": "es",
-      "taxonomy": 42,
+      "taxonomy": 43,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio Elasticseach abierto y accesible desde Internet.",
       "derived_problem": "Por defecto, este servicio no brinda ningun tipo de autenticación, lo que significa que cualquier entidad podria tener acceso instantaneo a sus datos.",
       "verification": null,
@@ -826,12 +826,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 55,
+    "pk": 56,
     "fields": {
       "created": "2017-12-21T11:57:58Z",
       "modified": "2022-02-01T22:16:41.373Z",
       "lang": "en",
-      "taxonomy": 43,
+      "taxonomy": 44,
       "problem": "We would like to inform you that we have been informed that web page hosted with the IP {{event.network}} has the Intelligent <strong>Intelligent Platform Management Interface</strong> (IPMI) service, accessible from the Internet.",
       "derived_problem": "The host under your administration could be controlled remotely. IPMI provides low level access to the device possibly allowing a system reboot, installation of unknown software, access restricted information, etc.",
       "verification": null,
@@ -841,12 +841,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 56,
+    "pk": 57,
     "fields": {
       "created": "2017-12-21T11:57:53Z",
       "modified": "2022-02-01T22:16:41.250Z",
       "lang": "es",
-      "taxonomy": 43,
+      "taxonomy": 44,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene el servicio Intelligent Platform Management Interface (IPMI) accesible desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado para controlar el dispositivo remotamente. IPMI provee acceso a bajo nivel al dispositivo, pudiendo permitir reiniciar el sistema, instalar un nuevo sistema operativo, acceder a información alojada en el sistema, etc.",
       "verification": null,
@@ -856,12 +856,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 57,
+    "pk": 58,
     "fields": {
       "created": "2017-12-21T11:57:53Z",
       "modified": "2022-02-01T22:16:41.374Z",
       "lang": "es",
-      "taxonomy": 44,
+      "taxonomy": 45,
       "problem": "Lo contactamos porque hemos sido informados que el dispositivo {{event.network}} contiene una vulnerabilidad en el procesamiento de paquetes IKEv1.",
       "derived_problem": "Esta vulnerabilidad podría permitir a un atacante remoto no autentiado recuperar el contenido de la memoria, lo cual podría conducir a la divulgación de información confidencial.",
       "verification": null,
@@ -871,12 +871,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 58,
+    "pk": 59,
     "fields": {
       "created": "2017-12-21T11:57:58Z",
       "modified": "2022-02-01T22:16:41.376Z",
       "lang": "en",
-      "taxonomy": 45,
+      "taxonomy": 46,
       "problem": "We would like to inform you that we have been notified that the host {{event.network}} has the <strong>Lightweight Directory Access Protocol</strong> (LDAP) service, accessible from the Internet.",
       "derived_problem": "The host under your administration could be compromising sensitive information.",
       "verification": null,
@@ -886,12 +886,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 59,
+    "pk": 60,
     "fields": {
       "created": "2017-12-21T11:57:53Z",
       "modified": "2022-02-01T22:16:41.378Z",
       "lang": "es",
-      "taxonomy": 45,
+      "taxonomy": 46,
       "problem": "Le contactamos porque se nos ha informado que el host con IP {{event.network}} tiene el servicio LDAP accesible desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a estar brindando información sensible.",
       "verification": null,
@@ -901,12 +901,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 60,
+    "pk": 61,
     "fields": {
       "created": "2017-12-21T11:57:53Z",
       "modified": "2022-02-01T22:16:41.380Z",
       "lang": "es",
-      "taxonomy": 46,
+      "taxonomy": 47,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio mDNS (Multicast DNS) abierto y accesible desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de amplificación para causar ataques de denegación de servicio (DOS, DDOS).",
       "verification": null,
@@ -916,12 +916,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 61,
+    "pk": 62,
     "fields": {
       "created": "2017-12-21T11:57:59Z",
       "modified": "2022-02-01T22:16:41.382Z",
       "lang": "en",
-      "taxonomy": 47,
+      "taxonomy": 48,
       "problem": "We would like to inform you that we have been notified that the host {{event.network}} has the <strong>Memcached</strong> service, accessible from the Internet.",
       "derived_problem": "The host under your administration could be used to perform <a href=\"https://www.us-cert.gov/ncas/alerts/TA14-017A\">amplification</a> attacks to third party's, like:\n\n<div>\n<ul>\n<li><p>Denial of Service attacks (DOS, DDOS).</p></li>\n</ul>\n</div>\n\nAlso, due to the service not providing an authentication mechanism, any third party accessing the Memcache service would have total over the stored information. The following items could be compromised:\n\n<div>\n<ul>\n<li><p>Access to sensitive information.</p></li>\n<li><p>Perform a defacement's attack to the web server.</p></li>\n<li><p>Perform a Denial of Service attack (DOS) to the server.</p></li>\n</ul>\n</div>",
       "verification": "To verify that the service is currently open, use the telnet command in the following way:\n<div>\ntelnet {{event.network}} 11211\nstats items\n\n</div>",
@@ -931,12 +931,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 62,
+    "pk": 63,
     "fields": {
       "created": "2017-12-21T11:57:54Z",
       "modified": "2022-02-01T22:16:41.387Z",
       "lang": "es",
-      "taxonomy": 47,
+      "taxonomy": 48,
       "problem": "Lo contactamos porque hemos sido informados que el host con {{event.network}} contiene\nuna instalación de Memcached accesible desde Internet.",
       "derived_problem": "Debido a que este servicio no provee autenticación, cualquier entidad que acceda a la instancia de Memcache, tendrá control total sobre los objetos almacenados, con lo que se podría:\n\n<div>\n<ul>\n<li><p>Acceder a la información almacenada</p></li>\n<li><p>Realizar el defacement del servidor WEB</p></li>\n<li><p>Realizar una denegación de servicio sobre el servidor</p></li>\n</ul>\n</div>",
       "verification": "Para comprobar que el servicio está abierto, utilice el comando telnet del siguiente modo:\n\n<div>\n\ntelnet {{event.network}} 11211\nstats items\n\n\n</div>",
@@ -946,12 +946,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 63,
+    "pk": 64,
     "fields": {
       "created": "2017-12-21T11:57:59Z",
       "modified": "2022-02-01T22:16:41.355Z",
       "lang": "en",
-      "taxonomy": 58,
+      "taxonomy": 59,
       "problem": "We would like to inform you that we have been notified that the host/server {{event.network}} has the <strong>Simple Network Management Protocol</strong> (SNMP - UDP port 161) service, accessible from the Internet.",
       "derived_problem": "The host under your administration could be used to perform attacks, such as:\n\n<ul>\n<li><p>Obtain unauthorized remote access and information.</p></li>\n<li><p>Brute force attacks.</p></li>\n</ul>",
       "verification": null,
@@ -961,12 +961,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 64,
+    "pk": 65,
     "fields": {
       "created": "2017-12-21T11:57:59Z",
       "modified": "2022-02-01T22:16:41.389Z",
       "lang": "en",
-      "taxonomy": 48,
+      "taxonomy": 49,
       "problem": "We would like to inform you that we have been informed that the host {{event.network}} has a database (MongoDB) with unrestricted access from the Internet.",
       "derived_problem": "The host under your administration could be compromising sensitive information.",
       "verification": "To manually verify the connection to the service, use the following command:\n\n<div>\n\nmongo {{event.network}}\n\n\n</div>",
@@ -976,12 +976,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 65,
+    "pk": 66,
     "fields": {
       "created": "2017-12-21T11:57:54Z",
       "modified": "2022-02-01T22:16:41.392Z",
       "lang": "es",
-      "taxonomy": 48,
+      "taxonomy": 49,
       "problem": "Le contactamos porque se nos ha informado que el host con IP {{event.network}} tiene una base de datos MongoDB NoSQL accesible sin restricciones desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a estar brindando información sensible, comprometiendo sistemas que corren él.",
       "verification": "Para testear manualmente la conexión al servicio puede utilizar el comando:\n\n<div>\n\nmongo {{event.network}}\n\n\n</div>",
@@ -991,12 +991,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 66,
+    "pk": 67,
     "fields": {
       "created": "2017-12-21T11:57:59Z",
       "modified": "2022-02-01T22:16:41.395Z",
       "lang": "en",
-      "taxonomy": 49,
+      "taxonomy": 50,
       "problem": "We would like to inform you that we have been notified that the host {{event.network}} has the <strong>Microsoft SQL Server</strong> service, accessible from the Internet.",
       "derived_problem": "The host under your administration could be compromising sensitive information, also could victim of UDP amplification performing Denial of Service (DOS,DDOS) attacks.",
       "verification": null,
@@ -1006,12 +1006,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 67,
+    "pk": 68,
     "fields": {
       "created": "2019-04-23T11:12:35Z",
       "modified": "2022-02-01T22:16:41.397Z",
       "lang": "en",
-      "taxonomy": 57,
+      "taxonomy": 58,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene el servicio SMB (Server Message Block) accesible desde Internet.",
       "derived_problem": "Este servicio no utiliza encriptación y puede revelar información sensible o el host bajo su administración podría llegar a ser usado para controlar el dispositivo remotamente.",
       "verification": null,
@@ -1021,12 +1021,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 68,
+    "pk": 69,
     "fields": {
       "created": "2017-12-21T11:57:54Z",
       "modified": "2022-02-01T22:16:41.385Z",
       "lang": "es",
-      "taxonomy": 49,
+      "taxonomy": 50,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene el servicio de resolución de Microsoft SQL Server abierto desde Internet.",
       "derived_problem": "El host bajo su administración podría ser usado para revelar información como así también en ataques de amplificación UDP que provoquen denegaciones de servicio (DOS, DDOS).",
       "verification": null,
@@ -1036,12 +1036,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 69,
+    "pk": 70,
     "fields": {
       "created": "2017-12-21T11:57:59Z",
       "modified": "2022-02-01T22:16:41.398Z",
       "lang": "en",
-      "taxonomy": 50,
+      "taxonomy": 51,
       "problem": "We would like to inform you that we have been notified that the host/server {{event.network}} has the <strong>Network Basic Input/Output System</strong> (NETBIOS) service, accessible from the Internet.",
       "derived_problem": "The host under your administration could be used to perform:\n\n<ul>\n<li><p>Denial of Service attacks (DOS, DDOS).</p></li>\n<li><p>Gather information shared within the host.</p></li>\n<li><p>Perform brute force attacks.</p></li>\n<li><p>Malware distribution.</p></li>\n<li><p>Store stolen information.</p></li>\n</ul>",
       "verification": null,
@@ -1051,12 +1051,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 70,
+    "pk": 71,
     "fields": {
       "created": "2017-12-21T11:57:54Z",
       "modified": "2022-02-01T22:16:41.400Z",
       "lang": "es",
-      "taxonomy": 50,
+      "taxonomy": 51,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio NETBIOS abierto desde Internet.",
       "derived_problem": "El host bajo su administración podría ser usado para:\n\n<ul>\n<li><p>Ataques de amplificación que causen denegación de servicio (DOS, DDOS)</p></li>\n<li><p>Recopilar información compartida en dicho host</p></li>\n<li><p>Realizar ataques de fuerza bruta en caso que el servicio solicite contraseña</p></li>\n<li><p>Distribución de malware</p></li>\n<li><p>Almacenar información robada</p></li>\n</ul>",
       "verification": null,
@@ -1066,12 +1066,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 71,
+    "pk": 72,
     "fields": {
       "created": "2017-12-21T11:57:59Z",
       "modified": "2022-02-01T22:16:41.403Z",
       "lang": "en",
-      "taxonomy": 51,
+      "taxonomy": 52,
       "problem": "We would like to inform you that we have been notified that the host {{event.network}} is providing insecure <strong>Network Time Protocol</strong> (NTP) service by responding to <a href=\"https://www.us-cert.gov/ncas/alerts/TA14-013A\">NTP monlist</a> commands.",
       "derived_problem": "The host under your administration could be used to perform <a href=\"https://www.us-cert.gov/ncas/alerts/TA14-017A\">amplification</a> attacks to third party's, like:\n\n<ul>\n<li><p>Denial of Service attacks (DOS, DDOS).</p></li>\n</ul>",
       "verification": "To manually verify if the service is vulnerable, use the following command:\n\n\n<div>\n\nntpdc -n -c monlist {{event.network}}\n\n\n</div>",
@@ -1081,12 +1081,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 72,
+    "pk": 73,
     "fields": {
       "created": "2017-12-21T11:57:54Z",
       "modified": "2022-02-01T22:16:41.405Z",
       "lang": "es",
-      "taxonomy": 51,
+      "taxonomy": 52,
       "problem": "Le contactamos porque se nos ha informado que el host con IP {{event.network}} brinda\nel servicio de NTP de manera insegura. En particular, el servicio estaría\nrespondiendo a comandos del tipo\n<a href=\"https://www.us-cert.gov/ncas/alerts/TA14-013A\">NTP monlist</a>.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de\n<a href=\"https://www.us-cert.gov/ncas/alerts/TA14-017A\">amplificación</a>. Esto\npermitiría realizar ataques a terceros de tipo:\n\n<ul>\n<li><p>DoS (Denegación de servicio)</p></li>\n<li><p>DDoS (Denegación de servicio distribuida)</p></li>\n</ul>",
       "verification": "Para testear manualmente si el servicio es vulnerable a esta falla, puede\nutilizar el comando:\n\n<div>\n\nntpdc -n -c monlist {{event.network}}\n\n\n</div>",
@@ -1096,12 +1096,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 73,
+    "pk": 74,
     "fields": {
       "created": "2017-12-21T11:57:59Z",
       "modified": "2022-02-01T22:16:41.407Z",
       "lang": "en",
-      "taxonomy": 52,
+      "taxonomy": 53,
       "problem": "We would like to inform you that we have been notified that the host  {{event.network}} is providing insecure <strong>Network Time Protocol</strong> (NTP) service by responding to NTP readvar commands.",
       "derived_problem": "<p>Problemas derivados</p>\n\nThe host  under your administration could be used to perform <a href=\"https://www.us-cert.gov/ncas/alerts/TA14-017A\">amplification</a> attacks to third party's, like:\n\n<ul>\n<li><p>Denial of Service attacks (DOS, DDOS).</p></li>\n</ul>",
       "verification": "To manually verify if the service is vulnerable, use the following command:\n\n\n<div>\n\nntpq -c readvar {{event.network}}\n\n\n</div>",
@@ -1111,12 +1111,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 74,
+    "pk": 75,
     "fields": {
       "created": "2017-12-21T11:57:54Z",
       "modified": "2022-02-01T22:16:41.409Z",
       "lang": "es",
-      "taxonomy": 52,
+      "taxonomy": 53,
       "problem": "Le contactamos porque se nos ha informado que el host con IP {{event.network}} brinda\nel servicio de NTP de manera insegura. En particular, el servicio estaría\nrespondiendo a comandos del tipo NTP readvar.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de\n<a href=\"https://www.us-cert.gov/ncas/alerts/TA14-017A\">amplificación</a>. Esto\npermitiría realizar ataques a terceros de tipo:\n\n<ul>\n<li><p>DoS (Denegación de servicio)</p></li>\n<li><p>DDoS (Denegación de servicio distribuida)</p></li>\n</ul>",
       "verification": "Para testear manualmente si el servicio es vulnerable a esta falla puede\nutilizar el comando:\n\n<div>\n\nntpq -c readvar {{event.network}}\n\n\n</div>",
@@ -1126,12 +1126,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 75,
+    "pk": 76,
     "fields": {
       "created": "2017-12-21T11:57:59Z",
       "modified": "2022-02-01T22:16:41.413Z",
       "lang": "en",
-      "taxonomy": 53,
+      "taxonomy": 54,
       "problem": "We would like to inform you that we have been notified that the host/server  {{event.network}} has the <strong>Portmap</strong> service, accessible from the Internet.",
       "derived_problem": "The host under your administration could be used to perform <a href=\"https://www.us-cert.gov/ncas/alerts/TA14-017A\">amplification</a> attacks to third party's, like:\n\n<ul>\n<li><p>Denial of Service attacks (DOS, DDOS).</p></li>\n</ul>\n\nAdditionally, the <strong>host/servidor</strong> could expose other misconfigured services, such as NFS shared folders.",
       "verification": "To manually verify if the service is vulnerable, use the following command:\n\n<div>\n\nrpcinfo -T udp -p {{event.network}}\n\n\n</div>\n\nView the NFS shared folders using the command:\n\n<div>\n\nshowmount -e {{event.network}}\n\n\n</div>",
@@ -1141,12 +1141,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 76,
+    "pk": 77,
     "fields": {
       "created": "2017-12-21T11:57:55Z",
       "modified": "2022-02-01T22:16:41.416Z",
       "lang": "es",
-      "taxonomy": 53,
+      "taxonomy": 54,
       "problem": "Lo contactamos porque hemos sido informados que el <strong>host/servidor</strong> {{event.network}} brinda el servicio portmap accesible desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de\n<a href=\"https://www.us-cert.gov/ncas/alerts/TA14-017A\">amplificación</a>. Esto \npermitiría realizar ataques a terceros de tipo:\n\n<ul>\n<li><p>DoS (Denegación de servicio)</p></li>\n<li><p>DDoS (Denegación de servicio distribuida)</p></li>\n</ul>\n\nAdicionalmente, el servidor podría exponer otros servicios mal configurados como puede ser carpetas compartidas NFS.",
       "verification": "Utilizando el comando:\n\n<div>\n\nrpcinfo -T udp -p {{event.network}}\n\n\n</div>\n\nY ver carpetas compartidas NFS utilizando el comando:\n\n<div>\n\nshowmount -e {{event.network}}\n\n\n</div>",
@@ -1156,12 +1156,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 77,
+    "pk": 78,
     "fields": {
       "created": "2017-12-21T11:57:55Z",
       "modified": "2022-02-01T22:16:41.419Z",
       "lang": "es",
-      "taxonomy": 54,
+      "taxonomy": 55,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio QOTD (Quote of the Day) abierto y accesible desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de amplificación para causar ataques de denegación de servicio (DOS, DDOS).",
       "verification": null,
@@ -1171,12 +1171,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 78,
+    "pk": 79,
     "fields": {
       "created": "2019-04-23T11:08:03Z",
       "modified": "2022-02-01T22:16:41.421Z",
       "lang": "en",
-      "taxonomy": 55,
+      "taxonomy": 56,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene el servicio RDP (Remote Desktop Protocol) accesible desde Internet.",
       "derived_problem": "Este servicio puede revelar información sensible o el host bajo su administración podría llegar a ser usado para controlar el dispositivo remotamente.",
       "verification": null,
@@ -1186,12 +1186,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 79,
+    "pk": 80,
     "fields": {
       "created": "2017-12-21T11:57:55Z",
       "modified": "2022-02-01T22:16:41.422Z",
       "lang": "es",
-      "taxonomy": 55,
+      "taxonomy": 56,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene el servicio RDP (Remote Desktop Protocol) accesible desde Internet.",
       "derived_problem": "Este servicio puede revelar información sensible o el host bajo su administración podría llegar a ser usado para controlar el dispositivo remotamente.",
       "verification": null,
@@ -1201,12 +1201,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 80,
+    "pk": 81,
     "fields": {
       "created": "2019-04-23T11:37:51Z",
       "modified": "2022-02-01T22:16:41.424Z",
       "lang": "en",
-      "taxonomy": 56,
+      "taxonomy": 57,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio Redis abierto y accesible desde Internet.",
       "derived_problem": "Por defecto, este servicio no brinda ningun tipo de autenticación, lo que significa que cualquier entidad podria tener acceso instantaneo a sus datos.",
       "verification": null,
@@ -1216,12 +1216,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 81,
+    "pk": 82,
     "fields": {
       "created": "2017-12-21T11:57:55Z",
       "modified": "2022-02-01T22:16:41.426Z",
       "lang": "es",
-      "taxonomy": 56,
+      "taxonomy": 57,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio Redis abierto y accesible desde Internet.",
       "derived_problem": "Por defecto, este servicio no brinda ningun tipo de autenticación, lo que significa que cualquier entidad podria tener acceso instantaneo a sus datos.",
       "verification": null,
@@ -1231,12 +1231,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 82,
+    "pk": 83,
     "fields": {
       "created": "2017-12-21T11:57:55Z",
       "modified": "2022-02-01T22:16:41.411Z",
       "lang": "es",
-      "taxonomy": 57,
+      "taxonomy": 58,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene el servicio SMB (Server Message Block) accesible desde Internet.",
       "derived_problem": "Este servicio no utiliza encriptación y puede revelar información sensible o el host bajo su administración podría llegar a ser usado para controlar el dispositivo remotamente.",
       "verification": null,
@@ -1246,12 +1246,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 83,
+    "pk": 84,
     "fields": {
       "created": "2017-12-21T11:57:55Z",
       "modified": "2022-02-01T22:16:41.340Z",
       "lang": "es",
-      "taxonomy": 58,
+      "taxonomy": 59,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone de un servicio SNMP (UDP 161) abierto a redes ajenas de la UNLP.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de:\n\n<ul>\n<li><p>Obtención de información de dispositivos de red en forma remota no autorizada.</p></li>\n<li><p>Configuración de dispositivos de red en forma remota no autorizada.</p></li>\n<li><p>Ataques de fuerza bruta.</p></li>\n</ul>",
       "verification": null,
@@ -1261,12 +1261,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 84,
+    "pk": 85,
     "fields": {
       "created": "2017-12-21T11:58:00Z",
       "modified": "2022-02-01T22:16:41.252Z",
       "lang": "en",
-      "taxonomy": 59,
+      "taxonomy": 60,
       "problem": "We would like to inform you that we have been notified that the host/server {{event.network}} has the <strong>Simple Service Discovery Protocol</strong> (SSDP) service, accessible from the Internet.",
       "derived_problem": "The host under your administration could be used to perform attacks, such as:\n* Denial of Service attacks (DOS, DDOS).",
       "verification": null,
@@ -1276,12 +1276,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 85,
+    "pk": 86,
     "fields": {
       "created": "2017-12-21T11:57:55Z",
       "modified": "2022-02-01T22:16:41.428Z",
       "lang": "es",
-      "taxonomy": 59,
+      "taxonomy": 60,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio SSDP (Simple Service Discovery Protocol) abierto y accesible desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de amplificación para causar ataques de denegación de servicio (DOS, DDOS).",
       "verification": null,
@@ -1291,12 +1291,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 86,
+    "pk": 87,
     "fields": {
       "created": "2017-12-21T11:57:55Z",
       "modified": "2022-02-01T22:16:41.429Z",
       "lang": "es",
-      "taxonomy": 60,
+      "taxonomy": 61,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene el servicio Telnet accesible desde Internet.",
       "derived_problem": "Este servicio no utiliza encriptación y puede revelar información sensible o el host bajo su administración podría llegar a ser usado para controlar el dispositivo remotamente.",
       "verification": null,
@@ -1306,12 +1306,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 87,
+    "pk": 88,
     "fields": {
       "created": "2019-04-23T11:24:22Z",
       "modified": "2022-02-01T22:16:41.431Z",
       "lang": "en",
-      "taxonomy": 61,
+      "taxonomy": 62,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio TFTP (Trivial file transfer Protocol) abierto y accesible desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de amplificación para causar ataques de denegación de servicio (DOS, DDOS).",
       "verification": null,
@@ -1321,12 +1321,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 88,
+    "pk": 89,
     "fields": {
       "created": "2017-12-21T11:57:55Z",
       "modified": "2022-02-01T22:16:41.433Z",
       "lang": "es",
-      "taxonomy": 61,
+      "taxonomy": 62,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} dispone del servicio TFTP (Trivial file transfer Protocol) abierto y accesible desde Internet.",
       "derived_problem": "El host bajo su administración podría llegar a ser usado en ataques de amplificación para causar ataques de denegación de servicio (DOS, DDOS).",
       "verification": null,
@@ -1336,12 +1336,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 89,
+    "pk": 90,
     "fields": {
       "created": "2019-04-23T11:29:12Z",
       "modified": "2022-02-01T22:16:41.256Z",
       "lang": "en",
-      "taxonomy": 62,
+      "taxonomy": 63,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene el servicio VNC (Virtual Network Computer/Computing) accesible desde Internet.",
       "derived_problem": "Este servicio no utiliza encriptación y puede revelar información sensible o el host bajo su administración podría llegar a ser usado para controlar el dispositivo remotamente.",
       "verification": null,
@@ -1351,12 +1351,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 90,
+    "pk": 91,
     "fields": {
       "created": "2017-12-21T11:57:55Z",
       "modified": "2022-02-01T22:16:41.435Z",
       "lang": "es",
-      "taxonomy": 62,
+      "taxonomy": 63,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene el servicio VNC (Virtual Network Computer/Computing) accesible desde Internet.",
       "derived_problem": "Este servicio no utiliza encriptación y puede revelar información sensible o el host bajo su administración podría llegar a ser usado para controlar el dispositivo remotamente.",
       "verification": null,
@@ -1366,12 +1366,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 91,
+    "pk": 92,
     "fields": {
       "created": "2017-12-21T11:58:00Z",
       "modified": "2022-02-01T22:16:41.437Z",
       "lang": "en",
-      "taxonomy": 64,
+      "taxonomy": 65,
       "problem": "We would like to inform you that we have been notified that the host {{event.network}} is being used to send emails containing Phishing.",
       "derived_problem": "If this issue is not addressed, the host could be added in public lists of compromised hosts, thus emails from this host will be filtered.",
       "verification": "It is likely that the Phishing emails are being sent by a compromised email account.\nAnalyzing the email header, the authenticated user being used to send the emails can be identified (See attached file).",
@@ -1381,12 +1381,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 92,
+    "pk": 93,
     "fields": {
       "created": "2017-12-21T11:57:56Z",
       "modified": "2022-02-01T22:16:41.439Z",
       "lang": "es",
-      "taxonomy": 64,
+      "taxonomy": 65,
       "problem": "Nos notificaron que el host/servidor {{event.network}} está enviando correo con contenido de Phishing.",
       "derived_problem": "De no solucionar el problema, el host/servidor puede ser introducido en listas públicas de servidores comprometidos que pueden causar que dicho host/servidor no pueda enviar correos a otros servidores.",
       "verification": "Es probable que el Phishing se envíe utilizando una cuenta de correo comprometida.\nAnalizando la cabecera del email de spam adjunto, puede distinguirse el usuario autenticado que realizó el envío del mensaje.",
@@ -1396,12 +1396,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 93,
+    "pk": 94,
     "fields": {
       "created": "2017-12-21T11:58:00Z",
       "modified": "2022-02-01T22:16:41.440Z",
       "lang": "en",
-      "taxonomy": 65,
+      "taxonomy": 66,
       "problem": "We would like to inform you that we have been notified that the server {{event.network}} is currently hosting a web service being used to perform Phising attacks.",
       "derived_problem": "If this issue is not addressed, the server could be added in public lists of compromised hosts, forcing the web browsers to show security alerts when accessing web pages hosted in the server.",
       "verification": "Verify the information in the attached file.",
@@ -1411,12 +1411,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 94,
+    "pk": 95,
     "fields": {
       "created": "2017-12-21T11:57:56Z",
       "modified": "2022-02-01T22:16:41.442Z",
       "lang": "es",
-      "taxonomy": 65,
+      "taxonomy": 66,
       "problem": "Nos notificaron que el servidor {{event.network}} está alojando un sitio web utilizado para ataques de Phishing.",
       "derived_problem": "Este problema puede provocar que su servidor sea introducido en listas públicas de servidores comprometidos pudiendo los navegadores disparar alertas de seguridad a los usuarios cuando accedan a cualquier página web alojada en dicho servidor.",
       "verification": "Verificar la información enviada en el contenido adjunto.",
@@ -1426,12 +1426,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 95,
+    "pk": 96,
     "fields": {
       "created": "2017-12-21T11:58:00Z",
       "modified": "2022-02-01T22:16:41.444Z",
       "lang": "en",
-      "taxonomy": 66,
+      "taxonomy": 67,
       "problem": "We would like to inform you that we have been notified that the server {{event.network}} is currently vulnerable to Padding Oracle On Downgraded Legacy Encryption (POODLE) attacks.",
       "derived_problem": "POODLE is a man-in-the-middle exploit which takes advantage of Internet and security software clients fallback to SSL 3.0. If attackers successfully exploit this vulnerability, sensitive information could be obtained by attackers, compromising confidentiality.",
       "verification": "Access the following web page to verify that the services currently provided by your host are in fact, vulnerable to POODLE:\n\n\n<div>\n\n<ul>\n<li><p><a href=\"https://www.poodlescan.com/\">https://www.poodlescan.com/</a></p></li>\n</ul>\n\n</div>",
@@ -1441,12 +1441,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 96,
+    "pk": 97,
     "fields": {
       "created": "2017-12-21T11:57:56Z",
       "modified": "2022-02-01T22:16:41.446Z",
       "lang": "es",
-      "taxonomy": 66,
+      "taxonomy": 67,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} es\nvulnerable a POODLE.",
       "derived_problem": "POODLE es una falla en SSLv3 que permite a un atacante recuperar\ninformación cifrada, ocasionando de esta forma pérdida de confidencialidad.",
       "verification": "Acceda a la siguiente página para verificar que los servicios que usted\nprovee en el host son vulnerables a POODLE:\n\n\n<div>\n\n<ul>\n<li><p><a href=\"http://poodletest.ntt-security.com/\">http://poodletest.ntt-security.com/</a></p></li>\n</ul>\n\n</div>",
@@ -1456,12 +1456,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 97,
+    "pk": 98,
     "fields": {
       "created": "2017-12-21T11:57:56Z",
       "modified": "2022-02-01T22:16:41.447Z",
       "lang": "es",
-      "taxonomy": 68,
+      "taxonomy": 69,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} está realizando consultas de DNS que arrojan coincidencia con nuestra zona RPZ \"BOTNET\".\n\nDicha RPZ, contiene direcciones de red conocidas que están vinculadas a infraestructuras de botnets.\n\n\n<p>Consideraciones</p>\n\nSe debe tener en cuenta que si la IP informada es un servidor de mail, este reporte podría tratarse de un falso positivo. La razón de ello es que en la detección de SPAM, se evalúan URLs observadas en los correos electrónicos.\n\nPor otro lado, si la IP informada es un servidor de DNS (resolver local) el origen del problema no es el servidor sino el host que le hizo la consulta DNS reportada. En este caso, la manera de detectar el host infectado es registrando las consultas DNS.",
       "derived_problem": "Es probable que su PC o servidor que esté intentando acceder a dominios de BOTNETs.\n\nEsto indica que la misma esté comprometido con algún tipo de malware y quiera conectarse a un servidor C&amp;C para esperar instrucciones a ejecutar (DoS, fuerza bruta, envío de spams, etc.).",
       "verification": null,
@@ -1471,12 +1471,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 98,
+    "pk": 99,
     "fields": {
       "created": "2017-12-21T11:57:56Z",
       "modified": "2022-02-01T22:16:41.449Z",
       "lang": "es",
-      "taxonomy": 69,
+      "taxonomy": 70,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} está realizando consultas de DNS que arrojan coincidencia con nuestra zona RPZ “DBL”.\n\nDicha RPZ, contiene información sobre direcciones de red que son utilizadas como distribuidores de malware, sitios que almacenan malware, redirecciones maliciosas, dominios usados como botnets, servidores de C&amp;C y otras actividades maliciosas.",
       "derived_problem": "En la mayoría de los casos puede ser un indicador de que su host está siendo utilizado para enviar spam.",
       "verification": "Si es el host es un servidor de correo o DNS, es importante que lo notifique al CeRT. Esto es para estudiar con mayor profundidad el caso y ver si se trata de un falso positivo o si realmente su servidor de correo está comprometido.\n\nSi el host no es un servidor de correo ni un DNS, es muy probable que tenga algún malware y sería útil chequear los procesos corriendo en el mísmo.",
@@ -1486,12 +1486,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 99,
+    "pk": 100,
     "fields": {
       "created": "2017-12-21T11:57:56Z",
       "modified": "2022-02-01T22:16:41.272Z",
       "lang": "es",
-      "taxonomy": 70,
+      "taxonomy": 71,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} está realizando consultas de DNS que arrojan coincidencia con nuestra zona RPZ “DROP”.\n\nDicha RPZ, consiste de bloques de red bogons, que fueron robados o liberados para generar spam u operaciones criminales.",
       "derived_problem": "Es probable que su dispositivo se encuentre comprometido.",
       "verification": "Puede verificar las conexiones establecidas con el comando \"netstat\".\n<div>\n<ul>\n<li><p>netstat -ntulp</p></li>\n</ul>\n</div>\nTambién verificar tráfico inusual con Wireshark como así también los procesos ejecutándose en el host.",
@@ -1501,28 +1501,13 @@
   },
   {
     "model": "ngen.report",
-    "pk": 100,
+    "pk": 101,
     "fields": {
       "created": "2017-12-21T11:57:56Z",
       "modified": "2022-02-01T22:16:41.451Z",
       "lang": "es",
-      "taxonomy": 72,
+      "taxonomy": 73,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} está realizando consultas de DNS que arrojan coincidencia con nuestra zona RPZ “MALWARE-AGGRESSIVE”.\n\nDicha RPZ, contiene direcciones de red conocidas que están vinculadas al malware, que mediante mecanismos normales de scoring no fueron agregados a otra lista, pero deberían ser incluidos por otras razones. Por la naturaleza de esta lista, es posible (aunque poco probable) que se reporten falsos positivos.",
-      "derived_problem": "Esto indica que es probable que su servidor esté comprometido.",
-      "verification": "Puede verificar las conexiones establecidas con el comando \"netstat\".\n\n\n<div>\n\n<ul>\n<li><p>netstat -ntulp</p></li>\n</ul>\n\n</div>\n\nTambién verificar tráfico inusual con Wireshark como así también los procesos ejecutándose en el host.",
-      "recommendations": "Se recomienda aislar el host hasta verificar y solucionar el problema.",
-      "more_information": null
-    }
-  },
-  {
-    "model": "ngen.report",
-    "pk": 101,
-    "fields": {
-      "created": "2017-12-21T11:57:56Z",
-      "modified": "2022-02-01T22:16:41.254Z",
-      "lang": "es",
-      "taxonomy": 71,
-      "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} está realizando consultas de DNS que arrojan coincidencia con nuestra zona RPZ “MALWARE”.\n\nDicha RPZ, contiene sólo información de direcciones de red asociadas con malwares. Están excluidos de esta lista fuentes de spam y phising, también dominios de redirección.",
       "derived_problem": "Esto indica que es probable que su servidor esté comprometido.",
       "verification": "Puede verificar las conexiones establecidas con el comando \"netstat\".\n\n\n<div>\n\n<ul>\n<li><p>netstat -ntulp</p></li>\n</ul>\n\n</div>\n\nTambién verificar tráfico inusual con Wireshark como así también los procesos ejecutándose en el host.",
       "recommendations": "Se recomienda aislar el host hasta verificar y solucionar el problema.",
@@ -1533,10 +1518,25 @@
     "model": "ngen.report",
     "pk": 102,
     "fields": {
+      "created": "2017-12-21T11:57:56Z",
+      "modified": "2022-02-01T22:16:41.254Z",
+      "lang": "es",
+      "taxonomy": 72,
+      "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} está realizando consultas de DNS que arrojan coincidencia con nuestra zona RPZ “MALWARE”.\n\nDicha RPZ, contiene sólo información de direcciones de red asociadas con malwares. Están excluidos de esta lista fuentes de spam y phising, también dominios de redirección.",
+      "derived_problem": "Esto indica que es probable que su servidor esté comprometido.",
+      "verification": "Puede verificar las conexiones establecidas con el comando \"netstat\".\n\n\n<div>\n\n<ul>\n<li><p>netstat -ntulp</p></li>\n</ul>\n\n</div>\n\nTambién verificar tráfico inusual con Wireshark como así también los procesos ejecutándose en el host.",
+      "recommendations": "Se recomienda aislar el host hasta verificar y solucionar el problema.",
+      "more_information": null
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 103,
+    "fields": {
       "created": "2017-12-21T11:58:00Z",
       "modified": "2022-02-01T22:16:41.452Z",
       "lang": "en",
-      "taxonomy": 74,
+      "taxonomy": 75,
       "problem": "We would like to inform you that we have detected that the host {{event.network}} is currently performing a Scan process over other devices.",
       "derived_problem": "Performing a Scan analysis is likely due to the host being compromised and used to gather information about other hosts inside the network, for possible future attacks. On the other hand, this generates great amount of bandwidth consumption, generating a network speed reduction.",
       "verification": "It can be verified by analyzing the existing network traffic, using tools such as:\n\n\n<div>\n\ntcpdump\n\n\n</div>\n\nor\n\n<div>\n\nwireshark\n\n\n</div>",
@@ -1546,12 +1546,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 103,
+    "pk": 104,
     "fields": {
       "created": "2017-12-21T11:57:57Z",
       "modified": "2022-02-01T22:16:41.454Z",
       "lang": "es",
-      "taxonomy": 76,
+      "taxonomy": 77,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene\nvulnerabilidades de SQL Injection.",
       "derived_problem": "El host bajo su administración podría llegar a estar brindando información sensible, comprometiendo sistemas que corren él.",
       "verification": null,
@@ -1561,12 +1561,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 104,
+    "pk": 105,
     "fields": {
       "created": "2017-12-21T11:57:56Z",
       "modified": "2022-02-01T22:16:41.456Z",
       "lang": "es",
-      "taxonomy": 74,
+      "taxonomy": 75,
       "problem": "Nos comunicamos con Ud. para comunicarle que el host {{event.network}} se encuentra realizando un proceso de Scan sobre otros equipos de la UNLP y/o el exterior.",
       "derived_problem": "La realización del proceso de Scan probablemente se deba a que el equipo se encuentre comprometido y siendo utilizado para reconocer otros equipos de la red, los cuales dependiendo del scan, serán luego atacados o no.\nPor otro lado este problema genera la circulación en la red grandes volúmenes de información que generan problemas o pérdidas velocidad en la misma.",
       "verification": "Se puede realizar una verificación del problema a través del análisis del tráfico existente en la red o sobre el host afectado, utilizando herramientas como \n\n<div>\n\ntcpdump\n\n\n</div>\n\no \n\n<div>\n\nwireshark\n\n\n</div>",
@@ -1576,12 +1576,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 105,
+    "pk": 106,
     "fields": {
       "created": "2017-12-21T11:58:00Z",
       "modified": "2022-02-01T22:16:41.458Z",
       "lang": "en",
-      "taxonomy": 75,
+      "taxonomy": 76,
       "problem": "We would like to inform you that we have been detected that the host {{event.network}} has possible been attacked using the known vulnerability ShellShock.",
       "derived_problem": "This vulnerability allows an attacker to read the device memory, possibly compromising sensitive information such as private SSL keys.",
       "verification": "Due to the report possible being a false positive, we recommend to verify the existence of the vulnerability using the following commands:\n\n<div>\n\nenv x='() { :;}; echo vulnerable' bash -c \"echo this is a test\"\n\n\n</div>\n\nIf the execution of the previous command returns the string \"vulnerable\", is most likely that the host has been compromised.",
@@ -1591,12 +1591,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 106,
+    "pk": 107,
     "fields": {
       "created": "2017-12-21T11:57:57Z",
       "modified": "2022-02-01T22:16:41.460Z",
       "lang": "es",
-      "taxonomy": 75,
+      "taxonomy": 76,
       "problem": "Se ha detectado que el servidor con IP {{event.network}} posiblemente ha sido atacado mediante la vulnerabilidad conocida como ShellShock.",
       "derived_problem": "Esta vulnerabilidad permite a un atacante leer la memoria de un servidor o un cliente, permitiéndole por ejemplo, conseguir las claves privadas SSL de un servidor.",
       "verification": "Debido a que este reporte puede ser un falso positivo, se recomienda comprobar que el host sea realmente vulnerable a ShellShock:\n\n<div>\n\nenv x='() { :;}; echo vulnerable' bash -c \"echo esto es una prueba\"\n\n\n</div>\n\nSi la ejecución en bash del comando anterior imprime \"vulnerable\", entonces es probable que el host haya sido comprometido.",
@@ -1606,12 +1606,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 107,
+    "pk": 108,
     "fields": {
       "created": "2020-03-17T22:41:39Z",
       "modified": "2022-02-01T22:16:41.462Z",
       "lang": "es",
-      "taxonomy": 114,
+      "taxonomy": 115,
       "problem": "El host {{event.network}} es vulnerable a SMBGhost (CVE-2020-0796)",
       "derived_problem": "Microsoft es consciente de una vulnerabilidad de ejecución remota de código en la forma en que el protocolo Microsoft Server Message Block 3.1.1 (SMBv3) maneja ciertas solicitudes. \nUn atacante puede aprovechar  la vulnerabilidad para ejecutar código en el servidor SMB o el cliente SMB de destino.",
       "verification": "<ul>\n<li>Uso <a href=\"https://github.com/cve-2020-0796/cve-2020-0796/blob/master/CVE-2020-0796_Scan_Vul.py\">CVE-2020-0796_Scan_Vul.py</a>: python3 CVE-2020-0796_Scan_Vul.py  {{event.network}}</li>\n<li>Uso <a href=\"https://github.com/cve-2020-0796/cve-2020-0796/blob/master/scan_vul_smb_v3.11.sh\">scan_vul_smb_v3.11.sh</a>: ./scan_vul_smb_v3.11.sh  {{event.network}}</li>\n</ul>",
@@ -1621,12 +1621,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 108,
+    "pk": 109,
     "fields": {
       "created": "2017-12-21T11:58:00Z",
       "modified": "2022-02-01T22:16:41.464Z",
       "lang": "en",
-      "taxonomy": 107,
+      "taxonomy": 108,
       "problem": "We would like to inform you that we have been informed that the host {{event.network}} is possibly sending SPAM.",
       "derived_problem": "If this issue is not addressed, the host could be added in blacklists, thus emails from this host will be filtered.",
       "verification": "It is likely that the Phishing emails are being sent by a compromised email account.\nAnalyzing the email header, the authenticated user being used to send the emails can be identified (See attached file).",
@@ -1636,12 +1636,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 109,
+    "pk": 110,
     "fields": {
       "created": "2017-12-21T11:57:57Z",
       "modified": "2022-02-01T22:16:41.465Z",
       "lang": "es",
-      "taxonomy": 107,
+      "taxonomy": 108,
       "problem": "Nos notificaron que el host {{event.network}} está enviando SPAM.",
       "derived_problem": "De no solucionar el problema, su servidor puede ser introducido en distintas blacklists que causarán que dicho servidor no pueda enviar correos a otros servidores.",
       "verification": "Es probable que el SPAM se envíe utilizando una cuenta de correo comprometida.\nAnalizando la cabecera del email de spam adjunto, puede distinguirse el usuario autenticado que realizó el envío del mensaje.",
@@ -1651,12 +1651,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 110,
+    "pk": 111,
     "fields": {
       "created": "2017-12-21T11:58:01Z",
       "modified": "2022-02-01T22:16:41.467Z",
       "lang": "en",
-      "taxonomy": 76,
+      "taxonomy": 77,
       "problem": "We would like to inform you that we have been informed that the host {{event.network}} has SQL injection vulnerabilities.",
       "derived_problem": "The host under your administration could be compromising sensitive information.",
       "verification": null,
@@ -1666,12 +1666,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 111,
+    "pk": 112,
     "fields": {
       "created": "2019-04-23T11:18:12Z",
       "modified": "2022-02-01T22:16:41.468Z",
       "lang": "en",
-      "taxonomy": 77,
+      "taxonomy": 78,
       "problem": "We would like to inform you that we have been notified that the server {{event.network}} is currently vulnerable to Padding Oracle On Downgraded Legacy Encryption (POODLE) attacks.",
       "derived_problem": "POODLE is a man-in-the-middle exploit which takes advantage of Internet and security software clients fallback to SSL 3.0. If attackers successfully exploit this vulnerability, sensitive information could be obtained by attackers, compromising confidentiality.",
       "verification": "Access the following web page to verify that the services currently provided by your host are in fact, vulnerable to POODLE:\n\n<div>\n\n<ul>\n<li><p><a href=\"https://www.poodlescan.com/\">https://www.poodlescan.com/</a></p></li>\n</ul>\n\n</div>",
@@ -1681,12 +1681,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 112,
+    "pk": 113,
     "fields": {
       "created": "2017-12-21T11:57:57Z",
       "modified": "2022-02-01T22:16:41.470Z",
       "lang": "es",
-      "taxonomy": 77,
+      "taxonomy": 78,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} es\nvulnerable a POODLE.",
       "derived_problem": "POODLE es una falla en SSLv3 que permite a un atacante recuperar\ninformación cifrada, ocasionando de esta forma pérdida de confidencialidad.",
       "verification": "Acceda a la siguiente página para verificar que los servicios que usted\nprovee en el host son vulnerables a POODLE:\n\n<div>\n\n<ul>\n<li><p><a href=\"https://www.poodlescan.com/\">https://www.poodlescan.com/</a></p></li>\n</ul>\n\n</div>",
@@ -1696,12 +1696,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 113,
+    "pk": 114,
     "fields": {
       "created": "2017-12-21T11:57:57Z",
       "modified": "2022-02-01T22:16:41.472Z",
       "lang": "es",
-      "taxonomy": 78,
+      "taxonomy": 79,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} se está comportando de manera sospechosa.",
       "derived_problem": "esto se puede deber a\n\n<ul>\n<li><p>El sitio web contiene software malicioso: El sitio podría instalar software malicioso a los usuarios.</p></li>\n<li><p>Sitio engañoso: El sitio web podría realizar una suplantación de identidad.</p></li>\n<li><p>El sitio contiene programas peligrosos: El sitio podría engañar usuarios para instalar programas que causen problemas cuando navegan.</p></li>\n</ul>",
       "verification": null,
@@ -1711,12 +1711,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 114,
+    "pk": 115,
     "fields": {
       "created": "2019-04-01T14:26:55Z",
       "modified": "2022-02-01T22:16:41.474Z",
       "lang": "en",
-      "taxonomy": 80,
+      "taxonomy": 81,
       "problem": "We would like to inform you that we have been informed that the host {{event.network}} has XSS vulnerability.",
       "derived_problem": "The XSS allows executing scripts in the victim's browser. The attacker of this type of attacks can steal user sessions on the vulnerable web system or redirect them to malicious sites.",
       "verification": null,
@@ -1726,12 +1726,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 115,
+    "pk": 116,
     "fields": {
       "created": "2019-04-01T14:29:48Z",
       "modified": "2022-02-01T22:16:41.476Z",
       "lang": "es",
-      "taxonomy": 80,
+      "taxonomy": 81,
       "problem": "Lo contactamos porque hemos sido informados que el host/servidor {{event.network}} tiene vulnerabilidades de XSS.",
       "derived_problem": "Los XSS permiten ejecutar scripts en el navegador de la víctima. El atacante de éste tipo de ataques puede robar sesiones de usuario sobre el sistema web vulnerable o redireccionarlo hacia un sitio malicioso.",
       "verification": null,

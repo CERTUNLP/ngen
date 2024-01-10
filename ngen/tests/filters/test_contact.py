@@ -23,9 +23,9 @@ class ContactFilterTest(BaseFilterTest):
         cls.basename = "contact"
         super().setUpTestData()
 
-        cls.priority_1 = Priority.objects.get(pk=1)
-        cls.priority_2 = Priority.objects.get(pk=2)
-        cls.priority_3 = Priority.objects.get(pk=3)
+        cls.priority_1 = Priority.objects.get(slug="critical")
+        cls.priority_2 = Priority.objects.get(slug="high")
+        cls.priority_3 = Priority.objects.get(slug="medium")
 
         cls.contact_1 = Contact.objects.create(
             name="Soporte CERT",

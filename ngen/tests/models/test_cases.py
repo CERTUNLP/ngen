@@ -20,9 +20,9 @@ class CaseTest(TestCase):
         Case model test setup
         """
 
-        self.priority = Priority.objects.get(pk=2)
-        self.tlp = Tlp.objects.get(pk=2)
-        self.state = State.objects.get(pk=9)
+        self.priority = Priority.objects.get(slug="critical")
+        self.tlp = Tlp.objects.get(slug="green")
+        self.state = State.objects.get(slug="open")
         self.case_template = CaseTemplate.objects.get(pk=1)
         self.name = 'Test Case'
 
