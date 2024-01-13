@@ -594,3 +594,21 @@ class ArtifactRelatedMixin(models.Model):
     @property
     def artifacts_dict(self) -> dict[str, list]:
         raise NotImplementedError
+
+
+class CanalizableMixin(models.Model):
+    """
+    Mixin for models that have Comunication Channels
+    """
+
+    class Meta:
+        abstract = True
+
+    def get_internal_contacts(self):
+        raise NotImplementedError
+
+    def get_affected_contacts(self):
+        raise NotImplementedError
+
+    def get_reporter_contacts(self):
+        raise NotImplementedError
