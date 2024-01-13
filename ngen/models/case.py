@@ -21,7 +21,7 @@ import ngen
 from ngen.models.announcement import Communication
 from . import Priority
 from .common.mixins import MergeModelMixin, AddressModelMixin, ArtifactRelatedMixin, AuditModelMixin, \
-    EvidenceModelMixin, PriorityModelMixin, ValidationModelMixin
+    EvidenceModelMixin, PriorityModelMixin, ValidationModelMixin, CanalizableMixin
 from ..storage import HashedFilenameStorage
 
 LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
@@ -29,7 +29,7 @@ LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('A
 
 
 class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMixin, ArtifactRelatedMixin,
-           Communication, ValidationModelMixin):
+           Communication, ValidationModelMixin, CanalizableMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255, null=True, blank=True, default='')
@@ -242,6 +242,15 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         # Increment notification_count
         # TODO: make communication a class with objects that can be audited
         self.notification_count += 1
+
+    def get_internal_contacts(self):
+        print('get_case_internal_contacts')
+
+    def get_affected_contacts(self):
+        print('get_case_affected_contacts')
+
+    def get_reporter_contacts(self):
+        print('get_case_reporter_contacts')
 
 
 class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin,
