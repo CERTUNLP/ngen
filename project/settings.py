@@ -290,16 +290,6 @@ origin_path = os.path.join(f'{STATIC_ROOT}', 'img', 'teamlogo_200_50.png')
 if not os.path.exists(LOGO_WIDE_PATH) and os.path.exists(origin_path):
     shutil.copy(origin_path, LOGO_WIDE_PATH)
 
-origin_path = os.path.join(f'{STATIC_ROOT}', 'img', 'ngenlogo.png')
-dest_path = os.path.join(f'{MEDIA_ROOT}', CONSTANCE_FILE_ROOT, 'ngenlogo.png')
-if not os.path.exists(dest_path) and os.path.exists(origin_path):
-    shutil.copy(origin_path, dest_path)
-
-origin_path = os.path.join(f'{STATIC_ROOT}', 'img', 'ngenlogo_big.png')
-dest_path = os.path.join(f'{MEDIA_ROOT}', CONSTANCE_FILE_ROOT, 'ngenlogo_big.png')
-if not os.path.exists(dest_path) and os.path.exists(origin_path):
-    shutil.copy(origin_path, dest_path)
-
 AUTH_USER_MODEL = 'ngen.User'
 
 BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'strong', 'a', 'ul', 'li', 'div', 'br']
