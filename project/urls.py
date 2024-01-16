@@ -27,17 +27,17 @@ from ngen.views import dashboards
 from project import settings
 
 router = DefaultRouter()
-router.register(r'administration/tlp', views.TlpViewSet)
-router.register(r'administration/feed', views.FeedViewSet)
-router.register(r'administration/priority', views.PriorityViewSet)
-router.register(r'state', views.StateViewSet, basename='state')
+router.register(r'administration/tlp', views.TlpViewSet)#
+router.register(r'administration/feed', views.FeedViewSet)#
+router.register(r'administration/priority', views.PriorityViewSet)#
+router.register(r'state', views.StateViewSet, basename='state')#
 router.register(r'edge', views.EdgeViewSet, basename='edge')
 router.register(r'template', views.CaseTemplateViewSet, basename='casetemplate')
 router.register(r'case', views.CaseViewSet, basename='case')
 router.register(r'evidence', views.EvidenceViewSet, basename='evidence')
 router.register(r'event', views.EventViewSet, basename='event')
 router.register(r'taxonomy', views.TaxonomyViewSet, basename='taxonomy')
-router.register(r'taxonomy-partial', views.TaxonomyPartialViewSet, basename='taxonomy-partial')
+
 router.register(r'report', views.ReportViewSet, basename='report')
 router.register(r'network', views.NetworkViewSet, basename='network')
 router.register(r'contact', views.ContactViewSet, basename='contact')
@@ -59,6 +59,8 @@ router.register(r'groups', views.GroupViewSet, basename='group')
 router.register(r'permission', views.PermissionViewSet, basename='permission')
 router.register(r'contenttype', views.ContentTypeViewSet, basename='contenttype')
 # router.register(r"login", views.LoginViewSet, basename="login")
+#-----------------------Minified views-----------------------#
+router.register(r'minified/taxonomy', views.TaxonomyPartialViewSet, basename='minified-taxonomy')
 
 if settings.ELASTIC_ENABLED:
     from ngen.documents import CaseDocumentViewSet
