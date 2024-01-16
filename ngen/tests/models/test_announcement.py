@@ -13,7 +13,6 @@ class AnnouncementTestCase(TestCase):
 
     def setUp(self):
         """SetUp for case and event creation in the tests"""
-        print(config.TEAM_EMAIL, config.PRIORITY_DEFAULT)
         self.priority = Priority.objects.get(name="High")
         self.tlp = Tlp.objects.get(name="Green")
         self.state = State.objects.get(name="Open")
@@ -397,7 +396,6 @@ class AnnouncementTestCase(TestCase):
         self.event.save()
         last_case = Case.objects.order_by('-id').first()
         last_case.state = State.objects.get(name="Closed")
-        print("The case created has ID",last_case," and state",last_case.state)
         self.assertEqual(last_case, self.event.case)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(self.evidence.attachment_name,
@@ -447,7 +445,6 @@ class AnnouncementTestCase(TestCase):
         )
         #Taking the last created case, making sure it's the one just created, and asserting that the emails are sent to the correct recipients.
         last_case = Case.objects.order_by('-id').first()
-        print("The case created has ID",last_case," and state",last_case.state)
         self.assertEqual(last_case, self.event.case)
         #Note: first email is sent to the contacts.
         first_email = mail.outbox[0]
@@ -557,9 +554,7 @@ class AnnouncementTestCase(TestCase):
         )
        #First email is sent to recipients
        first_email = mail.outbox[0]
-       print("Recipients:", first_email.to)
        self.assertEqual(first_email.to, contact_list1)
        #Second email is sent to admin, so taking third mail
        third_email = mail.outbox[2]
-       print("Recipients:", third_email.to)
        self.assertEqual(third_email.to, contact_list2)
