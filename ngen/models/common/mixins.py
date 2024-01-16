@@ -601,6 +601,10 @@ class CanalizableMixin(models.Model):
     Mixin for models that have Comunication Channels
     """
 
+    communication_channels = GenericRelation(
+        "ngen.CommunicationChannel", related_name="communication_channels"
+    )
+
     class Meta:
         abstract = True
 
