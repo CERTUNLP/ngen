@@ -5,8 +5,8 @@
     "fields": {
       "created": "2019-04-08T11:41:41Z",
       "modified": "2019-04-08T11:41:41Z",
-      "slug": "americas",
-      "name": "Americas",
+      "slug": "csirtamericas",
+      "name": "CSIRTAmericas",
       "active": true,
       "description": null
     }

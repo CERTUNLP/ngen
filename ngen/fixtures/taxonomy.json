@@ -1622,5 +1622,19 @@
       "active": true,
       "description": "Unencrypted communication protocol (HTTP, FTP, etc)"
     }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 116,
+    "fields": {
+      "created": "2019-11-14T15:41:49Z",
+      "modified": "2021-12-10T15:44:52.613Z",
+      "parent": 8,
+      "type": "vulnerability",
+      "name": "Breach Email",
+      "slug": "breach_email",
+      "active": true,
+      "description": "Email address found in a breach"
+    }
   }
 ]
