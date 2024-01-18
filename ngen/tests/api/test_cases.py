@@ -30,7 +30,7 @@ class TestCase(APITestCase):
         cls.case_template_url = cls.base_url + reverse('casetemplate-detail', kwargs={'pk': 1})
 
         cls.priority = Priority.objects.get(slug="high")
-        cls.feed = Feed.objects.get(slug="americas")
+        cls.feed = Feed.objects.get(slug="csirtamericas")
         cls.tlp = Tlp.objects.get(slug="green")
         cls.state = State.objects.get(slug="open")
         cls.taxonomy = Taxonomy.objects.get(slug="accessible_afp_report")

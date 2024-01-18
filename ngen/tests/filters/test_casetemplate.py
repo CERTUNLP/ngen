@@ -24,7 +24,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
         cls.basename = "casetemplate"
         super().setUpTestData()
 
-        cls.feed_1 = Feed.objects.get(slug="americas")
+        cls.feed_1 = Feed.objects.get(slug="csirtamericas")
         cls.feed_2 = Feed.objects.get(slug="bro")
         cls.feed_3 = Feed.objects.get(slug="censys")
         cls.tlp_1 = Tlp.objects.get(slug="white")
