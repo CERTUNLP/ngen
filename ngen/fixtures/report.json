@@ -1741,12 +1741,12 @@
   },
   {
     "model": "ngen.report",
-    "pk": 116,
+    "pk": 117,
     "fields": {
       "created": "2019-04-01T14:29:48Z",
       "modified": "2022-02-01T22:16:41.476Z",
       "lang": "es",
-      "taxonomy": 116,
+      "taxonomy": 117,
       "problem": "Durante nuestras actividades de monitoreo y análisis de amenazas en línea, hemos identificado una brecha de datos en la que se filtraron credenciales de usuarios de correo electrónico que pertenecen a un servidor de correo bajo su administración.Actualmente, los datos correspondientes se encuentran expuestos en Internet, al alcance de terceros no autorizados.",
       "derived_problem": "La exposición de las credenciales de usuario conlleva diversos problemas y riesgos, incluyendo:\n\n    1) Acceso no autorizado: Los atacantes podrían utilizar las credenciales comprometidas para acceder a cuentas de correo electrónico y otros servicios relacionados, lo que les permitiría robar información confidencial, enviar correos electrónicos maliciosos o llevar a cabo acciones perjudiciales en nombre de los usuarios afectados.\n    2) Suplantación de identidad (phishing): Con las credenciales en su poder, los atacantes podrían intentar engañar a otros usuarios haciéndose pasar por los afectados. Esto podría llevar a acciones fraudulentas, como solicitar información confidencial o realizar transacciones no autorizadas.\n    3) Compromiso de otros servicios: Si los usuarios afectados utilizan las mismas contraseñas en otros servicios, sus cuentas en dichos servicios también podrían estar en riesgo de ser comprometidas.",
       "verification": "Contactese con soporte@cert.unlp.edu.ar para más información.",

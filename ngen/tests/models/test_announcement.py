@@ -1,9 +1,10 @@
 from django.core import mail
-from ngen.models import Evidence, ContentType, Tlp, Priority, \
-    Taxonomy, Event, Feed, State, Case, CaseTemplate, User, Contact, Task, Playbook, Network, NetworkEntity, config
-
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+from constance.test import override_config
+
+from ngen.models import Evidence, ContentType, Tlp, Priority, \
+    Taxonomy, Event, Feed, State, Case, CaseTemplate, User, Contact, Task, Playbook, Network, NetworkEntity
 
 
 class AnnouncementTestCase(TestCase):
@@ -404,6 +405,7 @@ class AnnouncementTestCase(TestCase):
 
  
 # ----------------------------------------------------------------------------------
+    @override_config(TEAM_EMAIL="team@ngen.com")
     def test_event_contact(self):
         """
         Creating case template and coinciding event using a network with contacts.
