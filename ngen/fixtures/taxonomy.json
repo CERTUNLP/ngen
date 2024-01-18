@@ -1622,5 +1622,1531 @@
       "active": true,
       "description": "Unencrypted communication protocol (HTTP, FTP, etc)"
     }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 117,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "blacklisted ip",
+      "slug": "blacklisted_ip",
+      "active": true,
+      "description": "Shadowserver information about blacklisted-ip (blocklist) at https://www.shadowserver.org/what-we-do/network-reporting/blocklist-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 118,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "compromised account",
+      "slug": "compromised_account",
+      "active": true,
+      "description": "Shadowserver information about compromised-account (compromised_account) at https://www.shadowserver.org/what-we-do/network-reporting/compromised-account-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 119,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "compromised website",
+      "slug": "compromised_website",
+      "active": true,
+      "description": "Shadowserver information about compromised-website (compromised_website) at https://www.shadowserver.org/what-we-do/network-reporting/compromised-website-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 120,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "compromised website6",
+      "slug": "compromised_website6",
+      "active": true,
+      "description": "Shadowserver information about compromised-website6 (compromised_website6) at https://www.shadowserver.org/what-we-do/network-reporting/compromised-website-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 121,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "device id",
+      "slug": "device_id",
+      "active": true,
+      "description": "Shadowserver information about device-id (device_id) at https://www.shadowserver.org/what-we-do/network-reporting/device-identification-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 122,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "event6 sinkhole http referer",
+      "slug": "event6_sinkhole_http_referer",
+      "active": true,
+      "description": "Search at shadowserver.org for event6-sinkhole-http-referer (event6_sinkhole_http_referer)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 123,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "ddos participant",
+      "slug": "ddos_participant",
+      "active": true,
+      "description": "Shadowserver information about ddos-participant (event_ddos_participant) at https://www.shadowserver.org/what-we-do/network-reporting/ddos-participant-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 124,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "honeypot adb scan",
+      "slug": "honeypot_adb_scan",
+      "active": true,
+      "description": "Shadowserver information about honeypot-adb-scan (event_honeypot_adb_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-adb-scanner-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 125,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "honeypot ddos",
+      "slug": "honeypot_ddos",
+      "active": true,
+      "description": "Shadowserver information about honeypot-ddos (event_honeypot_ddos) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ddos-events/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 126,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "amplification ddos victim",
+      "slug": "amplification_ddos_victim",
+      "active": true,
+      "description": "Shadowserver information about amplification-ddos-victim (event_honeypot_ddos_amp) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-amplification-ddos-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 127,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "honeypot ddos target",
+      "slug": "honeypot_ddos_target",
+      "active": true,
+      "description": "Shadowserver information about honeypot-ddos-target (event_honeypot_ddos_target) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ddos-target-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 128,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "honeypot http scan",
+      "slug": "honeypot_http_scan",
+      "active": true,
+      "description": "Shadowserver information about honeypot-http-scan (event_honeypot_http_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-http-scanner-events/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 129,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "ics",
+      "slug": "ics",
+      "active": true,
+      "description": "Shadowserver information about ics (event_honeypot_ics_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ics-scanner-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 130,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "honeypot ikev2 scan",
+      "slug": "honeypot_ikev2_scan",
+      "active": true,
+      "description": "Shadowserver information about honeypot-ikev2-scan (event_honeypot_ikev2_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ikev2-scanner-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 131,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "honeypot rdp scan",
+      "slug": "honeypot_rdp_scan",
+      "active": true,
+      "description": "Shadowserver information about honeypot-rdp-scan (event_honeypot_rdp_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-rdp-scanner-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 132,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "honeypot rocketmq scan",
+      "slug": "honeypot_rocketmq_scan",
+      "active": true,
+      "description": "Shadowserver information about honeypot-rocketmq-scan (event_honeypot_rocketmq_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-rocketmq-scanner-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 133,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "honeypot smb scan",
+      "slug": "honeypot_smb_scan",
+      "active": true,
+      "description": "Shadowserver information about honeypot-smb-scan (event_honeypot_smb_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-smb-scanner-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 134,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "ip spoofer",
+      "slug": "ip_spoofer",
+      "active": true,
+      "description": "Shadowserver information about ip-spoofer (event_ip_spoofer) at https://www.shadowserver.org/what-we-do/network-reporting/ip-spoofer-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 135,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "sinkholedns",
+      "slug": "sinkholedns",
+      "active": true,
+      "description": "Shadowserver information about sinkholedns (event_sinkhole_dns) at https://www.shadowserver.org/what-we-do/network-reporting/sinkhole-dns-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 136,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "sinkhole http referer",
+      "slug": "sinkhole_http_referer",
+      "active": true,
+      "description": "Shadowserver information about sinkhole-http-referer (event_sinkhole_http_referer) at https://www.shadowserver.org/what-we-do/network-reporting/sinkhole-http-referer-events-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 137,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "malware url",
+      "slug": "malware_url",
+      "active": true,
+      "description": "Shadowserver information about malware-url (malware_url) at https://www.shadowserver.org/what-we-do/network-reporting/malware-url-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 138,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "phish url",
+      "slug": "phish_url",
+      "active": true,
+      "description": "Search at shadowserver.org for phish-url (phish_url)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 139,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "population6 bgp",
+      "slug": "population6_bgp",
+      "active": true,
+      "description": "Search at shadowserver.org for population6-bgp (population6_bgp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 140,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible http proxy",
+      "slug": "accessible_http_proxy",
+      "active": true,
+      "description": "Search at shadowserver.org for accessible-http-proxy (population6_http_proxy)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 141,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "population6 msmq",
+      "slug": "population6_msmq",
+      "active": true,
+      "description": "Search at shadowserver.org for population6-msmq (population6_msmq)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 142,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "population bgp",
+      "slug": "population_bgp",
+      "active": true,
+      "description": "Shadowserver information about population-bgp (population_bgp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-bgp-service-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 143,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "population msmq",
+      "slug": "population_msmq",
+      "active": true,
+      "description": "Shadowserver information about population-msmq (population_msmq) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-msmq-service-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 144,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "ransomware victim",
+      "slug": "ransomware_victim",
+      "active": true,
+      "description": "Shadowserver information about ransomware-victim (ransomware_victim) at https://www.shadowserver.org/what-we-do/network-reporting/ransomware-victim-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 145,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "sandbox conn",
+      "slug": "sandbox_conn",
+      "active": true,
+      "description": "Shadowserver information about sandbox-conn (sandbox_conn) at https://www.shadowserver.org/what-we-do/network-reporting/sandbox-connection-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 146,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "sandbox dns",
+      "slug": "sandbox_dns",
+      "active": true,
+      "description": "Search at shadowserver.org for sandbox-dns (sandbox_dns)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 147,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "sandbox url",
+      "slug": "sandbox_url",
+      "active": true,
+      "description": "Shadowserver information about sandbox-url (sandbox_url) at https://www.shadowserver.org/what-we-do/network-reporting/sandbox-url-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 148,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 activemq",
+      "slug": "scan6_activemq",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-activemq (scan6_activemq)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 149,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 bgp",
+      "slug": "scan6_bgp",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-bgp (scan6_bgp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 150,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 cwmp",
+      "slug": "scan6_cwmp",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-cwmp (scan6_cwmp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 151,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "dns open resolver",
+      "slug": "dns_open_resolver",
+      "active": true,
+      "description": "Search at shadowserver.org for dns-open-resolver (scan6_dns)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 152,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 elasticsearch",
+      "slug": "scan6_elasticsearch",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-elasticsearch (scan6_elasticsearch)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 153,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6_exchange",
+      "slug": "scan6_exchange",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6_exchange (scan6_exchange)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 154,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible ftp",
+      "slug": "accessible_ftp",
+      "active": true,
+      "description": "Search at shadowserver.org for accessible-ftp (scan6_ftp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 155,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible http",
+      "slug": "accessible_http",
+      "active": true,
+      "description": "Search at shadowserver.org for accessible-http (scan6_http)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 156,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open http proxy",
+      "slug": "open_http_proxy",
+      "active": true,
+      "description": "Search at shadowserver.org for open-http-proxy (scan6_http_proxy)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 157,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 ipp",
+      "slug": "scan6_ipp",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-ipp (scan6_ipp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 158,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open ike",
+      "slug": "open_ike",
+      "active": true,
+      "description": "Search at shadowserver.org for open-ike (scan6_isakmp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 159,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 mqtt",
+      "slug": "scan6_mqtt",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-mqtt (scan6_mqtt)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 160,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 mqtt anon",
+      "slug": "scan6_mqtt_anon",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-mqtt-anon (scan6_mqtt_anon)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 161,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 mysql",
+      "slug": "scan6_mysql",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-mysql (scan6_mysql)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 162,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "ntp version",
+      "slug": "ntp_version",
+      "active": true,
+      "description": "Search at shadowserver.org for ntp-version (scan6_ntp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 163,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "ntp monitor",
+      "slug": "ntp_monitor",
+      "active": true,
+      "description": "Search at shadowserver.org for ntp-monitor (scan6_ntpmonitor)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 164,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 postgres",
+      "slug": "scan6_postgres",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-postgres (scan6_postgres)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 165,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 rdp",
+      "slug": "scan6_rdp",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-rdp (scan6_rdp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 166,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 slp",
+      "slug": "scan6_slp",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-slp (scan6_slp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 167,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 smb",
+      "slug": "scan6_smb",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-smb (scan6_smb)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 168,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 smtp",
+      "slug": "scan6_smtp",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-smtp (scan6_smtp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 169,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 smtp vulnerable",
+      "slug": "scan6_smtp_vulnerable",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-smtp-vulnerable (scan6_smtp_vulnerable)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 170,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 snmp",
+      "slug": "scan6_snmp",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-snmp (scan6_snmp)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 171,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 ssh",
+      "slug": "scan6_ssh",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-ssh (scan6_ssh)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 172,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 ssl",
+      "slug": "scan6_ssl",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-ssl (scan6_ssl)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 173,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 ssl freak",
+      "slug": "scan6_ssl_freak",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-ssl-freak (scan6_ssl_freak)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 174,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 ssl poodle",
+      "slug": "scan6_ssl_poodle",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-ssl-poodle (scan6_ssl_poodle)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 175,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 stun",
+      "slug": "scan6_stun",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-stun (scan6_stun)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 176,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 telnet",
+      "slug": "scan6_telnet",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-telnet (scan6_telnet)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 177,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan6 vnc",
+      "slug": "scan6_vnc",
+      "active": true,
+      "description": "Search at shadowserver.org for scan6-vnc (scan6_vnc)"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 178,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open activemq",
+      "slug": "open_activemq",
+      "active": true,
+      "description": "Shadowserver information about open-activemq (scan_activemq) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-activemq-service-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 179,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible adb",
+      "slug": "accessible_adb",
+      "active": true,
+      "description": "Shadowserver information about accessible-adb (scan_adb) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-adb-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 180,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible afp",
+      "slug": "accessible_afp",
+      "active": true,
+      "description": "Shadowserver information about accessible-afp (scan_afp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-afp-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 181,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible amqp",
+      "slug": "accessible_amqp",
+      "active": true,
+      "description": "Shadowserver information about accessible-amqp (scan_amqp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-amqp-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 182,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible ard",
+      "slug": "accessible_ard",
+      "active": true,
+      "description": "Shadowserver information about accessible-ard (scan_ard) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-apple-remote-desktop-ard-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 183,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open bgp",
+      "slug": "open_bgp",
+      "active": true,
+      "description": "Shadowserver information about open-bgp (scan_bgp) at https://www.shadowserver.org/what-we-do/network-reporting/open-bgp-service-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 184,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible cisco smart install",
+      "slug": "accessible_cisco_smart_install",
+      "active": true,
+      "description": "Shadowserver information about accessible-cisco-smart-install (scan_cisco_smart_install) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-cisco-smart-install-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 185,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible coap",
+      "slug": "accessible_coap",
+      "active": true,
+      "description": "Shadowserver information about accessible-coap (scan_coap) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-coap-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 186,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open couchdb",
+      "slug": "open_couchdb",
+      "active": true,
+      "description": "Shadowserver information about open-couchdb (scan_couchdb) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-couchdb-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 187,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open cwmp",
+      "slug": "open_cwmp",
+      "active": true,
+      "description": "Shadowserver information about open-cwmp (scan_cwmp) at https://www.shadowserver.org/what-we-do/network-reporting/open-cwmp-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 188,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open db2 discovery service",
+      "slug": "open_db2_discovery_service",
+      "active": true,
+      "description": "Shadowserver information about open-db2-discovery-service (scan_db2) at https://www.shadowserver.org/what-we-do/network-reporting/open-db2-discovery-service-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 189,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open ddos middlebox",
+      "slug": "open_ddos_middlebox",
+      "active": true,
+      "description": "Shadowserver information about open-ddos-middlebox (scan_ddos_middlebox) at https://www.shadowserver.org/what-we-do/network-reporting/vulnerable-ddos-middlebox-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 190,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open docker",
+      "slug": "open_docker",
+      "active": true,
+      "description": "Shadowserver information about open-docker (scan_docker) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-docker-service-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 191,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open dvr dhcpdiscover",
+      "slug": "open_dvr_dhcpdiscover",
+      "active": true,
+      "description": "Shadowserver information about open-dvr-dhcpdiscover (scan_dvr_dhcpdiscover) at https://www.shadowserver.org/what-we-do/network-reporting/open-dvr-dhcpdiscover-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 192,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open epmd",
+      "slug": "open_epmd",
+      "active": true,
+      "description": "Shadowserver information about open-epmd (scan_epmd) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-erlang-port-mapper-report-daemon/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 193,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "scan_exchange",
+      "slug": "scan_exchange",
+      "active": true,
+      "description": "Shadowserver information about scan_exchange (scan_exchange) at https://www.shadowserver.org/what-we-do/network-reporting/vulnerable-exchange-server-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 194,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible hadoop",
+      "slug": "accessible_hadoop",
+      "active": true,
+      "description": "Shadowserver information about accessible-hadoop (scan_hadoop) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-hadoop-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 195,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open ics",
+      "slug": "open_ics",
+      "active": true,
+      "description": "Shadowserver information about open-ics (scan_ics) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ics-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 196,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open ipp",
+      "slug": "open_ipp",
+      "active": true,
+      "description": "Shadowserver information about open-ipp (scan_ipp) at https://www.shadowserver.org/what-we-do/network-reporting/open-ipp-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 197,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open kubernetes",
+      "slug": "open_kubernetes",
+      "active": true,
+      "description": "Shadowserver information about open-kubernetes (scan_kubernetes) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-kubernetes-api-server-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 198,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open mqtt",
+      "slug": "open_mqtt",
+      "active": true,
+      "description": "Shadowserver information about open-mqtt (scan_mqtt) at https://www.shadowserver.org/what-we-do/network-reporting/open-mqtt-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 199,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open mqtt anon",
+      "slug": "open_mqtt_anon",
+      "active": true,
+      "description": "Shadowserver information about open-mqtt-anon (scan_mqtt_anon) at https://www.shadowserver.org/what-we-do/network-reporting/open-mqtt-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 200,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open mysql",
+      "slug": "open_mysql",
+      "active": true,
+      "description": "Shadowserver information about open-mysql (scan_mysql) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-mysql-server-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 201,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open natpmp",
+      "slug": "open_natpmp",
+      "active": true,
+      "description": "Shadowserver information about open-natpmp (scan_nat_pmp) at https://www.shadowserver.org/what-we-do/network-reporting/open-nat-pmp-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 202,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open netbios nameservice",
+      "slug": "open_netbios_nameservice",
+      "active": true,
+      "description": "Shadowserver information about open-netbios-nameservice (scan_netbios) at https://www.shadowserver.org/what-we-do/network-reporting/open-netbios-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 203,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open netis",
+      "slug": "open_netis",
+      "active": true,
+      "description": "Shadowserver information about open-netis (scan_netis_router) at https://www.shadowserver.org/what-we-do/network-reporting/netcore-netis-router-vulnerability-scan-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 204,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open portmapper",
+      "slug": "open_portmapper",
+      "active": true,
+      "description": "Shadowserver information about open-portmapper (scan_portmapper) at https://www.shadowserver.org/what-we-do/network-reporting/open-portmapper-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 205,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "c2 beacon",
+      "slug": "c2_beacon",
+      "active": true,
+      "description": "Shadowserver information about c2-beacon (scan_post_exploitation_framework) at https://www.shadowserver.org/what-we-do/network-reporting/post-exploitation-framework/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 206,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open postgres",
+      "slug": "open_postgres",
+      "active": true,
+      "description": "Shadowserver information about open-postgres (scan_postgres) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-postgresql-server-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 207,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open quic",
+      "slug": "open_quic",
+      "active": true,
+      "description": "Shadowserver information about open-quic (scan_quic) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-quic-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 208,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible radmin",
+      "slug": "accessible_radmin",
+      "active": true,
+      "description": "Shadowserver information about accessible-radmin (scan_radmin) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-radmin-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 209,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible msrdpeudp",
+      "slug": "accessible_msrdpeudp",
+      "active": true,
+      "description": "Shadowserver information about accessible-msrdpeudp (scan_rdpeudp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ms-rdpeudp/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 210,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible rsync",
+      "slug": "accessible_rsync",
+      "active": true,
+      "description": "Shadowserver information about accessible-rsync (scan_rsync) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-rsync-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 211,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open sip",
+      "slug": "open_sip",
+      "active": true,
+      "description": "Shadowserver information about open-sip (scan_sip) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-sip-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 212,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open slp",
+      "slug": "open_slp",
+      "active": true,
+      "description": "Shadowserver information about open-slp (scan_slp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-slp-service-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 213,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open smtp",
+      "slug": "open_smtp",
+      "active": true,
+      "description": "Shadowserver information about open-smtp (scan_smtp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-smtp-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 214,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "vulnerable smtp",
+      "slug": "vulnerable_smtp",
+      "active": true,
+      "description": "Shadowserver information about vulnerable-smtp (scan_smtp_vulnerable) at https://www.shadowserver.org/what-we-do/network-reporting/vulnerable-smtp-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 215,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open socks",
+      "slug": "open_socks",
+      "active": true,
+      "description": "Shadowserver information about open-socks (scan_socks) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-socks4-5-proxy-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 216,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open ssh",
+      "slug": "open_ssh",
+      "active": true,
+      "description": "Shadowserver information about open-ssh (scan_ssh) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ssh-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 217,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open ssl",
+      "slug": "open_ssl",
+      "active": true,
+      "description": "Shadowserver information about open-ssl (scan_ssl) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ssl-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 218,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "ssl freak",
+      "slug": "ssl_freak",
+      "active": true,
+      "description": "Shadowserver information about ssl-freak (scan_ssl_freak) at https://www.shadowserver.org/what-we-do/network-reporting/ssl-freak-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 219,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open stun",
+      "slug": "open_stun",
+      "active": true,
+      "description": "Shadowserver information about open-stun (scan_stun) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-stun-service-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 220,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open synfulknock",
+      "slug": "open_synfulknock",
+      "active": true,
+      "description": "Shadowserver information about open-synfulknock (scan_synfulknock) at https://www.shadowserver.org/what-we-do/network-reporting/synful-scan-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 221,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "accessible ubiquiti discovery service",
+      "slug": "accessible_ubiquiti_discovery_service",
+      "active": true,
+      "description": "Shadowserver information about accessible-ubiquiti-discovery-service (scan_ubiquiti) at https://www.shadowserver.org/what-we-do/network-reporting/open-ubiquiti-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 222,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open ws discovery",
+      "slug": "open_ws_discovery",
+      "active": true,
+      "description": "Shadowserver information about open-ws-discovery (scan_ws_discovery) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ws-discovery-service-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 223,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "open xdmcp",
+      "slug": "open_xdmcp",
+      "active": true,
+      "description": "Shadowserver information about open-xdmcp (scan_xdmcp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-xdmcp-service-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 224,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "spam url",
+      "slug": "spam_url",
+      "active": true,
+      "description": "Shadowserver information about spam-url (spam_url) at https://www.shadowserver.org/what-we-do/network-reporting/spam-url-report/"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 225,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "special",
+      "slug": "special",
+      "active": true,
+      "description": "Search at shadowserver.org for special (special)"
+    }
   }
 ]
