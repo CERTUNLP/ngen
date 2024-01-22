@@ -1,19 +1,23 @@
 import django_filters
+from django.contrib.auth.models import Group, Permission
 from django.urls import reverse
-from rest_framework import permissions, filters, status, viewsets
+from rest_framework import permissions, filters, status, viewsets, mixins
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.exceptions import InvalidToken
-from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
-from django.contrib.auth.models import Group, Permission
 
 from ngen import models, serializers
-from ngen.serializers import RegisterSerializer, CustomTokenObtainPairSerializer
 from ngen.filters import UserFilter
+from ngen.serializers import RegisterSerializer, CustomTokenObtainPairSerializer, CookieTokenRefreshSerializer
 
+
+class IsSelf(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        # Permite el acceso solo si el usuario autenticado es el mismo que el objeto
+        return obj == request.user
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all().order_by('id')
@@ -28,6 +32,16 @@ class UserViewSet(viewsets.ModelViewSet):
                        'username', 'email', 'priority']
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, GenericViewSet):
+    serializer_class = serializers.UserProfileSerializer
+    permission_classes = [IsAuthenticated, IsSelf]
+    pagination_class = None
+
+    def get_queryset(self):
+        # Filtra el queryset para incluir solo el perfil del usuario logueado
+        return models.User.objects.filter(id=self.request.user.id)
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -78,17 +92,6 @@ class LogoutView(APIView):
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
-class CookieTokenRefreshSerializer(TokenRefreshSerializer):
-    refresh = None
-
-    def validate(self, attrs):
-        attrs['refresh'] = self.context['request'].COOKIES.get('refresh_token')
-        if attrs['refresh']:
-            return super().validate(attrs)
-        else:
-            raise InvalidToken(
-                'No valid token found in cookie \'refresh_token\'')
-
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -103,6 +106,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 
 class CookieTokenRefreshView(TokenRefreshView):
+    serializer_class = CookieTokenRefreshSerializer
+
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get('refresh'):
             cookie_max_age = 3600 * 24 * 14  # 14 days
@@ -110,8 +115,6 @@ class CookieTokenRefreshView(TokenRefreshView):
                                 path=reverse('ctoken-refresh'))
             del response.data['refresh']
         return super().finalize_response(request, response, *args, **kwargs)
-
-    serializer_class = CookieTokenRefreshSerializer
 
 
 class CookieTokenLogoutView(APIView):
