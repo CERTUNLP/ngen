@@ -20,10 +20,9 @@ from django.urls import include, path, re_path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.authtoken import views as authtokenviews
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
 from ngen import views
-from ngen.views import dashboards
 from project import settings
 
 router = DefaultRouter()
@@ -72,7 +71,7 @@ urlpatterns = [
     path('api/comment/', comment_views.CommentList.as_view(), name='comment-list'),
     path('api/comment/create/', comment_views.CommentCreate.as_view(), name='comment-create'),
     path('api/comment/<int:pk>/', comment_views.CommentDetail.as_view(), name='comment-detail'),
-    path('api/token/', TokenObtainPairView.as_view(), name='token-create'),
+    path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token-create'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token-verify'),
     path('api/token/simple/', authtokenviews.obtain_auth_token, name='token-simple'),
@@ -88,22 +87,22 @@ urlpatterns = [
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path(
         'api/dashboard/events',
-        dashboards.events.DashboardEventsView.as_view(),
+        views.dashboards.events.DashboardEventsView.as_view(),
         name='dashboard-events'
     ),
     path(
         'api/dashboard/cases',
-        dashboards.cases.DashboardCasesView.as_view(),
+        views.dashboards.cases.DashboardCasesView.as_view(),
         name='dashboard-cases'
     ),
     path(
         'api/dashboard/feeds',
-        dashboards.feeds.DashboardFeedsView.as_view(),
+        views.dashboards.feeds.DashboardFeedsView.as_view(),
         name='dashboard-feeds'
     ),
     path(
         'api/dashboard/network_entities',
-        dashboards.network_entities.DashboardNetworkEntitiesView.as_view(),
+        views.dashboards.network_entities.DashboardNetworkEntitiesView.as_view(),
         name='dashboard-network-entities'
     ),
 ]

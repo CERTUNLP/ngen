@@ -11,7 +11,7 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 from django.contrib.auth.models import Group, Permission
 
 from ngen import models, serializers
-from ngen.serializers import RegisterSerializer
+from ngen.serializers import RegisterSerializer, CustomTokenObtainPairSerializer
 from ngen.filters import UserFilter
 
 
@@ -75,6 +75,9 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
 class CookieTokenRefreshSerializer(TokenRefreshSerializer):
     refresh = None
 
@@ -88,6 +91,8 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get('refresh'):
             cookie_max_age = 3600 * 24 * 14  # 14 days
