@@ -59,7 +59,5 @@ admin.site.register(TodoTask)
 
 # communication
 admin.site.register(CommunicationChannel)
+admin.site.register(CommunicationType)
 admin.site.register(CommunicationChannelTypeRelation)
-admin.site.register(InternCommunicationType)
-admin.site.register(AffectedCommunicationType)
-admin.site.register(ReporterCommunicationType)

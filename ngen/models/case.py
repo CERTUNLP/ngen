@@ -254,13 +254,13 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         self.notification_count += 1
 
     def get_internal_contacts(self):
-        return 'get_case_internal_contacts'
+        return ['Internal Contact 1', 'Internal Contact 2', 'Internal Contact 3']
 
     def get_affected_contacts(self):
-        return 'get_case_affected_contacts'
+        return ['Affected Contact 1', 'Affected Contact 2', 'Affected Contact 3']
 
     def get_reporter_contacts(self):
-        return 'get_case_reporter_contacts'
+        return ['Reporter Contact 1', 'Reporter Contact 2', 'Reporter Contact 3']
 
 
 class EventManager(AL_NodeManager, AddressManager):
