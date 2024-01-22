@@ -31,7 +31,7 @@ class ValidationModelMixin(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        self.clean()
+        self.full_clean()
         super().save(*args, **kwargs)
 
 
@@ -44,9 +44,9 @@ class SlugModelMixin(ValidationModelMixin, models.Model):
     def _slug_field(self):
         return 'name'
 
-    def clean(self):
+    def clean_fields(self, exclude=None):
         self.slug = slugify_underscore(getattr(self, self._slug_field()))
-        super().clean()
+        super().clean_fields(exclude=exclude)
 
 
 class TreeModelMixin(AL_Node, ValidationModelMixin):
@@ -93,14 +93,14 @@ class TreeModelMixin(AL_Node, ValidationModelMixin):
     def fix_tree(cls):
         pass
 
-    def clean(self):
+    def clean_fields(self, exclude=None):
         # Check loops. This is not really performant, but it works
         elem = self.parent
         while elem:
             if elem.pk == self.pk:
                 raise ValidationError({'parent': [gettext('Parent can\'t be a descendant of the instance.')]})
             elem = elem.parent
-        super().clean()
+        super().clean_fields(exclude=exclude)
 
 
 class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
@@ -189,10 +189,10 @@ class PriorityModelMixin(ValidationModelMixin, models.Model):
     class Meta:
         abstract = True
 
-    def clean(self):
+    def clean_fields(self, exclude=None):
         if not self.priority:
             self.priority = ngen.models.Priority.default_priority()
-        super().clean()
+        super().clean_fields(exclude=exclude)
 
 
 class AddressManager(NetManager):
@@ -290,7 +290,7 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
                     raise ValidationError(
                         {'domain': [msg], 'address_value': [msg]})
 
-    def clean(self):
+    def clean_fields(self, exclude=None):
         # Should be called by subclasses if they override clean()
         self.validate_addresses()
 
@@ -301,7 +301,7 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
         if not self.address.is_valid():
             raise ValidationError(
                 {self.field_name(): [f'Must be a valid {self.field_name()}']})
-        super().clean()
+        super().clean_fields(exclude=exclude)
 
     def __eq__(self, other: 'AddressModelMixin'):
         if isinstance(other, AddressModelMixin):
