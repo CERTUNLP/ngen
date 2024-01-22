@@ -104,17 +104,19 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         perm_serializer = PermissionSerializer(perms, many=True, context={'request': self.context.get('request')})
 
         data.update({
-            'id': self.user.id,
-            'url': data_user,
-            'email': self.user.email,
-            'first_name': self.user.first_name,
-            'last_name': self.user.last_name,
-            'priority': data_priority,
-            'last_login': self.user.last_login,
-            'date_joined': self.user.date_joined,
-            'is_superuser': self.user.is_superuser,
-            'is_staff': self.user.is_staff,
-            'permissions': perm_serializer.data,
+            'user': {
+                'id': self.user.id,
+                'url': data_user,
+                'email': self.user.email,
+                'first_name': self.user.first_name,
+                'last_name': self.user.last_name,
+                'priority': data_priority,
+                'last_login': self.user.last_login,
+                'date_joined': self.user.date_joined,
+                'is_superuser': self.user.is_superuser,
+                'is_staff': self.user.is_staff,
+                'permissions': perm_serializer.data,
+            }
         })
 
         return data
