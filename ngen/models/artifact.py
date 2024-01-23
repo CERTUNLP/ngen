@@ -55,8 +55,7 @@ class ArtifactRelation(AuditModelMixin, ValidationModelMixin):
     def __str__(self):
         return "%s -> %s: %s" % (self.artifact, self.content_type.name, self.related)
 
-    def clean(self):
-        super().clean()
+    def clean_fields(self, exclude=None):
         try:
             # Check if related object exists
             obj = self.content_type.get_object_for_this_type(id=self.object_id)
@@ -67,10 +66,7 @@ class ArtifactRelation(AuditModelMixin, ValidationModelMixin):
                 ar.save()
         except ObjectDoesNotExist as e:
             raise ValidationError("Related object not exists.")
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
+        super().clean_fields(exclude=exclude)
 
 
 class ArtifactEnrichment(AuditModelMixin, ValidationModelMixin):

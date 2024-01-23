@@ -291,7 +291,6 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
                         {'domain': [msg], 'address_value': [msg]})
 
     def clean_fields(self, exclude=None):
-        # Should be called by subclasses if they override clean()
         self.validate_addresses()
 
         if not self.assign_address():
