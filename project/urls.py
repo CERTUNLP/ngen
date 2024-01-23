@@ -60,7 +60,11 @@ router.register(r'permission', views.PermissionViewSet, basename='permission')
 router.register(r'contenttype', views.ContentTypeViewSet, basename='contenttype')
 # router.register(r"login", views.LoginViewSet, basename="login")
 #-----------------------Minified views-----------------------#
-router.register(r'minified/taxonomy', views.TaxonomyPartialViewSet, basename='minified-taxonomy')
+router.register(r'minified/taxonomy', views.TaxonomyMinifiedViewSet, basename='minified-taxonomy') 
+router.register(r'minified/tlp', views.TlpMinifiedViewSet, basename='minified-tlp') #d
+router.register(r'minified/feed', views.FeedMinifiedViewSet, basename='minified-feed')#d
+router.register(r'minified/priority', views.PriorityMinifiedViewSet, basename='minified-priority') #d
+router.register(r'minified/state', views.StateMinifiedViewSet, basename='minified-state')
 
 if settings.ELASTIC_ENABLED:
     from ngen.documents import CaseDocumentViewSet

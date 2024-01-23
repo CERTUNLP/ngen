@@ -67,4 +67,4 @@ class TodoTaskSerializer(AuditSerializerMixin):
 class TaxonomyPartialSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Taxonomy
-        fields = ['id', 'name']
+        fields = ['url', 'name']

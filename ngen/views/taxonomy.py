@@ -3,7 +3,7 @@ from rest_framework import permissions, filters, viewsets
 
 from ngen import models, serializers
 from ngen.filters import TaxonomyFilter, PlaybookFilter
-from ngen.serializers import TaxonomyPartialSerializer
+
 
 class TaxonomyViewSet(viewsets.ModelViewSet):
     queryset = models.Taxonomy.objects.all()
@@ -50,7 +50,7 @@ class ReportViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ReportSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class TaxonomyPartialViewSet(viewsets.ModelViewSet):
+class TaxonomyMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Taxonomy.objects.all()
-    serializer_class = TaxonomyPartialSerializer
+    serializer_class = serializers.TaxonomyPartialSerializer
     pagination_class = None
