@@ -4,10 +4,18 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 
 from ngen.models import User
 from .common.mixins import AuditSerializerMixin
+
+
+def password_validation(password):
+    if len(password) < 8 or password.isdigit() or password.isalpha() or password.islower() or password.isupper() or password.isalnum():
+        raise serializers.ValidationError(
+            "Password must be at least 8 characters long, contain at least one letter, contain at least one number, contain at least one uppercase letter, contain at least one lowercase letter, contain at least one special character")
+    return password
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -31,12 +39,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(AuditSerializerMixin):
-    user_permissions = serializers.HyperlinkedRelatedField(
-        many=True,
-        view_name='permission-detail',
-        read_only=True
-    )
-
     class Meta:
         model = User
         fields = '__all__'
@@ -53,7 +55,8 @@ class UserSerializer(AuditSerializerMixin):
     def create(self, validated_data):
         password = validated_data.pop('password', None)
         instance = self.Meta.model(**validated_data)
-        if password is not None:
+        if password:
+            password_validation(password)
             instance.set_password(password)
         instance.save()
         return instance
@@ -61,6 +64,50 @@ class UserSerializer(AuditSerializerMixin):
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
             if attr == 'password':
+                password_validation(value)
+                instance.set_password(value)
+            else:
+                setattr(instance, attr, value)
+        instance.save()
+        return instance
+
+
+class UserProfileSerializer(AuditSerializerMixin):
+    old_password = serializers.CharField(max_length=128, write_only=True, required=False)
+    new_password1 = serializers.CharField(max_length=128, write_only=True, required=False)
+    new_password2 = serializers.CharField(max_length=128, write_only=True, required=False)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser',
+                  'date_joined', 'last_login', 'priority', 'groups', 'user_permissions', 'old_password',
+                  'new_password1', 'new_password2']
+        read_only_fields = ['id', 'username', 'email', 'is_active', 'is_staff', 'is_superuser', 'date_joined',
+                            'last_login', 'groups', 'user_permissions']
+        extra_kwargs = {'new_password1': {'write_only': True}, 'new_password2': {'write_only': True},
+                        'old_password': {'write_only': True}}
+
+    def validate_old_password(self, value):
+        if not self.instance.check_password(value):
+            raise serializers.ValidationError('The password you entered is invalid.')
+        return value
+
+    def validate_new_password1(self, value):
+        if not 'old_password' in self.initial_data:
+            raise serializers.ValidationError('Old password field is required.')
+        if self.instance.check_password(value):
+            raise serializers.ValidationError('The new password must be different from the old one.')
+        password_validation(value)
+        return value
+
+    def validate_new_password2(self, value):
+        if self.initial_data['new_password1'] != value:
+            raise serializers.ValidationError('The two password fields didn’t match.')
+        return value
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            if attr == 'new_password1':
                 instance.set_password(value)
             else:
                 setattr(instance, attr, value)
@@ -120,3 +167,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         })
 
         return data
+
+
+class CookieTokenRefreshSerializer(TokenRefreshSerializer):
+    refresh = None
+
+    def validate(self, attrs):
+        attrs['refresh'] = self.context['request'].COOKIES.get('refresh_token')
+        if attrs['refresh']:
+            return super().validate(attrs)
+        else:
+            raise InvalidToken('No valid token found in cookie \'refresh_token\'')
