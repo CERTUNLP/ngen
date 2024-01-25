@@ -50,6 +50,7 @@ class ReportViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ReportSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class TaxonomyMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Taxonomy.objects.all()
     serializer_class = serializers.TaxonomyPartialSerializer

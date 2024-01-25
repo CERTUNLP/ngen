@@ -34,20 +34,20 @@ class PrioritySerializer(AuditSerializerMixin):
         fields = '__all__'
         read_only_fields = ['slug']
 
-class FeedPartialSerializer(serializers.ModelSerializer):
+
+class FeedMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Feed
         fields = ['url', 'name']
 
-class TlpPartialSerializer(serializers.ModelSerializer):
+
+class TlpMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Tlp
         fields = ['url', 'name']        
 
  
-class PriorityPartialSerializer(serializers.ModelSerializer):
+class PriorityMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Priority
         fields = ['url', 'name']        
-
-               

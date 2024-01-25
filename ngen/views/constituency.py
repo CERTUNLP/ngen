@@ -60,6 +60,7 @@ class EntityMinifiedViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.EntityMinifiedSerializer
     pagination_class = None
 
+
 class ContactMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Contact.objects.all()
     serializer_class = serializers.ContactMinifiedSerializer

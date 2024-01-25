@@ -46,17 +46,20 @@ class TlpViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.TlpSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class FeedMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Feed.objects.all()
-    serializer_class = serializers.FeedPartialSerializer
+    serializer_class = serializers.FeedMinifiedSerializer
     pagination_class = None
+
 
 class TlpMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Tlp.objects.all()
-    serializer_class = serializers.TlpPartialSerializer
+    serializer_class = serializers.TlpMinifiedSerializer
     pagination_class = None
+
 
 class PriorityMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Priority.objects.all()
-    serializer_class = serializers.PriorityPartialSerializer
+    serializer_class = serializers.PriorityMinifiedSerializer
     pagination_class = None
