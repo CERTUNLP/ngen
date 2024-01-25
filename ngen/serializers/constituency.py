@@ -47,3 +47,9 @@ class ContactSerializer(AuditSerializerMixin):
     class Meta:
         model = models.Contact
         fields = '__all__'
+
+
+class EntityMinifiedSerializer(AuditSerializerMixin):
+    class Meta:
+        model = models.NetworkEntity
+        fields = ['url', 'name']   

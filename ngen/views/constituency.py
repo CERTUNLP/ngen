@@ -53,3 +53,9 @@ class ContactViewSet(viewsets.ModelViewSet):
         "priority",
     ]
     permission_classes = [permissions.IsAuthenticated]
+
+
+class EntityMinifiedViewSet(viewsets.ModelViewSet):
+    queryset = models.NetworkEntity.objects.all()
+    serializer_class = serializers.EntityMinifiedSerializer
+    pagination_class = None
