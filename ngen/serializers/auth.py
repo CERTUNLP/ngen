@@ -87,3 +87,9 @@ class PermissionSerializer(AuditSerializerMixin):
     class Meta:
         model = Permission
         fields = '__all__'
+
+
+class UserMinifiedSerializer(AuditSerializerMixin):
+    class Meta:
+        model = User
+        fields = ['url', 'username']   
