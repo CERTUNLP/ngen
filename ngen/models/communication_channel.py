@@ -1,9 +1,9 @@
-from typing import List
 from django.db import models
 from ngen.models.common.mixins import AuditModelMixin
 from ngen.models import CanalizableMixin
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from model_utils import Choices
 
 
@@ -13,7 +13,7 @@ class CommunicationChannel(AuditModelMixin):
     """
 
     name = models.CharField(blank=False, max_length=255)
-    message_id = models.IntegerField()
+    message_id = models.CharField(max_length=255, null=True, blank=True, default=None)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
@@ -32,10 +32,11 @@ class CommunicationChannel(AuditModelMixin):
         """
         Method to fetch contacts of every communication type
         """
-        contacts = []
-        for communication_type in self.communication_types():
-            contacts += communication_type.get_contacts(self.canalizable)
-        return contacts
+        return [
+            contact
+            for communication_type in self.communication_types()
+            for contact in communication_type.get_contacts(self.canalizable)
+        ]
 
 
 class CommunicationType(AuditModelMixin):
@@ -43,33 +44,40 @@ class CommunicationType(AuditModelMixin):
     CommunicationType model
     """
 
-    name = models.CharField(blank=False, max_length=255)
     TYPE_CHOICES = Choices(
         ("affected", "Affected"), ("reporter", "Reporter"), ("intern", "Intern")
     )
     type = models.CharField(choices=TYPE_CHOICES, max_length=255)
-    communication_channel_type_relation = GenericRelation(
-        "ngen.CommunicationChannelTypeRelation",
-        related_name="communication_channel_type_relation",
-    )
 
-    TYPE_METHOD_MAPPER = {
-        TYPE_CHOICES.affected: "get_affected_contacts",
-        TYPE_CHOICES.reporter: "get_reporter_contacts",
-        TYPE_CHOICES.intern: "get_internal_contacts",
-    }
+    def save(self, *args, **kwargs):
+        if self.type not in self.TYPE_CHOICES:
+            type_choices = ", ".join([choice[1] for choice in self.TYPE_CHOICES])
+            raise ValidationError(f"Invalid type. Valid options are {type_choices}")
+        super().save(*args, **kwargs)
 
     def get_contacts(self, canalizable_mixin: CanalizableMixin):
         """
         Method to get contacts
         """
-        method_name = self.TYPE_METHOD_MAPPER[self.type]
-        get_contacts_method = getattr(self, method_name)
+        get_contacts_method = self.get_contacts_method()
 
-        if get_contacts_method and callable(get_contacts_method):
-            return get_contacts_method(canalizable_mixin)
-        else:
-            raise ValueError(f"Unknown method: {method_name}")
+        return get_contacts_method(canalizable_mixin)
+
+    def get_contacts_method(self):
+        """
+        Method to get communication type method, based on the type
+        """
+        type_method_mapper = {
+            CommunicationType.TYPE_CHOICES.affected: self.get_affected_contacts,
+            CommunicationType.TYPE_CHOICES.reporter: self.get_reporter_contacts,
+            CommunicationType.TYPE_CHOICES.intern: self.get_internal_contacts,
+        }
+        method = type_method_mapper.get(self.type)
+
+        if method:
+            return method
+
+        raise ValueError(f"Method for Type: '{self.type}' not implemented")
 
     def get_affected_contacts(self, canalizable_mixin: CanalizableMixin):
         """
