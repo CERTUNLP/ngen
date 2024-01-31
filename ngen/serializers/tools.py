@@ -34,6 +34,7 @@ class AuditSerializer(AuditSerializerMixin):
 
 
 class ConstanceSerializer(serializers.Serializer):
+    url = serializers.SerializerMethodField()
     key = serializers.CharField()
     default = serializers.SerializerMethodField()
     help_text = serializers.SerializerMethodField()
@@ -45,6 +46,9 @@ class ConstanceSerializer(serializers.Serializer):
         if not self.settings:
             self.settings = get_settings()
         return self.settings
+
+    def get_url(self, obj):
+        return f"{self.context.get('request').build_absolute_uri()}{obj['key']}/"
 
     def get_default(self, obj):
         value = next((item for item in self.get_settings()

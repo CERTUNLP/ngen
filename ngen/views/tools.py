@@ -46,9 +46,12 @@ class AuditViewSet(viewsets.ModelViewSet):
 class ConstanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ConstanceSerializer
     permission_classes = (IsAuthenticated,)
-    queryset = get_settings()
     lookup_field = 'key'
     lookup_value_regex = '[A-Za-z_][A-Za-z0-9_]*'
+
+    def get_queryset(self):
+        """GET - List all instances"""
+        return get_settings()
 
     def create(self, request):
         """POST - Add new"""
@@ -57,9 +60,7 @@ class ConstanceViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, key=None):
         """GET - Show <key>"""
-        api_result = get_settings()
-        result = next(
-            (item for item in api_result if item["key"] == key), None)
+        result = next((item for item in get_settings() if item["key"] == key), None)
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND, data={'message': 'Key not found.'})
         return Response(result)
@@ -68,7 +69,7 @@ class ConstanceViewSet(viewsets.ModelViewSet):
         """PATCH - Update <key>"""
         data = request.data.copy()
         data['key'] = key
-        if not key in [item['key'] for item in self.queryset]:
+        if not key in [item['key'] for item in get_settings()]:
             return Response(status=status.HTTP_404_NOT_FOUND, data={'message': 'Key not found.'})
         serializer = serializers.ConstanceSerializer(data=data)
         if serializer.is_valid():
