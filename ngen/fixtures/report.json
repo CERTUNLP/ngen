@@ -1753,5 +1753,35 @@
       "recommendations": "Para mitigar los riesgos asociados con esta brecha de datos y proteger a los usuarios afectados, le recomendamos tomar las siguientes medidas:\n1) Restablecimiento de contraseñas: Solicite a los usuarios afectados que cambien sus contraseñas de forma inmediata.Es importante que utilicen contraseñas fuertes y únicas para cada servicio.\n2) Monitoreo de actividad sospechosa: Recomiende a los usuarios que estén atentos a cualquier actividad inusual en sus cuentas y solicite que informen de inmediato cualquier incidente sospechoso.",
       "more_information": "https://haveibeenpwned.com/"
     }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 118,
+    "fields": {
+      "created": "2017-12-21T11:57:58Z",
+      "modified": "2022-02-01T22:16:41.328Z",
+      "lang": "en",
+      "taxonomy": 118,
+      "problem": "We would like to inform you that we have detected that web page hosted with IP {{event.network}} has suffered a defacement's attack. This is an attack on a website that changes the visual appearance of the site or a webpage performed by an attacker.",
+      "derived_problem": "The changes in the existing information of the server indicates that the attackers succeeded to obtain restricted privileges on the server. As a result, the server may be exposed to other types of problems, such as:\n\n<ul>\n<li><p>Malware.</p></li>\n<li><p>Be used to perform more sophisticated attacks.</p></li>\n<li><p>Obtaining more privileges.</p></li>\n<li><p>etc.</p></li>\n</ul>",
+      "verification": "The defacement's attack can be observed in the URL\n\n<div>\n\nhttp://{{event.network}}/\n\n\n</div>",
+      "recommendations": "We recommend a forensic analysis on the involved server to obtain information about the source of the problem and it's extent. On the other hand, we recommend a penetration test analysis over the involved site, which allows early problem identification that could lead to similar situations.",
+      "more_information": null
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 119,
+    "fields": {
+      "created": "2017-12-21T11:57:52Z",
+      "modified": "2022-02-01T22:16:41.330Z",
+      "lang": "es",
+      "taxonomy": 118,
+      "problem": "Nos ponemos en contacto con Ud. para informarle que el sitio web que se encuentra en {{event.network}} sufrió un ataque de defacement, el cual consiste en la modificación del contenido propio del portal por terceros.",
+      "derived_problem": "La modificación de la información existente en el servidor indica la obtención de privilegios sobre el mismo por parte de los atacantes. A raíz de esta situación, el servidor puede encontrarse expuesto a otros tipos de problemas, como ser:\n\n<ul>\n<li><p>Alojamiento de malware.</p></li>\n<li><p>Servir como origen de ataques más sofisticados.</p></li>\n<li><p>Obtención de mayores privilegios sobre el mismo.</p></li>\n<li><p>etc.</p></li>\n</ul>",
+      "verification": "El defacement puede ser observado a través de la URL \n\n<div>\n\nhttp://{{event.network}}/\n\n\n</div>",
+      "recommendations": "Se recomienda la realización de una forensia sobre el servidor con el objetivo de conocer el origen del problema como así también el alcance del ataque. Por otro lado, se recomienda la realización de un pentest sobre el sitio afectado, el cual permitirá la identificación temprana de otros problemas que podrían derivar en situaciones similares a la presente.",
+      "more_information": null
+    }
   }
 ]
