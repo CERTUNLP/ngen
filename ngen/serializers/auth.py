@@ -41,7 +41,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(AuditSerializerMixin):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['url', 'password', 'last_login', 'is_superuser', 'username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'date_joined', 'created', 'modified', 'api_key', 'priority', 'groups', 'user_permissions']
+        
 
     def to_representation(self, obj):
         rep = super().to_representation(obj)
