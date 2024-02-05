@@ -53,5 +53,5 @@ class ReportViewSet(viewsets.ModelViewSet):
 
 class TaxonomyMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Taxonomy.objects.all()
-    serializer_class = serializers.TaxonomyPartialSerializer
+    serializer_class = serializers.TaxonomyMinifiedSerializer
     pagination_class = None
