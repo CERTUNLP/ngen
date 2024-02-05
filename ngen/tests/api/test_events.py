@@ -40,7 +40,7 @@ class TestEvent(APITestCase):
 
         cls.priority = Priority.objects.get(slug="high")
         cls.taxonomy = Taxonomy.objects.get(slug="copyright")
-        cls.feed = Feed.objects.get(slug="americas")
+        cls.feed = Feed.objects.get(slug="csirtamericas")
         cls.tlp = Tlp.objects.get(slug="green")
         cls.user = User.objects.get(username="ngen")
 

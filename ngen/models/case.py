@@ -125,7 +125,8 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
             self.communicate_open()
         elif self.state.solved:
             self.solve_date = timezone.now()
-            self.communicate_close()
+            if old.state.attended and not old.state.solved:
+                self.communicate_close()
         else:
             if old.state.attended != self.state.attended or old.state.solved != self.state.solved:
                 self.communicate_update()
@@ -226,14 +227,15 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         template_params = self.template_params
         recipients = self.recipients
         team_recipients = [self.assigned_email, self.team_email]
-        if event_by_contacts:
-            for contacts, events in event_by_contacts.items():
-                template_params.update({'events': events})
-                recipients.update({'to': [c.username for c in contacts]})
-                recipients.update({'bcc': team_recipients})
-                self.send_mail(self.subject(title), self.render_template(template, extra_params=template_params),
-                               recipients, self.email_attachments, self.email_headers)
+        for contacts, events in event_by_contacts.items():
+            # Case has events, so send email to contacts of each event (and bcc to team)
+            template_params.update({'events': events})
+            recipients.update({'to': [c.username for c in contacts]})
+            recipients.update({'bcc': team_recipients})
+            self.send_mail(self.subject(title), self.render_template(template, extra_params=template_params),
+                           recipients, self.email_attachments, self.email_headers)
         else:
+            # Case has no events, so send email only to team (and assignee)
             recipients.update({'to': [recipient for recipient in team_recipients if recipient]})
             self.send_mail(self.subject(title), self.render_template(template, extra_params=self.template_params),
                            recipients, self.email_attachments, self.email_headers)
@@ -409,8 +411,8 @@ class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, Valid
 
     def validate_unique(self, exclude=None):
         super().validate_unique(exclude)
-        qs = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain,
-                                           event_taxonomy=self.event_taxonomy, event_feed=self.event_feed)
+        qs = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain, event_taxonomy=self.event_taxonomy,
+                                           event_feed=self.event_feed).exclude(pk=self.pk)
         if qs.exists():
             raise ValidationError('CIDR, Domain, Taxonomy, Feed tuple must be unique')
 

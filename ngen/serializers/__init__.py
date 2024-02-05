@@ -8,3 +8,4 @@ from .dashboard import *
 from .state import *
 from .taxonomy import *
 from .tools import *
+from .dashboard import *

@@ -1738,5 +1738,20 @@
       "recommendations": "Prevenir XSS requiere mantener los datos no confiables separados del contenido activo del navegador:\n<ul>\n<li><p> Utilizar frameworks seguros que, por diseño, automáticamente codifican el contenido para prevenir XSS, como en Ruby 3.0 o React JS. \n</p></li><li><p> Codificar los datos de requerimientos HTTP no confiables en los campos de salida HTML (cuerpo, atributos, JavaScript, CSS, o URL) resuelve los XSS Reflejado y XSS Almacenado. \n</p></li><li><p> Aplicar codificación sensitiva al contexto, cuando se modifica el documento en el navegador del cliente, ayuda a prevenir DOM XSS. Cuando esta técnica no se puede aplicar, se pueden usar técnicas similares de codificación.\n</p></li><li><p> Habilitar una Política de Seguridad de Contenido (CSP) es una defensa profunda para la mitigación de vulnerabilidades XSS, asumiendo que no hay otras vulnerabilidades que permitan colocar código malicioso vía inclusión de archivos locales, bibliotecas vulnerables en fuentes conocidas almacenadas en Redes de Distribución de Contenidos (CDN) o localmente.\n</p></li></ul>",
       "more_information": "https://www.owasp.org/index.php/Category:OWASP_Guide_Project"
     }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 117,
+    "fields": {
+      "created": "2019-04-01T14:29:48Z",
+      "modified": "2022-02-01T22:16:41.476Z",
+      "lang": "es",
+      "taxonomy": 117,
+      "problem": "Durante nuestras actividades de monitoreo y análisis de amenazas en línea, hemos identificado una brecha de datos en la que se filtraron credenciales de usuarios de correo electrónico que pertenecen a un servidor de correo bajo su administración.Actualmente, los datos correspondientes se encuentran expuestos en Internet, al alcance de terceros no autorizados.",
+      "derived_problem": "La exposición de las credenciales de usuario conlleva diversos problemas y riesgos, incluyendo:\n\n    1) Acceso no autorizado: Los atacantes podrían utilizar las credenciales comprometidas para acceder a cuentas de correo electrónico y otros servicios relacionados, lo que les permitiría robar información confidencial, enviar correos electrónicos maliciosos o llevar a cabo acciones perjudiciales en nombre de los usuarios afectados.\n    2) Suplantación de identidad (phishing): Con las credenciales en su poder, los atacantes podrían intentar engañar a otros usuarios haciéndose pasar por los afectados. Esto podría llevar a acciones fraudulentas, como solicitar información confidencial o realizar transacciones no autorizadas.\n    3) Compromiso de otros servicios: Si los usuarios afectados utilizan las mismas contraseñas en otros servicios, sus cuentas en dichos servicios también podrían estar en riesgo de ser comprometidas.",
+      "verification": "Contactese con soporte@cert.unlp.edu.ar para más información.",
+      "recommendations": "Para mitigar los riesgos asociados con esta brecha de datos y proteger a los usuarios afectados, le recomendamos tomar las siguientes medidas:\n1) Restablecimiento de contraseñas: Solicite a los usuarios afectados que cambien sus contraseñas de forma inmediata.Es importante que utilicen contraseñas fuertes y únicas para cada servicio.\n2) Monitoreo de actividad sospechosa: Recomiende a los usuarios que estén atentos a cualquier actividad inusual en sus cuentas y solicite que informen de inmediato cualquier incidente sospechoso.",
+      "more_information": "https://haveibeenpwned.com/"
+    }
   }
 ]

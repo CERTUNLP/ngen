@@ -64,6 +64,9 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationMode
         super().delete()
 
     def clean(self):
+        """ Ensure that the parent of the network is the correct one,
+        this should be called at the end of clean, before
+        doing save and after assign _state.adding at full_clean """
         super().clean()
         if not self._state.adding:
             # Is not new. Needed by django admin because it validates with None object

@@ -242,9 +242,7 @@ CONSTANCE_CONFIG = {
     'TEAM_URL': (os.environ.get('TEAM_URL'), 'CSIRT site url'),
     'TEAM_SITE': (os.environ.get('TEAM_SITE'), 'CSIRT team site'),
     'TEAM_LOGO': (os.path.join(CONSTANCE_FILE_ROOT, 'teamlogo.png'),
-                  'Team logo will be saved at /api/media/teamlogo.png \
-                  and generated image of 200x50 pixels max for email \
-                  logo at /api/media/teamlogo_200_50.png',
+                  f'Team logo will be saved at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo.png and generated image of 200x50 pixels max for email logo at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo_200_50.png',
                   'image_field'),
     'TEAM_NAME': (os.environ.get('TEAM_NAME'), 'CSIRT name'),
     'EMAIL_SENDER': (os.environ.get('EMAIL_SENDER'), 'SMTP sender email address'),
@@ -331,7 +329,8 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(minutes=15),
     "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
+    # Blacklist refresh tokens could be a logging problem on refresh token rotation if they are parallel requests
+    "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": True,  # check if this is needed and performance impact
 
     "ALGORITHM": "HS256",
