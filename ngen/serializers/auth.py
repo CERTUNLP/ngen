@@ -138,6 +138,12 @@ class PermissionSerializer(AuditSerializerMixin):
         fields = '__all__'
 
 
+class UserMinifiedSerializer(AuditSerializerMixin):
+    class Meta:
+        model = User
+        fields = ['url', 'username']   
+
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
@@ -178,3 +184,4 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
             return super().validate(attrs)
         else:
             raise InvalidToken('No valid token found in cookie \'refresh_token\'')
+

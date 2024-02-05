@@ -45,3 +45,21 @@ class TlpViewSet(viewsets.ModelViewSet):
     ordering_fields = ['id', 'created', 'modified', 'name', 'slug', 'code']
     serializer_class = serializers.TlpSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class FeedMinifiedViewSet(viewsets.ModelViewSet):
+    queryset = models.Feed.objects.all()
+    serializer_class = serializers.FeedMinifiedSerializer
+    pagination_class = None
+
+
+class TlpMinifiedViewSet(viewsets.ModelViewSet):
+    queryset = models.Tlp.objects.all()
+    serializer_class = serializers.TlpMinifiedSerializer
+    pagination_class = None
+
+
+class PriorityMinifiedViewSet(viewsets.ModelViewSet):
+    queryset = models.Priority.objects.all()
+    serializer_class = serializers.PriorityMinifiedSerializer
+    pagination_class = None

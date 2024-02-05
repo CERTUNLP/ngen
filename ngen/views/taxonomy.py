@@ -49,3 +49,9 @@ class ReportViewSet(viewsets.ModelViewSet):
     queryset = models.Report.objects.all()
     serializer_class = serializers.ReportSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class TaxonomyMinifiedViewSet(viewsets.ModelViewSet):
+    queryset = models.Taxonomy.objects.all()
+    serializer_class = serializers.TaxonomyMinifiedSerializer
+    pagination_class = None

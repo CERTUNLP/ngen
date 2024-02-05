@@ -24,3 +24,10 @@ class EdgeViewSet(viewsets.ModelViewSet):
     queryset = models.Edge.objects.all()
     serializer_class = serializers.EdgeSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class StateMinifiedViewSet(viewsets.ModelViewSet):
+    queryset = models.State.objects.all()
+    serializer_class = serializers.StateMinifiedSerializer
+    pagination_class = None
+    

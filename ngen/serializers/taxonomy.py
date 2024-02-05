@@ -62,3 +62,10 @@ class TodoTaskSerializer(AuditSerializerMixin):
         model = models.TodoTask
         fields = '__all__'
         read_only_fields = ['completed_date', 'task', 'event']
+
+
+class TaxonomyMinifiedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Taxonomy
+        fields = ['url', 'name']
+        
