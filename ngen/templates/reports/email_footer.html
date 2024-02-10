@@ -1,0 +1,27 @@
+{% load i18n ngen_tags %}
+<table class="footer-wrap">
+    <tr>
+        <td></td>
+        <td class="container">
+            <div class="content">
+                <table>
+                    <tr>
+                        <td align="center">
+                            <p>
+                                {% blocktranslate trimmed %}
+                                    This report was generated with
+                                {% endblocktranslate %}
+                                <a href="https://github.com/CERTUNLP/ngen">https://github.com/certunlp/ngen</a>
+                                {#                                <a href="#">Privacy</a> |#}
+                                {#                                <a href="#">#}
+                                {#                                    <unsubscribe>Unsubscribe</unsubscribe>#}
+                                {#                                </a>#}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+</table>

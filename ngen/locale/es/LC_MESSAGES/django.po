@@ -218,3 +218,9 @@ msgid ""
 msgstr ""
 "Queremos informarle que el estado del caso número <strong>%(id)s</strong> ha "
 "cambiado a: \"<strong>%(state)s</strong>\""
+
+msgid "Affected resources"
+msgstr "Recursos afectados"
+
+msgid "Event Date"
+msgstr "Fecha del evento"

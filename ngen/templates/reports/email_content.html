@@ -1,0 +1,92 @@
+{% load i18n ngen_tags %}
+<table class="body-wrap" bgcolor="">
+    <tr>
+        <td></td>
+        <td class="container" align="" bgcolor="#FFFFFF">
+            <div class="content">
+                <table>
+                    <tr>
+                        <td>
+                            {% block content_header_content %}
+                                {#                                <p class="lead">Lorem ipsum dolor sit amet, consectetur#}
+                                {#                                    adipisicing elit, sed do eiusmod#}
+                                {#                                    tempor incididunt ut labore et.</p>#}
+                                {#                                <!-- A Real Hero (and a real human being) -->#}
+                                {#                                <p><img src="http://placehold.co/600x300"/></p><!-- /hero -->#}
+                                {#                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor#}
+                                {#                                    incididunt ut labore et dolore magna aliqua. Consectetur adipisicing elit, sed do#}
+                                {#                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>#}
+                            {% endblock %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            {% block content %}
+                {% for event in events %}
+                    {% include "reports/event_detail.html" with event=event %}
+                {% endfor %}
+            {% endblock %}
+            {% block content_footer %}
+                <div class="content">
+                    <table bgcolor="">
+                        <tr>
+                            <td>
+                                <p class="callout">
+                                    {% translate "Please do not hesitate to contact us if you need further assistance." %}
+                                    {% translate "Please remember to reply with the same subject and ID for better tracking of the case." %}
+                                    <br/>
+                                    <b>{% translate 'Sincerely' %} {{ config.TEAM_NAME }} - {{ config.TEAM_URL }}</b>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="content">
+                    <table bgcolor="">
+                        <tr>
+                            <td>
+                                <table bgcolor="" class="social" width="100%">
+                                    <tr>
+                                        <td>
+                                            {#                                            <!--- column 1 -->#}
+                                            {#                                            <div class="column">#}
+                                            {#                                                <table bgcolor="" cellpadding="" align="left">#}
+                                            {#                                                    <tr>#}
+                                            {#                                                        <td>#}
+                                            {#                                                            <h5 class="">Connect with Us:</h5>#}
+                                            {#                                                            <p class="">#}
+                                            {#                                                                <a href="#" class="soc-btn fb">Facebook</a>#}
+                                            {#                                                                <a href="#" class="soc-btn tw">Twitter</a>#}
+                                            {#                                                                <a href="#" class="soc-btn gp">Google+</a>#}
+                                            {#                                                            </p>#}
+                                            {#                                                        </td>#}
+                                            {#                                                    </tr>#}
+                                            {#                                                </table><!-- /column 1 -->#}
+                                            {#                                            </div>#}
+                                            {#                                            <!--- column 2 -->#}
+                                            <div class="column">
+                                                <table bgcolor="" cellpadding="" align="left">
+                                                    <tr>
+                                                        <td>
+                                                            <h5 class="">{% translate "Contact Info" %}:</h5>
+                                                            <p>
+                                                                {#                                                                Phone: <strong></strong><br/>#}
+                                                                Email: <strong><a
+                                                                    href="mailto:{{ config.TEAM_EMAIL }}">{{ config.TEAM_EMAIL }}</a></strong>
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {% endblock %}
+        </td>
+    </tr>
+</table>

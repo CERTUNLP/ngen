@@ -1,5 +1,6 @@
 {% extends "reports/base.html" %}
 {% load i18n %}
+{% language lang %}
 {% block content_header_content %}
     <p class="lead">
         {% blocktranslate trimmed with id=case.uuid state=case.state %}
@@ -10,3 +11,4 @@
 {% endblock %}
 {% block content %}
 {% endblock %}
+{% endlanguage %}
