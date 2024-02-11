@@ -34,16 +34,16 @@ msgid "Very low"
 msgstr "Muy bajo"
 
 msgid "Manual"
-msgstr ""
+msgstr "Manual"
 
 msgid "Auto"
-msgstr ""
+msgstr "Automático"
 
 msgid "Auto open"
-msgstr ""
+msgstr "Apertura automática"
 
 msgid "Auto close"
-msgstr ""
+msgstr "Cierre automático"
 
 msgid "Domain"
 msgstr "Dominio"
@@ -52,7 +52,7 @@ msgid "File"
 msgstr "Archivo"
 
 msgid "FQDN"
-msgstr ""
+msgstr "FQDN"
 
 msgid "Mail"
 msgstr "Correo"
@@ -61,7 +61,7 @@ msgid "Other"
 msgstr "Otro"
 
 msgid "User agent"
-msgstr ""
+msgstr "Agente de usuario"
 
 msgid "Autonomous system"
 msgstr "Sistema autónomo"
@@ -85,19 +85,19 @@ msgid "External"
 msgstr "Externo"
 
 msgid "Email"
-msgstr ""
+msgstr "Correo electrónico"
 
 msgid "Telegram"
-msgstr ""
+msgstr "Telegram"
 
 msgid "Phone"
 msgstr "Teléfono"
 
 msgid "URI"
-msgstr ""
+msgstr "URI"
 
 msgid "Technical"
-msgstr "Tecnico"
+msgstr "Técnico"
 
 msgid "Administrative"
 msgstr "Administrativo"
@@ -109,7 +109,7 @@ msgid "Notifications"
 msgstr "Notificaciones"
 
 msgid "NOC"
-msgstr ""
+msgstr "NOC"
 
 msgid "Vulnerability"
 msgstr "Vulnerabilidad"
@@ -118,51 +118,41 @@ msgid "Incident"
 msgstr "Incidente"
 
 msgid "The parent must not be the same instance."
-msgstr "El padre no debe ser la misma intancia"
+msgstr "El padre no debe ser la misma instancia."
 
-#, fuzzy
-#| msgid "The parent must not be the same instance."
 msgid "The parent is not mergeable or is blocked."
-msgstr "El padre no debe ser la misma intancia"
+msgstr "El padre no es fusionable o está bloqueado."
 
 msgid "The child is not mergeable or is blocked."
-msgstr ""
+msgstr "El hijo no es fusionable o está bloqueado."
 
-#, fuzzy
-#| msgid "Merged instances can't be modified"
 msgid "Parent of merged instances can't be modified"
-msgstr "Instancias combinadas no pueden ser modificadas"
+msgstr "Las instancias fusionadas no pueden ser modificadas."
 
 msgid "Address must be either a CIDR or a domain."
-msgstr ""
+msgstr "La dirección debe ser un CIDR o un dominio."
 
 msgid "Merged instances can't be modified"
-msgstr "Instancias combinadas no pueden ser modificadas"
+msgstr "Las instancias fusionadas no pueden ser modificadas."
 
-#, python-format
 msgid "%s of blocked instances can't be modified"
-msgstr "%s de instancias bloqueadas no pueden ser modificadas"
+msgstr "%s de las instancias bloqueadas no pueden ser modificadas"
 
-#, fuzzy, python-format
-#| msgid "%s of blocked instances can't be modified"
 msgid "%s of merged events can't be modified"
-msgstr "%s de instancias bloqueadas no pueden ser modificadas"
+msgstr "%s de los eventos fusionados no pueden ser modificados"
 
-#, python-format
 msgid ""
 "It's not possible to change the state \"%s\" to \"%s\". The new possible "
 "states are %s"
 msgstr ""
-"No es posible cambiar el estado \"%s\" a \"%s\". Los posibles nuevos estados "
-"son %s"
+"No es posible cambiar el estado \"%s\" a \"%s\". Los nuevos estados "
+"posibles son %s."
 
-#, fuzzy
-#| msgid "Notifications"
 msgid "Renotification: New Case"
-msgstr "Notificaciones"
+msgstr "Renotificación: Nuevo Caso"
 
 msgid "Please do not hesitate to contact us if you need further assistance."
-msgstr "No dude en consultarnos ante cualquier inquietud."
+msgstr "No dude en contactarnos si necesita más ayuda."
 
 msgid ""
 "Please remember to reply with the same subject and ID for better tracking of "
@@ -172,17 +162,16 @@ msgstr ""
 "caso."
 
 msgid "Sincerely"
-msgstr "Un saludo cordial"
+msgstr "Atentamente"
 
-msgid "Contact Info"
-msgstr "Info Contacto"
+msgid "Contact information"
+msgstr "Información de contacto"
 
 msgid "This report was generated with"
-msgstr "Este reporte ha sido generado con"
+msgstr "Este informe fue generado con"
 
-#, python-format
 msgid "A new event has been added to the case %(id)s"
-msgstr "Un nuevo evento ha sido agregado al caso  %(id)s"
+msgstr "Se ha agregado un nuevo evento al caso %(id)s"
 
 msgid "Case"
 msgstr "Caso"
@@ -197,7 +186,7 @@ msgid "Problem"
 msgstr "Problema"
 
 msgid "Related issues"
-msgstr "Problemas derivados"
+msgstr "Problemas relacionados"
 
 msgid "How to verify the issue"
 msgstr "Cómo verificar el problema"
@@ -206,12 +195,11 @@ msgid "Recommendations"
 msgstr "Recomendaciones"
 
 msgid "For more information"
-msgstr "Para mas información"
+msgstr "Para obtener más información"
 
 msgid "Priority"
 msgstr "Prioridad"
 
-#, python-format
 msgid ""
 "We want to inform you that the state of the case number <strong>%(id)s</"
 "strong> has changed to: \"<strong>%(state)s</strong>\""

@@ -57,8 +57,8 @@ p.callout {
     color: #2BA6CB;
 }
 
-table.social {
-    /* 	padding:15px; */
+.social {
+    padding:15px;
     background-color: #ebebeb;
 
 }
@@ -301,6 +301,11 @@ ul.sidebar li a h1, ul.sidebar li a h2, ul.sidebar li a h3, ul.sidebar li a h4, 
     width: 280px;
     min-width: 279px;
     float: left;
+}
+
+
+.social div {
+    padding: 5px;
 }
 
 /* Be sure to place a .clear element after each set of columns, just to be safe */
