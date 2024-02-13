@@ -132,20 +132,20 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
                 self.communicate_update()
 
     def communicate_new(self):
-        self.communicate(gettext_lazy('New case'), 'reports/case_base.html')
+        self.communicate(gettext_lazy('New case'), 'reports/case_report.html')
 
     def communicate_close(self):
-        self.communicate(gettext_lazy('Case closed'), 'reports/case_base.html')
+        self.communicate(gettext_lazy('Case closed'), 'reports/case_report.html')
 
     def communicate_open(self):
         title = 'Case reopened' if self.history.filter(changes__contains='solve_date":').exists() else 'Case opened'
-        self.communicate(gettext_lazy(title), 'reports/case_base.html')
+        self.communicate(gettext_lazy(title), 'reports/case_report.html')
 
     def communicate_new_open(self):
-        self.communicate(gettext_lazy('Case opened'), 'reports/case_base.html')
+        self.communicate(gettext_lazy('Case opened'), 'reports/case_report.html')
 
     def communicate_update(self):
-        self.communicate(gettext_lazy('Case status updated'), 'reports/state_change.html', )
+        self.communicate(gettext_lazy('Case status updated'), 'reports/case_change_state.html', )
 
     @property
     def evidence_events(self):

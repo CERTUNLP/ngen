@@ -5,16 +5,17 @@
 <html lang="{{ lang|default:config.NGEN_LANG }}">
     <head>
     {% block head %}
-        {% include 'reports/email_head.html' %}
+        {% include 'reports/base_head.html' %}
     {% endblock %}
     </head>
     <body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
     {% block header %}
-        {% include 'reports/email_header.html' %}
+        {% include 'reports/base_header.html' %}
     {% endblock %}
-    {% include 'reports/email_content.html' %}
+    {% block content %}
+    {% endblock %}
     {% block footer %}
-        {% include 'reports/email_footer.html' %}
+        {% include 'reports/base_footer.html' %}
     {% endblock %}
     </body>
 </html>

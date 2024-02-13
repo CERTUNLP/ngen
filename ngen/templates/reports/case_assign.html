@@ -1,7 +1,13 @@
-{% extends "reports/case_base.html" %}
+{% extends "reports/content_base.html" %}
 {% load i18n %}
 {% language lang %}
-{% block content_header_content %}
+{% block content_header %}
+    <h4>
+        {% translate 'New event on case' %}
+    </h4>
+{% endblock %}
+
+{% block content_body %}
     <p class="lead">
         {% blocktranslate trimmed with id=case.uuid %}
             A new event has been added to the case {{ id }}

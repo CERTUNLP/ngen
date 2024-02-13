@@ -1,35 +1,39 @@
 {% load i18n ngen_tags %}
 {% language lang %}
-{% block content_footer %}
-    <div class="content">
-        <table bgcolor="">
-            <tr>
-                <td>
-                    <p class="callout">
-                        {% translate "Please remember to reply with the same subject and ID for better tracking of the case." %}
-                        <br/>
-                        {% translate "Please do not hesitate to contact us if you need further assistance." %}
-                        <br/>
-                        <b>{% translate 'Sincerely' %} {{ config.TEAM_NAME }} - {{ config.TEAM_URL }}</b>
-                    </p>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div class="content">
-        <div class="social">
-            <div>
-                <h5 class="">{% translate "Contact information" %}:</h5>
-            </div>
-            <div>
-                <p>
-                    {% translate "Email" %}: <strong><a href="mailto:{{ config.TEAM_EMAIL }}">{{ config.TEAM_EMAIL }}</a></strong>
+<table class="footer-wrap">
+    <tr>
+        <td></td>
+        <td>
+            <div class="content">
+                <p class="callout">
+                    {% translate "Please remember to reply with the same subject and ID for better tracking of the case." %}
+                    <br/>
+                    {% translate "Please do not hesitate to contact us if you need further assistance." %}
+                    <br/>
+                    <b>{% translate 'Sincerely' %} {{ config.TEAM_NAME }} - {{ config.TEAM_URL }}</b>
                 </p>
             </div>
-        </div>
-    </div>
-{% endblock %}
-<table class="footer-wrap">
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            <div class="content">
+                <div class="social">
+                    <div>
+                        <h5 class="">{% translate "Contact information" %}:</h5>
+                    </div>
+                    <div>
+                        <p>
+                            {% translate "Email" %}: <strong><a href="mailto:{{ config.TEAM_EMAIL }}">{{ config.TEAM_EMAIL }}</a></strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <td></td>
+    </tr>
     <tr>
         <td></td>
         <td class="container">

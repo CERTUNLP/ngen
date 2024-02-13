@@ -265,7 +265,7 @@ ul.sidebar li a h1, ul.sidebar li a h2, ul.sidebar li a h3, ul.sidebar li a h4, 
 
 /* This should also be a block element, so that it will fill 100% of the .container */
 .content {
-    padding: 15px;
+    padding: 8px;
     max-width: 600px;
     margin: 0 auto;
     display: block;
