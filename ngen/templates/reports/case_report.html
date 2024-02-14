@@ -1,13 +1,16 @@
-{% extends 'reports/base.html' %}
+{% extends 'reports/content_base.html' %}
 {% load i18n %}
+{% language lang %}
 
-{% block content_header_content %}
+{% block content_header %}
     <h3>
         {% translate 'Case' %}: {{ case.uuid }}
     </h3>
 {% endblock %}
-{% block content %}
+
+{% block content_body %}
     {% for event in events %}
         {% include "reports/event_detail.html" with event=event %}
     {% endfor %}
 {% endblock %}
+{% endlanguage %}

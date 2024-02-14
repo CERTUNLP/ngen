@@ -1,0 +1,24 @@
+{% load i18n ngen_tags %}
+{% language lang %}
+{#<table class="head-wrap" bgcolor="#999999">#}
+<table class="head-wrap">
+    <tr>
+        <td></td>
+        <td class="header container" align="">
+            <div class="content">
+                {#                <table bgcolor="#999999">#}
+                <table>
+                    <tr>
+                        <td>
+                            <img src="{% mail_logo %}" alt="cert logo">
+                        </td>
+                        {% include 'reports/base_header_right.html' with priority=priority %}
+                    </tr>
+                </table>
+            </div>
+
+        </td>
+        <td></td>
+    </tr>
+</table>
+{% endlanguage %}

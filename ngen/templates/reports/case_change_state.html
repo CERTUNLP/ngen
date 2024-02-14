@@ -1,6 +1,14 @@
-{% extends "reports/base.html" %}
+{% extends 'reports/content_base.html' %}
 {% load i18n %}
-{% block content_header_content %}
+{% language lang %}
+
+{% block content_header %}
+    <h4>
+        {% translate 'Case status updated' %}
+    </h4>
+{% endblock %}
+
+{% block content_body %}
     <p class="lead">
         {% blocktranslate trimmed with id=case.uuid state=case.state %}
             We want to inform you that the state of the case number <strong>{{ id }}</strong> has changed
@@ -8,5 +16,4 @@
         {% endblocktranslate %}
     </p>
 {% endblock %}
-{% block content %}
-{% endblock %}
+{% endlanguage %}

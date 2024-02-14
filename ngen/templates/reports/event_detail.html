@@ -1,53 +1,66 @@
 {% load i18n ngen_tags %}
-{% for report in event.taxonomy.reports.all %}
-    {% if report.lang == lang|default:config.NGEN_LANG %}
-        <div class="content">
-            <table bgcolor="">
-                <tr>
-                    <td class="small" width="1%"
-                        style="vertical-align: top">
-                    </td>
-                    <td>
-                        <h5>{% translate 'Event' %}: {{ event.uuid }}</h5>
-                        <small class="lead"><strong>{% translate 'Taxonomy' %}:</strong>
-                            {% if event.taxonomy.parent %}{{ event.taxonomy.parent }} (
-                                {{ event.taxonomy.parent.type }})
-                                ->  {% endif %}{{ event.taxonomy }} ({{ event.taxonomy.type }})</small>
-                        <div class="content">
-                            {% if report.problem %}
-                                <p class="lead">
-                                    {% translate 'Problem' %}
-                                </p>
-                                <p class="">{{ report.problem | render_report_content:event }}</p>
+<div class="content">
+    {% language lang %}
+        <h5>{% translate 'Event' %}: {{ event.uuid }}</h5>
+        <small class="lead">
+            <strong>{% translate 'Taxonomy' %}:</strong>
+            {% if event.taxonomy.parent %}
+                {{ event.taxonomy.parent }} ({{ event.taxonomy.parent.type }}) ->
+            {% endif %}{{ event.taxonomy }} ({{ event.taxonomy.type }})
+        </small>
+        <br>
+        <small class="lead"><strong>{% translate 'Affected resources' %}:</strong>
+            {{ event.address }}</small>
+        <br>
+        <small class="lead"><strong>{% translate 'Date' %}:</strong>
+            {{ event.date | date:"Y-m-d H:i:s" }} UTC</small>
+        <br>
+    {% endlanguage %}
+    {% for report in event.taxonomy.reports.all %}
+        {% if report.lang == lang|default:config.NGEN_LANG %}
+            {% language lang %}
+                <table bgcolor="">
+                    <tr>
+                        <td class="small" width="1%" style="vertical-align: top"></td>
+                        <td>
+                            {% if report.lang == lang|default:config.NGEN_LANG %}
+                                <div class="content">
+                                    {% if report.problem %}
+                                        <p class="lead">
+                                            {% translate 'Problem' %}
+                                        </p>
+                                        <p class="">{{ report.problem | render_report_content:event }}</p>
+                                    {% endif %}
+                                    {% if report.derived_problem %}
+                                        <p class="lead">
+                                            {% translate 'Related issues' %}
+                                        </p>
+                                        <p class="">{{ report.derived_problem | render_report_content:event }}</p>
+                                    {% endif %}
+                                    {% if report.verification %}
+                                        <p class="lead">
+                                            {% translate 'How to verify the issue' %}
+                                        </p>
+                                        <p class="">{{ report.verification | render_report_content:event }}</p>
+                                    {% endif %}
+                                    {% if report.recomendations %}
+                                        <p class="lead">
+                                            {% translate 'Recommendations' %}
+                                        </p>
+                                        <p class="">{{ report.recomendations | render_report_content:event }}</p>
+                                    {% endif %}
+                                    {% if report.more_information %}
+                                        <p class="lead">
+                                            {% translate 'For more information' %}
+                                        </p>
+                                        <p class="">{{ report.more_information | render_report_content:event }}</p>
+                                    {% endif %}
+                                </div>
                             {% endif %}
-                            {% if report.derived_problem %}
-                                <p class="lead">
-                                    {% translate 'Related issues' %}
-                                </p>
-                                <p class="">{{ report.derived_problem | render_report_content:event }}</p>
-                            {% endif %}
-                            {% if report.verification %}
-                                <p class="lead">
-                                    {% translate 'How to verify the issue' %}
-                                </p>
-                                <p class="">{{ report.verification | render_report_content:event }}</p>
-                            {% endif %}
-                            {% if report.recomendations %}
-                                <p class="lead">
-                                    {% translate 'Recommendations' %}
-                                </p>
-                                <p class="">{{ report.recomendations | render_report_content:event }}</p>
-                            {% endif %}
-                            {% if report.more_information %}
-                                <p class="lead">
-                                    {% translate 'For more information' %}
-                                </p>
-                                <p class="">{{ report.more_information | render_report_content:event }}</p>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div><!-- /content -->
-    {% endif %}
-{% endfor %}
+                        </td>
+                    </tr>
+                </table>
+            {% endlanguage %}
+        {% endif %}
+    {% endfor %}
+</div>
