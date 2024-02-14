@@ -48,7 +48,7 @@ class ConstanceSerializer(serializers.Serializer):
         return self.settings
 
     def get_url(self, obj):
-        return f"{self.context.get('request').build_absolute_uri().split('?')[0]}/{obj['key']}/"
+        return f"{self.context.get('request').build_absolute_uri().split('?')[0]}{obj['key']}/"
 
     def get_default(self, obj):
         value = next((item for item in self.get_settings()
