@@ -10,7 +10,7 @@
     </head>
     <body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
     {% block header %}
-        {% include 'reports/base_header.html' %}
+        {% include 'reports/base_header.html' with tlp=case.tlp priority=case.priority %}
     {% endblock %}
     {% block content %}
     {% endblock %}

@@ -43,11 +43,11 @@
                                         </p>
                                         <p class="">{{ report.verification | render_report_content:event }}</p>
                                     {% endif %}
-                                    {% if report.recomendations %}
+                                    {% if report.recommendations %}
                                         <p class="lead">
                                             {% translate 'Recommendations' %}
                                         </p>
-                                        <p class="">{{ report.recomendations | render_report_content:event }}</p>
+                                        <p class="">{{ report.recommendations  }}</p>
                                     {% endif %}
                                     {% if report.more_information %}
                                         <p class="lead">
