@@ -36,10 +36,10 @@ class Report(AuditModelMixin, ValidationModelMixin):
     lang = models.CharField(choices=LANG, default=LANG.en, max_length=2)
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.CASCADE, related_name='reports')
     problem = BleachField()
-    derived_problem = BleachField(null=True)
-    verification = BleachField(null=True)
-    recommendations = BleachField(null=True)
-    more_information = BleachField(null=True)
+    derived_problem = BleachField(null=True, blank=True)
+    verification = BleachField(null=True, blank=True)
+    recommendations = BleachField(null=True, blank=True)
+    more_information = BleachField(null=True, blank=True)
 
     class Meta:
         db_table = 'report'
