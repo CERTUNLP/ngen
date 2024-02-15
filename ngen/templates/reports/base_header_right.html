@@ -1,15 +1,17 @@
 {% load i18n %}
 {% language lang %}
 <td align="right">
-    {% if tlp %}
-        <h6 class="collapse" style="color: {{ tlp.color }};">
-            TLP: {{ tlp }}
-        </h6>
-    {% endif %}
-    {% if priority %}
-        <h6 class="collapse" style="color: {{ priority.color }};">
-            {% translate 'Priority' %}: {{ priority }}
-        </h6>
-    {% endif %}
+    <div class="right-header">
+        {% if tlp %}
+            <h6 style="color: {{ tlp.color }}">
+                TLP {{ tlp }}
+            </h6>
+        {% endif %}
+        {% if priority %}
+            <h6 style="color: {{ priority.color }}">
+                {% translate 'Priority' %} {{ priority }}
+            </h6>
+        {% endif %}
+    </div>
 </td>
 {% endlanguage %}
