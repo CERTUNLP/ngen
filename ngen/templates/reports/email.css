@@ -213,6 +213,14 @@ ul li {
     list-style-position: inside;
 }
 
+ol li {
+    margin-left: 20px;
+}
+
+li {
+    margin: 5px;
+}
+
 /* ------------------------------------- 
 		SIDEBAR 
 ------------------------------------- */
