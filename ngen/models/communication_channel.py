@@ -32,11 +32,12 @@ class CommunicationChannel(AuditModelMixin):
         """
         Method to fetch contacts of every communication type
         """
-        return [
-            contact
-            for communication_type in self.communication_types()
-            for contact in communication_type.get_contacts(self.canalizable)
-        ]
+        contacts_by_type = {}
+        for communication_type in self.communication_types():
+            contacts_dict = communication_type.get_contacts(self.canalizable)
+            contacts_by_type[communication_type.type] = contacts_dict
+
+        return contacts_by_type
 
 
 class CommunicationType(AuditModelMixin):
