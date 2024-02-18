@@ -257,18 +257,25 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         return ['Internal Contact 1', 'Internal Contact 2', 'Internal Contact 3']
 
     def get_affected_contacts(self):
-        return ['Affected Contact 1', 'Affected Contact 2', 'Affected Contact 3']
+        contacts_from_all_events = []
+        for event in self.events.all():
+            contacts_from_all_events.append(event.get_affected_contacts())
+
+        return contacts_from_all_events
 
     def get_reporter_contacts(self):
-        return ['Reporter Contact 1', 'Reporter Contact 2', 'Reporter Contact 3']
+        reporters_from_all_events = []
+        for event in self.events.all():
+            reporters_from_all_events.append(event.get_reporter_contacts())
 
+        return reporters_from_all_events
 
 class EventManager(AL_NodeManager, AddressManager):
     pass
 
 
 class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin,
-            AddressModelMixin, ValidationModelMixin):
+            AddressModelMixin, ValidationModelMixin, CanalizableMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
 
@@ -439,6 +446,21 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
                 if network_contacts:
                     return network_contacts[0]
         return contacts
+
+    def get_affected_contacts(self):
+        affected_networks = ngen.models.Network.objects.parent_of(self)
+
+        network_contacts = []
+        for network in affected_networks:
+            network_cidr_or_domain = network.cidr if network.cidr else network.domain
+            contacts = network.contacts.all()
+            network_contacts.append({ network_cidr_or_domain: contacts })
+
+        self.affected_contacts = network_contacts
+        return self
+
+    def get_reporter_contacts(self):
+        return self
 
 
 class Evidence(AuditModelMixin, ValidationModelMixin):

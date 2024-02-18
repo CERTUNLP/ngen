@@ -106,7 +106,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
         return attrs
 
 
-class EventSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
+class EventSerializerReduced(EvidenceSerializerMixin, AuditSerializerMixin):
 
     @staticmethod
     def allowed_fields():
