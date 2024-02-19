@@ -16,12 +16,13 @@ from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
 from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
+from treebeard.al_tree import AL_NodeManager
 
 import ngen
 from ngen.models.announcement import Communication
 from . import Priority
 from .common.mixins import MergeModelMixin, AddressModelMixin, ArtifactRelatedMixin, AuditModelMixin, \
-    EvidenceModelMixin, PriorityModelMixin, ValidationModelMixin
+    EvidenceModelMixin, PriorityModelMixin, ValidationModelMixin, AddressManager
 from ..storage import HashedFilenameStorage
 
 LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
@@ -244,6 +245,10 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         self.notification_count += 1
 
 
+class EventManager(AL_NodeManager, AddressManager):
+    pass
+
+
 class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin,
             AddressModelMixin, ValidationModelMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
@@ -265,6 +270,8 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     )
     node_order_by = ['id']
     comments = GenericRelation(Comment)
+
+    objects = EventManager()
 
     class Meta:
         db_table = 'event'
@@ -291,7 +298,8 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
         """ Check if case should be created and create it """
         if not self.parent:
             template = CaseTemplate.objects.parents_of(self).filter(event_taxonomy=self.taxonomy,
-                                                                    event_feed=self.feed).first()
+                                                                    event_feed=self.feed,
+                                                                    active=True).first()
             if template:
                 self.case = template.create_case(events=[self])
 
@@ -431,6 +439,13 @@ class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, Valid
     def create_case(self, events: list = []) -> 'Case':
         return Case.objects.create(tlp=self.case_tlp, lifecycle=self.case_lifecycle, state=self.case_state,
                                    casetemplate_creator=self, events=events)
+
+    def matching_events_without_case(self):
+        return Event.objects.children_of(self).filter(case__isnull=True, taxonomy=self.event_taxonomy,
+                                    feed=self.event_feed)
+
+    def create_cases_for_matching_events(self):
+        return [self.create_case([event]) for event in self.matching_events_without_case()]
 
     def __str__(self):
         return str(self.id)
