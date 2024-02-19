@@ -1,5 +1,7 @@
 import django_filters
-from rest_framework import permissions, filters, viewsets
+from rest_framework import permissions, filters, viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from ngen import models, serializers, backends
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
@@ -53,3 +55,15 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
     ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority"]
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    @action(methods=['GET'], detail=True, url_path='create-cases', url_name='create_cases')
+    def create_cases(self, request, pk=None):
+        """
+        Process matching events without parent/case to this template `/template/<pk>/process-events/`.
+        """
+        template = self.get_object()
+        cases = template.create_cases_for_matching_events()
+        return Response(
+            serializers.CaseSerializer(cases, many=True, context={'request': request}).data,
+            status=status.HTTP_201_CREATED
+        )

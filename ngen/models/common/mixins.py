@@ -217,6 +217,19 @@ class AddressManager(NetManager):
     def parent_of(self, address: 'AddressModelMixin'):
         return self.parents_of(address)
 
+    def cidr_children_of(self, cidr: str):
+        return self.filter(cidr__net_contained_or_equal=cidr).order_by('cidr')
+
+    def domain_children_of(self, domain: str):
+        return self.filter(domain__endswith=domain).order_by('domain')
+
+    def children_of(self, address: 'AddressModelMixin'):
+        if address.cidr:
+            return self.cidr_children_of(str(address.address))
+        elif address.domain:
+            return self.domain_children_of(str(address.address))
+        return self.none()
+
     def defaults(self):
         return self.filter(Q(cidr__prefixlen=0) | Q(domain='*'))
 

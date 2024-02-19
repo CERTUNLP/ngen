@@ -2,6 +2,8 @@
 """
 Filters for ngen models.
 """
+from ipaddress import ip_network
+
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
 
@@ -114,7 +116,33 @@ class EventFilter(BaseFilter, NgenAddressModelFilter):
         - reporter (exact)
         - uuid (exact)
         - inherits NgenAddressModelFilter
+        - template_id (exact)
     """
+
+    template_id = django_filters.NumberFilter(label='Template id', method='filter_by_template_id')
+
+    def filter_by_template_id(self, queryset, name, value):
+        """
+        Filter by template id matching the event.
+        """
+        # maybe we need a refactor here
+        # https://stackoverflow.com/questions/62497536/django-manager-queries-dont-work-in-a-chain-of-queries-attributeerror-querys
+        case_template = CaseTemplate.objects.filter(id=value).first()
+        if case_template:
+            filters = {
+                'taxonomy': case_template.event_taxonomy,
+                'feed': case_template.event_feed,
+            }
+
+            if case_template.cidr:
+                filters['cidr__net_contained_or_equal'] = ip_network(case_template.cidr)
+
+            if case_template.domain:
+                filters['domain__endswith'] = case_template.domain
+
+            return queryset.filter(**filters)
+
+        return queryset.none()
 
     class Meta:
         model = Event
@@ -127,7 +155,7 @@ class EventFilter(BaseFilter, NgenAddressModelFilter):
             'parent': ['exact', 'isnull'],
             'case': ['exact', 'isnull'],
             'reporter': ['exact'],
-            'uuid': ['exact']
+            'uuid': ['exact'],
         }
 
 
