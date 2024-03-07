@@ -33,7 +33,7 @@ LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('A
 class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMixin, ArtifactRelatedMixin,
            Communication, ValidationModelMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
-    date = models.DateTimeField(default=datetime.now)
+    date = models.DateTimeField(default=timezone.now)
     name = models.CharField(max_length=255, null=True, blank=True, default='')
 
     casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.PROTECT, null=True, blank=True,
@@ -251,7 +251,7 @@ class EventManager(AL_NodeManager, AddressManager):
 class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin,
             AddressModelMixin, ValidationModelMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
-    date = models.DateTimeField(default=datetime.now)
+    date = models.DateTimeField(default=timezone.now)
 
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
     feed = models.ForeignKey('ngen.Feed', models.PROTECT)
