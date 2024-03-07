@@ -77,13 +77,20 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
 
     def update(self, instance, validated_data):
         artifacts = validated_data.pop('artifacts', [])
+        ct = ContentType.objects.get_for_model(instance)
+        # remove relations that are not in the new list
         models.ArtifactRelation.objects.filter(
             object_id=instance.id,
-            content_type=ContentType.objects.get_for_model(instance)
+            content_type=ct
+        ).exclude(
+            artifact__in=artifacts
         ).delete()
         for artifact in artifacts:
             artifact_obj = models.Artifact.objects.get(pk=artifact.pk)
-            models.ArtifactRelation.objects.get_or_create(artifact=artifact_obj, related=instance)
+            models.ArtifactRelation.objects.get_or_create(
+                artifact=artifact_obj,
+                object_id=instance.id,
+                content_type=ct)
         return instance
 
     def create(self, validated_data):
@@ -215,6 +222,7 @@ class CaseSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audit
             "state",
             "assigned",
         ]
+
 
 class CaseSerializerReducedWithEventsCount(CaseSerializerReduced):
     events_count = serializers.SerializerMethodField()
