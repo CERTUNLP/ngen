@@ -66,6 +66,8 @@ router.register(r'minified/state', views.StateMinifiedViewSet, basename='minifie
 router.register(r'minified/Entity', views.EntityMinifiedViewSet, basename='minified-entity')
 router.register(r'minified/Contact', views.ContactMinifiedViewSet, basename='minified-contact')
 router.register(r'minified/User', views.UserMinifiedViewSet, basename='minified-user')
+router.register(r'minified/Case', views.CaseMinifiedViewSet, basename='minified-case')
+router.register(r'minified/Artifact', views.ArtifactMinifiedViewSet, basename='minified-artifact')
 if settings.ELASTIC_ENABLED:
     from ngen.documents import CaseDocumentViewSet
 

@@ -22,3 +22,9 @@ class ArtifactRelationViewSet(viewsets.ModelViewSet):
     queryset = models.ArtifactRelation.objects.all()
     serializer_class = serializers.ArtifactRelationSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class ArtifactMinifiedViewSet(viewsets.ModelViewSet):
+    queryset = models.Artifact.objects.all()
+    serializer_class = serializers.ArtifactMinifiedSerializer
+    pagination_class = None

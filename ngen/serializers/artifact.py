@@ -52,3 +52,9 @@ class ArtifactRelationSerializer(AuditSerializerMixin):
 
     def get_content_type_description(self, obj):
         return str(obj.content_type)
+
+
+class ArtifactMinifiedSerializer(AuditSerializerMixin):
+    class Meta:
+        model = models.Artifact
+        fields = ['url', 'value']
