@@ -47,8 +47,8 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
     )
     artifacts = serializers.HyperlinkedRelatedField(
         many=True,
-        read_only=True,
-        view_name='artifact-detail'
+        view_name='artifact-detail',
+        queryset=models.Artifact.objects.all()
     )
     reporter = serializers.HyperlinkedRelatedField(
         default=serializers.CreateOnlyDefault(
@@ -73,6 +73,14 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
     @staticmethod
     def not_allowed_fields():
         return ['taxonomy', 'feed', 'network']
+
+    def create(self, validated_data):
+        artifacts = validated_data.pop('artifacts', [])
+        event = super().create(validated_data)
+        for artifact in artifacts:
+            artifact_obj = models.Artifact.objects.get(pk=artifact.pk)
+            models.ArtifactRelation.objects.create(artifact=artifact_obj, related=event)
+        return event
 
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
