@@ -44,10 +44,10 @@ class FeedMinifiedSerializer(serializers.ModelSerializer):
 class TlpMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Tlp
-        fields = ['url', 'name']        
+        fields = ['url', 'name', 'color']
 
- 
+
 class PriorityMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Priority
-        fields = ['url', 'name']        
+        fields = ['url', 'name', 'color']
