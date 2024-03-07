@@ -1,6 +1,7 @@
 from comment.models import Comment
 from constance import config
 from django.utils.translation import gettext
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -73,6 +74,17 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
     @staticmethod
     def not_allowed_fields():
         return ['taxonomy', 'feed', 'network']
+
+    def update(self, instance, validated_data):
+        artifacts = validated_data.pop('artifacts', [])
+        models.ArtifactRelation.objects.filter(
+            object_id=instance.id,
+            content_type=ContentType.objects.get_for_model(instance)
+        ).delete()
+        for artifact in artifacts:
+            artifact_obj = models.Artifact.objects.get(pk=artifact.pk)
+            models.ArtifactRelation.objects.get_or_create(artifact=artifact_obj, related=instance)
+        return instance
 
     def create(self, validated_data):
         artifacts = validated_data.pop('artifacts', [])
