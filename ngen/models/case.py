@@ -12,6 +12,7 @@ from django.core.exceptions import ValidationError
 from django.core.mail import DNS_NAME
 from django.db import models
 from django.utils import timezone
+from datetime import datetime
 from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
 from django_lifecycle.priority import HIGHEST_PRIORITY
@@ -32,7 +33,7 @@ LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('A
 class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMixin, ArtifactRelatedMixin,
            Communication, ValidationModelMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(default=datetime.now)
     name = models.CharField(max_length=255, null=True, blank=True, default='')
 
     casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.PROTECT, null=True, blank=True,
@@ -90,8 +91,6 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
 
     @hook(BEFORE_CREATE)
     def before_create(self):
-        if not self.date:
-            self.date = self.created
         self.report_message_id = make_msgid(domain=DNS_NAME)
         if not self.state:
             self.state = ngen.models.State.get_default()
@@ -252,7 +251,7 @@ class EventManager(AL_NodeManager, AddressManager):
 class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin,
             AddressModelMixin, ValidationModelMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(default=datetime.now)
 
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
     feed = models.ForeignKey('ngen.Feed', models.PROTECT)
