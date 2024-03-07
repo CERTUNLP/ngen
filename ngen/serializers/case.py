@@ -226,3 +226,9 @@ class EvidenceSerializer(AuditSerializerMixin):
 
     def get_related(self, obj):
         return GenericRelationField(read_only=True).generic_detail_link(obj.content_object, self.context.get('request'))
+
+
+class CaseMinifiedSerializer(AuditSerializerMixin):
+    class Meta:
+        model = models.Case
+        fields = ['url', 'uuid', 'name']

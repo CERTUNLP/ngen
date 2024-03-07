@@ -67,3 +67,9 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
             serializers.CaseSerializer(cases, many=True, context={'request': request}).data,
             status=status.HTTP_201_CREATED
         )
+
+
+class CaseMinifiedViewSet(viewsets.ModelViewSet):
+    queryset = models.Case.objects.all()
+    serializer_class = serializers.CaseMinifiedSerializer
+    pagination_class = None

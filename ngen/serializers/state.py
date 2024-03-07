@@ -17,6 +17,6 @@ class EdgeSerializer(AuditSerializerMixin):
  
 class StateMinifiedSerializer(AuditSerializerMixin):
     class Meta:
-        model = models.Priority
+        model = models.State
         fields = ['url', 'name']
          
