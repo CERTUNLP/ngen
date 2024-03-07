@@ -1,6 +1,7 @@
 from comment.models import Comment
 from constance import config
 from django.utils.translation import gettext
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -47,8 +48,8 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
     )
     artifacts = serializers.HyperlinkedRelatedField(
         many=True,
-        read_only=True,
-        view_name='artifact-detail'
+        view_name='artifact-detail',
+        queryset=models.Artifact.objects.all()
     )
     reporter = serializers.HyperlinkedRelatedField(
         default=serializers.CreateOnlyDefault(
@@ -73,6 +74,32 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
     @staticmethod
     def not_allowed_fields():
         return ['taxonomy', 'feed', 'network']
+
+    def update(self, instance, validated_data):
+        artifacts = validated_data.pop('artifacts', [])
+        ct = ContentType.objects.get_for_model(instance)
+        # remove relations that are not in the new list
+        models.ArtifactRelation.objects.filter(
+            object_id=instance.id,
+            content_type=ct
+        ).exclude(
+            artifact__in=artifacts
+        ).delete()
+        for artifact in artifacts:
+            artifact_obj = models.Artifact.objects.get(pk=artifact.pk)
+            models.ArtifactRelation.objects.get_or_create(
+                artifact=artifact_obj,
+                object_id=instance.id,
+                content_type=ct)
+        return instance
+
+    def create(self, validated_data):
+        artifacts = validated_data.pop('artifacts', [])
+        event = super().create(validated_data)
+        for artifact in artifacts:
+            artifact_obj = models.Artifact.objects.get(pk=artifact.pk)
+            models.ArtifactRelation.objects.create(artifact=artifact_obj, related=event)
+        return event
 
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
@@ -195,6 +222,7 @@ class CaseSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audit
             "state",
             "assigned",
         ]
+
 
 class CaseSerializerReducedWithEventsCount(CaseSerializerReduced):
     events_count = serializers.SerializerMethodField()
