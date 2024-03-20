@@ -29,7 +29,7 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ['username', 'email', 'first_name', 'last_name']
     filterset_class = UserFilter
     ordering_fields = ['id', 'created', 'modified',
-                       'username', 'email', 'priority']
+                       'username', 'email', 'priority', 'first_name', 'last_name']
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
