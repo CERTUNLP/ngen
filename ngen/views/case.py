@@ -23,7 +23,7 @@ class EventViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ["taxonomy__name", "feed__name", "address_value", "cidr", "domain"]
     filterset_class = EventFilter
-    ordering_fields = ["id", "date", "priority", "reporter"]
+    ordering_fields = ["id", "date", "priority", "reporter", "tlp", "taxonomy", "feed", "created"]
     serializer_class = serializers.EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -52,7 +52,7 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ["cidr", "domain", "address_value"]
     filterset_class = CaseTemplateFilter
-    ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority"]
+    ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority", "taxonomy"]
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
