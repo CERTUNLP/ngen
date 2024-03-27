@@ -77,6 +77,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
 
     def update(self, instance, validated_data):
         artifacts = validated_data.pop('artifacts', [])
+        super().update(instance, validated_data)
         ct = ContentType.objects.get_for_model(instance)
         # remove relations that are not in the new list
         models.ArtifactRelation.objects.filter(
