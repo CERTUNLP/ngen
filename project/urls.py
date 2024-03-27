@@ -95,6 +95,7 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('users/<int:pk>/audits/', views.tools.UserAuditsListView.as_view({'get': 'list'}), name='user-logentry-list'),
     path(
         'api/dashboard/events',
         views.dashboards.events.DashboardEventsView.as_view(),
