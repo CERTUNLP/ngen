@@ -1,10 +1,11 @@
-from django.db import models
-from ngen.models.common.mixins import AuditModelMixin
-from ngen.models import CanalizableMixin
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
+from django.db import models
 from model_utils import Choices
+
+from ngen.models import CanalizableMixin
+from ngen.models.common.mixins import AuditModelMixin
 
 
 class CommunicationChannel(AuditModelMixin):

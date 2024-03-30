@@ -60,16 +60,17 @@ class CommunicationChannelContactsSerializer(serializers.Serializer):
     NetworkContactsSerializer class
     """
 
-    reporter = EventSerializerReduced(many=True)
+    reporter = EventSerializerReduced(required=False, many=True)
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
 
-        representation["affected"] = EventWithAffectedContactsSerializer(
-            instance["affected"],
-            context=self.context,
-            many=True,
-        ).data
+        if "affected" in instance:
+            representation["affected"] = EventWithAffectedContactsSerializer(
+                instance["affected"],
+                context=self.context,
+                many=True,
+            ).data
 
         return representation
 
@@ -80,6 +81,9 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
     """
 
     canalizable = serializers.SerializerMethodField
+    communication_types = serializers.ListField(
+        child=serializers.IntegerField(), write_only=True
+    )
 
     class Meta:
         model = models.CommunicationChannel
@@ -101,3 +105,61 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
         ).data
 
         return representation
+
+    def create(self, validated_data):
+        """
+        Overwrite create to add communication channel types
+        """
+        type_ids = validated_data.pop("communication_types", [])
+
+        type_ids_not_found = [
+            type_id
+            for type_id in type_ids
+            if type_id
+            not in models.CommunicationType.objects.values_list("id", flat=True)
+        ]
+        if type_ids_not_found:
+            raise serializers.ValidationError(
+                f"Communication Types with IDs {type_ids_not_found} not found"
+            )
+
+        communication_channel = super().create(validated_data)
+
+        for type_id in type_ids:
+            models.CommunicationChannelTypeRelation.objects.create(
+                communication_channel=communication_channel,
+                communication_type_id=type_id,
+            )
+
+        return communication_channel
+
+    def update(self, instance, validated_data):
+        """
+        Overwrite update to add or remove communication channel types
+        """
+        type_ids = validated_data.pop("communication_types", [])
+
+        type_ids_not_found = [
+            type_id
+            for type_id in type_ids
+            if type_id
+            not in models.CommunicationType.objects.values_list("id", flat=True)
+        ]
+        if type_ids_not_found:
+            raise serializers.ValidationError(
+                f"Communication Types with IDs {type_ids_not_found} not found"
+            )
+
+        instance = super().update(instance, validated_data)
+
+        models.CommunicationChannelTypeRelation.objects.filter(
+            communication_channel=instance
+        ).exclude(communication_type__id__in=type_ids).delete()
+
+        for type_id in type_ids:
+            models.CommunicationChannelTypeRelation.objects.get_or_create(
+                communication_channel=instance,
+                communication_type_id=type_id,
+            )
+
+        return instance
