@@ -1,9 +1,14 @@
+"""
+Communication channel views
+"""
+
 import django_filters
 from rest_framework import permissions, filters, viewsets, status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.urls import resolve
+from django.core.exceptions import ObjectDoesNotExist
 from ngen import models
 from ngen.serializers.communication_channel import CommunicationChannelSerializer
 
@@ -31,6 +36,7 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     def communication_channels(self, request, pk=None):
         """
         View for list of communication channels of a canalizable
+        Example path: /api/some_canalizable/1/communication_channels/
         """
         canalizable = self.get_object()
         communication_channels = canalizable.communication_channels.all()
@@ -43,6 +49,7 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     def communication_channels_create(self, request, pk=None):
         """
         View for communication channel creation
+        Example path: /api/some_canalizable/1/communication_channels/
         """
         canalizable = self.get_object()
         serializer = CommunicationChannelSerializer(
@@ -64,13 +71,15 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     ):
         """
         View for communication channel detail
+        Example path: /api/some_canalizable/1/communication_channels/1/
         """
         canalizable = self.get_object()
-        communication_channel = canalizable.communication_channels.filter(
-            pk=communication_channel_id
-        ).first()
 
-        if not communication_channel:
+        try:
+            communication_channel = canalizable.communication_channels.get(
+                pk=communication_channel_id
+            )
+        except ObjectDoesNotExist:
             return Response(
                 {"detail": "Communication channel does not exist"},
                 status=status.HTTP_404_NOT_FOUND,
@@ -88,13 +97,15 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     ):
         """
         View for communication channel update
+        Example path: /api/some_canalizable/1/communication_channels/1/
         """
         canalizable = self.get_object()
-        communication_channel = canalizable.communication_channels.filter(
-            pk=communication_channel_id
-        ).first()
 
-        if not communication_channel:
+        try:
+            communication_channel = canalizable.communication_channels.get(
+                pk=communication_channel_id
+            )
+        except ObjectDoesNotExist:
             return Response(
                 {"detail": "Communication channel does not exist"},
                 status=status.HTTP_404_NOT_FOUND,
@@ -119,12 +130,15 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     ):
         """
         View for communication channel delete
+        Example path: /api/some_canalizable/1/communication_channels/1/
         """
         canalizable = self.get_object()
-        communication_channel = canalizable.communication_channels.filter(
-            pk=communication_channel_id
-        ).first()
-        if not communication_channel:
+
+        try:
+            communication_channel = canalizable.communication_channels.get(
+                pk=communication_channel_id
+            )
+        except ObjectDoesNotExist:
             return Response(
                 {"detail": "Communication channel does not exist"},
                 status=status.HTTP_404_NOT_FOUND,
