@@ -293,6 +293,7 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
         if self.address_value:
             self.sid = StringIdentifier(self.address_value)
             if self.cidr:
+                print(self.cidr, self.sid.parsed_obj)
                 if ipaddress.ip_network(self.cidr) != self.sid.parsed_obj:
                     msg = 'cidr is not in address_value'
                     raise ValidationError(
@@ -304,11 +305,13 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
                         {'domain': [msg], 'address_value': [msg]})
 
     def clean_fields(self, exclude=None):
-        self.validate_addresses()
-
+        # Reassign address_value to cidr/domain to validate it
         if not self.assign_address():
             raise ValidationError(
                 gettext('Address must be either a cidr or a domain.'))
+
+        # Validate address_value - cidr/domain consistency
+        self.validate_addresses()
 
         if not self.address.is_valid():
             raise ValidationError(
