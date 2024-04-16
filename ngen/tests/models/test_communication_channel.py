@@ -93,7 +93,7 @@ class CommunicationChannelTest(TestCase):
         cls.reporter_type = CommunicationType.objects.create(type="reporter")
         cls.intern_type = CommunicationType.objects.create(type="intern")
 
-    def test_case_creation(self):
+    def test_communication_channel_creation(self):
         """
         This will test Communication Channel creation
         """
