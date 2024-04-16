@@ -80,7 +80,7 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
     CommunicationChannelSerializer class
     """
 
-    canalizable = serializers.SerializerMethodField
+    canalizable = serializers.SerializerMethodField(read_only=True)
     communication_types = serializers.ListField(
         child=serializers.IntegerField(), write_only=True
     )
@@ -90,7 +90,7 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
         exclude = ["content_type", "object_id"]
 
     def get_canalizable(self, obj):
-        return GenericRelationField().generic_detail_link(
+        return GenericRelationField(read_only=True).generic_detail_link(
             obj.canalizable, self.context.get("request")
         )
 
