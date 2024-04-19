@@ -216,7 +216,6 @@ class CaseSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audit
             "modified",
             "tlp",
             "priority",
-            "date",
             "attend_date",
             "solve_date",
             "lifecycle",
