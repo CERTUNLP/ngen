@@ -163,7 +163,6 @@ class CaseFilter(BaseFilter):
     """
     Event model filter.
     Allows to filter by:
-        - date (exact, range)
         - attend_date (exact, range)
         - solve_date (exact, range)
         - lifecycle (exact)
@@ -178,7 +177,6 @@ class CaseFilter(BaseFilter):
         - event domain (endswith)
     """
 
-    date_range = DateFromToRangeFilter(field_name='date')
     attend_date_range = DateFromToRangeFilter(field_name='attend_date')
     solve_date_range = DateFromToRangeFilter(field_name='solve_date')
 
@@ -202,7 +200,6 @@ class CaseFilter(BaseFilter):
     class Meta:
         model = Case
         fields = {
-            'date': ['exact'],
             'attend_date': ['exact'],
             'solve_date': ['exact'],
             'lifecycle': ['exact'],

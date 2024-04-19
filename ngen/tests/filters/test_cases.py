@@ -70,8 +70,6 @@ class CaseFilterTest(BaseFilterTest):
             state=cls.state_2,
             lifecycle="manual",
         )
-        cls.case_1.date = timezone.datetime(
-            2000, 1, 1, tzinfo=pytz.UTC)  # bypass date auto_now_add
         cls.case_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.case_1.attend_date = timezone.datetime(2000, 1, 2, tzinfo=pytz.UTC)
         cls.case_1.solve_date = timezone.datetime(2000, 1, 3, tzinfo=pytz.UTC)
@@ -201,19 +199,6 @@ class CaseFilterTest(BaseFilterTest):
             [self.case_1, self.case_2, self.case_3, self.case_4, self.case_5],
             ordered=False
         )
-
-    def test_filter_by_date(self):
-        """
-        Test filter by date.
-        """
-
-        params = {
-            "date": "2000-01-01"
-        }
-
-        filtered_queryset = self.filter(params).qs
-
-        self.assertQuerysetEqual(filtered_queryset, [self.case_1])
 
     def test_filter_by_attend_date(self):
         """

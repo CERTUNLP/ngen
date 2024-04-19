@@ -101,6 +101,11 @@ class CaseDocument(Document):
 
     blocked = fields.BooleanField()
 
+    created = fields.DateField(
+        fields={
+            'raw': KeywordField(),
+        })
+
     evidence = fields.ListField(
         fields.ObjectField(
             properties={
@@ -211,11 +216,11 @@ class CaseDocument(Document):
         model = Case
         fields = [
             'id',
-            'date',
             'attend_date',
             'solve_date',
             'report_message_id',
             'uuid',
+            'name',
             'lifecycle',
         ]
 
@@ -225,11 +230,12 @@ class CaseDocumentSerializer(DocumentSerializer):
         document = CaseDocument
         fields = [
             'id',
-            'date',
+            'created',
             'attend_date',
             'solve_date',
             'report_message_id',
             'uuid',
+            'name',
             'tlp',
             'assigned',
             'state',
@@ -262,6 +268,7 @@ class CaseDocumentViewSet(DocumentViewSet):
     search_fields = (
         'report_message_id',
         'uuid',
+        'name',
         'tlp',
         'state',
         'priority',
@@ -293,8 +300,8 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_FILTER_TERMS,
             ],
         },
-        'date': {
-            'field': 'date',
+        'created': {
+            'field': 'created',
             'lookups': [
                 LOOKUP_FILTER_RANGE,
                 LOOKUP_QUERY_IN,
@@ -333,6 +340,7 @@ class CaseDocumentViewSet(DocumentViewSet):
         'mergeable': 'mergeable',
         'blocked': 'blocked',
         'lifecycle': 'lifecycle',
+        'name': 'name',
         'state': {
             'field': 'state',
             'lookups': [
