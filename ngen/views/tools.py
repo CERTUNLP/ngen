@@ -103,3 +103,12 @@ class StringIdentifierViewSet(viewsets.ViewSet):
     def list(self, request, format=None):
         return Response(serializers.StringIdentifierSerializer().list(),
                         status=status.HTTP_200_OK)
+    
+class UserAuditsListView(viewsets.ModelViewSet):
+    serializer_class = serializers.AuditSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user_pk = self.kwargs.get('pk')
+        content_type = ContentType.objects.get_for_model(models.User)
+        return LogEntry.objects.filter(content_type=content_type, object_id=user_pk)

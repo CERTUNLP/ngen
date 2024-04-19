@@ -81,6 +81,7 @@ urlpatterns = [
     path('api/comment/', comment_views.CommentList.as_view(), name='comment-list'),
     path('api/comment/create/', comment_views.CommentCreate.as_view(), name='comment-create'),
     path('api/comment/<int:pk>/', comment_views.CommentDetail.as_view(), name='comment-detail'),
+    path('api/user/<int:pk>/audit/', views.tools.UserAuditsListView.as_view({'get': 'list'}), name='user-logentry-list'),
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token-create'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token-verify'),
@@ -95,6 +96,7 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
     path(
         'api/dashboard/events',
         views.dashboards.events.DashboardEventsView.as_view(),

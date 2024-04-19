@@ -39,9 +39,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(AuditSerializerMixin):
+
+    history = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = '__all__'
+
+    def get_history(self, obj):
+        return reverse('user-logentry-list', kwargs={'pk': obj.id}, request=self.context.get('request'))
 
     def to_representation(self, obj):
         rep = super().to_representation(obj)
@@ -70,6 +75,7 @@ class UserSerializer(AuditSerializerMixin):
                 setattr(instance, attr, value)
         instance.save()
         return instance
+
 
 
 class UserProfileSerializer(AuditSerializerMixin):
