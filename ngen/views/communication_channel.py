@@ -194,7 +194,7 @@ class CommunicationChannelViewSet(viewsets.ModelViewSet):
     CommunicationChannelViewSet class
     """
 
-    queryset = models.CommunicationChannel.objects.all()
+    queryset = models.CommunicationChannel.objects.all().order_by("id")
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
