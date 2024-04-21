@@ -115,6 +115,38 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
             communication_channel,
             data=request.data,
             context={"request": request},
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @communication_channels_detail.mapping.patch
+    def communication_channels_partial_update(
+        self, request, pk=None, communication_channel_id=None
+    ):
+        """
+        View for communication channel update
+        Example path: /api/some_canalizable/1/communication_channels/1/
+        """
+        canalizable = self.get_object()
+
+        try:
+            communication_channel = canalizable.communication_channels.get(
+                pk=communication_channel_id
+            )
+        except ObjectDoesNotExist:
+            return Response(
+                {"detail": "Communication channel does not exist"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = CommunicationChannelSerializer(
+            communication_channel,
+            data=request.data,
+            context={"request": request},
             partial=True,
         )
 
