@@ -106,11 +106,11 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
 
         return representation
 
-    def create(self, validated_data):
+    def validate(self, data):
         """
-        Overwrite create to add communication channel types
+        Overwrite validate to check that communication_types exist
         """
-        type_ids = validated_data.pop("communication_types", [])
+        type_ids = data.get("communication_types", [])
 
         type_ids_not_found = [
             type_id
@@ -120,8 +120,19 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
         ]
         if type_ids_not_found:
             raise serializers.ValidationError(
-                f"Communication Types with IDs {type_ids_not_found} not found"
+                {
+                    "communication_types":
+                    f"Communication Types with IDs {type_ids_not_found} not found"
+                }
             )
+
+        return data
+
+    def create(self, validated_data):
+        """
+        Overwrite create to add communication channel type relations
+        """
+        type_ids = validated_data.pop("communication_types", [])
 
         communication_channel = super().create(validated_data)
 
@@ -135,20 +146,9 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
 
     def update(self, instance, validated_data):
         """
-        Overwrite update to add or remove communication channel types
+        Overwrite update to add or remove communication channel type relations
         """
         type_ids = validated_data.pop("communication_types", [])
-
-        type_ids_not_found = [
-            type_id
-            for type_id in type_ids
-            if type_id
-            not in models.CommunicationType.objects.values_list("id", flat=True)
-        ]
-        if type_ids_not_found:
-            raise serializers.ValidationError(
-                f"Communication Types with IDs {type_ids_not_found} not found"
-            )
 
         instance = super().update(instance, validated_data)
 
