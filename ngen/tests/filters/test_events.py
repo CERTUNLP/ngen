@@ -123,8 +123,6 @@ class EventFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by taxonomy name
         query = "black"  # matches with taxonomy 1: "Blacklist"
         response = self.client.get(self.search_url(query))

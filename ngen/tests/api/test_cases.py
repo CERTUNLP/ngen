@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 
 from ngen.models import Case, Priority, Tlp, State, CaseTemplate, Event, Taxonomy, Feed, User
+from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
 
 
-class TestCase(APITestCase):
+class TestCase(APITestCaseWithLogin):
     '''
     This will handle Case testcases
     '''
@@ -16,6 +16,7 @@ class TestCase(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         basename = 'case'
         cls.url_list = reverse(f'{basename}-list')
         cls.url_detail = lambda pk: reverse(f'{basename}-detail', kwargs={'pk': pk})
@@ -36,10 +37,6 @@ class TestCase(APITestCase):
         cls.taxonomy = Taxonomy.objects.get(slug="accessible_afp_report")
         cls.user = User.objects.get(username="ngen")
         cls.case_template = CaseTemplate.objects.get(pk=1)
-
-    def setUp(self):
-        resp = self.client.post(self.url_login_jwt, data=self.json_login, format="json")
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
 
     def test_case_get_list(self):
         '''

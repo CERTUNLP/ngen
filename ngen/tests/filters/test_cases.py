@@ -129,8 +129,6 @@ class CaseFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by cidr
         query = "10.0.1.0"
         response = self.client.get(self.search_url(query))

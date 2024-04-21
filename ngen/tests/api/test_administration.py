@@ -2,10 +2,10 @@ from datetime import timedelta
 
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import Token
 
 from ngen.models import Priority, Tlp, Feed, config
+from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
 
 
 class MyToken(Token):
@@ -13,7 +13,7 @@ class MyToken(Token):
     lifetime = timedelta(days=1)
 
 
-class TestAdministration(APITestCase):
+class TestAdministration(APITestCaseWithLogin):
     '''
     This will handle Administration testcases
     '''
@@ -21,12 +21,6 @@ class TestAdministration(APITestCase):
     fixtures = ["priority.json", "tlp.json", "user.json",
                 "feed.json"
                 ]
-
-    def setUp(self):
-        url_login_jwt = reverse("token-create")
-        json_login = {"username": "ngen", "password": "ngen"}
-        resp = self.client.post(url_login_jwt, data=json_login, format="json")
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
 
     # --------------------------------------------------------TLP----------------------------------------------------------
 

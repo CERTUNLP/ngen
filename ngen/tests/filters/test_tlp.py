@@ -70,8 +70,6 @@ class TlpFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by name
         query = "two"
         response = self.client.get(self.search_url(query))

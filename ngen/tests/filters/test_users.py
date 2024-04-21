@@ -77,8 +77,6 @@ class UserFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by username
         query = "user_one"
         response = self.client.get(self.search_url(query))

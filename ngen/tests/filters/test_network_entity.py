@@ -61,8 +61,6 @@ class NetworkEntityFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by name
         query = "plata"
         response = self.client.get(self.search_url(query))

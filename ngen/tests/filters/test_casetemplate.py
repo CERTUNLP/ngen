@@ -98,8 +98,6 @@ class CaseTemplateFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by cidr
         query = "/16"
         response = self.client.get(self.search_url(query))

@@ -62,8 +62,6 @@ class NetworkFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by cidr
         query = "/24"
         response = self.client.get(self.search_url(query))
