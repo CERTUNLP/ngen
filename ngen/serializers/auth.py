@@ -38,7 +38,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         raise ValidationError({"success": False, "msg": "Email already taken"})
 
 
-class UserSerializer(AuditSerializerMixin):
+class UserSerializer(serializers.ModelSerializer):
 
     history = serializers.SerializerMethodField()
     class Meta:
