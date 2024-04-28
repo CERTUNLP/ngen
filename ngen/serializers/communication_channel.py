@@ -84,6 +84,9 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
     communication_types = serializers.ListField(
         child=serializers.IntegerField(), write_only=True
     )
+    additional_contacts = serializers.ListField(
+        child=serializers.IntegerField(), write_only=True, required=False
+    )
 
     class Meta:
         model = models.CommunicationChannel
@@ -111,6 +114,7 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
         Overwrite validate to check that communication_types exist
         """
         type_ids = data.get("communication_types", [])
+        additional_contacts_ids = data.get("additional_contacts", [])
 
         type_ids_not_found = [
             type_id
@@ -123,6 +127,19 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
                 {
                     "communication_types":
                     f"Communication Types with IDs {type_ids_not_found} not found"
+                }
+            )
+
+        additional_contacts_ids_not_found = [
+            contact_id
+            for contact_id in additional_contacts_ids
+            if contact_id not in models.Contact.objects.values_list("id", flat=True)
+        ]
+        if additional_contacts_ids_not_found:
+            raise serializers.ValidationError(
+                {
+                    "additional_contacts":
+                    f"Contacts with IDs {additional_contacts_ids_not_found} not found"
                 }
             )
 

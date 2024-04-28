@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from model_utils import Choices
 
-from ngen.models import CanalizableMixin
+from ngen.models import CanalizableMixin, Contact
 from ngen.models.common.mixins import AuditModelMixin
 
 
@@ -19,6 +19,10 @@ class CommunicationChannel(AuditModelMixin):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     canalizable = GenericForeignKey("content_type", "object_id")
+
+    additional_contacts = models.ManyToManyField(
+        Contact, through="CommunicationChannelContactRelation"
+    )
 
     def communication_types(self):
         """
@@ -124,3 +128,29 @@ class CommunicationChannelTypeRelation(AuditModelMixin):
         """
 
         unique_together = ["communication_channel", "communication_type"]
+
+
+class CommunicationChannelContactRelation(AuditModelMixin):
+    """
+    CommunicationChannelContactRelation model, represents the many-to-many relationship
+    between a Communication Channel and a Contact
+    """
+
+    communication_channel = models.ForeignKey(
+        CommunicationChannel,
+        on_delete=models.CASCADE,
+        related_name="communication_channel_contact_relations",
+    )
+
+    contact = models.ForeignKey(
+        Contact,
+        on_delete=models.CASCADE,
+        related_name="communication_channel_contact_relations",
+    )
+
+    class Meta:
+        """
+        Unique tuples for communication channel and contact
+        """
+
+        unique_together = ["communication_channel", "contact"]
