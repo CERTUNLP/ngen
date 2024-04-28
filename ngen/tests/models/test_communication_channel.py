@@ -55,6 +55,13 @@ class CommunicationChannelTest(TestCase):
         cls.feed = Feed.objects.get(slug="csirtamericas")
         cls.user = User.objects.get(username="ngen")
         cls.contact = Contact.objects.get(pk=1)
+        cls.contact_2 = Contact.objects.create(
+            priority=cls.priority,
+            name="Contacto Adicional",
+            username="additional@contact.com",
+            type="email",
+            role="administrative",
+        )
         cls.entity = NetworkEntity.objects.get(pk=1)
         cls.domain = "testdomain.unlp.edu.ar"
 
@@ -88,6 +95,7 @@ class CommunicationChannelTest(TestCase):
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
             canalizable=cls.case,
         )
+        cls.communication_channel.additional_contacts.set([cls.contact_2])
 
         cls.affected_type = CommunicationType.objects.create(type="affected")
         cls.reporter_type = CommunicationType.objects.create(type="reporter")
@@ -127,6 +135,15 @@ class CommunicationChannelTest(TestCase):
         self.assertEqual(self.case.communication_channels.count(), 1)
         self.assertEqual(
             self.case.communication_channels.first(), self.communication_channel
+        )
+
+    def test_additional_contacts(self):
+        """
+        This will test Communication Channel additional_contacts relation
+        """
+        self.assertEqual(self.communication_channel.additional_contacts.count(), 1)
+        self.assertEqual(
+            self.communication_channel.additional_contacts.first(), self.contact_2
         )
 
     def test_communication_types(self):
