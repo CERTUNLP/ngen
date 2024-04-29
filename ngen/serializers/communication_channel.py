@@ -82,7 +82,7 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
 
     canalizable = serializers.SerializerMethodField(read_only=True)
     communication_types = serializers.ListField(
-        child=serializers.IntegerField(), write_only=True
+        child=serializers.IntegerField(), write_only=True, required=True
     )
     additional_contacts = serializers.ListField(
         child=serializers.IntegerField(), write_only=True, required=False
@@ -144,39 +144,3 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
             )
 
         return data
-
-    def create(self, validated_data):
-        """
-        Overwrite create to add communication channel type relations
-        """
-        type_ids = validated_data.pop("communication_types", [])
-
-        communication_channel = super().create(validated_data)
-
-        for type_id in type_ids:
-            models.CommunicationChannelTypeRelation.objects.create(
-                communication_channel=communication_channel,
-                communication_type_id=type_id,
-            )
-
-        return communication_channel
-
-    def update(self, instance, validated_data):
-        """
-        Overwrite update to add or remove communication channel type relations
-        """
-        type_ids = validated_data.pop("communication_types", [])
-
-        instance = super().update(instance, validated_data)
-
-        models.CommunicationChannelTypeRelation.objects.filter(
-            communication_channel=instance
-        ).exclude(communication_type__id__in=type_ids).delete()
-
-        for type_id in type_ids:
-            models.CommunicationChannelTypeRelation.objects.get_or_create(
-                communication_channel=instance,
-                communication_type_id=type_id,
-            )
-
-        return instance

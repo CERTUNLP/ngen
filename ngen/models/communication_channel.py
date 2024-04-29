@@ -8,43 +8,6 @@ from ngen.models import CanalizableMixin, Contact
 from ngen.models.common.mixins import AuditModelMixin
 
 
-class CommunicationChannel(AuditModelMixin):
-    """
-    CommunicationChannel model
-    """
-
-    name = models.CharField(blank=False, max_length=255)
-    message_id = models.CharField(max_length=255, null=True, blank=True, default=None)
-
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    canalizable = GenericForeignKey("content_type", "object_id")
-
-    additional_contacts = models.ManyToManyField(
-        Contact, through="CommunicationChannelContactRelation"
-    )
-
-    def communication_types(self):
-        """
-        Method to get communication types
-        """
-
-        return CommunicationType.objects.filter(
-            communication_channel_type_relations__communication_channel=self
-        )
-
-    def fetch_contacts(self):
-        """
-        Method to fetch contacts of every communication type
-        """
-        contacts_by_type = {}
-        for communication_type in self.communication_types():
-            contacts_dict = communication_type.get_contacts(self.canalizable)
-            contacts_by_type[communication_type.type] = contacts_dict
-
-        return contacts_by_type
-
-
 class CommunicationType(AuditModelMixin):
     """
     CommunicationType model
@@ -102,6 +65,38 @@ class CommunicationType(AuditModelMixin):
         Method to get internal contacts
         """
         return canalizable_mixin.get_internal_contacts()
+
+
+class CommunicationChannel(AuditModelMixin):
+    """
+    CommunicationChannel model
+    """
+
+    name = models.CharField(blank=False, max_length=255)
+    message_id = models.CharField(max_length=255, null=True, blank=True, default=None)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    canalizable = GenericForeignKey("content_type", "object_id")
+
+    communication_types = models.ManyToManyField(
+        CommunicationType, through="CommunicationChannelTypeRelation"
+    )
+
+    additional_contacts = models.ManyToManyField(
+        Contact, through="CommunicationChannelContactRelation"
+    )
+
+    def fetch_contacts(self):
+        """
+        Method to fetch contacts of every communication type
+        """
+        contacts_by_type = {}
+        for communication_type in self.communication_types.all():
+            contacts_dict = communication_type.get_contacts(self.canalizable)
+            contacts_by_type[communication_type.type] = contacts_dict
+
+        return contacts_by_type
 
 
 class CommunicationChannelTypeRelation(AuditModelMixin):

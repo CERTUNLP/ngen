@@ -236,9 +236,9 @@ class TestCommunicationChannel(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         communication_channel.refresh_from_db()
         self.assertEqual(communication_channel.name, "New name")
-        self.assertEqual(communication_channel.communication_types().count(), 1)
+        self.assertEqual(communication_channel.communication_types.count(), 1)
         self.assertTrue(
-            communication_channel.communication_types().contains(self.reporter_type)
+            communication_channel.communication_types.contains(self.reporter_type)
         )
         with self.assertRaises(CommunicationChannelTypeRelation.DoesNotExist):
             CommunicationChannelTypeRelation.objects.get(id=channel_type_relation.id)
@@ -395,9 +395,9 @@ class TestCommunicationChannel(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         communication_channel.refresh_from_db()
         self.assertEqual(communication_channel.name, "New name")
-        self.assertEqual(communication_channel.communication_types().count(), 1)
+        self.assertEqual(communication_channel.communication_types.count(), 1)
         self.assertTrue(
-            communication_channel.communication_types().contains(self.reporter_type)
+            communication_channel.communication_types.contains(self.reporter_type)
         )
         with self.assertRaises(CommunicationChannelTypeRelation.DoesNotExist):
             CommunicationChannelTypeRelation.objects.get(id=channel_type_relation.id)
@@ -484,6 +484,11 @@ class TestCommunicationChannel(APITestCase):
             canalizable=self.case_1,
         )
 
+        channel_type_relation = CommunicationChannelTypeRelation.objects.create(
+            communication_channel=communication_channel,
+            communication_type=self.affected_type,
+        )
+
         channel_contact_relation = CommunicationChannelContactRelation.objects.create(
             communication_channel=communication_channel,
             contact=self.contact_3,
@@ -495,6 +500,8 @@ class TestCommunicationChannel(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         with self.assertRaises(CommunicationChannel.DoesNotExist):
             CommunicationChannel.objects.get(pk=communication_channel_pk)
+        with self.assertRaises(CommunicationChannelTypeRelation.DoesNotExist):
+            CommunicationChannelTypeRelation.objects.get(id=channel_type_relation.id)
         with self.assertRaises(CommunicationChannelContactRelation.DoesNotExist):
             CommunicationChannelContactRelation.objects.get(
                 id=channel_contact_relation.id
@@ -570,9 +577,9 @@ class TestCommunicationChannel(APITestCase):
             communication_channel.message_id, "f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c"
         )
         self.assertEqual(communication_channel.canalizable, self.case_1)
-        self.assertEqual(communication_channel.communication_types().count(), 1)
+        self.assertEqual(communication_channel.communication_types.count(), 1)
         self.assertTrue(
-            communication_channel.communication_types().contains(self.affected_type)
+            communication_channel.communication_types.contains(self.affected_type)
         )
         self.assertEqual(communication_channel.additional_contacts.count(), 1)
         self.assertTrue(
@@ -602,7 +609,6 @@ class TestCommunicationChannel(APITestCase):
         """
         This will test unsuccessful nested Communication Channel POST with empty communication_types
         """
-
         json_data = {
             "name": "Test Communication Channel 1",
             "message_id": "f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
@@ -707,9 +713,9 @@ class TestCommunicationChannel(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         communication_channel.refresh_from_db()
         self.assertEqual(communication_channel.name, "New name")
-        self.assertEqual(communication_channel.communication_types().count(), 1)
+        self.assertEqual(communication_channel.communication_types.count(), 1)
         self.assertTrue(
-            communication_channel.communication_types().contains(self.reporter_type)
+            communication_channel.communication_types.contains(self.reporter_type)
         )
         with self.assertRaises(CommunicationChannelTypeRelation.DoesNotExist):
             CommunicationChannelTypeRelation.objects.get(id=channel_type_relation.id)
@@ -880,9 +886,9 @@ class TestCommunicationChannel(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         communication_channel.refresh_from_db()
         self.assertEqual(communication_channel.name, "New name")
-        self.assertEqual(communication_channel.communication_types().count(), 1)
+        self.assertEqual(communication_channel.communication_types.count(), 1)
         self.assertTrue(
-            communication_channel.communication_types().contains(self.reporter_type)
+            communication_channel.communication_types.contains(self.reporter_type)
         )
         with self.assertRaises(CommunicationChannelTypeRelation.DoesNotExist):
             CommunicationChannelTypeRelation.objects.get(id=channel_type_relation.id)
@@ -978,7 +984,11 @@ class TestCommunicationChannel(APITestCase):
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
             canalizable=self.case_1,
         )
-        communication_channel_pk = communication_channel.pk
+
+        channel_type_relation = CommunicationChannelTypeRelation.objects.create(
+            communication_channel=communication_channel,
+            communication_type=self.affected_type,
+        )
 
         channel_contact_relation = CommunicationChannelContactRelation.objects.create(
             communication_channel=communication_channel,
@@ -986,11 +996,13 @@ class TestCommunicationChannel(APITestCase):
         )
 
         response = self.client.delete(
-            self.nested_url_detail("case", self.case_1.pk, communication_channel_pk)
+            self.nested_url_detail("case", self.case_1.pk, communication_channel.pk)
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         with self.assertRaises(CommunicationChannel.DoesNotExist):
-            CommunicationChannel.objects.get(pk=communication_channel_pk)
+            CommunicationChannel.objects.get(pk=communication_channel.pk)
+        with self.assertRaises(CommunicationChannelTypeRelation.DoesNotExist):
+            CommunicationChannelTypeRelation.objects.get(id=channel_type_relation.id)
         with self.assertRaises(CommunicationChannelContactRelation.DoesNotExist):
             CommunicationChannelContactRelation.objects.get(
                 id=channel_contact_relation.id
