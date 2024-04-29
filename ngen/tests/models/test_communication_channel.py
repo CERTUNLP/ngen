@@ -150,7 +150,7 @@ class CommunicationChannelTest(TestCase):
         """
         This will test Communication Channel communication_types method
         """
-        self.assertEqual(self.communication_channel.communication_types().count(), 0)
+        self.assertEqual(self.communication_channel.communication_types.count(), 0)
 
         CommunicationChannelTypeRelation.objects.create(
             communication_channel=self.communication_channel,
@@ -162,16 +162,12 @@ class CommunicationChannelTest(TestCase):
             communication_type=self.reporter_type,
         )
 
-        self.assertEqual(self.communication_channel.communication_types().count(), 2)
+        self.assertEqual(self.communication_channel.communication_types.count(), 2)
         self.assertTrue(
-            self.communication_channel.communication_types().contains(
-                self.affected_type
-            )
+            self.communication_channel.communication_types.contains(self.affected_type)
         )
         self.assertTrue(
-            self.communication_channel.communication_types().contains(
-                self.reporter_type
-            )
+            self.communication_channel.communication_types.contains(self.reporter_type)
         )
 
     def test_fetch_contacts_with_affected_type(self):
