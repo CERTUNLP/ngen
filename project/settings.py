@@ -303,11 +303,31 @@ BLEACH_STRIP_TAGS = True
 BLEACH_STRIP_COMMENTS = False
 
 if DEBUG:
-    import os  # only if you haven't already imported this
     import socket  # only if you haven't already imported this
 
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+    DEBUG_INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips]
+    DEBUG_INTERNAL_IPS += os.environ.get('DJANGO_DEBUG_INTERNAL_IPS', '').split(',')
+
+    # Toolbar settings
+    def show_toolbar(request):
+        if not DEBUG:
+            return False
+
+        # Do not show toolbar if the request is AJAX
+        if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            return False
+
+        # Show toolbar if the IP in HTTP_X_REAL_IP or REMOTE_ADDR is in DEBUG_INTERNAL_IPS
+        if (request.META.get('HTTP_X_REAL_IP', None) in DEBUG_INTERNAL_IPS or
+                request.META.get('REMOTE_ADDR', None) in DEBUG_INTERNAL_IPS):
+            return True
+
+        return False
+
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': show_toolbar,
+    }
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = os.environ.get('DJANGO_CORS_ALLOWED_ORIGINS', '').split(',')
