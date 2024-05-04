@@ -543,12 +543,18 @@ class TestCommunicationChannel(APITestCase):
                 message_id="acb3b8b7-347e-4f6b-8b9e-689f33f4b123",
                 canalizable=self.case_2,
             ),
+            CommunicationChannel.objects.create(
+                name="Test Communication Channel 2",
+                message_id="acb3b8b7-347e-4f6b-8b9e-689f33f4b123",
+                canalizable=self.case_1,
+            ),
         ]
 
         response = self.client.get(self.nested_url_list("case", self.case_1.pk))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 2)
         self.assertEqual(response.data[0]["name"], communication_channels[0].name)
+        self.assertEqual(response.data[1]["name"], communication_channels[2].name)
 
     def test_nested_communication_channel_get_detail(self):
         """
