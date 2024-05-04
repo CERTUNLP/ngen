@@ -27,12 +27,10 @@ class APITestCaseWithLogin(APITestCase):
         response = cls.custom_client.post(
             cls.url_login_jwt, data=cls.json_login, format="json"
         )
-        cls.custom_client.credentials(
-            HTTP_AUTHORIZATION="Bearer " + response.data["access"]
-        )
 
-        # token = response.data.get("access")
-        # cls.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+        token = response.data.get("access")
+
+        cls.custom_client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
 
     def setUp(self):
         """
