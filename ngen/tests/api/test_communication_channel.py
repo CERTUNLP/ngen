@@ -146,6 +146,7 @@ class TestCommunicationChannel(APITestCase):
 
         cls.affected_type = CommunicationType.objects.create(type="affected")
         cls.reporter_type = CommunicationType.objects.create(type="reporter")
+        cls.intern_type = CommunicationType.objects.create(type="intern")
 
     def setUp(self):
         resp = self.client.post(self.url_login_jwt, data=self.json_login, format="json")
@@ -310,6 +311,11 @@ class TestCommunicationChannel(APITestCase):
             canalizable=self.case_1,
         )
 
+        CommunicationChannelTypeRelation.objects.create(
+            communication_channel=communication_channel,
+            communication_type=self.intern_type,
+        )
+
         json_data = {
             "name": "New name",
             "communication_types": [
@@ -331,6 +337,10 @@ class TestCommunicationChannel(APITestCase):
         )
         communication_channel.refresh_from_db()
         self.assertEqual(communication_channel.name, "Test Communication Channel 1")
+        self.assertEqual(communication_channel.communication_types.count(), 1)
+        self.assertTrue(
+            communication_channel.communication_types.contains(self.intern_type)
+        )
 
     def test_communication_channel_put_with_non_existent_additional_contacts(self):
         """
@@ -417,6 +427,11 @@ class TestCommunicationChannel(APITestCase):
             canalizable=self.case_1,
         )
 
+        CommunicationChannelTypeRelation.objects.create(
+            communication_channel=communication_channel,
+            communication_type=self.intern_type,
+        )
+
         json_data = {
             "name": "New name",
             "communication_types": [
@@ -438,6 +453,10 @@ class TestCommunicationChannel(APITestCase):
         )
         communication_channel.refresh_from_db()
         self.assertEqual(communication_channel.name, "Test Communication Channel 1")
+        self.assertEqual(communication_channel.communication_types.count(), 1)
+        self.assertTrue(
+            communication_channel.communication_types.contains(self.intern_type)
+        )
 
     def test_communication_channel_patch_with_non_existent_additional_contacts(self):
         """
@@ -792,6 +811,11 @@ class TestCommunicationChannel(APITestCase):
             canalizable=self.case_1,
         )
 
+        CommunicationChannelTypeRelation.objects.create(
+            communication_channel=communication_channel,
+            communication_type=self.intern_type,
+        )
+
         json_data = {
             "name": "New name",
             "communication_types": [
@@ -814,6 +838,10 @@ class TestCommunicationChannel(APITestCase):
         )
         communication_channel.refresh_from_db()
         self.assertEqual(communication_channel.name, "Test Communication Channel 1")
+        self.assertEqual(communication_channel.communication_types.count(), 1)
+        self.assertTrue(
+            communication_channel.communication_types.contains(self.intern_type)
+        )
 
     def test_nested_communication_channel_put_with_non_existent_additional_contacts(
         self,
@@ -914,6 +942,11 @@ class TestCommunicationChannel(APITestCase):
             canalizable=self.case_1,
         )
 
+        CommunicationChannelTypeRelation.objects.create(
+            communication_channel=communication_channel,
+            communication_type=self.intern_type,
+        )
+
         json_data = {
             "name": "New name",
             "communication_types": [
@@ -936,6 +969,10 @@ class TestCommunicationChannel(APITestCase):
         )
         communication_channel.refresh_from_db()
         self.assertEqual(communication_channel.name, "Test Communication Channel 1")
+        self.assertEqual(communication_channel.communication_types.count(), 1)
+        self.assertTrue(
+            communication_channel.communication_types.contains(self.intern_type)
+        )
 
     def test_nested_communication_channel_patch_with_non_existent_additional_contacts(
         self,
