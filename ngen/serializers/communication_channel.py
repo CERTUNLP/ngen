@@ -1,3 +1,4 @@
+# pylint: disable=protected-access
 from rest_framework import serializers
 from ngen.serializers.constituency import ContactSerializer
 from ngen import models
@@ -111,36 +112,26 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
 
     def validate(self, data):
         """
-        Overwrite validate to check that communication_types exist
+        Overwrite validate to verify IDs collections
         """
-        type_ids = data.get("communication_types", [])
-        additional_contacts_ids = data.get("additional_contacts", [])
-
-        type_ids_not_found = [
-            type_id
-            for type_id in type_ids
-            if type_id
-            not in models.CommunicationType.objects.values_list("id", flat=True)
-        ]
-        if type_ids_not_found:
-            raise serializers.ValidationError(
-                {
-                    "communication_types":
-                    f"Communication Types with IDs {type_ids_not_found} not found"
-                }
-            )
-
-        additional_contacts_ids_not_found = [
-            contact_id
-            for contact_id in additional_contacts_ids
-            if contact_id not in models.Contact.objects.values_list("id", flat=True)
-        ]
-        if additional_contacts_ids_not_found:
-            raise serializers.ValidationError(
-                {
-                    "additional_contacts":
-                    f"Contacts with IDs {additional_contacts_ids_not_found} not found"
-                }
-            )
+        self.validate_ids(data, "communication_types", models.CommunicationType)
+        self.validate_ids(data, "additional_contacts", models.Contact)
 
         return data
+
+    def validate_ids(self, data, field_name, model):
+        """
+        Method to validate ids
+        If any id is not found, raises a validation error
+        """
+        ids = data.get(field_name, [])
+        ids_not_found = [
+            id for id in ids if id not in model.objects.values_list("id", flat=True)
+        ]
+        if ids_not_found:
+            raise serializers.ValidationError(
+                {
+                    field_name:
+                    f"{model._meta.verbose_name_plural.title()} with IDs {ids_not_found} not found"
+                }
+            )
