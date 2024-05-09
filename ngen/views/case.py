@@ -11,6 +11,7 @@ class EvidenceViewSet(viewsets.ModelViewSet):
     queryset = models.Evidence.objects.all()
     serializer_class = serializers.EvidenceSerializer
     permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get', 'post', 'head', 'options', 'delete']
 
 
 class EventViewSet(viewsets.ModelViewSet):
