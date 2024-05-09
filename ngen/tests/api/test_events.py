@@ -130,6 +130,46 @@ class TestEvent(APITestCase):
         response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_event_post_domain_artifact_creation(self):
+        '''
+        This will test successfull Event POST
+        '''
+        json_data = {
+            # 'cidr': '2.2.2.2',
+            'domain': 'info.unlp.edu.ar',
+            'notes': 'estas son notas',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
+        }
+        response = self.client.post(self.url_list, data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        artifacts = Event.objects.last().artifacts
+        self.assertEqual(len(artifacts), 1)
+        self.assertEqual(artifacts[0].artifact_relation, Event.objects.last())
+        self.assertEqual(artifacts[0].value, 'info.unlp.edu.ar')
+
+    def test_event_post_domain_artifact_creation(self):
+        '''
+        This will test successfull Event POST
+        '''
+        json_data = {
+            'cidr': '2.2.2.2',
+            # 'domain': 'info.unlp.edu.ar',
+            'notes': 'estas son notas',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
+        }
+        response = self.client.post(self.url_list, data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        artifacts = Event.objects.last().artifacts
+        self.assertEqual(len(artifacts), 1)
+        self.assertEqual(artifacts[0].artifact_relation, Event.objects.last())
+        self.assertEqual(artifacts[0].value, '2.2.2.2')
+
     def test_event_post_with_slugs(self):
         '''
         This will test successfull Event POST
@@ -327,7 +367,9 @@ class TestEvent(APITestCase):
                                reverse('priority-detail', kwargs={'pk': 1})
 
         json_data = {
-            'priority': another_priority_url
+            'priority': another_priority_url,
+            'domain': 'another.domain.com',
+            'artifact': event.artifacts[0],
         }
 
         response = self.client.patch(self.url_detail(event.pk), data=json_data)
@@ -349,16 +391,21 @@ class TestEvent(APITestCase):
         )
 
         json_data = {
-            'domain': 'info.unlp.edu.ar',
+            'domain': 'another.domain2.com',
             'notes': 'Some notes',
             'priority': 'low',
             'tlp': 'amber',
             'taxonomy': 'phishing',
             'feed': 'shodan',
+            'artifact': event.artifacts[0],
         }
 
         response = self.client.put(self.url_detail(event.pk), data=json_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        artifacts = Event.objects.last().artifacts
+        self.assertEqual(len(artifacts), 1)
+        self.assertEqual(artifacts[0].artifact_relation, Event.objects.last())
+        self.assertEqual(artifacts[0].value, 'another.domain2.com')
 
     def test_event_delete(self):
         '''
