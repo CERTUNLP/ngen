@@ -96,6 +96,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
 
     def create(self, validated_data):
         artifacts = validated_data.pop('artifacts', [])
+        validated_data['reporter'] = self.context['request'].user
         event = super().create(validated_data)
         for artifact in artifacts:
             artifact_obj = models.Artifact.objects.get(pk=artifact.pk)
