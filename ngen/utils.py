@@ -1,5 +1,6 @@
 from constance import settings, config
 from django.utils.text import slugify
+import magic
 
 from project import settings as project_settings
 
@@ -19,3 +20,13 @@ def get_settings():
 
 def slugify_underscore(text):
     return slugify(text).replace('-', '_')
+
+def get_mime_type(file):
+    """
+    Get MIME by reading the header of the file already opened.
+    """
+    initial_pos = file.tell()
+    file.seek(0)
+    mime_type = magic.from_buffer(file.read(2048), mime=True)
+    file.seek(initial_pos)
+    return mime_type
