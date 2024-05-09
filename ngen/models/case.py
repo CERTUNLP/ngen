@@ -397,7 +397,7 @@ class Evidence(AuditModelMixin, ValidationModelMixin):
 
     @property
     def attachment_name(self):
-        return f'{self.get_related().__class__.__name__}({self.get_related().uuid})_{self.get_related().created.date()}_{self.assigned_name + "_" if self.assigned_name.strip() else ""}{self.filename}'
+        return f'{self.get_related().__class__.__name__}({self.get_related().uuid})_{self.created.date()}_{self.assigned_name + "_" if self.assigned_name.strip() else ""}{self.filename}'
 
     @property
     def filename(self):
