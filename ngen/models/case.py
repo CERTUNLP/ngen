@@ -12,7 +12,6 @@ from django.core.exceptions import ValidationError
 from django.core.mail import DNS_NAME
 from django.db import models
 from django.utils import timezone
-from datetime import datetime
 from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
 from django_lifecycle.priority import HIGHEST_PRIORITY
@@ -40,7 +39,8 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
                                              related_name='cases_created', default=None)
     user_creator = models.ForeignKey('ngen.User', models.PROTECT, null=True, blank=True, related_name='cases_created',
                                      default=None)
-    assigned = models.ForeignKey('ngen.User', models.PROTECT, null=True, related_name='assigned_cases', blank=True, default=None)
+    assigned = models.ForeignKey('ngen.User', models.PROTECT, null=True, related_name='assigned_cases', blank=True,
+                                 default=None)
     state = models.ForeignKey('ngen.State', models.PROTECT, related_name='cases')
 
     attend_date = models.DateTimeField(null=True, blank=True, default=None)
@@ -68,21 +68,56 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
     def __str__(self):
         return str(self.pk)
 
-    def email_contacts(self):
-        contacts = []
+    @property
+    def evidence_events(self):
+        evidence = []
         for event in self.events.all():
-            event_contacts = event.email_contacts()
-            for contact in event_contacts:
-                if contact not in contacts:
-                    contacts.insert(0, contact)
-        return contacts
+            evidence = evidence + list(event.evidence.all())
+        return evidence
 
-    def events_by_contacts(self):
-        contacts = defaultdict(list)
-        for event in self.events.all():
-            event_contacts = event.email_contacts()
-            contacts[tuple(event_contacts)].append(event)
-        return contacts
+    @property
+    def evidence_all(self):
+        return list(self.evidence.all()) + self.evidence_events
+
+    @property
+    def blocked(self):
+        return self.solve_date is not None
+
+    @property
+    def artifacts_dict(self) -> dict[str, list]:
+        artifacts_dict = {'hashes': [], 'files': []}
+        for evidence in self.evidence.all():
+            artifacts_dict['hashes'].append(evidence.filename.split('.')[0])
+            artifacts_dict['files'].append(evidence.file.path)
+        return artifacts_dict
+
+    @property
+    def email_headers(self) -> dict:
+        return {'Message-ID': self.report_message_id}
+
+    @property
+    def template_params(self) -> dict:
+        return {'case': self, 'events': self.events.all(), 'tlp': self.tlp, 'priority': self.priority}
+
+    @property
+    def email_attachments(self) -> list[dict]:
+        attachments = []
+        for evidence in self.evidence_all:
+            attachments.append({'name': evidence.attachment_name, 'file': evidence.file})
+        return attachments
+
+    @property
+    def assigned_email(self):
+        if self.assigned and self.assigned.priority.severity >= self.priority.severity:
+            return self.assigned.email
+        return None
+
+    @property
+    def team_email(self):
+        priority = Priority.objects.get(name=config.TEAM_EMAIL_PRIORITY)
+        if config.TEAM_EMAIL and priority.severity >= self.priority.severity:
+            return config.TEAM_EMAIL
+        return None
 
     @hook(BEFORE_DELETE)
     def delete_events(self):
@@ -131,6 +166,33 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
             if old.state.attended != self.state.attended or old.state.solved != self.state.solved:
                 self.communicate_update()
 
+    def merge(self, child: 'Case'):
+        super().merge(child)
+        for evidence in child.evidence.all():
+            self.evidence.add(evidence)
+        for event in child.events.all():
+            self.events.add(event)
+        for comment in child.comments.all():
+            self.comments.add(comment)
+        for artifact_relation in child.artifact_relation.all():
+            self.artifact_relation.add(artifact_relation)
+
+    def email_contacts(self):
+        contacts = []
+        for event in self.events.all():
+            event_contacts = event.email_contacts()
+            for contact in event_contacts:
+                if contact not in contacts:
+                    contacts.insert(0, contact)
+        return contacts
+
+    def events_by_contacts(self):
+        contacts = defaultdict(list)
+        for event in self.events.all():
+            event_contacts = event.email_contacts()
+            contacts[tuple(event_contacts)].append(event)
+        return contacts
+
     def communicate_new(self):
         self.communicate(gettext_lazy('New case'), 'reports/case_report.html')
 
@@ -146,68 +208,6 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
 
     def communicate_update(self):
         self.communicate(gettext_lazy('Case status updated'), 'reports/case_change_state.html', )
-
-    @property
-    def evidence_events(self):
-        evidence = []
-        for event in self.events.all():
-            evidence = evidence + list(event.evidence.all())
-        return evidence
-
-    @property
-    def evidence_all(self):
-        return list(self.evidence.all()) + self.evidence_events
-
-    @property
-    def blocked(self):
-        return self.solve_date is not None
-
-    def merge(self, child: 'Case'):
-        super().merge(child)
-        for evidence in child.evidence.all():
-            self.evidence.add(evidence)
-        for event in child.events.all():
-            self.events.add(event)
-        for comment in child.comments.all():
-            self.comments.add(comment)
-        for artifact_relation in child.artifact_relation.all():
-            self.artifact_relation.add(artifact_relation)
-
-    @property
-    def artifacts_dict(self) -> dict[str, list]:
-        artifacts_dict = {'hashes': [], 'files': []}
-        for evidence in self.evidence.all():
-            artifacts_dict['hashes'].append(evidence.filename.split('.')[0])
-            artifacts_dict['files'].append(evidence.file.path)
-        return artifacts_dict
-
-    @property
-    def email_headers(self) -> dict:
-        return {'Message-ID': self.report_message_id}
-
-    @property
-    def template_params(self) -> dict:
-        return {'case': self, 'events': self.events.all(), 'tlp': self.tlp, 'priority': self.priority}
-
-    @property
-    def email_attachments(self) -> list[dict]:
-        attachments = []
-        for evidence in self.evidence_all:
-            attachments.append({'name': evidence.attachment_name, 'file': evidence.file})
-        return attachments
-
-    @property
-    def assigned_email(self):
-        if self.assigned and self.assigned.priority.severity >= self.priority.severity:
-            return self.assigned.email
-        return None
-
-    @property
-    def team_email(self):
-        priority = Priority.objects.get(name=config.TEAM_EMAIL_PRIORITY)
-        if config.TEAM_EMAIL and priority.severity >= self.priority.severity:
-            return config.TEAM_EMAIL
-        return None
 
     def subject(self, title: str = None) -> str:
         return '[%s][TLP:%s][ID:%s] %s' % (config.TEAM_NAME, gettext_lazy(self.tlp.name), self.uuid, title)
@@ -283,6 +283,28 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     def detections_count(self):
         return self.children.count() + 1
 
+    @property
+    def blocked(self):
+        if self.case:
+            return self.case.blocked
+        return False
+
+    @property
+    def artifacts_dict(self) -> dict:
+        artifacts_dict = {'hashes': [], 'files': []}
+        if self.cidr:
+            artifacts_dict['ip'] = [self.address.network_address().compressed]
+        if self.domain:
+            artifacts_dict['domain'] = [self.domain]
+        for evidence in self.evidence.all():
+            artifacts_dict['hashes'].append(evidence.filename.split('.')[0])
+            artifacts_dict['files'].append(evidence.file.path)
+        return artifacts_dict
+
+    @property
+    def enrichable(self):
+        return self.mergeable
+
     @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
         event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, cidr=self.cidr, domain=self.domain,
@@ -316,11 +338,14 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
             self.case.communicate(gettext_lazy('New event on case'), 'reports/case_assign.html',
                                   event_by_contacts={tuple(self.email_contacts()): [self]})
 
-    @property
-    def blocked(self):
-        if self.case:
-            return self.case.blocked
-        return False
+    def clean(self):
+        super().clean()
+        if self.date and self.date > timezone.now():
+            raise ValidationError({'date': gettext_lazy('Date cannot be in the future')})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def merge(self, child: 'Event'):
         super().merge(child)
@@ -352,22 +377,6 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
                 if network_contacts:
                     return network_contacts[0]
         return contacts
-
-    @property
-    def artifacts_dict(self) -> dict:
-        artifacts_dict = {'hashes': [], 'files': []}
-        if self.cidr:
-            artifacts_dict['ip'] = [self.address.network_address().compressed]
-        if self.domain:
-            artifacts_dict['domain'] = [self.domain]
-        for evidence in self.evidence.all():
-            artifacts_dict['hashes'].append(evidence.filename.split('.')[0])
-            artifacts_dict['files'].append(evidence.file.path)
-        return artifacts_dict
-
-    @property
-    def enrichable(self):
-        return self.mergeable
 
 
 class Evidence(AuditModelMixin, ValidationModelMixin):
@@ -441,7 +450,7 @@ class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, Valid
 
     def matching_events_without_case(self):
         return Event.objects.children_of(self).filter(case__isnull=True, taxonomy=self.event_taxonomy,
-                                    feed=self.event_feed)
+                                                      feed=self.event_feed)
 
     def create_cases_for_matching_events(self):
         return [self.create_case([event]) for event in self.matching_events_without_case()]
