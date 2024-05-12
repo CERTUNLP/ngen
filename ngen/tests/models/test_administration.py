@@ -6,12 +6,14 @@ from ngen.models import Feed, Priority, Tlp, User, config
 
 
 class TestAdministration(TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setUpTestData(cls):
         default_priority, created = Priority.objects.get_or_create(
             name=config.PRIORITY_DEFAULT,
             severity=1
         )
-        self.priority = Priority.objects.create(
+        cls.priority = Priority.objects.create(
             name='Test Priority',
             severity=2,
             attend_time=timedelta(minutes=config.PRIORITY_ATTEND_TIME_DEFAULT),
@@ -19,8 +21,8 @@ class TestAdministration(TestCase):
             notification_amount=3,
             color='#FF0000'
         )
-        self.feed = Feed.objects.create(name='Test Feed', active=True)
-        self.tlp = Tlp.objects.create(
+        cls.feed = Feed.objects.create(name='Test Feed', active=True)
+        cls.tlp = Tlp.objects.create(
             color='#FF0000',
             when='Test when text',
             why='Test why text',
@@ -30,8 +32,8 @@ class TestAdministration(TestCase):
             name='Test TLP',
             code=123
         )
-        self.user = User.objects.create(username='testuser', password='testuser', email='test@example.com',
-                                        priority=self.priority)
+        cls.user = User.objects.create(username='testuser', password='testuser', email='test@example.com',
+                                        priority=cls.priority)
 
         '''
         ------------------------------------------------------------------------------------------------------
