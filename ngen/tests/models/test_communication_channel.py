@@ -93,7 +93,7 @@ class CommunicationChannelTest(TestCase):
         cls.communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=cls.case,
+            channelable=cls.case,
         )
         cls.communication_channel.additional_contacts.set([cls.contact_2])
 
@@ -122,15 +122,15 @@ class CommunicationChannelTest(TestCase):
             "f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
         )
 
-    def test_canalizable(self):
+    def test_channelable(self):
         """
-        This will test Communication Channel canalizable attribute
+        This will test Communication Channel channelable attribute
         """
-        self.assertEqual(self.communication_channel.canalizable, self.case)
+        self.assertEqual(self.communication_channel.channelable, self.case)
 
-    def test_canalizable_communication_channels(self):
+    def test_channelable_communication_channels(self):
         """
-        This will test canalizable communication_channels relation
+        This will test channelable communication_channels relation
         """
         self.assertEqual(self.case.communication_channels.count(), 1)
         self.assertEqual(

@@ -15,7 +15,7 @@ from ngen.serializers.communication_channel import CommunicationChannelSerialize
 
 class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     """
-    Class that adds communication channel endpoints to canalizable models
+    Class that adds communication channel endpoints to channelable models
     e.g.:
     /api/case/1/communication_channels/
     /api/case/1/communication_channels/1
@@ -35,11 +35,11 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"], url_path="communication_channels")
     def communication_channels(self, request, pk=None):
         """
-        View for list of communication channels of a canalizable
-        Example path: /api/some_canalizable/1/communication_channels/
+        View for list of communication channels of a channelable
+        Example path: /api/some_channelable/1/communication_channels/
         """
-        canalizable = self.get_object()
-        communication_channels = canalizable.communication_channels.all()
+        channelable = self.get_object()
+        communication_channels = channelable.communication_channels.all()
         serializer = CommunicationChannelSerializer(
             communication_channels, many=True, context={"request": request}
         )
@@ -49,14 +49,14 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     def communication_channels_create(self, request, pk=None):
         """
         View for communication channel creation
-        Example path: /api/some_canalizable/1/communication_channels/
+        Example path: /api/some_channelable/1/communication_channels/
         """
-        canalizable = self.get_object()
+        channelable = self.get_object()
         serializer = CommunicationChannelSerializer(
             data=request.data, context={"request": request}
         )
         if serializer.is_valid():
-            serializer.save(canalizable=canalizable)
+            serializer.save(channelable=channelable)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -71,12 +71,12 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     ):
         """
         View for communication channel detail
-        Example path: /api/some_canalizable/1/communication_channels/1/
+        Example path: /api/some_channelable/1/communication_channels/1/
         """
-        canalizable = self.get_object()
+        channelable = self.get_object()
 
         try:
-            communication_channel = canalizable.communication_channels.get(
+            communication_channel = channelable.communication_channels.get(
                 pk=communication_channel_id
             )
         except ObjectDoesNotExist:
@@ -97,12 +97,12 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     ):
         """
         View for communication channel update
-        Example path: /api/some_canalizable/1/communication_channels/1/
+        Example path: /api/some_channelable/1/communication_channels/1/
         """
-        canalizable = self.get_object()
+        channelable = self.get_object()
 
         try:
-            communication_channel = canalizable.communication_channels.get(
+            communication_channel = channelable.communication_channels.get(
                 pk=communication_channel_id
             )
         except ObjectDoesNotExist:
@@ -129,12 +129,12 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     ):
         """
         View for communication channel update
-        Example path: /api/some_canalizable/1/communication_channels/1/
+        Example path: /api/some_channelable/1/communication_channels/1/
         """
-        canalizable = self.get_object()
+        channelable = self.get_object()
 
         try:
-            communication_channel = canalizable.communication_channels.get(
+            communication_channel = channelable.communication_channels.get(
                 pk=communication_channel_id
             )
         except ObjectDoesNotExist:
@@ -162,12 +162,12 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     ):
         """
         View for communication channel delete
-        Example path: /api/some_canalizable/1/communication_channels/1/
+        Example path: /api/some_channelable/1/communication_channels/1/
         """
-        canalizable = self.get_object()
+        channelable = self.get_object()
 
         try:
-            communication_channel = canalizable.communication_channels.get(
+            communication_channel = channelable.communication_channels.get(
                 pk=communication_channel_id
             )
         except ObjectDoesNotExist:

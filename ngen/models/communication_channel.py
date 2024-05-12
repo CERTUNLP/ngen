@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from model_utils import Choices
 
-from ngen.models import CanalizableMixin, Contact
+from ngen.models import ChannelableMixin, Contact
 from ngen.models.common.mixins import AuditModelMixin
 
 
@@ -24,13 +24,13 @@ class CommunicationType(AuditModelMixin):
             raise ValidationError(f"Invalid type. Valid options are {type_choices}")
         super().save(*args, **kwargs)
 
-    def get_contacts(self, canalizable_mixin: CanalizableMixin):
+    def get_contacts(self, channelable_mixin: ChannelableMixin):
         """
         Method to get contacts
         """
         get_contacts_method = self.get_contacts_method()
 
-        return get_contacts_method(canalizable_mixin)
+        return get_contacts_method(channelable_mixin)
 
     def get_contacts_method(self):
         """
@@ -48,23 +48,23 @@ class CommunicationType(AuditModelMixin):
 
         raise ValueError(f"Method for Type: '{self.type}' not implemented")
 
-    def get_affected_contacts(self, canalizable_mixin: CanalizableMixin):
+    def get_affected_contacts(self, channelable_mixin: ChannelableMixin):
         """
         Method to get affected contacts
         """
-        return canalizable_mixin.get_affected_contacts()
+        return channelable_mixin.get_affected_contacts()
 
-    def get_reporter_contacts(self, canalizable_mixin: CanalizableMixin):
+    def get_reporter_contacts(self, channelable_mixin: ChannelableMixin):
         """
         Method to get reporter contacts
         """
-        return canalizable_mixin.get_reporter_contacts()
+        return channelable_mixin.get_reporter_contacts()
 
-    def get_internal_contacts(self, canalizable_mixin: CanalizableMixin):
+    def get_internal_contacts(self, channelable_mixin: ChannelableMixin):
         """
         Method to get internal contacts
         """
-        return canalizable_mixin.get_internal_contacts()
+        return channelable_mixin.get_internal_contacts()
 
 
 class CommunicationChannel(AuditModelMixin):
@@ -77,7 +77,7 @@ class CommunicationChannel(AuditModelMixin):
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    canalizable = GenericForeignKey("content_type", "object_id")
+    channelable = GenericForeignKey("content_type", "object_id")
 
     communication_types = models.ManyToManyField(
         CommunicationType, through="CommunicationChannelTypeRelation"
@@ -93,7 +93,7 @@ class CommunicationChannel(AuditModelMixin):
         """
         contacts_by_type = {}
         for communication_type in self.communication_types.all():
-            contacts_dict = communication_type.get_contacts(self.canalizable)
+            contacts_dict = communication_type.get_contacts(self.channelable)
             contacts_by_type[communication_type.type] = contacts_dict
 
         return contacts_by_type

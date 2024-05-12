@@ -45,10 +45,10 @@ class TestCommunicationChannel(APITestCase):
         cls.url_list = reverse(f"{basename}-list")
         cls.url_detail = lambda pk: reverse(f"{basename}-detail", kwargs={"pk": pk})
         cls.nested_url_list = (
-            lambda canalizable_name, canalizable_pk: f"/api/{canalizable_name}/{canalizable_pk}/communication_channels/"
+            lambda channelable_name, channelable_pk: f"/api/{channelable_name}/{channelable_pk}/communication_channels/"
         )
         cls.nested_url_detail = (
-            lambda canalizable_name, canalizable_pk, pk: f"/api/{canalizable_name}/{canalizable_pk}/communication_channels/{pk}/"
+            lambda channelable_name, channelable_pk, pk: f"/api/{channelable_name}/{channelable_pk}/communication_channels/{pk}/"
         )
 
         cls.url_login_jwt = reverse("token-create")
@@ -169,12 +169,12 @@ class TestCommunicationChannel(APITestCase):
             CommunicationChannel.objects.create(
                 name="Test Communication Channel 1",
                 message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-                canalizable=self.case_1,
+                channelable=self.case_1,
             ),
             CommunicationChannel.objects.create(
                 name="Test Communication Channel 2",
                 message_id="acb3b8b7-347e-4f6b-8b9e-689f33f4b123",
-                canalizable=self.case_2,
+                channelable=self.case_2,
             ),
         ]
 
@@ -196,7 +196,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         response = self.client.get(self.url_detail(communication_channel.pk))
@@ -211,7 +211,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         channel_type_relation = CommunicationChannelTypeRelation.objects.create(
@@ -260,7 +260,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         json_data = {"name": "New name"}
@@ -284,7 +284,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         json_data = {"name": "New name", "communication_types": []}
@@ -308,7 +308,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         CommunicationChannelTypeRelation.objects.create(
@@ -350,7 +350,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
         communication_channel.additional_contacts.set([self.contact_1])
 
@@ -384,7 +384,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
         communication_channel.additional_contacts.set([self.contact_1])
 
@@ -424,7 +424,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         CommunicationChannelTypeRelation.objects.create(
@@ -466,7 +466,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
         communication_channel.additional_contacts.set([self.contact_1])
 
@@ -500,7 +500,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         channel_type_relation = CommunicationChannelTypeRelation.objects.create(
@@ -526,7 +526,7 @@ class TestCommunicationChannel(APITestCase):
                 id=channel_contact_relation.id
             )
 
-    # Nested communication channel endpoints tests under canalizable
+    # Nested communication channel endpoints tests under channelable
 
     def test_nested_communication_channel_get_list(self):
         """
@@ -536,17 +536,17 @@ class TestCommunicationChannel(APITestCase):
             CommunicationChannel.objects.create(
                 name="Test Communication Channel 1",
                 message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-                canalizable=self.case_1,
+                channelable=self.case_1,
             ),
             CommunicationChannel.objects.create(
                 name="Test Communication Channel 2",
                 message_id="acb3b8b7-347e-4f6b-8b9e-689f33f4b123",
-                canalizable=self.case_2,
+                channelable=self.case_2,
             ),
             CommunicationChannel.objects.create(
                 name="Test Communication Channel 2",
                 message_id="acb3b8b7-347e-4f6b-8b9e-689f33f4b123",
-                canalizable=self.case_1,
+                channelable=self.case_1,
             ),
         ]
 
@@ -564,12 +564,12 @@ class TestCommunicationChannel(APITestCase):
             CommunicationChannel.objects.create(
                 name="Test Communication Channel 1",
                 message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-                canalizable=self.case_1,
+                channelable=self.case_1,
             ),
             CommunicationChannel.objects.create(
                 name="Test Communication Channel 2",
                 message_id="acb3b8b7-347e-4f6b-8b9e-689f33f4b123",
-                canalizable=self.case_2,
+                channelable=self.case_2,
             ),
         ]
 
@@ -601,7 +601,7 @@ class TestCommunicationChannel(APITestCase):
         self.assertEqual(
             communication_channel.message_id, "f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c"
         )
-        self.assertEqual(communication_channel.canalizable, self.case_1)
+        self.assertEqual(communication_channel.channelable, self.case_1)
         self.assertEqual(communication_channel.communication_types.count(), 1)
         self.assertTrue(
             communication_channel.communication_types.contains(self.affected_type)
@@ -711,7 +711,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         channel_type_relation = CommunicationChannelTypeRelation.objects.create(
@@ -761,7 +761,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         json_data = {"name": "New name"}
@@ -786,7 +786,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         json_data = {"name": "New name", "communication_types": []}
@@ -814,7 +814,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         CommunicationChannelTypeRelation.objects.create(
@@ -860,7 +860,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
         communication_channel.additional_contacts.set([self.contact_1])
 
@@ -894,7 +894,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         channel_type_relation = CommunicationChannelTypeRelation.objects.create(
@@ -945,7 +945,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         CommunicationChannelTypeRelation.objects.create(
@@ -990,7 +990,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
         communication_channel.additional_contacts.set([self.contact_1])
 
@@ -1025,7 +1025,7 @@ class TestCommunicationChannel(APITestCase):
         communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel 1",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            canalizable=self.case_1,
+            channelable=self.case_1,
         )
 
         channel_type_relation = CommunicationChannelTypeRelation.objects.create(

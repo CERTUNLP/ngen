@@ -6,7 +6,7 @@ from .announcement import *
 from .artifact import *
 from .auth import *
 from .case import *
-from .common.mixins import AuditModelMixin, CanalizableMixin
+from .common.mixins import AuditModelMixin, ChannelableMixin
 from .constituency import *
 from .message import *
 from .state import *

@@ -596,7 +596,7 @@ class ArtifactRelatedMixin(models.Model):
         raise NotImplementedError
 
 
-class CanalizableMixin(models.Model):
+class ChannelableMixin(models.Model):
     """
     Mixin for models that have Comunication Channels
     """
