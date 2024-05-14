@@ -46,7 +46,7 @@ class CaseViewSet(viewsets.ModelViewSet):
 
 
 class CaseTemplateViewSet(viewsets.ModelViewSet):
-    queryset = models.CaseTemplate.objects.all().order_by("id")
+    queryset = models.CaseTemplate.objects.all()
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
@@ -55,7 +55,7 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
     search_fields = ["cidr", "domain", "address_value"]
     filterset_class = CaseTemplateFilter
     ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority", "taxonomy",
-                       "matching_events_without_case"]
+                       "matching_events_without_case2"]
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -64,12 +64,15 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         # Ugly but necessary to order by a subquery? Can be moved to a custom manager?
         ordering = self.request.query_params.get('ordering', None)
-        if ordering == 'matching_events_without_case':
+        if ordering == 'matching_events_without_case2':
             subquery = models.Event.objects.filter(
                 case=None, taxonomy=OuterRef('event_taxonomy'), feed=OuterRef('event_feed'),
                 domain=OuterRef('domain'), cidr=OuterRef('cidr')
             ).values('id').annotate(total=Count('id')).values('total')[:1]
-            queryset = queryset.annotate(matching_events_without_case=Subquery(subquery)).order_by('matching_events_without_case')
+            queryset = queryset.annotate(matching_events_without_case2=Subquery(subquery)).order_by('matching_events_without_case2')
+            # only matching events without case and pk
+            # queryset = queryset.filter(matching_events_without_case2__gt=0)
+            # print(queryset.query)
         return queryset
 
 
