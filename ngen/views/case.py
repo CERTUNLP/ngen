@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Count, Subquery, F
 from rest_framework import permissions, filters, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -53,9 +54,36 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ["cidr", "domain", "address_value"]
     filterset_class = CaseTemplateFilter
-    ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority", "taxonomy"]
+    ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority", "taxonomy",
+                       "matching_events_without_case"]
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Ugly but necessary to order by a subquery? Can be moved to a custom manager?
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering == 'matching_events_without_case':
+            queryset = queryset.annotate(
+                matching_events_without_case=Subquery(
+                    models.Event.objects.children_of(
+                        models.CaseTemplate.objects.get(pk=F('pk'))
+                    ).values('cidr').annotate(count=Count('cidr')).values('count')[:1]
+                )
+            )
+            queryset = queryset.order_by('matching_events_without_case')
+        elif ordering == '-matching_events_without_case':
+            queryset = queryset.annotate(
+                matching_events_without_case=Subquery(
+                    models.Event.objects.children_of(
+                        models.CaseTemplate.objects.get(pk=F('pk'))
+                    ).values('cidr').annotate(count=Count('cidr')).values('count').order_by('-count')[:1]
+                )
+            )
+            queryset = queryset.order_by('matching_events_without_case')
+        return queryset
+
 
     @action(methods=['GET'], detail=True, url_path='create-cases', url_name='create_cases')
     def create_cases(self, request, pk=None):

@@ -448,7 +448,15 @@ class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, Valid
         return Case.objects.create(tlp=self.case_tlp, lifecycle=self.case_lifecycle, state=self.case_state,
                                    casetemplate_creator=self, events=events)
 
+    @property
     def matching_events_without_case(self):
+        return self.get_matching_events_without_case().count()
+
+    @matching_events_without_case.setter
+    def matching_events_without_case(self, value):
+        pass
+
+    def get_matching_events_without_case(self):
         return Event.objects.children_of(self).filter(case__isnull=True, taxonomy=self.event_taxonomy,
                                                       feed=self.event_feed)
 

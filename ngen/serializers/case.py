@@ -236,14 +236,11 @@ class CaseSerializerReducedWithEventsCount(CaseSerializerReduced):
 
 
 class CaseTemplateSerializer(AuditSerializerMixin):
-    matching_events_without_case = serializers.SerializerMethodField(read_only=True)
+    matching_events_without_case = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.CaseTemplate
         fields = '__all__'
-
-    def get_matching_events_without_case(self, obj):
-        return obj.matching_events_without_case().count()
 
 
 class EvidenceSerializer(AuditSerializerMixin):
