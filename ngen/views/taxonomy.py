@@ -54,7 +54,7 @@ class TodoTaskViewSet(viewsets.ModelViewSet):
         filters.OrderingFilter
     ]
     search_fields = ['note', 'assigned_to__username']
-    ordering_fields = ['id', 'created', 'modified', 'completed', 'assigned_to', 'note']
+    ordering_fields = ['id', 'created', 'modified', 'completed', 'assigned_to', 'note', 'reports']
     serializer_class = serializers.TodoTaskSerializer
     permission_classes = [permissions.IsAuthenticated]
 
