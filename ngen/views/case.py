@@ -1,5 +1,5 @@
 import django_filters
-from django.db.models import Count, Subquery, F
+from django.db.models import Count, Subquery, F, OuterRef
 from rest_framework import permissions, filters, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -65,23 +65,10 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         # Ugly but necessary to order by a subquery? Can be moved to a custom manager?
         ordering = self.request.query_params.get('ordering', None)
         if ordering == 'matching_events_without_case':
-            queryset = queryset.annotate(
-                matching_events_without_case=Subquery(
-                    models.Event.objects.children_of(
-                        models.CaseTemplate.objects.get(pk=F('pk'))
-                    ).values('cidr').annotate(count=Count('cidr')).values('count')[:1]
-                )
-            )
-            queryset = queryset.order_by('matching_events_without_case')
-        elif ordering == '-matching_events_without_case':
-            queryset = queryset.annotate(
-                matching_events_without_case=Subquery(
-                    models.Event.objects.children_of(
-                        models.CaseTemplate.objects.get(pk=F('pk'))
-                    ).values('cidr').annotate(count=Count('cidr')).values('count').order_by('-count')[:1]
-                )
-            )
-            queryset = queryset.order_by('matching_events_without_case')
+            subquery = models.Event.objects.filter(
+                case=None, taxonomy=OuterRef('event_taxonomy'), domain=OuterRef('domain'), cidr=OuterRef('cidr')
+            ).values('id').annotate(total=Count('id')).values('total')
+            queryset = queryset.annotate(matching_events_without_case=Subquery(subquery))
         return queryset
 
 
