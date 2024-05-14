@@ -66,9 +66,10 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         ordering = self.request.query_params.get('ordering', None)
         if ordering == 'matching_events_without_case':
             subquery = models.Event.objects.filter(
-                case=None, taxonomy=OuterRef('event_taxonomy'), domain=OuterRef('domain'), cidr=OuterRef('cidr')
-            ).values('id').annotate(total=Count('id')).values('total')
-            queryset = queryset.annotate(matching_events_without_case=Subquery(subquery))
+                case=None, taxonomy=OuterRef('event_taxonomy'), feed=OuterRef('event_feed'),
+                domain=OuterRef('domain'), cidr=OuterRef('cidr')
+            ).values('id').annotate(total=Count('id')).values('total')[:1]
+            queryset = queryset.annotate(matching_events_without_case=Subquery(subquery)).order_by('matching_events_without_case')
         return queryset
 
 
