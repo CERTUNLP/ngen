@@ -1,3 +1,4 @@
+import re
 import uuid as uuid
 from collections import defaultdict
 from email.utils import make_msgid
@@ -20,6 +21,7 @@ from treebeard.al_tree import AL_NodeManager
 
 import ngen
 from ngen.models.announcement import Communication
+from ngen.utils import get_mime_type
 from . import Priority
 from .common.mixins import MergeModelMixin, AddressModelMixin, ArtifactRelatedMixin, AuditModelMixin, \
     EvidenceModelMixin, PriorityModelMixin, ValidationModelMixin, AddressManager
@@ -381,10 +383,15 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
 
 class Evidence(AuditModelMixin, ValidationModelMixin):
     def directory_path(self, filename=None):
-        return '%s/%s' % (self.get_related().evidence_path(), filename)
+        return f'{self.get_related().evidence_path()}/{filename}'
 
     file = models.FileField(upload_to=directory_path, null=True, storage=HashedFilenameStorage(), unique=True)
     object_id = models.PositiveIntegerField()
+    assigned_name = models.CharField(max_length=100, null=True, blank=True, default='')
+    original_filename = models.CharField(max_length=255, null=True, blank=True, default='', editable=False)
+    size = models.PositiveIntegerField(default=0, editable=False)
+    extension = models.CharField(max_length=255, null=True, blank=True, default='', editable=False)
+    mime = models.CharField(max_length=255, null=True, blank=True, default='', editable=False)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     content_object = GenericForeignKey()
 
@@ -399,9 +406,7 @@ class Evidence(AuditModelMixin, ValidationModelMixin):
 
     @property
     def attachment_name(self):
-        return '%s(%s):%s:%s' % (
-            self.get_related().__class__.__name__, self.get_related().id, self.get_related().created.date(),
-            self.filename)
+        return f'{self.get_related().__class__.__name__}({self.get_related().uuid})_{self.created.date()}_{self.assigned_name + "_" if self.assigned_name.strip() else ""}{self.filename}'
 
     @property
     def filename(self):
@@ -410,6 +415,23 @@ class Evidence(AuditModelMixin, ValidationModelMixin):
     def delete(self, using=None, keep_parents=False):
         super().delete(using, keep_parents)
         self.file.storage.delete(self.file.name)
+
+    def save(self, *args, **kwargs):
+        """
+        Set assigned_name, size, extension, mime and original_filename fields.
+        assigned_name:
+            1. strip the assigned_name removing leading and trailing whitespaces
+            2. split the assigned_name by '.' and get the first part
+            3. remove any non-word characters [^a-zA-Z0-9_]
+            4. replace '_' with '-'
+        """
+        if self.assigned_name:
+            self.assigned_name = re.sub(r'[\W]+', '-', self.assigned_name.strip().split('.')[0]).replace('_', '-')
+        self.original_filename = self.file.name
+        self.size = self.file.size
+        self.extension = Path(self.file.name).suffix
+        self.mime = get_mime_type(self.file.open('rb'))
+        super().save(*args, **kwargs)
 
 
 class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, ValidationModelMixin):
