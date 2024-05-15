@@ -68,7 +68,7 @@ class ReportViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ['taxonomy__name']
     ordering_fields = ['id', 'created', 'modified', 'problem', 'derived_problem', 'taxonomy', 'verification',
-                       'recommendations', 'more_information', 'lang']
+                       'recommendations', 'more_information', 'lang', 'taxonomy__name']
     serializer_class = serializers.ReportSerializer
     permission_classes = [permissions.IsAuthenticated]
 
