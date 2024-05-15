@@ -309,7 +309,6 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
         if self.address_value:
             self.sid = StringIdentifier(self.address_value)
             if self.cidr:
-                print(self.cidr, self.sid.parsed_obj)
                 if ipaddress.ip_network(self.cidr) != self.sid.parsed_obj:
                     msg = 'cidr is not in address_value'
                     raise ValidationError(
@@ -515,19 +514,34 @@ class ArtifactRelatedMixin(models.Model):
         self.artifact_update()
 
     def artifact_update(self):
+        """
+        Update or create new artifacts and relations for the instance
+        based on the artifacts_dict property of the instance.
+        """
         if self.enrichable:
-            self.artifact_relation.all().delete()
             for artifact_type, artifact_values in self.artifacts_dict.items():
                 if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
+                    relations = []
                     for artifact_value in artifact_values:
-                        artifact, created = ngen.models.Artifact.objects.get_or_create(value=artifact_value,
-                                                                                       defaults={'type': artifact_type})
-                        ngen.models.ArtifactRelation.objects.get_or_create(
+                        artifact, created = ngen.models.Artifact.objects.get_or_create(
+                            value=artifact_value,
+                            defaults={'type': artifact_type}
+                        )
+                        relation, rel_created = ngen.models.ArtifactRelation.objects.get_or_create(
                             artifact=artifact,
                             content_type=ContentType.objects.get_for_model(self),
-                            object_id=self.id)
+                            object_id=self.id,
+                            auto_created=True
+                        )
+                        relations.append(relation)
                         if not created:
                             artifact.enrich()
+                    # Delete auto_created relations that are not in the new list
+                    self.artifact_relation.filter(
+                        auto_created=True
+                    ).exclude(
+                        pk__in=[relation.pk for relation in relations]
+                    ).delete()
 
     @property
     def artifacts_dict(self) -> dict[str, list]:
