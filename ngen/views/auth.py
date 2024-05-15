@@ -2,7 +2,6 @@ import django_filters
 from django.contrib.auth.models import Group, Permission
 from django.urls import reverse
 from rest_framework import permissions, filters, status, viewsets, mixins
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
@@ -36,7 +35,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, GenericViewSet):
     serializer_class = serializers.UserProfileSerializer
-    permission_classes = [IsAuthenticated, IsSelf]
+    permission_classes = [permissions.IsAuthenticated, IsSelf]
     pagination_class = None
 
     def get_queryset(self):
@@ -47,16 +46,18 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mix
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = serializers.GroupSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class PermissionViewSet(viewsets.ModelViewSet):
     queryset = Permission.objects.all()
     serializer_class = serializers.PermissionSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class RegisterViewSet(viewsets.ModelViewSet):
     http_method_names = ["post"]
-    permission_classes = (AllowAny,)
+    permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
@@ -76,7 +77,7 @@ class RegisterViewSet(viewsets.ModelViewSet):
 
 
 class LogoutView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         try:
@@ -118,7 +119,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 
 class CookieTokenLogoutView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         try:
@@ -135,3 +136,4 @@ class UserMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserMinifiedSerializer
     pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]

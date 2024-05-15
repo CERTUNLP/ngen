@@ -30,4 +30,5 @@ class StateMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.State.objects.all()
     serializer_class = serializers.StateMinifiedSerializer
     pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
     

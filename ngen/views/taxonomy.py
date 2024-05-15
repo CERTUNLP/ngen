@@ -77,3 +77,4 @@ class TaxonomyMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Taxonomy.objects.all()
     serializer_class = serializers.TaxonomyMinifiedSerializer
     pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
