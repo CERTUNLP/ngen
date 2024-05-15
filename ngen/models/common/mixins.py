@@ -230,6 +230,22 @@ class AddressManager(NetManager):
             return self.domain_children_of(str(address.address))
         return self.none()
 
+    def children_of_cidr(self, cidr: str):
+        return self.cidr_children_of(cidr)
+
+    def children_of_domain(self, domain: str):
+        return self.domain_children_of(domain)
+
+    # def children_of_cidr_or_domain(self, cidr: str, domain: str):
+    #     if cidr:
+    #         return self.cidr_children_of(cidr)
+    #     elif domain:
+    #         return self.domain_children_of(domain)
+    #     return self.none()
+    #
+    def children_of_cidr_or_domain(self, cidr: str, domain: str):
+        return self.children_of_cidr(cidr) | self.children_of_domain(domain)
+
     def defaults(self):
         return self.filter(Q(cidr__prefixlen=0) | Q(domain='*'))
 

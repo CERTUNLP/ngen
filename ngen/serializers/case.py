@@ -236,7 +236,7 @@ class CaseSerializerReducedWithEventsCount(CaseSerializerReduced):
 
 
 class CaseTemplateSerializer(AuditSerializerMixin):
-    matching_events_without_case = serializers.IntegerField(read_only=True)
+    matching_events_without_case_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.CaseTemplate

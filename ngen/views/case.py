@@ -1,5 +1,5 @@
 import django_filters
-from django.db.models import Count, Subquery, F, OuterRef
+from django.db.models import Count, Subquery, F, OuterRef, Value, Case, When, IntegerField
 from rest_framework import permissions, filters, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -55,7 +55,7 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
     search_fields = ["cidr", "domain", "address_value"]
     filterset_class = CaseTemplateFilter
     ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority", "taxonomy",
-                       "matching_events_without_case2"]
+                       "matching_events_without_case_count"]
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -64,15 +64,19 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         # Ugly but necessary to order by a subquery? Can be moved to a custom manager?
         ordering = self.request.query_params.get('ordering', None)
-        if ordering == 'matching_events_without_case2':
-            subquery = models.Event.objects.filter(
-                case=None, taxonomy=OuterRef('event_taxonomy'), feed=OuterRef('event_feed'),
-                domain=OuterRef('domain'), cidr=OuterRef('cidr')
-            ).values('id').annotate(total=Count('id')).values('total')[:1]
-            queryset = queryset.annotate(matching_events_without_case2=Subquery(subquery)).order_by('matching_events_without_case2')
-            # only matching events without case and pk
-            # queryset = queryset.filter(matching_events_without_case2__gt=0)
-            # print(queryset.query)
+        if 'matching_events_without_case_count' in ordering:
+            subquery = models.Event.objects.children_of_cidr_or_domain(
+                cidr=OuterRef('cidr'), domain=OuterRef('domain')
+            ).filter(
+                case=None, taxonomy=OuterRef('event_taxonomy'), feed=OuterRef('event_feed')
+            ).annotate(
+                dummy_group_by=Value(1) # dummy group by to count all events and avoid group by
+            ).values('dummy_group_by').order_by().annotate( # remove order by to avoid group by
+                total=Count('id')
+            ).values('total')[:1]
+            queryset = queryset.annotate(
+                matching_events_without_case_count=Subquery(subquery)
+            )
         return queryset
 
 

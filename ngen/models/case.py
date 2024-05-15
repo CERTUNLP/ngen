@@ -449,11 +449,11 @@ class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, Valid
                                    casetemplate_creator=self, events=events)
 
     @property
-    def matching_events_without_case(self):
+    def matching_events_without_case_count(self):
         return self.get_matching_events_without_case().count()
 
-    @matching_events_without_case.setter
-    def matching_events_without_case(self, value):
+    @matching_events_without_case_count.setter
+    def matching_events_without_case_count(self, value):
         pass
 
     def get_matching_events_without_case(self):
@@ -461,7 +461,7 @@ class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, Valid
                                                       feed=self.event_feed)
 
     def create_cases_for_matching_events(self):
-        return [self.create_case([event]) for event in self.matching_events_without_case()]
+        return [self.create_case([event]) for event in self.get_matching_events_without_case()]
 
     def __str__(self):
         return str(self.id)
