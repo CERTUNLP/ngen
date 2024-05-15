@@ -52,13 +52,13 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["cidr", "domain", "address_value"]
+    search_fields = ["cidr", "domain", "address_value", "event_taxonomy__name", "event_feed__name", "case_state__name"]
     filterset_class = CaseTemplateFilter
-    ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority", "taxonomy",
-                       "matching_events_without_case_count"]
+    ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority", "event_taxonomy", "event_feed",
+                       "case_lifecycle", "case_tlp", "case_state", "case_tlp__name", "case_state__name",
+                       "event_taxonomy__name", "event_feed__name", "matching_events_without_case_count"]
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
-
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -70,15 +70,14 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
             ).filter(
                 case=None, taxonomy=OuterRef('event_taxonomy'), feed=OuterRef('event_feed')
             ).annotate(
-                dummy_group_by=Value(1) # dummy group by to count all events and avoid group by
-            ).values('dummy_group_by').order_by().annotate( # remove order by to avoid group by
+                dummy_group_by=Value(1)  # dummy group by to count all events and avoid group by
+            ).values('dummy_group_by').order_by().annotate(  # remove order by to avoid group by
                 total=Count('id')
             ).values('total')[:1]
             queryset = queryset.annotate(
                 matching_events_without_case_count=Subquery(subquery)
             )
         return queryset
-
 
     @action(methods=['GET'], detail=True, url_path='create-cases', url_name='create_cases')
     def create_cases(self, request, pk=None):
