@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Count, Subquery, F, OuterRef, Value, Case, When, IntegerField
 from rest_framework import permissions, filters, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -45,17 +46,38 @@ class CaseViewSet(viewsets.ModelViewSet):
 
 
 class CaseTemplateViewSet(viewsets.ModelViewSet):
-    queryset = models.CaseTemplate.objects.all().order_by("id")
+    queryset = models.CaseTemplate.objects.all()
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["cidr", "domain", "address_value"]
+    search_fields = ["cidr", "domain", "address_value", "event_taxonomy__name", "event_feed__name", "case_state__name"]
     filterset_class = CaseTemplateFilter
-    ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority", "taxonomy"]
+    ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority", "event_taxonomy", "event_feed",
+                       "case_lifecycle", "case_tlp", "case_state", "case_tlp__name", "case_state__name",
+                       "event_taxonomy__name", "event_feed__name", "matching_events_without_case_count"]
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Ugly but necessary to order by a subquery? Can be moved to a custom manager?
+        ordering = self.request.query_params.get('ordering', '')
+        if 'matching_events_without_case_count' in ordering:
+            subquery = models.Event.objects.children_of_cidr_or_domain(
+                cidr=OuterRef('cidr'), domain=OuterRef('domain')
+            ).filter(
+                case=None, taxonomy=OuterRef('event_taxonomy'), feed=OuterRef('event_feed')
+            ).annotate(
+                dummy_group_by=Value(1)  # dummy group by to count all events and avoid group by
+            ).values('dummy_group_by').order_by().annotate(  # remove order by to avoid group by
+                total=Count('id')
+            ).values('total')[:1]
+            queryset = queryset.annotate(
+                matching_events_without_case_count=Subquery(subquery)
+            )
+        return queryset
 
     @action(methods=['GET'], detail=True, url_path='create-cases', url_name='create_cases')
     def create_cases(self, request, pk=None):
