@@ -15,7 +15,8 @@ class NetworkViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ["cidr", "type", "domain"]
     filterset_class = NetworkFilter
-    ordering_fields = ["id", "created", "modified", "cidr", "domain", "type", "address_value", "network_entity"]
+    ordering_fields = ["id", "created", "modified", "cidr", "domain", "type", "address_value", "network_entity",
+                       "network_entity__name"]
     permission_classes = [permissions.IsAuthenticated]
 
 
