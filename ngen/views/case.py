@@ -63,7 +63,7 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         # Ugly but necessary to order by a subquery? Can be moved to a custom manager?
-        ordering = self.request.query_params.get('ordering', None)
+        ordering = self.request.query_params.get('ordering', '')
         if 'matching_events_without_case_count' in ordering:
             subquery = models.Event.objects.children_of_cidr_or_domain(
                 cidr=OuterRef('cidr'), domain=OuterRef('domain')
