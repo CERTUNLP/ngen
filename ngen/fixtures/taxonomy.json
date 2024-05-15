@@ -3162,5 +3162,33 @@
       "active": true,
       "description": "Search at shadowserver.org for special (special)"
     }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 117,
+    "fields": {
+      "created": "2019-11-14T15:41:49Z",
+      "modified": "2021-12-10T15:44:52.613Z",
+      "parent": null,
+      "type": "vulnerability",
+      "name": "cryptojacking",
+      "slug": "cryptojacking",
+      "active": true,
+      "description": "Host mining cryptocurrency"
+    }
+  },
+  {
+    "model": "ngen.taxonomy",
+    "pk": 118,
+    "fields": {
+      "created": "2017-12-20T17:17:48Z",
+      "modified": "2021-12-10T15:44:52.619Z",
+      "parent": 31,
+      "type": "vulnerability",
+      "name": "Defacement",
+      "slug": "defacement",
+      "active": true,
+      "description": "Website defacement is an attack on a website that changes the visual appearance of a website or a web page"
+    }
   }
 ]
