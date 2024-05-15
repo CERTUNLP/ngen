@@ -44,10 +44,11 @@ class ArtifactRelationSerializer(AuditSerializerMixin):
             view_name='case-detail',
         ),
     })
+    auto_created = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = models.ArtifactRelation
-        fields = ('url', 'artifact', 'related', 'content_type', 'content_type_description', 'object_id')
+        fields = ('url', 'artifact', 'related', 'content_type', 'content_type_description', 'object_id', 'auto_created')
         read_only_fields = ('content_type', 'object_id', 'content_type_description')
 
     def get_content_type_description(self, obj):

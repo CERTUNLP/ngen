@@ -29,10 +29,7 @@ class Artifact(AuditModelMixin, ValidationModelMixin):
         transaction.on_commit(lambda: tasks.enrich_artifact.delay(self.id))
 
     def __str__(self):
-        display = '%s: %s' % (self.type, self.value)
-        if self.artifact_relation.count() > 1:
-            display += " (%s)" % self.artifact_relation.count()
-        return display
+        return f'{self.type}: {self.value} ({self.artifact_relation.count()})'
 
     @property
     def related(self):
@@ -47,13 +44,18 @@ class ArtifactRelation(AuditModelMixin, ValidationModelMixin):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='artifact_relation')
     object_id = models.PositiveIntegerField()
     related = GenericForeignKey('content_type', 'object_id')
+    auto_created = models.BooleanField(
+        default=False,
+        help_text=gettext_lazy('Designates whether this relation was created automatically and may will be removed '
+                               'automatically when the related object is modified.')
+    )
 
     class Meta:
         db_table = 'artifact_relation'
         unique_together = ['artifact', 'object_id', 'content_type']
 
     def __str__(self):
-        return "%s -> %s: %s" % (self.artifact, self.content_type.name, self.related)
+        return f'{self.artifact} -> {self.content_type.name}: {self.related}'
 
     def clean_fields(self, exclude=None):
         try:
@@ -62,7 +64,12 @@ class ArtifactRelation(AuditModelMixin, ValidationModelMixin):
             parent = getattr(obj, 'parent', None)
             if parent:
                 # If object has parent, add artifact to his parent also
-                ar = ArtifactRelation(artifact=self.artifact, content_type=self.content_type, object_id=parent.id)
+                ar = ArtifactRelation(
+                    artifact=self.artifact,
+                    content_type=self.content_type,
+                    object_id=parent.id,
+                    auto_created=True
+                )
                 ar.save()
         except ObjectDoesNotExist as e:
             raise ValidationError("Related object not exists.")
