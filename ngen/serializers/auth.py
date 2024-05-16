@@ -77,6 +77,7 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+
 class UserProfileSerializer(AuditSerializerMixin):
     old_password = serializers.CharField(max_length=128, write_only=True, required=False)
     new_password1 = serializers.CharField(max_length=128, write_only=True, required=False)

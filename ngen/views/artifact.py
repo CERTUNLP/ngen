@@ -28,3 +28,4 @@ class ArtifactMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Artifact.objects.all()
     serializer_class = serializers.ArtifactMinifiedSerializer
     pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]

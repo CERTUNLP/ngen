@@ -28,7 +28,7 @@ class StringType(str, Enum):
 
 class StringIdentifier:
     regex_map = {
-        StringType.DOMAIN: r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$',
+        StringType.DOMAIN: r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})(?=.*[a-zA-Z])[a-z0-9]+$',
         StringType.URL: r'\bhttps?://[^\s/$.?#].[^\s]*\b',
         StringType.EMAIL: r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b',
     }

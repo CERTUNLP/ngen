@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import Token
 
-from ngen.models import Event, Case, CaseTemplate, Taxonomy, Priority, Tlp, User, Feed
+from ngen.models import Event, Case, CaseTemplate, Taxonomy, Priority, Tlp, User, Feed, Artifact
 
 
 class MyToken(Token):
@@ -129,6 +129,46 @@ class TestEvent(APITestCase):
         }
         response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_event_post_domain_artifact_creation(self):
+        '''
+        This will test successfull Event POST
+        '''
+        json_data = {
+            # 'cidr': '2.2.2.2',
+            'domain': 'info.unlp.edu.ar',
+            'notes': 'estas son notas',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
+        }
+        response = self.client.post(self.url_list, data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        artifacts = Event.objects.last().artifacts
+        self.assertEqual(len(artifacts), 1)
+        self.assertEqual(artifacts[0].related[0], Event.objects.last())
+        self.assertEqual(artifacts[0].value, 'info.unlp.edu.ar')
+
+    def test_event_post_cidr_artifact_creation(self):
+        '''
+        This will test successfull Event POST
+        '''
+        json_data = {
+            'cidr': '2.2.2.2',
+            # 'domain': 'info.unlp.edu.ar',
+            'notes': 'estas son notas',
+            'priority': self.priority_url,
+            'tlp': self.tlp_url,
+            'taxonomy': self.taxonomy_url,
+            'feed': self.feed_url
+        }
+        response = self.client.post(self.url_list, data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        artifacts = Event.objects.last().artifacts
+        self.assertEqual(len(artifacts), 1)
+        self.assertEqual(artifacts[0].related[0], Event.objects.last())
+        self.assertEqual(artifacts[0].value, '2.2.2.2')
 
     def test_event_post_with_slugs(self):
         '''
@@ -305,8 +345,7 @@ class TestEvent(APITestCase):
         )
         self.assertEqual(new_case_count, initial_case_count + 1)
         self.assertEqual(Event.objects.last().case, Case.objects.last())
-        self.assertEqual(
-            Case.objects.last().casetemplate_creator, case_template)
+        self.assertEqual(Case.objects.last().casetemplate_creator, case_template)
 
     def test_event_patch(self):
         '''
@@ -327,13 +366,15 @@ class TestEvent(APITestCase):
                                reverse('priority-detail', kwargs={'pk': 1})
 
         json_data = {
-            'priority': another_priority_url
+            'priority': another_priority_url,
+            'domain': 'another.domain.com',
+            'artifact': event.artifacts[0],
         }
 
         response = self.client.patch(self.url_detail(event.pk), data=json_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_event_put(self):
+    def test_event_put_same_automatic_artifact(self):
         '''
         This will test successful Event PUT
         '''
@@ -348,17 +389,60 @@ class TestEvent(APITestCase):
             priority=self.priority,
         )
 
+        actual_artifact = self.base_url + reverse('artifact-detail', kwargs={'pk': event.artifacts[0].pk})
+
         json_data = {
-            'domain': 'info.unlp.edu.ar',
+            'domain': 'another.domain3.com',
             'notes': 'Some notes',
             'priority': 'low',
             'tlp': 'amber',
             'taxonomy': 'phishing',
             'feed': 'shodan',
+            'artifacts': [actual_artifact],
         }
 
         response = self.client.put(self.url_detail(event.pk), data=json_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        artifacts = Event.objects.last().artifacts
+        self.assertEqual(len(artifacts), 1)
+        self.assertEqual(artifacts[0].related[0], Event.objects.last())
+        self.assertEqual(artifacts[0].value, 'another.domain3.com')
+
+    def test_event_put_another_manual_artifact(self):
+        '''
+        This will test successful Event PUT
+        '''
+
+        event = Event.objects.create(
+            domain="*",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            notes="Some notes",
+            priority=self.priority,
+        )
+
+        other_artifact = Artifact.objects.create(value='another.domain5.com')
+        other_artifact_url = self.base_url + reverse('artifact-detail', kwargs={'pk': other_artifact.pk})
+
+        json_data = {
+            'domain': 'another.domain3.com',
+            'notes': 'Some notes',
+            'priority': 'low',
+            'tlp': 'amber',
+            'taxonomy': 'phishing',
+            'feed': 'shodan',
+            'artifacts': [other_artifact_url],
+        }
+
+        response = self.client.put(self.url_detail(event.pk), data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        artifacts = Event.objects.last().artifacts
+        self.assertEqual(len(artifacts), 2)
+        self.assertEqual(artifacts[0].related[0], Event.objects.last())
+        self.assertTrue('another.domain3.com' in [artifact.value for artifact in artifacts])
+        self.assertTrue('another.domain5.com' in [artifact.value for artifact in artifacts])
 
     def test_event_delete(self):
         '''

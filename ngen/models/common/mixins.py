@@ -169,7 +169,7 @@ class EvidenceModelMixin(models.Model):
             self.add_evidence(file)
 
     def evidence_path(self):
-        return 'evidence/%s/%s' % (self.__class__.__name__, self.id)
+        return f'evidence/{self.__class__.__name__}/{self.id}'
 
     def add_evidence(self, file):
         self.evidence.get_or_create(file=file)
@@ -229,6 +229,22 @@ class AddressManager(NetManager):
         elif address.domain:
             return self.domain_children_of(str(address.address))
         return self.none()
+
+    def children_of_cidr(self, cidr: str):
+        return self.cidr_children_of(cidr)
+
+    def children_of_domain(self, domain: str):
+        return self.domain_children_of(domain)
+
+    # def children_of_cidr_or_domain(self, cidr: str, domain: str):
+    #     if cidr:
+    #         return self.cidr_children_of(cidr)
+    #     elif domain:
+    #         return self.domain_children_of(domain)
+    #     return self.none()
+    #
+    def children_of_cidr_or_domain(self, cidr: str, domain: str):
+        return self.children_of_cidr(cidr) | self.children_of_domain(domain)
 
     def defaults(self):
         return self.filter(Q(cidr__prefixlen=0) | Q(domain='*'))
@@ -304,11 +320,13 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
                         {'domain': [msg], 'address_value': [msg]})
 
     def clean_fields(self, exclude=None):
-        self.validate_addresses()
-
+        # Reassign address_value to cidr/domain to validate it
         if not self.assign_address():
             raise ValidationError(
                 gettext('Address must be either a cidr or a domain.'))
+
+        # Validate address_value - cidr/domain consistency
+        self.validate_addresses()
 
         if not self.address.is_valid():
             raise ValidationError(
@@ -496,19 +514,34 @@ class ArtifactRelatedMixin(models.Model):
         self.artifact_update()
 
     def artifact_update(self):
+        """
+        Update or create new artifacts and relations for the instance
+        based on the artifacts_dict property of the instance.
+        """
         if self.enrichable:
-            self.artifact_relation.all().delete()
             for artifact_type, artifact_values in self.artifacts_dict.items():
                 if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
+                    relations = []
                     for artifact_value in artifact_values:
-                        artifact, created = ngen.models.Artifact.objects.get_or_create(value=artifact_value,
-                                                                                       defaults={'type': artifact_type})
-                        ngen.models.ArtifactRelation.objects.get_or_create(
+                        artifact, created = ngen.models.Artifact.objects.get_or_create(
+                            value=artifact_value,
+                            defaults={'type': artifact_type}
+                        )
+                        relation, rel_created = ngen.models.ArtifactRelation.objects.get_or_create(
                             artifact=artifact,
                             content_type=ContentType.objects.get_for_model(self),
-                            object_id=self.id)
+                            object_id=self.id,
+                            auto_created=True
+                        )
+                        relations.append(relation)
                         if not created:
                             artifact.enrich()
+                    # Delete auto_created relations that are not in the new list
+                    self.artifact_relation.filter(
+                        auto_created=True
+                    ).exclude(
+                        pk__in=[relation.pk for relation in relations]
+                    ).delete()
 
     @property
     def artifacts_dict(self) -> dict[str, list]:

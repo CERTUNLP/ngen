@@ -3,7 +3,6 @@ from auditlog.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.views.generic import TemplateView
 from rest_framework import permissions, status, viewsets
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -25,7 +24,7 @@ class AboutView(TemplateView):
 
 class DisabledView(APIView):
     """ View for disabled endpoints """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [permissions.IsAuthenticated]
 
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
@@ -35,6 +34,7 @@ class DisabledView(APIView):
 class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ContentType.objects.all()
     serializer_class = serializers.ContentTypeSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class AuditViewSet(viewsets.ModelViewSet):
@@ -45,7 +45,7 @@ class AuditViewSet(viewsets.ModelViewSet):
 
 class ConstanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ConstanceSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'key'
     lookup_value_regex = '[A-Za-z_][A-Za-z0-9_]*'
 
@@ -90,7 +90,7 @@ class ConstanceViewSet(viewsets.ModelViewSet):
 
 class StringIdentifierViewSet(viewsets.ViewSet):
     serializer_class = serializers.StringIdentifierSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = serializers.StringIdentifierSerializer(data=request.data)

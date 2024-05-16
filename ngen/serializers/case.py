@@ -1,16 +1,16 @@
 from comment.models import Comment
 from constance import config
 from django.utils.translation import gettext
-from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from ngen import models
 from ngen.serializers.common.fields import GenericRelationField, SlugOrHyperlinkedRelatedField
-from ngen.serializers.common.mixins import AuditSerializerMixin, MergeSerializerMixin, EvidenceSerializerMixin
+from ngen.serializers.common.mixins import AuditSerializerMixin, MergeSerializerMixin, EvidenceSerializerMixin, \
+    ArtifactSerializerMixin
 
 
-class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
+class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSerializerMixin, AuditSerializerMixin):
     feed = SlugOrHyperlinkedRelatedField(
         slug_field='slug',
         queryset=models.Feed.objects.all(),
@@ -46,11 +46,6 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
         read_only=True,
         view_name='todo-detail'
     )
-    artifacts = serializers.HyperlinkedRelatedField(
-        many=True,
-        view_name='artifact-detail',
-        queryset=models.Artifact.objects.all()
-    )
     reporter = serializers.HyperlinkedRelatedField(
         default=serializers.CreateOnlyDefault(
             serializers.CurrentUserDefault()),
@@ -74,32 +69,6 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerial
     @staticmethod
     def not_allowed_fields():
         return ['taxonomy', 'feed', 'network']
-
-    def update(self, instance, validated_data):
-        artifacts = validated_data.pop('artifacts', [])
-        ct = ContentType.objects.get_for_model(instance)
-        # remove relations that are not in the new list
-        models.ArtifactRelation.objects.filter(
-            object_id=instance.id,
-            content_type=ct
-        ).exclude(
-            artifact__in=artifacts
-        ).delete()
-        for artifact in artifacts:
-            artifact_obj = models.Artifact.objects.get(pk=artifact.pk)
-            models.ArtifactRelation.objects.get_or_create(
-                artifact=artifact_obj,
-                object_id=instance.id,
-                content_type=ct)
-        return instance
-
-    def create(self, validated_data):
-        artifacts = validated_data.pop('artifacts', [])
-        event = super().create(validated_data)
-        for artifact in artifacts:
-            artifact_obj = models.Artifact.objects.get(pk=artifact.pk)
-            models.ArtifactRelation.objects.create(artifact=artifact_obj, related=event)
-        return event
 
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
@@ -153,7 +122,7 @@ class EventSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audi
         ]
 
 
-class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
+class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSerializerMixin, AuditSerializerMixin):
     events = serializers.HyperlinkedRelatedField(
         many=True,
         queryset=models.Event.objects.all(),
@@ -235,14 +204,11 @@ class CaseSerializerReducedWithEventsCount(CaseSerializerReduced):
 
 
 class CaseTemplateSerializer(AuditSerializerMixin):
-    matching_events_without_case = serializers.SerializerMethodField(read_only=True)
+    matching_events_without_case_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.CaseTemplate
         fields = '__all__'
-
-    def get_matching_events_without_case(self, obj):
-        return obj.matching_events_without_case().count()
 
 
 class EvidenceSerializer(AuditSerializerMixin):
