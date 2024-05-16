@@ -38,9 +38,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         raise ValidationError({"success": False, "msg": "Email already taken"})
 
 
-class UserSerializer(AuditSerializerMixin):
-
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     history = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = '__all__'
@@ -147,7 +147,7 @@ class PermissionSerializer(AuditSerializerMixin):
 class UserMinifiedSerializer(AuditSerializerMixin):
     class Meta:
         model = User
-        fields = ['url', 'username']   
+        fields = ['url', 'username']
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -190,4 +190,3 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
             return super().validate(attrs)
         else:
             raise InvalidToken('No valid token found in cookie \'refresh_token\'')
-

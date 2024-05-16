@@ -26,10 +26,10 @@ from ngen import views
 from project import settings
 
 router = DefaultRouter()
-router.register(r'administration/tlp', views.TlpViewSet)#
-router.register(r'administration/feed', views.FeedViewSet)#
-router.register(r'administration/priority', views.PriorityViewSet)#
-router.register(r'state', views.StateViewSet, basename='state')#
+router.register(r'administration/tlp', views.TlpViewSet)
+router.register(r'administration/feed', views.FeedViewSet)
+router.register(r'administration/priority', views.PriorityViewSet)
+router.register(r'state', views.StateViewSet, basename='state')
 router.register(r'edge', views.EdgeViewSet, basename='edge')
 router.register(r'template', views.CaseTemplateViewSet, basename='casetemplate')
 router.register(r'case', views.CaseViewSet, basename='case')
@@ -58,10 +58,10 @@ router.register(r'groups', views.GroupViewSet, basename='group')
 router.register(r'permission', views.PermissionViewSet, basename='permission')
 router.register(r'contenttype', views.ContentTypeViewSet, basename='contenttype')
 # router.register(r"login", views.LoginViewSet, basename="login")
-router.register(r'minified/taxonomy', views.TaxonomyMinifiedViewSet, basename='minified-taxonomy') 
-router.register(r'minified/tlp', views.TlpMinifiedViewSet, basename='minified-tlp') 
+router.register(r'minified/taxonomy', views.TaxonomyMinifiedViewSet, basename='minified-taxonomy')
+router.register(r'minified/tlp', views.TlpMinifiedViewSet, basename='minified-tlp')
 router.register(r'minified/feed', views.FeedMinifiedViewSet, basename='minified-feed')
-router.register(r'minified/priority', views.PriorityMinifiedViewSet, basename='minified-priority') 
+router.register(r'minified/priority', views.PriorityMinifiedViewSet, basename='minified-priority')
 router.register(r'minified/state', views.StateMinifiedViewSet, basename='minified-state')
 router.register(r'minified/Entity', views.EntityMinifiedViewSet, basename='minified-entity')
 router.register(r'minified/Contact', views.ContactMinifiedViewSet, basename='minified-contact')
@@ -81,7 +81,8 @@ urlpatterns = [
     path('api/comment/', comment_views.CommentList.as_view(), name='comment-list'),
     path('api/comment/create/', comment_views.CommentCreate.as_view(), name='comment-create'),
     path('api/comment/<int:pk>/', comment_views.CommentDetail.as_view(), name='comment-detail'),
-    path('api/user/<int:pk>/audit/', views.tools.UserAuditsListView.as_view({'get': 'list'}), name='user-logentry-list'),
+    path('api/user/<int:pk>/audit/', views.tools.UserAuditsListView.as_view({'get': 'list'}),
+         name='user-logentry-list'),
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token-create'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token-verify'),
