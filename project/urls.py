@@ -26,10 +26,10 @@ from ngen import views
 from project import settings
 
 router = DefaultRouter()
-router.register(r'administration/tlp', views.TlpViewSet)  #
-router.register(r'administration/feed', views.FeedViewSet)  #
-router.register(r'administration/priority', views.PriorityViewSet)  #
-router.register(r'state', views.StateViewSet, basename='state')  #
+router.register(r'administration/tlp', views.TlpViewSet)
+router.register(r'administration/feed', views.FeedViewSet)
+router.register(r'administration/priority', views.PriorityViewSet)
+router.register(r'state', views.StateViewSet, basename='state')
 router.register(r'edge', views.EdgeViewSet, basename='edge')
 router.register(r'template', views.CaseTemplateViewSet, basename='casetemplate')
 router.register(r'case', views.CaseViewSet, basename='case')
