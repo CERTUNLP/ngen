@@ -1,11 +1,11 @@
 import constance
 from auditlog.models import LogEntry
+from django.contrib.contenttypes.models import ContentType
+from django.views.generic import TemplateView
 from rest_framework import permissions, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.contenttypes.models import ContentType
-from django.views.generic import TemplateView
 
 from ngen import models, serializers
 from ngen.utils import get_settings
@@ -103,7 +103,8 @@ class StringIdentifierViewSet(viewsets.ViewSet):
     def list(self, request, format=None):
         return Response(serializers.StringIdentifierSerializer().list(),
                         status=status.HTTP_200_OK)
-    
+
+
 class UserAuditsListView(viewsets.ModelViewSet):
     serializer_class = serializers.AuditSerializer
     permission_classes = [permissions.IsAuthenticated]

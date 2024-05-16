@@ -39,8 +39,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     history = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = '__all__'
@@ -75,7 +75,6 @@ class UserSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
         instance.save()
         return instance
-
 
 
 class UserProfileSerializer(AuditSerializerMixin):
@@ -147,7 +146,7 @@ class PermissionSerializer(AuditSerializerMixin):
 class UserMinifiedSerializer(AuditSerializerMixin):
     class Meta:
         model = User
-        fields = ['url', 'username']   
+        fields = ['url', 'username']
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -190,4 +189,3 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
             return super().validate(attrs)
         else:
             raise InvalidToken('No valid token found in cookie \'refresh_token\'')
-
