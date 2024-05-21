@@ -33,4 +33,4 @@ jobs:
         done
     - name: Run tests
       run: |
-        docker exec "$container_name" ./manage.py test ngen.tests
+        docker exec "$container_name" ./manage.py test ngen.tests --parallel auto
