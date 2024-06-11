@@ -83,7 +83,12 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
 
     @property
     def blocked(self):
-        return self.solve_date is not None
+        """
+        Case is blocked if was on a blocked state and is still on a blocked state.
+        This allows to edit the case when state changes to blocked and allows to edit the case when state changes from
+        blocked to an unblocked state.
+        """
+        return ngen.models.State.objects.get(pk=self.initial_value('state')).blocked and self.state.blocked
 
     @property
     def artifacts_dict(self) -> dict[str, list]:

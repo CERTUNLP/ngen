@@ -103,22 +103,3 @@ class MergeSerializerMixin:
                     extra_kwargs[field.name] = kwargs
 
         return extra_kwargs
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        if self.instance and self.instance.merged:
-            raise ValidationError(
-                gettext('Merged instances can\'t be modified'))
-        if self.instance and self.instance.blocked:
-            allowed_fields = self.allowed_fields()
-            for attr in list(attrs):
-                if attr not in allowed_fields:
-                    if config.ALLOWED_FIELDS_EXCEPTION:
-                        raise ValidationError(
-                            {attr: gettext('%s of blocked instances can\'t be modified') % attr})
-                    attrs.pop(attr)
-        return attrs
-
-    @staticmethod
-    def allowed_fields():
-        raise NotImplementedError

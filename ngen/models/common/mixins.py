@@ -112,6 +112,13 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
         raise NotImplementedError
 
     @property
+    def allowed_fields(self) -> bool:
+        key = f"ALLOWED_FIELDS_{self.__class__.__name__.upper()}"
+        values = getattr(config, key, []).split(',')
+        values += [f'{v}_id' for v in values]
+        return values
+
+    @property
     def mergeable(self) -> bool:
         return not self.merged and not self.blocked
 
@@ -149,6 +156,21 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
     def delete_children(self):
         for child in self.get_descendants():
             child.delete()
+
+    @hook(BEFORE_UPDATE)
+    def check_allowed_fields(self, exclude=None):
+        if self.merged:
+            raise ValidationError(gettext(f"Merged instances can\'t be modified: {self}"))
+        if self.blocked:
+            exceptions = {}
+            for attr in self.__dict__:
+                if attr not in self.allowed_fields and self.has_changed(attr):
+                    if config.ALLOWED_FIELDS_EXCEPTION:
+                        exceptions[attr] = [gettext(f'{attr} of blocked instances can\'t be modified')]
+                    else:
+                        self.__dict__[attr] = self.initial_value(attr)
+            if exceptions:
+                raise ValidationError(exceptions)
 
 
 class EvidenceModelMixin(models.Model):
