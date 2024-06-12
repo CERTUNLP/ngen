@@ -10,7 +10,11 @@ from rest_framework.response import Response
 from django.urls import resolve
 from django.core.exceptions import ObjectDoesNotExist
 from ngen import models
-from ngen.serializers.communication_channel import CommunicationChannelSerializer
+from ngen.serializers.communication_channel import (
+    CommunicationChannelSerializer,
+    CommunicationChannelReducedSerializer,
+)
+from ngen.serializers.communication_type import CommunicationTypeSerializer
 
 
 class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
@@ -39,11 +43,14 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
         Example path: /api/some_channelable/1/communication_channels/
         """
         channelable = self.get_object()
-        communication_channels = channelable.communication_channels.all()
-        serializer = CommunicationChannelSerializer(
-            communication_channels, many=True, context={"request": request}
+        communication_channels = channelable.communication_channels.all().order_by("id")
+        paginated_channels = self.paginator.paginate_queryset(
+            communication_channels, request
         )
-        return Response(serializer.data)
+        serializer = CommunicationChannelReducedSerializer(
+            paginated_channels, many=True, context={"request": request}
+        )
+        return self.paginator.get_paginated_response(serializer.data)
 
     @communication_channels.mapping.post
     def communication_channels_create(self, request, pk=None):
@@ -203,4 +210,31 @@ class CommunicationChannelViewSet(viewsets.ModelViewSet):
     search_fields = ["id", "name", "message_id"]
     ordering_fields = ["id", "created", "modified", "name", "message_id"]
     serializer_class = CommunicationChannelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    serializer_class_by_action = {
+        "list": CommunicationChannelReducedSerializer,
+    }
+
+    def get_serializer_class(self):
+        """
+        Use reduced serializer for list action, complete serializer for other actions
+        """
+        return self.serializer_class_by_action.get(self.action, self.serializer_class)
+
+
+class CommunicationTypeViewSet(viewsets.ModelViewSet):
+    """
+    CommunicationTypeViewSet class
+    """
+
+    queryset = models.CommunicationType.objects.all().order_by("id")
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter,
+    ]
+    search_fields = ["type"]
+    ordering_fields = ["id", "created", "modified", "type"]
+    serializer_class = CommunicationTypeSerializer
     permission_classes = [permissions.IsAuthenticated]

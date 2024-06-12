@@ -1,5 +1,6 @@
 # pylint: disable=protected-access
 from rest_framework import serializers
+from ngen.serializers.communication_type import CommunicationTypeSerializer
 from ngen.serializers.constituency import ContactSerializer
 from ngen import models
 from ngen.serializers.case import EventSerializerReduced
@@ -85,6 +86,7 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
     communication_types = serializers.ListField(
         child=serializers.IntegerField(), write_only=True, required=True
     )
+    channel_types = serializers.SerializerMethodField(read_only=True)
     additional_contacts = serializers.ListField(
         child=serializers.IntegerField(), write_only=True, required=False
     )
@@ -97,6 +99,11 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
         return GenericRelationField(read_only=True).generic_detail_link(
             obj.channelable, self.context.get("request")
         )
+
+    def get_channel_types(self, obj):
+        return CommunicationTypeSerializer(
+            obj.communication_types.all(), many=True
+        ).data
 
     def to_representation(self, instance):
         """
@@ -131,7 +138,24 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
         if ids_not_found:
             raise serializers.ValidationError(
                 {
-                    field_name:
-                    f"{model._meta.verbose_name_plural.title()} with IDs {ids_not_found} not found"
+                    field_name: f"{model._meta.verbose_name_plural.title()} with IDs {ids_not_found} not found"
                 }
             )
+
+
+class CommunicationChannelReducedSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    CommunicationChannelReducedSerializer class
+    """
+
+    channelable = serializers.SerializerMethodField(read_only=True)
+    communication_types = CommunicationTypeSerializer(many=True)
+
+    class Meta:
+        model = models.CommunicationChannel
+        exclude = ["content_type", "object_id", "additional_contacts"]
+
+    def get_channelable(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_link(
+            obj.channelable, self.context.get("request")
+        )

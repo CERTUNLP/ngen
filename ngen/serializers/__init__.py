@@ -10,3 +10,4 @@ from .taxonomy import *
 from .tools import *
 from .dashboard import *
 from .communication_channel import *
+from .communication_type import *

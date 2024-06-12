@@ -552,9 +552,31 @@ class TestCommunicationChannel(APITestCase):
 
         response = self.client.get(self.nested_url_list("case", self.case_1.pk))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]["name"], communication_channels[0].name)
-        self.assertEqual(response.data[1]["name"], communication_channels[2].name)
+        self.assertEqual(response.data["count"], 2)
+        self.assertEqual(len(response.data["results"]), 2)
+        self.assertEqual(
+            response.data["results"][0]["name"], communication_channels[0].name
+        )
+        self.assertEqual(
+            response.data["results"][1]["name"], communication_channels[1].name
+        )
+
+    def test_nested_communication_channel_get_list_pagination(self):
+        """
+        This will test successful nested Communication Channel GET list pagination
+        """
+        for i in range(12):
+            CommunicationChannel.objects.create(
+                name=f"Test Communication Channel {i}",
+                message_id=f"{i}",
+                channelable=self.case_1,
+            )
+
+        response = self.client.get(self.nested_url_list("case", self.case_1.pk))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 12)
+        self.assertEqual(len(response.data["results"]), 10)
+        self.assertIsNotNone(response.data["next"])
 
     def test_nested_communication_channel_get_detail(self):
         """
