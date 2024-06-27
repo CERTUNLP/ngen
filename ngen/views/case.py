@@ -23,7 +23,7 @@ class EventViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["taxonomy__name", "feed__name", "address_value", "cidr", "domain"]
+    search_fields = ["taxonomy__name", "feed__name", "address_value", "cidr", "domain", "uuid"]
     filterset_class = EventFilter
     ordering_fields = ["id", "date", "priority", "reporter", "tlp", "taxonomy", "feed", "created"]
     serializer_class = serializers.EventSerializer
@@ -38,7 +38,7 @@ class CaseViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["events__cidr", "events__domain"]
+    search_fields = ["events__cidr", "events__domain", "name", "uuid"]
     filterset_class = CaseFilter
     ordering_fields = ["id", "created", "modified", "attend_date", "solve_date", "priority", "state",
                        "casetemplate_creator", "user_creator", "assigned"]
