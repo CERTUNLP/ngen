@@ -4,9 +4,7 @@
         <h5>{% translate 'Event' %}: {{ event.uuid }}</h5>
         <small class="lead">
             <strong>{% translate 'Taxonomy' %}:</strong>
-            {% if event.taxonomy.parent %}
-                {{ event.taxonomy.parent }} ({{ event.taxonomy.parent.type }}) ->
-            {% endif %}{{ event.taxonomy }} ({{ event.taxonomy.type }})
+            {% if event.taxonomy.parent %} {{ event.taxonomy.parent }} ({{ event.taxonomy.parent.type }}) -> {% endif %}{{ event.taxonomy }} ({{ event.taxonomy.type }})
         </small>
         <br>
         <small class="lead"><strong>{% translate 'Affected resources' %}:</strong>

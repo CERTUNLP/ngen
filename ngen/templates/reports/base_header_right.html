@@ -1,15 +1,17 @@
 {% load i18n %}
 {% language lang %}
+{% translate 'Priority' as pname %}
+{% translate priority.name as pvalue %}
 <td align="right">
     <div class="right-header">
         {% if tlp %}
             <h6 style="color: {{ tlp.color }}">
-                TLP <br> {{ tlp }}
+                TLP: <br> {{ tlp | upper }}
             </h6>
         {% endif %}
         {% if priority %}
             <h6 style="color: {{ priority.color }}">
-                {% translate 'Priority' %} <br> {% translate priority.name %}
+                {{ pname | upper }} <br> {{ pvalue | upper }}
             </h6>
         {% endif %}
     </div>
