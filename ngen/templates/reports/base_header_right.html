@@ -4,12 +4,12 @@
     <div class="right-header">
         {% if tlp %}
             <h6 style="color: {{ tlp.color }}">
-                TLP {{ tlp }}
+                TLP <br> {{ tlp }}
             </h6>
         {% endif %}
         {% if priority %}
             <h6 style="color: {{ priority.color }}">
-                {% translate 'Priority' %} {{ priority }}
+                {% translate 'Priority' %} <br> {% translate priority.name %}
             </h6>
         {% endif %}
     </div>
