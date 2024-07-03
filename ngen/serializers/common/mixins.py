@@ -83,6 +83,8 @@ class ArtifactSerializerMixin(serializers.HyperlinkedModelSerializer):
 
 
 class MergeSerializerMixin:
+    blocked = serializers.Field(source='blocked')
+
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
         try:

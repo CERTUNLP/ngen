@@ -56,7 +56,9 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
 
     class Meta:
         model = models.Event
-        fields = '__all__'
+        fields = ('url', 'history', 'artifacts', 'feed', 'tlp', 'priority', 'taxonomy', 'evidence', 'children', 'todos',
+                  'reporter', 'comments', 'created', 'modified', 'cidr', 'domain', 'address_value', 'date',
+                  'evidence_file_path', 'notes', 'uuid', 'parent', 'case', 'tasks', 'blocked')
 
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
@@ -153,9 +155,12 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSeri
 
     class Meta:
         model = models.Case
-        fields = '__all__'
+        fields = ('url', 'history', 'artifacts', 'events', 'children', 'evidence', 'comments', 'user_creator', 'state',
+                  'created', 'modified', 'date', 'name', 'attend_date', 'solve_date', 'report_message_id', 'raw',
+                  'uuid', 'lifecycle', 'notification_count', 'parent', 'priority', 'tlp', 'template_creator',
+                  'assigned', 'blocked')
         read_only_fields = ['attend_date', 'solve_date',
-                            'report_message_id', 'raw', 'created_by', 'notification_count']
+                            'report_message_id', 'raw', 'created_by', 'notification_count', 'blocked']
 
     def get_evidence(self, obj):
         return GenericRelationField(read_only=True).generic_detail_links(obj.evidence_all, self.context.get('request'))
