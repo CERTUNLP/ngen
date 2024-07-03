@@ -1,7 +1,7 @@
+from constance.test import override_config
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from constance.test import override_config
 
 from ngen.models import Evidence, ContentType, Tlp, Priority, \
     Taxonomy, Event, Feed, State, Case, CaseTemplate, User, Contact, Task, Playbook, Network, NetworkEntity
@@ -9,8 +9,7 @@ from ngen.models import Evidence, ContentType, Tlp, Priority, \
 
 class AnnouncementTestCase(TestCase):
     fixtures = ["priority.json", "tlp.json", "user.json", "state.json", "edge.json",
-                "feed.json", "taxonomy.json", "case_template.json"
-                ]
+                "feed.json", "taxonomy.json", "case_template.json"]
 
     def setUp(self):
         """SetUp for case and event creation in the tests"""
