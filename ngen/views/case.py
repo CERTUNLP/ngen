@@ -40,7 +40,7 @@ class CaseViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ["events__cidr", "events__domain", "name", "uuid"]
     filterset_class = CaseFilter
-    ordering_fields = ["id", "created", "modified", "attend_date", "solve_date", "priority", "state",
+    ordering_fields = ["id", "date", "created", "modified", "attend_date", "solve_date", "priority", "state",
                        "casetemplate_creator", "user_creator", "assigned"]
     serializer_class = serializers.CaseSerializer
     permission_classes = [permissions.IsAuthenticated]

@@ -4,15 +4,13 @@
         <h5>{% translate 'Event' %}: {{ event.uuid }}</h5>
         <small class="lead">
             <strong>{% translate 'Taxonomy' %}:</strong>
-            {% if event.taxonomy.parent %}
-                {{ event.taxonomy.parent }} ({{ event.taxonomy.parent.type }}) ->
-            {% endif %}{{ event.taxonomy }} ({{ event.taxonomy.type }})
+            {% if event.taxonomy.parent %} {{ event.taxonomy.parent }} ({{ event.taxonomy.parent.type }}) -> {% endif %}{{ event.taxonomy }} ({{ event.taxonomy.type }})
         </small>
         <br>
         <small class="lead"><strong>{% translate 'Affected resources' %}:</strong>
             {{ event.address }}</small>
         <br>
-        <small class="lead"><strong>{% translate 'Date' %}:</strong>
+        <small class="lead"><strong>{% translate 'Event Date' %}:</strong>
             {{ event.date | date:"Y-m-d H:i:s" }} UTC</small>
         <br>
     {% endlanguage %}
