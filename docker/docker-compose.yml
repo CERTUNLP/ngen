@@ -114,9 +114,23 @@ services:
             - "443:443"
         depends_on:
             - ngen-django
-networks:
-    default:
-        name: ngen
+    ngen-frontend:
+        image: ngen-frontend:latest
+        build:
+            context: ../frontend
+            dockerfile: Dockerfile
+        volumes:
+            - '../frontend/:/app'
+            - '/app/node_modules'
+        ports:
+            - "3000:3000"
+        environment:
+            - REACT_APP_BASE_URL=/metrics
+            - REACT_APP_API_SERVER=http://localhost:8000/api/
+            - CHOKIDAR_USEPOLLING=true
+# networks:
+#     default:
+#         name: ngen
 #    ngen-cortex:
 #        image: thehiveproject/cortex:3.1-withdeps
 #        restart: on-failure
