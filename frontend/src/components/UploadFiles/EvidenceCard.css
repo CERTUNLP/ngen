@@ -1,0 +1,76 @@
+.dropzone {
+    border: 2px dashed #ddd;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.evidence-container {
+    max-height: 400px; /* Ajusta la altura según sea necesario */
+    overflow-y: auto;
+    overflow-x: hidden; /* Desactiva el desplazamiento horizontal */
+    padding: 10px;
+}
+
+.file-card {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.file-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.file-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file-details {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.file-details.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+    cursor: default;
+}
+
+.file-icon {
+    font-size: 24px;
+    margin-right: 10px;
+    color: #007bff;
+}
+
+.file-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.file-meta {
+    color: #666;
+    margin-bottom: 0;
+}
+
+.delete-button {
+    margin-left: 10px;
+}
+
+.flex-fill {
+    flex: 1;
+}
+
+.mr-auto {
+    margin-right: auto;
+}
+
+
