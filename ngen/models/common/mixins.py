@@ -158,7 +158,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
 
     @hook(BEFORE_UPDATE)
     def check_allowed_fields(self, exclude=None):
-        if self.merged and self.__class__.objects.filter(pk=self.pk).merged:
+        if self.merged and self.__class__.objects.filter(pk=self.pk).first().merged:
             raise ValidationError({'__all__': gettext(f"Merged instances can\'t be modified: {self}, {self.parent}, {self.children}")})
         if self.blocked:
             exceptions = {}
