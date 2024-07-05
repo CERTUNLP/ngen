@@ -135,7 +135,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
                 {'parent': gettext('The parent is not mergeable or is blocked.')})
         if child.blocked:
             raise ValidationError(
-                gettext('The child is not mergeable or is blocked.'))
+                {'__all__': gettext('The child is not mergeable or is blocked.')})
         return True
 
     def merge(self, child: 'MergeModelMixin'):
@@ -149,8 +149,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
             if self.parent and self.parent.mergeable_with(self) and not self._state.adding:
                 self.parent.merge(self)
         else:
-            raise ValidationError(
-                gettext('Parent of merged instances can\'t be modified'))
+            raise ValidationError({'__all__': gettext('Parent of merged instances can\'t be modified')})
 
     @hook(BEFORE_DELETE)
     def delete_children(self):
@@ -160,13 +159,13 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
     @hook(BEFORE_UPDATE)
     def check_allowed_fields(self, exclude=None):
         if self.merged:
-            raise ValidationError(gettext(f"Merged instances can\'t be modified: {self}"))
+            raise ValidationError({'__all__': gettext(f"Merged instances can\'t be modified: {self}")})
         if self.blocked:
             exceptions = {}
             for attr in self.__dict__:
                 if attr not in self.allowed_fields and self.has_changed(attr):
                     if config.ALLOWED_FIELDS_EXCEPTION:
-                        exceptions[attr] = [gettext(f'{attr} of blocked instances can\'t be modified')]
+                        exceptions[attr] = [{'__all__': gettext(f'{attr} of blocked instances can\'t be modified')}]
                     else:
                         self.__dict__[attr] = self.initial_value(attr)
             if exceptions:
