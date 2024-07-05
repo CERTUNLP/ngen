@@ -369,7 +369,12 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
         for comment in child.comments.all():
             self.comments.add(comment)
         for artifact_relation in child.artifact_relation.all():
-            self.artifact_relation.add(artifact_relation)
+            ngen.models.ArtifactRelation.objects.get_or_create(
+                artifact=artifact_relation.artifact,
+                object_id=self.id,
+                content_type=ContentType.objects.get_for_model(self),
+                defaults={'auto_created': False}
+            )
 
     def email_contacts(self):
         contacts = []
