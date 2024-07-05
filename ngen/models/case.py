@@ -13,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.mail import DNS_NAME
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
@@ -324,10 +325,10 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
                 date_limit = datetime.now() - timedelta(minutes=minutes_limit)
                 extra_filters.update({'date__gte': date_limit})
             event = self.__class__.objects.filter(
+                Q(case__isnull=True) | Q(case__state__blocked=False),
                 cidr=self.cidr,
                 domain=self.domain,
                 taxonomy=self.taxonomy,
-                case__state__blocked=False,
                 **extra_filters
             ).order_by('id').last()
 
