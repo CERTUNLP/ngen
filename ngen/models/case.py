@@ -324,7 +324,7 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
                 date_limit = datetime.now() - timedelta(minutes=minutes_limit)
                 extra_filters.update({'date__gte': date_limit})
             event = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain, taxonomy=self.taxonomy,
-                                                  **extra_filters).first().order_by('id').last()
+                                                  **extra_filters).order_by('id').last()
 
             if event:
                 if self.parent is None:
