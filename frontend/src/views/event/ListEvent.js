@@ -356,7 +356,7 @@ const ListEvent = () => {
                 title='Mergear'
                 onClick={() => mergeConfirm()}>
                 <i className="fa fa-code-branch" />
-                {t('Merge')}&nbsp;
+                {t('ngen.merge')}&nbsp;
                 <Badge
                   className="badge mr-1" >
                   {selectedEvent.length}

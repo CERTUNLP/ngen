@@ -9,7 +9,7 @@ const ModalCreateCase = ({ showModalCase, setShowModalCase, caseItem, states, se
   return (
     <Modal show={showModalCase} size="lg" onHide={() => setShowModalCase(false)} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>
-        <Modal.Title>{t('ngen.add_eventcase')}</Modal.Title>
+        <Modal.Title>{t('ngen.add.eventcase')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div id="example-collapse-text">
