@@ -120,7 +120,7 @@ const FormEvent = (props) => {
             getCase(props.body.case).then((response) => {
                 setCaseToLink({
                     value: response.data.url, name: response.data.name, date: response.data.date,
-                    priority: props.priorityNames[response.data.priority], tlp: props.tlpNames[response.data.tlp].name,
+                    priority: props.priorityNames[response.data.priority], tlp: response.data.tlp ? props.tlpNames[response.data.tlp].name : "",
                     state: allStates[response.data.state], user: props.userNames[response.data.user_creator]
                 })
             })
@@ -407,38 +407,38 @@ const FormEvent = (props) => {
                     </Form>
                 </Card.Body>
             </Card>
-            {props.disableCardArtifacts ? 
-            ""
-            :
-            <Card>
-                <Card.Header>
-                    <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                    <Form.Label>{t('cidr.domain.email')}<b style={{ color: "red" }}>*</b></Form.Label>
-                    <Row>
-                        <Col sm={12} lg={6}>
-                            <Form.Group controlId="formGridAddress1">
-                                <Form.Control
-                                    placeholder={t('ngen.enter.ipv5.ipv6.domain.email')}
-                                    maxLength="150"
-                                    value={props.body.address_value}
-                                    disabled={(props.body.children !== [] && props.body.children.length > 0) ? true : false}
-                                    onChange={(e) => completeFieldStringIdentifier(e)}
-                                    isInvalid={showErrorMessage}
-                                    name="address_value" />
-                                {showErrorMessage ? <div className="invalid-feedback"> {t('error.ipv4.ipv6.domain')}</div> : ""}
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                </Card.Body>
-            </Card>
+            {props.disableCardArtifacts ?
+                ""
+                :
+                <Card>
+                    <Card.Header>
+                        <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                        <Form.Label>{t('cidr.domain.email')}<b style={{ color: "red" }}>*</b></Form.Label>
+                        <Row>
+                            <Col sm={12} lg={6}>
+                                <Form.Group controlId="formGridAddress1">
+                                    <Form.Control
+                                        placeholder={t('ngen.enter.ipv5.ipv6.domain.email')}
+                                        maxLength="150"
+                                        value={props.body.address_value}
+                                        disabled={(props.body.children !== [] && props.body.children.length > 0) ? true : false}
+                                        onChange={(e) => completeFieldStringIdentifier(e)}
+                                        isInvalid={showErrorMessage}
+                                        name="address_value" />
+                                    {showErrorMessage ? <div className="invalid-feedback"> {t('error.ipv4.ipv6.domain')}</div> : ""}
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    </Card.Body>
+                </Card>
             }
-            {props.disableCardCase ? 
-            ""
-            :
-            <SmallCaseTable readCase={caseToLink.value} modalCaseDetail={tableCaseDetail} disableLink={true}
-                modalCase={modalCase} modalListCase={modalListCase} deleteCaseFromForm={deleteCaseFromForm} />
+            {props.disableCardCase ?
+                ""
+                :
+                <SmallCaseTable readCase={caseToLink.value} modalCaseDetail={tableCaseDetail} disableLink={true}
+                    modalCase={modalCase} modalListCase={modalListCase} deleteCaseFromForm={deleteCaseFromForm} />
             }
 
             <ModalCreateCase showModalCase={showModalCase} setShowModalCase={setShowModalCase} caseItem={caseItem}
@@ -512,10 +512,10 @@ const FormEvent = (props) => {
                 </Card.Body>
             </Card>
             {props.disableCardEvidence ?
-            ""
-            :
-            <EvidenceCard evidences={props.evidence} setEvidences={props.setEvidence} setUpdateCase={props.setUpdateEvidence}
-                updateCase={props.updateEvidence} />
+                ""
+                :
+                <EvidenceCard evidences={props.evidence} setEvidences={props.setEvidence} setUpdateCase={props.setUpdateEvidence}
+                    updateCase={props.updateEvidence} />
             }
 
             <CreateArtifactModal show={modalCreate} onHide={() => setModalCreate(false)} value={value} setValue={setValue}
