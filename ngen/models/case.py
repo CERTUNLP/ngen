@@ -312,6 +312,10 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     def enrichable(self):
         return self.mergeable
 
+    @property
+    def network(self):
+        return ngen.models.Network.objects.parent_of(self).first()
+
     @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
         event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, cidr=self.cidr, domain=self.domain,
