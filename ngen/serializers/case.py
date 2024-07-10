@@ -52,18 +52,18 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
         queryset=models.User.objects.all(),
         view_name='user-detail'
     )
-    network = serializers.HyperlinkedRelatedField(
-        many=False,
-        read_only=True,
-        view_name='network-detail'
-    )
+    # network = serializers.HyperlinkedRelatedField(
+    #     many=False,
+    #     read_only=True,
+    #     view_name='network-detail'
+    # )
     comments = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Event
         fields = ('url', 'history', 'artifacts', 'feed', 'tlp', 'priority', 'taxonomy', 'evidence', 'children', 'todos',
                   'reporter', 'comments', 'created', 'modified', 'cidr', 'domain', 'address_value', 'date',
-                  'evidence_file_path', 'notes', 'uuid', 'parent', 'case', 'tasks', 'blocked', 'network')
+                  'evidence_file_path', 'notes', 'uuid', 'parent', 'case', 'tasks', 'blocked')
 
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
