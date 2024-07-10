@@ -1,6 +1,4 @@
-from django.db.models import Q
 from rest_framework import serializers
-from ngen.models import Event
 from ngen.serializers import (
     EventSerializerReduced,
     CaseSerializerReducedWithEventsCount,
@@ -72,11 +70,11 @@ class NetworkEntitiesWithEventsSerializer(NetworkEntitySerializerReduced):
 
             if domain is not None:
                 domain_list.append(domain)
-                entity_events += Event.objects.children_of_domain(domain)
+                entity_events += events.filter(domain__endswith=domain).order_by('domain').all()
 
             if cidr is not None:
                 cidr_list.append(cidr)
-                entity_events += Event.objects.children_of_cidr(cidr)
+                entity_events += events.filter(cidr__net_contained_or_equal=cidr).order_by('cidr').all()
 
         # This uses exact match, but we may want entity_events to be a subtree search:
         # entity_events = events.filter(Q(domain__in=domain_list) | Q(cidr__in=cidr_list))
