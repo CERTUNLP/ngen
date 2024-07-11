@@ -1,4 +1,7 @@
+import ipaddress
+from django.db.models import Q
 from rest_framework import serializers
+from ngen import models
 from ngen.serializers import (
     EventSerializerReduced,
     CaseSerializerReducedWithEventsCount,
@@ -60,28 +63,68 @@ class NetworkEntitiesWithEventsSerializer(NetworkEntitySerializerReduced):
 
         events = self.context.get("events")
 
+        # print(events.all())
+
         domain_list = []
         cidr_list = []
         entity_events = []
 
-        for network in network_entity.networks.all():
-            domain = network.domain
-            cidr = network.cidr
+        # networks = models.Network.objects.parents_of_many(events)
+        # print(networks)
+        # network_entities = models.NetworkEntity.objects.filter(networks__in=networks).prefetch_related('networks')
+        #
+        # for network_entity in network_entities:
+        #     for network in network_entity.networks.all():
+        #         domain = network.domain
+        #         cidr = network.cidr
+        #
+        #         if domain is not None:
+        #             domain_list.append(domain)
+        #             entity_events += models.Event.objects.children_of_domain(domain)
+        #
+        #         if cidr is not None:
+        #             cidr_list.append(cidr)
+        #             entity_events += models.Event.objects.children_of_cidr(cidr)
 
-            if domain is not None:
-                domain_list.append(domain)
-                entity_events += events.filter(domain__endswith=domain).order_by('domain').all()
 
-            if cidr is not None:
-                cidr_list.append(cidr)
-                entity_events += events.filter(cidr__net_contained_or_equal=cidr).order_by('cidr').all()
+        # for network in network_entity.networks.all():
+        #     domain = network.domain
+        #     cidr = network.cidr
+        #
+        #     if domain is not None:
+        #         domain_list.append(domain)
+        #         entity_events += models.Event.objects.children_of_domain(domain)
+        #
+        #     if cidr is not None:
+        #         cidr_list.append(cidr)
+        #         entity_events += models.Event.objects.children_of_cidr(cidr)
 
         # This uses exact match, but we may want entity_events to be a subtree search:
         # entity_events = events.filter(Q(domain__in=domain_list) | Q(cidr__in=cidr_list))
 
+
+        networks = network_entity.networks.all()
+
+        for event in events.all():
+            # print(event)
+            for network in networks:
+                # print(network)
+                domain = network.domain
+                cidr = network.cidr
+                # print(domain, cidr, event.domain, event.cidr)
+
+                if domain and event.domain:
+                    if event.domain.endswith(domain):
+                        entity_events.append(event)
+                elif cidr and event.cidr:
+                    if ipaddress.ip_address(event.cidr) in ipaddress.ip_network(cidr):
+                        entity_events.append(event)
+
         return EventSerializerReduced(
             entity_events, many=True, context=self.context
         ).data
+        # print(entity_events)
+        # return len(entity_events)
 
 
 class NetworkEntityDashboardSerializer(DashboardSerializer):
