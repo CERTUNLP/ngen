@@ -236,6 +236,12 @@ class AddressManager(NetManager):
             return self.domain_parents_of(str(address.address))
         return self.none()
 
+    def parents_of_many(self, addresses: list['AddressModelMixin']):
+        parents = self.none()
+        for address in addresses:
+            parents |= self.parents_of(address)
+        return parents
+
     def parent_of(self, address: 'AddressModelMixin'):
         return self.parents_of(address)
 
