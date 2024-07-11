@@ -117,7 +117,7 @@ class NetworkEntitiesWithEventsSerializer(NetworkEntitySerializerReduced):
                     if event.domain.endswith(domain):
                         entity_events.append(event)
                 elif cidr and event.cidr:
-                    if ipaddress.ip_address(event.cidr) in ipaddress.ip_network(cidr):
+                    if ipaddress.ip_network(event.cidr) in ipaddress.ip_network(cidr):
                         entity_events.append(event)
 
         return EventSerializerReduced(
