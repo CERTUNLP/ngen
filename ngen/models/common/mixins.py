@@ -243,7 +243,7 @@ class AddressManager(NetManager):
         return parents
 
     def parent_of(self, address: 'AddressModelMixin'):
-        return self.parents_of(address)
+        return self.parents_of(address)[:1]
 
     def cidr_children_of(self, cidr: str):
         return self.filter(cidr__net_contained_or_equal=cidr).order_by('cidr')

@@ -63,7 +63,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
         model = models.Event
         fields = ('url', 'history', 'artifacts', 'feed', 'tlp', 'priority', 'taxonomy', 'evidence', 'children', 'todos',
                   'reporter', 'comments', 'created', 'modified', 'cidr', 'domain', 'address_value', 'date',
-                  'evidence_file_path', 'notes', 'uuid', 'parent', 'case', 'tasks', 'blocked')
+                  'evidence_file_path', 'notes', 'uuid', 'parent', 'case', 'tasks', 'blocked', 'network')
 
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)

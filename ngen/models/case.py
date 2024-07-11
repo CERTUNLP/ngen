@@ -260,6 +260,9 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
 
+    network = models.ForeignKey('ngen.Network', models.PROTECT, null=True, blank=True, related_name='events',
+                                editable=False)
+
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
     feed = models.ForeignKey('ngen.Feed', models.PROTECT)
 
@@ -311,10 +314,6 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     @property
     def enrichable(self):
         return self.mergeable
-
-    @property
-    def network(self):
-        return ngen.models.Network.objects.parent_of(self).first()
 
     @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
