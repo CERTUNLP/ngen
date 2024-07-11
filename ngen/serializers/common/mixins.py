@@ -68,7 +68,7 @@ class ArtifactSerializerMixin(serializers.HyperlinkedModelSerializer):
                 artifact=artifact_obj,
                 object_id=instance.id,
                 content_type=ct,
-                auto_created=False
+                defaults={'auto_created': False}
             )
         return instance
 
