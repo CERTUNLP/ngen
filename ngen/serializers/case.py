@@ -71,7 +71,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_EVENT.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_EVENT.split(',')
 
     @staticmethod
     def not_allowed_fields():
@@ -97,7 +97,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
             if self.instance.merged or self.instance.is_parent():
                 for attr in list(attrs):
                     if attr in self.not_allowed_fields():
-                        if config.ALLOWED_FIELDS_EXCEPTION:
+                        if config.ALLOWED_FIELDS_BLOCKED_EXCEPTION:
                             raise ValidationError(
                                 {attr: gettext('%s of merged events can\'t be modified') % self.not_allowed_fields()})
                         attrs.pop(attr)
@@ -108,7 +108,7 @@ class EventSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audi
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_EVENT.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_EVENT.split(',')
 
     class Meta:
         model = models.Event
@@ -172,7 +172,7 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSeri
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_CASE.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_CASE.split(',')
 
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
@@ -183,7 +183,7 @@ class CaseSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audit
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_CASE.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_CASE.split(',')
 
     class Meta:
         model = models.Case
