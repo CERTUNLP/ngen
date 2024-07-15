@@ -117,7 +117,7 @@ const TableTemplete = ({ list, loading, order, setOrder, setLoading, currentPage
                                             <CrudButton type='edit' />
                                         </Link>
                                         <CrudButton type='delete' onClick={() => modalDelete(template.cidr, template.url)} />
-                                        {template.matching_events_without_case > 0 ?
+                                        {template.matching_events_without_case_count > 0 ?
                                             <Button className="btn-icon btn-rounded" variant="outline-primary" onClick={() => create(template.url)}>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
