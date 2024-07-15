@@ -245,6 +245,7 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
                            recipients, self.email_attachments, self.email_headers)
         else:
             # Case has no events, so send email only to team (and assignee)
+            template_params.update({'events': self.events})
             recipients.update({'to': [recipient for recipient in team_recipients if recipient]})
             self.send_mail(self.subject(title), self.render_template(template, extra_params=self.template_params),
                            recipients, self.email_attachments, self.email_headers)
