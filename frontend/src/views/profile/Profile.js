@@ -64,6 +64,26 @@ const Profile = () => {
                         <Card.Body>
                             <Table responsive >
                                 <tbody>
+                                    {profile.username ?
+                                        <tr>
+                                            <td>{t('ngen.user.username')}</td>
+                                            <td>
+                                                <Form.Control plaintext readOnly defaultValue={profile.username} />
+                                            </td>
+                                        </tr>
+                                        :
+                                        <></>
+                                    }
+                                    {profile.email ?
+                                        <tr>
+                                            <td>{t('w.email')}</td>
+                                            <td>
+                                                <Form.Control plaintext readOnly defaultValue={profile.email} />
+                                            </td>
+                                        </tr>
+                                        :
+                                        <></>
+                                    }
                                     {profile.first_name ?
                                         <tr>
                                             <td>{t('ngen.name_one')}</td>
@@ -109,27 +129,6 @@ const Profile = () => {
                                             <td> {t('ngen.user.is.staff')}</td>
                                             <td>
                                                 <ActiveButton active={profile.is_staff} />
-                                            </td>
-                                        </tr>
-                                        :
-                                        <></>
-                                    }
-                                    {profile.last_name ?
-                                        <tr>
-                                            <td>{t('w.active')}</td>
-                                            <td>
-
-                                            </td>
-                                        </tr>
-                                        :
-                                        <></>
-                                    }
-
-                                    {profile.email ?
-                                        <tr>
-                                            <td>{t('w.email')}</td>
-                                            <td>
-                                                <Form.Control plaintext readOnly defaultValue={profile.email} />
                                             </td>
                                         </tr>
                                         :

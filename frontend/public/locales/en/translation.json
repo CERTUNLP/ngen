@@ -109,6 +109,7 @@
     "ngen.contact.type.email": "Email",
     "ngen.contact.type.telegram": "Telegram",
     "ngen.contact.type.uri": "URI",
+    "ngen.merge": "Merge",
     "search.taxonomy_feed_affectedresource": "by taxonomy, feed or affected resource",
     "ngen.case.addto": "Add to a case",
     "ngen.user": "User",
