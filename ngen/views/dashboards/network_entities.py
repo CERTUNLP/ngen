@@ -26,6 +26,8 @@ class DashboardNetworkEntitiesView(DashboardView):
             context={
                 "request": request,
                 "events": self.dashboard_presenter.get_events(),
+                "date_from": self.dashboard_presenter.get_date_from(),
+                "date_to": self.dashboard_presenter.get_date_to(),
             },
         ).data
 
