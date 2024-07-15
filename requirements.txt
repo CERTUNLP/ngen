@@ -213,7 +213,7 @@ six==1.16.0
     #   django-netfields
     #   elasticsearch-dsl
     #   python-dateutil
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via
     #   django
     #   django-debug-toolbar
