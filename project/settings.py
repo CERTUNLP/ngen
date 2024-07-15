@@ -275,6 +275,15 @@ CONSTANCE_CONFIG = {
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
     'PAGE_SIZE': (int(os.environ.get('PAGE_SIZE', 10)), 'Default page size', int),
     'PAGE_SIZE_MAX': (int(os.environ.get('PAGE_SIZE_MAX', 100)), 'Max page size (use with caution)', int),
+    'AUTO_MERGE_EVENTS':
+        (os.environ.get('AUTO_MERGE_EVENTS', 'true').lower() in ('true', '1', 't'),
+         'Auto merge events with same domain/cidr and traxonomy', bool),
+    'AUTO_MERGE_BY_FEED':
+        (os.environ.get('AUTO_MERGE_BY_FEED', 'false').lower() in ('true', '1', 't'),
+         'Add `same feed` to the auto merge events condition', bool),
+    'AUTO_MERGE_TIME_WINDOW_MINUTES':
+        (int(os.environ.get('AUTO_MERGE_TIME_WINDOW_MINUTES', 0)),
+         'Add an optional time window to the auto merge events condition (0 disabled)', int),
 }
 CONSTANCE_CONFIG_PASSWORDS = ['CORTEX_APIKEY']
 
@@ -309,6 +318,7 @@ if DEBUG:
     DEBUG_INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips]
     DEBUG_INTERNAL_IPS += os.environ.get('DJANGO_DEBUG_INTERNAL_IPS', '').split(',')
 
+
     # Toolbar settings
     def show_toolbar(request):
         if not DEBUG:
@@ -324,6 +334,7 @@ if DEBUG:
             return True
 
         return False
+
 
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': show_toolbar,

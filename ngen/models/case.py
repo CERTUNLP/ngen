@@ -1,6 +1,7 @@
 import re
 import uuid as uuid
 from collections import defaultdict
+from datetime import timedelta, datetime
 from email.utils import make_msgid
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.mail import DNS_NAME
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
@@ -314,12 +316,25 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
 
     @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
-        event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, cidr=self.cidr, domain=self.domain,
-                                           case__solve_date__isnull=True).order_by('id').last()
+        if config.AUTO_MERGE_EVENTS:
+            extra_filters = {}
+            if config.AUTO_MERGE_BY_FEED:
+                extra_filters.update({'feed': self.feed})
+            if config.AUTO_MERGE_TIME_WINDOW_MINUTES:
+                minutes_limit = config.AUTO_MERGE_TIME_WINDOW_MINUTES
+                date_limit = datetime.now() - timedelta(minutes=minutes_limit)
+                extra_filters.update({'date__gte': date_limit})
+            event = self.__class__.objects.filter(
+                Q(case__isnull=True) | Q(case__state__blocked=False),
+                cidr=self.cidr,
+                domain=self.domain,
+                taxonomy=self.taxonomy,
+                **extra_filters
+            ).order_by('id').last()
 
-        if event:
-            if self.parent is None:
-                self.parent = event
+            if event:
+                if self.parent is None:
+                    self.parent = event
 
     @hook(AFTER_CREATE)
     def create_case(self):
