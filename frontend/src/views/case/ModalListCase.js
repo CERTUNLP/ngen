@@ -6,6 +6,7 @@ import TableCase from './components/TableCase';
 import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
 import { getCases } from '../../api/services/cases';
 import { useTranslation, Trans } from 'react-i18next';
+import './ModalListCase.css'
 
 const ModalListCase = (props) => {
 
@@ -45,7 +46,8 @@ const ModalListCase = (props) => {
     }
 
     return (
-        <Modal size="lg" show={props.showModalListCase} onHide={props.closeModal} aria-labelledby="contained-modal-title-vcenter" centered>
+        <Modal size="lg" show={props.showModalListCase} onHide={props.closeModal} aria-labelledby="contained-modal-title-vcenter" 
+        dialogClassName="modal-90w"centered>
             <Modal.Header closeButton />
             <Modal.Body>
                 <Row>

@@ -175,7 +175,10 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                                         {disableColumOption ?
                                             ""
                                             :
-                                            !disableColumnEdit && !event.blocked ? (
+                                            disableColumnEdit ?
+                                            ""
+                                            :
+                                            !event.blocked ? (
                                                 <Link to={{ pathname: "/events/edit", state: event }} >
                                                     <CrudButton type='edit' />
                                                 </Link>
