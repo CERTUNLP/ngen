@@ -30,7 +30,7 @@
         "react-copy-to-clipboard": "^5.0.3",
         "react-dom": "^17.0.1",
         "react-google-maps": "^9.4.5",
-        "react-i18next": "^14.1.1",
+        "react-i18next": "14.1.2",
         "react-nvd3": "^0.5.7",
         "react-perfect-scrollbar": "^1.5.8",
         "react-redux": "^7.2.2",
