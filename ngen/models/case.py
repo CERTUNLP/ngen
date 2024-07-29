@@ -328,15 +328,22 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
                 minutes_limit = config.AUTO_MERGE_TIME_WINDOW_MINUTES
                 date_limit = datetime.now() - timedelta(minutes=minutes_limit)
                 extra_filters.update({'date__gte': date_limit})
+
+            # This will find the last event that is not merged and has the same cidr, domain and taxonomy
+            # If this event is blocked it will not be merged
             event = self.__class__.objects.filter(
                 Q(case__isnull=True) | Q(case__state__blocked=False),
+                parent__isnull=True,
                 cidr=self.cidr,
                 domain=self.domain,
                 taxonomy=self.taxonomy,
                 **extra_filters
             ).order_by('id').last()
 
-            if event:
+            # Check if event is mergeable (not blocked, not parent, not already merged)
+            # Should not be merged because last query will return events without parent
+            # But if it's blocked, it should not be merged
+            if event and event.mergeable:
                 if self.parent is None:
                     self.parent = event
 
