@@ -6,8 +6,8 @@ const getEvents = (currentPage, filters, order) => {//el parametro es para compl
     return apiInstance.get(COMPONENT_URL.event + PAGE + currentPage + '&ordering=' + order + '&' + filters);
 }
 const postEvent = (formData) => {//el parametro es para completar la url con el numero de pagina
-    let messageSuccess = `La evento se pudo crear correctamente`;
-    let messageError = `La evento no se pudo crear`;
+    let messageSuccess = `El evento se pudo crear correctamente`;
+    let messageError = `El evento no se pudo crear`;
 
     return apiInstance.post(COMPONENT_URL.event, formData).then(response => {
         setAlert(messageSuccess, "success", "event");
@@ -64,7 +64,7 @@ const deleteEvent = (url) => {
     });
 }
 const mergeEvent = (urlParent, urlChildren) => {
-    let messageSuccess = `Los eventps han sido mergeados correctamente.`;
+    let messageSuccess = `Los eventos han sido mergeados correctamente.`;
     let messageError = `Los eventos no han sido mergeados. `;
     return apiInstance.patch(urlChildren,
         {
