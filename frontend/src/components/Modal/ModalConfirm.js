@@ -7,7 +7,7 @@ const ModalConfirm = (props) => { // props: showModal, onHide, ifConfirm, type, 
     const [eventOrCase, setEventOrCase] = useState('');
 
     useEffect(() => {
-        let names = Object.values(props.name);
+        let names = Object.values(props.name || '');
         const eventOrCase = names.some((el) => el.includes("event")) ? "eventos" : "casos";
         setEventOrCase(eventOrCase);
     }, [props.name]);

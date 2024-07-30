@@ -83,7 +83,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
           <tr>
             <Ordering field="name" label={t('ngen.name_one')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
             <th style={letterSize}>{t('w.active')}</th>
-            <th style={letterSize}>{t('ngen.event_one')}</th>
+            <th style={letterSize}>{t('ngen.reports')}</th>
             <th style={letterSize}>{t('ngen.options')}</th>
           </tr>
         </thead>
@@ -170,7 +170,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                         </tr>
                       )}
                       <tr>
-                        <td>{t('ngen.info.related')}</td>
+                        <td>{t('ngen.reports')}</td>
                         <td>
                           <Button size="sm" variant='light' className="text-capitalize">
                             {t('ngen.reports')}
