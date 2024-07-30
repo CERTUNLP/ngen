@@ -260,7 +260,7 @@ const ReadEvent = () => {
             <Table responsive >
                 <Card>
                     <Card.Header>
-                        <Card.Title as="h5">{t('ngen.evidences')}Datos adicionales</Card.Title>
+                        <Card.Title as="h5">{t('ngen.evidences.aditional.data')}</Card.Title>
                     </Card.Header>
                     <Card.Body>
                         <tr>
