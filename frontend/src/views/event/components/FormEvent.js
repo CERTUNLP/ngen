@@ -434,6 +434,32 @@ const FormEvent = (props) => {
                     </Card.Body>
                 </Card>
             }
+                        <Card>
+                <Card.Header>
+                    <Card.Title as="h5">{t('ngen.artifact_other')}</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                    <Form>
+                        <Form.Group controlId="formGridAddress1">
+                            <Row>
+                                <Col sm={12} lg={9}>
+                                    <Select
+                                        placeholder={t('ngen.artifact_other_select')}
+                                        closeMenuOnSelect={false}
+                                        components={animatedComponents}
+                                        isMulti
+                                        value={artifactsValueLabel}
+                                        onChange={selectArtefact}
+                                        options={props.listArtifact} />
+                                </Col>
+                                <Col sm={12} lg={3}>
+                                    <CrudButton type='create' name='Artefacto' onClick={() => setModalCreate(true)} />
+                                </Col>
+                            </Row>
+                        </Form.Group>
+                    </Form>
+                </Card.Body>
+            </Card>
             {props.disableCardCase ?
                 ""
                 :
@@ -461,56 +487,6 @@ const FormEvent = (props) => {
             <ModalReadCase modalShowCase={modalShowCase} tableDetail={tableDetail} closeModalDetail={closeModalDetail}
                 returnToListOfCases={returnToListOfCases} linkCaseToEvent={linkCaseToEvent} />
 
-            <Card>
-                <Card.Header>
-                    <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                    <Form>
-                        <Form.Group controlId="formGridAddress1">
-                            <Form.Label>{t('ngen.artifact_other')}</Form.Label>
-                            <Row>
-                                <Col sm={12} lg={9}>
-                                    <Select
-                                        placeholder={t('ngen.artifact_other_select')}
-                                        closeMenuOnSelect={false}
-                                        components={animatedComponents}
-                                        isMulti
-                                        value={artifactsValueLabel}
-                                        onChange={selectArtefact}
-                                        options={props.listArtifact} />
-                                </Col>
-                                <Col sm={12} lg={3}>
-                                    <CrudButton type='create' name='Artefacto' onClick={() => setModalCreate(true)} />
-                                </Col>
-                            </Row>
-                        </Form.Group>
-                    </Form>
-                </Card.Body>
-            </Card>
-            <Card>
-                <Card.Header>
-                    <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                    <Form.Label>{t('cidr.domain.email')}<b style={{ color: "red" }}>*</b></Form.Label>
-                    <Row>
-                        <Col sm={12} lg={6}>
-                            <Form.Group controlId="formGridAddress1">
-                                <Form.Control
-                                    placeholder={t('ngen.enter.ipv4.ipv6.domain.email')}
-                                    maxLength="150"
-                                    value={props.body.address_value}
-                                    disabled={(props.body.children !== [] && props.body.children.length > 0) ? true : false}
-                                    onChange={(e) => completeFieldStringIdentifier(e)}
-                                    isInvalid={showErrorMessage}
-                                    name="address_value" />
-                                {showErrorMessage ? <div className="invalid-feedback"> {t('error.ipv4.ipv6.domain')}</div> : ""}
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                </Card.Body>
-            </Card>
             {props.disableCardEvidence ?
                 ""
                 :

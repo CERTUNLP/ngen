@@ -210,23 +210,6 @@ const ReadEvent = () => {
                     {/*</Table>*/}
                 </Card.Body>
             </Card>
-
-            <SmallCaseTable readCase={body.case} disableColumOption={true} />
-
-            <Card>
-                <Card.Header>
-                    <Card.Title as="h5">{t('ngen.artifact_other')}</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                    <Row>
-                        {body.artifacts !== undefined ?
-                            body.artifacts.map((url) => {
-                                return (<CallBackendByType url={url} callback={callbackArtefact} useBadge={true} />)
-                            }) : ""
-                        }
-                    </Row>
-                </Card.Body>
-            </Card>
             <Card>
                 <Card.Header>
                     <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
@@ -251,6 +234,22 @@ const ReadEvent = () => {
 
 
 
+                    </Row>
+                </Card.Body>
+            </Card>
+            <SmallCaseTable readCase={body.case} disableColumOption={true} />
+
+            <Card>
+                <Card.Header>
+                    <Card.Title as="h5">{t('ngen.artifact_other')}</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                    <Row>
+                        {body.artifacts !== undefined ?
+                            body.artifacts.map((url) => {
+                                return (<CallBackendByType url={url} callback={callbackArtefact} useBadge={true} />)
+                            }) : ""
+                        }
                     </Row>
                 </Card.Body>
             </Card>
