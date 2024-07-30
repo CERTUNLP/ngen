@@ -349,5 +349,6 @@
     "button.signin": "Sign in",
     "ngen.default": "Default",
     "ngen.uuid": "UUID",
-    "ngen.evidences.aditional.data": "Evidences - Aditional data"
+    "ngen.evidences.aditional.data": "Evidences - Aditional data",
+    "ngen.file_upload_type": "You can upload files of type:" 
 }
