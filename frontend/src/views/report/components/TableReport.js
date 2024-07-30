@@ -81,6 +81,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                     <thead>
                         <tr>
                             <Ordering field="taxonomy__name" label={t('ngen.taxonomy_one')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                            <Ordering field="lang" label={t('w.lang')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
                             <th>{t('ngen.options')}</th>
                         </tr>
                     </thead>
@@ -89,7 +90,9 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                             return (
                                 <tr key={index}>
 
-                                    <td> {taxonomyNames[report.taxonomy]}</td>
+                                    <td>{taxonomyNames[report.taxonomy]}</td>
+
+                                    <td>{report.lang.toUpperCase()} ({t('w.language.'+report.lang)})</td>
 
                                     <td>
                                         <CrudButton type='read' onClick={() => showModalReport(report)} />
