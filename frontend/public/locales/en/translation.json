@@ -261,6 +261,7 @@
     "ngen.report.detail": "Report detail",
     "ngen.reports": "Reports",
     "ngen.report.edit": "Edit report",
+    "ngen.report.create": "Create report",
     "reporter": "Reporter",
     "ngen.children": "Children",
     "ngen.state_ErrorAssign": "There was an error assigning a state.",
