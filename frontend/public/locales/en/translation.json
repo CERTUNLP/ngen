@@ -230,6 +230,7 @@
     "ngen.event.add": "Add event",
     "ngen.event.quantity": "Event quantity",
     "ngen.event.edit": "Edit event",
+    "ngen.event.create": "Create event",
     "ngen.action_one": "Action",
     "date.creation": "Creation Date",
     "w.entityByName": "by entity name",
