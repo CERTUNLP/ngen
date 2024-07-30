@@ -54,7 +54,7 @@ const ModalListEvent = (props) => {
             <Modal.Body>
                 <Row>
                     <Col sm={12} lg={12}>
-                        <Search type="caso" setWordToSearch={props.setWordToSearch} wordToSearch={props.wordToSearch} setLoading={setLoading} />
+                        <Search type="case" setWordToSearch={props.setWordToSearch} wordToSearch={props.wordToSearch} setLoading={setLoading} />
                     </Col>
                 </Row>
                 <br />
@@ -65,12 +65,12 @@ const ModalListEvent = (props) => {
                             setCurrentPage={props.setCurrentPage} value={props.selectTlpFilter} setValue={props.setSelectTlpFilter} />
                     </Col>
                     <Col sm={4} lg={4}>
-                        <FilterSelectUrl options={props.taxonomies} itemName="taxonomia" partOfTheUrl="taxonomy"
+                        <FilterSelectUrl options={props.taxonomies} itemName="taxonomy" partOfTheUrl="taxonomy"
                             itemFilter={props.taxonomyFilter} itemFilterSetter={props.setTaxonomyFilter} setLoading={setLoading}
                             setCurrentPage={props.setCurrentPage} value={props.selectTaxonomyFilter} setValue={props.setSelectTaxonomyFilter} />
                     </Col>
                     <Col sm={4} lg={4}>
-                        <FilterSelectUrl options={props.feeds} itemName="fuentes" partOfTheUrl="feed"
+                        <FilterSelectUrl options={props.feeds} itemName='feeds' partOfTheUrl="feed"
                             itemFilter={props.feedFilter} itemFilterSetter={props.setFeedFilter} setLoading={setLoading}
                             setCurrentPage={props.setCurrentPage} value={props.selectFeedFilter} setValue={props.setSelectFeedFilter} />
                     </Col>
@@ -103,9 +103,9 @@ const ModalListEvent = (props) => {
             </Modal.Footer>
             <Modal.Footer>
                 <Button variant="outline-primary" onClick={props.linkEventsToCase}>
-                    Vincular
+                    Link
                 </Button>
-                <Button variant="outline-secondary" onClick={props.closeModal}>Cancelar</Button>
+                <Button variant="outline-secondary" onClick={props.closeModal}>Cancel</Button>
             </Modal.Footer>
         </Modal>
     );
