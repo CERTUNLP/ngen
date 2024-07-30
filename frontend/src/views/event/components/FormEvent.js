@@ -384,7 +384,7 @@ const FormEvent = (props) => {
                         </Row>
                         <Row>
                             <Col sm={12} lg={4}>
-                                <SelectComponent controlId="exampleForm.ControlSelect1" label={t('Fuente de Informacion')} options={props.feeds} value={selectFeed} nameField="feed"
+                                <SelectComponent controlId="exampleForm.ControlSelect1" label={t('ngen.feed.information')} options={props.feeds} value={selectFeed} nameField="feed"
                                     onChange={completeField1} placeholder={t('ngen.feed.information.select')} setOption={setSelectFeed} required={true}
                                     disabled={(props.body.children !== [] && props.body.children.length > 0) ? true : false} />
                             </Col>
