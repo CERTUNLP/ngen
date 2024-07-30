@@ -13,6 +13,9 @@ import Alert from '../../components/Alert/Alert';
 import ButtonFilter from '../../components/Button/ButtonFilter';
 import FilterSelectUrl from '../../components/Filter/FilterSelectUrl';
 import { useTranslation, Trans } from 'react-i18next';
+import { getMinifiedTlp } from "../../api/services/tlp";
+import { getMinifiedPriority } from "../../api/services/priorities";
+import { getMinifiedState } from "../../api/services/states";
 
 const ListTemplete = () => {
     const [templete, setTemplete] = useState([])
@@ -28,6 +31,9 @@ const ListTemplete = () => {
 
     const [taxonomies, setTaxonomies] = useState([]);
     const [feeds, setFeeds] = useState([])
+    const [priorities, setPriorities] = useState([])
+    const [tlps, setTlps] = useState([])
+    const [states, setStates] = useState([])
 
     const [taxonomyFilter, setTaxonomyFilter] = useState('')
     const [feedFilter, setFeedFilter] = useState('')
@@ -36,6 +42,9 @@ const ListTemplete = () => {
 
     const [taxonomyNames, setTaxonomyNames] = useState({});
     const [feedNames, setFeedNames] = useState({});
+    const [priorityNames, setPriorityNames] = useState({});
+    const [tlpNames, setTlpNames] = useState({});
+    const [stateNames, setStateNames] = useState({});
     function updatePage(chosenPage) {
         setCurrentPage(chosenPage);
     }
@@ -53,6 +62,42 @@ const ListTemplete = () => {
                 })
                 setTaxonomyNames(dicTaxonomy)
                 setTaxonomies(listTaxonomies)
+            })
+
+        getMinifiedTlp()
+            .then((response) => {
+                let listTlps = []
+                let dicTlp = {}
+                response.map((tlp) => {
+                    listTlps.push({ value: tlp.url, label: tlp.name })
+                    dicTlp[tlp.url] = tlp.name
+                })
+                setTlpNames(dicTlp)
+                setTlps(listTlps)
+            })
+
+        getMinifiedPriority()
+            .then((response) => {
+                let listPriorities = []
+                let dicPriority = {}
+                response.map((priority) => {
+                    listPriorities.push({ value: priority.url, label: priority.name })
+                    dicPriority[priority.url] = priority.name
+                })
+                setPriorityNames(dicPriority)
+                setPriorities(listPriorities)
+            })
+
+        getMinifiedState()
+            .then((response) => {
+                let listStates = []
+                let dicState = {}
+                response.map((state) => {
+                    listStates.push({ value: state.url, label: state.name })
+                    dicState[state.url] = state.name
+                })
+                setStateNames(dicState)
+                setStates(listStates)
             })
 
         getMinifiedFeed().then((response) => {
@@ -131,7 +176,7 @@ const ListTemplete = () => {
                         </Card.Header>
                         <Card.Body>
                             <TableTemplete list={templete} loading={loading} order={order} setOrder={setOrder} setLoading={setLoading} currentPage={currentPage}
-                                taxonomyNames={taxonomyNames} feedNames={feedNames} />
+                                taxonomyNames={taxonomyNames} feedNames={feedNames} tlpNames={tlpNames} priorityNames={priorityNames} stateNames={stateNames} />
                         </Card.Body>
                         <Card.Footer >
                             <Row className="justify-content-md-center">
