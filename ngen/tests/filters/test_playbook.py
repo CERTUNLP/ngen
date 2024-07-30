@@ -48,8 +48,6 @@ class PlaybookFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by name
         query = "phish"
         response = self.client.get(self.search_url(query))

@@ -69,8 +69,6 @@ class TaxonomyFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by name
         query = "bot"
         response = self.client.get(self.search_url(query))

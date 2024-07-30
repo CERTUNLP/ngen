@@ -5,18 +5,19 @@ from ngen.models import Taxonomy
 
 class TaxonomyTestCase(TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         """ 
         Create instances of Taxonomy
         """
-        self.parent = Taxonomy.objects.create(type='vulnerability', name='Parent')
-        self.child1 = Taxonomy.objects.create(type='vulnerability', name='Child 1', parent=self.parent)
-        self.child2 = Taxonomy.objects.create(type='vulnerability', name='Child 2', parent=self.child1)
-        self.aRootNode = Taxonomy.objects.create(type='vulnerability', name='A Root Node')
-        self.aNode_Parent = Taxonomy.objects.create(type='vulnerability', name='A Node Parent')
-        self.aNode = Taxonomy.objects.create(type='vulnerability', name='a Node', parent=self.aNode_Parent)
-        self.aNode_child1 = Taxonomy.objects.create(type='vulnerability', name='Node Child 1', parent=self.aNode)
-        self.Node_child2 = Taxonomy.objects.create(type='vulnerability', name='Node Child 2', parent=self.aNode)
+        cls.parent = Taxonomy.objects.create(type='vulnerability', name='Parent')
+        cls.child1 = Taxonomy.objects.create(type='vulnerability', name='Child 1', parent=cls.parent)
+        cls.child2 = Taxonomy.objects.create(type='vulnerability', name='Child 2', parent=cls.child1)
+        cls.aRootNode = Taxonomy.objects.create(type='vulnerability', name='A Root Node')
+        cls.aNode_Parent = Taxonomy.objects.create(type='vulnerability', name='A Node Parent')
+        cls.aNode = Taxonomy.objects.create(type='vulnerability', name='a Node', parent=cls.aNode_Parent)
+        cls.aNode_child1 = Taxonomy.objects.create(type='vulnerability', name='Node Child 1', parent=cls.aNode)
+        cls.Node_child2 = Taxonomy.objects.create(type='vulnerability', name='Node Child 2', parent=cls.aNode)
         # self.aNode = Taxonomy.objects.create(type='vulnerability' name= 'Node')
 
     # def test_duplicated_taxonomy(self):

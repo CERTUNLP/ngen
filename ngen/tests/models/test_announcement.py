@@ -11,29 +11,30 @@ class AnnouncementTestCase(TestCase):
     fixtures = ["priority.json", "tlp.json", "user.json", "state.json", "edge.json",
                 "feed.json", "taxonomy.json", "case_template.json"]
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         """SetUp for case and event creation in the tests"""
-        self.priority = Priority.objects.get(name="High")
-        self.tlp = Tlp.objects.get(name="Green")
-        self.state = State.objects.get(name="Open")
-        self.case_template = CaseTemplate.objects.get(pk=1)  # Missing
-        self.taxonomy = Taxonomy.objects.create(
+        cls.priority = Priority.objects.get(name="High")
+        cls.tlp = Tlp.objects.get(name="Green")
+        cls.state = State.objects.get(name="Open")
+        cls.case_template = CaseTemplate.objects.get(pk=1)  # Missing
+        cls.taxonomy = Taxonomy.objects.create(
             type="incident", name="Phising", slug="phising"
         )
-        self.feed = Feed.objects.get(slug="shodan", name="Shodan")
-        self.user = User.objects.create(
+        cls.feed = Feed.objects.get(slug="shodan", name="Shodan")
+        cls.user = User.objects.create(
             username="test",
             password="test",
-            priority=self.priority
+            priority=cls.priority
         )
-        self.playbook = Playbook.objects.create(
+        cls.playbook = Playbook.objects.create(
             name="Test playbook",
         )
-        self.task = Task.objects.create(
+        cls.task = Task.objects.create(
             name="Test task",
             description="Test description",
-            playbook=self.playbook,
-            priority=self.priority,
+            playbook=cls.playbook,
+            priority=cls.priority,
         )
 
     # ------------------------------CASE-TESTS------------------------------------------

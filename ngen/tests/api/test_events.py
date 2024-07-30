@@ -2,10 +2,10 @@ from datetime import timedelta
 
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import Token
 
 from ngen.models import Event, Case, CaseTemplate, Taxonomy, Priority, Tlp, User, Feed, Artifact
+from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
 
 
 class MyToken(Token):
@@ -13,7 +13,7 @@ class MyToken(Token):
     lifetime = timedelta(days=1)
 
 
-class TestEvent(APITestCase):
+class TestEvent(APITestCaseWithLogin):
     '''
     This will handle Event testcases
     '''
@@ -25,6 +25,7 @@ class TestEvent(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         basename = 'event'
         cls.url_list = reverse(f'{basename}-list')
         cls.url_detail = lambda pk: reverse(
@@ -43,12 +44,6 @@ class TestEvent(APITestCase):
         cls.feed = Feed.objects.get(slug="csirtamericas")
         cls.tlp = Tlp.objects.get(slug="green")
         cls.user = User.objects.get(username="ngen")
-
-    def setUp(self):
-        resp = self.client.post(
-            self.url_login_jwt, data=self.json_login, format="json")
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
 
     def test_event_get_list(self):
         '''

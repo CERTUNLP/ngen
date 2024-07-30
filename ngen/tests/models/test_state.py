@@ -6,7 +6,8 @@ from ngen.models import State, Edge, Case, Tlp, User, Priority, config
 
 class StateTestCase(TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         '''
         State setup.
         '''
@@ -16,14 +17,14 @@ class StateTestCase(TestCase):
             severity=1
         )
         default_priority.save()
-        self.tlp = Tlp.objects.create(name='Test TLP', code='123', color='#FFFFFF', when='Test When', why='Test Why',
+        cls.tlp = Tlp.objects.create(name='Test TLP', code='123', color='#FFFFFF', when='Test When', why='Test Why',
                                       information='Test Information', description='Test Description')
-        self.user_creator = User.objects.create(username='creator', password='creator')
-        self.assigned_user = User.objects.create(username='assigned', password='assigned')
-        self.state = State.objects.create(name='State')
-        self.first_state = State.objects.create(name='First State', active=True)
-        self.second_state = State.objects.create(name='Second State', active=True)
-        self.case_template = None
+        cls.user_creator = User.objects.create(username='creator', password='creator')
+        cls.assigned_user = User.objects.create(username='assigned', password='assigned')
+        cls.state = State.objects.create(name='State')
+        cls.first_state = State.objects.create(name='First State', active=True)
+        cls.second_state = State.objects.create(name='Second State', active=True)
+        cls.case_template = None
 
     def test_state_creation(self):
         '''
