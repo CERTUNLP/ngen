@@ -453,7 +453,7 @@ const FormEvent = (props) => {
                                         options={props.listArtifact} />
                                 </Col>
                                 <Col sm={12} lg={3}>
-                                    <CrudButton type='create' name='Artefacto' onClick={() => setModalCreate(true)} />
+                                    <CrudButton type='create' name={t('ngen.artifact_one')} onClick={() => setModalCreate(true)} />
                                 </Col>
                             </Row>
                         </Form.Group>
