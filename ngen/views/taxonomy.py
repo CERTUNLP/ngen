@@ -14,7 +14,7 @@ class TaxonomyViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ['name', 'description']
     filterset_class = TaxonomyFilter
-    ordering_fields = ['id', 'created', 'modified', 'name', 'reports']
+    ordering_fields = ['id', 'created', 'modified', 'name', 'reports', 'is_alias']
     serializer_class = serializers.TaxonomySerializer
     permission_classes = [permissions.IsAuthenticated]
 

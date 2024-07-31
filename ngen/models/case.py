@@ -93,6 +93,10 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         return ngen.models.State.objects.get(pk=self.initial_value('state')).blocked and self.state.blocked
 
     @property
+    def mergeable(self) -> bool:
+        return not self.merged and not self.blocked
+
+    @property
     def artifacts_dict(self) -> dict[str, list]:
         artifacts_dict = {'hashes': [], 'files': []}
         for evidence in self.evidence.all():
@@ -303,6 +307,10 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
         return False
 
     @property
+    def mergeable(self) -> bool:
+        return not self.merged and not self.blocked and not self.taxonomy.is_alias
+
+    @property
     def artifacts_dict(self) -> dict:
         artifacts_dict = {'hashes': [], 'files': []}
         if self.cidr:
@@ -318,8 +326,13 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     def enrichable(self):
         return self.mergeable
 
+    def update_taxonomy(self):
+        if self.taxonomy and self.taxonomy.is_alias and self.taxonomy.parent:
+            self.taxonomy = self.taxonomy.parent
+
     @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
+        self.update_taxonomy()
         if config.AUTO_MERGE_EVENTS:
             extra_filters = {}
             if config.AUTO_MERGE_BY_FEED:
@@ -373,6 +386,7 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
 
     def clean(self):
         super().clean()
+        self.update_taxonomy()
         if self.date and self.date > timezone.now():
             raise ValidationError({'date': gettext_lazy('Date cannot be in the future')})
 

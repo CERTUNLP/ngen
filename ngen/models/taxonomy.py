@@ -9,10 +9,15 @@ from ngen.models.common.mixins import AuditModelMixin, TreeModelMixin, PriorityM
 
 
 class Taxonomy(AuditModelMixin, TreeModelMixin, SlugModelMixin, ValidationModelMixin):
-    TYPE = Choices(('vulnerability', gettext_lazy('Vulnerability')), ('incident', gettext_lazy('Incident')))
+    TYPE = Choices(
+        ('vulnerability', gettext_lazy('Vulnerability')),
+        ('incident', gettext_lazy('Incident')),
+        ('other', gettext_lazy('Other')),
+    )
     type = models.CharField(choices=TYPE, max_length=20)
     name = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
+    is_alias = models.BooleanField(default=False)
     description = models.TextField(null=True, blank=True, default='')
     node_order_by = ['id']
 
@@ -26,6 +31,18 @@ class Taxonomy(AuditModelMixin, TreeModelMixin, SlugModelMixin, ValidationModelM
 
     def get_ancestors_reports(self):
         return self.get_ancestors_related(lambda obj: obj.reports.all())
+
+    def save(self, **kwargs):
+        if self.parent and self.parent.is_alias:
+            raise ValueError({'parent': gettext_lazy('Parent of an alias cannot be an alias')})
+
+        if not self._state.adding and self.children.exists() and self.is_alias:
+            raise ValueError({'is_alias': gettext_lazy('Alias cannot have children')})
+
+        if self.parent and self.is_alias:
+            self.type = self.parent.type
+
+        super().save()
 
     class Meta:
         db_table = 'taxonomy'

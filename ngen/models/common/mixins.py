@@ -127,7 +127,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
 
     @property
     def mergeable(self) -> bool:
-        return not self.merged and not self.blocked
+        raise NotImplementedError
 
     @property
     def merged(self) -> bool:

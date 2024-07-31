@@ -5,7 +5,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from ngen import models
-from ngen.serializers.common.fields import GenericRelationField, SlugOrHyperlinkedRelatedField
+from ngen.serializers.common.fields import GenericRelationField, SlugOrHyperlinkedRelatedField, \
+    AliasOrSlugOrHyperlinkedRelatedField
 from ngen.serializers.common.mixins import AuditSerializerMixin, MergeSerializerMixin, EvidenceSerializerMixin, \
     ArtifactSerializerMixin
 
@@ -26,7 +27,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
         queryset=models.Priority.objects.all(),
         view_name='priority-detail'
     )
-    taxonomy = SlugOrHyperlinkedRelatedField(
+    taxonomy = AliasOrSlugOrHyperlinkedRelatedField(
         slug_field='slug',
         queryset=models.Taxonomy.objects.all(),
         view_name='taxonomy-detail'

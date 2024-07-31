@@ -34,6 +34,9 @@ class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
         self.slug_field = kwargs.pop('slug_field', 'slug')
         super().__init__(**kwargs)
 
+    def when_invalid_slug(self, queryset, data, slug):
+        raise serializers.ValidationError(f"{slug} is not a valid slug for TEST {queryset.model.__name__}.")
+
     def to_internal_value(self, data):
         """
         Override the `to_internal_value` method to allow slugs.
@@ -44,13 +47,23 @@ class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
         except serializers.ValidationError:
             # If that fails, try to get the related object using a slug
             slug = slugify_underscore(data)
+            queryset = self.get_queryset()
             try:
-                queryset = self.get_queryset()
                 return queryset.get(**{self.slug_field: slug})
             except queryset.model.DoesNotExist:
-                raise serializers.ValidationError(
-                    f"{slug} is not a valid slug for {queryset.model.__name__}."
-                )
+                return self.when_invalid_slug(queryset, data, slug)
+
+
+class AliasOrSlugOrHyperlinkedRelatedField(SlugOrHyperlinkedRelatedField):
+    """
+    A custom field to allow creation of related objects using either a slug, hyperlink, or alias.
+    """
+
+    def when_invalid_slug(self, queryset, data, slug):
+        print(f"Creating alias {data}.")
+        obj = queryset.create(name=data, is_alias=True, type='other', parent=None, description='Auto-generated alias.')
+        print(obj)
+        return obj
 
 
 class ConstanceValueField(serializers.Field):

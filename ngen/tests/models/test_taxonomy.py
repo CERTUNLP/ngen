@@ -18,6 +18,13 @@ class TaxonomyTestCase(TestCase):
         cls.aNode = Taxonomy.objects.create(type='vulnerability', name='a Node', parent=cls.aNode_Parent)
         cls.aNode_child1 = Taxonomy.objects.create(type='vulnerability', name='Node Child 1', parent=cls.aNode)
         cls.Node_child2 = Taxonomy.objects.create(type='vulnerability', name='Node Child 2', parent=cls.aNode)
+        cls.aNode_child1_child1 = Taxonomy.objects.create(type='vulnerability', name='Node Child 1 Child 1',
+                                                          parent=cls.aNode_child1, is_alias=True)
+        cls.aNode_child1_child2 = Taxonomy.objects.create(type='vulnerability', name='Node Child 1 Child 2',
+                                                          parent=cls.aNode_child1)
+        cls.aNode_child1_child2_child1 = Taxonomy.objects.create(type='vulnerability',
+                                                                 name='Node Child 1 Child 2 Child 1',
+                                                                 parent=cls.aNode_child1_child2, is_alias=True)
         # self.aNode = Taxonomy.objects.create(type='vulnerability' name= 'Node')
 
     # def test_duplicated_taxonomy(self):
@@ -99,4 +106,46 @@ class TaxonomyTestCase(TestCase):
         Test: if the taxonomy tree has cycles
         """
         self.parent.parent = self.child2
-        self.assertRaises(Exception, self.parent.save) # ToDo: Espero excepcion especifica para cuando se produce un ciclo
+        self.assertRaises(Exception,
+                          self.parent.save)  # ToDo: Espero excepcion especifica para cuando se produce un ciclo
+
+    def test_taxonomy_root(self):
+        """
+        Test: Root node
+        """
+        self.assertIsNone(self.parent.get_parent())
+
+    def test_taxonomy_alias(self):
+        """
+        Test: Alias node
+        """
+        self.assertTrue(self.aNode_child1_child1.is_alias)
+
+    def test_taxonomy_alias_creation_parent_none(self):
+        """
+        Test: Alias parent
+        """
+        self.assertRaises(ValueError, Taxonomy.objects.create, type='vulnerability', name='Alias Parent', is_alias=True,
+                          parent=None)
+
+    def test_taxonomy_alias_creation_parent_alias(self):
+        """
+        Test: Alias parent
+        """
+        self.assertRaises(ValueError, Taxonomy.objects.create, type='vulnerability', name='Alias Parent', is_alias=True,
+                          parent=self.aNode_child1_child1)
+
+    def test_taxonomy_alias_update_parent_is_alias(self):
+        """
+        Test: Alias parent
+        """
+        with self.assertRaises(ValueError):
+            self.aNode_child1.is_alias = True
+            self.aNode_child1.save()
+
+    def test_taxonomy_alias_update_parent(self):
+        """
+        Test: Alias parent
+        """
+        with self.assertRaises(ValueError):
+            self.aNode_child1_child2.parent = self.aNode_child1_child1
