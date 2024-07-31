@@ -16,6 +16,7 @@ import Alert from '../../components/Alert/Alert';
 import ButtonFilter from '../../components/Button/ButtonFilter';
 import FilterSelectUrl from '../../components/Filter/FilterSelectUrl';
 import { useTranslation, Trans } from 'react-i18next';
+import { settingPageSize } from '../../api/services/setting';
 
 const ListCase = () => {
 
@@ -35,7 +36,7 @@ const ListCase = () => {
     const [updatePagination, setUpdatePagination] = useState(false)
     const [disabledPagination, setDisabledPagination] = useState(true)
     //filters
-    const [order, setOrder] = useState("date");
+    const [order, setOrder] = useState("-created");
     const [wordToSearch, setWordToSearch] = useState('')
     const [open, setOpen] = useState(false);
 
@@ -56,12 +57,16 @@ const ListCase = () => {
 
 
     const [refresh, setRefresh] = useState(true)
+    
 
     const { t } = useTranslation();
 
     function updatePage(chosenPage) {
         setCurrentPage(chosenPage);
     }
+
+
+    
 
     //ORDER
     useEffect(() => {
@@ -123,7 +128,11 @@ const ListCase = () => {
             .catch((error) => {
                 console.log(error)
             })
-        //getCases(currentPage,priorityFilter+tlpFilter+stateFilter+wordToSearch, order) 
+
+
+    }, [])
+
+    useEffect(() => {
         getCases(currentPage, priorityFilter + tlpFilter + stateFilter + wordToSearch, order)
             .then((response) => {
                 setCases(response.data.results)

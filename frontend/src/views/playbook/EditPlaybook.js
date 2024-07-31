@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import { putPlaybook } from '../../api/services/playbooks';
 import FormCreatePlaybook from '../playbook/components/FormCreatePlaybook';
-import { getAllTaxonomies } from '../../api/services/taxonomies';
+import { getAllTaxonomies, getMinifiedTaxonomy } from '../../api/services/taxonomies';
 import ListTask from '../task/ListTask';
 import Navigation from '../../components/Navigation/Navigation';
 import Alert from '../../components/Alert/Alert';
@@ -26,18 +26,12 @@ const EditPlaybook = () => {
     const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
-        getAllTaxonomies()
-            .then((response) => {
-                console.log(response)
-                //allTaxonomies
-                let listAllTaxonomies = []
-                response.map((taxonomyItem) => {
-                    listAllTaxonomies.push({ value: taxonomyItem.url, label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] + ')' })
-                })
-                setAllTaxonomies(listAllTaxonomies)
+        getMinifiedTaxonomy().then((response) => {
+            let listTaxonomies = []
+            response.map((taxonomyItem) => {
+                listTaxonomies.push({ value: taxonomyItem.url, label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] + ')' })
             })
-            .catch((error) => {
-                console.log(error)
+            setAllTaxonomies(listTaxonomies)
             })
 
     }, [])

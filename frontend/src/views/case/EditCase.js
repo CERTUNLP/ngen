@@ -12,23 +12,33 @@ const EditCase = () => {
 
     const location = useLocation();
     const fromState = location.state;
-    const [url, setUrl] = useState(fromState);
-
-    const [caseItem, setCaseItem] = useState(null);
+    const [url, setUrl] = useState(null);
+    const [caseItem, setCaseItem] = useState(location?.state?.item || null);
 
     //multiselect
     const [allStates, setSupportedStates] = useState([])
     const [updateCase, setUpdateCase] = useState([])
 
+    console.log(fromState)
+
     useEffect(() => {
-        getCase(url)
+        const { caseUrl, navigation, buttonReturn } = location.state || {};
+        console.log(caseUrl)
+        setUrl(caseUrl)
+        
+      }, [location.state]);
+
+    useEffect(() => {
+        if (url !== null){
+            getCase(url)
             .then(response => {
                 setCaseItem(response.data)
             })
             .catch(error => {
             })
-
-    }, [updateCase])
+        }
+        
+    }, [updateCase, url])
 
 
     useEffect(() => {

@@ -110,7 +110,11 @@ const ReadEvent = () => {
             .catch();
     }
     const returnBack = () => {
-        window.history.back()
+        if (localStorage.getItem('return') === "List events"){
+            window.location.href = '/events';
+        }else{
+            window.history.back()
+        }
     }
 
     return (
@@ -197,6 +201,17 @@ const ReadEvent = () => {
                                 <CallBackendByName url={body.reporter} callback={callbackReporter} /> : "-"}
                         </Col>
                     </Row>
+                    <p />
+                    <Row>
+                        <Col sm={12} lg={2}>
+                            Cantidad de eventos asociados
+                        </Col>
+                        <Col sm={12} lg={4}>
+                            {body.children !== undefined ?
+                                body.children.length
+                                 : "-"}
+                        </Col>
+                    </Row>
                     <br />
                     <Row>
                         <Col sm={12} lg={2}>
@@ -255,8 +270,7 @@ const ReadEvent = () => {
                 </Card.Body>
             </Card>
 
-            <EvidenceCard evidences={evidences} disableDelete={true} disableDragAndDrop={true}
-            />
+            <EvidenceCard evidences={evidences} disableDelete={true} disableDragAndDrop={true}/>
 
             <Table responsive >
                 <Card>

@@ -407,33 +407,6 @@ const FormEvent = (props) => {
                     </Form>
                 </Card.Body>
             </Card>
-            {props.disableCardArtifacts ? 
-            ""
-            :
-            <Card>
-                <Card.Header>
-                    <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                    <Form.Label>{t('cidr.domain.email')}<b style={{ color: "red" }}>*</b></Form.Label>
-                    <Row>
-                        <Col sm={12} lg={6}>
-                            <Form.Group controlId="formGridAddress1">
-                                <Form.Control
-                                    placeholder={t('ngen.enter.ipv5.ipv6.domain.email')}
-                                    maxLength="150"
-                                    value={props.body.address_value}
-                                    disabled={(props.body.children !== [] && props.body.children.length > 0) ? true : false}
-                                    onChange={(e) => completeFieldStringIdentifier(e)}
-                                    isInvalid={showErrorMessage}
-                                    name="address_value" />
-                                {showErrorMessage ? <div className="invalid-feedback"> {t('error.ipv4.ipv6.domain')}</div> : ""}
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                </Card.Body>
-            </Card>
-            }
             {props.disableCardCase ? 
             ""
             :

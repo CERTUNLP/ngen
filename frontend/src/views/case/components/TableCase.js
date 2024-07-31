@@ -8,6 +8,7 @@ import ModalConfirm from '../../../components/Modal/ModalConfirm';
 import Ordering from '../../../components/Ordering/Ordering'
 import LetterFormat from '../../../components/LetterFormat';
 import { useTranslation, Trans } from 'react-i18next';
+import ListDomain from './ListDomain';
 const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, setSelectedCases, setOrder, order, priorityNames, stateNames, tlpNames, userNames, editColum, deleteColum, detailModal, modalCaseDetail, navigationRow, selectCase, handleClickRadio, setSelectCase, disableCheckbox, disableDateOrdering, disableName, disablePriority, disableTlp, disableNubersOfEvents, deleteColumForm, deleteCaseFromForm, disableColumOption, disableUuid }) => {
     const [url, setUrl] = useState(null)
     const [modalDelete, setModalDelete] = useState(false)
@@ -27,9 +28,13 @@ const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, set
     }, [cases]);
 
     const storageCaseUrl = (url) => {
+        localStorage.removeItem('case');
+        localStorage.removeItem('navigation');
+        localStorage.removeItem('button return');
         localStorage.setItem('case', url);
         localStorage.setItem('navigation', navigationRow);
         localStorage.setItem('button return', navigationRow);
+        window.location.href = '/cases/edit'
 
     }
 
@@ -77,6 +82,12 @@ const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, set
         }
     };
 
+    const handleOnClick = (url) => {
+        localStorage.setItem('case', url);
+        localStorage.setItem('navigation', navigationRow);
+        localStorage.setItem('button return', navigationRow);
+      };
+
 
 
     const letterSize = { fontSize: '1.0em' }
@@ -112,7 +123,7 @@ const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, set
                         {disableDateOrdering ?
                             ""
                             :
-                            <Ordering field="date" label={t('date.management.start')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                            <Ordering field="created" label={t('creation.date')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
                         }
                         {disableUuid ? "" :
                             <th style={letterSize}> {t('ngen.uuid')} </th>
@@ -127,6 +138,7 @@ const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, set
                             <th style={letterSize}> {t('ngen.tlp')} </th>
                         }
                         <th style={letterSize}> {t('ngen.state_one')} </th>
+                        <th style={letterSize}> Dominio </th>
                         {disableNubersOfEvents ? "" :
                             <th style={letterSize}> {t('ngen.event.quantity')} </th>
                         }
@@ -196,6 +208,8 @@ const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, set
                                         <LetterFormat useBadge={true} stringToDisplay={tlpNames[caseItem.tlp].name} color={tlpNames[caseItem.tlp].color} />
                                     </td>}
                                 <td>{stateNames[caseItem.state] || "-"}</td>
+                                <td> <ListDomain events={caseItem.events}/> </td>
+
                                 {disableNubersOfEvents ? "" :
                                     <td>{caseItem.events_count}</td>
                                 }
@@ -207,17 +221,22 @@ const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, set
                                         detailModal ? (
                                             <CrudButton type="read" onClick={() => modalCaseDetail(caseItem.url, caseItem.name, caseItem.name, caseItem.date, priorityNames[caseItem.priority], tlpNames[caseItem.tlp].name, stateNames[caseItem.state], userNames[caseItem.user_creator])} />
                                         ) : (
-                                            <Link to={{ pathname: '/cases/view' }}>
                                                 <CrudButton type="read" onClick={() => storageCaseUrl(caseItem.url)} />
-                                            </Link>
+                                            
                                         )}
                                     {disableColumOption ? ""
                                         :
                                         editColum && (
                                             !caseItem.blocked ? (
-                                                <Link to={{ pathname: '/cases/edit', state: caseItem.url }}>
-                                                    <CrudButton type="edit" />
-                                                </Link>
+                                                <Link 
+                                                to={{
+                                                  pathname: '/cases/edit',
+                                                  state: { caseUrl: caseItem.url, navigation: navigationRow, buttonReturn: navigationRow }
+                                                }} 
+                                                onClick={handleOnClick(caseItem.url)}
+                                              >
+                                                <CrudButton type="edit" />
+                                              </Link>
                                             ) : (
                                                 <Button
                                                     id="button_hover"

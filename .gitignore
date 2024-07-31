@@ -67,6 +67,8 @@ db.sqlite3-journal
 *.pyc
 __pycache__
 mediafiles/
+media/
+media/evidence
 staticfiles/
 
 # Flask stuff:

@@ -17,8 +17,6 @@ const SmallCaseTable = ({ readCase, disableLink, modalCase, modalListCase, modal
     const [tlpNames, setTlpNames] = useState({});
     const { t } = useTranslation();
 
-    console.log(readCase)
-
     useEffect(() => {
 
         if (readCase) {

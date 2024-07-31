@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Card, Col, Collapse, Row } from 'react-bootstrap';
 import { postPlaybook, putPlaybook } from '../../api/services/playbooks';
 import FormCreatePlaybook from '../playbook/components/FormCreatePlaybook';
-import { getAllTaxonomies } from '../../api/services/taxonomies';
+import { getAllTaxonomies, getMinifiedTaxonomy } from '../../api/services/taxonomies';
 import ListTask from '../task/ListTask';
 import Navigation from '../../components/Navigation/Navigation';
 import Alert from '../../components/Alert/Alert';
@@ -26,14 +26,14 @@ const CreatePlaybook = () => {
 
     useEffect(() => {
 
-        getAllTaxonomies()// en TableCase
-            .then((response) => {
-                let listTaxonomies = []
-                response.map((taxonomyItem) => {
-                    listTaxonomies.push({ value: taxonomyItem.url, label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] + ')' })
-                    setAllTaxonomies(listTaxonomies)
-                })
-            }).catch();
+
+        getMinifiedTaxonomy().then((response) => {
+            let listTaxonomies = []
+            response.map((taxonomyItem) => {
+                listTaxonomies.push({ value: taxonomyItem.url, label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] + ')' })
+            })
+            setAllTaxonomies(listTaxonomies)
+            })
 
     }, [sectionAddTask])
 

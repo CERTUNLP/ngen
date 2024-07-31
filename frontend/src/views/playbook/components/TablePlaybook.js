@@ -5,7 +5,6 @@ import { getPlaybook, deletePlaybook } from '../../../api/services/playbooks'
 import { Link } from 'react-router-dom';
 import ModalConfirm from '../../../components/Modal/ModalConfirm';
 import ModalDetailPlaybook from './ModalDetailPlaybook';
-import { getTaxonomy } from '../../../api/services/taxonomies';
 import Alert from '../../../components/Alert/Alert';
 import { useTranslation, Trans } from 'react-i18next';
 

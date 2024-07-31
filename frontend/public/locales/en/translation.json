@@ -347,5 +347,6 @@
     "signup.already_have_an_account": "Already have an account?",
     "button.signin": "Sign in",
     "ngen.default": "Default",
-    "ngen.uuid": "UUID"
+    "ngen.uuid": "UUID",
+    "creation.date": "Creation date"
 }

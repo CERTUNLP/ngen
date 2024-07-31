@@ -35,9 +35,10 @@ const EditEvent = () => {
   const [priorityNames, setPriorityNames] = useState({});
   const [userNames, setUserNames] = useState({});
   const [updateEvidence, setUpdateEvidence] = useState([])
+  const [url, setUrl] = useState(localStorage.getItem('event'));
 
   useEffect(() => {
-    getEvent(fromState.url)
+    getEvent(url)
       .then(response => {
         response.data.case = response.data.case ? response.data.case : ""
         response.data.date = response.data.date.substr(0, 16)

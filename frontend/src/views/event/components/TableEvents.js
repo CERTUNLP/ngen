@@ -180,7 +180,7 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                                             :
                                             !event.blocked ? (
                                                 <Link to={{ pathname: "/events/edit", state: event }} >
-                                                    <CrudButton type='edit' />
+                                                    <CrudButton type='edit' onClick={() => storageEventUrl(event.url)} />
                                                 </Link>
                                             ) : (
                                                 <CrudButton type='edit' disabled={true} />

@@ -1,5 +1,5 @@
 import  apiInstance  from "../api";
-import { COMPONENT_URL, PAGE } from '../../config/constant';
+import { COMPONENT_URL, PAGE, PAGE_SIZE } from '../../config/constant';
 import setAlert from '../../utils/setAlert';
 
 const getAllSetting = (currentPage = 1, results = [], limit = 100) => {
@@ -49,4 +49,15 @@ const patchSetting = (url, value) => {
     })
 }
 
-export { getAllSetting, patchSetting, getSetting};
+const settingPageSize = () => {
+    let messageError = `No se pudo recuperar la informacion de los estados`;
+    return apiInstance.get(COMPONENT_URL.constance + PAGE_SIZE)
+    .then(response => {        
+        return response;
+    }).catch( error => { 
+        setAlert(messageError, "error", "state");
+        return Promise.reject(error);
+    });
+}
+
+export { getAllSetting, patchSetting, getSetting, settingPageSize};

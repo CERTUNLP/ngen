@@ -21,7 +21,8 @@ import ModalCreateEvent from '../../event/ModalCreateEvent';
 const FormCase = (props) => {  // props: edit, caseitem, allStates 
 
     const [url, setUrl] = useState(props.edit ? props.caseItem.url : null)
-    const [date, setDate] = useState(props.caseItem.date !== null ? props.caseItem.date.substr(0, 16) : getCurrentDateTime())
+    const [date, setDate] = useState(props.caseItem.date !== null ? props.caseItem.date.substr(0, 16) : getCurrentDateTimeCreated())
+    const [created, setCreated] = useState(props.caseItem.date !== null ? props.caseItem.created.substr(0, 16) : getCurrentDateTimeCreated())
     const [lifecycle, setLifecycle] = useState(props.caseItem.lifecycle)
     const [parent, setParent] = useState(props.caseItem.parent)
     const [priority, setPriority] = useState(props.caseItem.priority)
@@ -79,6 +80,8 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
     const [selectTaxonomyFilter, setSelectTaxonomyFilter] = useState("");
     const [tableDetail, setTableDetail] = useState(false);
     const [showModalEvent, setShowModalEvent] = useState(false);
+
+    const [dateNotification, setDateNotification] = useState(false)
 
     const { t } = useTranslation();
     useEffect(() => {
@@ -410,6 +413,17 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
 
+    function getCurrentDateTimeCreated() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+    
+
     const modalListEvent = () => {
         setUpdatePagination(true)
         setShowModalListEvent(true);
@@ -494,6 +508,15 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
         setShowModalEvent(true);
     }
 
+    const completeDate = (date, setDate) => {
+        if (getCurrentDateTimeCreated() >= date) {
+            setDate(date)
+            setDateNotification(false)
+        } else {
+            setDateNotification(true)
+        }
+    }
+
     return (
         <React.Fragment>
             <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="case" />
@@ -507,7 +530,7 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
                 }
                 <Card.Body>
                     <Row>
-                        <Col lg={6} sm={12}>
+                        <Col lg={3} sm={12}>
                             <Form.Group controlId="Form.Case.Comments">
                                 <Form.Label>{t('ngen.case_name')} </Form.Label>
                                 <Form.Control
@@ -522,13 +545,26 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
                         </Col>
                         <Col lg={3} sm={12}>
                             <Form.Group controlId="Form.Case.Date">
+                                <Form.Label>{t('creation.date')}</Form.Label>
+                                <Form.Control type="datetime-local" //2023-03-24T01:40:14.181622Z 
+                                    value={created} //yyyy-mm-ddThh:mm
+                                    disabled
+                                    min="2000-01-01T00:00" max="2030-01-01T00:00"
+                                    />
+                            </Form.Group>
+                        </Col>
+                        <Col lg={3} sm={12}>
+                            <Form.Group controlId="Form.Case.Date">
                                 <Form.Label>{t('date.incidence')}</Form.Label>
                                 <Form.Control type="datetime-local" //2023-03-24T01:40:14.181622Z 
-
+                                    max={getCurrentDateTimeCreated()}
                                     value={date} //yyyy-mm-ddThh:mm
-                                    min="2000-01-01T00:00" max="2030-01-01T00:00"
-                                    onChange={(e) => setDate(e.target.value)} />
+                                    min="2000-01-01T00:00" 
+                                    isInvalid={dateNotification}
+                                    onChange={(e) => completeDate(e.target.value, setDate)} />
+                                    {dateNotification ? <div className="invalid-feedback"> {t('date.invalid')}</div> : ""}
                             </Form.Group>
+                            
                         </Col>
                         <Col lg={3} sm={12}>
                             <SelectLabel set={setPriority} setSelect={setSelectPriority} options={allPriorities}

@@ -167,8 +167,15 @@ const CreateEvent = () => {
     });
 
     postEvent(formDataEvent)
-      .then(() => {
-        window.location.href = '/events';
+      .then((response) => {
+        if(response.data.parent !== null){
+        
+            localStorage.setItem('event', response.data.parent);
+            localStorage.setItem('return', "List events");
+            window.location.href = '/events/view'
+        }else{
+          window.location.href = '/events';
+        }
       })
       .catch((error) => {
         setShowAlert(true)
