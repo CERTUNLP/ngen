@@ -56,7 +56,7 @@ const CreateReport = () => {
         <React.Fragment>
             <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="report" />
             <Row>
-                <Navigation actualPosition="Crear reporte" path="/reports" index="Reportes" />
+                <Navigation actualPosition={t("ngen.report.create")} path="/reports" index={t('ngen.report')} />
             </Row>
             <Row>
                 <Col sm={12}>

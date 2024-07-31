@@ -230,6 +230,7 @@
     "ngen.event.add": "Add event",
     "ngen.event.quantity": "Event quantity",
     "ngen.event.edit": "Edit event",
+    "ngen.event.create": "Create event",
     "ngen.action_one": "Action",
     "date.creation": "Creation Date",
     "w.entityByName": "by entity name",
@@ -261,6 +262,7 @@
     "ngen.report.detail": "Report detail",
     "ngen.reports": "Reports",
     "ngen.report.edit": "Edit report",
+    "ngen.report.create": "Create report",
     "reporter": "Reporter",
     "ngen.children": "Children",
     "ngen.state_ErrorAssign": "There was an error assigning a state.",
@@ -398,4 +400,5 @@
     "ngen.delete.case.error": "The case could not be deleted",
     "ngen.merge.case.success": "The cases were successfully merged",
     "ngen.merge.case.error": "The cases could not be merged"
+    "ngen.file_upload_type": "You can upload files of type:"
 }
