@@ -272,6 +272,7 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
 
     taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
     feed = models.ForeignKey('ngen.Feed', models.PROTECT)
+    created_with_taxonomy_slug = models.CharField(max_length=255, null=True, blank=True, default='', editable=False)
 
     reporter = models.ForeignKey('ngen.User', models.PROTECT, related_name='events_reporter')
     evidence_file_path = models.CharField(max_length=255, null=True, blank=True)
@@ -327,8 +328,11 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
         return self.mergeable
 
     def update_taxonomy(self):
-        if self.taxonomy and self.taxonomy.is_alias and self.taxonomy.parent:
-            self.taxonomy = self.taxonomy.parent
+        if self.taxonomy:
+            if not self.created_with_taxonomy_slug:
+                self.created_with_taxonomy_slug = self.taxonomy.slug
+            if self.taxonomy.is_alias and self.taxonomy.parent:
+                self.taxonomy = self.taxonomy.parent
 
     @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
