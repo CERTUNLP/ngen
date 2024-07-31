@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { getTaxonomy } from '../../api/services/taxonomies';
+import { useTranslation } from 'react-i18next';
 
 const ModalConfirm = (props) => { // props: showModal, onHide, ifConfirm, type, component, state, name
     const [warning, setWarning] = useState('');
     const [eventOrCase, setEventOrCase] = useState('');
+    const { t } = useTranslation();
 
     useEffect(() => {
-        let names = Object.values(props.name || '');
-        const eventOrCase = names.some((el) => el.includes("event")) ? "eventos" : "casos";
+        const eventOrCase = props.component.toLowerCase().includes("event") ? "events" : "cases";
         setEventOrCase(eventOrCase);
-    }, [props.name]);
+    }, [props.component]);
 
     useEffect(() => {
-        if (props.type === "merge" && eventOrCase === "eventos") {
+        if (props.type === "merge" && eventOrCase.includes("event")) {
             const fetchTaxonomies = async () => {
                 try {
                     let names = Object.values(props.name);
@@ -28,11 +29,11 @@ const ModalConfirm = (props) => { // props: showModal, onHide, ifConfirm, type, 
                     const diffTax = (new Set(taxonomyNames).size > 1);
                     const diffDOrCidr = (new Set(dOrCidr).size > 1);
                     const warning = diffTax && diffDOrCidr 
-                        ? "(Advertencia: las taxonomias y domain/cidr de los eventos son diferentes)"
+                        ? `(${t('ngen.warning.modal.taxonomy.domain')})`
                         : diffTax 
-                        ? "(Advertencia: las taxonomias de los eventos son diferentes)" 
+                        ? `(${t('ngen.warning.modal.taxonomy')})`
                         : diffDOrCidr 
-                        ? "(Advertencia: los domain/cidr de los eventos son diferentes)" 
+                        ? `(${t('ngen.warning.modal.domain')})` 
                         : "";
                     setWarning(warning);
                 } catch (error) {
@@ -47,24 +48,24 @@ const ModalConfirm = (props) => { // props: showModal, onHide, ifConfirm, type, 
     const type = {
         editState:
         {
-            header: `${props.component ? `Estado de ${props.component}` : 'Estado'}`,
-            message: `${props.state ? `Desea desactivar ${props.name}?` : `Desea activar ${props.name}?`}`,
+            header: `${props.component ?  `${t('ngen.edit.header.of')} ${props.component}` : t('ngen.edit.header')}`,
+            message: `${props.state ? `${t('ngen.edit.message.disable')} ${props.name}?` : `${t('ngen.edit.message.enable')} ${props.name}?`}`,
             variantButtonConfirm: `${props.state ? 'outline-danger' : 'outline-primary'}`,
-            textButtonConfirm: `${props.state ? 'Desactivar' : 'Activar'}`
+            textButtonConfirm: `${props.state ? t('ngen.disable') : t('ngen.enable')}`
         },
         delete:
         {
-            header: `${props.component ? `Eliminar ${props.component}` : 'Eliminar'}`,
-            message: `${`¿Desea eliminar ${props.name}?`}`,
+            header: `${props.component ? eventOrCase.includes("event") ? t('ngen.delete.header.event') : t('ngen.delete.header.case') : t('ngen.delete')}`,
+            message: `${`${t('ngen.delete.message')} ${props.name}?`}`,
             variantButtonConfirm: 'outline-danger',
-            textButtonConfirm: 'Eliminar'
+            textButtonConfirm: t('ngen.delete')
         },
         merge:
         {
-            header: `${props.component ? `Merge de ${props.component}` : 'Merge'}`,
-            message: `¿Desea mergear los ${eventOrCase} seleccionados? ${warning}`,
+            header: `${props.component ? eventOrCase.includes("event") ? t('ngen.merge.header.event') : t('ngen.merge.header.case') : 'Merge'}`,
+            message: eventOrCase.includes("event") ? `${t('ngen.merge.message.event')} ${warning}` : `${t('ngen.merge.message.case')} ${warning}`,
             variantButtonConfirm: 'outline-primary',
-            textButtonConfirm: 'Aceptar'
+            textButtonConfirm: t('ngen.accept')
         },
     }
 
@@ -82,7 +83,7 @@ const ModalConfirm = (props) => { // props: showModal, onHide, ifConfirm, type, 
                         {type[props.type].textButtonConfirm}
                     </Button>
 
-                    <Button variant="outline-secondary" onClick={props.onHide}>Cancelar</Button>
+                    <Button variant="outline-secondary" onClick={props.onHide}>{t('ngen.cancel')}</Button>
                 </Modal.Footer>
             </Modal>
         </React.Fragment>

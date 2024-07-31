@@ -3,7 +3,7 @@ import { COMPONENT_URL } from '../../config/constant';
 import setAlert from '../../utils/setAlert';
 import { REFRESH_TOKEN, LOGOUT, CLEAR_MESSAGE } from '../../store/actions';
 import { store } from '../../store';
-
+import i18next from "i18next";
 
 const register = (username, password, email) => {
     return apiInstance.post(COMPONENT_URL.register, {
@@ -12,10 +12,10 @@ const register = (username, password, email) => {
         email: email,
         is_active: true
     }).then(response => {
-        setAlert("Registración exitosa", "success");
+        setAlert(i18next.t('ngen.auth.register.success'), "success");
         return response;
     }).catch(error => {
-        setAlert("No se pudo registrar al usuario", "error");
+        setAlert(i18next.t('ngen.auth.register.error'), "error");
         return Promise.reject(error);
     });
 }
@@ -26,9 +26,9 @@ const login = (username, password) => {
         password: password,
     }).catch(error => {
         if (error.response.data.detail === "La combinación de credenciales no tiene una cuenta activa") {
-            setAlert("Las credenciales de acceso son inválidas", "error");
+            setAlert(i18next.t('ngen.auth.login.invalidCredentials'), "error");
         } else {
-            setAlert("No se pudo realizar el login", "error");
+            setAlert(i18next.t('ngen.auth.login.error'), "error");
         }
         return Promise.reject(error);
     });
