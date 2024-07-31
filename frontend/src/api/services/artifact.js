@@ -1,9 +1,10 @@
 import  apiInstance  from "../api";
 import { COMPONENT_URL } from '../../config/constant';
 import setAlert from '../../utils/setAlert';
+import i18next from "i18next";
 
 const getMinifiedArtifact = () => {//el parametro es para completar la url con el numero de pagina
-    let messageError = `No se pudo recuperar la informacion de los estados`;
+    let messageError = i18next.t('ngen.artifact.error');
     return apiInstance.get(COMPONENT_URL.artifactMinifiedList)
     .then(response => {        
         return response.data;

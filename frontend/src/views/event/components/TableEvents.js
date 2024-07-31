@@ -234,7 +234,7 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                     </tbody>
                 </Table>
             </ul>
-            <ModalConfirm type='delete' component='Evento' name={"el evento"} showModal={remove} onHide={() => setRemove(false)} ifConfirm={() => handleDelete(deleteUrl)} />
+            <ModalConfirm type='delete' component='Evento' name={`${t('ngen.event_one')}`} showModal={remove} onHide={() => setRemove(false)} ifConfirm={() => handleDelete(deleteUrl)} />
         </div>
     )
 }
