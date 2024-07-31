@@ -67,6 +67,7 @@ db.sqlite3-journal
 *.pyc
 __pycache__
 media/
+media/evidence/
 mediafiles/
 staticfiles/
 
