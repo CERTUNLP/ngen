@@ -12,7 +12,7 @@ import Ordering from '../../../components/Ordering/Ordering';
 import { useTranslation, Trans } from 'react-i18next';
 
 
-const TableTemplete = ({ list, loading, order, setOrder, setLoading, currentPage, taxonomyNames, feedNames }) => {
+const TableTemplete = ({ list, loading, order, setOrder, setLoading, currentPage, taxonomyNames, feedNames, tlpNames, priorityNames, stateNames }) => {
     const [deleteName, setDeleteName] = useState()
     const [deleteUrl, setDeleteUrl] = useState()
     const [remove, setRemove] = useState()
@@ -30,12 +30,14 @@ const TableTemplete = ({ list, loading, order, setOrder, setLoading, currentPage
             </Row>
         );
     }
-    const modalDelete = (name, url) => {
+
+    const modalDelete = (cidr, domain, taxonomy, feed, url) => {
+        let name = "[" + (cidr || domain) + " - " + taxonomy + " - " + feed + "]"
         setDeleteName(name)
         setDeleteUrl(url)
         setRemove(true)
-
     }
+
     const handleDelete = () => {
         deleteTemplate(deleteUrl).then(() => {
             window.location.href = '/templates';
@@ -48,17 +50,18 @@ const TableTemplete = ({ list, loading, order, setOrder, setLoading, currentPage
                 setRemove(false)
             })
     }
+
     const showModalTemplate = (template) => {
         setTemplate(template)
         setModalShow(true)
-
     }
 
-    const modalChangeState = (url, name, active) => {
-
-        setDataTemplate({ url: url, name: name, state: active })
+    const modalChangeState = (url, cidr, domain, taxonomy, feed, active) => {
+        let name = "[" + (cidr || domain) + " - " + taxonomy + " - " + feed + "]"
+        setDataTemplate({ url: url, name: name , state: active })
         setShowTemplate(true)
     }
+
     const create = (url) => {
         createCases(url).then(() => {
             window.location.href = '/templates';
@@ -67,6 +70,7 @@ const TableTemplete = ({ list, loading, order, setOrder, setLoading, currentPage
                 console.log(error)
             })
     }
+
     const changeState = () => {
 
         isActive(dataTemplate.url, +!dataTemplate.state)
@@ -94,10 +98,14 @@ const TableTemplete = ({ list, loading, order, setOrder, setLoading, currentPage
                 <Table responsive hover className="text-center">
                     <thead>
                         <tr>
-                            <Ordering field="event_feed__name" label={t('ngen.feed.information')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                            <Ordering field="cidr,domain" label={t('ngen.affectedResources')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
                             <Ordering field="event_taxonomy__name" label={t('ngen.taxonomy_one')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
-                            <th>{t('ngen.affectedResources')}</th>
-                            <th>{t('ngen.state_one')}</th>
+                            <Ordering field="event_feed__name" label={t('ngen.feed.information')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                            <Ordering field="active" label={t('w.active')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                            <Ordering field="priority" label={t('ngen.priority_one')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                            <Ordering field="case_state" label={t('ngen.state_one')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                            <Ordering field="case_tlp" label={t('ngen.tlp')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                            <Ordering field="matching_events_without_case_count" label={t('ngen.template.matching_events_without_case')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
                             <th>{t('ngen.options')}</th>
                         </tr>
                     </thead>
@@ -105,56 +113,65 @@ const TableTemplete = ({ list, loading, order, setOrder, setLoading, currentPage
                         {list.map((template, index) => {
                             return (
                                 <tr key={index}>
+                                    <td>{template.cidr || template.domain}</td>
+                                    <td>{taxonomyNames[template.event_taxonomy]}</td>
                                     <td>{feedNames[template.event_feed]}</td>
-                                    <td>{taxonomyNames[template.event_taxonomy]} </td>
-                                    <td>{template.address_value} </td>
                                     <td>
-                                        <ActiveButton active={+template.active} onClick={() => modalChangeState(template.url, template.cidr, template.active)} />
+                                        <ActiveButton active={+template.active} onClick={() => modalChangeState(template.url, template.cidr, template.domain, taxonomyNames[template.event_taxonomy], feedNames[template.event_feed], template.active)} />
+                                    </td>
+                                    <td>{priorityNames[template.priority]}</td>
+                                    <td>{stateNames[template.case_state]}</td>
+                                    <td>{tlpNames[template.case_tlp]}</td>
+                                    <td>
+                                        {template.matching_events_without_case_count > 0 ?
+                                        <Button className="" variant="outline-primary" onClick={() => create(template.url)}
+                                            style={{
+                                                borderRadius: "50px",
+                                            }}>
+                                            {template.matching_events_without_case_count}
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="16"
+                                                height="16"
+                                                fill="currentColor"
+                                                className="bi bi-play"
+                                                viewBox="-2 2 16 16"
+                                            >
+                                                <path d="M12.645 8.235l-6.647-4.662a1 1 0 0 0-1.618.785v9.324a1 1 0 0 0 1.618.785l6.647-4.662a1 1 0 0 0 0-1.57z" />
+                                            </svg>
+                                        </Button> :
+                                        <Button disabled className="" variant="outline-secundary"
+                                            style={{
+                                                border: "1px solid #555",
+                                                borderRadius: "50px",
+                                                color: "#555",
+                                            }}>
+                                            {template.matching_events_without_case_count}
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="16"
+                                                height="16"
+                                                fill="currentColor"
+                                                className="bi bi-play"
+                                                viewBox="-2 2 16 16"
+                                            >
+                                                <path d="M12.645 8.235l-6.647-4.662a1 1 0 0 0-1.618.785v9.324a1 1 0 0 0 1.618.785l6.647-4.662a1 1 0 0 0 0-1.57z" />
+                                            </svg>
+                                        </Button>}
                                     </td>
                                     <td>
                                         <CrudButton type='read' onClick={() => showModalTemplate(template)} />
                                         <Link to={{ pathname: "/templates/edit", state: template }} >
                                             <CrudButton type='edit' />
                                         </Link>
-                                        <CrudButton type='delete' onClick={() => modalDelete(template.cidr, template.url)} />
-                                        {template.matching_events_without_case_count > 0 ?
-                                            <Button className="btn-icon btn-rounded" variant="outline-primary" onClick={() => create(template.url)}>
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="16"
-                                                    height="16"
-                                                    fill="currentColor"
-                                                    className="bi bi-play"
-                                                    viewBox="0 0 16 16"
-                                                >
-                                                    <path d="M12.645 8.235l-6.647-4.662a1 1 0 0 0-1.618.785v9.324a1 1 0 0 0 1.618.785l6.647-4.662a1 1 0 0 0 0-1.57z" />
-                                                </svg>
-                                            </Button> :
-                                            <Button disabled className="btn-icon btn-rounded" variant="outline-secundary"
-                                                style={{
-                                                    border: "1px solid #555",
-                                                    borderRadius: "50px",
-                                                    color: "#555",
-                                                }}>
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="16"
-                                                    height="16"
-                                                    fill="currentColor"
-                                                    className="bi bi-play"
-                                                    viewBox="0 0 16 16"
-                                                >
-                                                    <path d="M12.645 8.235l-6.647-4.662a1 1 0 0 0-1.618.785v9.324a1 1 0 0 0 1.618.785l6.647-4.662a1 1 0 0 0 0-1.57z" />
-                                                </svg>
-                                            </Button>}
-
+                                        <CrudButton type='delete' onClick={() => modalDelete(template.cidr, template.domain, taxonomyNames[template.event_taxonomy], feedNames[template.event_feed], template.url)} />
                                     </td>
                                 </tr>
                             )
                         })}
 
                         <ModalConfirm type='delete' component={t('ngen.state_one')} name={deleteName} showModal={remove} onHide={() => setRemove(false)} ifConfirm={() => handleDelete(deleteUrl)} />
-                        <ModalConfirm type='editState' component={t('ngen.state_one')} name={dataTemplate.cidr} state={dataTemplate.state} showModal={showTemplate} onHide={() => setShowTemplate(false)} ifConfirm={() => changeState()} />
+                        <ModalConfirm type='editState' component={t('ngen.state_one')} name={dataTemplate.cidr || dataTemplate.domain} state={dataTemplate.state} showModal={showTemplate} onHide={() => setShowTemplate(false)} ifConfirm={() => changeState()} />
                         <Modal size='lg' show={modalShow} onHide={() => setModalShow(false)} aria-labelledby="contained-modal-title-vcenter" centered>
                             <Modal.Body>
                                 <Row>

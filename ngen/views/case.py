@@ -57,7 +57,7 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
     filterset_class = CaseTemplateFilter
     ordering_fields = ["id", "created", "modified", "cidr", "domain", "priority", "event_taxonomy", "event_feed",
                        "case_lifecycle", "case_tlp", "case_state", "case_tlp__name", "case_state__name",
-                       "event_taxonomy__name", "event_feed__name", "matching_events_without_case_count"]
+                       "event_taxonomy__name", "event_feed__name", "matching_events_without_case_count", "active"]
     serializer_class = serializers.CaseTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
 

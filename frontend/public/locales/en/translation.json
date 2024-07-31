@@ -311,6 +311,7 @@
     "ngen.template.detail": "Template detail",
     "ngen.template.add": "Add template",
     "ngen.template.edit": "Edit template",
+    "ngen.template.matching_events_without_case": "Matching events without case",
     "date.limit.response": "Response deadline",
     "date.limit.resolution": "Resolution deadline",
     "session.last": "Last login",
@@ -336,7 +337,9 @@
     "derived.issue.preview": "Preview of derived issue",
     "user.error.fetch": "Oops! There was an error fetching the users.",
     "w.language.english": "English",
+    "w.language.en": "English",
     "w.language.spanish": "Spanish",
+    "w.language.es": "Spanish",
     "ngen.true": "True",
     "ngen.false": "False",
     "ngen.yes": "Yes",
@@ -352,5 +355,5 @@
     "ngen.default": "Default",
     "ngen.uuid": "UUID",
     "ngen.evidences.aditional.data": "Evidences - Aditional data",
-    "ngen.file_upload_type": "You can upload files of type:" 
+    "ngen.file_upload_type": "You can upload files of type:"
 }
