@@ -6,6 +6,7 @@ import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
 import TableEvents from './components/TableEvents';
 import { getEvents } from '../../api/services/events';
 import './ModalListEvent.css'
+import { useTranslation } from 'react-i18next';
 
 
 const ModalListEvent = (props) => {
@@ -16,6 +17,7 @@ const ModalListEvent = (props) => {
     const [events, setEvents] = useState([]);
     const [disabledPagination, setDisabledPagination] = useState(true);
     const [caseIsNull, setCaseIsNull] = useState('&case__isnull=true')
+    const { t } = useTranslation();
     //&case__isnull=true
 
     useEffect(() => {
@@ -60,17 +62,17 @@ const ModalListEvent = (props) => {
                 <br />
                 <Row>
                     <Col sm={4} lg={4}>
-                        <FilterSelectUrl options={props.tlpList} itemName="tlp" partOfTheUrl="tlp" itemFilter={props.tlpFilter}
+                        <FilterSelectUrl options={props.tlpList} itemName={t('ngen.tlp')} partOfTheUrl="tlp" itemFilter={props.tlpFilter}
                             itemFilterSetter={props.setTlpFilter} setLoading={setLoading}
                             setCurrentPage={props.setCurrentPage} value={props.selectTlpFilter} setValue={props.setSelectTlpFilter} />
                     </Col>
                     <Col sm={4} lg={4}>
-                        <FilterSelectUrl options={props.taxonomies} itemName="taxonomy" partOfTheUrl="taxonomy"
+                        <FilterSelectUrl options={props.taxonomies} itemName={t('ngen.taxonomy_other')} partOfTheUrl="taxonomy"
                             itemFilter={props.taxonomyFilter} itemFilterSetter={props.setTaxonomyFilter} setLoading={setLoading}
                             setCurrentPage={props.setCurrentPage} value={props.selectTaxonomyFilter} setValue={props.setSelectTaxonomyFilter} />
                     </Col>
                     <Col sm={4} lg={4}>
-                        <FilterSelectUrl options={props.feeds} itemName='feeds' partOfTheUrl="feed"
+                        <FilterSelectUrl options={props.feeds} itemName={t('ngen.feed_other')} partOfTheUrl="feed"
                             itemFilter={props.feedFilter} itemFilterSetter={props.setFeedFilter} setLoading={setLoading}
                             setCurrentPage={props.setCurrentPage} value={props.selectFeedFilter} setValue={props.setSelectFeedFilter} />
                     </Col>
