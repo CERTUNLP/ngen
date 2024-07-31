@@ -69,6 +69,7 @@ __pycache__
 media/
 media/evidence/
 mediafiles/
+static/
 staticfiles/
 
 # Flask stuff:
