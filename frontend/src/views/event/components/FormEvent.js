@@ -420,7 +420,7 @@ const FormEvent = (props) => {
                             <Col sm={12} lg={6}>
                                 <Form.Group controlId="formGridAddress1">
                                     <Form.Control
-                                        placeholder={t('ngen.enter.ipv5.ipv6.domain.email')}
+                                        placeholder={t('ngen.enter.ipv4.ipv6.domain.email')}
                                         maxLength="150"
                                         value={props.body.address_value}
                                         disabled={(props.body.children !== [] && props.body.children.length > 0) ? true : false}

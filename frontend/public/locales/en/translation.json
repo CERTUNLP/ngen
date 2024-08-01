@@ -275,7 +275,7 @@
     "ngen.playbook.detail": "Playbook details",
     "ngen.contact.detail": "Contact detail",
     "ngen.playbook.edit": "Edit playbook",
-    "button.savechanges": "Save Changes",
+    "button.save_changes": "Save Changes",
     "ngen.color.placeholder": "Add a color",
     "ngen.playbook.add": "Add Playbook",
     "ngen.priority.add": "Add priority",
@@ -354,7 +354,7 @@
     "button.signin": "Sign in",
     "ngen.default": "Default",
     "ngen.uuid": "UUID",
-    "ngen.evidences.aditional.data": "Evidences - Aditional data",
+    "ngen.evidences.additional.data": "Evidences - Additional data",
     "ngen.enable": "Enable",
     "ngen.disable": "Disable",
     "ngen.delete": "Delete",
@@ -399,6 +399,6 @@
     "ngen.delete.case.success": "The case was successfully deleted",
     "ngen.delete.case.error": "The case could not be deleted",
     "ngen.merge.case.success": "The cases were successfully merged",
-    "ngen.merge.case.error": "The cases could not be merged"
+    "ngen.merge.case.error": "The cases could not be merged",
     "ngen.file_upload_type": "You can upload files of type:"
 }
