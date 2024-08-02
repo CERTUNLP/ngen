@@ -8,6 +8,7 @@ import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
 import { getMinifiedTlp } from '../../api/services/tlp';
 import { getMinifiedUser } from '../../api/services/users';
 import FormEvent from './components/FormEvent';
+import { useTranslation } from 'react-i18next';
 
 const ModalCreateEvent = ({ showModalEvent, setShowModalEvent, caseItem, states, setCaseToLink, stateNames, setSelectCase, completeField1,selectedEvent,setSelectedEvent,refresh,setRefresh}) => {
     const formEmpty = {
@@ -42,6 +43,7 @@ const ModalCreateEvent = ({ showModalEvent, setShowModalEvent, caseItem, states,
       const [priorityNames, setPriorityNames] = useState({});
       const [userNames, setUserNames] = useState({});
       const [showAlert, setShowAlert] = useState(false)
+      const { t } = useTranslation();
     
       useEffect(() => {
     
@@ -169,7 +171,7 @@ const ModalCreateEvent = ({ showModalEvent, setShowModalEvent, caseItem, states,
   return (
     <Modal show={showModalEvent} size="lg" onHide={() => setShowModalEvent(false)} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>
-      <Modal.Title>{'ngen.event.create'}</Modal.Title>
+      <Modal.Title>{t('ngen.event.create')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div id="example-collapse-text">
