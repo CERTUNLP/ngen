@@ -18,8 +18,8 @@ jobs:
     - name: Build docker containers
       run: |
         cd docker
-        docker-compose build
-        docker-compose up -d
+        docker compose build
+        docker compose up -d
 
         max_retries=60
         retries=0
