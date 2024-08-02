@@ -52,11 +52,15 @@ const ModalListEvent = (props) => {
             centered
             dialogClassName="modal-90w"
         >
-            <Modal.Header closeButton />
+            <Modal.Header closeButton>
+                <Modal.Title>{
+                    t('ngen.event_link')}
+                </Modal.Title>
+            </Modal.Header>
             <Modal.Body>
                 <Row>
                     <Col sm={12} lg={12}>
-                        <Search type="case" setWordToSearch={props.setWordToSearch} wordToSearch={props.wordToSearch} setLoading={setLoading} />
+                        <Search type="event" setWordToSearch={props.setWordToSearch} wordToSearch={props.wordToSearch} setLoading={setLoading} />
                     </Col>
                 </Row>
                 <br />
@@ -82,7 +86,7 @@ const ModalListEvent = (props) => {
                         events={events} loading={loading} selectedEvent={props.selectedEvent}
                         setSelectedEvent={props.setSelectedEvent} order={order} setOrder={setOrder} setLoading={setLoading}
                         currentPage={props.currentPage} taxonomyNames={props.taxonomyNames} feedNames={props.feedNames}
-                        tlpNames={props.tlpNames} disableCheckbox={false} formCaseCheckbok={true} disableCheckboxAll={true}
+                        tlpNames={props.tlpNames} disableCheckbox={false} formCaseCheckbox={true} disableCheckboxAll={false}
                         disableColumnDelete={true} disableTemplate={true} disableColumnEdit={true} detailModal={true}
                         modalEventDetail={props.modalEventDetail} disableUuid={false}
                     />

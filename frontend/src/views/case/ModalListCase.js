@@ -46,7 +46,11 @@ const ModalListCase = (props) => {
 
     return (
         <Modal size="lg" show={props.showModalListCase} onHide={props.closeModal} aria-labelledby="contained-modal-title-vcenter" centered>
-            <Modal.Header closeButton />
+            <Modal.Header closeButton>
+                <Modal.Title>
+                    {t('ngen.case_link')} 
+                </Modal.Title>
+            </Modal.Header>
             <Modal.Body>
                 <Row>
                     <Col sm={12} lg={12}>
