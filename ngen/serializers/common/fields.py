@@ -67,22 +67,25 @@ class TaxonomySlugOrHyperlinkedRelatedField(SlugOrHyperlinkedRelatedField):
         p0, *parts = data.split('-')
         if len(parts) == 0:
             # add prefix internal: to the slug
-            return f'internal-{slugify_underscore(p0)}'
+            return f'{slugify_underscore(p0)}'
         return f'{slugify_underscore(p0)}-{slugify_underscore("_".join(parts))}'
 
     def when_invalid_slug(self, queryset, data, slug):
-        group_name = slug.split("-")[0]
-        taxonomy_name = slugify_underscore('_'.join(slug.split('-')[1:]))
+        if '-' in slug:
+            group_name, taxonomy_name = slug.split("-")
+            tax_group = TaxonomyGroup.objects.get_or_create(
+                slug=group_name,
+                defaults={
+                    'name': group_name,
+                    'description': 'Auto-generated group.'
+                }
+            )[0]
+            internal_taxonomy = queryset.filter(slug=taxonomy_name).first()
+        else:
+            tax_group = None
+            taxonomy_name = slug
+            internal_taxonomy = None
 
-        tax_group = TaxonomyGroup.objects.get_or_create(
-            slug=group_name,
-            defaults={
-                'name': group_name,
-                'description': 'Auto-generated group.'
-            }
-        )[0]
-
-        internal_taxonomy = queryset.filter(slug=f'internal-{taxonomy_name}').first()
 
         obj = queryset.create(
             name=data,

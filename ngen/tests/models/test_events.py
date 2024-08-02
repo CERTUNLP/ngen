@@ -5,7 +5,7 @@ import uuid
 
 from django.test import TestCase
 
-from ngen.models import Event, User, Taxonomy, TaxonomyGroup, Feed, Tlp, Priority, \
+from ngen.models import Event, User, Taxonomy, Feed, Tlp, Priority, \
     CaseTemplate, Playbook, Task, State, Case
 
 
@@ -19,10 +19,6 @@ class EventTest(TestCase):
         """
         Event model test setup
         """
-        cls.taxonomy_group = TaxonomyGroup.objects.create(
-            name="Internal",
-            description="First group"
-        )
         cls.taxonomy = Taxonomy.objects.create(
             type="incident", name="Phising", slug="phising"
         )

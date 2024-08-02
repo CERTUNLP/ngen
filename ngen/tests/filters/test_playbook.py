@@ -16,15 +16,15 @@ class PlaybookFilterTest(BaseFilterTest):
     Playbook filter test class.
     """
 
-    fixtures = ['priority.json', 'user.json', "taxonomy_group.json", 'taxonomy.json']
+    fixtures = ['priority.json', 'user.json', 'taxonomy.json']
 
     @classmethod
     def setUpTestData(cls):
         cls.basename = "playbook"
         super().setUpTestData()
 
-        cls.taxonomy_1 = Taxonomy.objects.get_by_slug(slug="phishing")
-        cls.taxonomy_2 = Taxonomy.objects.get_by_slug(slug="copyright")
+        cls.taxonomy_1 = Taxonomy.objects.get(slug="phishing")
+        cls.taxonomy_2 = Taxonomy.objects.get(slug="copyright")
 
         cls.playbook_1 = Playbook.objects.create(name="Phish playbook")
         cls.playbook_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)

@@ -23,11 +23,6 @@ class TaxonomyFilterTest(BaseFilterTest):
         cls.basename = "taxonomy"
         super().setUpTestData()
 
-        cls.taxonomy_group_1 = TaxonomyGroup.objects.create(
-            name="Internal",
-            description="First group"
-        )
-
         cls.playbook_1 = Playbook.objects.create(
             name="Botnet Playbook"
         )

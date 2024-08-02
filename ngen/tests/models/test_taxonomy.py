@@ -11,7 +11,6 @@ class TaxonomyTestCase(TestCase):
         """ 
         Create instances of Taxonomy
         """
-        cls.taxonomy_group1 = TaxonomyGroup.objects.create(name='Internal')
         cls.parent = Taxonomy.objects.create(type='vulnerability', name='Parent')
         cls.child1 = Taxonomy.objects.create(type='vulnerability', name='Child 1', parent=cls.parent)
         cls.child2 = Taxonomy.objects.create(type='vulnerability', name='Child 2', parent=cls.child1)
@@ -139,7 +138,7 @@ class TaxonomyTestCase(TestCase):
         Test: Alias parent
         """
         self.assertRaises(ValidationError, Taxonomy.objects.create, type='vulnerability', name='Alias Parent',
-                          alias_of=self.aNode_child1, parent=self.parent, group=self.taxonomy_group1)
+                          alias_of=self.aNode_child1, parent=self.parent)
 
     def test_taxonomy_external_creation_parent_and_alias(self):
         """

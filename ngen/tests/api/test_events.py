@@ -19,7 +19,7 @@ class TestEvent(APITestCaseWithLogin):
     '''
 
     fixtures = [
-        "priority.json", "feed.json", "tlp.json", "user.json", "taxonomy_group.json", "taxonomy.json", "state.json",
+        "priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json",
         "edge.json", "report.json", "network_entity.json", "network.json", "contact.json"
     ]
 
@@ -40,7 +40,7 @@ class TestEvent(APITestCaseWithLogin):
         cls.feed_url = cls.base_url + reverse('feed-detail', kwargs={'pk': 1})
 
         cls.priority = Priority.objects.get(slug="high")
-        cls.taxonomy = Taxonomy.objects.get_by_slug(slug="copyright")
+        cls.taxonomy = Taxonomy.objects.get(slug="copyright")
         cls.feed = Feed.objects.get(slug="csirtamericas")
         cls.tlp = Tlp.objects.get(slug="green")
         cls.user = User.objects.get(username="ngen")

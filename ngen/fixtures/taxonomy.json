@@ -8,10 +8,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Accessible AFP Report",
-      "slug": "internal-accessible_afp_report",
+      "slug": "accessible_afp_report",
       "active": false,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -23,10 +22,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Blacklist",
-      "slug": "internal-blacklist",
+      "slug": "blacklist",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -38,10 +36,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Botnet",
-      "slug": "internal-botnet",
+      "slug": "botnet",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -53,10 +50,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Botnet Attack Command",
-      "slug": "internal-botnet_attack_command",
+      "slug": "botnet_attack_command",
       "active": false,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -68,10 +64,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Botnet Drone",
-      "slug": "internal-botnet_drone",
+      "slug": "botnet_drone",
       "active": false,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -83,10 +78,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Bruteforce",
-      "slug": "internal-bruteforce",
+      "slug": "bruteforce",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -98,10 +92,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Bruteforcing SSH",
-      "slug": "internal-bruteforcing_ssh",
+      "slug": "bruteforcing_ssh",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -113,10 +106,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Cisco Smart Install",
-      "slug": "internal-cisco_smart_install",
+      "slug": "cisco_smart_install",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -128,10 +120,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Data Breach",
-      "slug": "internal-data_breach",
+      "slug": "data_breach",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -143,10 +134,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "DNS zone transfer",
-      "slug": "internal-dns_zone_transfer",
+      "slug": "dns_zone_transfer",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -158,10 +148,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "DOS chargen",
-      "slug": "internal-dos_chargen",
+      "slug": "dos_chargen",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -173,10 +162,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "DoS Inbound",
-      "slug": "internal-dos_inbound",
+      "slug": "dos_inbound",
       "active": false,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -188,10 +176,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "DOS NTP",
-      "slug": "internal-dos_ntp",
+      "slug": "dos_ntp",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -203,10 +190,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "DoS Outbound",
-      "slug": "internal-dos_outbound",
+      "slug": "dos_outbound",
       "active": false,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -218,10 +204,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "DOS SNMP",
-      "slug": "internal-dos_snmp",
+      "slug": "dos_snmp",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -233,10 +218,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Drupal Remote Code Execution",
-      "slug": "internal-drupal_remote_code_execution",
+      "slug": "drupal_remote_code_execution",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -248,10 +232,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Heartbleed",
-      "slug": "internal-heartbleed",
+      "slug": "heartbleed",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -263,10 +246,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "information leakage",
-      "slug": "internal-information_leakage",
+      "slug": "information_leakage",
       "active": false,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -278,10 +260,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Mail Leak",
-      "slug": "internal-mail_leak",
+      "slug": "mail_leak",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -293,10 +274,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Malware",
-      "slug": "internal-malware",
+      "slug": "malware",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -308,10 +288,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "miner",
-      "slug": "internal-miner",
+      "slug": "miner",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -323,10 +302,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "mining_pool_server",
-      "slug": "internal-mining_pool_server",
+      "slug": "mining_pool_server",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -338,10 +316,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open Chargen",
-      "slug": "internal-open_chargen",
+      "slug": "open_chargen",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -353,10 +330,9 @@
       "parent": 82,
       "type": "vulnerability",
       "name": "Open DNS",
-      "slug": "internal-open_dns",
+      "slug": "open_dns",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -368,10 +344,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Fraud",
-      "slug": "internal-fraud",
+      "slug": "fraud",
       "active": true,
-      "description": "Fraud.",
-      "group": 1
+      "description": "Fraud."
     }
   },
   {
@@ -383,10 +358,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Information Content Security",
-      "slug": "internal-information_content_security",
+      "slug": "information_content_security",
       "active": true,
-      "description": "Besides a local abuse of data and systems the information security can be endangered by a successful account or application compromise. Furthermore attacks are possible that intercept and access information during transmission (wiretapping, spoofing or hijacking). Human/configuration/software error can also be the cause.",
-      "group": 1
+      "description": "Besides a local abuse of data and systems the information security can be endangered by a successful account or application compromise. Furthermore attacks are possible that intercept and access information during transmission (wiretapping, spoofing or hijacking). Human/configuration/software error can also be the cause."
     }
   },
   {
@@ -398,10 +372,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Information Gathering",
-      "slug": "internal-information_gathering",
+      "slug": "information_gathering",
       "active": true,
-      "description": "Information Gathering.",
-      "group": 1
+      "description": "Information Gathering."
     }
   },
   {
@@ -413,10 +386,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Intrusion Attempts",
-      "slug": "internal-intrusion_attempts",
+      "slug": "intrusion_attempts",
       "active": true,
-      "description": "Intrusion Attempts.",
-      "group": 1
+      "description": "Intrusion Attempts."
     }
   },
   {
@@ -428,10 +400,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Intrusions",
-      "slug": "internal-intrusions",
+      "slug": "intrusions",
       "active": true,
-      "description": "A successful compromise of a system or application (service). This can have been caused remotely by a known or new vulnerability, but also by an unauthorised local access. Also includes being part of a botnet.",
-      "group": 1
+      "description": "A successful compromise of a system or application (service). This can have been caused remotely by a known or new vulnerability, but also by an unauthorised local access. Also includes being part of a botnet."
     }
   },
   {
@@ -443,10 +414,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Malicious Code",
-      "slug": "internal-malicious_code",
+      "slug": "malicious_code",
       "active": true,
-      "description": "Software that is intentionally included or inserted in a system for a harmful purpose. A user interaction is normally necessary to activate the code.",
-      "group": 1
+      "description": "Software that is intentionally included or inserted in a system for a harmful purpose. A user interaction is normally necessary to activate the code."
     }
   },
   {
@@ -458,10 +428,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Vulnerable",
-      "slug": "internal-vulnerable",
+      "slug": "vulnerable",
       "active": true,
-      "description": "Open resolvers, world readable printers, vulnerability apparent from Nessus etc scans, virus signatures not up-to-date, etc",
-      "group": 1
+      "description": "Open resolvers, world readable printers, vulnerability apparent from Nessus etc scans, virus signatures not up-to-date, etc"
     }
   },
   {
@@ -473,10 +442,9 @@
       "parent": 28,
       "type": "vulnerability",
       "name": "Application Compromise",
-      "slug": "internal-application_compromise",
+      "slug": "application_compromise",
       "active": true,
-      "description": "Compromise of an application by exploiting (un-)known software vulnerabilities, e.g. SQL injection.",
-      "group": 1
+      "description": "Compromise of an application by exploiting (un-)known software vulnerabilities, e.g. SQL injection."
     }
   },
   {
@@ -488,10 +456,9 @@
       "parent": 27,
       "type": "vulnerability",
       "name": "Login attempts",
-      "slug": "internal-brute_force",
+      "slug": "brute_force",
       "active": true,
-      "description": "Multiple login attempts (Guessing / cracking of passwords, brute force). This IOC refers to a resource, which has been observed to perform brute-force attacks over a given application protocol.",
-      "group": 1
+      "description": "Multiple login attempts (Guessing / cracking of passwords, brute force). This IOC refers to a resource, which has been observed to perform brute-force attacks over a given application protocol."
     }
   },
   {
@@ -503,10 +470,9 @@
       "parent": 28,
       "type": "vulnerability",
       "name": "Burglary",
-      "slug": "internal-burglary",
+      "slug": "burglary",
       "active": true,
-      "description": "Physical intrusion, e.g. into corporate building or data-centre.",
-      "group": 1
+      "description": "Physical intrusion, e.g. into corporate building or data-centre."
     }
   },
   {
@@ -518,10 +484,9 @@
       "parent": 29,
       "type": "vulnerability",
       "name": "C2 Server",
-      "slug": "internal-c2_server",
+      "slug": "c2_server",
       "active": true,
-      "description": "Command-and-control server contacted by malware on infected systems.",
-      "group": 1
+      "description": "Command-and-control server contacted by malware on infected systems."
     }
   },
   {
@@ -533,10 +498,9 @@
       "parent": 25,
       "type": "vulnerability",
       "name": "Data Loss",
-      "slug": "internal-data_loss",
+      "slug": "data_loss",
       "active": true,
-      "description": "Loss of data, e.g. caused by harddisk failure or physical theft.",
-      "group": 1
+      "description": "Loss of data, e.g. caused by harddisk failure or physical theft."
     }
   },
   {
@@ -548,10 +512,9 @@
       "parent": 67,
       "type": "vulnerability",
       "name": "Distributed Denial of Service",
-      "slug": "internal-ddos",
+      "slug": "ddos",
       "active": true,
-      "description": "Distributed Denial of Service attack, e.g. SYN-Flood or UDP-based reflection/amplification attacks.",
-      "group": 1
+      "description": "Distributed Denial of Service attack, e.g. SYN-Flood or UDP-based reflection/amplification attacks."
     }
   },
   {
@@ -563,10 +526,9 @@
       "parent": 30,
       "type": "vulnerability",
       "name": "DDoS amplifier",
-      "slug": "internal-ddos_amplifier",
+      "slug": "ddos_amplifier",
       "active": true,
-      "description": "Publicly accessible services that can be abused for conducting DDoS reflection/amplification attacks, e.g. DNS open-resolvers or NTP servers with monlist enabled.",
-      "group": 1
+      "description": "Publicly accessible services that can be abused for conducting DDoS reflection/amplification attacks, e.g. DNS open-resolvers or NTP servers with monlist enabled."
     }
   },
   {
@@ -578,10 +540,9 @@
       "parent": 67,
       "type": "vulnerability",
       "name": "Denial of Service",
-      "slug": "internal-dos",
+      "slug": "dos",
       "active": true,
-      "description": "Denial of Service attack, e.g. sending specially crafted requests to a web application which causes the application to crash or slow down.",
-      "group": 1
+      "description": "Denial of Service attack, e.g. sending specially crafted requests to a web application which causes the application to crash or slow down."
     }
   },
   {
@@ -593,10 +554,9 @@
       "parent": 27,
       "type": "vulnerability",
       "name": "New attack signature",
-      "slug": "internal-exploit",
+      "slug": "exploit",
       "active": true,
-      "description": "An attack using an unknown exploit.",
-      "group": 1
+      "description": "An attack using an unknown exploit."
     }
   },
   {
@@ -608,10 +568,9 @@
       "parent": 63,
       "type": "vulnerability",
       "name": "Harmful Speech",
-      "slug": "internal-harmful_speech",
+      "slug": "harmful_speech",
       "active": true,
-      "description": "Discretization or discrimination of somebody, e.g. cyber stalking, racism or threats against one or more individuals.",
-      "group": 1
+      "description": "Discretization or discrimination of somebody, e.g. cyber stalking, racism or threats against one or more individuals."
     }
   },
   {
@@ -623,10 +582,9 @@
       "parent": 24,
       "type": "vulnerability",
       "name": "Copyright",
-      "slug": "internal-copyright",
+      "slug": "copyright",
       "active": true,
-      "description": "Offering or Installing copies of unlicensed commercial software or other copyright protected materials (Warez).",
-      "group": 1
+      "description": "Offering or Installing copies of unlicensed commercial software or other copyright protected materials (Warez)."
     }
   },
   {
@@ -638,10 +596,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open Elasticsearch",
-      "slug": "internal-open_elasticsearch",
+      "slug": "open_elasticsearch",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -653,10 +610,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open IPMI",
-      "slug": "internal-open_ipmi",
+      "slug": "open_ipmi",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -668,10 +624,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open ISAKMP",
-      "slug": "internal-open_isakmp",
+      "slug": "open_isakmp",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -683,10 +638,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open LDAP",
-      "slug": "internal-open_ldap",
+      "slug": "open_ldap",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -698,10 +652,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open MDNS",
-      "slug": "internal-open_mdns",
+      "slug": "open_mdns",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -713,10 +666,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open memcached",
-      "slug": "internal-open_memcached",
+      "slug": "open_memcached",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -728,10 +680,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open MongoDB",
-      "slug": "internal-open_mongodb",
+      "slug": "open_mongodb",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -743,10 +694,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open MSSQL",
-      "slug": "internal-open_mssql",
+      "slug": "open_mssql",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -758,10 +708,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open NetBios",
-      "slug": "internal-open_netbios",
+      "slug": "open_netbios",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -773,10 +722,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open NTP monitor",
-      "slug": "internal-open_ntp_monitor",
+      "slug": "open_ntp_monitor",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -788,10 +736,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open NTP version",
-      "slug": "internal-open_ntp_version",
+      "slug": "open_ntp_version",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -803,10 +750,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open Portmap",
-      "slug": "internal-open_portmap",
+      "slug": "open_portmap",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -818,10 +764,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open QOTD",
-      "slug": "internal-open_qotd",
+      "slug": "open_qotd",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -833,10 +778,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open RDP",
-      "slug": "internal-open_rdp",
+      "slug": "open_rdp",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -848,10 +792,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open Redis",
-      "slug": "internal-open_redis",
+      "slug": "open_redis",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -863,10 +806,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open SMB",
-      "slug": "internal-open_smb",
+      "slug": "open_smb",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -878,10 +820,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open SNMP",
-      "slug": "internal-open_snmp",
+      "slug": "open_snmp",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -893,10 +834,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open SSDP",
-      "slug": "internal-open_ssdp",
+      "slug": "open_ssdp",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -908,10 +848,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open Telnet",
-      "slug": "internal-open_telnet",
+      "slug": "open_telnet",
       "active": false,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -923,10 +862,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open TFTP",
-      "slug": "internal-open_tftp",
+      "slug": "open_tftp",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -938,10 +876,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Open VNC",
-      "slug": "internal-open_vnc",
+      "slug": "open_vnc",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -953,10 +890,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Abusive Content",
-      "slug": "internal-abusive_content",
+      "slug": "abusive_content",
       "active": true,
-      "description": "Abusive Content.",
-      "group": 1
+      "description": "Abusive Content."
     }
   },
   {
@@ -968,10 +904,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Phishing Mail",
-      "slug": "internal-phishing_mail",
+      "slug": "phishing_mail",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -983,10 +918,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Phishing Web",
-      "slug": "internal-phishing_web",
+      "slug": "phishing_web",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -998,10 +932,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Poodle",
-      "slug": "internal-poodle",
+      "slug": "poodle",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1013,10 +946,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Availability",
-      "slug": "internal-availability",
+      "slug": "availability",
       "active": true,
-      "description": "By this kind of an attack a system is bombarded with so many packets that the operations are delayed or the system crashes. DoS examples are ICMP and SYN floods, Teardrop attacks and mail-bombing. DDoS often is based on DoS attacks originating from botnets, but also other scenarios exist like DNS Amplification attacks. However, the availability also can be affected by local actions (destruction, disruption of power supply, etc.) – or by Act of God, spontaneous failures or human error, without malice or gross neglect being involved.",
-      "group": 1
+      "description": "By this kind of an attack a system is bombarded with so many packets that the operations are delayed or the system crashes. DoS examples are ICMP and SYN floods, Teardrop attacks and mail-bombing. DDoS often is based on DoS attacks originating from botnets, but also other scenarios exist like DNS Amplification attacks. However, the availability also can be affected by local actions (destruction, disruption of power supply, etc.) – or by Act of God, spontaneous failures or human error, without malice or gross neglect being involved."
     }
   },
   {
@@ -1028,10 +960,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "RPZ Botnet",
-      "slug": "internal-rpz_botnet",
+      "slug": "rpz_botnet",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1043,10 +974,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "RPZ DBL",
-      "slug": "internal-rpz_dbl",
+      "slug": "rpz_dbl",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1058,10 +988,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "RPZ Drop",
-      "slug": "internal-rpz_drop",
+      "slug": "rpz_drop",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1073,10 +1002,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "RPZ Malware",
-      "slug": "internal-rpz_malware",
+      "slug": "rpz_malware",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1088,10 +1016,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "RPZ Malware Aggressive",
-      "slug": "internal-rpz_malware_aggressive",
+      "slug": "rpz_malware_aggressive",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1103,10 +1030,9 @@
       "parent": 34,
       "type": "vulnerability",
       "name": "c2c",
-      "slug": "internal-c2c",
+      "slug": "c2c",
       "active": true,
-      "description": "C2 Server",
-      "group": 1
+      "description": "C2 Server"
     }
   },
   {
@@ -1118,10 +1044,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Scan",
-      "slug": "internal-scan",
+      "slug": "scan",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1133,10 +1058,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Shellshock",
-      "slug": "internal-shellshock",
+      "slug": "shellshock",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1148,10 +1072,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "SQL Injection",
-      "slug": "internal-sql_injection",
+      "slug": "sql_injection",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1163,10 +1086,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "SSL Poodle",
-      "slug": "internal-ssl_poodle",
+      "slug": "ssl_poodle",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1178,10 +1100,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Suspicious Behavior",
-      "slug": "internal-suspicious_behavior",
+      "slug": "suspicious_behavior",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1193,10 +1114,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "Undefined",
-      "slug": "internal-undefined",
+      "slug": "undefined",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1208,10 +1128,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "XSS",
-      "slug": "internal-xss",
+      "slug": "xss",
       "active": true,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1223,10 +1142,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "xxe",
-      "slug": "internal-xxe",
+      "slug": "xxe",
       "active": false,
-      "description": "",
-      "group": 1
+      "description": ""
     }
   },
   {
@@ -1238,10 +1156,9 @@
       "parent": 27,
       "type": "vulnerability",
       "name": "Exploitation of known Vulnerabilities",
-      "slug": "internal-ids_alert",
+      "slug": "ids_alert",
       "active": true,
-      "description": "An attempt to compromise a system or to disrupt any service by exploiting vulnerabilities with a standardised identifier such as CVE name (e.g. buffer overflow, backdoor, cross site scripting, etc.)",
-      "group": 1
+      "description": "An attempt to compromise a system or to disrupt any service by exploiting vulnerabilities with a standardised identifier such as CVE name (e.g. buffer overflow, backdoor, cross site scripting, etc.)"
     }
   },
   {
@@ -1253,10 +1170,9 @@
       "parent": 29,
       "type": "vulnerability",
       "name": "Infected System",
-      "slug": "internal-infected_system",
+      "slug": "infected_system",
       "active": true,
-      "description": "System infected with malware, e.g. PC, smartphone or server infected with a rootkit. Most often this refers to a connection to a sinkholed C2 server",
-      "group": 1
+      "description": "System infected with malware, e.g. PC, smartphone or server infected with a rootkit. Most often this refers to a connection to a sinkholed C2 server"
     }
   },
   {
@@ -1268,10 +1184,9 @@
       "parent": 30,
       "type": "vulnerability",
       "name": "Information disclosure",
-      "slug": "internal-information_disclosure",
+      "slug": "information_disclosure",
       "active": true,
-      "description": "Publicly accessible services potentially disclosing sensitive information, e.g. SNMP or Redis.",
-      "group": 1
+      "description": "Publicly accessible services potentially disclosing sensitive information, e.g. SNMP or Redis."
     }
   },
   {
@@ -1283,10 +1198,9 @@
       "parent": 29,
       "type": "vulnerability",
       "name": "Malware Configuration",
-      "slug": "internal-malware_configuration",
+      "slug": "malware_configuration",
       "active": true,
-      "description": "URI hosting a malware configuration file, e.g. web-injects for a banking trojan.",
-      "group": 1
+      "description": "URI hosting a malware configuration file, e.g. web-injects for a banking trojan."
     }
   },
   {
@@ -1298,10 +1212,9 @@
       "parent": 29,
       "type": "vulnerability",
       "name": "Malware Distribution",
-      "slug": "internal-malware_distribution",
+      "slug": "malware_distribution",
       "active": true,
-      "description": "URI used for malware distribution, e.g. a download URL included in fake invoice malware spam.",
-      "group": 1
+      "description": "URI used for malware distribution, e.g. a download URL included in fake invoice malware spam."
     }
   },
   {
@@ -1313,10 +1226,9 @@
       "parent": 24,
       "type": "vulnerability",
       "name": "Masquerade",
-      "slug": "internal-masquerade",
+      "slug": "masquerade",
       "active": true,
-      "description": "Type of attack in which one entity illegitimately impersonates the identity of another in order to benefit from it.",
-      "group": 1
+      "description": "Type of attack in which one entity illegitimately impersonates the identity of another in order to benefit from it."
     }
   },
   {
@@ -1328,10 +1240,9 @@
       "parent": 67,
       "type": "vulnerability",
       "name": "Misconfiguration",
-      "slug": "internal-misconfiguration",
+      "slug": "misconfiguration",
       "active": true,
-      "description": "Software misconfiguration resulting in service availability issues, e.g. DNS server with outdated DNSSEC Root Zone KSK.",
-      "group": 1
+      "description": "Software misconfiguration resulting in service availability issues, e.g. DNS server with outdated DNSSEC Root Zone KSK."
     }
   },
   {
@@ -1343,10 +1254,9 @@
       "parent": 67,
       "type": "vulnerability",
       "name": "Outage",
-      "slug": "internal-outage",
+      "slug": "outage",
       "active": true,
-      "description": "Outage caused e.g. by air condition failure or natural disaster.",
-      "group": 1
+      "description": "Outage caused e.g. by air condition failure or natural disaster."
     }
   },
   {
@@ -1358,10 +1268,9 @@
       "parent": 24,
       "type": "vulnerability",
       "name": "Phishing",
-      "slug": "internal-phishing",
+      "slug": "phishing",
       "active": true,
-      "description": "Masquerading as another entity in order to persuade the user to reveal private credentials. This IOC most often refers to a URL, which is used to phish user credentials.",
-      "group": 1
+      "description": "Masquerading as another entity in order to persuade the user to reveal private credentials. This IOC most often refers to a URL, which is used to phish user credentials."
     }
   },
   {
@@ -1373,10 +1282,9 @@
       "parent": 30,
       "type": "vulnerability",
       "name": "Potentially unwanted accessible services",
-      "slug": "internal-potentially_unwanted_accessible",
+      "slug": "potentially_unwanted_accessible",
       "active": true,
-      "description": "Potentially unwanted publicly accessible services, e.g. Telnet, RDP or VNC.",
-      "group": 1
+      "description": "Potentially unwanted publicly accessible services, e.g. Telnet, RDP or VNC."
     }
   },
   {
@@ -1388,10 +1296,9 @@
       "parent": 28,
       "type": "vulnerability",
       "name": "Privileged Account Compromise",
-      "slug": "internal-privileged_account_compromise",
+      "slug": "privileged_account_compromise",
       "active": true,
-      "description": "Compromise of a system where the attacker gained administrative privileges.",
-      "group": 1
+      "description": "Compromise of a system where the attacker gained administrative privileges."
     }
   },
   {
@@ -1403,10 +1310,9 @@
       "parent": 67,
       "type": "vulnerability",
       "name": "Sabotage",
-      "slug": "internal-sabotage",
+      "slug": "sabotage",
       "active": true,
-      "description": "Physical sabotage, e.g cutting wires or malicious arson.",
-      "group": 1
+      "description": "Physical sabotage, e.g cutting wires or malicious arson."
     }
   },
   {
@@ -1418,10 +1324,9 @@
       "parent": 26,
       "type": "vulnerability",
       "name": "Scanning",
-      "slug": "internal-scanner",
+      "slug": "scanner",
       "active": true,
-      "description": "Attacks that send requests to a system to discover weaknesses. This also includes testing processes to gather information on hosts, services and accounts. Examples: fingerd, DNS querying, ICMP, SMTP (EXPN, RCPT, ...), port scanning.",
-      "group": 1
+      "description": "Attacks that send requests to a system to discover weaknesses. This also includes testing processes to gather information on hosts, services and accounts. Examples: fingerd, DNS querying, ICMP, SMTP (EXPN, RCPT, ...), port scanning."
     }
   },
   {
@@ -1433,10 +1338,9 @@
       "parent": 26,
       "type": "vulnerability",
       "name": "Sniffing",
-      "slug": "internal-sniffing",
+      "slug": "sniffing",
       "active": true,
-      "description": "Observing and recording of network traffic (wiretapping).",
-      "group": 1
+      "description": "Observing and recording of network traffic (wiretapping)."
     }
   },
   {
@@ -1448,10 +1352,9 @@
       "parent": 26,
       "type": "vulnerability",
       "name": "Social Engineering",
-      "slug": "internal-social_engineering",
+      "slug": "social_engineering",
       "active": true,
-      "description": "Gathering information from a human being in a non-technical way (e.g. lies, tricks, bribes, or threats).",
-      "group": 1
+      "description": "Gathering information from a human being in a non-technical way (e.g. lies, tricks, bribes, or threats)."
     }
   },
   {
@@ -1463,10 +1366,9 @@
       "parent": 25,
       "type": "vulnerability",
       "name": "Unauthorised access to information",
-      "slug": "internal-unauthorised_information_access",
+      "slug": "unauthorised_information_access",
       "active": true,
-      "description": "Unauthorised access to information, e.g. by abusing stolen login credentials for a system or application, intercepting traffic or gaining access to physical documents.",
-      "group": 1
+      "description": "Unauthorised access to information, e.g. by abusing stolen login credentials for a system or application, intercepting traffic or gaining access to physical documents."
     }
   },
   {
@@ -1478,10 +1380,9 @@
       "parent": 25,
       "type": "vulnerability",
       "name": "Unauthorised modification of information",
-      "slug": "internal-unauthorised_information_modification",
+      "slug": "unauthorised_information_modification",
       "active": true,
-      "description": "Unauthorised modification of information, e.g. by an attacker abusing stolen login credentials for a system or application or a ransomware encrypting data.",
-      "group": 1
+      "description": "Unauthorised modification of information, e.g. by an attacker abusing stolen login credentials for a system or application or a ransomware encrypting data."
     }
   },
   {
@@ -1493,10 +1394,9 @@
       "parent": 24,
       "type": "vulnerability",
       "name": "Unauthorised use of resources",
-      "slug": "internal-unauthorised_use_of_resources",
+      "slug": "unauthorised_use_of_resources",
       "active": true,
-      "description": "Using resources for unauthorised purposes including profit-making ventures, e.g. the use of e-mail to participate in illegal profit chain letters or pyramid schemes.",
-      "group": 1
+      "description": "Using resources for unauthorised purposes including profit-making ventures, e.g. the use of e-mail to participate in illegal profit chain letters or pyramid schemes."
     }
   },
   {
@@ -1508,10 +1408,9 @@
       "parent": 108,
       "type": "vulnerability",
       "name": "Undetermined",
-      "slug": "internal-undetermined",
+      "slug": "undetermined",
       "active": true,
-      "description": "The categorisation of the incident is unknown/undetermined.",
-      "group": 1
+      "description": "The categorisation of the incident is unknown/undetermined."
     }
   },
   {
@@ -1523,10 +1422,9 @@
       "parent": 28,
       "type": "vulnerability",
       "name": "Unprivileged Account Compromise",
-      "slug": "internal-unprivileged_account_compromise",
+      "slug": "unprivileged_account_compromise",
       "active": true,
-      "description": "Compromise of a system using an unprivileged (user/service) account.",
-      "group": 1
+      "description": "Compromise of a system using an unprivileged (user/service) account."
     }
   },
   {
@@ -1538,10 +1436,9 @@
       "parent": 63,
       "type": "vulnerability",
       "name": "(Child) Sexual Exploitation/Sexual/Violent Content",
-      "slug": "internal-violence",
+      "slug": "violence",
       "active": true,
-      "description": "Child Sexual Exploitation (CSE), Sexual content, glorification of violence, etc.",
-      "group": 1
+      "description": "Child Sexual Exploitation (CSE), Sexual content, glorification of violence, etc."
     }
   },
   {
@@ -1553,10 +1450,9 @@
       "parent": 30,
       "type": "vulnerability",
       "name": "Vulnerable system",
-      "slug": "internal-vulnerable_system",
+      "slug": "vulnerable_system",
       "active": true,
-      "description": "A system which is vulnerable to certain attacks. Example: misconfigured client proxy settings (example: WPAD), outdated operating system version, etc.",
-      "group": 1
+      "description": "A system which is vulnerable to certain attacks. Example: misconfigured client proxy settings (example: WPAD), outdated operating system version, etc."
     }
   },
   {
@@ -1568,10 +1464,9 @@
       "parent": 30,
       "type": "vulnerability",
       "name": "Weak crypto",
-      "slug": "internal-weak_crypto",
+      "slug": "weak_crypto",
       "active": true,
-      "description": "Publicly accessible services offering weak crypto, e.g. web servers susceptible to POODLE/FREAK attacks.",
-      "group": 1
+      "description": "Publicly accessible services offering weak crypto, e.g. web servers susceptible to POODLE/FREAK attacks."
     }
   },
   {
@@ -1583,10 +1478,9 @@
       "parent": 31,
       "type": "vulnerability",
       "name": "Deface",
-      "slug": "internal-deface",
+      "slug": "deface",
       "active": true,
-      "description": "Website defacement is an attack on a website that changes the visual appearance of a website or a web page",
-      "group": 1
+      "description": "Website defacement is an attack on a website that changes the visual appearance of a website or a web page"
     }
   },
   {
@@ -1598,10 +1492,9 @@
       "parent": 106,
       "type": "vulnerability",
       "name": "Test",
-      "slug": "internal-test",
+      "slug": "test",
       "active": true,
-      "description": "Meant for testing.",
-      "group": 1
+      "description": "Meant for testing."
     }
   },
   {
@@ -1613,10 +1506,9 @@
       "parent": 63,
       "type": "vulnerability",
       "name": "Spam",
-      "slug": "internal-spam",
+      "slug": "spam",
       "active": true,
-      "description": "Or 'Unsolicited Bulk Email', this means that the recipient has not granted verifiable permission for the message to be sent and that the message is sent as part of a larger collection of messages, all having a functionally comparable content. This IOC refers to resources, which make up a SPAM infrastructure, be it a harvesters like address verification, URLs in spam e-mails etc.",
-      "group": 1
+      "description": "Or 'Unsolicited Bulk Email', this means that the recipient has not granted verifiable permission for the message to be sent and that the message is sent as part of a larger collection of messages, all having a functionally comparable content. This IOC refers to resources, which make up a SPAM infrastructure, be it a harvesters like address verification, URLs in spam e-mails etc."
     }
   },
   {
@@ -1628,10 +1520,9 @@
       "parent": 108,
       "type": "vulnerability",
       "name": "Other",
-      "slug": "internal-other",
+      "slug": "other",
       "active": true,
-      "description": "All incidents which don't fit in one of the given categories should be put into this class or the incident is not categorised.",
-      "group": 1
+      "description": "All incidents which don't fit in one of the given categories should be put into this class or the incident is not categorised."
     }
   },
   {
@@ -1643,10 +1534,9 @@
       "parent": 103,
       "type": "vulnerability",
       "name": "Bluekeep",
-      "slug": "internal-bluekeep",
+      "slug": "bluekeep",
       "active": true,
-      "description": "BlueKeep (CVE-2019-0708) is a security vulnerability that was discovered in Microsoft's Remote Desktop Protocol implementation, which allows for the possibility of remote code execution.",
-      "group": 1
+      "description": "BlueKeep (CVE-2019-0708) is a security vulnerability that was discovered in Microsoft's Remote Desktop Protocol implementation, which allows for the possibility of remote code execution."
     }
   },
   {
@@ -1658,10 +1548,9 @@
       "parent": 94,
       "type": "vulnerability",
       "name": "HTTP Scanner",
-      "slug": "internal-http_scanner",
+      "slug": "http_scanner",
       "active": true,
-      "description": "Web Application Vulnerability Scanners are automated tools that scan web applications",
-      "group": 1
+      "description": "Web Application Vulnerability Scanners are automated tools that scan web applications"
     }
   },
   {
@@ -1673,10 +1562,9 @@
       "parent": 94,
       "type": "vulnerability",
       "name": "ICS Scanner",
-      "slug": "internal-ics_scanner",
+      "slug": "ics_scanner",
       "active": true,
-      "description": "ICS security is the area of concern involving the safeguarding of industrial control systems, the integrated hardware and software designed to monitor and control the operation of machinery and associated devices in industrial environments.",
-      "group": 1
+      "description": "ICS security is the area of concern involving the safeguarding of industrial control systems, the integrated hardware and software designed to monitor and control the operation of machinery and associated devices in industrial environments."
     }
   },
   {
@@ -1688,10 +1576,9 @@
       "parent": 35,
       "type": "vulnerability",
       "name": "Leak",
-      "slug": "internal-leak",
+      "slug": "leak",
       "active": true,
-      "description": "Information leakage allows an application to reveal sensitive data such as technical details of the application, developer comments, environment, or user-specific data.",
-      "group": 1
+      "description": "Information leakage allows an application to reveal sensitive data such as technical details of the application, developer comments, environment, or user-specific data."
     }
   },
   {
@@ -1703,10 +1590,9 @@
       "parent": 103,
       "type": "vulnerability",
       "name": "Local File Include",
-      "slug": "internal-local_file_include",
+      "slug": "local_file_include",
       "active": true,
-      "description": "Local File Inclusion (also known as LFI) is the process of including files, that are already locally present on the server, through the exploiting of vulnerable inclusion procedures implemented in the application",
-      "group": 1
+      "description": "Local File Inclusion (also known as LFI) is the process of including files, that are already locally present on the server, through the exploiting of vulnerable inclusion procedures implemented in the application"
     }
   },
   {
@@ -1718,10 +1604,9 @@
       "parent": 82,
       "type": "vulnerability",
       "name": "SMBGhost",
-      "slug": "internal-smbghost",
+      "slug": "smbghost",
       "active": true,
-      "description": "Microsoft es consciente de una vulnerabilidad de ejecución remota de código en la forma en que el protocolo Microsoft Server Message Block 3.1.1 (SMBv3) maneja ciertas solicitudes. Un atacante que aprovechó con éxito la vulnerabilidad podría obtener",
-      "group": 1
+      "description": "Microsoft es consciente de una vulnerabilidad de ejecución remota de código en la forma en que el protocolo Microsoft Server Message Block 3.1.1 (SMBv3) maneja ciertas solicitudes. Un atacante que aprovechó con éxito la vulnerabilidad podría obtener"
     }
   },
   {
@@ -1733,10 +1618,9 @@
       "parent": 84,
       "type": "vulnerability",
       "name": "unencrypted_protocol",
-      "slug": "internal-unencrypted_protocol",
+      "slug": "unencrypted_protocol",
       "active": true,
-      "description": "Unencrypted communication protocol (HTTP, FTP, etc)",
-      "group": 1
+      "description": "Unencrypted communication protocol (HTTP, FTP, etc)"
     }
   },
   {
@@ -1748,10 +1632,9 @@
       "parent": 9,
       "type": "vulnerability",
       "name": "Breach Email",
-      "slug": "internal-breach_email",
+      "slug": "breach_email",
       "active": true,
-      "description": "Email data breach",
-      "group": 1
+      "description": "Email data breach"
     }
   },
   {
@@ -1763,10 +1646,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "blacklisted ip",
-      "slug": "internal-blacklisted_ip",
+      "slug": "blacklisted_ip",
       "active": true,
-      "description": "Shadowserver information about blacklisted-ip (blocklist) at https://www.shadowserver.org/what-we-do/network-reporting/blocklist-report/",
-      "group": 1
+      "description": "Shadowserver information about blacklisted-ip (blocklist) at https://www.shadowserver.org/what-we-do/network-reporting/blocklist-report/"
     }
   },
   {
@@ -1778,10 +1660,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "compromised account",
-      "slug": "internal-compromised_account",
+      "slug": "compromised_account",
       "active": true,
-      "description": "Shadowserver information about compromised-account (compromised_account) at https://www.shadowserver.org/what-we-do/network-reporting/compromised-account-report/",
-      "group": 1
+      "description": "Shadowserver information about compromised-account (compromised_account) at https://www.shadowserver.org/what-we-do/network-reporting/compromised-account-report/"
     }
   },
   {
@@ -1793,10 +1674,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "compromised website",
-      "slug": "internal-compromised_website",
+      "slug": "compromised_website",
       "active": true,
-      "description": "Shadowserver information about compromised-website (compromised_website) at https://www.shadowserver.org/what-we-do/network-reporting/compromised-website-report/",
-      "group": 1
+      "description": "Shadowserver information about compromised-website (compromised_website) at https://www.shadowserver.org/what-we-do/network-reporting/compromised-website-report/"
     }
   },
   {
@@ -1808,10 +1688,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "compromised website6",
-      "slug": "internal-compromised_website6",
+      "slug": "compromised_website6",
       "active": true,
-      "description": "Shadowserver information about compromised-website6 (compromised_website6) at https://www.shadowserver.org/what-we-do/network-reporting/compromised-website-report/",
-      "group": 1
+      "description": "Shadowserver information about compromised-website6 (compromised_website6) at https://www.shadowserver.org/what-we-do/network-reporting/compromised-website-report/"
     }
   },
   {
@@ -1823,10 +1702,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "device id",
-      "slug": "internal-device_id",
+      "slug": "device_id",
       "active": true,
-      "description": "Shadowserver information about device-id (device_id) at https://www.shadowserver.org/what-we-do/network-reporting/device-identification-report/",
-      "group": 1
+      "description": "Shadowserver information about device-id (device_id) at https://www.shadowserver.org/what-we-do/network-reporting/device-identification-report/"
     }
   },
   {
@@ -1838,10 +1716,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "event6 sinkhole http referer",
-      "slug": "internal-event6_sinkhole_http_referer",
+      "slug": "event6_sinkhole_http_referer",
       "active": true,
-      "description": "Search at shadowserver.org for event6-sinkhole-http-referer (event6_sinkhole_http_referer)",
-      "group": 1
+      "description": "Search at shadowserver.org for event6-sinkhole-http-referer (event6_sinkhole_http_referer)"
     }
   },
   {
@@ -1853,10 +1730,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "ddos participant",
-      "slug": "internal-ddos_participant",
+      "slug": "ddos_participant",
       "active": true,
-      "description": "Shadowserver information about ddos-participant (event_ddos_participant) at https://www.shadowserver.org/what-we-do/network-reporting/ddos-participant-report/",
-      "group": 1
+      "description": "Shadowserver information about ddos-participant (event_ddos_participant) at https://www.shadowserver.org/what-we-do/network-reporting/ddos-participant-report/"
     }
   },
   {
@@ -1868,10 +1744,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "honeypot adb scan",
-      "slug": "internal-honeypot_adb_scan",
+      "slug": "honeypot_adb_scan",
       "active": true,
-      "description": "Shadowserver information about honeypot-adb-scan (event_honeypot_adb_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-adb-scanner-events-report/",
-      "group": 1
+      "description": "Shadowserver information about honeypot-adb-scan (event_honeypot_adb_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-adb-scanner-events-report/"
     }
   },
   {
@@ -1883,10 +1758,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "honeypot ddos",
-      "slug": "internal-honeypot_ddos",
+      "slug": "honeypot_ddos",
       "active": true,
-      "description": "Shadowserver information about honeypot-ddos (event_honeypot_ddos) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ddos-events/",
-      "group": 1
+      "description": "Shadowserver information about honeypot-ddos (event_honeypot_ddos) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ddos-events/"
     }
   },
   {
@@ -1898,10 +1772,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "amplification ddos victim",
-      "slug": "internal-amplification_ddos_victim",
+      "slug": "amplification_ddos_victim",
       "active": true,
-      "description": "Shadowserver information about amplification-ddos-victim (event_honeypot_ddos_amp) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-amplification-ddos-events-report/",
-      "group": 1
+      "description": "Shadowserver information about amplification-ddos-victim (event_honeypot_ddos_amp) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-amplification-ddos-events-report/"
     }
   },
   {
@@ -1913,10 +1786,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "honeypot ddos target",
-      "slug": "internal-honeypot_ddos_target",
+      "slug": "honeypot_ddos_target",
       "active": true,
-      "description": "Shadowserver information about honeypot-ddos-target (event_honeypot_ddos_target) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ddos-target-events-report/",
-      "group": 1
+      "description": "Shadowserver information about honeypot-ddos-target (event_honeypot_ddos_target) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ddos-target-events-report/"
     }
   },
   {
@@ -1928,10 +1800,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "honeypot http scan",
-      "slug": "internal-honeypot_http_scan",
+      "slug": "honeypot_http_scan",
       "active": true,
-      "description": "Shadowserver information about honeypot-http-scan (event_honeypot_http_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-http-scanner-events/",
-      "group": 1
+      "description": "Shadowserver information about honeypot-http-scan (event_honeypot_http_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-http-scanner-events/"
     }
   },
   {
@@ -1943,10 +1814,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "ics",
-      "slug": "internal-ics",
+      "slug": "ics",
       "active": true,
-      "description": "Shadowserver information about ics (event_honeypot_ics_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ics-scanner-events-report/",
-      "group": 1
+      "description": "Shadowserver information about ics (event_honeypot_ics_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ics-scanner-events-report/"
     }
   },
   {
@@ -1958,10 +1828,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "honeypot ikev2 scan",
-      "slug": "internal-honeypot_ikev2_scan",
+      "slug": "honeypot_ikev2_scan",
       "active": true,
-      "description": "Shadowserver information about honeypot-ikev2-scan (event_honeypot_ikev2_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ikev2-scanner-events-report/",
-      "group": 1
+      "description": "Shadowserver information about honeypot-ikev2-scan (event_honeypot_ikev2_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-ikev2-scanner-events-report/"
     }
   },
   {
@@ -1973,10 +1842,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "honeypot rdp scan",
-      "slug": "internal-honeypot_rdp_scan",
+      "slug": "honeypot_rdp_scan",
       "active": true,
-      "description": "Shadowserver information about honeypot-rdp-scan (event_honeypot_rdp_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-rdp-scanner-events-report/",
-      "group": 1
+      "description": "Shadowserver information about honeypot-rdp-scan (event_honeypot_rdp_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-rdp-scanner-events-report/"
     }
   },
   {
@@ -1988,10 +1856,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "honeypot rocketmq scan",
-      "slug": "internal-honeypot_rocketmq_scan",
+      "slug": "honeypot_rocketmq_scan",
       "active": true,
-      "description": "Shadowserver information about honeypot-rocketmq-scan (event_honeypot_rocketmq_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-rocketmq-scanner-events-report/",
-      "group": 1
+      "description": "Shadowserver information about honeypot-rocketmq-scan (event_honeypot_rocketmq_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-rocketmq-scanner-events-report/"
     }
   },
   {
@@ -2003,10 +1870,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "honeypot smb scan",
-      "slug": "internal-honeypot_smb_scan",
+      "slug": "honeypot_smb_scan",
       "active": true,
-      "description": "Shadowserver information about honeypot-smb-scan (event_honeypot_smb_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-smb-scanner-events-report/",
-      "group": 1
+      "description": "Shadowserver information about honeypot-smb-scan (event_honeypot_smb_scan) at https://www.shadowserver.org/what-we-do/network-reporting/honeypot-smb-scanner-events-report/"
     }
   },
   {
@@ -2018,10 +1884,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "ip spoofer",
-      "slug": "internal-ip_spoofer",
+      "slug": "ip_spoofer",
       "active": true,
-      "description": "Shadowserver information about ip-spoofer (event_ip_spoofer) at https://www.shadowserver.org/what-we-do/network-reporting/ip-spoofer-events-report/",
-      "group": 1
+      "description": "Shadowserver information about ip-spoofer (event_ip_spoofer) at https://www.shadowserver.org/what-we-do/network-reporting/ip-spoofer-events-report/"
     }
   },
   {
@@ -2033,10 +1898,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "sinkholedns",
-      "slug": "internal-sinkholedns",
+      "slug": "sinkholedns",
       "active": true,
-      "description": "Shadowserver information about sinkholedns (event_sinkhole_dns) at https://www.shadowserver.org/what-we-do/network-reporting/sinkhole-dns-events-report/",
-      "group": 1
+      "description": "Shadowserver information about sinkholedns (event_sinkhole_dns) at https://www.shadowserver.org/what-we-do/network-reporting/sinkhole-dns-events-report/"
     }
   },
   {
@@ -2048,10 +1912,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "sinkhole http referer",
-      "slug": "internal-sinkhole_http_referer",
+      "slug": "sinkhole_http_referer",
       "active": true,
-      "description": "Shadowserver information about sinkhole-http-referer (event_sinkhole_http_referer) at https://www.shadowserver.org/what-we-do/network-reporting/sinkhole-http-referer-events-report/",
-      "group": 1
+      "description": "Shadowserver information about sinkhole-http-referer (event_sinkhole_http_referer) at https://www.shadowserver.org/what-we-do/network-reporting/sinkhole-http-referer-events-report/"
     }
   },
   {
@@ -2063,10 +1926,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "malware url",
-      "slug": "internal-malware_url",
+      "slug": "malware_url",
       "active": true,
-      "description": "Shadowserver information about malware-url (malware_url) at https://www.shadowserver.org/what-we-do/network-reporting/malware-url-report/",
-      "group": 1
+      "description": "Shadowserver information about malware-url (malware_url) at https://www.shadowserver.org/what-we-do/network-reporting/malware-url-report/"
     }
   },
   {
@@ -2078,10 +1940,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "phish url",
-      "slug": "internal-phish_url",
+      "slug": "phish_url",
       "active": true,
-      "description": "Search at shadowserver.org for phish-url (phish_url)",
-      "group": 1
+      "description": "Search at shadowserver.org for phish-url (phish_url)"
     }
   },
   {
@@ -2093,10 +1954,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "population6 bgp",
-      "slug": "internal-population6_bgp",
+      "slug": "population6_bgp",
       "active": true,
-      "description": "Search at shadowserver.org for population6-bgp (population6_bgp)",
-      "group": 1
+      "description": "Search at shadowserver.org for population6-bgp (population6_bgp)"
     }
   },
   {
@@ -2108,10 +1968,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible http proxy",
-      "slug": "internal-accessible_http_proxy",
+      "slug": "accessible_http_proxy",
       "active": true,
-      "description": "Search at shadowserver.org for accessible-http-proxy (population6_http_proxy)",
-      "group": 1
+      "description": "Search at shadowserver.org for accessible-http-proxy (population6_http_proxy)"
     }
   },
   {
@@ -2123,10 +1982,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "population6 msmq",
-      "slug": "internal-population6_msmq",
+      "slug": "population6_msmq",
       "active": true,
-      "description": "Search at shadowserver.org for population6-msmq (population6_msmq)",
-      "group": 1
+      "description": "Search at shadowserver.org for population6-msmq (population6_msmq)"
     }
   },
   {
@@ -2138,10 +1996,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "population bgp",
-      "slug": "internal-population_bgp",
+      "slug": "population_bgp",
       "active": true,
-      "description": "Shadowserver information about population-bgp (population_bgp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-bgp-service-report/",
-      "group": 1
+      "description": "Shadowserver information about population-bgp (population_bgp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-bgp-service-report/"
     }
   },
   {
@@ -2153,10 +2010,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "population msmq",
-      "slug": "internal-population_msmq",
+      "slug": "population_msmq",
       "active": true,
-      "description": "Shadowserver information about population-msmq (population_msmq) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-msmq-service-report/",
-      "group": 1
+      "description": "Shadowserver information about population-msmq (population_msmq) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-msmq-service-report/"
     }
   },
   {
@@ -2168,10 +2024,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "ransomware victim",
-      "slug": "internal-ransomware_victim",
+      "slug": "ransomware_victim",
       "active": true,
-      "description": "Shadowserver information about ransomware-victim (ransomware_victim) at https://www.shadowserver.org/what-we-do/network-reporting/ransomware-victim-report/",
-      "group": 1
+      "description": "Shadowserver information about ransomware-victim (ransomware_victim) at https://www.shadowserver.org/what-we-do/network-reporting/ransomware-victim-report/"
     }
   },
   {
@@ -2183,10 +2038,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "sandbox conn",
-      "slug": "internal-sandbox_conn",
+      "slug": "sandbox_conn",
       "active": true,
-      "description": "Shadowserver information about sandbox-conn (sandbox_conn) at https://www.shadowserver.org/what-we-do/network-reporting/sandbox-connection-report/",
-      "group": 1
+      "description": "Shadowserver information about sandbox-conn (sandbox_conn) at https://www.shadowserver.org/what-we-do/network-reporting/sandbox-connection-report/"
     }
   },
   {
@@ -2198,10 +2052,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "sandbox dns",
-      "slug": "internal-sandbox_dns",
+      "slug": "sandbox_dns",
       "active": true,
-      "description": "Search at shadowserver.org for sandbox-dns (sandbox_dns)",
-      "group": 1
+      "description": "Search at shadowserver.org for sandbox-dns (sandbox_dns)"
     }
   },
   {
@@ -2213,10 +2066,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "sandbox url",
-      "slug": "internal-sandbox_url",
+      "slug": "sandbox_url",
       "active": true,
-      "description": "Shadowserver information about sandbox-url (sandbox_url) at https://www.shadowserver.org/what-we-do/network-reporting/sandbox-url-report/",
-      "group": 1
+      "description": "Shadowserver information about sandbox-url (sandbox_url) at https://www.shadowserver.org/what-we-do/network-reporting/sandbox-url-report/"
     }
   },
   {
@@ -2228,10 +2080,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 activemq",
-      "slug": "internal-scan6_activemq",
+      "slug": "scan6_activemq",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-activemq (scan6_activemq)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-activemq (scan6_activemq)"
     }
   },
   {
@@ -2243,10 +2094,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 bgp",
-      "slug": "internal-scan6_bgp",
+      "slug": "scan6_bgp",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-bgp (scan6_bgp)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-bgp (scan6_bgp)"
     }
   },
   {
@@ -2258,10 +2108,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 cwmp",
-      "slug": "internal-scan6_cwmp",
+      "slug": "scan6_cwmp",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-cwmp (scan6_cwmp)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-cwmp (scan6_cwmp)"
     }
   },
   {
@@ -2273,10 +2122,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "dns open resolver",
-      "slug": "internal-dns_open_resolver",
+      "slug": "dns_open_resolver",
       "active": true,
-      "description": "Search at shadowserver.org for dns-open-resolver (scan6_dns)",
-      "group": 1
+      "description": "Search at shadowserver.org for dns-open-resolver (scan6_dns)"
     }
   },
   {
@@ -2288,10 +2136,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 elasticsearch",
-      "slug": "internal-scan6_elasticsearch",
+      "slug": "scan6_elasticsearch",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-elasticsearch (scan6_elasticsearch)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-elasticsearch (scan6_elasticsearch)"
     }
   },
   {
@@ -2303,10 +2150,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6_exchange",
-      "slug": "internal-scan6_exchange",
+      "slug": "scan6_exchange",
       "active": true,
-      "description": "Search at shadowserver.org for scan6_exchange (scan6_exchange)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6_exchange (scan6_exchange)"
     }
   },
   {
@@ -2318,10 +2164,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible ftp",
-      "slug": "internal-accessible_ftp",
+      "slug": "accessible_ftp",
       "active": true,
-      "description": "Search at shadowserver.org for accessible-ftp (scan6_ftp)",
-      "group": 1
+      "description": "Search at shadowserver.org for accessible-ftp (scan6_ftp)"
     }
   },
   {
@@ -2333,10 +2178,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible http",
-      "slug": "internal-accessible_http",
+      "slug": "accessible_http",
       "active": true,
-      "description": "Search at shadowserver.org for accessible-http (scan6_http)",
-      "group": 1
+      "description": "Search at shadowserver.org for accessible-http (scan6_http)"
     }
   },
   {
@@ -2348,10 +2192,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open http proxy",
-      "slug": "internal-open_http_proxy",
+      "slug": "open_http_proxy",
       "active": true,
-      "description": "Search at shadowserver.org for open-http-proxy (scan6_http_proxy)",
-      "group": 1
+      "description": "Search at shadowserver.org for open-http-proxy (scan6_http_proxy)"
     }
   },
   {
@@ -2363,10 +2206,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 ipp",
-      "slug": "internal-scan6_ipp",
+      "slug": "scan6_ipp",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-ipp (scan6_ipp)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-ipp (scan6_ipp)"
     }
   },
   {
@@ -2378,10 +2220,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open ike",
-      "slug": "internal-open_ike",
+      "slug": "open_ike",
       "active": true,
-      "description": "Search at shadowserver.org for open-ike (scan6_isakmp)",
-      "group": 1
+      "description": "Search at shadowserver.org for open-ike (scan6_isakmp)"
     }
   },
   {
@@ -2393,10 +2234,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 mqtt",
-      "slug": "internal-scan6_mqtt",
+      "slug": "scan6_mqtt",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-mqtt (scan6_mqtt)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-mqtt (scan6_mqtt)"
     }
   },
   {
@@ -2408,10 +2248,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 mqtt anon",
-      "slug": "internal-scan6_mqtt_anon",
+      "slug": "scan6_mqtt_anon",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-mqtt-anon (scan6_mqtt_anon)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-mqtt-anon (scan6_mqtt_anon)"
     }
   },
   {
@@ -2423,10 +2262,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 mysql",
-      "slug": "internal-scan6_mysql",
+      "slug": "scan6_mysql",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-mysql (scan6_mysql)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-mysql (scan6_mysql)"
     }
   },
   {
@@ -2438,10 +2276,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "ntp version",
-      "slug": "internal-ntp_version",
+      "slug": "ntp_version",
       "active": true,
-      "description": "Search at shadowserver.org for ntp-version (scan6_ntp)",
-      "group": 1
+      "description": "Search at shadowserver.org for ntp-version (scan6_ntp)"
     }
   },
   {
@@ -2453,10 +2290,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "ntp monitor",
-      "slug": "internal-ntp_monitor",
+      "slug": "ntp_monitor",
       "active": true,
-      "description": "Search at shadowserver.org for ntp-monitor (scan6_ntpmonitor)",
-      "group": 1
+      "description": "Search at shadowserver.org for ntp-monitor (scan6_ntpmonitor)"
     }
   },
   {
@@ -2468,10 +2304,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 postgres",
-      "slug": "internal-scan6_postgres",
+      "slug": "scan6_postgres",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-postgres (scan6_postgres)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-postgres (scan6_postgres)"
     }
   },
   {
@@ -2483,10 +2318,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 rdp",
-      "slug": "internal-scan6_rdp",
+      "slug": "scan6_rdp",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-rdp (scan6_rdp)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-rdp (scan6_rdp)"
     }
   },
   {
@@ -2498,10 +2332,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 slp",
-      "slug": "internal-scan6_slp",
+      "slug": "scan6_slp",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-slp (scan6_slp)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-slp (scan6_slp)"
     }
   },
   {
@@ -2513,10 +2346,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 smb",
-      "slug": "internal-scan6_smb",
+      "slug": "scan6_smb",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-smb (scan6_smb)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-smb (scan6_smb)"
     }
   },
   {
@@ -2528,10 +2360,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 smtp",
-      "slug": "internal-scan6_smtp",
+      "slug": "scan6_smtp",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-smtp (scan6_smtp)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-smtp (scan6_smtp)"
     }
   },
   {
@@ -2543,10 +2374,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 smtp vulnerable",
-      "slug": "internal-scan6_smtp_vulnerable",
+      "slug": "scan6_smtp_vulnerable",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-smtp-vulnerable (scan6_smtp_vulnerable)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-smtp-vulnerable (scan6_smtp_vulnerable)"
     }
   },
   {
@@ -2558,10 +2388,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 snmp",
-      "slug": "internal-scan6_snmp",
+      "slug": "scan6_snmp",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-snmp (scan6_snmp)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-snmp (scan6_snmp)"
     }
   },
   {
@@ -2573,10 +2402,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 ssh",
-      "slug": "internal-scan6_ssh",
+      "slug": "scan6_ssh",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-ssh (scan6_ssh)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-ssh (scan6_ssh)"
     }
   },
   {
@@ -2588,10 +2416,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 ssl",
-      "slug": "internal-scan6_ssl",
+      "slug": "scan6_ssl",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-ssl (scan6_ssl)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-ssl (scan6_ssl)"
     }
   },
   {
@@ -2603,10 +2430,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 ssl freak",
-      "slug": "internal-scan6_ssl_freak",
+      "slug": "scan6_ssl_freak",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-ssl-freak (scan6_ssl_freak)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-ssl-freak (scan6_ssl_freak)"
     }
   },
   {
@@ -2618,10 +2444,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 ssl poodle",
-      "slug": "internal-scan6_ssl_poodle",
+      "slug": "scan6_ssl_poodle",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-ssl-poodle (scan6_ssl_poodle)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-ssl-poodle (scan6_ssl_poodle)"
     }
   },
   {
@@ -2633,10 +2458,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 stun",
-      "slug": "internal-scan6_stun",
+      "slug": "scan6_stun",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-stun (scan6_stun)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-stun (scan6_stun)"
     }
   },
   {
@@ -2648,10 +2472,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 telnet",
-      "slug": "internal-scan6_telnet",
+      "slug": "scan6_telnet",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-telnet (scan6_telnet)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-telnet (scan6_telnet)"
     }
   },
   {
@@ -2663,10 +2486,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan6 vnc",
-      "slug": "internal-scan6_vnc",
+      "slug": "scan6_vnc",
       "active": true,
-      "description": "Search at shadowserver.org for scan6-vnc (scan6_vnc)",
-      "group": 1
+      "description": "Search at shadowserver.org for scan6-vnc (scan6_vnc)"
     }
   },
   {
@@ -2678,10 +2500,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open activemq",
-      "slug": "internal-open_activemq",
+      "slug": "open_activemq",
       "active": true,
-      "description": "Shadowserver information about open-activemq (scan_activemq) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-activemq-service-report/",
-      "group": 1
+      "description": "Shadowserver information about open-activemq (scan_activemq) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-activemq-service-report/"
     }
   },
   {
@@ -2693,10 +2514,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible adb",
-      "slug": "internal-accessible_adb",
+      "slug": "accessible_adb",
       "active": true,
-      "description": "Shadowserver information about accessible-adb (scan_adb) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-adb-report/",
-      "group": 1
+      "description": "Shadowserver information about accessible-adb (scan_adb) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-adb-report/"
     }
   },
   {
@@ -2708,10 +2528,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible afp",
-      "slug": "internal-accessible_afp",
+      "slug": "accessible_afp",
       "active": true,
-      "description": "Shadowserver information about accessible-afp (scan_afp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-afp-report/",
-      "group": 1
+      "description": "Shadowserver information about accessible-afp (scan_afp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-afp-report/"
     }
   },
   {
@@ -2723,10 +2542,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible amqp",
-      "slug": "internal-accessible_amqp",
+      "slug": "accessible_amqp",
       "active": true,
-      "description": "Shadowserver information about accessible-amqp (scan_amqp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-amqp-report/",
-      "group": 1
+      "description": "Shadowserver information about accessible-amqp (scan_amqp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-amqp-report/"
     }
   },
   {
@@ -2738,10 +2556,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible ard",
-      "slug": "internal-accessible_ard",
+      "slug": "accessible_ard",
       "active": true,
-      "description": "Shadowserver information about accessible-ard (scan_ard) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-apple-remote-desktop-ard-report/",
-      "group": 1
+      "description": "Shadowserver information about accessible-ard (scan_ard) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-apple-remote-desktop-ard-report/"
     }
   },
   {
@@ -2753,10 +2570,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open bgp",
-      "slug": "internal-open_bgp",
+      "slug": "open_bgp",
       "active": true,
-      "description": "Shadowserver information about open-bgp (scan_bgp) at https://www.shadowserver.org/what-we-do/network-reporting/open-bgp-service-report/",
-      "group": 1
+      "description": "Shadowserver information about open-bgp (scan_bgp) at https://www.shadowserver.org/what-we-do/network-reporting/open-bgp-service-report/"
     }
   },
   {
@@ -2768,10 +2584,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible cisco smart install",
-      "slug": "internal-accessible_cisco_smart_install",
+      "slug": "accessible_cisco_smart_install",
       "active": true,
-      "description": "Shadowserver information about accessible-cisco-smart-install (scan_cisco_smart_install) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-cisco-smart-install-report/",
-      "group": 1
+      "description": "Shadowserver information about accessible-cisco-smart-install (scan_cisco_smart_install) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-cisco-smart-install-report/"
     }
   },
   {
@@ -2783,10 +2598,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible coap",
-      "slug": "internal-accessible_coap",
+      "slug": "accessible_coap",
       "active": true,
-      "description": "Shadowserver information about accessible-coap (scan_coap) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-coap-report/",
-      "group": 1
+      "description": "Shadowserver information about accessible-coap (scan_coap) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-coap-report/"
     }
   },
   {
@@ -2798,10 +2612,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open couchdb",
-      "slug": "internal-open_couchdb",
+      "slug": "open_couchdb",
       "active": true,
-      "description": "Shadowserver information about open-couchdb (scan_couchdb) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-couchdb-report/",
-      "group": 1
+      "description": "Shadowserver information about open-couchdb (scan_couchdb) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-couchdb-report/"
     }
   },
   {
@@ -2813,10 +2626,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open cwmp",
-      "slug": "internal-open_cwmp",
+      "slug": "open_cwmp",
       "active": true,
-      "description": "Shadowserver information about open-cwmp (scan_cwmp) at https://www.shadowserver.org/what-we-do/network-reporting/open-cwmp-report/",
-      "group": 1
+      "description": "Shadowserver information about open-cwmp (scan_cwmp) at https://www.shadowserver.org/what-we-do/network-reporting/open-cwmp-report/"
     }
   },
   {
@@ -2828,10 +2640,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open db2 discovery service",
-      "slug": "internal-open_db2_discovery_service",
+      "slug": "open_db2_discovery_service",
       "active": true,
-      "description": "Shadowserver information about open-db2-discovery-service (scan_db2) at https://www.shadowserver.org/what-we-do/network-reporting/open-db2-discovery-service-report/",
-      "group": 1
+      "description": "Shadowserver information about open-db2-discovery-service (scan_db2) at https://www.shadowserver.org/what-we-do/network-reporting/open-db2-discovery-service-report/"
     }
   },
   {
@@ -2843,10 +2654,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open ddos middlebox",
-      "slug": "internal-open_ddos_middlebox",
+      "slug": "open_ddos_middlebox",
       "active": true,
-      "description": "Shadowserver information about open-ddos-middlebox (scan_ddos_middlebox) at https://www.shadowserver.org/what-we-do/network-reporting/vulnerable-ddos-middlebox-report/",
-      "group": 1
+      "description": "Shadowserver information about open-ddos-middlebox (scan_ddos_middlebox) at https://www.shadowserver.org/what-we-do/network-reporting/vulnerable-ddos-middlebox-report/"
     }
   },
   {
@@ -2858,10 +2668,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open docker",
-      "slug": "internal-open_docker",
+      "slug": "open_docker",
       "active": true,
-      "description": "Shadowserver information about open-docker (scan_docker) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-docker-service-report/",
-      "group": 1
+      "description": "Shadowserver information about open-docker (scan_docker) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-docker-service-report/"
     }
   },
   {
@@ -2873,10 +2682,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open dvr dhcpdiscover",
-      "slug": "internal-open_dvr_dhcpdiscover",
+      "slug": "open_dvr_dhcpdiscover",
       "active": true,
-      "description": "Shadowserver information about open-dvr-dhcpdiscover (scan_dvr_dhcpdiscover) at https://www.shadowserver.org/what-we-do/network-reporting/open-dvr-dhcpdiscover-report/",
-      "group": 1
+      "description": "Shadowserver information about open-dvr-dhcpdiscover (scan_dvr_dhcpdiscover) at https://www.shadowserver.org/what-we-do/network-reporting/open-dvr-dhcpdiscover-report/"
     }
   },
   {
@@ -2888,10 +2696,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open epmd",
-      "slug": "internal-open_epmd",
+      "slug": "open_epmd",
       "active": true,
-      "description": "Shadowserver information about open-epmd (scan_epmd) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-erlang-port-mapper-report-daemon/",
-      "group": 1
+      "description": "Shadowserver information about open-epmd (scan_epmd) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-erlang-port-mapper-report-daemon/"
     }
   },
   {
@@ -2903,10 +2710,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "scan_exchange",
-      "slug": "internal-scan_exchange",
+      "slug": "scan_exchange",
       "active": true,
-      "description": "Shadowserver information about scan_exchange (scan_exchange) at https://www.shadowserver.org/what-we-do/network-reporting/vulnerable-exchange-server-report/",
-      "group": 1
+      "description": "Shadowserver information about scan_exchange (scan_exchange) at https://www.shadowserver.org/what-we-do/network-reporting/vulnerable-exchange-server-report/"
     }
   },
   {
@@ -2918,10 +2724,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible hadoop",
-      "slug": "internal-accessible_hadoop",
+      "slug": "accessible_hadoop",
       "active": true,
-      "description": "Shadowserver information about accessible-hadoop (scan_hadoop) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-hadoop-report/",
-      "group": 1
+      "description": "Shadowserver information about accessible-hadoop (scan_hadoop) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-hadoop-report/"
     }
   },
   {
@@ -2933,10 +2738,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open ics",
-      "slug": "internal-open_ics",
+      "slug": "open_ics",
       "active": true,
-      "description": "Shadowserver information about open-ics (scan_ics) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ics-report/",
-      "group": 1
+      "description": "Shadowserver information about open-ics (scan_ics) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ics-report/"
     }
   },
   {
@@ -2948,10 +2752,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open ipp",
-      "slug": "internal-open_ipp",
+      "slug": "open_ipp",
       "active": true,
-      "description": "Shadowserver information about open-ipp (scan_ipp) at https://www.shadowserver.org/what-we-do/network-reporting/open-ipp-report/",
-      "group": 1
+      "description": "Shadowserver information about open-ipp (scan_ipp) at https://www.shadowserver.org/what-we-do/network-reporting/open-ipp-report/"
     }
   },
   {
@@ -2963,10 +2766,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open kubernetes",
-      "slug": "internal-open_kubernetes",
+      "slug": "open_kubernetes",
       "active": true,
-      "description": "Shadowserver information about open-kubernetes (scan_kubernetes) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-kubernetes-api-server-report/",
-      "group": 1
+      "description": "Shadowserver information about open-kubernetes (scan_kubernetes) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-kubernetes-api-server-report/"
     }
   },
   {
@@ -2978,10 +2780,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open mqtt",
-      "slug": "internal-open_mqtt",
+      "slug": "open_mqtt",
       "active": true,
-      "description": "Shadowserver information about open-mqtt (scan_mqtt) at https://www.shadowserver.org/what-we-do/network-reporting/open-mqtt-report/",
-      "group": 1
+      "description": "Shadowserver information about open-mqtt (scan_mqtt) at https://www.shadowserver.org/what-we-do/network-reporting/open-mqtt-report/"
     }
   },
   {
@@ -2993,10 +2794,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open mqtt anon",
-      "slug": "internal-open_mqtt_anon",
+      "slug": "open_mqtt_anon",
       "active": true,
-      "description": "Shadowserver information about open-mqtt-anon (scan_mqtt_anon) at https://www.shadowserver.org/what-we-do/network-reporting/open-mqtt-report/",
-      "group": 1
+      "description": "Shadowserver information about open-mqtt-anon (scan_mqtt_anon) at https://www.shadowserver.org/what-we-do/network-reporting/open-mqtt-report/"
     }
   },
   {
@@ -3008,10 +2808,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open mysql",
-      "slug": "internal-open_mysql",
+      "slug": "open_mysql",
       "active": true,
-      "description": "Shadowserver information about open-mysql (scan_mysql) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-mysql-server-report/",
-      "group": 1
+      "description": "Shadowserver information about open-mysql (scan_mysql) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-mysql-server-report/"
     }
   },
   {
@@ -3023,10 +2822,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open natpmp",
-      "slug": "internal-open_natpmp",
+      "slug": "open_natpmp",
       "active": true,
-      "description": "Shadowserver information about open-natpmp (scan_nat_pmp) at https://www.shadowserver.org/what-we-do/network-reporting/open-nat-pmp-report/",
-      "group": 1
+      "description": "Shadowserver information about open-natpmp (scan_nat_pmp) at https://www.shadowserver.org/what-we-do/network-reporting/open-nat-pmp-report/"
     }
   },
   {
@@ -3038,10 +2836,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open netbios nameservice",
-      "slug": "internal-open_netbios_nameservice",
+      "slug": "open_netbios_nameservice",
       "active": true,
-      "description": "Shadowserver information about open-netbios-nameservice (scan_netbios) at https://www.shadowserver.org/what-we-do/network-reporting/open-netbios-report/",
-      "group": 1
+      "description": "Shadowserver information about open-netbios-nameservice (scan_netbios) at https://www.shadowserver.org/what-we-do/network-reporting/open-netbios-report/"
     }
   },
   {
@@ -3053,10 +2850,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open netis",
-      "slug": "internal-open_netis",
+      "slug": "open_netis",
       "active": true,
-      "description": "Shadowserver information about open-netis (scan_netis_router) at https://www.shadowserver.org/what-we-do/network-reporting/netcore-netis-router-vulnerability-scan-report/",
-      "group": 1
+      "description": "Shadowserver information about open-netis (scan_netis_router) at https://www.shadowserver.org/what-we-do/network-reporting/netcore-netis-router-vulnerability-scan-report/"
     }
   },
   {
@@ -3068,10 +2864,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open portmapper",
-      "slug": "internal-open_portmapper",
+      "slug": "open_portmapper",
       "active": true,
-      "description": "Shadowserver information about open-portmapper (scan_portmapper) at https://www.shadowserver.org/what-we-do/network-reporting/open-portmapper-report/",
-      "group": 1
+      "description": "Shadowserver information about open-portmapper (scan_portmapper) at https://www.shadowserver.org/what-we-do/network-reporting/open-portmapper-report/"
     }
   },
   {
@@ -3083,10 +2878,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "c2 beacon",
-      "slug": "internal-c2_beacon",
+      "slug": "c2_beacon",
       "active": true,
-      "description": "Shadowserver information about c2-beacon (scan_post_exploitation_framework) at https://www.shadowserver.org/what-we-do/network-reporting/post-exploitation-framework/",
-      "group": 1
+      "description": "Shadowserver information about c2-beacon (scan_post_exploitation_framework) at https://www.shadowserver.org/what-we-do/network-reporting/post-exploitation-framework/"
     }
   },
   {
@@ -3098,10 +2892,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open postgres",
-      "slug": "internal-open_postgres",
+      "slug": "open_postgres",
       "active": true,
-      "description": "Shadowserver information about open-postgres (scan_postgres) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-postgresql-server-report/",
-      "group": 1
+      "description": "Shadowserver information about open-postgres (scan_postgres) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-postgresql-server-report/"
     }
   },
   {
@@ -3113,10 +2906,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open quic",
-      "slug": "internal-open_quic",
+      "slug": "open_quic",
       "active": true,
-      "description": "Shadowserver information about open-quic (scan_quic) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-quic-report/",
-      "group": 1
+      "description": "Shadowserver information about open-quic (scan_quic) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-quic-report/"
     }
   },
   {
@@ -3128,10 +2920,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible radmin",
-      "slug": "internal-accessible_radmin",
+      "slug": "accessible_radmin",
       "active": true,
-      "description": "Shadowserver information about accessible-radmin (scan_radmin) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-radmin-report/",
-      "group": 1
+      "description": "Shadowserver information about accessible-radmin (scan_radmin) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-radmin-report/"
     }
   },
   {
@@ -3143,10 +2934,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible msrdpeudp",
-      "slug": "internal-accessible_msrdpeudp",
+      "slug": "accessible_msrdpeudp",
       "active": true,
-      "description": "Shadowserver information about accessible-msrdpeudp (scan_rdpeudp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ms-rdpeudp/",
-      "group": 1
+      "description": "Shadowserver information about accessible-msrdpeudp (scan_rdpeudp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ms-rdpeudp/"
     }
   },
   {
@@ -3158,10 +2948,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible rsync",
-      "slug": "internal-accessible_rsync",
+      "slug": "accessible_rsync",
       "active": true,
-      "description": "Shadowserver information about accessible-rsync (scan_rsync) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-rsync-report/",
-      "group": 1
+      "description": "Shadowserver information about accessible-rsync (scan_rsync) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-rsync-report/"
     }
   },
   {
@@ -3173,10 +2962,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open sip",
-      "slug": "internal-open_sip",
+      "slug": "open_sip",
       "active": true,
-      "description": "Shadowserver information about open-sip (scan_sip) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-sip-report/",
-      "group": 1
+      "description": "Shadowserver information about open-sip (scan_sip) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-sip-report/"
     }
   },
   {
@@ -3188,10 +2976,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open slp",
-      "slug": "internal-open_slp",
+      "slug": "open_slp",
       "active": true,
-      "description": "Shadowserver information about open-slp (scan_slp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-slp-service-report/",
-      "group": 1
+      "description": "Shadowserver information about open-slp (scan_slp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-slp-service-report/"
     }
   },
   {
@@ -3203,10 +2990,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open smtp",
-      "slug": "internal-open_smtp",
+      "slug": "open_smtp",
       "active": true,
-      "description": "Shadowserver information about open-smtp (scan_smtp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-smtp-report/",
-      "group": 1
+      "description": "Shadowserver information about open-smtp (scan_smtp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-smtp-report/"
     }
   },
   {
@@ -3218,10 +3004,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "vulnerable smtp",
-      "slug": "internal-vulnerable_smtp",
+      "slug": "vulnerable_smtp",
       "active": true,
-      "description": "Shadowserver information about vulnerable-smtp (scan_smtp_vulnerable) at https://www.shadowserver.org/what-we-do/network-reporting/vulnerable-smtp-report/",
-      "group": 1
+      "description": "Shadowserver information about vulnerable-smtp (scan_smtp_vulnerable) at https://www.shadowserver.org/what-we-do/network-reporting/vulnerable-smtp-report/"
     }
   },
   {
@@ -3233,10 +3018,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open socks",
-      "slug": "internal-open_socks",
+      "slug": "open_socks",
       "active": true,
-      "description": "Shadowserver information about open-socks (scan_socks) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-socks4-5-proxy-report/",
-      "group": 1
+      "description": "Shadowserver information about open-socks (scan_socks) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-socks4-5-proxy-report/"
     }
   },
   {
@@ -3248,10 +3032,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open ssh",
-      "slug": "internal-open_ssh",
+      "slug": "open_ssh",
       "active": true,
-      "description": "Shadowserver information about open-ssh (scan_ssh) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ssh-report/",
-      "group": 1
+      "description": "Shadowserver information about open-ssh (scan_ssh) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ssh-report/"
     }
   },
   {
@@ -3263,10 +3046,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open ssl",
-      "slug": "internal-open_ssl",
+      "slug": "open_ssl",
       "active": true,
-      "description": "Shadowserver information about open-ssl (scan_ssl) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ssl-report/",
-      "group": 1
+      "description": "Shadowserver information about open-ssl (scan_ssl) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ssl-report/"
     }
   },
   {
@@ -3278,10 +3060,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "ssl freak",
-      "slug": "internal-ssl_freak",
+      "slug": "ssl_freak",
       "active": true,
-      "description": "Shadowserver information about ssl-freak (scan_ssl_freak) at https://www.shadowserver.org/what-we-do/network-reporting/ssl-freak-report/",
-      "group": 1
+      "description": "Shadowserver information about ssl-freak (scan_ssl_freak) at https://www.shadowserver.org/what-we-do/network-reporting/ssl-freak-report/"
     }
   },
   {
@@ -3293,10 +3074,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open stun",
-      "slug": "internal-open_stun",
+      "slug": "open_stun",
       "active": true,
-      "description": "Shadowserver information about open-stun (scan_stun) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-stun-service-report/",
-      "group": 1
+      "description": "Shadowserver information about open-stun (scan_stun) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-stun-service-report/"
     }
   },
   {
@@ -3308,10 +3088,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open synfulknock",
-      "slug": "internal-open_synfulknock",
+      "slug": "open_synfulknock",
       "active": true,
-      "description": "Shadowserver information about open-synfulknock (scan_synfulknock) at https://www.shadowserver.org/what-we-do/network-reporting/synful-scan-report/",
-      "group": 1
+      "description": "Shadowserver information about open-synfulknock (scan_synfulknock) at https://www.shadowserver.org/what-we-do/network-reporting/synful-scan-report/"
     }
   },
   {
@@ -3323,10 +3102,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "accessible ubiquiti discovery service",
-      "slug": "internal-accessible_ubiquiti_discovery_service",
+      "slug": "accessible_ubiquiti_discovery_service",
       "active": true,
-      "description": "Shadowserver information about accessible-ubiquiti-discovery-service (scan_ubiquiti) at https://www.shadowserver.org/what-we-do/network-reporting/open-ubiquiti-report/",
-      "group": 1
+      "description": "Shadowserver information about accessible-ubiquiti-discovery-service (scan_ubiquiti) at https://www.shadowserver.org/what-we-do/network-reporting/open-ubiquiti-report/"
     }
   },
   {
@@ -3338,10 +3116,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open ws discovery",
-      "slug": "internal-open_ws_discovery",
+      "slug": "open_ws_discovery",
       "active": true,
-      "description": "Shadowserver information about open-ws-discovery (scan_ws_discovery) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ws-discovery-service-report/",
-      "group": 1
+      "description": "Shadowserver information about open-ws-discovery (scan_ws_discovery) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-ws-discovery-service-report/"
     }
   },
   {
@@ -3353,10 +3130,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "open xdmcp",
-      "slug": "internal-open_xdmcp",
+      "slug": "open_xdmcp",
       "active": true,
-      "description": "Shadowserver information about open-xdmcp (scan_xdmcp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-xdmcp-service-report/",
-      "group": 1
+      "description": "Shadowserver information about open-xdmcp (scan_xdmcp) at https://www.shadowserver.org/what-we-do/network-reporting/accessible-xdmcp-service-report/"
     }
   },
   {
@@ -3368,10 +3144,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "spam url",
-      "slug": "internal-spam_url",
+      "slug": "spam_url",
       "active": true,
-      "description": "Shadowserver information about spam-url (spam_url) at https://www.shadowserver.org/what-we-do/network-reporting/spam-url-report/",
-      "group": 1
+      "description": "Shadowserver information about spam-url (spam_url) at https://www.shadowserver.org/what-we-do/network-reporting/spam-url-report/"
     }
   },
   {
@@ -3383,10 +3158,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "special",
-      "slug": "internal-special",
+      "slug": "special",
       "active": true,
-      "description": "Search at shadowserver.org for special (special)",
-      "group": 1
+      "description": "Search at shadowserver.org for special (special)"
     }
   },
   {
@@ -3398,10 +3172,9 @@
       "parent": null,
       "type": "vulnerability",
       "name": "cryptojacking",
-      "slug": "internal-cryptojacking",
+      "slug": "cryptojacking",
       "active": true,
-      "description": "Host mining cryptocurrency",
-      "group": 1
+      "description": "Host mining cryptocurrency"
     }
   },
   {
@@ -3413,10 +3186,9 @@
       "parent": 31,
       "type": "vulnerability",
       "name": "Defacement",
-      "slug": "internal-defacement",
+      "slug": "defacement",
       "active": true,
-      "description": "Website defacement is an attack on a website that changes the visual appearance of a website or a web page",
-      "group": 1
+      "description": "Website defacement is an attack on a website that changes the visual appearance of a website or a web page"
     }
   }
 ]

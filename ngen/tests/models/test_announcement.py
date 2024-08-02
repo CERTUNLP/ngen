@@ -9,7 +9,7 @@ from ngen.models import Evidence, ContentType, Tlp, Priority, \
 
 class AnnouncementTestCase(TestCase):
     fixtures = ["priority.json", "tlp.json", "user.json", "state.json", "edge.json",
-                "feed.json", "taxonomy_group.json", "taxonomy.json", "case_template.json"]
+                "feed.json", "taxonomy.json", "case_template.json"]
 
     @classmethod
     def setUpTestData(cls):
