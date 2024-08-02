@@ -19,6 +19,19 @@ class TaxonomyViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class TaxonomyGroupViewSet(viewsets.ModelViewSet):
+    queryset = models.TaxonomyGroup.objects.all()
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    search_fields = ['name', 'description']
+    ordering_fields = ['id', 'created', 'modified', 'name', 'taxonomies']
+    serializer_class = serializers.TaxonomyGroupSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
 class PlaybookViewSet(viewsets.ModelViewSet):
     queryset = models.Playbook.objects.all()
     filter_backends = [

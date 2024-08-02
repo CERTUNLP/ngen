@@ -23,6 +23,19 @@ class TaxonomySerializer(AuditSerializerMixin):
         read_only_fields = ['slug']
 
 
+class TaxonomyGroupSerializer(AuditSerializerMixin):
+    taxonomies = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='taxonomy-detail'
+    )
+
+    class Meta:
+        model = models.TaxonomyGroup
+        fields = '__all__'
+        read_only_fields = ['slug']
+
+
 class ReportSerializer(AuditSerializerMixin):
     problem = CharField(style={'base_template': 'textarea.html', 'rows': 10})
     derived_problem = CharField(
@@ -68,4 +81,3 @@ class TaxonomyMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Taxonomy
         fields = ['url', 'name']
-        

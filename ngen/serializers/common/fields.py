@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from ngen.utils import slugify_underscore
+from ngen.models import Taxonomy, TaxonomyGroup
 
 
 class GenericRelationField(serializers.RelatedField):
@@ -34,6 +35,12 @@ class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
         self.slug_field = kwargs.pop('slug_field', 'slug')
         super().__init__(**kwargs)
 
+    def when_invalid_slug(self, queryset, data, slug):
+        raise serializers.ValidationError(f"{slug} is not a valid slug for {queryset.model.__name__}.")
+
+    def sluglify(self, data):
+        return slugify_underscore(data)
+
     def to_internal_value(self, data):
         """
         Override the `to_internal_value` method to allow slugs.
@@ -43,14 +50,48 @@ class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
             return super().to_internal_value(data)
         except serializers.ValidationError:
             # If that fails, try to get the related object using a slug
-            slug = slugify_underscore(data)
+            slug = self.sluglify(data)
+            queryset = self.get_queryset()
             try:
-                queryset = self.get_queryset()
                 return queryset.get(**{self.slug_field: slug})
             except queryset.model.DoesNotExist:
-                raise serializers.ValidationError(
-                    f"{slug} is not a valid slug for {queryset.model.__name__}."
-                )
+                return self.when_invalid_slug(queryset, data, slug)
+
+
+class TaxonomySlugOrHyperlinkedRelatedField(SlugOrHyperlinkedRelatedField):
+    """
+    A custom field to allow creation of related objects using either a slug, hyperlink, or alias.
+    """
+
+    def sluglify(self, data):
+        p0, *parts = data.split('-')
+        if len(parts) == 0:
+            # add prefix internal: to the slug
+            return f'internal-{slugify_underscore(p0)}'
+        return f'{slugify_underscore(p0)}-{slugify_underscore("_".join(parts))}'
+
+    def when_invalid_slug(self, queryset, data, slug):
+        group_name = slug.split("-")[0]
+        taxonomy_name = slugify_underscore('_'.join(slug.split('-')[1:]))
+
+        tax_group = TaxonomyGroup.objects.get_or_create(
+            slug=group_name,
+            defaults={
+                'name': group_name,
+                'description': 'Auto-generated group.'
+            }
+        )[0]
+
+        internal_taxonomy = queryset.filter(slug=f'internal-{taxonomy_name}').first()
+
+        obj = queryset.create(
+            name=data,
+            alias_of=internal_taxonomy,
+            group=tax_group,
+            description='Auto-generated alias.'
+        )
+
+        return obj
 
 
 class ConstanceValueField(serializers.Field):

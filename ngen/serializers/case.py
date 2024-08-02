@@ -5,7 +5,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from ngen import models
-from ngen.serializers.common.fields import GenericRelationField, SlugOrHyperlinkedRelatedField
+from ngen.serializers.common.fields import GenericRelationField, SlugOrHyperlinkedRelatedField, \
+    TaxonomySlugOrHyperlinkedRelatedField
 from ngen.serializers.common.mixins import AuditSerializerMixin, MergeSerializerMixin, EvidenceSerializerMixin, \
     ArtifactSerializerMixin
 
@@ -26,7 +27,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
         queryset=models.Priority.objects.all(),
         view_name='priority-detail'
     )
-    taxonomy = SlugOrHyperlinkedRelatedField(
+    taxonomy = TaxonomySlugOrHyperlinkedRelatedField(
         slug_field='slug',
         queryset=models.Taxonomy.objects.all(),
         view_name='taxonomy-detail'
@@ -63,7 +64,8 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
         model = models.Event
         fields = ('url', 'history', 'artifacts', 'feed', 'tlp', 'priority', 'taxonomy', 'evidence', 'children', 'todos',
                   'reporter', 'comments', 'created', 'modified', 'cidr', 'domain', 'address_value', 'date',
-                  'evidence_file_path', 'notes', 'uuid', 'parent', 'case', 'tasks', 'blocked', 'merged', 'network')
+                  'evidence_file_path', 'notes', 'uuid', 'parent', 'case', 'tasks', 'blocked', 'merged', 'network',
+                  'initial_taxonomy_slug')
 
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)

@@ -10,9 +10,8 @@ class TestCase(APITestCaseWithLogin):
     This will handle Case testcases
     '''
 
-    fixtures = ["priority.json", "tlp.json", "user.json", "state.json", "feed.json",
-                "taxonomy.json", "case_template.json", "user.json"
-                ]
+    fixtures = ["priority.json", "tlp.json", "user.json", "state.json", "feed.json", "taxonomy_group.json",
+                "taxonomy.json", "case_template.json", "user.json"]
 
     @classmethod
     def setUpTestData(cls):
@@ -34,7 +33,7 @@ class TestCase(APITestCaseWithLogin):
         cls.feed = Feed.objects.get(slug="csirtamericas")
         cls.tlp = Tlp.objects.get(slug="green")
         cls.state = State.objects.get(slug="open")
-        cls.taxonomy = Taxonomy.objects.get(slug="accessible_afp_report")
+        cls.taxonomy = Taxonomy.objects.get_by_slug(slug="internal-accessible_afp_report")
         cls.user = User.objects.get(username="ngen")
         cls.case_template = CaseTemplate.objects.get(pk=1)
 

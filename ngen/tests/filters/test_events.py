@@ -17,7 +17,7 @@ class EventFilterTest(BaseFilterTest):
     """
 
     fixtures = [
-        "priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json",
+        "priority.json", "feed.json", "tlp.json", "user.json", "taxonomy_group.json", "taxonomy.json", "state.json",
         "case_template.json",
     ]
 
@@ -35,9 +35,9 @@ class EventFilterTest(BaseFilterTest):
         cls.priority_1 = Priority.objects.get(slug="critical")
         cls.priority_2 = Priority.objects.get(slug="high")
         cls.priority_3 = Priority.objects.get(slug="medium")
-        cls.taxonomy_1 = Taxonomy.objects.get(slug="blacklist")
-        cls.taxonomy_2 = Taxonomy.objects.get(slug="botnet")
-        cls.taxonomy_3 = Taxonomy.objects.get(slug="botnet_attack_command")
+        cls.taxonomy_1 = Taxonomy.objects.get_by_slug(slug="blacklist")
+        cls.taxonomy_2 = Taxonomy.objects.get_by_slug(slug="botnet")
+        cls.taxonomy_3 = Taxonomy.objects.get_by_slug(slug="botnet_attack_command")
         cls.user_1 = User.objects.get(username="ngen")
         cls.user_2 = User.objects.create(username="ngen2", password="ngen2")
 

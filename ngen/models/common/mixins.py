@@ -36,7 +36,7 @@ class ValidationModelMixin(models.Model):
 
 
 class SlugModelMixin(ValidationModelMixin, models.Model):
-    slug = models.SlugField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
 
     class Meta:
         abstract = True
@@ -44,8 +44,14 @@ class SlugModelMixin(ValidationModelMixin, models.Model):
     def _slug_field(self):
         return 'name'
 
+    def _slugify(self, data):
+        return slugify_underscore(data)
+
+    def slugify(self):
+        return self._slugify(getattr(self, self._slug_field()))
+
     def clean_fields(self, exclude=None):
-        self.slug = slugify_underscore(getattr(self, self._slug_field()))
+        self.slug = self.slugify()
         super().clean_fields(exclude=exclude)
 
 

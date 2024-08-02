@@ -266,8 +266,9 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     network = models.ForeignKey('ngen.Network', models.PROTECT, null=True, blank=True, related_name='events',
                                 editable=False)
 
-    taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
-    feed = models.ForeignKey('ngen.Feed', models.PROTECT)
+    taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT, related_name='events')
+    feed = models.ForeignKey('ngen.Feed', models.PROTECT, related_name='events')
+    initial_taxonomy_slug = models.CharField(max_length=255, null=True, blank=True, default='', editable=False)
 
     reporter = models.ForeignKey('ngen.User', models.PROTECT, related_name='events_reporter')
     evidence_file_path = models.CharField(max_length=255, null=True, blank=True)
@@ -318,8 +319,16 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     def enrichable(self):
         return self.mergeable
 
+    def update_taxonomy(self):
+        if self.taxonomy:
+            if not self.initial_taxonomy_slug:
+                self.initial_taxonomy_slug = self.taxonomy.slug
+            if self.taxonomy.alias_of:
+                self.taxonomy = self.taxonomy.alias_of
+
     @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
+        self.update_taxonomy()
         if config.AUTO_MERGE_EVENTS:
             extra_filters = {}
             if config.AUTO_MERGE_BY_FEED:
@@ -373,6 +382,7 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
 
     def clean(self):
         super().clean()
+        self.update_taxonomy()
         if self.date and self.date > timezone.now():
             raise ValidationError({'date': gettext_lazy('Date cannot be in the future')})
 

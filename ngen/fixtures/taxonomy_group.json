@@ -1,0 +1,13 @@
+[
+  {
+    "model": "ngen.taxonomygroup",
+    "pk": 1,
+    "fields": {
+      "created": "2019-04-26T16:03:33Z",
+      "modified": "2021-12-10T15:01:46.770Z",
+      "name": "Internal",
+      "slug": "internal",
+      "description": "Internal taxonomy group. Used for base team taxonomy tree. Can't be deleted."
+    }
+  }
+]

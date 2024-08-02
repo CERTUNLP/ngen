@@ -12,7 +12,7 @@ class CaseTest(TestCase):
     """
 
     fixtures = ["priority.json", "tlp.json", "user.json", "state.json",
-                "feed.json", "taxonomy.json"]
+                "feed.json", "taxonomy_group.json", "taxonomy.json"]
 
     @classmethod
     def setUpTestData(cls):
@@ -28,7 +28,7 @@ class CaseTest(TestCase):
         cls.template1 = CaseTemplate.objects.create(
             domain="info.unlp.edu.ar",
             priority=Priority.objects.get(slug="critical"),
-            event_taxonomy=Taxonomy.objects.get(slug="blacklist"),
+            event_taxonomy=Taxonomy.objects.get_by_slug(slug="internal-blacklist"),
             event_feed=Feed.objects.get(slug="csirtamericas"),
             case_tlp=Tlp.objects.get(slug="white"),
             case_state=State.objects.get(slug="staging")
@@ -36,7 +36,7 @@ class CaseTest(TestCase):
         cls.template2 = CaseTemplate.objects.create(
             domain="alumnos.unlp.edu.ar",
             priority=Priority.objects.get(slug="high"),
-            event_taxonomy=Taxonomy.objects.get(slug="botnet"),
+            event_taxonomy=Taxonomy.objects.get_by_slug(slug="internal-botnet"),
             event_feed=Feed.objects.get(slug="bro"),
             case_tlp=Tlp.objects.get(slug="green"),
             case_state=State.objects.get(slug="staging")
@@ -95,7 +95,7 @@ class CaseTest(TestCase):
             CaseTemplate.objects.create(
                 domain="info.unlp.edu.ar",
                 priority=Priority.objects.get(slug="critical"),
-                event_taxonomy=Taxonomy.objects.get(slug="blacklist"),
+                event_taxonomy=Taxonomy.objects.get_by_slug(slug="internal-blacklist"),
                 event_feed=Feed.objects.get(slug="csirtamericas"),
                 case_tlp=Tlp.objects.get(slug="white"),
                 case_state=State.objects.get(slug="staging")
