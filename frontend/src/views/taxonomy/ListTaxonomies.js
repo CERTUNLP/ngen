@@ -9,9 +9,13 @@ import { getTaxonomies } from '../../api/services/taxonomies';
 import Search from '../../components/Search/Search';
 import TableTaxonomy from './components/TableTaxonomy';
 import { useTranslation, Trans } from 'react-i18next';
+import { getMinifiedTaxonomyGroups } from "../../api/services/taxonomyGroups";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 
 const ListTaxonomies = () => {
     const [taxonomies, setTaxonomies] = useState([]);
+    const [taxonomyGroups, setTaxonomyGroups] = useState([])
+    const [minifiedTaxonomies, setMinifiedTaxonomies] = useState([])
     const [isModify, setIsModify] = useState(null);
     const [loading, setLoading] = useState(true)
     const { t } = useTranslation();
@@ -43,11 +47,47 @@ const ListTaxonomies = () => {
             })
             .catch((error) => {
                 //alert
+                console.log(error)
             })
             .finally(() => {
                 setShowAlert(true)
                 setLoading(false)
             })
+
+        const fetchTaxonomyGroups = async () => {
+            setLoading(true)
+            getMinifiedTaxonomyGroups()
+                .then((response) => {
+                    let dicTaxonomyGroups = {}
+                    response.map((tg) => {
+                      dicTaxonomyGroups[tg.url] = tg.name
+                    })
+                    setTaxonomyGroups(dicTaxonomyGroups)
+                }).catch((error) => {
+                    console.log(error)
+                }).finally(() => {
+                    setLoading(false)
+                })
+        }
+        fetchTaxonomyGroups()
+
+        const fetchMinifiedTaxonomies = async () => {
+            setLoading(true)
+            getMinifiedTaxonomy()
+                .then((response) => {
+                    let dicMinifiedTaxonomy = {}
+                    response.map((tg) => {
+                      dicMinifiedTaxonomy[tg.url] = tg.name
+                    })
+                    setMinifiedTaxonomies(dicMinifiedTaxonomy)
+                }).catch((error) => {
+                    console.log(error)
+                }).finally(() => {
+                    setLoading(false)
+                })
+        }
+        fetchMinifiedTaxonomies()
+
     }, [currentPage, isModify, order, wordToSearch,]);
 
 
@@ -75,7 +115,7 @@ const ListTaxonomies = () => {
                             </Row>
                         </Card.Header>
                         <Card.Body>
-                            <TableTaxonomy setIsModify={setIsModify} list={taxonomies} loading={loading} order={order} setOrder={setOrder} setLoading={setLoading} />
+                            <TableTaxonomy setIsModify={setIsModify} list={taxonomies} loading={loading} order={order} setOrder={setOrder} setLoading={setLoading} taxonomyGroups={taxonomyGroups} minifiedTaxonomies={minifiedTaxonomies} />
                         </Card.Body>
                         <Card.Footer >
                             <Row className="justify-content-md-center">

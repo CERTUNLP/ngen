@@ -50,6 +50,7 @@ admin.site.register(State)
 admin.site.register(Edge)
 
 # taxonomy
+admin.site.register(TaxonomyGroup)
 admin.site.register(Taxonomy)
 admin.site.register(Report)
 admin.site.register(Playbook)

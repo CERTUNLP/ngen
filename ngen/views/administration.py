@@ -7,7 +7,7 @@ from ngen.filters import FeedFilter, PriorityFilter, TlpFilter
 
 
 class FeedViewSet(viewsets.ModelViewSet):
-    queryset = models.Feed.objects.annotate(events_count=Count('event')).order_by('id')
+    queryset = models.Feed.objects.annotate(events_count=Count('events')).order_by('id')
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
