@@ -86,11 +86,11 @@ const EditTaxonomy = () => {
     let typeOption = [
         {
             value: 'vulnerability',
-            label: 'ngen.vulnerability'
+            label: t('ngen.vulnerability')
         },
         {
             value: 'incident',
-            label: 'ngen.incident'
+            label: t('ngen.incident')
         }
 
     ]

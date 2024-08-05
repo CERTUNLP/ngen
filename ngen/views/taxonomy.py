@@ -12,9 +12,9 @@ class TaxonomyViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter
     ]
-    search_fields = ['name', 'description']
+    search_fields = ['name', 'description', 'slug', 'group__name', 'group__slug', 'alias_of__name', 'alias_of__slug']
     filterset_class = TaxonomyFilter
-    ordering_fields = ['id', 'created', 'modified', 'name', 'reports']
+    ordering_fields = ['id', 'created', 'modified', 'name', 'reports', 'group__name', 'alias_of__name', 'needs_review', 'type', 'active']
     serializer_class = serializers.TaxonomySerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -26,8 +26,8 @@ class TaxonomyGroupViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter
     ]
-    search_fields = ['name', 'description']
-    ordering_fields = ['id', 'created', 'modified', 'name', 'taxonomies']
+    search_fields = ['name', 'description', 'slug']
+    ordering_fields = ['id', 'created', 'modified', 'name', 'taxonomies', 'needs_review']
     serializer_class = serializers.TaxonomyGroupSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -89,5 +89,11 @@ class ReportViewSet(viewsets.ModelViewSet):
 class TaxonomyMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Taxonomy.objects.all()
     serializer_class = serializers.TaxonomyMinifiedSerializer
+    pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
+
+class TaxonomyGroupMinifiedViewSet(viewsets.ModelViewSet):
+    queryset = models.TaxonomyGroup.objects.all()
+    serializer_class = serializers.TaxonomyGroupMinifiedSerializer
     pagination_class = None
     permission_classes = [permissions.IsAuthenticated]

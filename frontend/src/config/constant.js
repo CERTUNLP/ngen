@@ -63,15 +63,16 @@ export const COMPONENT_URL = {
     constance: "constance/",
     profile: "profile/",
     taxonomyMinifiedList:"minified/taxonomy/",
+    taxonomyGroupMinifiedList:"minified/taxonomygroup/",
     priorityMinifiedList: "minified/priority/",
     tlpMinifiedList: "minified/tlp/",
     feedMinifiedList:"minified/feed/",
     stateMinifiedList: "minified/state/",
-    entityMinifiedList: "minified/Entity",
-    contactMinifiedList: "minified/Contact/",
-    userMinifiedList: "minified/User/",
-    caseMinifiedList:"/minified/Case/",
-    artifactMinifiedList:"minified/Artifact/",
+    entityMinifiedList: "minified/entity",
+    contactMinifiedList: "minified/contact/",
+    userMinifiedList: "minified/user/",
+    caseMinifiedList:"/minified/case/",
+    artifactMinifiedList:"minified/artifact/",
     group: "groups/"
 
 };

@@ -81,3 +81,8 @@ class TaxonomyMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Taxonomy
         fields = ['url', 'name']
+
+class TaxonomyGroupMinifiedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.TaxonomyGroup
+        fields = ['url', 'name']
