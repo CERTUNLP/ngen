@@ -83,12 +83,12 @@ class ConstanceSerializer(serializers.Serializer):
             else:
                 value = value_type(value)
             setattr(config, key, '' if value is None else value)
-        except AttributeError as e:
-            raise serializers.ValidationError(f'Invalid key. {e}')
-        except ValidationError as e:
-            raise serializers.ValidationError(f'Invalid value. {e}')
-        except ValueError as e:
-            raise serializers.ValidationError(str(e))
+        except AttributeError:
+            raise serializers.ValidationError(f'Invalid key.')
+        except ValidationError:
+            raise serializers.ValidationError(f'Validation error.')
+        except ValueError:
+            raise serializers.ValidationError(f'Invalid value.')
         return validated_data
 
     def update(self, instance, validated_data):
