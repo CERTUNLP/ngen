@@ -81,6 +81,7 @@ console.log(list)
       <Table responsive hover className="text-center">
         <thead>
           <tr>
+            <Ordering field="created" label={t('date.creation')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
             <Ordering field="name" label={t('ngen.name_one')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
             <Ordering field="type" label={t('ngen.taxonomy.type')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
             <Ordering field="parent__name" label={t('ngen.taxonomy.parent')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
@@ -95,6 +96,7 @@ console.log(list)
         <tbody>
           {list.map((taxonomy, index) => (
             <tr key={index}>
+              <td>{taxonomy.created.slice(0, 10) + " " + taxonomy.created.slice(11, 19)}</td>
               <td>{taxonomy.name}</td>
               <td>{taxonomy.type}</td>
               <td>{minifiedTaxonomies[taxonomy.parent]}</td>
