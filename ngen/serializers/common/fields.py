@@ -64,34 +64,44 @@ class TaxonomySlugOrHyperlinkedRelatedField(SlugOrHyperlinkedRelatedField):
     """
 
     def sluglify(self, data):
+        p0, p1 = self._parse(data)
+        parsed_p0 = slugify_underscore(p0)
+        if not p1:
+            # is internal so is without group and is only 'taxonomy'
+            return parsed_p0
+        else:
+            # is external so is 'group-taxonomy'
+            return f"{parsed_p0}-{slugify_underscore(p1)}"
+
+    def _parse(self, data):
         p0, *parts = data.split('-')
-        if len(parts) == 0:
-            # add prefix internal: to the slug
-            return f'{slugify_underscore(p0)}'
-        return f'{slugify_underscore(p0)}-{slugify_underscore("_".join(parts))}'
+        return p0.strip(), '-'.join(parts).strip()
 
     def when_invalid_slug(self, queryset, data, slug):
-        if '-' in slug:
-            group_name, taxonomy_name = slug.split("-")
+        parsed_data = self._parse(data)
+        group_name, tax_name = (parsed_data[0], parsed_data[1]) if parsed_data[1] else (None, parsed_data[0])
+        if group_name:
+            group_slug, tax_slug = slug.split("-")
             tax_group = TaxonomyGroup.objects.get_or_create(
-                slug=group_name,
+                slug=group_slug,
                 defaults={
-                    'name': group_name,
-                    'description': 'Auto-generated group.'
+                    'name': group_slug,
+                    'description': 'Auto-generated group.',
+                    'needs_review': True
                 }
             )[0]
-            internal_taxonomy = queryset.filter(slug=taxonomy_name).first()
+            # Search for the matching internal taxonomy if exists and add it as alias
+            internal_taxonomy = queryset.filter(slug=tax_slug).first()
         else:
             tax_group = None
-            taxonomy_name = slug
             internal_taxonomy = None
 
-
         obj = queryset.create(
-            name=data,
+            name=tax_name,
             alias_of=internal_taxonomy,
             group=tax_group,
-            description='Auto-generated alias.'
+            description='Auto-generated alias.',
+            needs_review=True
         )
 
         return obj

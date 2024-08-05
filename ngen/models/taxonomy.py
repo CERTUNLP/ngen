@@ -25,6 +25,7 @@ class Taxonomy(AuditModelMixin, TreeModelMixin, SlugModelMixin, ValidationModelM
                               blank=True, default=None)
     alias_of = models.ForeignKey('ngen.Taxonomy', null=True, blank=True, default=None, on_delete=models.SET_NULL,
                                  related_name='aliases')
+    needs_review = models.BooleanField(default=True)
     node_order_by = ['id']
 
     def delete(self):
@@ -112,6 +113,7 @@ class TaxonomyGroup(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True, default='')
     node_order_by = ['id']
+    needs_review = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
