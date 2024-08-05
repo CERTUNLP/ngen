@@ -1,7 +1,8 @@
 from rest_framework import serializers
+from constance import config
 
 from ngen.utils import slugify_underscore
-from ngen.models import Taxonomy, TaxonomyGroup
+from ngen.models import TaxonomyGroup
 
 
 class GenericRelationField(serializers.RelatedField):
@@ -36,6 +37,7 @@ class SlugOrHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
         super().__init__(**kwargs)
 
     def when_invalid_slug(self, queryset, data, slug):
+        print('here2')
         raise serializers.ValidationError(f"{slug} is not a valid slug for {queryset.model.__name__}.")
 
     def sluglify(self, data):
@@ -78,6 +80,11 @@ class TaxonomySlugOrHyperlinkedRelatedField(SlugOrHyperlinkedRelatedField):
         return p0.strip(), '-'.join(parts).strip()
 
     def when_invalid_slug(self, queryset, data, slug):
+        print(config.TAXONOMY_ALLOW_AUTO_CREATE)
+        print(type(config.TAXONOMY_ALLOW_AUTO_CREATE))
+        if not config.TAXONOMY_ALLOW_AUTO_CREATE:
+            print('here')
+            super().when_invalid_slug(queryset, data, slug)
         parsed_data = self._parse(data)
         group_name, tax_name = (parsed_data[0], parsed_data[1]) if parsed_data[1] else (None, parsed_data[0])
         if group_name:
