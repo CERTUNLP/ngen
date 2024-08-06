@@ -5,7 +5,6 @@ from model_utils import Choices
 
 from ngen.models.common.mixins import AuditModelMixin, PriorityModelMixin, AddressModelMixin, TreeModelMixin, \
     SlugModelMixin, ValidationModelMixin, AddressManager
-from ngen.models import Event
 
 
 class NetworkManager(AddressManager):
@@ -88,10 +87,6 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationMode
         self.full_clean()
         super().save(*args, **kwargs)
         Network.objects.children_of(self).update(parent=self)
-        events = Event.objects.children_of(self)
-        if self.parent:
-            events = events.filter(network=self.parent)
-        events.update(network=self)
 
     def ancestors_email_contacts(self, priority):
         return self.get_ancestors_related(
