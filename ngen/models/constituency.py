@@ -106,7 +106,7 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationMode
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-        Network.objects.children_of(self).update(parent=self)
+        Network.objects.direct_children_of(self).update(parent=self)
         events = Event.objects.children_of(self)
         if self.parent:
             events = events.filter(network=self.parent)
