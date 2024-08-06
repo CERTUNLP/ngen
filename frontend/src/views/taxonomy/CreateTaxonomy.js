@@ -7,13 +7,17 @@ import { validateName, validateDescription, validateType, validateUnrequiredInpu
 import { postTaxonomy, getMinifiedTaxonomy } from '../../api/services/taxonomies';
 import SelectLabel from '../../components/Select/SelectLabel';
 import { useTranslation, Trans } from 'react-i18next';
+import { getMinifiedTaxonomyGroups } from "../../api/services/taxonomyGroups";
 
 const CreateTaxonomy = () => {
     const [type, setType] = useState("");
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [parent, setParent] = useState("");
+    const [alias_of, setAlias_of] = useState("");
+    const [selectGroup, setSelectGroup] = useState("")
     const [taxonomies, setTaxonomies] = useState([]);
+    const [taxonomyGroups, setTaxonomyGroups] = useState([]);
     const [showAlert, setShowAlert] = useState(false)
     const { t } = useTranslation();
 
@@ -28,6 +32,15 @@ const CreateTaxonomy = () => {
                     listTaxonomies.push({ value: taxonomy.url, label: taxonomy.name })
                 })
                 setTaxonomies(listTaxonomies)
+            })
+
+        getMinifiedTaxonomyGroups()
+            .then((response) => {
+                let listTaxonomyGroups = []
+                response.map((taxonomyGroup) => {
+                    listTaxonomyGroups.push({ value: taxonomyGroup.url, label: taxonomyGroup.name })
+                })
+                setTaxonomyGroups(listTaxonomyGroups)
             })
 
         const handleResize = (e) => {
@@ -49,7 +62,8 @@ const CreateTaxonomy = () => {
 
     const createTaxonomy = () => {
         let active = true
-        postTaxonomy(type, name, description, active, parent)
+        let needs_review = false
+        postTaxonomy(type, name, description, active, parent, alias_of, needs_review)
             .then(() => {
                 window.location.href = '/taxonomies';
             })
@@ -66,11 +80,11 @@ const CreateTaxonomy = () => {
     let typeOption = [
         {
             value: 'vulnerability',
-            label: 'Vulnerabilidad'
+            label: t('ngen.vulnerability')
         },
         {
             value: 'incident',
-            label: "Incidente"
+            label: t('ngen.incident')
         }
 
     ]
@@ -90,7 +104,7 @@ const CreateTaxonomy = () => {
                         <Card.Body>
                             <Form>
                                 <Row>
-                                    <Col sm={12} lg={4}>
+                                    <Col sm={12} lg={6}>
                                         <Form.Group>
                                             <Form.Label>{t('ngen.name_one')} <b style={{ color: "red" }}>*</b></Form.Label>
                                             <Form.Control
@@ -102,13 +116,23 @@ const CreateTaxonomy = () => {
                                             {validateName(name) ? '' : <div className="invalid-feedback">{t('ngen.name.invalid')}</div>}
                                         </Form.Group>
                                     </Col>
-                                    <Col sm={12} lg={4}>
+                                    <Col sm={12} lg={6}>
                                         <SelectLabel set={setType} setSelect={setSelectedType} options={typeOption}
                                             value={selectedType} placeholder={t('ngen.type')} required={true} />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col sm={12} lg={4}>
+                                        <SelectLabel set={setSelectGroup} setSelect={setSelectGroup} options={taxonomyGroups}
+                                            value={selectGroup} placeholder={t('ngen.taxonomy.group')} />
                                     </Col>
                                     <Col sm={12} lg={4}>
                                         <SelectLabel set={setParent} setSelect={setSelectTaxonomy} options={taxonomies}
                                             value={selectTaxonomy} placeholder={t('ngen.taxonomy.parent')} />
+                                    </Col>
+                                    <Col sm={12} lg={4}>
+                                        <SelectLabel set={setAlias_of} setSelect={setSelectTaxonomy} options={taxonomies}
+                                            value={selectTaxonomy} placeholder={t('ngen.taxonomy.alias_of')} />
                                     </Col>
                                 </Row>
                                 <Row>
