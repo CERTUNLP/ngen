@@ -356,6 +356,11 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
                 if self.parent is None:
                     self.parent = event
 
+    @hook(BEFORE_CREATE)
+    @hook(BEFORE_UPDATE, when="network", has_changed=True)
+    def network_assign(self):
+        self.network = ngen.models.Network.objects.parent_of(self).first()
+
     @hook(AFTER_CREATE)
     def create_case(self):
         """ Check if case should be created and create it """
