@@ -12,12 +12,13 @@ class ConstituencyTest(TestCase):
         cls.default_ipv4 = Network.objects.create(cidr='0.0.0.0/0')
         cls.default_ipv6 = Network.objects.create(cidr='::/0')
         cls.default_domain = Network.objects.create(domain='*')
-        Network.objects.create(cidr='163.10.0.0/16', network_entity=cls.example_entity)
-        Network.objects.create(cidr='163.10.1.0/24', network_entity=cls.example_entity)
-        Network.objects.create(cidr='163.10.2.0/24', network_entity=cls.example_entity)
-        Network.objects.create(cidr='163.10.2.1/32', network_entity=cls.example_entity)
-        Network.objects.create(cidr='163.10.2.2/32', network_entity=cls.example_entity)
-        Network.objects.create(cidr='163.10.2.3/32', network_entity=cls.example_entity)
+        cls.ipv4_1 = Network.objects.create(cidr='163.10.0.0/16', network_entity=cls.example_entity)
+        cls.ipv4_1_1 = Network.objects.create(cidr='163.10.1.0/24', network_entity=cls.example_entity)
+        cls.ipv4_1_2 = Network.objects.create(cidr='163.10.2.0/24', network_entity=cls.example_entity)
+        cls.ipv4_1_3 = Network.objects.create(cidr='163.10.250.0/24', network_entity=cls.example_entity)
+        cls.ipv4_2_1 = Network.objects.create(cidr='163.10.2.1/32', network_entity=cls.example_entity)
+        cls.ipv4_2_2 = Network.objects.create(cidr='163.10.2.2/32', network_entity=cls.example_entity)
+        cls.ipv4_2_3 = Network.objects.create(cidr='163.10.2.3/32', network_entity=cls.example_entity)
         Network.objects.create(domain='ar', network_entity=cls.example_entity)
         Network.objects.create(domain='edu.ar', network_entity=cls.example_entity)
         Network.objects.create(domain='unlp.edu.ar', network_entity=cls.example_entity)
@@ -144,3 +145,18 @@ class ConstituencyTest(TestCase):
                             related_networks.count())
         self.assertEqual(NetworkEntity.objects.filter(name='Example Entity').count(), 0)
         self.assertRaises(NetworkEntity.DoesNotExist, NetworkEntity.objects.get, id=self.example_entity.id)
+
+    def test_insert_ipv4_network(self):
+        test1 = Network.objects.create(cidr='163.10.0.0/20')
+        self.ipv4_1_1.refresh_from_db()
+        self.ipv4_1_2.refresh_from_db()
+        self.assertEqual(test1.get_parent(), self.ipv4_1)
+        self.assertIn(test1, self.ipv4_1.get_children().all())
+        self.assertQuerysetEqual(test1.get_children().all(), [self.ipv4_1_1, self.ipv4_1_2], ordered=False)
+        self.assertQuerysetEqual(
+            Network.objects.children_of(self.ipv4_1),
+            [self.ipv4_1_1, self.ipv4_1_2, self.ipv4_1_3, self.ipv4_2_1, self.ipv4_2_2, self.ipv4_2_3, test1],
+            ordered=False
+        )
+        self.assertEqual(test1, self.ipv4_1_1.parent)
+        self.assertEqual(test1, self.ipv4_1_2.parent)

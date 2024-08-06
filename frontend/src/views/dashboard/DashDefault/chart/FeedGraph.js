@@ -15,12 +15,13 @@ const FeedGraph = ({ dashboardFeed }) => {
 
     }, [dashboardFeed])
     const { t } = useTranslation();
+                console.log(feed);
 
     return (
         <div>
             {
                 feed.length > 0 ? <NVD3Chart id="chart" height={600} type="pieChart" datum={feed} x="feed_name" y="events_count" donut labelType="percent" /> :
-                    t('feeds_noEventsAssociated')
+                    t('ngen.dashboard.no_events_associated_with_feeds')
 
             }
         </div>

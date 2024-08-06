@@ -16,11 +16,12 @@ const EntityGraph = ({ list }) => {
 
     }, [list])
     const { t } = useTranslation();
+                console.log(entity);
     return (
         <div>
             {
                 entity.length > 0 ? <NVD3Chart id="chart" height={600} type="pieChart" datum={entity} x="name" y="eventCount" labelType="percent" /> :
-                    t('feeds_noEventsAssociated')
+                    t('ngen.dashboard.no_events_associated_with_entities')
 
             }
         </div>
