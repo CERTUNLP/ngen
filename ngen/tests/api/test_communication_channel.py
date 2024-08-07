@@ -45,10 +45,10 @@ class TestCommunicationChannel(APITestCase):
         cls.url_list = reverse(f"{basename}-list")
         cls.url_detail = lambda pk: reverse(f"{basename}-detail", kwargs={"pk": pk})
         cls.nested_url_list = (
-            lambda channelable_name, channelable_pk: f"/api/{channelable_name}/{channelable_pk}/communication_channels/"
+            lambda channelable_name, channelable_pk: f"/api/{channelable_name}/{channelable_pk}/communicationchannels/"
         )
         cls.nested_url_detail = (
-            lambda channelable_name, channelable_pk, pk: f"/api/{channelable_name}/{channelable_pk}/communication_channels/{pk}/"
+            lambda channelable_name, channelable_pk, pk: f"/api/{channelable_name}/{channelable_pk}/communicationchannels/{pk}/"
         )
 
         cls.url_login_jwt = reverse("token-create")

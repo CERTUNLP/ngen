@@ -21,9 +21,9 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     """
     Class that adds communication channel endpoints to channelable models
     e.g.:
-    /api/case/1/communication_channels/
-    /api/case/1/communication_channels/1
-    /api/event/2/communication_channels/3
+    /api/case/1/communicationchannels/
+    /api/case/1/communicationchannels/1
+    /api/event/2/communicationchannels/3
     """
 
     def get_serializer_class(self):
@@ -36,11 +36,11 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
 
         return self.serializer_class
 
-    @action(detail=True, methods=["get"], url_path="communication_channels")
+    @action(detail=True, methods=["get"], url_path="communicationchannels")
     def communication_channels(self, request, pk=None):
         """
         View for list of communication channels of a channelable
-        Example path: /api/some_channelable/1/communication_channels/
+        Example path: /api/some_channelable/1/communicationchannels/
         """
         channelable = self.get_object()
         communication_channels = channelable.communication_channels.all().order_by("id")
@@ -56,7 +56,7 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     def communication_channels_create(self, request, pk=None):
         """
         View for communication channel creation
-        Example path: /api/some_channelable/1/communication_channels/
+        Example path: /api/some_channelable/1/communicationchannels/
         """
         channelable = self.get_object()
         serializer = CommunicationChannelSerializer(
@@ -71,14 +71,14 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["get"],
-        url_path="communication_channels/(?P<communication_channel_id>[^/.]+)",
+        url_path="communicationchannels/(?P<communication_channel_id>[^/.]+)", # <int:communication_channel_id> !!!!!!!!!!
     )
     def communication_channels_detail(
         self, request, pk=None, communication_channel_id=None
     ):
         """
         View for communication channel detail
-        Example path: /api/some_channelable/1/communication_channels/1/
+        Example path: /api/some_channelable/1/communicationchannels/1/
         """
         channelable = self.get_object()
 
@@ -104,7 +104,7 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     ):
         """
         View for communication channel update
-        Example path: /api/some_channelable/1/communication_channels/1/
+        Example path: /api/some_channelable/1/communicationchannels/1/
         """
         channelable = self.get_object()
 
@@ -136,7 +136,7 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     ):
         """
         View for communication channel update
-        Example path: /api/some_channelable/1/communication_channels/1/
+        Example path: /api/some_channelable/1/communicationchannels/1/
         """
         channelable = self.get_object()
 
@@ -169,7 +169,7 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     ):
         """
         View for communication channel delete
-        Example path: /api/some_channelable/1/communication_channels/1/
+        Example path: /api/some_channelable/1/communicationchannels/1/
         """
         channelable = self.get_object()
 
