@@ -8,6 +8,7 @@ import { postTaxonomy, getMinifiedTaxonomy } from '../../api/services/taxonomies
 import SelectLabel from '../../components/Select/SelectLabel';
 import { useTranslation, Trans } from 'react-i18next';
 import { getMinifiedTaxonomyGroups } from "../../api/services/taxonomyGroups";
+import DropdownState from "../../components/Dropdown/DropdownState";
 
 const CreateTaxonomy = () => {
     const [type, setType] = useState("");
@@ -15,14 +16,21 @@ const CreateTaxonomy = () => {
     const [description, setDescription] = useState("");
     const [parent, setParent] = useState("");
     const [alias_of, setAlias_of] = useState("");
-    const [selectGroup, setSelectGroup] = useState("")
+    const [group, setGroup] = useState("");
+    const [showAlert, setShowAlert] = useState(false)
+    const [active, setActive] = useState(true);
+    const [needs_review, setNeeds_review] = useState(false);
+
     const [taxonomies, setTaxonomies] = useState([]);
     const [taxonomyGroups, setTaxonomyGroups] = useState([]);
-    const [showAlert, setShowAlert] = useState(false)
-    const { t } = useTranslation();
 
-    const [selectTaxonomy, setSelectTaxonomy] = useState()
+    const [selectTaxonomyParent, setSelectTaxonomyParent] = useState()
+    const [selectGroup, setSelectGroup] = useState("")
+    const [selectTaxonomyAlias_of, setSelectTaxonomyAlias_of] = useState()
     const [selectedType, setSelectedType] = useState()
+    const [isGroupDisabled, setIsGroupDisabled] = useState(false);
+
+    const { t } = useTranslation();
 
     useEffect(() => {
         getMinifiedTaxonomy()
@@ -53,17 +61,24 @@ const CreateTaxonomy = () => {
 
         // Elimina el listener cuando el componente se desmonta
         return () => {
-            console.log('desmon')
             window.removeEventListener('resize', handleResize);
         };
     }, []);
 
 
+    const handleParentChange = (value) => {
+        setParent(value);
+        setGroup(null);
+        setSelectGroup(null);
+        if (value) {
+            setIsGroupDisabled(true);
+        } else {
+            setIsGroupDisabled(false);
+        }
+    };
 
     const createTaxonomy = () => {
-        let active = true
-        let needs_review = false
-        postTaxonomy(type, name, description, active, parent, alias_of, needs_review)
+        postTaxonomy(type, name, description, active, parent, alias_of, needs_review, group)
             .then(() => {
                 window.location.href = '/taxonomies';
             })
@@ -116,23 +131,39 @@ const CreateTaxonomy = () => {
                                             {validateName(name) ? '' : <div className="invalid-feedback">{t('ngen.name.invalid')}</div>}
                                         </Form.Group>
                                     </Col>
-                                    <Col sm={12} lg={6}>
+                                    <Col sm={12} lg={4}>
                                         <SelectLabel set={setType} setSelect={setSelectedType} options={typeOption}
                                             value={selectedType} placeholder={t('ngen.type')} required={true} />
+                                    </Col>
+                                    <Col sm={12} lg={1}>
+                                        <Form.Group>
+                                            <Form.Label>{t('ngen.state_one')}</Form.Label>
+                                            <DropdownState state={true} setActive={setActive}></DropdownState>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={12} lg={1}>
+                                        <Form.Group>
+                                            <Form.Label>{t('ngen.taxonomy.needs_review')}</Form.Label>
+                                            <DropdownState state={false} setActive={setNeeds_review}
+                                                           str_true='w.yes' str_false='w.no' />
+                                        </Form.Group>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col sm={12} lg={4}>
-                                        <SelectLabel set={setSelectGroup} setSelect={setSelectGroup} options={taxonomyGroups}
-                                            value={selectGroup} placeholder={t('ngen.taxonomy.group')} />
+                                        <SelectLabel set={handleParentChange} setSelect={setSelectTaxonomyParent}
+                                                     options={taxonomies} value={selectTaxonomyParent}
+                                                     placeholder={t('ngen.taxonomy.parent')}
+                                                     legend={t('ngen.taxonomy.parent.legend.create')} />
                                     </Col>
                                     <Col sm={12} lg={4}>
-                                        <SelectLabel set={setParent} setSelect={setSelectTaxonomy} options={taxonomies}
-                                            value={selectTaxonomy} placeholder={t('ngen.taxonomy.parent')} />
+                                        <SelectLabel set={setGroup} setSelect={setSelectGroup} options={taxonomyGroups}
+                                            value={selectGroup} placeholder={t('ngen.taxonomy.group')}
+                                            disabled={isGroupDisabled} legend={t('ngen.taxonomy.group.legend.create')}/>
                                     </Col>
                                     <Col sm={12} lg={4}>
-                                        <SelectLabel set={setAlias_of} setSelect={setSelectTaxonomy} options={taxonomies}
-                                            value={selectTaxonomy} placeholder={t('ngen.taxonomy.alias_of')} />
+                                        <SelectLabel set={setAlias_of} setSelect={setSelectTaxonomyAlias_of} options={taxonomies}
+                                            value={selectTaxonomyAlias_of} placeholder={t('ngen.taxonomy.alias_of')} />
                                     </Col>
                                 </Row>
                                 <Row>
