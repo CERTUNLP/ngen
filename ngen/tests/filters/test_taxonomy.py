@@ -7,7 +7,7 @@ import pytz
 from django.utils import timezone
 
 from ngen.filters import TaxonomyFilter
-from ngen.models import Taxonomy, Playbook
+from ngen.models import Taxonomy, Playbook, TaxonomyGroup
 from ngen.tests.filters.base_filter_test import BaseFilterTest
 
 
@@ -152,7 +152,10 @@ class TaxonomyFilterTest(BaseFilterTest):
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset, [self.taxonomy_2, self.taxonomy_3])
+            filtered_queryset,
+            [self.taxonomy_2, self.taxonomy_3],
+            ordered=False
+        )
 
     def test_filter_by_slug(self):
         """
@@ -166,7 +169,10 @@ class TaxonomyFilterTest(BaseFilterTest):
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset, [self.taxonomy_2, self.taxonomy_3])
+            filtered_queryset,
+            [self.taxonomy_2, self.taxonomy_3],
+            ordered=False
+        )
 
     def test_filter_by_description(self):
         """
@@ -240,7 +246,10 @@ class TaxonomyFilterTest(BaseFilterTest):
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset, [self.taxonomy_2, self.taxonomy_3])
+            filtered_queryset,
+            [self.taxonomy_2, self.taxonomy_3],
+            ordered=False
+        )
 
         params = {
             "parent__isnull": True

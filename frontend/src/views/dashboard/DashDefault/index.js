@@ -245,7 +245,7 @@ const DashDefault = () => {
                 <Col md={6}>
                     <Card>
                         <Card.Header>
-                            <Card.Title as="h5">{t('feeds_graphic')}</Card.Title>
+                            <Card.Title as="h5">{t('ngen.dashboard.feeds_graphic')}</Card.Title>
                         </Card.Header>
                         <Card.Body className="text-center">
                             <FeedGraph dashboardFeed={dashboardFeed} />
@@ -255,7 +255,7 @@ const DashDefault = () => {
                 <Col md={6}>
                     <Card>
                         <Card.Header>
-                            <Card.Title as="h5">{t('ngen.entity_graphic')}</Card.Title>
+                            <Card.Title as="h5">{t('ngen.dashboard.entities_graphic')}</Card.Title>
                         </Card.Header>
                         <Card.Body className="text-center">
                             <EntityGraph list={dashboardNetworkEntities.length > 0 ? dashboardNetworkEntities[0].values : []} />

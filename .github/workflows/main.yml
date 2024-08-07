@@ -12,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      container_name: docker_ngen-django_1
+      container_name: docker-ngen-django-1
     steps:
     - uses: actions/checkout@v3
     - name: Build docker containers
       run: |
         cd docker
-        docker-compose build
-        docker-compose up -d
+        docker compose build
+        docker compose up -d
 
         max_retries=60
         retries=0

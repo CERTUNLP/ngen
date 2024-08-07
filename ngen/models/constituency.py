@@ -5,6 +5,7 @@ from model_utils import Choices
 
 from ngen.models.common.mixins import AuditModelMixin, PriorityModelMixin, AddressModelMixin, TreeModelMixin, \
     SlugModelMixin, ValidationModelMixin, AddressManager
+from ngen.models import Event
 
 
 class NetworkManager(AddressManager):
@@ -23,6 +24,25 @@ class NetworkManager(AddressManager):
             children = self.filter(cidr__net_contained=str(network.cidr))
         elif network.domain != None:
             children = self.filter(domain__endswith=network.domain).exclude(domain=network.domain)
+        return children
+
+    def direct_children_of(self, network: 'Network'):
+        """
+        Return all networks that are children of the given network.
+        Not necessarily already assigned to the network.
+        But only the direct children, not the children of the children.
+        """
+        children = None
+        if network.cidr:
+            children = self.filter(cidr__net_contained=str(network.cidr))
+        elif network.domain != None:
+            children = self.filter(domain__endswith=network.domain).exclude(domain=network.domain)
+
+        parent = network.parent if network.parent else self.parent_of(network).first()
+
+        if children and parent:
+            children = children.filter(parent=parent)
+
         return children
 
     def default_ipv4(self):
@@ -86,7 +106,11 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationMode
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-        Network.objects.children_of(self).update(parent=self)
+        Network.objects.direct_children_of(self).update(parent=self)
+        events = Event.objects.children_of(self)
+        if self.parent:
+            events = events.filter(network=self.parent)
+        events.update(network=self)
 
     def ancestors_email_contacts(self, priority):
         return self.get_ancestors_related(

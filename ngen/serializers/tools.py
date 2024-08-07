@@ -1,5 +1,6 @@
 from auditlog.models import LogEntry
-from constance import config
+from constance import config, settings
+from django.conf import settings as project_settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
@@ -76,11 +77,18 @@ class ConstanceSerializer(serializers.Serializer):
         value = validated_data.get('value')
 
         try:
+            value_type = type(settings.CONFIG.get(key)[0])
+            if value_type == bool:
+                value = str(value).lower() in project_settings.VALUES_TRUE
+            else:
+                value = value_type(value)
             setattr(config, key, '' if value is None else value)
         except AttributeError:
-            raise serializers.ValidationError('Invalid key')
+            raise serializers.ValidationError(f'Invalid key.')
         except ValidationError:
-            raise serializers.ValidationError('Invalid value')
+            raise serializers.ValidationError(f'Validation error.')
+        except ValueError:
+            raise serializers.ValidationError(f'Invalid value.')
         return validated_data
 
     def update(self, instance, validated_data):

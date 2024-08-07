@@ -40,7 +40,7 @@ class FeedsInEventsSerializer(serializers.Serializer):
     """
 
     feed_name = serializers.CharField()
-    event_count = serializers.IntegerField()
+    events_count = serializers.IntegerField()
 
 
 class FeedDashboardSerializer(DashboardSerializer):

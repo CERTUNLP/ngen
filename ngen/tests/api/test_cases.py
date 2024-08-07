@@ -11,8 +11,7 @@ class TestCase(APITestCaseWithLogin):
     '''
 
     fixtures = ["priority.json", "tlp.json", "user.json", "state.json", "feed.json",
-                "taxonomy.json", "case_template.json", "user.json"
-                ]
+                "taxonomy.json", "case_template.json", "user.json"]
 
     @classmethod
     def setUpTestData(cls):
