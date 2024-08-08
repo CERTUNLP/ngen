@@ -20,7 +20,7 @@ const FileUpload = ({ files, setFiles, removeFile }) => {
                     </button>
                 </div>
 
-                <p className="main">Se pueden subir archivos de tipo</p>
+                <p className="main">{t('ngen.file_upload_type')}</p>
                 <p className="info">PDF, JPG, PNG, TXT, DOC</p>
 
             </div>

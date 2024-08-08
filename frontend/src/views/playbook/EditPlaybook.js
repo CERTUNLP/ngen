@@ -77,7 +77,7 @@ const EditPlaybook = () => {
                                 taxonomy={taxonomy} setTaxonomy={setTaxonomy}
                                 ifConfirm={editPlaybook}
                                 allTaxonomies={allTaxonomies}
-                                save={t('button.savechanges')} />
+                                save={t('button.save_changes')} />
                         </Card.Body>
                     </Card>
 

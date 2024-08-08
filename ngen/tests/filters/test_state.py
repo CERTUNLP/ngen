@@ -69,8 +69,6 @@ class StateFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by name
         query = "init"
         response = self.client.get(self.search_url(query))

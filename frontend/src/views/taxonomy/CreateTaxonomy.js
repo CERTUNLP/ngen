@@ -79,7 +79,7 @@ const CreateTaxonomy = () => {
         <React.Fragment>
             <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="taxonomy" />
             <Row>
-                <Navigation actualPosition="Agregar taxonomia" path="/taxonomies" index="Taxonomia" />
+                <Navigation actualPosition={t('w.add') + " " + t('ngen.taxonomy_one')} path="/taxonomies" index={t('ngen.taxonomy_other')} />
             </Row>
             <Row>
                 <Col sm={12}>

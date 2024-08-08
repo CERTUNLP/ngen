@@ -36,7 +36,7 @@ class ValidationModelMixin(models.Model):
 
 
 class SlugModelMixin(ValidationModelMixin, models.Model):
-    slug = models.SlugField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
 
     class Meta:
         abstract = True
@@ -44,8 +44,14 @@ class SlugModelMixin(ValidationModelMixin, models.Model):
     def _slug_field(self):
         return 'name'
 
+    def _slugify(self, data):
+        return slugify_underscore(data)
+
+    def slugify(self):
+        return self._slugify(getattr(self, self._slug_field()))
+
     def clean_fields(self, exclude=None):
-        self.slug = slugify_underscore(getattr(self, self._slug_field()))
+        self.slug = self.slugify()
         super().clean_fields(exclude=exclude)
 
 
@@ -113,7 +119,14 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
 
     @property
     def allowed_fields(self) -> bool:
-        key = f"ALLOWED_FIELDS_{self.__class__.__name__.upper()}"
+        key = f"ALLOWED_FIELDS_BLOCKED_{self.__class__.__name__.upper()}"
+        values = getattr(config, key, []).split(',')
+        values += [f'{v}_id' for v in values]
+        return values
+
+    @property
+    def allowed_fields_on_merged(self) -> bool:
+        key = f"ALLOWED_FIELDS_MERGED_{self.__class__.__name__.upper()}"
         values = getattr(config, key, []).split(',')
         values += [f'{v}_id' for v in values]
         return values
@@ -135,7 +148,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
                 {'parent': gettext('The parent is not mergeable or is blocked.')})
         if child.blocked:
             raise ValidationError(
-                gettext('The child is not mergeable or is blocked.'))
+                {'__all__': gettext('The child is not mergeable or is blocked.')})
         return True
 
     def merge(self, child: 'MergeModelMixin'):
@@ -149,8 +162,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
             if self.parent and self.parent.mergeable_with(self) and not self._state.adding:
                 self.parent.merge(self)
         else:
-            raise ValidationError(
-                gettext('Parent of merged instances can\'t be modified'))
+            raise ValidationError({'__all__': gettext('Parent of merged instances can\'t be modified')})
 
     @hook(BEFORE_DELETE)
     def delete_children(self):
@@ -159,14 +171,22 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
 
     @hook(BEFORE_UPDATE)
     def check_allowed_fields(self, exclude=None):
-        if self.merged:
-            raise ValidationError(gettext(f"Merged instances can\'t be modified: {self}"))
+        if self.merged and self.__class__.objects.filter(pk=self.pk).first().merged: # TODO: Avoid query
+            for attr in self.__dict__:
+                if attr not in self.allowed_fields_on_merged and self.has_changed(attr):
+                    if (attr == 'cidr' and str(self.cidr) == self.initial_value('cidr')) or \
+                        (attr == 'sid' and self.sid == self.initial_value('sid')):
+                        # cidr and sid has invalid check of has_changed
+                        pass
+                    else:
+                        raise ValidationError(
+                            {'__all__': gettext(f"Merged instances can\'t be modified: {self}, {self.parent}, {self.children}")})
         if self.blocked:
             exceptions = {}
             for attr in self.__dict__:
                 if attr not in self.allowed_fields and self.has_changed(attr):
-                    if config.ALLOWED_FIELDS_EXCEPTION:
-                        exceptions[attr] = [gettext(f'{attr} of blocked instances can\'t be modified')]
+                    if config.ALLOWED_FIELDS_BLOCKED_EXCEPTION:
+                        exceptions[attr] = [{'__all__': gettext(f'{attr} of blocked instances can\'t be modified')}]
                     else:
                         self.__dict__[attr] = self.initial_value(attr)
             if exceptions:
@@ -235,6 +255,12 @@ class AddressManager(NetManager):
         elif address.domain:
             return self.domain_parents_of(str(address.address))
         return self.none()
+
+    def parents_of_many(self, addresses: list['AddressModelMixin']):
+        parents = self.none()
+        for address in addresses:
+            parents |= self.parents_of(address)
+        return parents
 
     def parent_of(self, address: 'AddressModelMixin'):
         return self.parents_of(address)
@@ -553,7 +579,7 @@ class ArtifactRelatedMixin(models.Model):
                             artifact=artifact,
                             content_type=ContentType.objects.get_for_model(self),
                             object_id=self.id,
-                            auto_created=True
+                            defaults={'auto_created': True}
                         )
                         relations.append(relation)
                         if not created:

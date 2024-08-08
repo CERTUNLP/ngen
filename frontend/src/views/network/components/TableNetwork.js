@@ -19,6 +19,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
 
     const [url, setUrl] = useState(null)
     const [cidr, setCidr] = useState(null)
+    const [domain, setDomain] = useState(null)
     const [active, setActive] = useState(null)
 
     if (loading) {
@@ -45,9 +46,10 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
     };
 
     //Update Network
-    const pressActive = (cidr, active, url) => {
+    const pressActive = (domain, cidr, active, url) => {
         setUrl(url)
         setCidr(cidr)
+        setDomain(domain)
         setActive(active)
         setModalState(true)
     }
@@ -67,14 +69,15 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
     };
 
     //Remove Network
-    const Delete = (url, cidr) => {
+    const Delete = (url, cidr, domain) => {
         setUrl(url);
         setCidr(cidr)
+        setDomain(domain)
         setModalDelete(true)
     }
 
     const removeNetwork = (url) => {
-        deleteNetwork(url, cidr)
+        deleteNetwork(url, cidr || domain)
             .then((response) => {
                 console.log(response)
                 setIsModify(response)
@@ -112,7 +115,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
                                 <td>{network.cidr}</td>
                                 <td>{network.type === 'internal' ? t('ngen.network.type.internal') : t('ngen.network.type.external')}</td>
                                 <td>
-                                    <ActiveButton active={network.active} onClick={() => pressActive(network.cidr, network.active, network.url)} />
+                                    <ActiveButton active={network.active} onClick={() => pressActive(network.domain, network.cidr, network.active, network.url)} />
                                 </td>
                                 <td>
                                     {network.network_entity ?
@@ -125,7 +128,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
                                     <Link to={{ pathname: '/networks/edit', state: network }} >
                                         <CrudButton type='edit' />
                                     </Link>
-                                    <CrudButton type='delete' onClick={() => Delete(network.url, network.cidr)} />
+                                    <CrudButton type='delete' onClick={() => Delete(network.url, network.cidr, network.domain)} />
                                 </td>
                             </tr>
                         );
@@ -133,8 +136,8 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
                 </tbody>
             </Table>
             <ModalDetailNetwork show={modalShow} network={network} onHide={() => setModalShow(false)} />
-            <ModalConfirm type='delete' component='Red' name={cidr} showModal={modalDelete} onHide={() => setModalDelete(false)} ifConfirm={() => removeNetwork(url)} />
-            <ModalConfirm type='editState' component='Red' name={cidr} state={active} showModal={modalState} onHide={() => setModalState(false)} ifConfirm={() => switchState(url, active, cidr)} />
+            <ModalConfirm type='delete' component='Red' name={cidr || domain} showModal={modalDelete} onHide={() => setModalDelete(false)} ifConfirm={() => removeNetwork(url)} />
+            <ModalConfirm type='editState' component='Red' name={cidr || domain} state={active} showModal={modalState} onHide={() => setModalState(false)} ifConfirm={() => switchState(url, active, cidr)} />
 
         </React.Fragment>
     );

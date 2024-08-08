@@ -3,8 +3,9 @@ from datetime import timedelta
 from constance.test import override_config
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import Token
+
+from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
 
 
 class MyToken(Token):
@@ -12,7 +13,7 @@ class MyToken(Token):
     lifetime = timedelta(days=1)
 
 
-class TestConstance(APITestCase):
+class TestConstance(APITestCaseWithLogin):
     '''
     This will handle constance testcases
     '''
@@ -21,16 +22,11 @@ class TestConstance(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         basename = 'constance'
         cls.url_list = reverse(f'{basename}-list')
         cls.url_detail = lambda key: reverse(f'{basename}-detail', kwargs={'key': key})
-        cls.url_login_jwt = reverse("token-create")
-        cls.json_login = {"username": "ngen", "password": "ngen"}
         cls.team_email = "test@test.com"
-
-    def setUp(self):
-        resp = self.client.post(self.url_login_jwt, data=self.json_login, format="json")
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
 
     def test_constance_get(self):
         '''

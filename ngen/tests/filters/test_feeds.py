@@ -53,8 +53,6 @@ class FeedFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by name
         query = "bc"
         response = self.client.get(self.search_url(query))

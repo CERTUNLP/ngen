@@ -19,7 +19,7 @@ const SelectLabel = ({set, setSelect, options, value, placeholder, required}) =>
                 options={options}
                 value={value}
                 isClearable
-                placeholder={`Seleccione ${placeholder}`}
+                placeholder={`Select ${placeholder}`}
                 onChange={handleChange}
             />
         </Form.Group>

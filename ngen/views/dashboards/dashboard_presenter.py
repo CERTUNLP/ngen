@@ -104,15 +104,15 @@ class DashboardPresenter:
         Get the Feeds, the number of events they are involved in and the total amount of events.
         """
         feed_count = Feed.objects.annotate(
-            event_count=Count("event", filter=Q(event__in=self.get_events()))
-        ).order_by("-event_count")
+            events_count=Count("events", filter=Q(events__in=self.get_events()))
+        ).order_by("-events_count")
 
         total_events_count = self.get_events().count()
 
         feed_in_events = []
         for feed in feed_count:
             feed_in_events.append(
-                {"feed_name": feed.name, "event_count": feed.event_count}
+                {"feed_name": feed.name, "events_count": feed.events_count}
             )
 
         feeds = {

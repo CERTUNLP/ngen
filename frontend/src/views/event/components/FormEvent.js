@@ -120,7 +120,7 @@ const FormEvent = (props) => {
             getCase(props.body.case).then((response) => {
                 setCaseToLink({
                     value: response.data.url, name: response.data.name, date: response.data.date,
-                    priority: props.priorityNames[response.data.priority], tlp: props.tlpNames[response.data.tlp].name,
+                    priority: props.priorityNames[response.data.priority], tlp: response.data.tlp ? props.tlpNames[response.data.tlp].name : "",
                     state: allStates[response.data.state], user: props.userNames[response.data.user_creator]
                 })
             })
@@ -384,7 +384,7 @@ const FormEvent = (props) => {
                         </Row>
                         <Row>
                             <Col sm={12} lg={4}>
-                                <SelectComponent controlId="exampleForm.ControlSelect1" label={t('Fuente de Informacion')} options={props.feeds} value={selectFeed} nameField="feed"
+                                <SelectComponent controlId="exampleForm.ControlSelect1" label={t('ngen.feed.information')} options={props.feeds} value={selectFeed} nameField="feed"
                                     onChange={completeField1} placeholder={t('ngen.feed.information.select')} setOption={setSelectFeed} required={true}
                                     disabled={(props.body.children !== [] && props.body.children.length > 0) ? true : false} />
                             </Col>
@@ -407,38 +407,64 @@ const FormEvent = (props) => {
                     </Form>
                 </Card.Body>
             </Card>
-            {props.disableCardArtifacts ? 
-            ""
-            :
-            <Card>
+            {props.disableCardArtifacts ?
+                ""
+                :
+                <Card>
+                    <Card.Header>
+                        <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                        <Form.Label>{t('cidr.domain.email')}<b style={{ color: "red" }}>*</b></Form.Label>
+                        <Row>
+                            <Col sm={12} lg={6}>
+                                <Form.Group controlId="formGridAddress1">
+                                    <Form.Control
+                                        placeholder={t('ngen.enter.ipv4.ipv6.domain.email')}
+                                        maxLength="150"
+                                        value={props.body.address_value}
+                                        disabled={(props.body.children !== [] && props.body.children.length > 0) ? true : false}
+                                        onChange={(e) => completeFieldStringIdentifier(e)}
+                                        isInvalid={showErrorMessage}
+                                        name="address_value" />
+                                    {showErrorMessage ? <div className="invalid-feedback"> {t('error.ipv4.ipv6.domain')}</div> : ""}
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    </Card.Body>
+                </Card>
+            }
+                        <Card>
                 <Card.Header>
-                    <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
+                    <Card.Title as="h5">{t('ngen.artifact_other')}</Card.Title>
                 </Card.Header>
                 <Card.Body>
-                    <Form.Label>{t('cidr.domain.email')}<b style={{ color: "red" }}>*</b></Form.Label>
-                    <Row>
-                        <Col sm={12} lg={6}>
-                            <Form.Group controlId="formGridAddress1">
-                                <Form.Control
-                                    placeholder={t('ngen.enter.ipv5.ipv6.domain.email')}
-                                    maxLength="150"
-                                    value={props.body.address_value}
-                                    disabled={(props.body.children !== [] && props.body.children.length > 0) ? true : false}
-                                    onChange={(e) => completeFieldStringIdentifier(e)}
-                                    isInvalid={showErrorMessage}
-                                    name="address_value" />
-                                {showErrorMessage ? <div className="invalid-feedback"> {t('error.ipv4.ipv6.domain')}</div> : ""}
-                            </Form.Group>
-                        </Col>
-                    </Row>
+                    <Form>
+                        <Form.Group controlId="formGridAddress1">
+                            <Row>
+                                <Col sm={12} lg={9}>
+                                    <Select
+                                        placeholder={t('ngen.artifact_other_select')}
+                                        closeMenuOnSelect={false}
+                                        components={animatedComponents}
+                                        isMulti
+                                        value={artifactsValueLabel}
+                                        onChange={selectArtefact}
+                                        options={props.listArtifact} />
+                                </Col>
+                                <Col sm={12} lg={3}>
+                                    <CrudButton type='create' name={t('ngen.artifact_one')} onClick={() => setModalCreate(true)} />
+                                </Col>
+                            </Row>
+                        </Form.Group>
+                    </Form>
                 </Card.Body>
             </Card>
-            }
-            {props.disableCardCase ? 
-            ""
-            :
-            <SmallCaseTable readCase={caseToLink.value} modalCaseDetail={tableCaseDetail} disableLink={true}
-                modalCase={modalCase} modalListCase={modalListCase} deleteCaseFromForm={deleteCaseFromForm} />
+            {props.disableCardCase ?
+                ""
+                :
+                <SmallCaseTable readCase={caseToLink.value} modalCaseDetail={tableCaseDetail} disableLink={true}
+                    modalCase={modalCase} modalListCase={modalListCase} deleteCaseFromForm={deleteCaseFromForm} />
             }
 
             <ModalCreateCase showModalCase={showModalCase} setShowModalCase={setShowModalCase} caseItem={caseItem}
@@ -461,61 +487,11 @@ const FormEvent = (props) => {
             <ModalReadCase modalShowCase={modalShowCase} tableDetail={tableDetail} closeModalDetail={closeModalDetail}
                 returnToListOfCases={returnToListOfCases} linkCaseToEvent={linkCaseToEvent} />
 
-            <Card>
-                <Card.Header>
-                    <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                    <Form>
-                        <Form.Group controlId="formGridAddress1">
-                            <Form.Label>{t('ngen.artifact_other')}</Form.Label>
-                            <Row>
-                                <Col sm={12} lg={9}>
-                                    <Select
-                                        placeholder={t('ngen.artifact_other_select')}
-                                        closeMenuOnSelect={false}
-                                        components={animatedComponents}
-                                        isMulti
-                                        value={artifactsValueLabel}
-                                        onChange={selectArtefact}
-                                        options={props.listArtifact} />
-                                </Col>
-                                <Col sm={12} lg={3}>
-                                    <CrudButton type='create' name='Artefacto' onClick={() => setModalCreate(true)} />
-                                </Col>
-                            </Row>
-                        </Form.Group>
-                    </Form>
-                </Card.Body>
-            </Card>
-            <Card>
-                <Card.Header>
-                    <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                    <Form.Label>{t('cidr.domain.email')}<b style={{ color: "red" }}>*</b></Form.Label>
-                    <Row>
-                        <Col sm={12} lg={6}>
-                            <Form.Group controlId="formGridAddress1">
-                                <Form.Control
-                                    placeholder={t('ngen.enter.ipv4.ipv6.domain.email')}
-                                    maxLength="150"
-                                    value={props.body.address_value}
-                                    disabled={(props.body.children !== [] && props.body.children.length > 0) ? true : false}
-                                    onChange={(e) => completeFieldStringIdentifier(e)}
-                                    isInvalid={showErrorMessage}
-                                    name="address_value" />
-                                {showErrorMessage ? <div className="invalid-feedback"> {t('error.ipv4.ipv6.domain')}</div> : ""}
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                </Card.Body>
-            </Card>
             {props.disableCardEvidence ?
-            ""
-            :
-            <EvidenceCard evidences={props.evidence} setEvidences={props.setEvidence} setUpdateCase={props.setUpdateEvidence}
-                updateCase={props.updateEvidence} />
+                ""
+                :
+                <EvidenceCard evidences={props.evidence} setEvidences={props.setEvidence} setUpdateCase={props.setUpdateEvidence}
+                    updateCase={props.updateEvidence} />
             }
 
             <CreateArtifactModal show={modalCreate} onHide={() => setModalCreate(false)} value={value} setValue={setValue}

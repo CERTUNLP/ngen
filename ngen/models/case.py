@@ -1,6 +1,7 @@
 import re
 import uuid as uuid
 from collections import defaultdict
+from datetime import timedelta, datetime
 from email.utils import make_msgid
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.mail import DNS_NAME
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
 from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
@@ -243,6 +245,7 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
                            recipients, self.email_attachments, self.email_headers)
         else:
             # Case has no events, so send email only to team (and assignee)
+            template_params.update({'events': self.events})
             recipients.update({'to': [recipient for recipient in team_recipients if recipient]})
             self.send_mail(self.subject(title), self.render_template(template, extra_params=self.template_params),
                            recipients, self.email_attachments, self.email_headers)
@@ -260,8 +263,12 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
 
-    taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
-    feed = models.ForeignKey('ngen.Feed', models.PROTECT)
+    network = models.ForeignKey('ngen.Network', models.PROTECT, null=True, blank=True, related_name='events',
+                                editable=False)
+
+    taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT, related_name='events')
+    feed = models.ForeignKey('ngen.Feed', models.PROTECT, related_name='events')
+    initial_taxonomy_slug = models.CharField(max_length=255, null=True, blank=True, default='', editable=False)
 
     reporter = models.ForeignKey('ngen.User', models.PROTECT, related_name='events_reporter')
     evidence_file_path = models.CharField(max_length=255, null=True, blank=True)
@@ -312,14 +319,47 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     def enrichable(self):
         return self.mergeable
 
+    def update_taxonomy(self):
+        if self.taxonomy:
+            if not self.initial_taxonomy_slug:
+                self.initial_taxonomy_slug = self.taxonomy.slug
+            if self.taxonomy.alias_of:
+                self.taxonomy = self.taxonomy.alias_of
+
     @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
-        event = Event.get_parents().filter(taxonomy=self.taxonomy, feed=self.feed, cidr=self.cidr, domain=self.domain,
-                                           case__solve_date__isnull=True).order_by('id').last()
+        self.update_taxonomy()
+        if config.AUTO_MERGE_EVENTS:
+            extra_filters = {}
+            if config.AUTO_MERGE_BY_FEED:
+                extra_filters.update({'feed': self.feed})
+            if config.AUTO_MERGE_TIME_WINDOW_MINUTES:
+                minutes_limit = config.AUTO_MERGE_TIME_WINDOW_MINUTES
+                date_limit = datetime.now() - timedelta(minutes=minutes_limit)
+                extra_filters.update({'date__gte': date_limit})
 
-        if event:
-            if self.parent is None:
-                self.parent = event
+            # This will find the last event that is not merged and has the same cidr, domain and taxonomy
+            # If this event is blocked it will not be merged
+            event = self.__class__.objects.filter(
+                Q(case__isnull=True) | Q(case__state__blocked=False),
+                parent__isnull=True,
+                cidr=self.cidr,
+                domain=self.domain,
+                taxonomy=self.taxonomy,
+                **extra_filters
+            ).order_by('id').last()
+
+            # Check if event is mergeable (not blocked, not parent, not already merged)
+            # Should not be merged because last query will return events without parent
+            # But if it's blocked, it should not be merged
+            if event and event.mergeable:
+                if self.parent is None:
+                    self.parent = event
+
+    @hook(BEFORE_CREATE)
+    @hook(BEFORE_UPDATE, when="network", has_changed=True)
+    def network_assign(self):
+        self.network = ngen.models.Network.objects.parent_of(self).first()
 
     @hook(AFTER_CREATE)
     def create_case(self):
@@ -347,6 +387,7 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
 
     def clean(self):
         super().clean()
+        self.update_taxonomy()
         if self.date and self.date > timezone.now():
             raise ValidationError({'date': gettext_lazy('Date cannot be in the future')})
 
@@ -369,7 +410,12 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
         for comment in child.comments.all():
             self.comments.add(comment)
         for artifact_relation in child.artifact_relation.all():
-            self.artifact_relation.add(artifact_relation)
+            ngen.models.ArtifactRelation.objects.get_or_create(
+                artifact=artifact_relation.artifact,
+                object_id=self.id,
+                content_type=ContentType.objects.get_for_model(self),
+                defaults={'auto_created': False}
+            )
 
     def email_contacts(self):
         contacts = []

@@ -5,7 +5,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from ngen import models
-from ngen.serializers.common.fields import GenericRelationField, SlugOrHyperlinkedRelatedField
+from ngen.serializers.common.fields import GenericRelationField, SlugOrHyperlinkedRelatedField, \
+    TaxonomySlugOrHyperlinkedRelatedField
 from ngen.serializers.common.mixins import AuditSerializerMixin, MergeSerializerMixin, EvidenceSerializerMixin, \
     ArtifactSerializerMixin
 
@@ -26,7 +27,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
         queryset=models.Priority.objects.all(),
         view_name='priority-detail'
     )
-    taxonomy = SlugOrHyperlinkedRelatedField(
+    taxonomy = TaxonomySlugOrHyperlinkedRelatedField(
         slug_field='slug',
         queryset=models.Taxonomy.objects.all(),
         view_name='taxonomy-detail'
@@ -52,13 +53,19 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
         queryset=models.User.objects.all(),
         view_name='user-detail'
     )
+    # network = serializers.HyperlinkedRelatedField(
+    #     many=False,
+    #     read_only=True,
+    #     view_name='network-detail'
+    # )
     comments = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Event
         fields = ('url', 'history', 'artifacts', 'feed', 'tlp', 'priority', 'taxonomy', 'evidence', 'children', 'todos',
                   'reporter', 'comments', 'created', 'modified', 'cidr', 'domain', 'address_value', 'date',
-                  'evidence_file_path', 'notes', 'uuid', 'parent', 'case', 'tasks', 'blocked')
+                  'evidence_file_path', 'notes', 'uuid', 'parent', 'case', 'tasks', 'blocked', 'merged', 'network',
+                  'initial_taxonomy_slug')
 
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
@@ -66,7 +73,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_EVENT.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_EVENT.split(',')
 
     @staticmethod
     def not_allowed_fields():
@@ -92,7 +99,7 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
             if self.instance.merged or self.instance.is_parent():
                 for attr in list(attrs):
                     if attr in self.not_allowed_fields():
-                        if config.ALLOWED_FIELDS_EXCEPTION:
+                        if config.ALLOWED_FIELDS_BLOCKED_EXCEPTION:
                             raise ValidationError(
                                 {attr: gettext('%s of merged events can\'t be modified') % self.not_allowed_fields()})
                         attrs.pop(attr)
@@ -103,7 +110,7 @@ class EventSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audi
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_EVENT.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_EVENT.split(',')
 
     class Meta:
         model = models.Event
@@ -158,7 +165,7 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSeri
         fields = ('url', 'history', 'artifacts', 'events', 'children', 'evidence', 'comments', 'user_creator', 'state',
                   'created', 'modified', 'date', 'name', 'attend_date', 'solve_date', 'report_message_id', 'raw',
                   'uuid', 'lifecycle', 'notification_count', 'parent', 'priority', 'tlp', 'template_creator',
-                  'assigned', 'blocked')
+                  'assigned', 'blocked', 'merged')
         read_only_fields = ['attend_date', 'solve_date',
                             'report_message_id', 'raw', 'created_by', 'notification_count', 'blocked']
 
@@ -167,7 +174,7 @@ class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSeri
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_CASE.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_CASE.split(',')
 
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
@@ -178,7 +185,7 @@ class CaseSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audit
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_CASE.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_CASE.split(',')
 
     class Meta:
         model = models.Case
