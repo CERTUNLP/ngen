@@ -52,11 +52,15 @@ const ModalListEvent = (props) => {
             centered
             dialogClassName="modal-90w"
         >
-            <Modal.Header closeButton />
+            <Modal.Header closeButton>
+                <Modal.Title>{
+                    t('ngen.event_link')}
+                </Modal.Title>
+            </Modal.Header>
             <Modal.Body>
                 <Row>
                     <Col sm={12} lg={12}>
-                        <Search type="case" setWordToSearch={props.setWordToSearch} wordToSearch={props.wordToSearch} setLoading={setLoading} />
+                        <Search type="event" setWordToSearch={props.setWordToSearch} wordToSearch={props.wordToSearch} setLoading={setLoading} />
                     </Col>
                 </Row>
                 <br />
