@@ -66,13 +66,8 @@ db.sqlite3
 db.sqlite3-journal
 *.pyc
 __pycache__
-media/
-media/evidence/
 mediafiles/
-static/
 staticfiles/
-
-docker-compose-linux-x86_64.sha256
 
 # Flask stuff:
 instance/

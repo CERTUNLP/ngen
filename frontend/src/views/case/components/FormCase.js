@@ -302,7 +302,6 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
                 form.append("events", selectedEvent);
             });
         }
-        console.log(events)
         if (comm !== null) {
             let array = comments;
             array.push(comm)
@@ -313,7 +312,6 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
         putCase(url, form)
             .then((response) => {
                 window.location.href = "/cases"
-                
             })
             .catch((error) => {
                 setShowAlert(true)

@@ -176,7 +176,7 @@ const ModalCreateEvent = ({ showModalEvent, setShowModalEvent, setEventList, eve
   return (
     <Modal show={showModalEvent} size="lg" onHide={() => setShowModalEvent(false)} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>
-        <Modal.Title>Crear Evento</Modal.Title>
+        <Modal.Title>{t('ngen.event.create')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div id="example-collapse-text">
