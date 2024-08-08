@@ -2,7 +2,7 @@ import React from 'react';
 import { Form } from 'react-bootstrap';
 import Select from 'react-select';
 
-const SelectLabel = ({set, setSelect, options, value, placeholder, required}) => {
+const SelectLabel = ({set, setSelect, options, value, placeholder, required, disabled, legend}) => {
     const handleChange = (e) => {
         if (e) {
             set(e.value);
@@ -21,7 +21,9 @@ const SelectLabel = ({set, setSelect, options, value, placeholder, required}) =>
                 isClearable
                 placeholder={`Select ${placeholder}`}
                 onChange={handleChange}
+                {...(disabled ? {isDisabled: true} : {})}
             />
+            {legend ? <Form.Text className="text-muted">{legend}</Form.Text> : ""}
         </Form.Group>
     );
 };

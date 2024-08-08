@@ -68,14 +68,12 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
   const callbackTaxonomy = (url, set) => {
     getTaxonomy(url)
       .then((response) => {
-        console.log(response);
         set(response.data);
       })
       .catch();
   };
 
   const letterSize = { fontSize: '1.1em' };
-console.log(list)
   return (
     <React.Fragment>
       <Table responsive hover className="text-center">

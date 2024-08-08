@@ -59,7 +59,7 @@ const getAllTaxonomies = (currentPage = 1, results = [], limit = 100) => {
 
 }
 
-const postTaxonomy = (type, name, description, active, parent) => {
+const postTaxonomy = (type, name, description, active, parent, alias_of, needs_review, group) => {
     let messageSuccess = `La taxonomia ${name} se ha creado correctamente`;
     let messageError = `La taxonomia ${name} no ha creado. `;
     return apiInstance.post(COMPONENT_URL.taxonomy, {
@@ -67,7 +67,10 @@ const postTaxonomy = (type, name, description, active, parent) => {
         name: name, 
         description: description,
         active: active,
-        parent: parent
+        parent: parent,
+        alias_of: alias_of,
+        needs_review: needs_review,
+        group: group
     }).then(response => {
         setAlert(messageSuccess, "success", "taxonomy");
         return response;
@@ -90,7 +93,7 @@ const postTaxonomy = (type, name, description, active, parent) => {
 }
 
 
-const putTaxonomy = (url, type, name, description, active, parent) => {
+const putTaxonomy = (url, type, name, description, active, parent, alias_of, needs_review, group) => {
     let messageSuccess = `La taxonomia ${name} se ha editado correctamente`;
     let messageError = `La taxonomia ${name} no se ha editado. `;
     return apiInstance.put(url, {
@@ -98,7 +101,10 @@ const putTaxonomy = (url, type, name, description, active, parent) => {
         name: name, 
         description: description,
         active: active,
-        parent: parent
+        parent: parent,
+        alias_of: alias_of,
+        needs_review: needs_review,
+        group: group
     }).then(response => {
         setAlert(messageSuccess, "success", "taxonomy");
         return response;

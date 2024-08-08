@@ -55,3 +55,11 @@
     opacity: 1;
     clip-path: inset(0 calc(200px - #{$Menu-collapsed-width} + 40px) 0 0);
 }
+
+ // avoid overflow and multiline text in form labels
+.form-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}

@@ -9,6 +9,7 @@ import { validateName, validateDescription, validateType, validateUnrequiredInpu
 import { putTaxonomy, getTaxonomy, getMinifiedTaxonomy } from '../../api/services/taxonomies';
 import SelectLabel from '../../components/Select/SelectLabel';
 import { useTranslation, Trans } from 'react-i18next';
+import { getMinifiedTaxonomyGroups } from "../../api/services/taxonomyGroups";
 
 const EditTaxonomy = () => {
     const location = useLocation();
@@ -20,40 +21,78 @@ const EditTaxonomy = () => {
     const [name, setName] = useState(taxonomy.name);
     const [description, setDescription] = useState(taxonomy.description);
     const [parent, setParent] = useState(taxonomy.parent);
+    const [group, setGroup] = useState(taxonomy.group);
+    const [alias_of, setAlias_of] = useState(taxonomy.alias_of);
     const [active, setActive] = useState(+taxonomy.active);
-    const [taxonomies, setTaxonomies] = useState([]);
-    const [currentParent, setCurrentParent] = useState("")
+    const [needs_review, setNeeds_review] = useState(+taxonomy.needs_review);
+    // const [currentParent, setSelectParent] = useState("")
+    // const [currentTaxonomyGroup, setSelectTaxonomyGroup] = useState("")
+    // const [currentAlias_of, setSelectAlias_of] = useState("")
     const [showAlert, setShowAlert] = useState(false)
 
-    const [selectTaxonomy, setSelectTaxonomy] = useState()
+    const [taxonomies, setTaxonomies] = useState([]);
+    const [groups, setGroups] = useState([]);
+
+    const [selectParent, setSelectParent] = useState()
+    const [selectGroup, setSelectGroup] = useState()
+    const [selectAlias_of, setSelectAlias_of] = useState()
     const [selectedType, setSelectedType] = useState()
+    const [isGroupDisabled, setIsGroupDisabled] = useState(false)
 
     useEffect(() => {
         getMinifiedTaxonomy()
             .then((response) => {
                 let listTaxonomies = []
-                listTaxonomies.push({ value: "", label: "Sin padre" })
+                listTaxonomies.push({ value: "", label: "" })
                 response.map((taxonomy) => {
                     listTaxonomies.push({ value: taxonomy.url, label: taxonomy.name })
                 })
                 setTaxonomies(listTaxonomies)
             })
 
-        {
-            (parent != undefined) ?
-                getTaxonomy(parent)
-                    .then((response) => {
-                        setCurrentParent(response.data.name)
-                    })
-                : setCurrentParent("Sin padre")
-        }
+        getMinifiedTaxonomyGroups()
+            .then((response) => {
+                let listTaxonomyGroups = []
+                response.map((taxonomyGroup) => {
+                    listTaxonomyGroups.push({ value: taxonomyGroup.url, label: taxonomyGroup.name })
+                })
+                setGroups(listTaxonomyGroups)
+            })
+        //
+        // {
+        //     (parent != undefined) ?
+        //         getTaxonomy(parent)
+        //             .then((response) => {
+        //                 setSelectParent(response.data.name)
+        //             })
+        //         : setSelectParent("Sin padre")
+        // }
+
+        // {
+        //     (alias_of != undefined) ?
+        //         getTaxonomy(alias_of)
+        //             .then((response) => {
+        //                 setSelectAlias_of(response.data.name)
+        //             })
+        //         : setSelectAlias_of("Sin alias")
+        // }
     }, []);
 
     useEffect(() => {
         if (taxonomies !== []) {
             taxonomies.forEach(item => {
                 if (item.value === parent) {
-                    setSelectTaxonomy({ label: item.label, value: item.value })
+                    setSelectParent({ label: item.label, value: item.value })
+                }
+                if (item.value === alias_of) {
+                    setSelectAlias_of({ label: item.label, value: item.value })
+                }
+            });
+        }
+        if (groups !== []) {
+            groups.forEach(item => {
+                if (item.value === group) {
+                    setSelectGroup({ label: item.label, value: item.value })
                 }
             });
         }
@@ -67,9 +106,19 @@ const EditTaxonomy = () => {
 
     }, [taxonomies]);
 
+    const handleParentChange = (value) => {
+        setParent(value);
+        setGroup(null);
+        setSelectGroup(null);
+        if (value) {
+            setIsGroupDisabled(true);
+        } else {
+            setIsGroupDisabled(false);
+        }
+    };
 
     const editTaxonomy = () => {
-        putTaxonomy(taxonomy.url, type, name, description, active, parent)
+        putTaxonomy(taxonomy.url, type, name, description, active, parent, alias_of, needs_review, group)
             .then(() => {
                 window.location.href = '/taxonomies';
             })
@@ -99,7 +148,7 @@ const EditTaxonomy = () => {
         <React.Fragment>
             <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="taxonomy" />
             <Row>
-                <Navigation actualPosition={t('edit') + ' ' + t('ngen.taxonomy_one')} path="/taxonomies" index="Taxonomia" />
+                <Navigation actualPosition={t('w.edit') + ' ' + t('ngen.taxonomy_one')} path="/taxonomies" index="Taxonomia" />
             </Row>
             <Row>
                 <Col sm={12}>
@@ -110,7 +159,7 @@ const EditTaxonomy = () => {
                         <Card.Body>
                             <Form>
                                 <Row>
-                                    <Col sm={12} lg={4}>
+                                    <Col sm={12} lg={6}>
                                         <Form.Group>
                                             <Form.Label>{t('ngen.name_one')}<b style={{ color: "red" }}>*</b></Form.Label>
                                             <Form.Control
@@ -122,19 +171,38 @@ const EditTaxonomy = () => {
                                             {validateName(name) ? '' : <div className="invalid-feedback">{t('ngen.name.invalid')}</div>}
                                         </Form.Group>
                                     </Col>
+                                    <Col sm={12} lg={4}>
+                                        <SelectLabel set={setType} setSelect={setSelectedType} options={typeOption}
+                                            value={selectedType} placeholder={t('ngen.type')} required={true} />
+                                    </Col>
                                     <Col sm={12} lg={1}>
                                         <Form.Group>
                                             <Form.Label>{t('ngen.state_one')}</Form.Label>
                                             <DropdownState state={taxonomy.active} setActive={setActive}></DropdownState>
                                         </Form.Group>
                                     </Col>
-                                    <Col sm={12} lg={3}>
-                                        <SelectLabel set={setType} setSelect={setSelectedType} options={typeOption}
-                                            value={selectedType} placeholder={t('ngen.type')} required={true} />
+                                    <Col sm={12} lg={1}>
+                                        <Form.Group>
+                                            <Form.Label>{t('ngen.taxonomy.needs_review')}</Form.Label>
+                                            <DropdownState state={taxonomy.needs_review} setActive={setNeeds_review}
+                                                           str_true='w.yes' str_false='w.no' />
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col sm={12} lg={4}>
+                                        <SelectLabel set={handleParentChange} setSelect={setSelectParent} options={taxonomies}
+                                            value={selectParent} placeholder={t('ngen.taxonomy.parent')} required={false}
+                                            legend={t('ngen.taxonomy.parent.legend.edit')}/>
                                     </Col>
                                     <Col sm={12} lg={4}>
-                                        <SelectLabel set={setParent} setSelect={setSelectTaxonomy} options={taxonomies}
-                                            value={selectTaxonomy} placeholder={t('ngen.taxonomy.parent')} required={true} />
+                                        <SelectLabel set={setGroup} setSelect={setSelectGroup} options={groups}
+                                            value={selectGroup} placeholder={t('ngen.taxonomy.group')} required={false}
+                                            legend={t('ngen.taxonomy.group.legend.edit')} />
+                                    </Col>
+                                    <Col sm={12} lg={4}>
+                                        <SelectLabel set={setAlias_of} setSelect={setSelectAlias_of} options={taxonomies}
+                                            value={selectAlias_of} placeholder={t('ngen.taxonomy.alias_of')} required={false} />
                                     </Col>
                                 </Row>
                                 <Row>
