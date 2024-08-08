@@ -26,7 +26,7 @@ from ngen.models.announcement import Communication
 from ngen.utils import get_mime_type
 from . import Priority
 from .common.mixins import MergeModelMixin, AddressModelMixin, ArtifactRelatedMixin, AuditModelMixin, \
-    EvidenceModelMixin, PriorityModelMixin, ValidationModelMixin, AddressManager
+    EvidenceModelMixin, PriorityModelMixin, ValidationModelMixin, AddressManager, ChannelableMixin
 from ..storage import HashedFilenameStorage
 
 LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
@@ -34,7 +34,7 @@ LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('A
 
 
 class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMixin, ArtifactRelatedMixin,
-           Communication, ValidationModelMixin):
+           Communication, ValidationModelMixin, ChannelableMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
     name = models.CharField(max_length=255, null=True, blank=True, default='')
@@ -253,13 +253,29 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         # TODO: make communication a class with objects that can be audited
         self.notification_count += 1
 
+    def get_internal_contacts(self):
+        return ['Internal Contact 1', 'Internal Contact 2', 'Internal Contact 3']
+
+    def get_affected_contacts(self):
+        contacts_from_all_events = []
+        for event in self.events.all():
+            contacts_from_all_events.append(event.get_affected_contacts())
+
+        return contacts_from_all_events
+
+    def get_reporter_contacts(self):
+        reporters_from_all_events = []
+        for event in self.events.all():
+            reporters_from_all_events.append(event.get_reporter_contacts())
+
+        return reporters_from_all_events
 
 class EventManager(AL_NodeManager, AddressManager):
     pass
 
 
 class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin,
-            AddressModelMixin, ValidationModelMixin):
+            AddressModelMixin, ValidationModelMixin, ChannelableMixin):
     tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
 
@@ -430,6 +446,21 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
                 if network_contacts:
                     return network_contacts[0]
         return contacts
+
+    def get_affected_contacts(self):
+        affected_networks = ngen.models.Network.objects.parent_of(self)
+
+        network_contacts = []
+        for network in affected_networks:
+            network_cidr_or_domain = network.cidr if network.cidr else network.domain
+            contacts = network.contacts.all()
+            network_contacts.append({ network_cidr_or_domain: contacts })
+
+        self.affected_contacts = network_contacts
+        return self
+
+    def get_reporter_contacts(self):
+        return self
 
 
 class Evidence(AuditModelMixin, ValidationModelMixin):

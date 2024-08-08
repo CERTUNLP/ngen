@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from ngen import models, serializers, backends
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
+from ngen.views.communication_channel import BaseCommunicationChannelsViewSet
 
 
 class EvidenceViewSet(viewsets.ModelViewSet):
@@ -15,7 +16,7 @@ class EvidenceViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'head', 'options', 'delete']
 
 
-class EventViewSet(viewsets.ModelViewSet):
+class EventViewSet(BaseCommunicationChannelsViewSet):
     queryset = models.Event.objects.all()
     filter_backends = [
         backends.MergedModelFilterBackend,
@@ -30,7 +31,7 @@ class EventViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class CaseViewSet(viewsets.ModelViewSet):
+class CaseViewSet(BaseCommunicationChannelsViewSet):
     queryset = models.Case.objects.all()
     filter_backends = [
         backends.MergedModelFilterBackend,

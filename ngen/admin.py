@@ -56,3 +56,8 @@ admin.site.register(Report)
 admin.site.register(Playbook)
 admin.site.register(Task)
 admin.site.register(TodoTask)
+
+# communication
+admin.site.register(CommunicationChannel)
+admin.site.register(CommunicationType)
+admin.site.register(CommunicationChannelTypeRelation)

@@ -8,3 +8,4 @@ from .dashboards import *
 from .state import *
 from .taxonomy import *
 from .tools import *
+from .communication_channel import *
