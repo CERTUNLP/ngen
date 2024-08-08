@@ -8,6 +8,7 @@ import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
 import { getMinifiedTlp } from '../../api/services/tlp';
 import { getMinifiedUser } from '../../api/services/users';
 import FormEvent from './components/FormEvent';
+import { useTranslation } from 'react-i18next';
 
 const ModalCreateEvent = ({ showModalEvent, setShowModalEvent, setEventList, eventList, setCurrentPage,  selectedEvent, setSelectedEvent, setEvents}) => {
   const formEmpty = {
@@ -42,6 +43,8 @@ const ModalCreateEvent = ({ showModalEvent, setShowModalEvent, setEventList, eve
   const [priorityNames, setPriorityNames] = useState({});
   const [userNames, setUserNames] = useState({});
   const [showAlert, setShowAlert] = useState(false)
+
+  const { t } = useTranslation();
 
   useEffect(() => {
 
