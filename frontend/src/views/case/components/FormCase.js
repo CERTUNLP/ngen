@@ -312,7 +312,6 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
         putCase(url, form)
             .then((response) => {
                 window.location.href = "/cases"
-
             })
             .catch((error) => {
                 setShowAlert(true)
@@ -347,6 +346,7 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
                 form.append("events", selectedEvent);
             });
         }
+        
         //form.append("evidence", evidences)
         if (evidences !== null) {
             for (let index = 0; index < evidences.length; index++) {
@@ -573,16 +573,18 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
                 :
                 <SmallEventTable list={eventList} modalEventDetail={tableCaseDetail}
                     modalListEvent={modalListEvent} deleteEventFromForm={deleteEventFromForm}
-                    modalEvent={modalEvent} disableUuid={false} />
+                    modalEvent={modalEvent} disableUuid={false} disableColumOption={false}/>
             }
 
-            <ModalCreateEvent showModalEvent={showModalEvent} setShowModalEvent={setShowModalEvent} />
+            <ModalCreateEvent showModalEvent={showModalEvent} setEventList={setEventList} eventList={eventList}
+             setShowModalEvent={setShowModalEvent} setSelectedEvent={setSelectedEvent} setEvents={setEvents}
+             setCurrentPage={setCurrentPage}/>
 
             <ModalListEvent showModalListEvent={showModalListEvent} modalEventDetail={modalEventDetail}
                 selectFeedFilter={selectFeedFilter} setSelectFeedFilter={setSelectFeedFilter}
                 selectTlpFilter={selectTlpFilter} setSelectTlpFilter={setSelectTlpFilter}
                 selectTaxonomyFilter={selectTaxonomyFilter} setSelectTaxonomyFilter={setSelectTaxonomyFilter}
-                currentPage={currentPage} setCurrentPage={setCurrentPage}
+                currentPage={currentPage} setCurrentPage={setCurrentPage} disableColumOption={false}
                 setUpdatePagination={setUpdatePagination} updatePagination={updatePagination}
                 selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}
                 taxonomyNames={taxonomyNames} feedNames={feedNames} tlpNames={tlpNames}
