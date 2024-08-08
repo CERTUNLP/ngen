@@ -1,10 +1,10 @@
 import django_filters
-from django.db.models import Count, Subquery, F, OuterRef, Value, Case, When, IntegerField
+from django.db.models import Count, Subquery, OuterRef, Value
 from rest_framework import permissions, filters, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from ngen import models, serializers, backends
+from ngen import models, serializers
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
 from ngen.views.communication_channel import BaseCommunicationChannelsViewSet
 
@@ -19,7 +19,6 @@ class EvidenceViewSet(viewsets.ModelViewSet):
 class EventViewSet(BaseCommunicationChannelsViewSet):
     queryset = models.Event.objects.all()
     filter_backends = [
-        backends.MergedModelFilterBackend,
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
@@ -34,7 +33,6 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
 class CaseViewSet(BaseCommunicationChannelsViewSet):
     queryset = models.Case.objects.all()
     filter_backends = [
-        backends.MergedModelFilterBackend,
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,

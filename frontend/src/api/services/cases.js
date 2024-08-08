@@ -16,6 +16,9 @@ const getMinifiedCase = () => {//el parametro es para completar la url con el nu
 
 const getCases = (currentPage, filters, order) => { //+- id, date, attend_date, priority
     let messageError = i18next.t('ngen.cases.info.error') + " .";
+    if (!filters.includes('parent__isnull')) {
+        filters += 'parent__isnull=true&';
+    }
     return apiInstance.get(COMPONENT_URL.case + PAGE + currentPage + '&ordering=' + order + '&' + filters)
         .then(response => {
             return response;
