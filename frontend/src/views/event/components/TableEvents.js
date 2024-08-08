@@ -180,34 +180,34 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                                             {disableColumOption ?
                                                 ""
                                                 :
-                                                detailModal ?
-                                                    <CrudButton type="read" onClick={() => modalEventDetail(event.url, event.date, event.address_value, event.domain,
-                                                        event.cidr, event.tlp, event.taxonomy, event.feed)} />
-                                                    :
-                                                    <Link to={{ pathname: "/events/view", state: event }} >
-                                                        <CrudButton type='read' onClick={() => storageEventUrl(event.url)} />
-                                                    </Link>
-                                            }
-                                            {disableColumOption ?
+                                                <Link to={{ pathname: "/events/view", state: event }} >
+                                                    <CrudButton type='read' onClick={() => storageEventUrl(event.url)} />
+                                                </Link>
+                                        }
+                                        {disableColumOption ?
+                                            ""
+                                            :
+                                            disableColumnEdit ?
+                                            ""
+                                            :
+                                            !event.blocked ? (
+                                                <Link to={{ pathname: "/events/edit", state: event }} >
+                                                    <CrudButton type='edit' />
+                                                </Link>
+                                            ) : (
+                                                <CrudButton type='edit' disabled={true} />
+                                            )
+                                        }
+                                        {disableColumOption ?
+                                            ""
+                                            :
+                                            disableColumnDelete ?
                                                 ""
                                                 :
-                                                !disableColumnEdit && !event.blocked ? (
-                                                    <Link to={{ pathname: "/events/edit", state: event }} >
-                                                        <CrudButton type='edit' />
-                                                    </Link>
-                                                ) : (
-                                                    <CrudButton type='edit' disabled={true} />
-                                                )
-                                            }
-                                            {disableColumOption ?
-                                                ""
-                                                :
-                                                disableColumnDelete ? ""
+                                                deleteColumForm ?
+                                                    <CrudButton type='delete' onClick={() => deleteEventFromForm(event.url)} />
                                                     :
-                                                    deleteColumForm ?
-                                                        <CrudButton type='delete' onClick={() => deleteEventFromForm(event.url)} />
-                                                        :
-                                                        <CrudButton type='delete' onClick={() => modalDelete(event.name, event.url)} />
+                                                    <CrudButton type='delete' onClick={() => modalDelete(event.name, event.url)} />
                                             }
                                             {disableTemplate ? ""
                                                 :
