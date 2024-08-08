@@ -17,11 +17,11 @@ const ModalListEvent = (props) => {
     const [events, setEvents] = useState([]);
     const [disabledPagination, setDisabledPagination] = useState(true);
     const [caseIsNull, setCaseIsNull] = useState('&case__isnull=true')
+    const [parentIsNull, setParentIsNull] = useState('&parent__isnull=true')
     const { t } = useTranslation();
-    //&case__isnull=true
 
     useEffect(() => {
-        getEvents(props.currentPage, props.taxonomyFilter + props.tlpFilter + props.feedFilter + caseIsNull,)
+        getEvents(props.currentPage, props.taxonomyFilter + props.tlpFilter + props.feedFilter + caseIsNull + parentIsNull,)
             .then((response) => {
                 setEvents(response.data.results);
                 setCountItems(response.data.count);
