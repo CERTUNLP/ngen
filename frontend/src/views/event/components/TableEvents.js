@@ -6,7 +6,7 @@ import ModalConfirm from '../../../components/Modal/ModalConfirm';
 import { deleteEvent } from "../../../api/services/events";
 import Ordering from '../../../components/Ordering/Ordering'
 import LetterFormat from '../../../components/LetterFormat';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, setOrder, setLoading, taxonomyNames, feedNames, tlpNames, disableDate, disableCheckbox, disableDomain, disableCidr, disableTlp, disableColumnEdit, disableColumnDelete, disableTemplate, disableNubersOfEvents, disableCheckboxAll, modalEventDetail, formCaseCheckbok, detailModal, deleteColumForm, deleteEventFromForm, disableColumOption, disableColumView, disableUuid, disableMerged, disableDateModified, disableOrdering }) => {
 
@@ -97,7 +97,7 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                                 </th>}
 
                             {!disableDateModified ?
-                                (!disableOrdering ?
+                                (disableOrdering ?
                                     <th style={letterSize}>{t('ngen.event.date')} </th>
                                     :
                                     <Ordering field="modified" label={t('ngen.date.modified')} order={order}
@@ -107,7 +107,7 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                                 ""
                             }
                             {!disableDate ?
-                                (!disableOrdering ?
+                                (disableOrdering ?
                                     <th style={letterSize}>{t('ngen.event.date')} </th>
                                     :
                                     <Ordering field="date" label={t('ngen.event.date')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
