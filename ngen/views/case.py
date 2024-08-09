@@ -25,7 +25,7 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
     ]
     search_fields = ["taxonomy__name", "feed__name", "address_value", "cidr", "domain", "uuid"]
     filterset_class = EventFilter
-    ordering_fields = ["id", "date", "priority", "reporter", "tlp", "taxonomy", "feed", "created"]
+    ordering_fields = ["id", "date", "priority", "reporter", "tlp", "taxonomy", "feed", "created", "modified"]
     serializer_class = serializers.EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
