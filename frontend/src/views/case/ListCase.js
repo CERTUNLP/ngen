@@ -35,7 +35,7 @@ const ListCase = () => {
     const [updatePagination, setUpdatePagination] = useState(false)
     const [disabledPagination, setDisabledPagination] = useState(true)
     //filters
-    const [order, setOrder] = useState("date");
+    const [order, setOrder] = useState("-date");
     const [wordToSearch, setWordToSearch] = useState('')
     const [open, setOpen] = useState(false);
 

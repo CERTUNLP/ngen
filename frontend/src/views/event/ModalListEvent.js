@@ -21,7 +21,7 @@ const ModalListEvent = (props) => {
     const { t } = useTranslation();
 
     useEffect(() => {
-        getEvents(props.currentPage, props.taxonomyFilter + props.tlpFilter + props.feedFilter + caseIsNull + parentIsNull,)
+        getEvents(props.currentPage, props.taxonomyFilter + props.tlpFilter + props.feedFilter + props.wordToSearch + caseIsNull + parentIsNull)
             .then((response) => {
                 setEvents(response.data.results);
                 setCountItems(response.data.count);
@@ -60,7 +60,7 @@ const ModalListEvent = (props) => {
             <Modal.Body>
                 <Row>
                     <Col sm={12} lg={12}>
-                        <Search type="event" setWordToSearch={props.setWordToSearch} wordToSearch={props.wordToSearch} setLoading={setLoading} />
+                        <Search type={t('ngen.event_one')} setWordToSearch={props.setWordToSearch} wordToSearch={props.wordToSearch} setLoading={setLoading} />
                     </Col>
                 </Row>
                 <br />
