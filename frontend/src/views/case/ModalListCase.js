@@ -74,7 +74,7 @@ const ModalListCase = (props) => {
                         stateNames={props.stateNames} tlpNames={props.tlpNames} userNames={props.userNames}
                         editColum={false} deleteColum={false} detailModal={true} modalCaseDetail={props.modalCaseDetail}
                         navigationRow={false} selectCase={true} handleClickRadio={props.handleClickRadio} setSelectCase={props.setSelectCase}
-                        disableNubersOfEvents={true} />
+                        disableNubersOfEvents={true} disableDateModified={true} />
                 </div>
             </Modal.Body>
             <Modal.Footer>

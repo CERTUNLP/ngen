@@ -47,11 +47,12 @@ const DashboardCases = ({ list, loading }) => {
                 <Card.Header>
                     <Card.Title as="h5">{t('case.last10')}</Card.Title>
                 </Card.Header>
-                <TableCase cases={list} loading={loading} disableCheckbox={true} disableDateOrdering={true} disableName={true}
+                <TableCase cases={list} loading={loading} disableCheckbox={true} disableDate={true} disableName={true}
                     disablePriority={true} disableTlp={true}
                     stateNames={stateNames} userNames={userNames}
                     editColum={false} deleteColum={false} detailModal={false}
-                    navigationRow={false} selectCase={true} disableNubersOfEvents={false} disableUuid={true} />
+                    navigationRow={false} selectCase={true} disableNubersOfEvents={false} disableUuid={true}
+                    disableDateModified={true} />
 
             </Card>
 

@@ -188,13 +188,13 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>{t('w.creation')}</td>
+                                                        <td>{t('ngen.date.created')}</td>
                                                         <td>
                                                             <Form.Control plaintext readOnly defaultValue={user.created ? user.created.slice(0, 10) + " " + user.created.slice(11, 19) : ""} />
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>{t('w.update')}</td>
+                                                        <td>{t('ngen.date.modified')}</td>
                                                         <td>
                                                             <Form.Control plaintext readOnly defaultValue={user.modified ? user.modified.slice(0, 10) + " " + user.modified.slice(11, 19) : ""} />
                                                         </td>

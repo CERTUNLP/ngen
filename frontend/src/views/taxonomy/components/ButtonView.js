@@ -111,13 +111,13 @@ function ButtonView({ taxonomy }) {
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>{t('w.creation')}</td>
+                                            <td>{t('ngen.date.created')}</td>
                                             <td>
                                                 <Form.Control plaintext readOnly defaultValue={created} />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>{t('w.update')}</td>
+                                            <td>{t('ngen.date.modified')}</td>
                                             <td>
                                                 <Form.Control plaintext readOnly defaultValue={modified} />
                                             </td>

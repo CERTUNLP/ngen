@@ -212,13 +212,13 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('w.creation')}</td>
+                        <td>{t('ngen.date.created')}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={taxonomy ? taxonomy.created.slice(0, 10) + " " + taxonomy.created.slice(11, 19) : ""} />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('w.update')}</td>
+                        <td>{t('ngen.date.modified')}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={taxonomy ? taxonomy.modified.slice(0, 10) + " " + taxonomy.modified.slice(11, 19) : ""} />
                         </td>

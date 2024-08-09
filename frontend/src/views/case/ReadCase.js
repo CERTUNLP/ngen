@@ -228,7 +228,7 @@ const ReadCase = () => {
                             <Table responsive >
                                 <tbody>
                                     <tr>
-                                        <td>{t('date.management.start')}</td>
+                                        <td>{t('ngen.case.management_start_date')}</td>
                                         <td>
                                             <Form.Control plaintext readOnly defaultValue={date} />
                                         </td>
@@ -255,11 +255,11 @@ const ReadCase = () => {
                                         }
                                     </tr>
                                     <tr>
-                                        <td>{t('w.creation')}</td>
+                                        <td>{t('ngen.date.created')}</td>
                                         <td>
                                             <Form.Control plaintext readOnly defaultValue={created} />
                                         </td>
-                                        <td>{t('w.update')}</td>
+                                        <td>{t('ngen.date.modified')}</td>
                                         <td>
                                             <Form.Control plaintext readOnly defaultValue={modified} />
                                         </td>

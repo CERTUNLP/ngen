@@ -120,7 +120,8 @@ const SmallCaseTable = ({ readCase, disableLink, modalCase, modalListCase, modal
                         priorityNames={priorityNames} stateNames={stateNames} userNames={userNames} tlpNames={tlpNames}
                         editColum={false} deleteColum={true} deleteColumForm={true} detailModal={true}
                         navigationRow={false} selectCase={true} disableNubersOfEvents={true} modalCaseDetail={modalCaseDetail}
-                        deleteCaseFromForm={deleteCaseFromForm} disableColumOption={disableColumOption} />
+                        deleteCaseFromForm={deleteCaseFromForm} disableColumOption={disableColumOption}
+                               disableDateModified={true} disableDate={true} />
                 </Card.Body>
             </Card>
         </React.Fragment>

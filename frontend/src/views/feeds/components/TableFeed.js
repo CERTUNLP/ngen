@@ -175,13 +175,13 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>{t('w.creation')}</td>
+                                                <td>{t('ngen.date.created')}</td>
                                                 <td>
                                                     <Form.Control plaintext readOnly defaultValue={feed.created ? feed.created.slice(0, 10) + " " + feed.created.slice(11, 19) : ""} />
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>{t('w.update')}</td>
+                                                <td>{t('ngen.date.modified')}</td>
                                                 <td>
                                                     <Form.Control plaintext readOnly defaultValue={feed.modified ? feed.modified.slice(0, 10) + " " + feed.modified.slice(11, 19) : ""} />
                                                 </td>

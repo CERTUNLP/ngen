@@ -371,6 +371,8 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
             if event and event.mergeable:
                 if self.parent is None:
                     self.parent = event
+                    # Update parent modified date
+                    self.parent.save()
 
     @hook(BEFORE_CREATE)
     @hook(BEFORE_UPDATE, when="network", has_changed=True)

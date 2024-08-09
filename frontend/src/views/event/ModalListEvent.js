@@ -89,6 +89,7 @@ const ModalListEvent = (props) => {
                         tlpNames={props.tlpNames} disableCheckbox={false} formCaseCheckbok={true} disableCheckboxAll={true}
                         disableColumnDelete={true} disableTemplate={true} disableColumnEdit={true} detailModal={false}
                         modalEventDetail={props.modalEventDetail} disableUuid={false} disableColumOption={props.disableColumOption}
+                        disableDateModified={true} disableDate={false}
                     />
                 </div>
             </Modal.Body>
