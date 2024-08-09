@@ -185,8 +185,8 @@ const ReadEvent = () => {
                             {t('ngen.event.initial_taxonomy_slug')}
                         </Col>
                         <Col sm={12} lg={4} className={'align-self-center'}>
-                            {body.reporter !== undefined ?
-                                body.initial_taxonomy_slug : "-"}
+                            {body.initial_taxonomy_slug !== undefined ?
+                                body.initial_taxonomy_slug ? body.initial_taxonomy_slug  : "-" : "-"}
                         </Col>
                     </Row>
                     <p />
@@ -339,13 +339,13 @@ const ReadEvent = () => {
                             </tr>
 
                             <tr>
-                                <td>{t('w.creation')}</td>
+                                <td>{t('ngen.date.created')}</td>
                                 <td>
                                     <Form.Control plaintext readOnly defaultValue={body.created !== undefined ? body.created.slice(0, 10) + " " + body.date.slice(11, 19) : ""} />
                                 </td>
                             </tr>
                             <tr>
-                                <td>{t('w.update')}</td>
+                                <td>{t('ngen.date.modified')}</td>
                                 <td>
                                     <Form.Control plaintext readOnly defaultValue={body.modified !== undefined ? body.modified.slice(0, 10) + " " + body.date.slice(11, 19) : ""} />
                                 </td>

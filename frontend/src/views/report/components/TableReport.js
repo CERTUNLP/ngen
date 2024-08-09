@@ -172,13 +172,13 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>{t('w.creation')}</td>
+                                                <td>{t('ngen.date.created')}</td>
                                                 <td>
                                                     <Form.Control plaintext readOnly defaultValue={report.created ? report.created.slice(0, 10) + " " + report.created.slice(11, 19) : ""} />
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>{t('w.update')}</td>
+                                                <td>{t('ngen.date.modified')}</td>
                                                 <td>
                                                     <Form.Control plaintext readOnly defaultValue={report.modified ? report.modified.slice(0, 10) + " " + report.modified.slice(11, 19) : ""} />
                                                 </td>

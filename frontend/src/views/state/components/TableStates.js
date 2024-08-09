@@ -198,13 +198,13 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>{t('w.creation')}</td>
+                                                        <td>{t('ngen.date.created')}</td>
                                                         <td>
                                                             <Form.Control plaintext readOnly defaultValue={state.created ? state.created.slice(0, 10) + " " + state.created.slice(11, 19) : ""} />
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>{t('w.update')}</td>
+                                                        <td>{t('ngen.date.modified')}</td>
                                                         <td>
                                                             <Form.Control plaintext readOnly defaultValue={state.modified ? state.modified.slice(0, 10) + " " + state.modified.slice(11, 19) : ""} />
                                                         </td>

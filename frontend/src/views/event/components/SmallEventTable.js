@@ -74,9 +74,11 @@ const SmallEventTable = ({ list, disableLink, modalListEvent, modalEventDetail, 
                 </Card.Header>
                 <Card.Body>
                     <TableEvents events={list} taxonomyNames={taxonomyNames} feedNames={feedNames} tlpNames={tlpNames}
-                        disableDateOrdering={true} disableCheckbox={true} disableTemplate={true} deleteColumForm={true}
+                        disableDate={true} disableCheckbox={true} disableTemplate={true} deleteColumForm={true}
                         disableColumnEdit={true} disableCheckboxAll={true} detailModal={false} modalEventDetail={modalEventDetail}
-                        deleteEventFromForm={deleteEventFromForm} disableColumOption={disableColumOption} disableUuid={disableUuid} />
+                        deleteEventFromForm={deleteEventFromForm} disableColumOption={disableColumOption} disableUuid={disableUuid}
+                        disableDateModified={true}
+                    />
                 </Card.Body>
             </Card>
         </React.Fragment>

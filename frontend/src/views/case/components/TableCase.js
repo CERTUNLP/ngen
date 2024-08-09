@@ -8,7 +8,7 @@ import ModalConfirm from '../../../components/Modal/ModalConfirm';
 import Ordering from '../../../components/Ordering/Ordering'
 import LetterFormat from '../../../components/LetterFormat';
 import { useTranslation, Trans } from 'react-i18next';
-const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, setSelectedCases, setOrder, order, priorityNames, stateNames, tlpNames, userNames, editColum, deleteColum, detailModal, modalCaseDetail, navigationRow, selectCase, handleClickRadio, setSelectCase, disableCheckbox, disableDateOrdering, disableName, disablePriority, disableTlp, disableNubersOfEvents, deleteColumForm, deleteCaseFromForm, disableColumOption, disableUuid }) => {
+const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, setSelectedCases, setOrder, order, priorityNames, stateNames, tlpNames, userNames, editColum, deleteColum, detailModal, modalCaseDetail, navigationRow, selectCase, handleClickRadio, setSelectCase, disableCheckbox, disableDate, disableName, disablePriority, disableTlp, disableNubersOfEvents, deleteColumForm, deleteCaseFromForm, disableColumOption, disableUuid, disableDateModified }) => {
     const [url, setUrl] = useState(null)
     const [modalDelete, setModalDelete] = useState(false)
     const [id, setId] = useState(null)
@@ -108,8 +108,11 @@ const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, set
                                 </th>
                             ))
                         }
-                        {!disableDateOrdering &&
-                            <Ordering field="date" label={t('date.management.start')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                        {!disableDate &&
+                            <Ordering field="date" label={t('ngen.case.management_start_date')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                        }
+                        {!disableDateModified &&
+                            <Ordering field="modified" label={t('ngen.date.modified')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
                         }
                         {!disableUuid &&
                             <th style={letterSize}> {t('ngen.uuid')} </th>
@@ -166,8 +169,12 @@ const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, set
                                         )}
                                     </td>
                                 )}
-                                {!disableDateOrdering &&
+                                {!disableDate &&
                                     <td>{caseItem ? caseItem.date.slice(0, 10) + " " + caseItem.date.slice(11, 19) : ""}</td>
+                                }
+
+                                {!disableDateModified &&
+                                    <td>{caseItem ? caseItem.modified.slice(0, 10) + " " + caseItem.modified.slice(11, 19) : ""}</td>
                                 }
 
                                 {!disableUuid &&

@@ -181,7 +181,7 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>{t('w.creation')}</td>
+                                                <td>{t('ngen.date.created')}</td>
                                                 <td>
                                                     <Form.Control plaintext readOnly defaultValue={modified} />
                                                 </td>

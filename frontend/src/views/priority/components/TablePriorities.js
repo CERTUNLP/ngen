@@ -142,13 +142,13 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>{t('w.creation')}</td>
+                                                        <td>{t('ngen.date.created')}</td>
                                                         <td>
                                                             <Form.Control plaintext readOnly defaultValue={priority.created ? priority.created.slice(0, 10) + " " + priority.created.slice(11, 19) : ""} />
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>{t('w.update')}</td>
+                                                        <td>{t('ngen.date.modified')}</td>
                                                         <td>
                                                             <Form.Control plaintext readOnly defaultValue={priority.modified ? priority.modified.slice(0, 10) + " " + priority.modified.slice(11, 19) : ""} />
                                                         </td>

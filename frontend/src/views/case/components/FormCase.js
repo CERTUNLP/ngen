@@ -403,8 +403,8 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
         const year = now.getFullYear();
         const month = (now.getMonth() + 1).toString().padStart(2, '0');
         const day = now.getDate().toString().padStart(2, '0');
-        const hours = '00';
-        const minutes = '00';
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
 
@@ -520,12 +520,12 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
                         </Col>
                         <Col lg={3} sm={12}>
                             <Form.Group controlId="Form.Case.Date">
-                                <Form.Label>{t('date.incidence')}</Form.Label>
-                                <Form.Control type="datetime-local" //2023-03-24T01:40:14.181622Z 
-
-                                    value={date} //yyyy-mm-ddThh:mm
-                                    min="2000-01-01T00:00" max="2030-01-01T00:00"
-                                    onChange={(e) => setDate(e.target.value)} />
+                                <Form.Label>{t('ngen.case.management_start_date')}</Form.Label>
+                                <Form.Control type="datetime-local" //2023-03-24T01:40:14.181622Z
+                                              value={date} //yyyy-mm-ddThh:mm
+                                              max={getCurrentDateTime()}
+                                              isInvalid={new Date(date) > new Date()}
+                                              onChange={(e) => setDate(e.target.value)} />
                             </Form.Group>
                         </Col>
                         <Col lg={3} sm={12}>

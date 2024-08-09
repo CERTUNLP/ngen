@@ -8,7 +8,7 @@ import Ordering from '../../../components/Ordering/Ordering'
 import LetterFormat from '../../../components/LetterFormat';
 import { useTranslation, Trans } from 'react-i18next';
 
-const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, setOrder, setLoading, taxonomyNames, feedNames, tlpNames, disableDateOrdering, disableCheckbox, disableDomain, disableCidr, disableTlp, disableColumnEdit, disableColumnDelete, disableTemplate, disableNubersOfEvents, disableCheckboxAll, modalEventDetail, formCaseCheckbok, detailModal, deleteColumForm, deleteEventFromForm, disableColumOption, disableUuid, disableMerged }) => {
+const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, setOrder, setLoading, taxonomyNames, feedNames, tlpNames, disableDate, disableCheckbox, disableDomain, disableCidr, disableTlp, disableColumnEdit, disableColumnDelete, disableTemplate, disableNubersOfEvents, disableCheckboxAll, modalEventDetail, formCaseCheckbok, detailModal, deleteColumForm, deleteEventFromForm, disableColumOption, disableColumView, disableUuid, disableMerged, disableDateModified, disableOrdering }) => {
 
     const [deleteName, setDeleteName] = useState()
     const [deleteUrl, setDeleteUrl] = useState()
@@ -96,10 +96,24 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                                     </Form.Group>
                                 </th>}
 
-                            {disableDateOrdering ?
-                                <th style={letterSize}>{t('ngen.event_date')} </th>
+                            {!disableDateModified ?
+                                (!disableOrdering ?
+                                    <th style={letterSize}>{t('ngen.event.date')} </th>
+                                    :
+                                    <Ordering field="modified" label={t('ngen.date.modified')} order={order}
+                                              setOrder={setOrder} setLoading={setLoading} letterSize={letterSize}/>
+                                )
                                 :
-                                <Ordering field="date" label={t('ngen.event_date')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                                ""
+                            }
+                            {!disableDate ?
+                                (!disableOrdering ?
+                                    <th style={letterSize}>{t('ngen.event.date')} </th>
+                                    :
+                                    <Ordering field="date" label={t('ngen.event.date')} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+                                )
+                                :
+                                ""
                             }
                             {!disableUuid &&
                                 <th style={letterSize}>{t('ngen.uuid')}</th>
@@ -121,9 +135,6 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                     </thead>
                     <tbody>
                         {list.map((event, index) => {
-                            // console.log("event", index, event);
-                            // console.log(disableCheckboxAll, disableCheckbox);
-                            // console.log(!disableCheckboxAll && !disableCheckbox);
                             if (event) {
                                 return (
                                     <tr key={index}>
@@ -162,8 +173,8 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                                                 )}
                                             </th>
                                         )}
-
-                                        <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : ""}</td>
+                                        {!disableDateModified ? <td>{event.modified.slice(0, 10) + " " + event.modified.slice(11, 19)}</td> : ""}
+                                        {!disableDate ? <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : "" }</td> : ""}
                                         {!disableUuid &&
                                             <td>{event.uuid}</td>
                                         }
@@ -194,57 +205,62 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
 
                                         <td>{feedNames[event.feed]}</td>
 
-                                        <td>
-                                            {disableColumOption ?
-                                                ""
-                                                :
-                                                <Link to={{ pathname: "/events/view", state: event }} >
-                                                    <CrudButton type='read' onClick={() => storageEventUrl(event.url)} />
-                                                </Link>
-                                            }
-                                            {disableColumOption ?
-                                                ""
-                                            :
-                                                (disableColumnEdit ?
-                                                    ""
-                                                :
-                                                    ((!event.blocked && !event.parent) ?
-                                                        (<Link to={{ pathname: "/events/edit", state: event }} >
-                                                            <CrudButton type='edit' />
-                                                        </Link>)
-                                                    :
-                                                        (<CrudButton type='edit' disabled={true} />)
-                                                    )
-                                                )
-                                            }
-                                            {disableColumOption ?
-                                                ""
-                                                :
-                                                disableColumnDelete ?
+                                        {!disableColumOption ?
+                                            <td>
+                                                {disableColumView ?
                                                     ""
                                                     :
-                                                    deleteColumForm ?
-                                                        <CrudButton type='delete' onClick={() => deleteEventFromForm(event.url)} />
+                                                    <Link to={{ pathname: "/events/view", state: event }} >
+                                                        <CrudButton type='read' onClick={() => storageEventUrl(event.url)} />
+                                                    </Link>
+                                                }
+                                                {disableColumOption ?
+                                                    ""
+                                                :
+                                                    (disableColumnEdit ?
+                                                        ""
+                                                    :
+                                                        ((event.blocked || event.parent) ?
+                                                            (<CrudButton type='edit' disabled={true} />)
                                                         :
-                                                        <CrudButton type='delete' onClick={() => modalDelete(event.name, event.url)} />
-                                            }
-                                            {disableTemplate ? ""
-                                                :
-                                                event.case ? <Button className="btn-icon btn-rounded" disabled variant="outline-primary"
-                                                    style={{
-                                                        border: "1px solid #555",
-                                                        borderRadius: "50px",
-                                                        color: "#555",
-                                                    }}
-                                                    onClick={() => console.log("")}>
-                                                    <i className="fa fa-plus" aria-hidden="true"></i>
-                                                </Button> :
-                                                    <Link to={{ pathname: "/templates/create", state: event }} >
-                                                        <Button className="btn-icon btn-rounded" variant="outline-primary" onClick={() => console.log("")}>
-                                                            <i className="fa fa-plus" aria-hidden="true"></i>
-                                                        </Button>
-                                                    </Link>}
-                                        </td>
+                                                            (<Link to={{ pathname: "/events/edit", state: event }} >
+                                                                <CrudButton type='edit' />
+                                                            </Link>)
+                                                        )
+                                                    )
+                                                }
+                                                {disableColumOption ?
+                                                    ""
+                                                    :
+                                                    disableColumnDelete ?
+                                                        ""
+                                                        :
+                                                        deleteColumForm ?
+                                                            <CrudButton type='delete' onClick={() => deleteEventFromForm(event.url)} />
+                                                            :
+                                                            <CrudButton type='delete' onClick={() => modalDelete(event.name, event.url)} />
+                                                }
+                                                {disableTemplate ?
+                                                    ""
+                                                    :
+                                                    event.case ? <Button className="btn-icon btn-rounded" disabled variant="outline-primary"
+                                                        style={{
+                                                            border: "1px solid #555",
+                                                            borderRadius: "50px",
+                                                            color: "#555",
+                                                        }}
+                                                        onClick={() => console.log("")}>
+                                                        <i className="fa fa-plus" aria-hidden="true"></i>
+                                                    </Button> :
+                                                        <Link to={{ pathname: "/templates/create", state: event }} >
+                                                            <Button className="btn-icon btn-rounded" variant="outline-primary" onClick={() => console.log("")}>
+                                                                <i className="fa fa-plus" aria-hidden="true"></i>
+                                                            </Button>
+                                                        </Link>}
+                                            </td>
+                                            :
+                                            ""
+                                        }
                                     </tr>
                                 )
                             }

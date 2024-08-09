@@ -20,6 +20,7 @@ import { useTranslation, Trans } from 'react-i18next';
 
 const animatedComponents = makeAnimated();
 const FormEvent = (props) => {
+    const [date, setDate] = useState(props.body.date ? props.body.date.substr(0, 16) : getCurrentDateTime())
     const [artifactsValueLabel, setArtifactsValueLabel] = useState([])
     const [modalCreate, setModalCreate] = useState(false)
     const [typeArtifact, setTypeArtifact] = useState('0')
@@ -315,8 +316,8 @@ const FormEvent = (props) => {
         const year = now.getFullYear();
         const month = (now.getMonth() + 1).toString().padStart(2, '0');
         const day = now.getDate().toString().padStart(2, '0');
-        const hours = '00';
-        const minutes = '00';
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
 
@@ -364,11 +365,12 @@ const FormEvent = (props) => {
                                         type="datetime-local"
                                         maxLength="150"
                                         max={getCurrentDateTime()}
-                                        value={props.body.date}
-                                        isInvalid={new Date(props.body.date) > new Date()}
-                                        onChange={(e) => completeField(e)}
+                                        value={date}
+                                        isInvalid={new Date(date) > new Date()}
+                                        // onChange={(e) => completeField(e)}
+                                        onChange={(e) => setDate(e.target.value)}
                                         name="date" />
-                                    {new Date(props.body.date) > new Date() ? <div className="invalid-feedback">{t('date.invalid')}</div> : ""}
+                                    {new Date(date) > new Date() ? <div className="invalid-feedback">{t('date.invalid')}</div> : ""}
                                 </Form.Group>
                             </Col>
                             <Col sm={12} lg={4}>

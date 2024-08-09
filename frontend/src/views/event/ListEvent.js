@@ -60,7 +60,7 @@ const ListEvent = () => {
   const [taxonomies, setTaxonomies] = useState([]);
   const [feeds, setFeeds] = useState([])
 
-  const [order, setOrder] = useState("-date");
+  const [order, setOrder] = useState("-modified");
   const [starDateFilter, setStarDateFilter] = useState("")
   const [endDateFilter, setEndDateFilter] = useState("")
   const [starDate, setStarDate] = useState("")
@@ -443,7 +443,8 @@ const ListEvent = () => {
                        setSelectedEvent={setSelectedEvent} order={order} setOrder={setOrder}
                        setLoading={setLoading} currentPage={currentPage} taxonomyNames={taxonomyNames}
                        feedNames={feedNames} tlpNames={tlpNames} disableCheckbox={false}
-                       disableUuid={false} disableMerged={false} />
+                       disableUuid={false} disableMerged={false} disbleDateModified={false}
+                       disableDate={false} />
         </Card.Body>
         <Card.Footer >
           <Row className="justify-content-md-center">
