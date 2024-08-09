@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import {
     Button, Card, Table, Row, Col, Form
 } from 'react-bootstrap';
@@ -21,6 +21,7 @@ import EvidenceCard from '../../components/UploadFiles/EvidenceCard';
 import { useTranslation, Trans } from 'react-i18next';
 
 const ReadEvent = () => {
+    const history = useHistory();
     const location = useLocation();
     const [body, setBody] = useState({})
     const [eventItem, setEventItem] = useState(location?.state?.item || null);
@@ -216,16 +217,21 @@ const ReadEvent = () => {
                         <Col sm={12} lg={4} className={'align-self-center'}>
                             {body.parent !== undefined ?
                                 (body.parent ?
-                                    <Link to={{ pathname: "/events/view", state: body.parent }} >
-                                        <Button className="fa fa-eye mx-auto font-weight-light" variant="outline-primary"
-                                                onClick={() => storageEventUrl(body.parent)}>
-                                                {' ' + t('ngen.event.parent')}
-                                        </Button>
-                                    </Link>
-                                    :
+                                    // Esto no funciona por el routing, al acceder al elemento parent y tener la misma URL el componente no recarga
+                                    // Y aunque recargue, luego no funciona el history back
+                                    // <Link to={{ pathname: "/events/view", state: body.parent }} >
+                                    //     <Button className="fa fa-eye mx-auto font-weight-light" variant="outline-primary"
+                                    //             onClick={() =>
+                                    //                 storageEventUrl(body.parent)
+                                    //             }>
+                                    //             {' ' + t('ngen.event.parent')}
+                                    //     </Button>
+                                    // </Link>
+                                    <CallBackendByName url={body.parent} callback={callbackEvent} attr={'uuid'} />
+                                :
                                     "-"
                                 )
-                                :
+                            :
                                 "-"
                             }
                         </Col>

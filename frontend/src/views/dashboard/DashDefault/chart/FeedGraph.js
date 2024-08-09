@@ -15,7 +15,6 @@ const FeedGraph = ({ dashboardFeed }) => {
 
     }, [dashboardFeed])
     const { t } = useTranslation();
-                console.log(feed);
 
     return (
         <div>

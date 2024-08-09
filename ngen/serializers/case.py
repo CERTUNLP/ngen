@@ -128,6 +128,13 @@ class EventSerializerReduced(EvidenceSerializerMixin, AuditSerializerMixin):
             "address_value",
             "date",
             "reporter",
+            "parent",
+            "children",
+            "merged",
+            "blocked",
+            "case",
+            "network",
+            "initial_taxonomy_slug",
         ]
 
 

@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap';
 import { useTranslation, Trans } from 'react-i18next';
 
 // type: {create, read, update, delete} 
-const CrudButton = ({ type, name, onClick }) => {
+const CrudButton = ({ type, name, onClick, disabled=false }) => {
     const { t } = useTranslation();
 
     const button = {
@@ -50,11 +50,9 @@ const CrudButton = ({ type, name, onClick }) => {
     }
     return (
         <React.Fragment>
-            <Button
-                className={button[type].class}
-                variant={button[type].variant}
-                tite={button[type].title}
-                onClick={onClick}>
+            <Button className={(button[type].class) + " " + (disabled ? 'btn-secondary disabled' : "")} variant={!disabled ? button[type].variant : ''} title={button[type].title}
+                disabled={disabled} onClick={onClick}
+            >
                 <i className={button[type].icon} />
                 {button[type].text}
             </Button>
