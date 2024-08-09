@@ -126,7 +126,7 @@ class EventFilterTest(BaseFilterTest):
         # Searching by taxonomy name
         query = "black"  # matches with taxonomy 1: "Blacklist"
         response = self.client.get(self.search_url(query))
-        self.assertEqual(response.data["count"], 2)
+        self.assertEqual(response.data["count"], 3)
         self.assertEqual(
             self.get_id_from_url(response.data["results"][0]["url"]),
             self.event_1.id
@@ -134,6 +134,10 @@ class EventFilterTest(BaseFilterTest):
         self.assertEqual(
             self.get_id_from_url(response.data["results"][1]["url"]),
             self.event_4.id
+        )
+        self.assertEqual(
+            self.get_id_from_url(response.data["results"][2]["url"]),
+            self.event_5.id
         )
 
         # Searching by feed name
@@ -161,7 +165,7 @@ class EventFilterTest(BaseFilterTest):
         # Searching by domain
         query = "info.unlp"
         response = self.client.get(self.search_url(query))
-        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["count"], 2)
         self.assertEqual(
             self.get_id_from_url(response.data["results"][0]["url"]),
             self.event_1.id
@@ -319,6 +323,28 @@ class EventFilterTest(BaseFilterTest):
         self.assertQuerysetEqual(
             filtered_queryset,
             [self.event_1, self.event_2, self.event_3, self.event_4, self.event_6],
+            ordered=False
+        )
+
+        params = {
+            "parent__isnull": False
+        }
+
+        filtered_queryset = self.filter(params).qs
+
+        self.assertQuerysetEqual(
+            filtered_queryset,
+            [self.event_5],
+            ordered=False
+        )
+
+        params = {}
+
+        filtered_queryset = self.filter(params).qs
+
+        self.assertQuerysetEqual(
+            filtered_queryset,
+            [self.event_1, self.event_2, self.event_3, self.event_4, self.event_5, self.event_6],
             ordered=False
         )
 

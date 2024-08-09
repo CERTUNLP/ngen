@@ -4,6 +4,9 @@ import setAlert from '../../utils/setAlert';
 import i18next from "i18next";
 
 const getEvents = (currentPage, filters, order) => {//el parametro es para completar la url con el numero de pagina
+    if (!filters.includes('parent__isnull')) {
+        filters += 'parent__isnull=true&';
+    }
     return apiInstance.get(COMPONENT_URL.event + PAGE + currentPage + '&ordering=' + order + '&' + filters);
 }
 

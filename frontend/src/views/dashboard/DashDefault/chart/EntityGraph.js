@@ -16,7 +16,7 @@ const EntityGraph = ({ list }) => {
 
     }, [list])
     const { t } = useTranslation();
-                console.log(entity);
+
     return (
         <div>
             {

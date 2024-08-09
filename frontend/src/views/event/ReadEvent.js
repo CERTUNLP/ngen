@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link, useHistory } from 'react-router-dom'
 import {
     Button, Card, Table, Row, Col, Form
 } from 'react-bootstrap';
@@ -20,6 +21,7 @@ import EvidenceCard from '../../components/UploadFiles/EvidenceCard';
 import { useTranslation, Trans } from 'react-i18next';
 
 const ReadEvent = () => {
+    const history = useHistory();
     const location = useLocation();
     const [body, setBody] = useState({})
     const [eventItem, setEventItem] = useState(location?.state?.item || null);
@@ -28,15 +30,16 @@ const ReadEvent = () => {
     const [evidences, setEvidences] = useState([]);
     const { t } = useTranslation();
 
+    const storageEventUrl = (url) => {
+        localStorage.setItem('event', url);
+    };
 
     useEffect(() => {
-        console.log(body)
         if (!eventItem) {
             const event = localStorage.getItem('event');
             getEvent(event).then((responsive) => {
                 setBody(responsive.data)
                 setEventItem(responsive.data)
-                console.log(responsive.data)
             }).catch(error => console.log(error));
         }
     }, [eventItem]);
@@ -44,16 +47,18 @@ const ReadEvent = () => {
     useEffect(() => {
 
         const fetchAllEvidences = async () => {
-            try {
-                // Esperar a que todas las promesas de getEvidence se resuelvan
-                const responses = await Promise.all(eventItem.evidence.map((url) => getEvidence(url)));
-                // Extraer los datos de las respuestas
-                const data = responses.map(response => response.data);
-                // Actualizar el estado con los datos de todas las evidencias
-                setEvidences(data);
+            if (eventItem) {
+                try {
+                    // Esperar a que todas las promesas de getEvidence se resuelvan
+                    const responses = await Promise.all(eventItem.evidence.map((url) => getEvidence(url)));
+                    // Extraer los datos de las respuestas
+                    const data = responses.map(response => response.data);
+                    // Actualizar el estado con los datos de todas las evidencias
+                    setEvidences(data);
 
-            } catch (error) {
-                console.error("Error fetching evidence data:", error);
+                } catch (error) {
+                    console.error("Error fetching evidence data:", error);
+                }
             }
         };
 
@@ -64,7 +69,6 @@ const ReadEvent = () => {
     const callbackTaxonomy = (url, setPriority) => {
         getTaxonomy(url)
             .then((response) => {
-                console.log(response)
                 setPriority(response.data)
             })
             .catch();
@@ -72,7 +76,6 @@ const ReadEvent = () => {
     const callbackTlp = (url, setPriority) => {
         getTLPSpecific(url)
             .then((response) => {
-                console.log(response)
                 setPriority(response.data)
             })
             .catch();
@@ -80,7 +83,6 @@ const ReadEvent = () => {
     const callbackFeed = (url, setPriority) => {
         getFeed(url)
             .then((response) => {
-                console.log(response)
                 setPriority(response.data)
             })
             .catch();
@@ -88,7 +90,13 @@ const ReadEvent = () => {
     const callbackPriority = (url, set) => {
         getPriority(url)
             .then((response) => {
-                console.log(response)
+                set(response.data)
+            })
+            .catch();
+    }
+    const callbackEvent = (url, set) => {
+        getEvent(url)
+            .then((response) => {
                 set(response.data)
             })
             .catch();
@@ -96,7 +104,6 @@ const ReadEvent = () => {
     const callbackReporter = (url, set) => {
         getUser(url)
             .then((response) => {
-                console.log(response)
                 set(response.data)
             })
             .catch();
@@ -104,7 +111,6 @@ const ReadEvent = () => {
     const callbackArtefact = (url, set) => {
         getArtefact(url)
             .then((response) => {
-                console.log(response)
                 set(response.data)
             })
             .catch();
@@ -114,7 +120,7 @@ const ReadEvent = () => {
     }
 
     return (
-        <div>
+        <React.Fragment>
             {navigationRow !== "false" ?
                 <Row>
                     <Navigation actualPosition={t('ngen.event.detail')} path="/events" index={t('ngen.event_one')} />
@@ -127,85 +133,147 @@ const ReadEvent = () => {
                 </Card.Header>
                 <Card.Body>
                     <Row>
-                        <Col sm={12} lg={2}>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
                             {t('date.one')}
                         </Col>
-                        <Col sm={12} lg={4}>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
                             <div>{body.date ? body.date.slice(0, 10) + " " + body.date.slice(11, 19) : "--"}</div>
                         </Col>
                     </Row>
                     <p />
                     <Row>
-                        <Col sm={12} lg={2}>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
                             {t('ngen.uuid')}
                         </Col>
-                        <Col sm={12} lg={4}>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
                             <div>{body.uuid}</div>
                         </Col>
                     </Row>
                     <p />
                     <Row>
-                        <Col sm={12} lg={2}>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
                             {t('ngen.tlp')}
                         </Col>
-                        <Col sm={12} lg={4}>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
                             {body.tlp !== undefined ?
                                 <CallBackendByName url={body.tlp} callback={callbackTlp} /> : "-"}
                         </Col>
-
                     </Row>
                     <p />
                     <Row>
-                        <Col sm={12} lg={2}>
-                            {t('ngen.taxonomy_one')}
-                        </Col>
-                        <Col sm={12} lg={4}>
-                            {body.taxonomy !== undefined ?
-                                <CallBackendByName url={body.taxonomy} callback={callbackTaxonomy} /> : "-"}
-                        </Col>
-
-                    </Row>
-                    <p />
-                    <Row>
-                        <Col sm={12} lg={2}>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
                             {t('ngen.feed.information')}
                         </Col>
-                        <Col sm={12} lg={4}>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
                             {body.feed !== undefined ?
                                 <CallBackendByName url={body.feed} callback={callbackFeed} /> : "-"}
                         </Col>
-
                     </Row>
                     <p />
                     <Row>
-                        <Col sm={12} lg={2}>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
+                            {t('ngen.taxonomy_one')}
+                        </Col>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
+                            {body.taxonomy !== undefined ?
+                                <CallBackendByName url={body.taxonomy} callback={callbackTaxonomy} /> : "-"}
+                        </Col>
+                    </Row>
+                    <p />
+                    <Row>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
+                            {t('ngen.event.initial_taxonomy_slug')}
+                        </Col>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
+                            {body.reporter !== undefined ?
+                                body.initial_taxonomy_slug : "-"}
+                        </Col>
+                    </Row>
+                    <p />
+                    <Row>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
                             {t('ngen.priority_one')}
                         </Col>
-                        <Col sm={12} lg={4}>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
                             {body.priority !== undefined ?
                                 <CallBackendByName url={body.priority} callback={callbackPriority} /> : "-"}
                         </Col>
-
                     </Row>
                     <p />
                     <Row>
-                        <Col sm={12} lg={2}>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
                             {t('reporter')}
                         </Col>
-                        <Col sm={12} lg={4}>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
                             {body.reporter !== undefined ?
-                                <CallBackendByName url={body.reporter} callback={callbackReporter} /> : "-"}
+                                <CallBackendByName url={body.reporter} callback={callbackReporter} attr={'username'} /> : "-"}
+                        </Col>
+                    </Row>
+                    <p />
+                    <Row>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
+                            {t('ngen.event.parent')}
+                        </Col>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
+                            {body.parent !== undefined ?
+                                (body.parent ?
+                                    // Esto no funciona por el routing, al acceder al elemento parent y tener la misma URL el componente no recarga
+                                    // Y aunque recargue, luego no funciona el history back
+                                    // <Link to={{ pathname: "/events/view", state: body.parent }} >
+                                    //     <Button className="fa fa-eye mx-auto font-weight-light" variant="outline-primary"
+                                    //             onClick={() =>
+                                    //                 storageEventUrl(body.parent)
+                                    //             }>
+                                    //             {' ' + t('ngen.event.parent')}
+                                    //     </Button>
+                                    // </Link>
+                                    <CallBackendByName url={body.parent} callback={callbackEvent} attr={'uuid'} />
+                                :
+                                    "-"
+                                )
+                            :
+                                "-"
+                            }
+                        </Col>
+                    </Row>
+                    <p />
+                    <Row>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
+                            {t('ngen.children')}
+                        </Col>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
+                            {body.children !== undefined ?
+                                body.children.length : "0"}
+                        </Col>
+                    </Row>
+                    <p />
+                    <Row>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
+                            {t('ngen.event.merged')}
+                        </Col>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
+                            {body.merged !== undefined ?
+                                (body.merged ? t('w.yes') : t('w.no') ) : "-"}
+                        </Col>
+                    </Row>
+                    <p />
+                    <Row>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
+                            {t('w.blocked')}
+                        </Col>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
+                            {body.blocked !== undefined ?
+                                (body.merged ? t('w.yes') : t('w.no') ) : "-"}
                         </Col>
                     </Row>
                     <br />
                     <Row>
-                        <Col sm={12} lg={2}>
+                        <Col sm={12} lg={2} className={'align-self-center'}>
                             {t('notes')}
                         </Col>
-                        <Col sm={12} lg={4}>
+                        <Col sm={12} lg={4} className={'align-self-center'}>
                             {body.notes}
                         </Col>
-
                     </Row>
                     {/*</Table>*/}
                 </Card.Body>
@@ -218,25 +286,26 @@ const ReadEvent = () => {
                     <Row>
                         <p></p>
 
-                        <Col sm={12} lg={2}>{t('ngen.domain')}</Col>
+                        <Col sm={12} lg={2} className={'align-self-center'}>{t('ngen.domain')}</Col>
                         <p></p>
 
-                        <Col sm={12} lg={4}> <Form.Control plaintext readOnly defaultValue={body.domain} /></Col>
+                        <Col sm={12} lg={4} className={'align-self-center'}> <Form.Control plaintext readOnly defaultValue={body.domain} /></Col>
 
 
 
                     </Row>
                     <Row>
 
-                        <Col sm={12} lg={2}>{t('ngen.cidr')}</Col>
+                        <Col sm={12} lg={2} className={'align-self-center'}>{t('ngen.cidr')}</Col>
 
-                        <Col sm={12} lg={4}>  <Form.Control plaintext readOnly defaultValue={body.cidr} /></Col>
+                        <Col sm={12} lg={4} className={'align-self-center'}>  <Form.Control plaintext readOnly defaultValue={body.cidr} /></Col>
 
 
 
                     </Row>
                 </Card.Body>
             </Card>
+
             <SmallCaseTable readCase={body.case} disableColumOption={true} />
 
             <Card>
@@ -247,52 +316,49 @@ const ReadEvent = () => {
                     <Row>
                         {body.artifacts !== undefined ?
                             body.artifacts.map((url) => {
-                                return (<CallBackendByType url={url} callback={callbackArtefact} useBadge={true} />)
+                                return (<CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />)
                             }) : ""
                         }
                     </Row>
                 </Card.Body>
             </Card>
 
-            <EvidenceCard evidences={evidences} disableDelete={true} disableDragAndDrop={true}
-            />
+            <EvidenceCard evidences={evidences} disableDelete={true} disableDragAndDrop={true} />
+            <Card>
+                <Card.Header>
+                    <Card.Title as="h5">{t('ngen.event.additional')}</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                    <Table responsive >
+                        <tbody>
+                            <tr>
+                                <td>{t('ngen.comments')}</td>
+                                <td>
+                                    <Form.Control plaintext readOnly defaultValue="" />
+                                </td>
+                            </tr>
 
-            <Table responsive >
-                <Card>
-                    <Card.Header>
-                        <Card.Title as="h5">{t('ngen.evidences.aditional.data')}</Card.Title>
-                    </Card.Header>
-                    <Card.Body>
-                        <tr>
-                            <td>{t('ngen.comments')}</td>
-                            <td>
-                                <Form.Control plaintext readOnly defaultValue="" />
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>{t('w.creation')}</td>
-                            <td>
-                                <Form.Control plaintext readOnly defaultValue={body.created !== undefined ? body.created.slice(0, 10) + " " + body.date.slice(11, 19) : ""} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>{t('w.update')}</td>
-                            <td>
-                                <Form.Control plaintext readOnly defaultValue={body.modified !== undefined ? body.modified.slice(0, 10) + " " + body.date.slice(11, 19) : ""} />
-                            </td>
-                        </tr>
-
-
-                    </Card.Body>
-                </Card>
-                {buttonReturn !== "false" ?
-                    <Button variant="primary" onClick={() => returnBack()}>{t('button.return')}</Button>
-                    : ""
-                }
-
-            </Table>
-        </div>
+                            <tr>
+                                <td>{t('w.creation')}</td>
+                                <td>
+                                    <Form.Control plaintext readOnly defaultValue={body.created !== undefined ? body.created.slice(0, 10) + " " + body.date.slice(11, 19) : ""} />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{t('w.update')}</td>
+                                <td>
+                                    <Form.Control plaintext readOnly defaultValue={body.modified !== undefined ? body.modified.slice(0, 10) + " " + body.date.slice(11, 19) : ""} />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                </Card.Body>
+            </Card>
+            {buttonReturn !== "false" ?
+                <Button variant="primary" onClick={() => returnBack()}>{t('button.return')}</Button>
+                : ""
+            }
+        </React.Fragment>
     )
 }
 

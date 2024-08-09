@@ -88,7 +88,7 @@ class DashboardPresenter:
             self.events = Event.objects.filter(
                 date__range=(self.date_from, self.date_to),
                 parent__isnull=True,
-            )
+            ).order_by("-date")
 
         return self.events
 

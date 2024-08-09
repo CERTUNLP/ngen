@@ -8,7 +8,7 @@ import Ordering from '../../../components/Ordering/Ordering'
 import LetterFormat from '../../../components/LetterFormat';
 import { useTranslation, Trans } from 'react-i18next';
 
-const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, setOrder, setLoading, taxonomyNames, feedNames, tlpNames, disableDateOrdering, disableCheckbox, disableDomain, disableCidr, disableTlp, disableColumnEdit, disableColumnDelete, disableTemplate, disableNubersOfEvents, disableCheckboxAll, modalEventDetail, formCaseCheckbok, detailModal, deleteColumForm, deleteEventFromForm, disableColumOption, disableUuid }) => {
+const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, setOrder, setLoading, taxonomyNames, feedNames, tlpNames, disableDateOrdering, disableCheckbox, disableDomain, disableCidr, disableTlp, disableColumnEdit, disableColumnDelete, disableTemplate, disableNubersOfEvents, disableCheckboxAll, modalEventDetail, formCaseCheckbok, detailModal, deleteColumForm, deleteEventFromForm, disableColumOption, disableUuid, disableMerged }) => {
 
     const [deleteName, setDeleteName] = useState()
     const [deleteUrl, setDeleteUrl] = useState()
@@ -109,6 +109,9 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                             {!disableTlp &&
                                 <th style={letterSize}>{t('ngen.tlp')}</th>
                             }
+                            {!disableMerged &&
+                                <th style={letterSize}>{t('ngen.event.merged')}</th>
+                            }
                             <th style={letterSize}>{t('ngen.taxonomy_one')}</th>
                             <th style={letterSize}>{t('ngen.feed.information')}</th>
                             {!disableColumOption &&
@@ -171,6 +174,21 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                                                 <LetterFormat useBadge={true} stringToDisplay={tlpNames[event.tlp].name} color={tlpNames[event.tlp].color} />
                                             </td>
                                         }
+                                        {!disableMerged &&
+                                            event.parent ?
+                                                <td>
+                                                    <Link to={{ pathname: "/events/view", state: event.parent }} >
+                                                        <Button className="fa fa-eye mx-auto font-weight-light" variant="outline-primary"
+                                                                onClick={() => storageEventUrl(event.parent)}>
+                                                                {' ' + t('ngen.event.parent')}
+                                                        </Button>
+                                                    </Link>
+                                                </td>
+                                            :
+                                                <td>
+                                                    {event.children ? event.children.length : 0}
+                                                </td>
+                                        }
 
                                         <td>{taxonomyNames[event.taxonomy]}</td>
 
@@ -183,31 +201,32 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                                                 <Link to={{ pathname: "/events/view", state: event }} >
                                                     <CrudButton type='read' onClick={() => storageEventUrl(event.url)} />
                                                 </Link>
-                                        }
-                                        {disableColumOption ?
-                                            ""
+                                            }
+                                            {disableColumOption ?
+                                                ""
                                             :
-                                            disableColumnEdit ?
-                                            ""
-                                            :
-                                            !event.blocked ? (
-                                                <Link to={{ pathname: "/events/edit", state: event }} >
-                                                    <CrudButton type='edit' />
-                                                </Link>
-                                            ) : (
-                                                <CrudButton type='edit' disabled={true} />
-                                            )
-                                        }
-                                        {disableColumOption ?
-                                            ""
-                                            :
-                                            disableColumnDelete ?
+                                                (disableColumnEdit ?
+                                                    ""
+                                                :
+                                                    ((!event.blocked && !event.parent) ?
+                                                        (<Link to={{ pathname: "/events/edit", state: event }} >
+                                                            <CrudButton type='edit' />
+                                                        </Link>)
+                                                    :
+                                                        (<CrudButton type='edit' disabled={true} />)
+                                                    )
+                                                )
+                                            }
+                                            {disableColumOption ?
                                                 ""
                                                 :
-                                                deleteColumForm ?
-                                                    <CrudButton type='delete' onClick={() => deleteEventFromForm(event.url)} />
+                                                disableColumnDelete ?
+                                                    ""
                                                     :
-                                                    <CrudButton type='delete' onClick={() => modalDelete(event.name, event.url)} />
+                                                    deleteColumForm ?
+                                                        <CrudButton type='delete' onClick={() => deleteEventFromForm(event.url)} />
+                                                        :
+                                                        <CrudButton type='delete' onClick={() => modalDelete(event.name, event.url)} />
                                             }
                                             {disableTemplate ? ""
                                                 :

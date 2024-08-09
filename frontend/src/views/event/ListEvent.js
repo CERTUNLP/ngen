@@ -8,6 +8,7 @@ import TableEvents from './components/TableEvents';
 //filters
 import FilterSelectUrl from '../../components/Filter/FilterSelectUrl';
 import FilterSelect from '../../components/Filter/FilterSelect';
+import FilterSelectWithDefault from '../../components/Filter/FilterSelectWithDefault';
 import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
 import ModalConfirm from '../../components/Modal/ModalConfirm';
 import Alert from '../../components/Alert/Alert';
@@ -27,6 +28,8 @@ import { getMinifiedUser } from '../../api/services/users';
 import { useTranslation, Trans } from 'react-i18next';
 
 const ListEvent = () => {
+  const { t } = useTranslation();
+
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [refresh, setRefresh] = useState(true)
@@ -66,8 +69,10 @@ const ListEvent = () => {
   const [open, setOpen] = useState(false);
   const [updatePagination, setUpdatePagination] = useState(false)
   const [disabledPagination, setDisabledPagination] = useState(true)
-  const types = [{ value: "true", label: "Eventos sin casos asignados" }, { value: "false", label: "Eventos con casos asignados" }]
+  const types = [{ value: "true", label: t('w.not_assigned') }, { value: "false", label: t('w.assigned') }]
   const [caseIsNull, setCaseIsNull] = useState('')
+  const [parentIsNull, setParentIsNull] = useState('')
+  const [valueParentIsNull, setValueParentIsNull] = useState({ value: "true", label: t('w.not_assigned') })
   //add to cases
   const [openCases, setOpenCases] = useState(true);
 
@@ -108,8 +113,6 @@ const ListEvent = () => {
   const [priorityFilter, setPriorityFilter] = useState("");
   const [selectCase, setSelectCase] = useState("")//puede que se use en el multiselect, tengo ver bien cual es su utilidad
   const [updatePaginationCase, setUpdatePaginationCase] = useState(false)
-
-  const { t } = useTranslation();
 
   useEffect(() => {
     getMinifiedUser().then((response) => { //se hardcodea las paginas
@@ -184,7 +187,7 @@ const ListEvent = () => {
   }, []);
 
   useEffect(() => {
-    getEvents(currentPage, starDateFilter + endDateFilter + taxonomyFilter + tlpFilter + feedFilter + caseIsNull + wordToSearch, order)
+    getEvents(currentPage, starDateFilter + endDateFilter + taxonomyFilter + tlpFilter + feedFilter + caseIsNull + parentIsNull + wordToSearch, order)
       .then((response) => {
         setEvents(response.data.results);
         setCountItems(response.data.count);
@@ -202,7 +205,7 @@ const ListEvent = () => {
         setLoading(false);
         setShowAlert(true);
       });
-  }, [currentPage, ifModify, wordToSearch, taxonomyFilter, tlpFilter, feedFilter, filterDate, order, caseIsNull, refresh]);
+  }, [currentPage, ifModify, wordToSearch, taxonomyFilter, tlpFilter, feedFilter, filterDate, order, caseIsNull, parentIsNull, refresh]);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
@@ -414,7 +417,7 @@ const ListEvent = () => {
               </Row>
               <Row>
                 <Col sm={4} lg={4}>
-                  <FilterSelectUrl options={tlpList} itemName="tlp" partOfTheUrl="tlp" itemFilter={tlpFilter} itemFilterSetter={setTlpFilter} setLoading={setLoading} setCurrentPage={setCurrentPage} />
+                  <FilterSelectUrl options={tlpList} itemName={t('ngen.tlp')} partOfTheUrl="tlp" itemFilter={tlpFilter} itemFilterSetter={setTlpFilter} setLoading={setLoading} setCurrentPage={setCurrentPage} />
                 </Col>
                 <Col sm={4} lg={4}>
                   <FilterSelectUrl options={taxonomies} itemName={t('ngen.taxonomy_one')} partOfTheUrl="taxonomy" itemFilter={taxonomyFilter} itemFilterSetter={setTaxonomyFilter} setLoading={setLoading} setCurrentPage={setCurrentPage} />
@@ -425,7 +428,10 @@ const ListEvent = () => {
               </Row>
               <Row>
                 <Col sm={4} lg={4}>
-                  <FilterSelect options={types} partOfTheUrl="case__isnull" setFilter={setCaseIsNull} currentFilter={caseIsNull} setLoading={setLoading} placeholder={t('ngen.filter_case')} />
+                  <FilterSelect options={types} partOfTheUrl="case__isnull" setFilter={setCaseIsNull} currentFilter={caseIsNull} setLoading={setLoading} placeholder={t('ngen.filter_by') + ' ' + t('ngen.case_one')} />
+                </Col>
+                <Col sm={4} lg={4}>
+                  <FilterSelectWithDefault options={types} partOfTheUrl="parent__isnull" setFilter={setParentIsNull} currentFilter={parentIsNull} setValue={setValueParentIsNull} value={valueParentIsNull} setLoading={setLoading} placeholder={t('ngen.filter_by') + ' ' + t('ngen.event.parent')} />
                 </Col>
               </Row>
               <br />
@@ -433,8 +439,11 @@ const ListEvent = () => {
           </Collapse>
         </Card.Header>
         <Card.Body>
-          <TableEvents events={events} loading={loading} selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent} order={order} setOrder={setOrder}
-            setLoading={setLoading} currentPage={currentPage} taxonomyNames={taxonomyNames} feedNames={feedNames} tlpNames={tlpNames} disableCheckbox={false} disableUuid={false} />
+          <TableEvents events={events} loading={loading} selectedEvent={selectedEvent}
+                       setSelectedEvent={setSelectedEvent} order={order} setOrder={setOrder}
+                       setLoading={setLoading} currentPage={currentPage} taxonomyNames={taxonomyNames}
+                       feedNames={feedNames} tlpNames={tlpNames} disableCheckbox={false}
+                       disableUuid={false} disableMerged={false} />
         </Card.Body>
         <Card.Footer >
           <Row className="justify-content-md-center">

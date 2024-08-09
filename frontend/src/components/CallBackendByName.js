@@ -3,7 +3,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import LetterFormat from './LetterFormat'
 
-const CallBackendByName = ({url, callback, useBadge}) => {
+const CallBackendByName = ({url, callback, useBadge, attr='name'}) => {
     const [data, setData] = useState('');
 
     useEffect(() => {
@@ -14,7 +14,7 @@ const CallBackendByName = ({url, callback, useBadge}) => {
 return (
         data && 
         <React.Fragment>
-                <LetterFormat useBadge={useBadge} stringToDisplay={data.name? data.name: data.username} color={data.color}/>
+                <LetterFormat useBadge={useBadge} stringToDisplay={data[attr]} color={data.color}/>
         </React.Fragment>
     );
 };

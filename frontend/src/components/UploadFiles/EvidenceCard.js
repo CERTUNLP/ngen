@@ -11,8 +11,6 @@ const EvidenceCard = (props) => {
     useEffect(() => {
     }, [props.evidences]);
 
-    console.log(props.evidences);
-
     const handleDragOver = (event) => {
         event.preventDefault();
     };
