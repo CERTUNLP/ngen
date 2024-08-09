@@ -223,8 +223,6 @@
     "ngen.case.create": "Create case",
     "ngen.case_link": "Link to case",
     "ngen.event_link": "Link to event",
-    "button.link": "Link",
-    "button.create": "Create",
     "notes": "Notes",
     "ngen.notes.placeholder": "Insert notes here...",
     "ngen.affectedResources": "Affected resources",
