@@ -21,7 +21,7 @@ const ModalListEvent = (props) => {
     const { t } = useTranslation();
 
     useEffect(() => {
-        getEvents(props.currentPage, props.taxonomyFilter + props.tlpFilter + props.feedFilter + caseIsNull + parentIsNull,)
+        getEvents(props.currentPage, props.taxonomyFilter + props.tlpFilter + props.feedFilter + props.wordToSearch + caseIsNull + parentIsNull)
             .then((response) => {
                 setEvents(response.data.results);
                 setCountItems(response.data.count);
