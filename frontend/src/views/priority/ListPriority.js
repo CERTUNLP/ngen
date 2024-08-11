@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'
-import { Card, Row, Col } from 'react-bootstrap';
+import { Card, Col, Row } from 'react-bootstrap';
 import Alert from '../../components/Alert/Alert';
 import Navigation from '../../components/Navigation/Navigation'
 import Search from '../../components/Search/Search'
@@ -8,7 +8,7 @@ import CrudButton from '../../components/Button/CrudButton';
 import { getPriorities } from "../../api/services/priorities";
 import TablePriorities from './components/TablePriorities';
 import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const ListPriorities = () => {
   const [priorities, setPriorities] = useState([])
@@ -39,11 +39,10 @@ const ListPriorities = () => {
 
     }).catch((error) => {
       console.log(error)
+    }).finally(() => {
+      setShowAlert(true)
+      setLoading(false)
     })
-      .finally(() => {
-        setShowAlert(true)
-        setLoading(false)
-      })
 
   }, [currentPage, wordToSearch, order])
 
@@ -54,9 +53,9 @@ const ListPriorities = () => {
   return (
     <div>
 
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="priority" />
+      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="priority"/>
       <Row>
-        <Navigation actualPosition={t('ngen.priority_other')} />
+        <Navigation actualPosition={t('ngen.priority_other')}/>
       </Row>
 
       <Card>
@@ -64,22 +63,27 @@ const ListPriorities = () => {
 
           <Row>
             <Col sm={12} lg={9}>
-              <Search type={t('search.by.name')} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+              <Search type={t('search.by.name')} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch}
+                      setLoading={setLoading}/>
             </Col>
             <Col sm={12} lg={3}>
-              <Link to={"/priorities/create"} >
-                <CrudButton type='create' name={t('ngen.priority_one')} />
+              <Link to={"/priorities/create"}>
+                <CrudButton type='create' name={t('ngen.priority_one')}/>
               </Link>
             </Col>
           </Row>
         </Card.Header>
         <Card.Body>
-          <TablePriorities Priorities={priorities} loading={loading} order={order} setOrder={setOrder} setLoading={setLoading} currentPage={currentPage} />
+          <TablePriorities Priorities={priorities} loading={loading} order={order} setOrder={setOrder}
+                           setLoading={setLoading} currentPage={currentPage}/>
         </Card.Body>
-        <Card.Footer >
+        <Card.Footer>
           <Row className="justify-content-md-center">
             <Col md="auto">
-              <AdvancedPagination countItems={countItems} updatePage={updatePage} updatePagination={updatePagination} setUpdatePagination={setUpdatePagination} setLoading={setLoading} setDisabledPagination={setDisabledPagination} disabledPagination={disabledPagination} />
+              <AdvancedPagination countItems={countItems} updatePage={updatePage} updatePagination={updatePagination}
+                                  setUpdatePagination={setUpdatePagination} setLoading={setLoading}
+                                  setDisabledPagination={setDisabledPagination}
+                                  disabledPagination={disabledPagination}/>
             </Col>
           </Row>
         </Card.Footer>
@@ -87,4 +91,5 @@ const ListPriorities = () => {
     </div>
   );
 }
+
 export default ListPriorities

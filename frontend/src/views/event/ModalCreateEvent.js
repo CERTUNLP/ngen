@@ -9,8 +9,18 @@ import { getMinifiedTlp } from '../../api/services/tlp';
 import { getMinifiedUser } from '../../api/services/users';
 import FormEvent from './components/FormEvent';
 import { useTranslation } from 'react-i18next';
+import Alert from "../../components/Alert/Alert";
 
-const ModalCreateEvent = ({ showModalEvent, setShowModalEvent, setEventList, eventList, setCurrentPage,  selectedEvent, setSelectedEvent, setEvents}) => {
+const ModalCreateEvent = ({
+                            showModalEvent,
+                            setShowModalEvent,
+                            setEventList,
+                            eventList,
+                            setCurrentPage,
+                            selectedEvent,
+                            setSelectedEvent,
+                            setEvents
+                          }) => {
   const formEmpty = {
     children: [],
     todos: [],
@@ -21,7 +31,7 @@ const ModalCreateEvent = ({ showModalEvent, setShowModalEvent, setEventList, eve
     notes: "",
     parent: [],
     priority: "",  //requerido
-    tlp: "",        //requerido 
+    tlp: "",        //requerido
     taxonomy: "",   //requerido
     feed: "",       //requerido
     reporter: [],
@@ -51,89 +61,76 @@ const ModalCreateEvent = ({ showModalEvent, setShowModalEvent, setEventList, eve
     getMinifiedTlp().then((response) => {
       let listTlp = []
       let dicTlp = {}
-      response.map((tlp) => {
+      response.forEach((tlp) => {
         listTlp.push({ value: tlp.url, label: tlp.name })
         dicTlp[tlp.url] = { name: tlp.name, color: tlp.color }
       })
       setTLP(listTlp)
       setTlpNames(dicTlp)
-    })
-      .catch((error) => {
-        setShowAlert(true) //hace falta?
-        console.log(error)
+    }).catch((error) => {
+      setShowAlert(true) //hace falta?
+      console.log(error)
 
-      })
+    })
 
     getMinifiedTaxonomy().then((response) => {
-      let listTaxonomies = []
-      response.map((taxonomy) => {
-        listTaxonomies.push({ value: taxonomy.url, label: taxonomy.name })
+      let listTaxonomies = response.map((taxonomy) => {
+        return { value: taxonomy.url, label: taxonomy.name }
       })
       setTaxonomy(listTaxonomies)
-    })
-      .catch((error) => {
-        console.log(error)
+    }).catch((error) => {
+      console.log(error)
 
-      })
+    })
 
     getMinifiedFeed().then((response) => { //se hardcodea las paginas
-      let listFeed = []
-      response.map((feed) => {
-        listFeed.push({ value: feed.url, label: feed.name })
+      let listFeed = response.map((feed) => {
+        return { value: feed.url, label: feed.name }
       })
       setFeeds(listFeed)
-    })
-      .catch((error) => {
-        console.log(error)
+    }).catch((error) => {
+      console.log(error)
 
-      })
+    })
 
     getMinifiedPriority().then((response) => { //se hardcodea las paginas
       let priorityOp = []
       let dicPriority = {}
-      response.map((priority) => {
+      response.forEach((priority) => {
         priorityOp.push({ value: priority.url, label: priority.name })
         dicPriority[priority.url] = priority.name
       })
       setPriorityNames(dicPriority)
       setPriorities(priorityOp)
-    })
-      .catch((error) => {
-        console.log(error)
+    }).catch((error) => {
+      console.log(error)
 
-      })
+    })
 
     getMinifiedUser().then((response) => { //se hardcodea las paginas
       let dicUser = {}
-      response.map((user) => {
+      response.forEach((user) => {
         dicUser[user.url] = user.username
       })
       setUserNames(dicUser)
+    }).catch((error) => {
+      console.log(error)
+
     })
-      .catch((error) => {
-        console.log(error)
 
+    getMinifiedArtifact().then((response) => {
+      var list = response.map((artifact) => {
+        return { value: artifact.url, label: artifact.value }
       })
-
-    getMinifiedArtifact()
-      .then((response) => {
-        var list = []
-        response.map((artifact) => {
-          list.push({ value: artifact.url, label: artifact.value })
-        })
-        setListArtifact(list)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+      setListArtifact(list)
+    }).catch((error) => {
+      console.log(error)
+    })
 
   }, [contactCreated]);
 
   const createEvent = () => {
-
     const formDataEvent = new FormData();
-
-
     formDataEvent.append("date", body.date)// tengo que hacer esto porque solo me acepta este formato, ver a futuro
     formDataEvent.append("priority", body.priority)
     formDataEvent.append("tlp", body.tlp)
@@ -160,36 +157,38 @@ const ModalCreateEvent = ({ showModalEvent, setShowModalEvent, setEventList, eve
       formDataEvent.append('artifacts', item);
     });
 
-    postEvent(formDataEvent)
-      .then((response) => {
-        //window.location.href = '/events';
-        console.log(response.data)
-        setShowModalEvent(false)
-        setEventList([... eventList, response.data])
-        setSelectedEvent([... eventList, response.data])
-        
-        setEvents([... eventList.map(event => event.url), response.data.url])
-        setCurrentPage(1);
-      })
-      .catch((error) => {
-        setShowAlert(true)
-        console.log(error)
-      })
+    postEvent(formDataEvent).then((response) => {
+      //window.location.href = '/events';
+      console.log(response.data)
+      setShowModalEvent(false)
+      setEventList([...eventList, response.data])
+      setSelectedEvent([...eventList, response.data])
+
+      setEvents([...eventList.map(event => event.url), response.data.url])
+      setCurrentPage(1);
+    }).catch((error) => {
+      setShowAlert(true)
+      console.log(error)
+    })
   }
+
   return (
-    <Modal show={showModalEvent} size="lg" onHide={() => setShowModalEvent(false)} aria-labelledby="contained-modal-title-vcenter" centered>
+    <Modal show={showModalEvent} size="lg" onHide={() => setShowModalEvent(false)}
+           aria-labelledby="contained-modal-title-vcenter" centered>
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="edge"/>
       <Modal.Header closeButton>
         <Modal.Title>{t('ngen.event.create')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div id="example-collapse-text">
           <FormEvent createEvent={createEvent} setBody={setBody} body={body}
-            feeds={feeds} taxonomy={taxonomy} tlp={TLP} priorities={priorities}
-            listArtifact={listArtifact} setContactsCreated={setContactsCreated}
-            evidence={evidence} setEvidence={setEvidence}
-            tlpNames={tlpNames}
-            priorityNames={priorityNames} setPriorityNames={setPriorityNames}
-            userNames={userNames} disableCardCase={true} disableCardEvidence={true} disableCardArtifacts={true} />
+                     feeds={feeds} taxonomy={taxonomy} tlp={TLP} priorities={priorities}
+                     listArtifact={listArtifact} setContactsCreated={setContactsCreated}
+                     evidence={evidence} setEvidence={setEvidence}
+                     tlpNames={tlpNames}
+                     priorityNames={priorityNames} setPriorityNames={setPriorityNames}
+                     userNames={userNames} disableCardCase={true} disableCardEvidence={true}
+                     disableCardArtifacts={true}/>
         </div>
       </Modal.Body>
     </Modal>

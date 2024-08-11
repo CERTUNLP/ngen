@@ -1,7 +1,16 @@
 import Pagination from 'react-bootstrap/Pagination';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const AdvancedPagination = ({ countItems, updatePage, updatePagination, setUpdatePagination, setLoading, disabledPagination, setDisabledPagination, parentCurrentPage = -1 }) => {
+const AdvancedPagination = ({
+                              countItems,
+                              updatePage,
+                              updatePagination,
+                              setUpdatePagination,
+                              setLoading,
+                              disabledPagination,
+                              setDisabledPagination,
+                              parentCurrentPage = -1
+                            }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [initPage, setInitPage] = useState(1);
@@ -93,30 +102,32 @@ const AdvancedPagination = ({ countItems, updatePage, updatePagination, setUpdat
   return (
     <Pagination>
       {currentPage === 1 ?
-        <Pagination.First disabled />
+        <Pagination.First disabled/>
         :
-        <Pagination.First disabled={disabledPagination} onClick={() => updateCurrentPage(1)} />
+        <Pagination.First disabled={disabledPagination} onClick={() => updateCurrentPage(1)}/>
       }
 
       {currentPage === 1 ?
-        <Pagination.Prev disabled />
+        <Pagination.Prev disabled/>
         :
-        <Pagination.Prev disabled={disabledPagination} onClick={() => arrayPagesPrev()} />
+        <Pagination.Prev disabled={disabledPagination} onClick={() => arrayPagesPrev()}/>
       }
       {arrayPages.map(page => (
         (page === currentPage) ?
-          <Pagination.Item key={page} disabled={disabledPagination} onClick={() => updateCurrentPage(page)} active>{page}</Pagination.Item>
-          : <Pagination.Item key={page} disabled={disabledPagination} onClick={() => updateCurrentPage(page)}>{page}</Pagination.Item>
+          <Pagination.Item key={page} disabled={disabledPagination} onClick={() => updateCurrentPage(page)}
+                           active>{page}</Pagination.Item>
+          : <Pagination.Item key={page} disabled={disabledPagination}
+                             onClick={() => updateCurrentPage(page)}>{page}</Pagination.Item>
       ))}
       {currentPage === lastPage ?
-        <Pagination.Next disabled />
+        <Pagination.Next disabled/>
         :
-        <Pagination.Next disabled={disabledPagination} onClick={() => arrayPagesNext()} />
+        <Pagination.Next disabled={disabledPagination} onClick={() => arrayPagesNext()}/>
       }
       {currentPage === lastPage ?
-        <Pagination.Last disabled />
+        <Pagination.Last disabled/>
         :
-        <Pagination.Last disabled={disabledPagination} onClick={() => updateCurrentPage(lastPage)} />
+        <Pagination.Last disabled={disabledPagination} onClick={() => updateCurrentPage(lastPage)}/>
       }
 
     </Pagination>

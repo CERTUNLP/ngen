@@ -1,11 +1,10 @@
-import { validateAlphanumeric, validateLength, isBlank, isNull } from '../validators'; 
+import { isBlank, isNull, validateAlphanumeric, validateLength } from '../validators';
 
-const validateUnrequiredInput = (input) =>{
-    return (!(isNull(input) || isBlank(input)))
+const validateUnrequiredInput = (input) => {
+  return (!(isNull(input) || isBlank(input)))
 }
-const validatePlaybookName = (name) =>{
-    return (validateAlphanumeric(name) && validateLength(name, 25) )
+const validatePlaybookName = (name) => {
+  return (validateAlphanumeric(name) && validateLength(name, 25))
 }
 
-
-export { validatePlaybookName, validateUnrequiredInput}
+export { validatePlaybookName, validateUnrequiredInput }

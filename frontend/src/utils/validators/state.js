@@ -1,20 +1,20 @@
-import { validateFieldText, validateLength, isEmpty, isBlank } from "../validators"
+import { isBlank, isEmpty, validateFieldText, validateLength } from "../validators"
 
-const validateName = (name) =>{
-    //return (validateFieldText(name) && validateLength(name, 100) && !isEmpty(name))
-    return (validateFieldText(name) && validateLength(name, 100))
+const validateName = (name) => {
+  //return (validateFieldText(name) && validateLength(name, 100) && !isEmpty(name))
+  return (validateFieldText(name) && validateLength(name, 100))
 }
 
-const validateDescription = (description) =>{
-    return (validateLength(description, 250) && !isEmpty(description))
+const validateDescription = (description) => {
+  return (validateLength(description, 250) && !isEmpty(description))
 }
 
-const validateSelect = (option) =>{
-    return (!isEmpty(option))
+const validateSelect = (option) => {
+  return (!isEmpty(option))
 }
 
-const validateUnrequiredInput = (input) =>{
-    return (!isBlank(input))
+const validateUnrequiredInput = (input) => {
+  return (!isBlank(input))
 }
 
-export {validateName, validateDescription, validateSelect, validateUnrequiredInput}
+export { validateName, validateDescription, validateSelect, validateUnrequiredInput }

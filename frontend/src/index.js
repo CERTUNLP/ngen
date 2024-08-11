@@ -11,22 +11,22 @@ import { PersistGate } from 'redux-persist/integration/react';
 import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { store, persister } from './store';
+import { persister, store } from './store';
 
 import setupInterceptors from './api/setupInterceptors';
 
-// import i18n (needs to be bundled ;)) 
+// import i18n (needs to be bundled ;))
 import './i18n';
 
 ReactDOM.render(
-    <Provider store={store}>
-        <ConfigProvider>
-            <PersistGate loading={null} persistor={persister}>
-                <App />
-            </PersistGate>
-        </ConfigProvider>
-    </Provider>,
-    document.getElementById('root')
+  <Provider store={store}>
+    <ConfigProvider>
+      <PersistGate loading={null} persistor={persister}>
+        <App/>
+      </PersistGate>
+    </ConfigProvider>
+  </Provider>,
+  document.getElementById('root')
 );
 
 setupInterceptors(store);

@@ -1,34 +1,28 @@
-import React from 'react';
-import {Badge, Button} from 'react-bootstrap';
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Badge } from 'react-bootstrap';
 import { getPriority } from '../../api/services/priorities';
 
 const PriorityButton = (props) => {
-    const [priority, setPriority] = useState('');
-    const [colorText, setColorText] = useState('');
+  const [priority, setPriority] = useState('');
+  // const [colorText, setColorText] = useState('');
 
-    useEffect(() => {
+  useEffect(() => {
+    showPriority(props.url)
+  }, []);
 
-        showPriority(props.url)
-        
-    }, []);
-    
-    const showPriority = (url) => {
-        getPriority(url)
-        .then((response) => {
-            //console.log(response)
-            setPriority(response.data)
-        })
-        .catch();
-    }
-return (
-        priority && 
-        <React.Fragment>
-                <Badge className="badge mr-1" 
-                style={{background: `${priority.color}`, color: '#111111'}}>{priority.name}</Badge> 
-        </React.Fragment>
-    );
+  const showPriority = (url) => {
+    getPriority(url).then((response) => {
+      setPriority(response.data)
+    }).catch();
+  }
+
+  return (
+    priority &&
+    <React.Fragment>
+      <Badge className="badge mr-1"
+             style={{ background: `${priority.color}`, color: '#111111' }}>{priority.name}</Badge>
+    </React.Fragment>
+  );
 };
 
-export default PriorityButton; 
-//parseInt(priority.color.slice(1),16)
+export default PriorityButton;

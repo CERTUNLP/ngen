@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button } from 'react-bootstrap'; 
+import { Button } from 'react-bootstrap';
 
-const ButtonFilter = ({open, setOpen}) => {
+const ButtonFilter = ({ open, setOpen }) => {
 
   return (
     <Button variant="primary" className='text-capitalize' size="sm" onClick={() => setOpen(!open)} aria-expanded={open}>
@@ -9,7 +9,7 @@ const ButtonFilter = ({open, setOpen}) => {
         tune
       </span>
     </Button>
-    
+
   );
 }
 

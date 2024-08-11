@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Card, Table, Form, Button, Col } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
 import Alert from '../../components/Alert/Alert';
 import Navigation from '../../components/Navigation/Navigation';
-import { patchSetting, getSetting } from '../../api/services/setting';
+import { getSetting, patchSetting } from '../../api/services/setting';
 import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const EditSetting = () => {
-  const location = useLocation();
-  const fromState = location.state;
-  const [body, setBody] = useState(fromState);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
@@ -31,26 +27,19 @@ const EditSetting = () => {
   }
 
   useEffect(() => {
-    getSetting(currentPage)
-      .then(response => {
-        setList(response.data.results);
-        setCountItems(response.data.count)
-        if (currentPage === 1) {
-          setUpdatePagination(true)
-        }
-        setDisabledPagination(false)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    getSetting(currentPage).then(response => {
+      setList(response.data.results);
+      setCountItems(response.data.count)
+      if (currentPage === 1) {
+        setUpdatePagination(true)
+      }
+      setDisabledPagination(false)
+    }).catch(error => {
+      console.log(error)
+    }).finally(() => {
+      setLoading(false);
+    });
   }, [ifModify, currentPage]);
-
-  const resetShowAlert = () => {
-    setShowAlert(false);
-  };
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
@@ -60,7 +49,7 @@ const EditSetting = () => {
   function removePartOfURL(url) {
     // Using a regular expression to find and replace the part to remove
     var partToRemove = "/?page=" + currentPage;
-    return url.replace(new RegExp(partToRemove + '.*?(\/|$)'), '');
+    return url.replace(new RegExp(partToRemove + '.*?(/|$)'), '');
 
   }
 
@@ -69,9 +58,7 @@ const EditSetting = () => {
     let item = list[list.findIndex(item => item.url === url)]
     console.log(removePartOfURL(url))
 
-    patchSetting(url, item.value)
-      .then(response => setIfModify(response))
-      .catch(error => console.log(error))
+    patchSetting(url, item.value).then(response => setIfModify(response)).catch(error => console.log(error))
   };
 
   const completeField = (event, url) => {
@@ -87,9 +74,9 @@ const EditSetting = () => {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="state" />
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="state"/>
       <Row>
-        <Navigation actualPosition={t('config')} />
+        <Navigation actualPosition={t('config')}/>
       </Row>
       <Card>
         <Card.Header>
@@ -99,20 +86,31 @@ const EditSetting = () => {
           <ul className="list-group my-4">
             <Table responsive hover className="text-center">
               <thead>
-                <tr>
-                  <th>{t('ngen.name_one')}</th>
-                  <th>{t('ngen.description')}</th>
-                  <th>{t('ngen.default')}</th>
-                  <th>{t('ngen.value')}</th>
-                  <th>{t('w.modify')}</th>
-                  <th></th>
-                </tr>
+              <tr>
+                <th>{t('ngen.name_one')}</th>
+                <th>{t('ngen.description')}</th>
+                <th>{t('ngen.default')}</th>
+                <th>{t('ngen.value')}</th>
+                <th>{t('w.modify')}</th>
+                <th></th>
+              </tr>
               </thead>
               <tbody>
-                {list.map((setting, index) => (
+              {loading ? (
+                  <tr>
+                    <td colSpan="6">
+                      <Row className='justify-content-md-center'>
+                        <Spinner animation='border' variant='primary' size='sm'/>
+                      </Row>
+                    </td>
+                  </tr>
+                )
+                :
+                list.map((setting, index) => (
                   <tr key={index}>
                     <td>{setting.key}</td>
-                    <td><Form.Control style={textareaStyle} as="textarea" rows={3} readOnly value={setting.help_text} /></td>
+                    <td><Form.Control style={textareaStyle} as="textarea" rows={3} readOnly value={setting.help_text}/>
+                    </td>
                     <td>{setting.default}</td>
                     <td>
                       <Form.Group controlId={`formGridAddress${index}`}>
@@ -131,16 +129,20 @@ const EditSetting = () => {
                       </Button>
                     </td>
                   </tr>
-                ))}
+                ))
+              }
               </tbody>
             </Table>
           </ul>
         </Card.Body>
 
-        <Card.Footer >
+        <Card.Footer>
           <Row className="justify-content-md-center">
             <Col md="auto">
-              <AdvancedPagination countItems={countItems} updatePage={updatePage} updatePagination={updatePagination} setUpdatePagination={setUpdatePagination} setLoading={setLoading} setDisabledPagination={setDisabledPagination} disabledPagination={disabledPagination} />
+              <AdvancedPagination countItems={countItems} updatePage={updatePage} updatePagination={updatePagination}
+                                  setUpdatePagination={setUpdatePagination} setLoading={setLoading}
+                                  setDisabledPagination={setDisabledPagination}
+                                  disabledPagination={disabledPagination}/>
             </Col>
           </Row>
         </Card.Footer>

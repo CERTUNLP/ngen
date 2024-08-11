@@ -3,7 +3,17 @@ import { Form } from 'react-bootstrap';
 import Select from 'react-select';
 import { useTranslation } from 'react-i18next';
 
-const FilterSelectUrl = ({ options, itemName, partOfTheUrl, itemFilter, itemFilterSetter, setLoading, setCurrentPage, value, setValue }) => {
+const FilterSelectUrl = ({
+                           options,
+                           itemName,
+                           partOfTheUrl,
+                           itemFilter,
+                           itemFilterSetter,
+                           setLoading,
+                           setCurrentPage,
+                           value,
+                           setValue
+                         }) => {
   const { t } = useTranslation();
 
   const getUrlNumber = (item) => {
@@ -29,7 +39,7 @@ const FilterSelectUrl = ({ options, itemName, partOfTheUrl, itemFilter, itemFilt
   return (
     <Form.Group>
       <Select options={options} isClearable placeholder={`${t('ngen.filter_by')} ${itemName}`}
-        value={value} onChange={(e) => getUrlNumber(e)} />
+              value={value} onChange={(e) => getUrlNumber(e)}/>
     </Form.Group>
 
   );

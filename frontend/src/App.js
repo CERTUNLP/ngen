@@ -5,12 +5,12 @@ import routes, { renderRoutes } from './routes';
 import { BASENAME } from './config/constant';
 
 const App = () => {
-    return (
-        <React.Fragment>
+  return (
+    <React.Fragment>
 
-            <Router basename={BASENAME}>{renderRoutes(routes)}</Router>
-        </React.Fragment>
-    );
+      <Router basename={BASENAME}>{renderRoutes(routes)}</Router>
+    </React.Fragment>
+  );
 };
 
 export default App;

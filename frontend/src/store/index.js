@@ -5,9 +5,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import reducers from './reducers';
 
 const store = configureStore({
-    reducer: reducers,
-    middleware: [],
-    devTools: true
+  reducer: reducers,
+  middleware: [],
+  devTools: true
 });
 
 export const useSelector = useReduxSelector;

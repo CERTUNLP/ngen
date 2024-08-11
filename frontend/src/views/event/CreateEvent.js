@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row } from 'react-bootstrap';
 import FormEvent from './components/FormEvent'
 import Navigation from '../../components/Navigation/Navigation'
@@ -10,7 +10,7 @@ import { getMinifiedPriority } from "../../api/services/priorities";
 import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedArtifact } from "../../api/services/artifact";
 import Alert from '../../components/Alert/Alert';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const CreateEvent = () => {
   const formEmpty = {
@@ -57,81 +57,71 @@ const CreateEvent = () => {
     getMinifiedTlp().then((response) => {
       let listTlp = []
       let dicTlp = {}
-      response.map((tlp) => {
+      response.forEach((tlp) => {
         listTlp.push({ value: tlp.url, label: tlp.name })
         dicTlp[tlp.url] = { name: tlp.name, color: tlp.color }
       })
       setTLP(listTlp)
       setTlpNames(dicTlp)
-    })
-      .catch((error) => {
-        setShowAlert(true) //hace falta?
-        console.log(error)
+    }).catch((error) => {
+      setShowAlert(true) //hace falta?
+      console.log(error)
 
-      })
+    })
 
     getMinifiedTaxonomy().then((response) => {
-      let listTaxonomies = []
-      response.map((taxonomy) => {
-        listTaxonomies.push({ value: taxonomy.url, label: taxonomy.name })
+      let listTaxonomies = response.map((taxonomy) => {
+        return { value: taxonomy.url, label: taxonomy.name }
       })
       setTaxonomy(listTaxonomies)
-    })
-      .catch((error) => {
-        console.log(error)
+    }).catch((error) => {
+      console.log(error)
 
-      })
+    })
 
     getMinifiedFeed().then((response) => { //se hardcodea las paginas
-      let listFeed = []
-      response.map((feed) => {
-        listFeed.push({ value: feed.url, label: feed.name })
+      let listFeed = response.map((feed) => {
+        return { value: feed.url, label: feed.name }
       })
       setFeeds(listFeed)
-    })
-      .catch((error) => {
-        console.log(error)
+    }).catch((error) => {
+      console.log(error)
 
-      })
+    })
 
     getMinifiedPriority().then((response) => { //se hardcodea las paginas
       let priorityOp = []
       let dicPriority = {}
-      response.map((priority) => {
+      response.forEach((priority) => {
         priorityOp.push({ value: priority.url, label: priority.name })
         dicPriority[priority.url] = priority.name
       })
       setPriorityNames(dicPriority)
       setPriorities(priorityOp)
-    })
-      .catch((error) => {
-        console.log(error)
+    }).catch((error) => {
+      console.log(error)
 
-      })
+    })
 
     getMinifiedUser().then((response) => { //se hardcodea las paginas
       let dicUser = {}
-      response.map((user) => {
+      response.forEach((user) => {
         dicUser[user.url] = user.username
       })
       setUserNames(dicUser)
+    }).catch((error) => {
+      console.log(error)
+
     })
-      .catch((error) => {
-        console.log(error)
 
+    getMinifiedArtifact().then((response) => {
+      var list = response.map((artifact) => {
+        return { value: artifact.url, label: artifact.value }
       })
-
-    getMinifiedArtifact()
-      .then((response) => {
-        var list = []
-        response.map((artifact) => {
-          list.push({ value: artifact.url, label: artifact.value })
-        })
-        setListArtifact(list)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+      setListArtifact(list)
+    }).catch((error) => {
+      console.log(error)
+    })
 
   }, [contactCreated]);
 
@@ -166,29 +156,27 @@ const CreateEvent = () => {
       formDataEvent.append('artifacts', item);
     });
 
-    postEvent(formDataEvent)
-      .then(() => {
-        window.location.href = '/events';
-      })
-      .catch((error) => {
-        setShowAlert(true)
-        console.log(error)
-      })
+    postEvent(formDataEvent).then(() => {
+      window.location.href = '/events';
+    }).catch((error) => {
+      setShowAlert(true)
+      console.log(error)
+    })
   }
 
   return (body &&
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="event" />
+      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="event"/>
       <Row>
-        <Navigation actualPosition={t('ngen.event.add')} path="/events" index={t('ngen.event_one')} />
+        <Navigation actualPosition={t('ngen.event.add')} path="/events" index={t('ngen.event_one')}/>
       </Row>
       <FormEvent createEvent={createEvent} setBody={setBody} body={body}
-        feeds={feeds} taxonomy={taxonomy} tlp={TLP} priorities={priorities}
-        listArtifact={listArtifact} setContactsCreated={setContactsCreated}
-        evidence={evidence} setEvidence={setEvidence}
-        tlpNames={tlpNames}
-        priorityNames={priorityNames} setPriorityNames={setPriorityNames}
-        userNames={userNames} />
+                 feeds={feeds} taxonomy={taxonomy} tlp={TLP} priorities={priorities}
+                 listArtifact={listArtifact} setContactsCreated={setContactsCreated}
+                 evidence={evidence} setEvidence={setEvidence}
+                 tlpNames={tlpNames}
+                 priorityNames={priorityNames} setPriorityNames={setPriorityNames}
+                 userNames={userNames}/>
     </div>
   )
 }

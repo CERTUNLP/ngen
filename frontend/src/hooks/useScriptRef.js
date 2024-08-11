@@ -1,16 +1,14 @@
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 const useScriptRef = () => {
-    const scripted = useRef(true);
+  const scripted = useRef(true);
 
-    useEffect(
-        () => () => {
-            scripted.current = false;
-        },
-        []
-    );
+  useEffect(
+    () => () => {
+      scripted.current = false;
+    }, []);
 
-    return scripted;
+  return scripted;
 };
 
 export default useScriptRef;

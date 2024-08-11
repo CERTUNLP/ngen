@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
-import Select from 'react-select'; 
+import Select from 'react-select';
 
 const FilterSelect = ({ options, partOfTheUrl, setFilter, currentFilter, setLoading, placeholder }) => {
   const applyFilter = (e) => {
@@ -14,9 +14,9 @@ const FilterSelect = ({ options, partOfTheUrl, setFilter, currentFilter, setLoad
   };
 
   return (
-      <Form.Group>
-        <Select options={options} isClearable placeholder={placeholder} onChange={applyFilter} />
-      </Form.Group>
+    <Form.Group>
+      <Select options={options} isClearable placeholder={placeholder} onChange={applyFilter}/>
+    </Form.Group>
   );
 };
 

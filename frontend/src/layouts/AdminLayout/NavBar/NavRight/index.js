@@ -1,46 +1,36 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ListGroup, Dropdown, Media } from 'react-bootstrap';
+import { Dropdown, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import axios from 'axios';
 
 import ChatList from './ChatList';
-import { LOGOUT, CLEAR_MESSAGE } from './../../../../store/actions';
+import { CLEAR_MESSAGE, LOGOUT } from './../../../../store/actions';
 import { logout } from '../../../../api/services/auth';
 import { store } from './../../../../store';
 
-import avatar1 from '../../../../assets/images/user/avatar-1.jpg';
-import avatar2 from '../../../../assets/images/user/avatar-2.jpg';
-import avatar3 from '../../../../assets/images/user/avatar-3.jpg';
-import avatar4 from '../../../../assets/images/user/avatar-4.jpg';
 
-import Alert from './../../../../components/Alert/Alert'; 
-
-
-const { dispatch } = store;
+const { dispatch } = store;
 
 const handleLogout = () => {
 
-    logout().finally(() => {
-        dispatch({
-            type: LOGOUT,
-        });
-        dispatch({
-            type: CLEAR_MESSAGE
-        });
+  logout().finally(() => {
+    dispatch({
+      type: LOGOUT,
     });
+    dispatch({
+      type: CLEAR_MESSAGE
+    });
+  });
 
 };
 
 const NavRight = () => {
 
-    const [listOpen, setListOpen] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
 
-    return (
-        <React.Fragment>
-            <ListGroup as="ul" bsPrefix=" " className="navbar-nav ml-auto" id="navbar-right">
-                {/* <ListGroup.Item as="li" bsPrefix=" ">
+  return (
+    <React.Fragment>
+      <ListGroup as="ul" bsPrefix=" " className="navbar-nav ml-auto" id="navbar-right">
+        {/* <ListGroup.Item as="li" bsPrefix=" ">
                     <Dropdown>
                         <Dropdown.Toggle as={Link} variant="link" to="#" id="dropdown-basic">
                             <i className="feather icon-bell icon" />
@@ -139,13 +129,13 @@ const NavRight = () => {
                     </Dropdown>
                 </ListGroup.Item>
                 */}
-                <ListGroup.Item as="li" bsPrefix=" ">
-                    <Dropdown className="drp-user">
-                        <Dropdown.Toggle as={Link} variant="link" to="#" id="dropdown-basic">
-                            <i className="icon feather icon-settings" />
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu alignRight className="profile-notification">
-                            {/* 
+        <ListGroup.Item as="li" bsPrefix=" ">
+          <Dropdown className="drp-user">
+            <Dropdown.Toggle as={Link} variant="link" to="#" id="dropdown-basic">
+              <i className="icon feather icon-settings"/>
+            </Dropdown.Toggle>
+            <Dropdown.Menu alignRight className="profile-notification">
+              {/*
                             <div className="pro-head">
                                <img src={avatar3} className="img-radius" alt="User Profile" /> 
                                 <span>
@@ -156,8 +146,8 @@ const NavRight = () => {
                                 </Link>
                             </div>
                             */}
-                            <ListGroup as="ul" bsPrefix=" " variant="flush" className="pro-body">
-                                {/*
+              <ListGroup as="ul" bsPrefix=" " variant="flush" className="pro-body">
+                {/*
                                 <ListGroup.Item as="li" bsPrefix=" ">
                                     <Link to="#" className="dropdown-item">
                                         <i className="feather icon-settings" /> Settings
@@ -174,24 +164,24 @@ const NavRight = () => {
                                     </Link>
                                 </ListGroup.Item>
                                 */}
-                                <ListGroup.Item as="li" bsPrefix=" ">
-                                    <Link to="#" className="dropdown-item">
-                                        <i className="feather icon-user" /> Mi perfil
-                                    </Link>
-                                </ListGroup.Item>
-                                <ListGroup.Item as="li" bsPrefix=" ">
-                                    <Link to="#" className="dropdown-item" onClick={handleLogout}>
-                                        <i className="feather icon-log-out" /> Logout
-                                    </Link>
-                                </ListGroup.Item>
-                            </ListGroup>
-                        </Dropdown.Menu>
-                    </Dropdown>
+                <ListGroup.Item as="li" bsPrefix=" ">
+                  <Link to="#" className="dropdown-item">
+                    <i className="feather icon-user"/> Mi perfil
+                  </Link>
                 </ListGroup.Item>
-            </ListGroup>
-            <ChatList listOpen={listOpen} closed={() => setListOpen(false)} />
-        </React.Fragment>
-    );
+                <ListGroup.Item as="li" bsPrefix=" ">
+                  <Link to="#" className="dropdown-item" onClick={handleLogout}>
+                    <i className="feather icon-log-out"/> Logout
+                  </Link>
+                </ListGroup.Item>
+              </ListGroup>
+            </Dropdown.Menu>
+          </Dropdown>
+        </ListGroup.Item>
+      </ListGroup>
+      <ChatList listOpen={listOpen} closed={() => setListOpen(false)}/>
+    </React.Fragment>
+  );
 };
 
 export default NavRight;

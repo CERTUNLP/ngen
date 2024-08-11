@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getReports } from "../../api/services/reports";
-import { Row, Col, Card } from 'react-bootstrap';
+import { Card, Col, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
 import Navigation from '../../components/Navigation/Navigation'
 import Search from '../../components/Search/Search'
@@ -9,7 +9,7 @@ import TableReport from './components/TableReport'
 import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
 import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
 import Alert from '../../components/Alert/Alert';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const ListReport = () => {
   const [loading, setLoading] = useState(true)
@@ -32,63 +32,63 @@ const ListReport = () => {
 
   useEffect(() => {
 
-    getReports(currentPage, wordToSearch, order)
-      .then((response) => {
-        setReports(response.data.results)
-        setCountItems(response.data.count)
-        if (currentPage === 1) {
-          setUpdatePagination(true)
-        }
-        setDisabledPagination(false)
-      }).catch((error) => {
-        console.log(error)
-      })
-      .finally(() => {
-        setShowAlert(true)
-        setLoading(false)
-      })
+    getReports(currentPage, wordToSearch, order).then((response) => {
+      setReports(response.data.results)
+      setCountItems(response.data.count)
+      if (currentPage === 1) {
+        setUpdatePagination(true)
+      }
+      setDisabledPagination(false)
+    }).catch((error) => {
+      console.log(error)
+    }).finally(() => {
+      setShowAlert(true)
+      setLoading(false)
+    })
 
-    getMinifiedTaxonomy()
-      .then((response) => {
-        let dicTaxonomy = {}
-        response.map((taxonomy) => {
-          dicTaxonomy[taxonomy.url] = taxonomy.name
-        })
-        setTaxonomyNames(dicTaxonomy)
+    getMinifiedTaxonomy().then((response) => {
+      let dicTaxonomy = {}
+      response.forEach((taxonomy) => {
+        dicTaxonomy[taxonomy.url] = taxonomy.name
       })
+      setTaxonomyNames(dicTaxonomy)
+    })
 
 
   }, [currentPage, wordToSearch, order])
 
 
-
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="report" />
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="report"/>
       <Row>
-        <Navigation actualPosition={t('ngen.report')} />
+        <Navigation actualPosition={t('ngen.report')}/>
       </Row>
       <Card>
         <Card.Header>
           <Row>
             <Col sm={12} lg={9}>
-              <Search type=".." setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+              <Search type=".." setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading}/>
             </Col>
             <Col sm={12} lg={3}>
-              <Link to={{ pathname: '/reports/create' }} >
-                <CrudButton type='create' name={t('ngen.report')} />
+              <Link to={{ pathname: '/reports/create' }}>
+                <CrudButton type='create' name={t('ngen.report')}/>
               </Link>
 
             </Col>
           </Row>
         </Card.Header>
         <Card.Body>
-          <TableReport list={reports} loading={loading} taxonomyNames={taxonomyNames} order={order} setOrder={setOrder} setLoading={setLoading} />
+          <TableReport list={reports} loading={loading} taxonomyNames={taxonomyNames} order={order} setOrder={setOrder}
+                       setLoading={setLoading}/>
         </Card.Body>
-        <Card.Footer >
+        <Card.Footer>
           <Row className="justify-content-md-center">
             <Col md="auto">
-              <AdvancedPagination countItems={countItems} updatePage={updatePage} updatePagination={updatePagination} setUpdatePagination={setUpdatePagination} setLoading={setLoading} setDisabledPagination={setDisabledPagination} disabledPagination={disabledPagination} />
+              <AdvancedPagination countItems={countItems} updatePage={updatePage} updatePagination={updatePagination}
+                                  setUpdatePagination={setUpdatePagination} setLoading={setLoading}
+                                  setDisabledPagination={setDisabledPagination}
+                                  disabledPagination={disabledPagination}/>
             </Col>
           </Row>
         </Card.Footer>

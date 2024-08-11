@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Card } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Card, Col, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
 import TableUsers from './components/TableUsers'
 import Navigation from '../../components/Navigation/Navigation'
@@ -8,7 +8,7 @@ import CrudButton from '../../components/Button/CrudButton';
 import { getUsers } from "../../api/services/users";
 import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
 import Alert from '../../components/Alert/Alert';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 function ListUser() {
   const [users, setUsers] = useState([])
@@ -44,14 +44,12 @@ function ListUser() {
       }
       setDisabledPagination(false)
 
+    }).catch((error) => {
+      setError(error)
+    }).finally(() => {
+      setShowAlert(true)
+      setLoading(false)
     })
-      .catch((error) => {
-        setError(error)
-      })
-      .finally(() => {
-        setShowAlert(true)
-        setLoading(false)
-      })
 
   }, [currentPage, wordToSearch, order])
 
@@ -60,20 +58,21 @@ function ListUser() {
   }
 
   return (
-    <div >
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
+    <div>
+      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert}/>
       <Row>
-        <Navigation actualPosition={t('menu.users')} />
+        <Navigation actualPosition={t('menu.users')}/>
       </Row>
       <Card>
         <Card.Header>
           <Row>
             <Col sm={12} lg={8}>
-              <Search type={t('search.by.name.user.email')} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+              <Search type={t('search.by.name.user.email')} setWordToSearch={setWordToSearch}
+                      wordToSearch={wordToSearch} setLoading={setLoading}/>
             </Col>
             <Col sm={12} lg={3}>
-              <Link to={{ pathname: '/users/create' }} >
-                <CrudButton type='create' name={t('ngen.user')} />
+              <Link to={{ pathname: '/users/create' }}>
+                <CrudButton type='create' name={t('ngen.user')}/>
               </Link>
 
             </Col>
@@ -82,12 +81,16 @@ function ListUser() {
           </Row>
         </Card.Header>
         <Card.Body>
-          <TableUsers users={users} loading={loading} order={order} setOrder={setOrder} setLoading={setLoading} currentPage={currentPage} />
+          <TableUsers users={users} loading={loading} order={order} setOrder={setOrder} setLoading={setLoading}
+                      currentPage={currentPage}/>
         </Card.Body>
-        <Card.Footer >
+        <Card.Footer>
           <Row className="justify-content-md-center">
             <Col md="auto">
-              <AdvancedPagination countItems={countItems} updatePage={updatePage} updatePagination={updatePagination} setUpdatePagination={setUpdatePagination} setLoading={setLoading} setDisabledPagination={setDisabledPagination} disabledPagination={disabledPagination} />
+              <AdvancedPagination countItems={countItems} updatePage={updatePage} updatePagination={updatePagination}
+                                  setUpdatePagination={setUpdatePagination} setLoading={setLoading}
+                                  setDisabledPagination={setDisabledPagination}
+                                  disabledPagination={disabledPagination}/>
             </Col>
           </Row>
         </Card.Footer>

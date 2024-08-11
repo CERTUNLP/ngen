@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'
-import { Card, Row, Col, Button, Badge, Collapse, Form, Modal } from 'react-bootstrap';
+import { Badge, Button, Card, Col, Collapse, Form, Modal, Row } from 'react-bootstrap';
 import Navigation from '../../components/Navigation/Navigation'
 import Search from '../../components/Search/Search'
 import CrudButton from '../../components/Button/CrudButton';
@@ -25,7 +25,7 @@ import ModalListCase from '../case/ModalListCase';
 import { getMinifiedPriority } from '../../api/services/priorities';
 import ModalReadCase from '../case/ModalReadCase';
 import { getMinifiedUser } from '../../api/services/users';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const ListEvent = () => {
   const { t } = useTranslation();
@@ -74,7 +74,7 @@ const ListEvent = () => {
   const [parentIsNull, setParentIsNull] = useState('')
   const [valueParentIsNull, setValueParentIsNull] = useState({ value: "true", label: t('w.not_assigned') })
   //add to cases
-  const [openCases, setOpenCases] = useState(true);
+  const [openCases] = useState(true);
 
   //modal case
   const [showModalCase, setShowModalCase] = useState(false);
@@ -117,32 +117,30 @@ const ListEvent = () => {
   useEffect(() => {
     getMinifiedUser().then((response) => { //se hardcodea las paginas
       let dicUser = {}
-      response.map((user) => {
+      response.forEach((user) => {
         dicUser[user.url] = user.username
       })
       setUserNames(dicUser)
-    })
-      .catch((error) => {
-        console.log(error)
+    }).catch((error) => {
+      console.log(error)
 
-      })
+    })
     getMinifiedState().then((response) => {
       let list = []
       let dicState = {};
-      response.map((stateItem) => {
+      response.forEach((stateItem) => {
         list.push({ value: stateItem.url, label: stateItem.name })
         dicState[stateItem.url] = stateItem.name;
       })
       setStates(list)
       setStateNames(dicState)
+    }).catch((error) => {
+      console.log(error)
     })
-      .catch((error) => {
-        console.log(error)
-      })
     getMinifiedTaxonomy().then((response) => {
       let listTaxonomies = [];
       let dicTaxonomy = {};
-      response.map((taxonomy) => {
+      response.forEach((taxonomy) => {
         listTaxonomies.push({ value: taxonomy.url, label: taxonomy.name });
         dicTaxonomy[taxonomy.url] = taxonomy.name;
       });
@@ -152,21 +150,20 @@ const ListEvent = () => {
     getMinifiedPriority().then((response) => {
       let listPriority = []
       let dicPriority = {}
-      response.map((priority) => {
+      response.forEach((priority) => {
         listPriority.push({ value: priority.url, label: priority.name })
         dicPriority[priority.url] = priority.name
       })
       setPriorityNames(dicPriority)
       setAllPriorities(listPriority)
+    }).catch((error) => {
+      console.log(error)
     })
-      .catch((error) => {
-        console.log(error)
-      })
 
     getMinifiedFeed().then((response) => {
       let listFeeds = [];
       let dicFeed = {};
-      response.map((feed) => {
+      response.forEach((feed) => {
         listFeeds.push({ value: feed.url, label: feed.name });
         dicFeed[feed.url] = feed.name;
       });
@@ -177,7 +174,7 @@ const ListEvent = () => {
     getMinifiedTlp().then((response) => {
       let listTlp = [];
       let dicTlp = {};
-      response.map((tlp) => {
+      response.forEach((tlp) => {
         listTlp.push({ value: tlp.url, label: tlp.name });
         dicTlp[tlp.url] = { name: tlp.name, color: tlp.color };
       });
@@ -187,24 +184,21 @@ const ListEvent = () => {
   }, []);
 
   useEffect(() => {
-    getEvents(currentPage, starDateFilter + endDateFilter + taxonomyFilter + tlpFilter + feedFilter + caseIsNull + parentIsNull + wordToSearch, order)
-      .then((response) => {
-        setEvents(response.data.results);
-        setCountItems(response.data.count);
-        if (currentPage === 1) {
-          setUpdatePagination(true);
-        }
-        setFilterDate(false);
-        setDisabledPagination(false);
-      })
-      .catch((error) => {
-        setShowAlert(true); // ¿Hace falta?
-        console.log(error);
-      })
-      .finally(() => {
-        setLoading(false);
-        setShowAlert(true);
-      });
+    getEvents(currentPage, starDateFilter + endDateFilter + taxonomyFilter + tlpFilter + feedFilter + caseIsNull + parentIsNull + wordToSearch, order).then((response) => {
+      setEvents(response.data.results);
+      setCountItems(response.data.count);
+      if (currentPage === 1) {
+        setUpdatePagination(true);
+      }
+      setFilterDate(false);
+      setDisabledPagination(false);
+    }).catch((error) => {
+      setShowAlert(true); // ¿Hace falta?
+      console.log(error);
+    }).finally(() => {
+      setLoading(false);
+      setShowAlert(true);
+    });
   }, [currentPage, ifModify, wordToSearch, taxonomyFilter, tlpFilter, feedFilter, filterDate, order, caseIsNull, parentIsNull, refresh]);
 
   function updatePage(chosenPage) {
@@ -224,13 +218,10 @@ const ListEvent = () => {
     const parent = selectedEvent.shift();
     selectedEvent.forEach(child => {
       console.log(`MERGE --> parent: ${parent} \n          child:${child} `)
-      mergeEvent(parent, child)
-        .then(response => setIfModify(response))
-        .catch(error => console.log(error))
-        .finally(() => {
-          setSelectedEvent([])
-          setShowModal(false)
-        })
+      mergeEvent(parent, child).then(response => setIfModify(response)).catch(error => console.log(error)).finally(() => {
+        setSelectedEvent([])
+        setShowModal(false)
+      })
     });
   }
 
@@ -243,7 +234,7 @@ const ListEvent = () => {
   const completeDateStar = (date) => {
     setStarDate(date)
     setStarDateFilter("created_range_after=" + date + '&')
-    if ((endDateFilter !== "") && (starDateFilter !== "created_range_after=" + date + '&')) { // este if esta porque si no hay cambios en el WordToSearch 
+    if ((endDateFilter !== "") && (starDateFilter !== "created_range_after=" + date + '&')) { // este if esta porque si no hay cambios en el WordToSearch
       //haciendo que no se vuelva a ejecutar el useEffect y qeu al setearce setloading en true quede en un bucle infinito
       setFilterDate(true)
       setLoading(true)
@@ -253,16 +244,12 @@ const ListEvent = () => {
   const completeDateEnd = (date) => {
     setEndDate(date)
     setEndDateFilter("created_range_before=" + date + '&')
-    if ((endDateFilter !== "created_range_before=" + date + '&') && (starDateFilter !== "")) { // este if esta porque si no hay cambios en el WordToSearch 
+    if ((endDateFilter !== "created_range_before=" + date + '&') && (starDateFilter !== "")) { // este if esta porque si no hay cambios en el WordToSearch
       //haciendo que no se vuelva a ejecutar el useEffect y qeu al setearce setloading en true quede en un bucle infinito
       setFilterDate(true)
       setLoading(true)
     }
   }
-
-  const clearModal = () => {
-    setShowModalCase(false)
-  };
 
   const closeOptionsList = () => {
     setShowOptionsToAddCase(false)
@@ -334,22 +321,23 @@ const ListEvent = () => {
   };
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="event" />
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="event"/>
       <Row>
-        <Navigation actualPosition={t('ngen.event_other')} />
+        <Navigation actualPosition={t('ngen.event_other')}/>
       </Row>
       <Card>
         <Card.Header>
           <Row>
             <Col sm={1} lg={1}>
-              <ButtonFilter open={open} setOpen={setOpen} />
+              <ButtonFilter open={open} setOpen={setOpen}/>
             </Col>
-            <Col sm={8} lg={4} >
-              <Search type={t('search.taxonomy_feed_affectedresource')} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+            <Col sm={8} lg={4}>
+              <Search type={t('search.taxonomy_feed_affectedresource')} setWordToSearch={setWordToSearch}
+                      wordToSearch={wordToSearch} setLoading={setLoading}/>
             </Col>
             <Col>
-              <Link to={"/events/create"} >
-                <CrudButton type='create' name={t('ngen.event_one')} />
+              <Link to={"/events/create"}>
+                <CrudButton type='create' name={t('ngen.event_one')}/>
               </Link>
               <Button
                 disabled={selectedEvent.length > 1 ? false : true}
@@ -358,10 +346,10 @@ const ListEvent = () => {
                 variant="outline-dark"
                 title='Mergear'
                 onClick={() => mergeConfirm()}>
-                <i className="fa fa-code-branch" />
+                <i className="fa fa-code-branch"/>
                 {t('ngen.merge')}&nbsp;
                 <Badge
-                  className="badge mr-1" >
+                  className="badge mr-1">
                   {selectedEvent.length}
                 </Badge>
               </Button>
@@ -372,7 +360,7 @@ const ListEvent = () => {
                 onClick={() => modalCase()}>
                 {t('ngen.case.addto')}
                 <Badge
-                  className="badge mr-1" >
+                  className="badge mr-1">
                   {selectedEvent.length}
                 </Badge>
               </Button>
@@ -381,9 +369,12 @@ const ListEvent = () => {
                 variant="outline-dark"
                 onClick={() => reloadPage()}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                  <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
-                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                     className="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                  <path fillRule="evenodd"
+                        d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                  <path
+                    d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
                 </svg>
               </Button>
             </Col>
@@ -400,7 +391,7 @@ const ListEvent = () => {
                       placeholder={t('date.condition_from')}
                       value={starDate}
                       onChange={(e) => completeDateStar(e.target.value)}
-                      name="date" />
+                      name="date"/>
                   </Form.Group>
                 </Col>
                 <Col sm={12} lg={6}>
@@ -411,30 +402,43 @@ const ListEvent = () => {
                       maxLength="150"
                       value={endDate}
                       onChange={(e) => completeDateEnd(e.target.value)}
-                      name="date" />
+                      name="date"/>
                   </Form.Group>
                 </Col>
               </Row>
               <Row>
                 <Col sm={4} lg={4}>
-                  <FilterSelectUrl options={tlpList} itemName={t('ngen.tlp')} partOfTheUrl="tlp" itemFilter={tlpFilter} itemFilterSetter={setTlpFilter} setLoading={setLoading} setCurrentPage={setCurrentPage} />
+                  <FilterSelectUrl options={tlpList} itemName={t('ngen.tlp')} partOfTheUrl="tlp"
+                                   itemFilter={tlpFilter} itemFilterSetter={setTlpFilter}
+                                   setLoading={setLoading} setCurrentPage={setCurrentPage}/>
                 </Col>
                 <Col sm={4} lg={4}>
-                  <FilterSelectUrl options={taxonomies} itemName={t('ngen.taxonomy_one')} partOfTheUrl="taxonomy" itemFilter={taxonomyFilter} itemFilterSetter={setTaxonomyFilter} setLoading={setLoading} setCurrentPage={setCurrentPage} />
+                  <FilterSelectUrl options={taxonomies} itemName={t('ngen.taxonomy_one')}
+                                   partOfTheUrl="taxonomy" itemFilter={taxonomyFilter}
+                                   itemFilterSetter={setTaxonomyFilter} setLoading={setLoading}
+                                   setCurrentPage={setCurrentPage}/>
                 </Col>
                 <Col sm={4} lg={4}>
-                  <FilterSelectUrl options={feeds} itemName={t('ngen.feed_other')} partOfTheUrl="feed" itemFilter={feedFilter} itemFilterSetter={setFeedFilter} setLoading={setLoading} setCurrentPage={setCurrentPage} />
+                  <FilterSelectUrl options={feeds} itemName={t('ngen.feed_other')} partOfTheUrl="feed"
+                                   itemFilter={feedFilter} itemFilterSetter={setFeedFilter}
+                                   setLoading={setLoading} setCurrentPage={setCurrentPage}/>
                 </Col>
               </Row>
               <Row>
                 <Col sm={4} lg={4}>
-                  <FilterSelect options={types} partOfTheUrl="case__isnull" setFilter={setCaseIsNull} currentFilter={caseIsNull} setLoading={setLoading} placeholder={t('ngen.filter_by') + ' ' + t('ngen.case_one')} />
+                  <FilterSelect options={types} partOfTheUrl="case__isnull" setFilter={setCaseIsNull}
+                                currentFilter={caseIsNull} setLoading={setLoading}
+                                placeholder={t('ngen.filter_by') + ' ' + t('ngen.case_one')}/>
                 </Col>
                 <Col sm={4} lg={4}>
-                  <FilterSelectWithDefault options={types} partOfTheUrl="parent__isnull" setFilter={setParentIsNull} currentFilter={parentIsNull} setValue={setValueParentIsNull} value={valueParentIsNull} setLoading={setLoading} placeholder={t('ngen.filter_by') + ' ' + t('ngen.event.parent')} />
+                  <FilterSelectWithDefault options={types} partOfTheUrl="parent__isnull"
+                                           setFilter={setParentIsNull} currentFilter={parentIsNull}
+                                           setValue={setValueParentIsNull} value={valueParentIsNull}
+                                           setLoading={setLoading}
+                                           placeholder={t('ngen.filter_by') + ' ' + t('ngen.event.parent')}/>
                 </Col>
               </Row>
-              <br />
+              <br/>
             </div>
           </Collapse>
         </Card.Header>
@@ -444,52 +448,65 @@ const ListEvent = () => {
                        setLoading={setLoading} currentPage={currentPage} taxonomyNames={taxonomyNames}
                        feedNames={feedNames} tlpNames={tlpNames} disableCheckbox={false}
                        disableUuid={false} disableMerged={false} disbleDateModified={false}
-                       disableDate={false} />
+                       disableDate={false}/>
         </Card.Body>
-        <Card.Footer >
+        <Card.Footer>
           <Row className="justify-content-md-center">
             <Col md="auto">
-              <AdvancedPagination countItems={countItems} updatePage={updatePage} updatePagination={updatePagination} setUpdatePagination={setUpdatePagination} setLoading={setLoading} setDisabledPagination={setDisabledPagination} disabledPagination={disabledPagination} />
+              <AdvancedPagination countItems={countItems} updatePage={updatePage}
+                                  updatePagination={updatePagination}
+                                  setUpdatePagination={setUpdatePagination} setLoading={setLoading}
+                                  setDisabledPagination={setDisabledPagination}
+                                  disabledPagination={disabledPagination}/>
             </Col>
           </Row>
         </Card.Footer>
 
-        <ModalConfirm type='merge' component={t('ngen.event_other')} name={selectedEvent} showModal={showModal} onHide={() => setShowModal(false)} ifConfirm={() => merge()} />
+        <ModalConfirm type='merge' component={t('ngen.event_other')} name={selectedEvent} showModal={showModal}
+                      onHide={() => setShowModal(false)} ifConfirm={() => merge()}/>
 
-        <Modal show={showOptionsToAddCase} size="lg" onHide={() => setShowOptionsToAddCase(false)} aria-labelledby="contained-modal-title-vcenter" centered>
+        <Modal show={showOptionsToAddCase} size="lg" onHide={() => setShowOptionsToAddCase(false)}
+               aria-labelledby="contained-modal-title-vcenter" centered>
           <Modal.Header closeButton>
             <Modal.Title>{t('ngen.add.eventcase')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Button variant="primary" className='text-capitalize' size="sm" onClick={() => closeOptionsList()} aria-expanded={openCases}>
+            <Button variant="primary" className='text-capitalize' size="sm"
+                    onClick={() => closeOptionsList()} aria-expanded={openCases}>
               {t('button.case_existing')}
             </Button>
-            <Button variant="primary" className='text-capitalize' size="sm" onClick={() => closeOptionsCreate()} aria-expanded={openCases}>
+            <Button variant="primary" className='text-capitalize' size="sm"
+                    onClick={() => closeOptionsCreate()} aria-expanded={openCases}>
               {t('button.case_new')}
             </Button>
           </Modal.Body>
         </Modal>
         <ModalCreateCase showModalCase={showModalCase} setShowModalCase={setShowModalCase} caseItem={caseItem}
-          states={states} setSelectCase={setSelectCase} stateNames={states}
-          evidenceColum={false} buttonsModalColum={false} createCaseModal={true} selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent} refresh={refresh} setRefresh={setRefresh} />
+                         states={states} setSelectCase={setSelectCase} stateNames={states}
+                         evidenceColum={false} buttonsModalColum={false} createCaseModal={true}
+                         selectedEvent={selectedEvent}
+                         setSelectedEvent={setSelectedEvent} refresh={refresh} setRefresh={setRefresh}/>
 
-        <ModalListCase stateNames={stateNames} showModalListCase={showModalListCase} setShowModalListCase={setShowModalListCase}
-          closeModal={closeModal} setSelectCase={setSelectCase} setTlpFilter={setTlpFilterCase}
-          currentPage={currentPageCase} setCurrentPage={setCurrentPageCase}
-          wordToSearch={wordToSearchCase} setWordToSearch={setWordToSearchCase}
-          updatePagination={updatePaginationCase} setUpdatePagination={setUpdatePaginationCase}
-          selectedCases={selectedCases} selectCase={selectCase}
-          tlpNames={tlpNames} userNames={userNames} priorityNames={priorityNames}
-          priorityFilter={priorityFilter} setPriorityFilter={setPriorityFilter}
-          tlpFilter={tlpFilterCase} setStateFilter={setStateFilter} stateFilter={stateFilter}
-          priorities={allPriorities} tlp={tlpList} allStates={states}
-          handleClickRadio={handleClickRadio} caseToLink={caseToLink} modalCaseDetail={modalCaseDetail}
-          linkCaseToEvent={linkCaseToEvent}
+        <ModalListCase stateNames={stateNames} showModalListCase={showModalListCase}
+                       setShowModalListCase={setShowModalListCase}
+                       closeModal={closeModal} setSelectCase={setSelectCase} setTlpFilter={setTlpFilterCase}
+                       currentPage={currentPageCase} setCurrentPage={setCurrentPageCase}
+                       wordToSearch={wordToSearchCase} setWordToSearch={setWordToSearchCase}
+                       updatePagination={updatePaginationCase} setUpdatePagination={setUpdatePaginationCase}
+                       selectedCases={selectedCases} selectCase={selectCase}
+                       tlpNames={tlpNames} userNames={userNames} priorityNames={priorityNames}
+                       priorityFilter={priorityFilter} setPriorityFilter={setPriorityFilter}
+                       tlpFilter={tlpFilterCase} setStateFilter={setStateFilter} stateFilter={stateFilter}
+                       priorities={allPriorities} tlp={tlpList} allStates={states}
+                       handleClickRadio={handleClickRadio} caseToLink={caseToLink}
+                       modalCaseDetail={modalCaseDetail}
+                       linkCaseToEvent={linkCaseToEvent}
         />
-        <ModalReadCase modalShowCase={modalShowCase} returnToListOfCases={returnToListOfCases} linkCaseToEvent={linkCaseToEvent} />
+        <ModalReadCase modalShowCase={modalShowCase} returnToListOfCases={returnToListOfCases}
+                       linkCaseToEvent={linkCaseToEvent}/>
       </Card>
     </div>
   )
 }
-export default ListEvent
+
+export default ListEvent;

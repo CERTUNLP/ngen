@@ -40,6 +40,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     history = serializers.SerializerMethodField()
+    password = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = User
@@ -67,15 +68,16 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
         for attr, value in validated_data.items():
-            if attr == 'password':
-                password_validation(value)
-                instance.set_password(value)
-            else:
-                setattr(instance, attr, value)
+            setattr(instance, attr, value)
+
+        if password:
+            password_validation(password)
+            instance.set_password(password)
+
         instance.save()
         return instance
-
 
 
 class UserProfileSerializer(AuditSerializerMixin):
