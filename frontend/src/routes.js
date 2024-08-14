@@ -129,7 +129,7 @@ const routes = [
             },
             {
                 exact: true,
-                path: '/entities/edit',
+                path: '/entities/edit/:id',
                 component: lazy(() => import('./views/entity/EditEntity'))
             },
             {
@@ -174,7 +174,7 @@ const routes = [
             },
             {
                 exact: true,
-                path: "/users/edit",
+                path: "/users/edit/:id",
                 component: lazy(() => import('./views/user/EditUser'))
             },
             {
@@ -189,7 +189,7 @@ const routes = [
             },
             {
                 exact: true,
-                path: "/states/edit",
+                path: "/states/edit/:id",
                 component: lazy(() => import('./views/state/EditState'))
             },
             {

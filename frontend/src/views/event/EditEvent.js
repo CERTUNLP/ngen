@@ -35,7 +35,7 @@ const EditEvent = () => {
   const [priorityNames, setPriorityNames] = useState({});
   const [userNames, setUserNames] = useState({});
   const [updateEvidence, setUpdateEvidence] = useState([])
-  const [url, setUrl] = useState(localStorage.getItem('event'));
+  const [url, setUrl] = useState(location.state?.eventUrl || localStorage.getItem('event'));
 
   useEffect(() => {
     getEvent(url)

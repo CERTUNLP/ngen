@@ -101,6 +101,8 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                     </thead>
                     <tbody>
                         {users.map((user, index) => {
+                            const parts = user.url.split("/");
+                            let itemNumber = parts[parts.length - 2];
                             return (
                                 <tr key={index}>
                                     <td>{user.username}</td>
@@ -112,7 +114,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                                     <td>{user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}</td>
                                     <td>
                                         <CrudButton type='read' onClick={() => showModalUser(user)} />
-                                        <Link to={{ pathname: "/users/edit", state: user }} >
+                                        <Link to={{ pathname: `/users/edit/${itemNumber}`, state: user }} >
                                             <CrudButton type='edit' />
                                         </Link>
                                         <CrudButton type='delete' onClick={() => handleShow(user.username, user.url)} />

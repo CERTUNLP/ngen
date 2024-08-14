@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect } from 'react'
-import { Card, Form, Button, Row, Col } from 'react-bootstrap'
+import { Card, Form, Button, Row, Col, Spinner } from 'react-bootstrap'
 import makeAnimated from 'react-select/animated';
 import { validateName, validateDescription, validateUnrequiredInput } from '../../../utils/validators/state';
 import SelectComponent from '../../../components/Select/SelectComponent';
 import { useTranslation, Trans } from 'react-i18next';
 
 const animatedComponents = makeAnimated();
-const FormState = ({ body, setBody, createState, type }) => {
+const FormState = ({ body, setBody, createState, type, loading }) => {
     const [selectAttended, setSelecAttended] = useState()
     const [selectSolved, setSelectSolved] = useState()
     const { t } = useTranslation();
@@ -31,6 +31,7 @@ const FormState = ({ body, setBody, createState, type }) => {
             label: t('ngen.false')
         }
     ]
+
     useEffect(() => {
 
         if (solvedOptions !== []) {
@@ -50,6 +51,14 @@ const FormState = ({ body, setBody, createState, type }) => {
 
 
     }, [])
+
+    if (loading) {
+        return (
+            <Row className='justify-content-md-center'>
+                <Spinner animation='border' variant='primary' size='sm' />
+            </Row>
+        );
+    }
 
     const completeField = (event) => {
         setBody({

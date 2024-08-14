@@ -102,6 +102,8 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                     </thead>
                     <tbody>
                         {states.map((state, index) => {
+                            const parts = state.url.split("/");
+                            let itemNumber = parts[parts.length - 2];
                             return (
                                 <tr key={index}>
                                     <td>{state.name}</td>
@@ -115,7 +117,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
 
                                     <td>
                                         <CrudButton type='read' onClick={() => showModalState(state)} />
-                                        <Link to={{ pathname: "/states/edit", state: state }} >
+                                        <Link to={{ pathname: `/states/edit/${itemNumber}`, state: state }} >
                                             <CrudButton type='edit' />
                                         </Link>
                                         <CrudButton type='delete' onClick={() => modalDelete(state.name, state.url)} />

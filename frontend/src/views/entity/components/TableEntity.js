@@ -111,6 +111,8 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                 </thead>
                 <tbody>
                     {list.map((entity, index) => {
+                         const parts = entity.url.split("/");
+                         let itemNumber = parts[parts.length - 2];
 
                         return (
                             <tr key={index}>
@@ -121,7 +123,10 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                                 <td>{entity.networks.length}</td>
                                 <td>
                                     <CrudButton type='read' onClick={() => showEntity(entity.url)} />
-                                    <Link to={{ pathname: '/entities/edit', state: entity }}>
+                                    {/*<Link to={{ pathname: '/entities/edit', state: entity }}>
+                                        <CrudButton type='edit' onClick={() => storageEntityUrl(entity.url)} />
+                                    </Link>*/}
+                                    <Link to={`/entities/edit/${itemNumber}`}>
                                         <CrudButton type='edit' onClick={() => storageEntityUrl(entity.url)} />
                                     </Link>
                                     <CrudButton type='delete' onClick={() => Delete(entity.url, entity.name)} />

@@ -74,7 +74,13 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
 
     const storageEventUrl = (url) => {
         localStorage.setItem('event', url);
+        window.dispatchEvent(new Event('storageUpdated'));
     };
+    
+    window.addEventListener('storageUpdated', () => {
+        const eventUrl = localStorage.getItem('event');
+        console.log('Storage updated: ', eventUrl);
+    });
 
     const letterSize = { fontSize: '1.1em' }
     return (
@@ -179,7 +185,7 @@ const TableEvents = ({ events, loading, selectedEvent, setSelectedEvent, order, 
                                             ""
                                             :
                                             !event.blocked ? (
-                                                <Link to={{ pathname: "/events/edit", state: event }} >
+                                                <Link to={{ pathname: "/events/edit", state: { eventUrl: event.url }  }} >
                                                     <CrudButton type='edit' onClick={() => storageEventUrl(event.url)} />
                                                 </Link>
                                             ) : (

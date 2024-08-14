@@ -34,7 +34,7 @@ const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, set
         localStorage.setItem('case', url);
         localStorage.setItem('navigation', navigationRow);
         localStorage.setItem('button return', navigationRow);
-        window.location.href = '/cases/edit'
+        
 
     }
 
@@ -219,11 +219,13 @@ const TableCase = ({ setIfModify, cases, loading, setLoading, selectedCases, set
                                         ""
                                         :
                                         detailModal ? (
-                                            <CrudButton type="read" onClick={() => modalCaseDetail(caseItem.url, caseItem.name, caseItem.name, caseItem.date, priorityNames[caseItem.priority], tlpNames[caseItem.tlp].name, stateNames[caseItem.state], userNames[caseItem.user_creator])} />
-                                        ) : (
-                                                <CrudButton type="read" onClick={() => storageCaseUrl(caseItem.url)} />
-                                            
-                                        )}
+                                            <CrudButton type="read"
+                                                        onClick={() => modalCaseDetail(caseItem.url, caseItem.name, caseItem.name, caseItem.date, priorityNames[caseItem.priority], tlpNames[caseItem.tlp].name, stateNames[caseItem.state], userNames[caseItem.user_creator])}/>
+                                          ) : (
+                                            <Link to={{ pathname: '/cases/view' }}>
+                                              <CrudButton type="read" onClick={() => storageCaseUrl(caseItem.url)}/>
+                                            </Link>
+                                          )}
                                     {disableColumOption ? ""
                                         :
                                         editColum && (

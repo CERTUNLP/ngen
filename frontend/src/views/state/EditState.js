@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Form, Row } from 'react-bootstrap';
-import { useLocation } from "react-router-dom";
+import { Row } from 'react-bootstrap';
+import { useLocation, useParams } from "react-router-dom";
 import Alert from '../../components/Alert/Alert';
 import FormState from './components/FormState'
 import Navigation from '../../components/Navigation/Navigation'
-import { putState } from "../../api/services/states";
+import { putState, getState } from "../../api/services/states";
 import { getAllStates } from "../../api/services/states";
 import ListEdge from '../edge/ListEdge';
 import { useTranslation, Trans } from 'react-i18next';
+import { COMPONENT_URL } from '../../config/constant';
 
 const EditState = () => {
     const location = useLocation();
@@ -18,6 +19,7 @@ const EditState = () => {
     const [loading, setLoading] = useState(true)
     const [showAlert, setShowAlert] = useState(false)
     const [edge, setEdge] = useState()
+    const [id, setId] = useState(useParams());
     const { t } = useTranslation();
 
     const [sectionAddEdge, setSectionAddEdge] = useState(false);
@@ -27,7 +29,10 @@ const EditState = () => {
         if (body.children !== []) {
             setSectionAddEdge(true)
         }
-        const fetchPosts = async () => {
+
+    }, [body]);
+
+    useEffect(() => {
             getAllStates().then((response) => {
 
                 var listChildren = []
@@ -41,13 +46,22 @@ const EditState = () => {
                 .catch((error) => {
                     console.log(error)
                 })
-        }
-        fetchPosts()
+        
 
     }, []);
-    const resetShowAlert = () => {
-        setShowAlert(false);
-    }
+
+    useEffect(() => {
+        if (id){
+            getState(COMPONENT_URL.state+id.id+"/").then((response) => {
+                setBody(response.data)
+            }).catch((error) => {
+                console.log(error)
+
+            }).finally(() => {
+                setLoading(false)
+            })
+        }
+    }, [id]);
 
     const editState = () => {
         putState(body.url, body.name, body.attended, body.solved, body.active, body.description, body.children)
@@ -66,7 +80,10 @@ const EditState = () => {
                 <Navigation actualPosition={t('ngen.state.edit')} path="/states" index={t('ngen.state_other')} />
             </Row>
             <FormState body={body} setBody={setBody} edge={edge} createState={editState} childernes={states} type={t('w.edit')} />
-            <ListEdge url={body.url} sectionAddEdge={sectionAddEdge} setShowAlert={setShowAlert} />
+            {body?
+            <ListEdge url={body.url} sectionAddEdge={sectionAddEdge} setShowAlert={setShowAlert} loading={loading} />
+            :""
+            }
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation,useParams } from 'react-router-dom';
 import { Row, Col, Card } from 'react-bootstrap';
 import { putEntity } from '../../api/services/entities';
 import FormEntity from './components/FormEntity';
@@ -7,6 +7,7 @@ import Navigation from '../../components/Navigation/Navigation';
 import Alert from '../../components/Alert/Alert';
 import { getEntity } from '../../api/services/entities';
 import { useTranslation, Trans } from 'react-i18next';
+import { COMPONENT_URL } from '../../config/constant';
 
 const EditEntity = () => {
     const location = useLocation();
@@ -15,11 +16,12 @@ const EditEntity = () => {
     const [name, setName] = useState('');
     const [active, setActive] = useState('');
     const { t } = useTranslation();
+    const [id, setId] = useState(useParams());
 
     //Alert
     const [showAlert, setShowAlert] = useState(false);
 
-    useEffect(() => {
+    /*useEffect(() => {
 
         if (entity) {
             setName(entity.name);
@@ -33,6 +35,27 @@ const EditEntity = () => {
                 }).catch(error => console.log(error));
 
         }
+    }, [entity]);*/
+    console.log(id)
+
+    useEffect(() => {
+
+        if (id.id) {
+            getEntity(COMPONENT_URL.entity+id.id+"/")
+                .then((response) => {
+                    setEntity(response.data)
+                }).catch(error => console.log(error));
+
+        } 
+    }, [id]);
+
+    useEffect(() => {
+
+        if (entity) {
+            setName(entity.name);
+            setActive(entity.active);
+
+        } 
     }, [entity]);
 
     //Update
