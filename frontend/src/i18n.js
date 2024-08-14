@@ -9,7 +9,8 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 const options = {
   order: ['querystring', 'navigator'],
-  lookupQuerystring: 'lng'
+  lookupQuerystring: 'lng',
+  returnEmptyString: true,
 }
 
 i18n
