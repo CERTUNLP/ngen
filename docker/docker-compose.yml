@@ -127,14 +127,13 @@ services:
         environment:
             - REACT_APP_BASE_URL=/metrics
             - REACT_APP_API_SERVER=http://localhost:8000/api/
+            - VITE_APP_VERSION=v3.0.0
+            - GENERATE_SOURCEMAP=false
+            - PUBLIC_URL=http://localhost:3000/
+            - VITE_APP_BASE_NAME=
+            - VITE_APP_BASE_URL=/metrics
+            - VITE_APP_API_SERVER=http://localhost:8000/api/
             - CHOKIDAR_USEPOLLING=true
-            - VITE_APP_VERSION = v3.0.0
-            - GENERATE_SOURCEMAP = false
-            - PUBLIC_URL = 'http://localhost:3000/'
-            - VITE_APP_BASE_NAME = ""
-            - VITE_APP_BASE_URL = /metrics
-            - VITE_APP_API_SERVER = http://localhost:8000/api/
-            - CHOKIDAR_USEPOLLING = true
             - VITE_APP_GOOGLE_MAPS_API_KEY=
 
 # networks:
