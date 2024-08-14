@@ -1,30 +1,38 @@
 // action - state management
-import { LOGIN, LOGOUT, REFRESH_TOKEN } from './actions';
+import { REGISTER, LOGIN, LOGOUT, REFRESH_TOKEN } from './actions';
 
+// initial state
 export const initialState = {
-  token: '',
   isLoggedIn: false,
+  isInitialized: false,
   user: null
 };
 
-//-----------------------|| ACCOUNT REDUCER ||-----------------------//
+// ==============================|| AUTH REDUCER ||============================== //
 
-const accountReducer = (state = initialState, action) => {
+const auth = (state = initialState, action) => {
   switch (action.type) {
+    case REGISTER: {
+      const { user } = action.payload;
+      return {
+        ...state,
+        user
+      };
+    }
     case LOGIN: {
-      const { user, token } = action.payload;
+      const { user } = action.payload;
       return {
         ...state,
         isLoggedIn: true,
-        user: user,
-        token: token
+        isInitialized: true,
+        user
       };
     }
     case LOGOUT: {
       return {
         ...state,
+        isInitialized: true,
         isLoggedIn: false,
-        token: '',
         user: null
       };
     }
@@ -41,4 +49,4 @@ const accountReducer = (state = initialState, action) => {
   }
 };
 
-export default accountReducer;
+export default auth;

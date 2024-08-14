@@ -1,7 +1,7 @@
 version: '3.7'
 services:
-  ngen-frontend:
-    image: ngen-frontend:latest
+  ngen-frontend-new:
+    image: ngen-frontend-new:latest
     build:
       context: .
       dockerfile: Dockerfile

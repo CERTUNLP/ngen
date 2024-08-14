@@ -356,6 +356,7 @@
     "w.blocked": "Blocked",
     "ngen.vulnerability": "Vulnerability",
     "ngen.incident": "Incident",
+    "ngen.other": "Other",
     "w.info": "More information",
     "w.info.placeholder": "Enter more information",
     "info.related": "Related information",
