@@ -1,27 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import { ResponsivePieCanvas } from '@nivo/pie'
+import React, { useEffect, useState } from 'react';
+import { ResponsivePieCanvas } from '@nivo/pie';
+import { Row, Spinner } from 'react-bootstrap';
 
-const EntityGraph = ({ list }) => {
-  const [entity, setEntity] = useState([])
+const EntityGraph = ({ list, loading }) => {
+  const [entity, setEntity] = useState([]);
 
-  const filtrarEventosNoCero = (datos) => { //opino que se debe mostrar aquellas fuentes que este asociados a uno amas eventos
-    return datos ? datos.filter((obj) => obj.events.length !== 0) : []
-  }
+  const filtrarEventosNoCero = (datos) => {
+    //opino que se debe mostrar aquellas fuentes que este asociados a uno amas eventos
+    return datos ? datos.filter((obj) => obj.events.length !== 0) : [];
+  };
 
   useEffect(() => {
     if (list) {
-      const filteredData = filtrarEventosNoCero(list)
-      setEntity(filteredData)
+      const filteredData = filtrarEventosNoCero(list);
+      setEntity(filteredData);
     }
-  }, [list])
+  }, [list]);
 
   const data = entity.map((element) => ({
     id: element.name,
     label: element.name,
-    value: element.events.length,
-  }))
+    value: element.events.length
+  }));
 
-  return (
+  return loading ? (
+    <Row className="justify-content-md-center">
+      <Spinner animation="border" variant="primary" />
+    </Row>
+  ) : (
     <div style={{ height: 600 }}>
       <ResponsivePieCanvas
         data={data}
@@ -33,12 +39,7 @@ const EntityGraph = ({ list }) => {
         colors={{ scheme: 'paired' }}
         borderColor={{
           from: 'color',
-          modifiers: [
-            [
-              'darker',
-              0.6,
-            ],
-          ],
+          modifiers: [['darker', 0.6]]
         }}
         arcLinkLabelsSkipAngle={10}
         arcLinkLabelsTextColor="#333333"
@@ -54,7 +55,7 @@ const EntityGraph = ({ list }) => {
             color: 'rgba(255, 255, 255, 0.3)',
             size: 4,
             padding: 1,
-            stagger: true,
+            stagger: true
           },
           {
             id: 'lines',
@@ -63,58 +64,58 @@ const EntityGraph = ({ list }) => {
             color: 'rgba(255, 255, 255, 0.3)',
             rotation: -45,
             lineWidth: 6,
-            spacing: 10,
-          },
+            spacing: 10
+          }
         ]}
         fill={[
           {
             match: {
-              id: 'ruby',
+              id: 'ruby'
             },
-            id: 'dots',
+            id: 'dots'
           },
           {
             match: {
-              id: 'c',
+              id: 'c'
             },
-            id: 'dots',
+            id: 'dots'
           },
           {
             match: {
-              id: 'go',
+              id: 'go'
             },
-            id: 'dots',
+            id: 'dots'
           },
           {
             match: {
-              id: 'python',
+              id: 'python'
             },
-            id: 'dots',
+            id: 'dots'
           },
           {
             match: {
-              id: 'scala',
+              id: 'scala'
             },
-            id: 'lines',
+            id: 'lines'
           },
           {
             match: {
-              id: 'lisp',
+              id: 'lisp'
             },
-            id: 'lines',
+            id: 'lines'
           },
           {
             match: {
-              id: 'elixir',
+              id: 'elixir'
             },
-            id: 'lines',
+            id: 'lines'
           },
           {
             match: {
-              id: 'javascript',
+              id: 'javascript'
             },
-            id: 'lines',
-          },
+            id: 'lines'
+          }
         ]}
         legends={[
           {
@@ -130,12 +131,12 @@ const EntityGraph = ({ list }) => {
             itemDirection: 'left-to-right',
             itemOpacity: 1,
             symbolSize: 14,
-            symbolShape: 'circle',
-          },
+            symbolShape: 'circle'
+          }
         ]}
       />
     </div>
-  )
-}
+  );
+};
 
-export default EntityGraph
+export default EntityGraph;

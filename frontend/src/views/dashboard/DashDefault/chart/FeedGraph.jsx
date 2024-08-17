@@ -1,25 +1,31 @@
-import React, { useEffect, useState } from 'react'
-import { ResponsivePieCanvas } from '@nivo/pie'
+import React, { useEffect, useState } from 'react';
+import { ResponsivePieCanvas } from '@nivo/pie';
+import { Row, Spinner } from 'react-bootstrap';
 
-const FeedGraph = ({ list }) => {
-  const [feed, setFeed] = useState([])
+const FeedGraph = ({ list, loading }) => {
+  const [feed, setFeed] = useState([]);
 
-  const filtrarEventosNoCero = (datos) => { //opino que se debe mostrar aquellas fuentes que este asociados a uno amas eventos
-    return datos.filter((obj) => obj.events_count !== 0)
-  }
+  const filtrarEventosNoCero = (datos) => {
+    //opino que se debe mostrar aquellas fuentes que este asociados a uno amas eventos
+    return datos.filter((obj) => obj.events_count !== 0);
+  };
 
   useEffect(() => {
-    setFeed(filtrarEventosNoCero(list))
-  }, [list])
+    setFeed(filtrarEventosNoCero(list));
+  }, [list]);
 
   const data = feed.map((element) => ({
-    'id': element.feed_name,
-    'label': element.feed_name,
-    'value': element.events_count,
+    id: element.feed_name,
+    label: element.feed_name,
+    value: element.events_count
     // "color": "hsl(0, 70%, 50%)"
-  }))
+  }));
 
-  return (
+  return loading ? (
+    <Row className="justify-content-md-center">
+      <Spinner animation="border" variant="primary" />
+    </Row>
+  ) : (
     <div style={{ height: 600 }}>
       <ResponsivePieCanvas
         data={data}
@@ -31,12 +37,7 @@ const FeedGraph = ({ list }) => {
         colors={{ scheme: 'paired' }}
         borderColor={{
           from: 'color',
-          modifiers: [
-            [
-              'darker',
-              0.6,
-            ],
-          ],
+          modifiers: [['darker', 0.6]]
         }}
         arcLinkLabelsSkipAngle={10}
         arcLinkLabelsTextColor="#333333"
@@ -52,7 +53,7 @@ const FeedGraph = ({ list }) => {
             color: 'rgba(255, 255, 255, 0.3)',
             size: 4,
             padding: 1,
-            stagger: true,
+            stagger: true
           },
           {
             id: 'lines',
@@ -61,58 +62,58 @@ const FeedGraph = ({ list }) => {
             color: 'rgba(255, 255, 255, 0.3)',
             rotation: -45,
             lineWidth: 6,
-            spacing: 10,
-          },
+            spacing: 10
+          }
         ]}
         fill={[
           {
             match: {
-              id: 'ruby',
+              id: 'ruby'
             },
-            id: 'dots',
+            id: 'dots'
           },
           {
             match: {
-              id: 'c',
+              id: 'c'
             },
-            id: 'dots',
+            id: 'dots'
           },
           {
             match: {
-              id: 'go',
+              id: 'go'
             },
-            id: 'dots',
+            id: 'dots'
           },
           {
             match: {
-              id: 'python',
+              id: 'python'
             },
-            id: 'dots',
+            id: 'dots'
           },
           {
             match: {
-              id: 'scala',
+              id: 'scala'
             },
-            id: 'lines',
+            id: 'lines'
           },
           {
             match: {
-              id: 'lisp',
+              id: 'lisp'
             },
-            id: 'lines',
+            id: 'lines'
           },
           {
             match: {
-              id: 'elixir',
+              id: 'elixir'
             },
-            id: 'lines',
+            id: 'lines'
           },
           {
             match: {
-              id: 'javascript',
+              id: 'javascript'
             },
-            id: 'lines',
-          },
+            id: 'lines'
+          }
         ]}
         legends={[
           {
@@ -128,14 +129,12 @@ const FeedGraph = ({ list }) => {
             itemDirection: 'left-to-right',
             itemOpacity: 1,
             symbolSize: 14,
-            symbolShape: 'circle',
-          },
+            symbolShape: 'circle'
+          }
         ]}
       />
     </div>
-  )
-}
+  );
+};
 
-export default FeedGraph
-
-
+export default FeedGraph;
