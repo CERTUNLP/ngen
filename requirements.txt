@@ -17,9 +17,7 @@ attrs==23.1.0
 billiard==4.1.0
     # via celery
 bleach[css]==5.0.1
-    # via
-    #   bleach
-    #   django-bleach
+    # via django-bleach
 build==1.0.3
     # via pip-tools
 celery==5.3.1
@@ -53,7 +51,7 @@ cron-descriptor==1.4.0
     # via django-celery-beat
 decorator==5.1.1
     # via validators
-django==4.1.13
+django==4.2.15
     # via
     #   -r requirements.in
     #   django-appconf
@@ -125,8 +123,9 @@ django-timezone-field==5.1
     # via django-celery-beat
 django-treebeard==4.5.1
     # via -r requirements.in
-djangorestframework==3.14.0
+djangorestframework==3.15.2
     # via
+    #   -r requirements.in
     #   django-elasticsearch-dsl-drf
     #   djangorestframework-simplejwt
     #   drf-spectacular
@@ -191,9 +190,7 @@ python-dateutil==2.8.2
 python-magic==0.4.27
     # via cortex4py
 pytz==2023.3
-    # via
-    #   django-timezone-field
-    #   djangorestframework
+    # via django-timezone-field
 pyyaml==6.0.1
     # via drf-spectacular
 redis==4.4.4
@@ -202,7 +199,7 @@ referencing==0.30.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.32.0
+requests==2.32.3
     # via
     #   -r requirements.in
     #   cortex4py
