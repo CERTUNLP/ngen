@@ -1,16 +1,16 @@
-import React from 'react'
-import { Navigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const AuthGuard = ({ children }) => {
-  const account = useSelector((state) => state.account)
-  const { isLoggedIn } = account
+  const account = useSelector((state) => state.account);
+  const { isLoggedIn } = account;
 
   if (!isLoggedIn) {
-    return <Navigate to="/login"/>
+    return <Navigate to="/login" />;
   }
 
-  return children
-}
+  return children;
+};
 
-export default AuthGuard
+export default AuthGuard;
