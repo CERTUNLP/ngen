@@ -139,8 +139,6 @@ const TableEvents = ({
                 </th>
               )}
 
-              {!disableColumOption && <th style={letterSize}>{t('ngen.options')}</th>}
-
               {!disableDateModified ? (
                 disableOrdering ? (
                   <th style={letterSize}>{t('ngen.event.date')} </th>
@@ -182,6 +180,7 @@ const TableEvents = ({
               {!disableMerged && <th style={letterSize}>{t('ngen.event.merged')}</th>}
               <th style={letterSize}>{t('ngen.taxonomy_one')}</th>
               <th style={letterSize}>{t('ngen.feed.information')}</th>
+              {!disableColumOption && <th style={letterSize}>{t('ngen.options')}</th>}
             </tr>
           </thead>
           <tbody>
@@ -225,6 +224,39 @@ const TableEvents = ({
                       )}
                     </th>
                   )}
+                  {!disableDateModified ? <td>{event.modified.slice(0, 10) + ' ' + event.modified.slice(11, 19)}</td> : ''}
+                  {!disableDate ? <td>{event.date ? event.date.slice(0, 10) + ' ' + event.date.slice(11, 19) : ''}</td> : ''}
+                  {!disableUuid && <td>{event.uuid}</td>}
+                  <td>{event.address_value}</td>
+                  <td>
+                    {event.domain}
+                    {event.cidr}
+                  </td>
+                  {!disableTlp && (
+                    <td>
+                      <LetterFormat useBadge={true} stringToDisplay={tlpNames[event.tlp].name} color={tlpNames[event.tlp].color} />
+                    </td>
+                  )}
+                  {!disableMerged && event.parent ? (
+                    <td>
+                      <Link to="/events/view" state={event.parent}>
+                        <Button
+                          className="fa fa-eye mx-auto font-weight-light"
+                          variant="outline-primary"
+                          onClick={() => storageEventUrl(event.parent)}
+                        >
+                          {' ' + t('ngen.event.parent')}
+                        </Button>
+                      </Link>
+                    </td>
+                  ) : (
+                    <td>{event.children ? event.children.length : 0}</td>
+                  )}
+
+                  <td>{taxonomyNames[event.taxonomy]}</td>
+
+                  <td>{feedNames[event.feed]}</td>
+
                   {!disableColumOption ? (
                     <td>
                       {disableColumView ? (
@@ -281,39 +313,6 @@ const TableEvents = ({
                   ) : (
                     ''
                   )}
-                  {!disableDateModified ? <td>{event.modified.slice(0, 10) + ' ' + event.modified.slice(11, 19)}</td> : ''}
-                  {!disableDate ? <td>{event.date ? event.date.slice(0, 10) + ' ' + event.date.slice(11, 19) : ''}</td> : ''}
-                  {!disableUuid && <td>{event.uuid}</td>}
-                  <td>{event.address_value}</td>
-                  <td>
-                    {event.domain}
-                    {event.cidr}
-                  </td>
-                  {!disableTlp && (
-                    <td>
-                      <LetterFormat useBadge={true} stringToDisplay={tlpNames[event.tlp].name} color={tlpNames[event.tlp].color} />
-                    </td>
-                  )}
-                  {!disableMerged && event.parent ? (
-                    <td>
-                      <Link to="/events/view" state={event.parent}>
-                        <Button
-                          className="fa fa-eye mx-auto font-weight-light"
-                          variant="outline-primary"
-                          onClick={() => storageEventUrl(event.parent)}
-                        >
-                          {' ' + t('ngen.event.parent')}
-                        </Button>
-                      </Link>
-                    </td>
-                  ) : (
-                    <td>{event.children ? event.children.length : 0}</td>
-                  )}
-
-                  <td>{taxonomyNames[event.taxonomy]}</td>
-
-                  <td>{feedNames[event.feed]}</td>
-
                 </tr>
               ) : (
                 <tr>
