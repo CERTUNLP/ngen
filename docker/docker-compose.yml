@@ -125,8 +125,6 @@ services:
         ports:
             - "3000:3000"
         environment:
-            - REACT_APP_BASE_URL=/metrics
-            - REACT_APP_API_SERVER=http://localhost:8000/api/
             - VITE_APP_VERSION=v3.0.0
             - GENERATE_SOURCEMAP=false
             - PUBLIC_URL=http://localhost:3000/
