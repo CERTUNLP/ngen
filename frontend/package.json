@@ -37,6 +37,7 @@
     "i18next-http-backend": "^2.5.2",
     "ip-cidr": "^4.0.2",
     "jquery": "^3.7.1",
+    "jwt-decode": "^4.0.0",
     "process": "^0.11.10",
     "react": "^18.3.1",
     "react-app-polyfill": "^3.0.0",
