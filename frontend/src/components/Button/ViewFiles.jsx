@@ -64,8 +64,8 @@ const ViewFiles = (props) => {
     <>
       <ModalConfirm
         type="delete"
-        component="Evidencia"
-        name={`La evidencia ${name}`}
+        component="Evidence"
+        name={`evidence file: ${name}`}
         showModal={modalDelete}
         onHide={() => setModalDelete(false)}
         ifConfirm={() => removeCase(props.file)}
@@ -94,7 +94,7 @@ const ViewFiles = (props) => {
                   {t('date.creation')}: {props.file.created
                   ? props.file.created.slice(0, 10) + ' ' +
                   props.file.created.slice(11, 19)
-                  : 'No creado en el sistema'}
+                  : 'Not created in system'}
                 </p>
               </div>
             </div>
@@ -103,7 +103,7 @@ const ViewFiles = (props) => {
                 size="sm"
                 className="btn-icon btn-rounded delete-button"
                 variant="outline-danger"
-                title={'Eliminar evidencia ' + props.index}
+                title={'Delete evidence ' + props.index}
                 onClick={() => deleteFile(
                   props.file.original_filename || props.file.name)}
               >
