@@ -11,11 +11,11 @@
     max-height: 400px; /* Ajusta la altura según sea necesario */
     overflow-y: auto;
     overflow-x: hidden; /* Desactiva el desplazamiento horizontal */
-    padding: 10px;
+    padding: 5px;
 }
 
 .file-card {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
