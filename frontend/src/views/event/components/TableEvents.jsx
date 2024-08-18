@@ -164,7 +164,6 @@ const TableEvents = ({
               <th style={letterSize}>{t('ngen.uuid')}</th>
             }
             <th style={letterSize}>{t('ngen.identifier')}</th>
-            <th style={letterSize}>{t('ngen.domain')}/{t('ngen.cidr')}</th>
             {!disableTlp &&
               <th style={letterSize}>{t('ngen.tlp')}</th>
             }
@@ -230,7 +229,6 @@ const TableEvents = ({
                         <td>{event.uuid}</td>
                       }
                       <td>{event.address_value}</td>
-                      <td>{event.domain}{event.cidr}</td>
                       {!disableTlp &&
                         <td>
                           <LetterFormat useBadge={true}
