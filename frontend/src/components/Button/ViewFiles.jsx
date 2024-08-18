@@ -3,6 +3,7 @@ import { deleteEvidence } from '../../api/services/evidences'
 import { Button, Card } from 'react-bootstrap'
 import ModalConfirm from '../Modal/ModalConfirm'
 import Alert from '../Alert/Alert'
+import { useTranslation } from 'react-i18next'
 
 // Función para obtener el ícono de acuerdo al tipo de archivo
 const getFileIcon = (mimeType, fileType) => {
@@ -57,6 +58,8 @@ const ViewFiles = (props) => {
 
   const fileIcon = getFileIcon(props.file.mime, props.file.type)
 
+  const { t } = useTranslation()
+
   return (
     <>
       <ModalConfirm
@@ -86,10 +89,9 @@ const ViewFiles = (props) => {
                     : ''}</p>
                 <p className="file-meta">Mime: {props.file.mime ||
                   props.file.type}</p>
-                <p className="file-meta">Tamaño: {props.file.size} KB</p>
+                <p className="file-meta">{t('w.size')}: {props.file.size} Bytes</p>
                 <p className="file-meta">
-                  Fecha de
-                  creación: {props.file.created
+                  {t('date.creation')}: {props.file.created
                   ? props.file.created.slice(0, 10) + ' ' +
                   props.file.created.slice(11, 19)
                   : 'No creado en el sistema'}
