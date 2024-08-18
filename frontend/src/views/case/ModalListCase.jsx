@@ -53,7 +53,11 @@ const ModalListCase = (props) => {
     <Modal size="lg" show={props.showModalListCase} onHide={props.closeModal}
            aria-labelledby="contained-modal-title-vcenter"
            dialogClassName="modal-90w" centered>
-      <Modal.Header closeButton/>
+      <Modal.Header closeButton>
+        <Modal.Title>{
+          t('ngen.case_link')}
+        </Modal.Title>
+      </Modal.Header>
       <Modal.Body>
         {showAlert && <Alert showAlert={showAlert}
                              resetShowAlert={() => setShowAlert(false)}
