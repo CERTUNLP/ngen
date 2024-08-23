@@ -70,16 +70,19 @@ class ArtifactSerializerMixin(serializers.HyperlinkedModelSerializer):
                 content_type=ct,
                 defaults={'auto_created': False}
             )
+
         return instance
 
     def create(self, validated_data):
         artifacts = validated_data.pop('artifacts', [])
-        event = super().create(validated_data)
+        instance = super().create(validated_data)
+
         # add new manual relations
         for artifact in artifacts:
             artifact_obj = models.Artifact.objects.get(pk=artifact.pk)
-            models.ArtifactRelation.objects.create(artifact=artifact_obj, related=event, auto_created=False)
-        return event
+            models.ArtifactRelation.objects.create(artifact=artifact_obj, related=instance, auto_created=False)
+
+        return instance
 
 
 class MergeSerializerMixin:
