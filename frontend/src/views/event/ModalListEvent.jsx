@@ -115,8 +115,8 @@ const ModalListEvent = (props) => {
             setOrder={setOrder} setLoading={setLoading}
             currentPage={props.currentPage} taxonomyNames={props.taxonomyNames}
             feedNames={props.feedNames}
-            tlpNames={props.tlpNames} disableCheckbox={false}
-            formCaseCheckbok={true} disableCheckboxAll={true}
+            tlpNames={props.tlpNames} 
+            formCaseCheckbok={true} 
             disableColumnDelete={true} disableTemplate={true}
             disableColumnEdit={true} detailModal={false}
             modalEventDetail={props.modalEventDetail} disableUuid={false}

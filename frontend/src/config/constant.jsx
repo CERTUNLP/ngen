@@ -3,6 +3,7 @@ export const BASE_URL = import.meta.env.VITE_APP_BASE_URL || '/metrics'
 export const BASENAME = import.meta.env.VITE_APP_BASENAME || ''
 export const BASE_TITLE = ' | ngen '
 export const PAGE = '?page='
+export const PAGE_SIZE = 'PAGE_SIZE/';
 
 export const CONFIG = {
   layout: 'vertical', // disable on free version

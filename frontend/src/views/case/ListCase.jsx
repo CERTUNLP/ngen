@@ -17,6 +17,7 @@ import ButtonFilter from '../../components/Button/ButtonFilter'
 import FilterSelectUrl from '../../components/Filter/FilterSelectUrl'
 import { useTranslation } from 'react-i18next'
 
+
 const ListCase = () => {
 
   const [cases, setCases] = useState([]) //lista de casos
@@ -35,7 +36,7 @@ const ListCase = () => {
   const [updatePagination, setUpdatePagination] = useState(false)
   const [disabledPagination, setDisabledPagination] = useState(true)
   //filters
-  const [order, setOrder] = useState('-date')
+  const [order, setOrder] = useState("-created");
   const [wordToSearch, setWordToSearch] = useState('')
   const [open, setOpen] = useState(false)
 
