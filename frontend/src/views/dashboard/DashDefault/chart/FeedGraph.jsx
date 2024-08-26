@@ -29,7 +29,8 @@ const FeedGraph = ({ list, loading }) => {
     <div style={{ height: 600 }}>
       <ResponsivePieCanvas
         data={data}
-        margin={{ top: 40, right: 200, bottom: 40, left: 80 }}
+        // margin={{ top: 40, right: 200, bottom: 40, left: 80 }} // margin for the legend
+        margin={{ top: 40, right: 40, bottom: 40, left: 80 }}
         innerRadius={0.5}
         padAngle={0.7}
         cornerRadius={3}
@@ -115,23 +116,23 @@ const FeedGraph = ({ list, loading }) => {
             id: 'lines'
           }
         ]}
-        legends={[
-          {
-            anchor: 'right',
-            direction: 'column',
-            justify: false,
-            translateX: 140,
-            translateY: 0,
-            itemsSpacing: 2,
-            itemWidth: 60,
-            itemHeight: 14,
-            itemTextColor: '#999',
-            itemDirection: 'left-to-right',
-            itemOpacity: 1,
-            symbolSize: 14,
-            symbolShape: 'circle'
-          }
-        ]}
+        // legends={[
+        //   {
+        //     anchor: 'right',
+        //     direction: 'column',
+        //     justify: false,
+        //     translateX: 140,
+        //     translateY: 0,
+        //     itemsSpacing: 2,
+        //     itemWidth: 60,
+        //     itemHeight: 14,
+        //     itemTextColor: '#999',
+        //     itemDirection: 'left-to-right',
+        //     itemOpacity: 1,
+        //     symbolSize: 14,
+        //     symbolShape: 'circle'
+        //   }
+        // ]}
       />
     </div>
   );
