@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useContext } from 'react';
 import { ListGroup } from 'react-bootstrap';
-import { NavLink, Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import NavIcon from '../NavIcon';
 import NavBadge from '../NavBadge';

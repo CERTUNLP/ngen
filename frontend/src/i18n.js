@@ -21,7 +21,7 @@ const fetchLanguageSetting = async () => {
     }
 
     const data = await response.json();
-    const langSetting = data.results.find(item => item.key === 'NGEN_LANG');
+    const langSetting = data.results.find((item) => item.key === 'NGEN_LANG');
     const lang = langSetting ? langSetting.value : 'en';
 
     localStorage.setItem('ngen_lang', lang);
@@ -45,8 +45,8 @@ const initializeI18n = async () => {
       debug: true,
       detection: options,
       interpolation: {
-        escapeValue: false, // not needed for react as it escapes by default
-      },
+        escapeValue: false // not needed for react as it escapes by default
+      }
     });
 };
 

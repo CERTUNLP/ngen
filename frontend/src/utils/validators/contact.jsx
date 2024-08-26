@@ -1,42 +1,33 @@
-import {
-  isEmpty,
-  validateAlphanumeric,
-  validateEmail,
-  validateLength,
-  validateNumbers,
-  validateSpace,
-  validateURL,
-} from '../validators'
+import { isEmpty, validateAlphanumeric, validateEmail, validateLength, validateNumbers, validateSpace, validateURL } from '../validators';
 
 const validateName = (name) => {
   //return (validateAlphanumeric(name) && validateLength(name, 100) && validateSpace(name))// tengo que ver la funcion de este metodo validateSpace(name)
-  return (validateAlphanumeric(name) && validateLength(name, 100))
-}
+  return validateAlphanumeric(name) && validateLength(name, 100);
+};
 
 const validateSelect = (option) => {
-  return (!isEmpty(option))
-}
+  return !isEmpty(option);
+};
 
 const validateContact = (contact) => {
-  return (validateSpace(contact))// no entinedo porque un selec
-}
+  return validateSpace(contact); // no entinedo porque un selec
+};
 
 const validateContactMail = (contactMail) => {
-  return (validateSpace(contactMail) && validateEmail(contactMail))
-}
+  return validateSpace(contactMail) && validateEmail(contactMail);
+};
 
 const validateContactPhone = (contactPhone) => {
-  return (validateSpace(contactPhone) && validateNumbers(contactPhone))
-}
+  return validateSpace(contactPhone) && validateNumbers(contactPhone);
+};
 
 const validateContactURI = (contactURI) => {
-  return (validateSpace(contactURI) && validateURL(contactURI))
-}
+  return validateSpace(contactURI) && validateURL(contactURI);
+};
 
 const validateContactTelegram = (contactTelegram) => {
-  return (validateSpace(contactTelegram) &&
-    validateAlphanumeric(contactTelegram))
-}
+  return validateSpace(contactTelegram) && validateAlphanumeric(contactTelegram);
+};
 
 export {
   validateName,
@@ -45,5 +36,5 @@ export {
   validateContactMail,
   validateContactPhone,
   validateContactURI,
-  validateContactTelegram,
-}
+  validateContactTelegram
+};

@@ -1,7 +1,7 @@
 import apiInstance from '../api';
 import { COMPONENT_URL } from '../../config/constant';
 import setAlert from '../../utils/setAlert';
-import { CLEAR_MESSAGE, LOGIN, LOGOUT, REFRESH_TOKEN, SAVE_URL } from '../../store/actions';
+import { LOGIN, LOGOUT, REFRESH_TOKEN, SAVE_URL } from '../../store/actions';
 import store from '../../store';
 import i18next from 'i18next';
 import { jwtDecode } from 'jwt-decode';

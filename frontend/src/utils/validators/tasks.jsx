@@ -1,18 +1,13 @@
-import {
-  isBlank,
-  isNull,
-  validateAlphanumeric,
-  validateLength,
-} from '../validators'
+import { isBlank, isNull, validateAlphanumeric, validateLength } from '../validators';
 
 const validateUnrequiredInput = (input) => {
-  return (!(isNull(input) || isBlank(input)))
-}
+  return !(isNull(input) || isBlank(input));
+};
 const validateTaskName = (name) => {
-  return (validateAlphanumeric(name) && validateLength(name, 25))
-}
+  return validateAlphanumeric(name) && validateLength(name, 25);
+};
 const validateTaskDescription = (description) => {
-  return (validateAlphanumeric(description) && validateLength(description, 200))
-}
+  return validateAlphanumeric(description) && validateLength(description, 200);
+};
 
-export { validateTaskDescription, validateTaskName, validateUnrequiredInput }
+export { validateTaskDescription, validateTaskName, validateUnrequiredInput };

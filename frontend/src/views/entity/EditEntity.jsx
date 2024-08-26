@@ -1,54 +1,54 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { Card, Col, Row } from 'react-bootstrap'
-import { getEntity, putEntity } from '../../api/services/entities'
-import FormEntity from './components/FormEntity'
-import Navigation from '../../components/Navigation/Navigation'
-import Alert from '../../components/Alert/Alert'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Card, Col, Row } from 'react-bootstrap';
+import { getEntity, putEntity } from '../../api/services/entities';
+import FormEntity from './components/FormEntity';
+import Navigation from '../../components/Navigation/Navigation';
+import Alert from '../../components/Alert/Alert';
+import { useTranslation } from 'react-i18next';
 
 const EditEntity = () => {
-  const location = useLocation()
-  const fromState = location.state
-  const [entity, setEntity] = useState(fromState)
-  const [name, setName] = useState('')
-  const [active, setActive] = useState('')
-  const { t } = useTranslation()
+  const location = useLocation();
+  const fromState = location.state;
+  const [entity, setEntity] = useState(fromState);
+  const [name, setName] = useState('');
+  const [active, setActive] = useState('');
+  const { t } = useTranslation();
 
   //Alert
-  const [showAlert, setShowAlert] = useState(false)
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-
     if (entity) {
-      setName(entity.name)
-      setActive(entity.active)
+      setName(entity.name);
+      setActive(entity.active);
     } else {
-      const entityUrl = localStorage.getItem('entity')
-      getEntity(entityUrl).then((response) => {
-        setEntity(response.data)
-      }).catch(error => console.log(error))
-
+      const entityUrl = localStorage.getItem('entity');
+      getEntity(entityUrl)
+        .then((response) => {
+          setEntity(response.data);
+        })
+        .catch((error) => console.log(error));
     }
-  }, [entity])
+  }, [entity]);
 
   //Update
   const editEntity = () => {
-    putEntity(entity.url, name, active).then((response) => {
-      localStorage.removeItem('entity')
-      window.location.href = '/entities'
-    }).catch(() => {
-      setShowAlert(true)
-    })
-  }
+    putEntity(entity.url, name, active)
+      .then((response) => {
+        localStorage.removeItem('entity');
+        window.location.href = '/entities';
+      })
+      .catch(() => {
+        setShowAlert(true);
+      });
+  };
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)}
-             component="entity"/>
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="entity" />
       <Row>
-        <Navigation actualPosition={t('ngen.entity_edit')} path="/entities"
-                    index={t('ngen.entity_other')}/>
+        <Navigation actualPosition={t('ngen.entity_edit')} path="/entities" index={t('ngen.entity_other')} />
       </Row>
       <Row>
         <Col sm={12}>
@@ -60,10 +60,7 @@ const EditEntity = () => {
             <Card.Body>
               <Row>
                 <Col sm={12}>
-                  <FormEntity
-                    name={name} setName={setName}
-                    active={active} setActive={setActive}
-                    ifConfirm={editEntity} edit={true}/>
+                  <FormEntity name={name} setName={setName} active={active} setActive={setActive} ifConfirm={editEntity} edit={true} />
                 </Col>
               </Row>
             </Card.Body>
@@ -71,7 +68,7 @@ const EditEntity = () => {
         </Col>
       </Row>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default EditEntity
+export default EditEntity;

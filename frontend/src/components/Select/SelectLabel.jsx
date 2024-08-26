@@ -1,31 +1,22 @@
-import React from 'react'
-import { Form } from 'react-bootstrap'
-import Select from 'react-select'
+import React from 'react';
+import { Form } from 'react-bootstrap';
+import Select from 'react-select';
 
-const SelectLabel = ({
-  set,
-  setSelect,
-  options,
-  value,
-  placeholder,
-  required,
-  disabled,
-  legend,
-}) => {
+const SelectLabel = ({ set, setSelect, options, value, placeholder, required, disabled, legend }) => {
   const handleChange = (e) => {
     if (e) {
-      set(e.value)
+      set(e.value);
     } else {
-      set('')
+      set('');
     }
-    setSelect(e)
-  }
+    setSelect(e);
+  };
 
   return (
     <Form.Group controlId={`Form.${placeholder}`}>
-      <Form.Label>{placeholder} {required
-        ? <b style={{ color: 'red' }}>*</b>
-        : ''}</Form.Label>
+      <Form.Label>
+        {placeholder} {required ? <b style={{ color: 'red' }}>*</b> : ''}
+      </Form.Label>
       <Select
         options={options}
         value={value}
@@ -36,7 +27,7 @@ const SelectLabel = ({
       />
       {legend ? <Form.Text className="text-muted">{legend}</Form.Text> : ''}
     </Form.Group>
-  )
-}
+  );
+};
 
-export default SelectLabel
+export default SelectLabel;

@@ -17,7 +17,6 @@ import ButtonFilter from '../../components/Button/ButtonFilter';
 import FilterSelectUrl from '../../components/Filter/FilterSelectUrl';
 import { useTranslation } from 'react-i18next';
 
-
 const ListCase = () => {
   const [cases, setCases] = useState([]); //lista de casos
   const [ifModify, setIfModify] = useState(null);

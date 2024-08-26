@@ -1,7 +1,7 @@
-import apiInstance from '../api'
+import apiInstance from '../api';
 
 const getGroup = (url) => {
-  return apiInstance.get(url)
-}
+  return apiInstance.get(url);
+};
 
-export { getGroup }
+export { getGroup };

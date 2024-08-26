@@ -1,24 +1,23 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { Card } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Card } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const Messages = ({ message, photo, name }) => {
-  let image = ''
+  let image = '';
   if (message.type) {
     image = (
       <Link to="#" className="media-left photo-table">
-        <img className="media-object img-radius img-radius m-t-5" src={photo}
-             alt={name}/>
+        <img className="media-object img-radius img-radius m-t-5" src={photo} alt={name} />
       </Link>
-    )
+    );
   }
 
-  let msgClass = []
+  let msgClass = [];
   if (message.type) {
-    msgClass = [...msgClass, 'chat-menu-content']
+    msgClass = [...msgClass, 'chat-menu-content'];
   } else {
-    msgClass = [...msgClass, 'chat-menu-reply text-muted']
+    msgClass = [...msgClass, 'chat-menu-reply text-muted'];
   }
 
   return (
@@ -36,8 +35,8 @@ const Messages = ({ message, photo, name }) => {
         </Card.Body>
       </Card>
     </React.Fragment>
-  )
-}
+  );
+};
 
 Messages.propTypes = {
   message: PropTypes.object,
@@ -45,7 +44,7 @@ Messages.propTypes = {
   name: PropTypes.string,
   type: PropTypes.string,
   msg: PropTypes.string,
-  time: PropTypes.string,
-}
+  time: PropTypes.string
+};
 
-export default Messages
+export default Messages;
