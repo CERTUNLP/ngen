@@ -1,4 +1,4 @@
-import { handleLogout } from './layouts/AdminLayout/NavBar/NavRight/index'
+import { logout } from './api/services/auth';
 
 const menuItems = {
   items: [
@@ -13,9 +13,8 @@ const menuItems = {
           type: 'item',
           url: '/metrics',
           icon: 'feather icon-home',
-          breadcrumbs: false,
+          breadcrumbs: false
         },
-
         {
           id: 'Eventos',
           title: 'menu.events',
@@ -23,7 +22,7 @@ const menuItems = {
           url: '/events',
           classes: '',
           icon: 'feather icon-alert-circle',
-          breadcrumbs: false,
+          breadcrumbs: false
         },
         {
           id: 'case',
@@ -31,9 +30,9 @@ const menuItems = {
           type: 'item',
           url: '/cases',
           icon: 'feather icon-search',
-          breadcrumbs: false,
-        },
-      ],
+          breadcrumbs: false
+        }
+      ]
     },
     {
       id: 'constituency',
@@ -47,7 +46,7 @@ const menuItems = {
           type: 'item',
           url: '/entities',
           icon: 'fas fa-cubes',
-          breadcrumbs: false,
+          breadcrumbs: false
         },
         {
           id: 'networks',
@@ -55,7 +54,7 @@ const menuItems = {
           type: 'item',
           url: '/networks',
           icon: 'feather icon-share-2',
-          breadcrumbs: false,
+          breadcrumbs: false
         },
         {
           id: 'contacts',
@@ -63,9 +62,9 @@ const menuItems = {
           type: 'item',
           url: '/contacts',
           icon: 'far fa-address-book',
-          breadcrumbs: false,
-        },
-      ],
+          breadcrumbs: false
+        }
+      ]
     },
     {
       id: 'config',
@@ -86,7 +85,7 @@ const menuItems = {
               type: 'item',
               url: '/tlp',
               icon: '',
-              breadcrumbs: false,
+              breadcrumbs: false
             },
             {
               id: 'reporte',
@@ -94,7 +93,7 @@ const menuItems = {
               type: 'item',
               url: '/reports',
               icon: '',
-              breadcrumbs: false,
+              breadcrumbs: false
             },
             {
               id: 'feeds',
@@ -102,7 +101,7 @@ const menuItems = {
               type: 'item',
               url: '/feeds',
               icon: '',
-              breadcrumbs: false,
+              breadcrumbs: false
             },
             {
               id: 'priority',
@@ -111,8 +110,7 @@ const menuItems = {
               url: '/priorities',
               classes: '',
               icon: '',
-              breadcrumbs: false,
-
+              breadcrumbs: false
             },
             {
               id: 'playbook',
@@ -120,7 +118,7 @@ const menuItems = {
               type: 'item',
               url: '/playbooks',
               icon: '',
-              breadcrumbs: false,
+              breadcrumbs: false
             },
             {
               id: 'taxonomy',
@@ -128,7 +126,7 @@ const menuItems = {
               type: 'item',
               url: '/taxonomies',
               icon: '',
-              breadcrumbs: false,
+              breadcrumbs: false
             },
             {
               id: 'Estados',
@@ -137,7 +135,7 @@ const menuItems = {
               url: '/states',
               classes: '',
               icon: '',
-              breadcrumbs: false,
+              breadcrumbs: false
             },
             {
               id: 'Plantilla',
@@ -146,7 +144,7 @@ const menuItems = {
               url: '/templates',
               classes: '',
               icon: '',
-              breadcrumbs: false,
+              breadcrumbs: false
             },
             {
               id: 'users',
@@ -155,7 +153,7 @@ const menuItems = {
               url: '/users',
               classes: '',
               icon: '',
-              breadcrumbs: false,
+              breadcrumbs: false
             },
             {
               id: 'Configuración',
@@ -164,12 +162,12 @@ const menuItems = {
               url: '/setting',
               classes: '',
               icon: '',
-              breadcrumbs: false,
-            },
-          ],
-        },
-      ],
-    },
+              breadcrumbs: false
+            }
+          ]
+        }
+      ]
+    }
   ],
   itemsBottom: [
     {
@@ -184,21 +182,22 @@ const menuItems = {
           url: '/profile',
           classes: '',
           icon: 'feather icon-user',
-          breadcrumbs: false,
+          breadcrumbs: false
         },
         {
           id: 'logout',
           title: 'menu.logout',
           type: 'item',
-          url: '',
+          url: '#',
+          basic_link: true,
           classes: 'logout-btn',
           icon: 'fa fa-sign-out-alt',
           breadcrumbs: false,
-          onClick: handleLogout,
-        },
-      ],
-    },
-  ],
-}
+          onClick: logout
+        }
+      ]
+    }
+  ]
+};
 
-export default menuItems
+export default menuItems;

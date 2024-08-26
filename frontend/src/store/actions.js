@@ -33,3 +33,4 @@ export const FIREBASE_STATE_CHANGED = 'FIREBASE_STATE_CHANGED';
 export const REFRESH_TOKEN = 'REFRESH_TOKEN';
 export const SET_MESSAGE = 'SET_MESSAGE';
 export const CLEAR_MESSAGE = 'CLEAR_MESSAGE';
+export const SAVE_URL = 'SAVE_URL';
