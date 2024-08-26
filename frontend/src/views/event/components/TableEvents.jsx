@@ -156,7 +156,7 @@ const TableEvents = ({
                 ''
               )}
               {!disableDate ? (
-                disableOrdering ? (
+                disableOrdering ?
                   <th style={letterSize}>{t('ngen.event.date')} </th>
                   :
                   <Ordering field="date" label={t('ngen.event.date')}
