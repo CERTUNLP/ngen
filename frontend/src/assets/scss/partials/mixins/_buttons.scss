@@ -34,6 +34,7 @@
     border-color: $active-border;
   }
 }
+
 @mixin button-outline-variant-pc($color, $color-hover: color-yiq($color), $active-background: $color, $active-border: $color) {
   color: $color;
   background-color: transparent;
@@ -60,14 +61,13 @@
     border-color: $active-border;
   }
 }
+
 @mixin button-glow-variant-pc($color, $color-hover: color-yiq($color), $active-background: $color, $active-border: $color) {
-  box-shadow:
-    0 1px 6px 2px transparentize($color, 0.44),
-    0 6px 11px 2px transparentize($color, 0.8);
+  box-shadow: 0 1px 6px 2px transparentize($color, 0.44),
+  0 6px 11px 2px transparentize($color, 0.8);
   &:hover {
-    box-shadow:
-      0 1px 4px 2px transparentize($color, 0.44),
-      0 4px 9px 2px transparentize($color, 0.9);
+    box-shadow: 0 1px 4px 2px transparentize($color, 0.44),
+    0 4px 9px 2px transparentize($color, 0.9);
   }
   &:not(:disabled):not(.disabled).active,
   &:not(:disabled):not(.disabled):active:focus,

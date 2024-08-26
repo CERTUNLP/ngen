@@ -3,6 +3,7 @@
 ==========================  **/
 .table {
   color: #888;
+
   td,
   th {
     border-top: 1px solid $theme-border;
@@ -25,6 +26,7 @@
     }
   }
 }
+
 /* Border versions */
 
 .table-bordered {
@@ -35,6 +37,7 @@
     border: 1px solid $theme-border;
   }
 }
+
 /* Zebra-striping */
 
 .table-striped {
@@ -42,6 +45,7 @@
     background-color: transparentize($primary-color, 0.95);
   }
 }
+
 /* Hover effect */
 
 .table-hover {

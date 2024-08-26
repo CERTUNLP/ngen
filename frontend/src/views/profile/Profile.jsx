@@ -23,22 +23,22 @@ const Profile = () => {
   }, []);
 
   /*
-        {
-            "id": 1,
-            "username": "ngen",
-            "email": "ngen@ngen.com",
-            "first_name": "ngen",
-            "last_name": "ngen",
-            "is_active": true,
-            "is_staff": true,
-            "is_superuser": true,
-            "date_joined": "2022-04-02T22:52:32.851000Z",
-            "last_login": "2024-02-19T02:23:48.445540Z",
-            "priority": "http://localhost:8000/api/administration/priority/5/",
-            "groups": [],
-            "user_permissions": []
-        }
-      */
+          {
+              "id": 1,
+              "username": "ngen",
+              "email": "ngen@ngen.com",
+              "first_name": "ngen",
+              "last_name": "ngen",
+              "is_active": true,
+              "is_staff": true,
+              "is_superuser": true,
+              "date_joined": "2022-04-02T22:52:32.851000Z",
+              "last_login": "2024-02-19T02:23:48.445540Z",
+              "priority": "http://localhost:8000/api/administration/priority/5/",
+              "groups": [],
+              "user_permissions": []
+          }
+        */
 
   return (
     <div>

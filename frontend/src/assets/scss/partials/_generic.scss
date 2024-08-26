@@ -48,6 +48,7 @@ $i: 0;
   }
   $i: $i + 5;
 }
+
 /*====== Padding , Margin css ends ======*/
 
 /*====== text-color, background color css starts ======*/
@@ -60,6 +61,7 @@ $i: 0;
     color: nth($color-color, $i);
   }
 }
+
 /*====== text-color css ends ======*/
 /*====== Card top border css starts ======*/
 @each $value in $color-name {
@@ -68,6 +70,7 @@ $i: 0;
     border-top: 4px solid nth($color-color, $i);
   }
 }
+
 /*====== Card top border ends ======*/
 /*====== Font-size css starts ======*/
 $i: 10;
@@ -77,6 +80,7 @@ $i: 10;
   }
   $i: $i + 2;
 }
+
 /*====== Font-size css ends ======*/
 /*====== Font-weight css starts ======*/
 $i: 100;
@@ -86,6 +90,7 @@ $i: 100;
   }
   $i: $i + 100;
 }
+
 /*====== Font-weight css ends ======*/
 /*====== width, Height css starts ======*/
 $i: 20;
@@ -98,4 +103,5 @@ $i: 20;
   }
   $i: $i + 5;
 }
+
 /*====== width, Height css ends ======*/

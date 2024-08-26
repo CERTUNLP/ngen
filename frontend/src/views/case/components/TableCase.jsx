@@ -188,8 +188,8 @@ const TableCase = ({
         <tbody>
           {list.map((caseItem, index) => {
             /*let datetime = caseItem.date.split('T');
-                                      datetime = datetime[0] + ' ' + datetime[1].slice(0, 8);
-                                      let idItem = caseItem.url.split('/').slice(-2)[0];*/
+                                                  datetime = datetime[0] + ' ' + datetime[1].slice(0, 8);
+                                                  let idItem = caseItem.url.split('/').slice(-2)[0];*/
             return (
               <tr key={index}>
                 {!disableCheckbox && (

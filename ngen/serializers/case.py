@@ -266,7 +266,7 @@ class CaseSerializer(
         """
         # the model takes care of the events saving this relation
         # should do the same with the artifacts and the serializer mixin can be removed
-        validated_data['_temp_events'] = validated_data.pop("events", None)
+        validated_data["_temp_events"] = validated_data.pop("events", None)
         case = super().create(validated_data)
         return case
 

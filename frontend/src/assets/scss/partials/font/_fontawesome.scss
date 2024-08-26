@@ -75,6 +75,7 @@
   list-style-type: none;
   margin-left: 2.5em;
   padding-left: 0;
+
   > li {
     position: relative;
   }
@@ -5556,12 +5557,11 @@
   font-style: normal;
   font-weight: normal;
   src: url(assets/scss/partials/font/fonts/fa-brands-400.eot);
-  src:
-    url(assets/scss/partials/font/fonts/fa-brands-400.eot?#iefix) format('embedded-opentype'),
-    url(assets/scss/partials/font/fonts/fa-brands-400.woff2) format('woff2'),
-    url(assets/scss/partials/font/fonts/fa-brands-400.woff) format('woff'),
-    url(assets/scss/partials/font/fonts/fa-brands-400.ttf) format('truetype'),
-    url(assets/scss/partials/font/fonts/fa-brands-400.svg#fontawesome) format('svg');
+  src: url(assets/scss/partials/font/fonts/fa-brands-400.eot?#iefix) format('embedded-opentype'),
+  url(assets/scss/partials/font/fonts/fa-brands-400.woff2) format('woff2'),
+  url(assets/scss/partials/font/fonts/fa-brands-400.woff) format('woff'),
+  url(assets/scss/partials/font/fonts/fa-brands-400.ttf) format('truetype'),
+  url(assets/scss/partials/font/fonts/fa-brands-400.svg#fontawesome) format('svg');
 }
 
 .fab {
@@ -5573,12 +5573,11 @@
   font-style: normal;
   font-weight: 400;
   src: url(assets/scss/partials/font/fonts/fa-regular-400.eot);
-  src:
-    url(assets/scss/partials/font/fonts/fa-regular-400.eot?#iefix) format('embedded-opentype'),
-    url(assets/scss/partials/font/fonts/fa-regular-400.woff2) format('woff2'),
-    url(assets/scss/partials/font/fonts/fa-regular-400.woff) format('woff'),
-    url(assets/scss/partials/font/fonts/fa-regular-400.ttf) format('truetype'),
-    url(assets/scss/partials/font/fonts/fa-regular-400.svg#fontawesome) format('svg');
+  src: url(assets/scss/partials/font/fonts/fa-regular-400.eot?#iefix) format('embedded-opentype'),
+  url(assets/scss/partials/font/fonts/fa-regular-400.woff2) format('woff2'),
+  url(assets/scss/partials/font/fonts/fa-regular-400.woff) format('woff'),
+  url(assets/scss/partials/font/fonts/fa-regular-400.ttf) format('truetype'),
+  url(assets/scss/partials/font/fonts/fa-regular-400.svg#fontawesome) format('svg');
 }
 
 .far {
@@ -5590,12 +5589,11 @@
   font-style: normal;
   font-weight: 900;
   src: url(assets/scss/partials/font/fonts/fa-solid-900.eot);
-  src:
-    url(assets/scss/partials/font/fonts/fa-solid-900.eot?#iefix) format('embedded-opentype'),
-    url(assets/scss/partials/font/fonts/fa-solid-900.woff2) format('woff2'),
-    url(assets/scss/partials/font/fonts/fa-solid-900.woff) format('woff'),
-    url(assets/scss/partials/font/fonts/fa-solid-900.ttf) format('truetype'),
-    url(assets/scss/partials/font/fonts/fa-solid-900.svg#fontawesome) format('svg');
+  src: url(assets/scss/partials/font/fonts/fa-solid-900.eot?#iefix) format('embedded-opentype'),
+  url(assets/scss/partials/font/fonts/fa-solid-900.woff2) format('woff2'),
+  url(assets/scss/partials/font/fonts/fa-solid-900.woff) format('woff'),
+  url(assets/scss/partials/font/fonts/fa-solid-900.ttf) format('truetype'),
+  url(assets/scss/partials/font/fonts/fa-solid-900.svg#fontawesome) format('svg');
 }
 
 .fa,
