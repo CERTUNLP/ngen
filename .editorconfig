@@ -333,7 +333,7 @@ ij_shell_redirect_followed_by_space = false
 ij_shell_switch_cases_indented = false
 ij_shell_use_unix_line_separator = true
 
-[{*.cjs,*.js,*.jsx}]
+[{*.cjs,*.js}]
 indent_size = 2
 max_line_length = 80
 tab_width = 2
