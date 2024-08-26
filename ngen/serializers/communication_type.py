@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from ngen.models.communication_channel import CommunicationType
 
 

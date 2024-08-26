@@ -9,7 +9,13 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Length
 from django.utils.translation import gettext
-from django_lifecycle import LifecycleModelMixin, hook, BEFORE_UPDATE, BEFORE_CREATE, BEFORE_DELETE
+from django_lifecycle import (
+    LifecycleModelMixin,
+    hook,
+    BEFORE_UPDATE,
+    BEFORE_CREATE,
+    BEFORE_DELETE,
+)
 from model_utils.models import TimeStampedModel
 from netfields import NetManager, CidrAddressField
 from treebeard.al_tree import AL_Node
@@ -42,7 +48,7 @@ class SlugModelMixin(ValidationModelMixin, models.Model):
         abstract = True
 
     def _slug_field(self):
-        return 'name'
+        return "name"
 
     def _slugify(self, data):
         return slugify_underscore(data)
@@ -56,8 +62,14 @@ class SlugModelMixin(ValidationModelMixin, models.Model):
 
 
 class TreeModelMixin(AL_Node, ValidationModelMixin):
-    parent = models.ForeignKey('self', models.DO_NOTHING, null=True,
-                               blank=True, db_index=True, related_name='children')
+    parent = models.ForeignKey(
+        "self",
+        models.DO_NOTHING,
+        null=True,
+        blank=True,
+        db_index=True,
+        related_name="children",
+    )
 
     class Meta:
         abstract = True
@@ -104,7 +116,13 @@ class TreeModelMixin(AL_Node, ValidationModelMixin):
         elem = self.parent
         while elem:
             if elem.pk == self.pk:
-                raise ValidationError({'parent': [gettext('Parent can\'t be a descendant of the instance.')]})
+                raise ValidationError(
+                    {
+                        "parent": [
+                            gettext("Parent can't be a descendant of the instance.")
+                        ]
+                    }
+                )
             elem = elem.parent
         super().clean_fields(exclude=exclude)
 
@@ -120,15 +138,15 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
     @property
     def allowed_fields(self) -> bool:
         key = f"ALLOWED_FIELDS_BLOCKED_{self.__class__.__name__.upper()}"
-        values = getattr(config, key, []).split(',')
-        values += [f'{v}_id' for v in values]
+        values = getattr(config, key, []).split(",")
+        values += [f"{v}_id" for v in values]
         return values
 
     @property
     def allowed_fields_on_merged(self) -> bool:
         key = f"ALLOWED_FIELDS_MERGED_{self.__class__.__name__.upper()}"
-        values = getattr(config, key, []).split(',')
-        values += [f'{v}_id' for v in values]
+        values = getattr(config, key, []).split(",")
+        values += [f"{v}_id" for v in values]
         return values
 
     @property
@@ -139,19 +157,22 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
     def merged(self) -> bool:
         return self.is_child()
 
-    def mergeable_with(self, child: 'MergeModelMixin') -> bool:
+    def mergeable_with(self, child: "MergeModelMixin") -> bool:
         if self.uuid == child.uuid:
             raise ValidationError(
-                {'parent': gettext('The parent must not be the same instance.')})
+                {"parent": gettext("The parent must not be the same instance.")}
+            )
         if not self.mergeable:
             raise ValidationError(
-                {'parent': gettext('The parent is not mergeable or is blocked.')})
+                {"parent": gettext("The parent is not mergeable or is blocked.")}
+            )
         if child.blocked:
             raise ValidationError(
-                {'__all__': gettext('The child is not mergeable or is blocked.')})
+                {"__all__": gettext("The child is not mergeable or is blocked.")}
+            )
         return True
 
-    def merge(self, child: 'MergeModelMixin'):
+    def merge(self, child: "MergeModelMixin"):
         for child_child in child.children.all():
             child_child.parent = self
             child_child.save()
@@ -161,11 +182,17 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
     @hook(BEFORE_UPDATE, when="parent", has_changed=True)
     @hook(BEFORE_CREATE, when="parent", was=None)
     def parent_changed(self):
-        if self.initial_value('parent') is None:
-            if self.parent and self.parent.mergeable_with(self) and not self._state.adding:
+        if self.initial_value("parent") is None:
+            if (
+                self.parent
+                and self.parent.mergeable_with(self)
+                and not self._state.adding
+            ):
                 self.parent.merge(self)
         else:
-            raise ValidationError({'__all__': gettext('Parent of merged instances can\'t be modified')})
+            raise ValidationError(
+                {"__all__": gettext("Parent of merged instances can't be modified")}
+            )
 
     @hook(BEFORE_DELETE)
     def delete_children(self):
@@ -174,23 +201,36 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
 
     @hook(BEFORE_UPDATE)
     def check_allowed_fields(self, exclude=None):
-        if self.merged and self.__class__.objects.filter(pk=self.pk).first().merged:  # TODO: Avoid query
+        if (
+            self.merged and self.__class__.objects.filter(pk=self.pk).first().merged
+        ):  # TODO: Avoid query
             for attr in self.__dict__:
                 if attr not in self.allowed_fields_on_merged and self.has_changed(attr):
-                    if (attr == 'cidr' and str(self.cidr) == self.initial_value('cidr')) or \
-                            (attr == 'sid' and self.sid == self.initial_value('sid')):
+                    if (
+                        attr == "cidr" and str(self.cidr) == self.initial_value("cidr")
+                    ) or (attr == "sid" and self.sid == self.initial_value("sid")):
                         # cidr and sid has invalid check of has_changed
                         pass
                     else:
                         raise ValidationError(
-                            {'__all__': gettext(
-                                f"Merged instances can\'t be modified: {self}, {self.parent}, {self.children}")})
+                            {
+                                "__all__": gettext(
+                                    f"Merged instances can't be modified: {self}, {self.parent}, {self.children}"
+                                )
+                            }
+                        )
         if self.blocked:
             exceptions = {}
             for attr in self.__dict__:
                 if attr not in self.allowed_fields and self.has_changed(attr):
                     if config.ALLOWED_FIELDS_BLOCKED_EXCEPTION:
-                        exceptions[attr] = [{'__all__': gettext(f'{attr} of blocked instances can\'t be modified')}]
+                        exceptions[attr] = [
+                            {
+                                "__all__": gettext(
+                                    f"{attr} of blocked instances can't be modified"
+                                )
+                            }
+                        ]
                     else:
                         self.__dict__[attr] = self.initial_value(attr)
             if exceptions:
@@ -198,7 +238,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
 
 
 class EvidenceModelMixin(models.Model):
-    evidence = GenericRelation('ngen.Evidence')
+    evidence = GenericRelation("ngen.Evidence")
     _files = []
 
     class Meta:
@@ -215,7 +255,7 @@ class EvidenceModelMixin(models.Model):
             self.add_evidence(file)
 
     def evidence_path(self):
-        return f'evidence/{self.__class__.__name__}/{self.id}'
+        return f"evidence/{self.__class__.__name__}/{self.id}"
 
     def add_evidence(self, file):
         self.evidence.get_or_create(file=file)
@@ -230,7 +270,7 @@ class EvidenceModelMixin(models.Model):
 
 
 class PriorityModelMixin(ValidationModelMixin, models.Model):
-    priority = models.ForeignKey('Priority', models.PROTECT, null=True, blank=True)
+    priority = models.ForeignKey("Priority", models.PROTECT, null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -243,39 +283,39 @@ class PriorityModelMixin(ValidationModelMixin, models.Model):
 
 class AddressManager(NetManager):
     def cidr_parents_of(self, cidr: str):
-        return self.filter(cidr__net_contains_or_equals=cidr).order_by('-cidr')
+        return self.filter(cidr__net_contains_or_equals=cidr).order_by("-cidr")
 
     def domain_parents_of(self, domain: str):
-        query = Q(domain='*') | Q(domain=domain)
-        partition = domain.partition('.')[-1]
+        query = Q(domain="*") | Q(domain=domain)
+        partition = domain.partition(".")[-1]
         while partition:
             query |= Q(domain=partition)
-            partition = partition.partition('.')[-1]
-        return self.filter(query).order_by(Length('domain').desc())
+            partition = partition.partition(".")[-1]
+        return self.filter(query).order_by(Length("domain").desc())
 
-    def parents_of(self, address: 'AddressModelMixin'):
+    def parents_of(self, address: "AddressModelMixin"):
         if address.cidr:
             return self.cidr_parents_of(str(address.address))
         elif address.domain:
             return self.domain_parents_of(str(address.address))
         return self.none()
 
-    def parents_of_many(self, addresses: list['AddressModelMixin']):
+    def parents_of_many(self, addresses: list["AddressModelMixin"]):
         parents = self.none()
         for address in addresses:
             parents |= self.parents_of(address)
         return parents
 
-    def parent_of(self, address: 'AddressModelMixin'):
+    def parent_of(self, address: "AddressModelMixin"):
         return self.parents_of(address)
 
     def cidr_children_of(self, cidr: str):
-        return self.filter(cidr__net_contained_or_equal=cidr).order_by('cidr')
+        return self.filter(cidr__net_contained_or_equal=cidr).order_by("cidr")
 
     def domain_children_of(self, domain: str):
-        return self.filter(domain__endswith=domain).order_by('domain')
+        return self.filter(domain__endswith=domain).order_by("domain")
 
-    def children_of(self, address: 'AddressModelMixin'):
+    def children_of(self, address: "AddressModelMixin"):
         if address.cidr:
             return self.cidr_children_of(str(address.address))
         elif address.domain:
@@ -299,7 +339,7 @@ class AddressManager(NetManager):
         return self.children_of_cidr(cidr) | self.children_of_domain(domain)
 
     def defaults(self):
-        return self.filter(Q(cidr__prefixlen=0) | Q(domain='*'))
+        return self.filter(Q(cidr__prefixlen=0) | Q(domain="*"))
 
     def defaults_ipv4(self):
         return self.filter(cidr__prefixlen=0, cidr__family=4)
@@ -308,15 +348,13 @@ class AddressManager(NetManager):
         return self.filter(cidr__prefixlen=0, cidr__family=6)
 
     def defaults_domain(self):
-        return self.filter(domain='*')
+        return self.filter(domain="*")
 
 
 class AddressModelMixin(ValidationModelMixin, models.Model):
     cidr = CidrAddressField(null=True, default=None, blank=True)
-    domain = models.CharField(
-        max_length=255, null=True, default=None, blank=True)
-    address_value = models.CharField(
-        max_length=255, null=False, default='', blank=True)
+    domain = models.CharField(max_length=255, null=True, default=None, blank=True)
+    address_value = models.CharField(max_length=255, null=False, default="", blank=True)
     objects = AddressManager()
     address = None
     sid = None
@@ -351,48 +389,47 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
 
     def validate_addresses(self):
         if not self.address_value and not self.cidr and not self.domain:
-            msg = 'At least cidr or domain must be setted'
-            raise ValidationError({'cidr': [msg], 'domain': [msg]})
+            msg = "At least cidr or domain must be setted"
+            raise ValidationError({"cidr": [msg], "domain": [msg]})
         elif self.cidr and self.domain:
-            msg = 'cidr and domain are mutually exclusive'
+            msg = "cidr and domain are mutually exclusive"
             raise ValidationError(
-                {'address_value': [msg], 'cidr': [msg], 'domain': [msg]})
+                {"address_value": [msg], "cidr": [msg], "domain": [msg]}
+            )
 
         if self.address_value:
             self.sid = StringIdentifier(self.address_value)
             if self.cidr:
                 if ipaddress.ip_network(self.cidr) != self.sid.parsed_obj:
-                    msg = 'cidr is not in address_value'
-                    raise ValidationError(
-                        {'cidr': [msg], 'address_value': [msg]})
+                    msg = "cidr is not in address_value"
+                    raise ValidationError({"cidr": [msg], "address_value": [msg]})
             elif self.domain:
                 if not self.domain == self.sid.parsed_string:
-                    msg = 'domain is not in address_value'
-                    raise ValidationError(
-                        {'domain': [msg], 'address_value': [msg]})
+                    msg = "domain is not in address_value"
+                    raise ValidationError({"domain": [msg], "address_value": [msg]})
 
     def clean_fields(self, exclude=None):
         # Reassign address_value to cidr/domain to validate it
         if not self.assign_address():
-            raise ValidationError(
-                gettext('Address must be either a cidr or a domain.'))
+            raise ValidationError(gettext("Address must be either a cidr or a domain."))
 
         # Validate address_value - cidr/domain consistency
         self.validate_addresses()
 
         if not self.address.is_valid():
             raise ValidationError(
-                {self.field_name(): [f'Must be a valid {self.field_name()}']})
+                {self.field_name(): [f"Must be a valid {self.field_name()}"]}
+            )
         super().clean_fields(exclude=exclude)
 
-    def __eq__(self, other: 'AddressModelMixin'):
+    def __eq__(self, other: "AddressModelMixin"):
         if isinstance(other, AddressModelMixin):
             return self.address == other.address
 
     def __str__(self):
         return self.address.network_string()
 
-    def __contains__(self, other: 'AddressModelMixin'):
+    def __contains__(self, other: "AddressModelMixin"):
         # b.address._address.subnet_of(a.address._address)
         if isinstance(other, AddressModelMixin):
             return other.address in self.address
@@ -450,7 +487,7 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
             return self.address.compressed
 
         def field_name(self):
-            return 'cidr'
+            return "cidr"
 
         def sanitized(self):
             return self.address.compressed
@@ -476,7 +513,7 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
             return False
 
         def default(self):
-            return '0.0.0.0/0'
+            return "0.0.0.0/0"
 
     class AddressIpv6(AddressIp):
 
@@ -490,25 +527,25 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
             return True
 
         def default(self):
-            return '::/0'
+            return "::/0"
 
     class AddressDomain(Address):
 
         def address_mask(self):
-            if self.address in ['*', '.']:
+            if self.address in ["*", "."]:
                 return 0
-            return len(self.address.split('.'))
+            return len(self.address.split("."))
 
         def create_address_object(self, address):
             # return address.replace('*','').strip().lower().split('/')[0]
-            a = address.replace('*', '').strip().strip('.').lower().split('/')[0]
-            if a == '':
-                return '*'
+            a = address.replace("*", "").strip().strip(".").lower().split("/")[0]
+            if a == "":
+                return "*"
             return a
 
         def in_range(self, other):
-            address_set = set(self.address.split('.'))
-            address_set_other = set(other.address.split('.'))
+            address_set = set(self.address.split("."))
+            address_set_other = set(other.address.split("."))
 
             if address_set == address_set_other:
                 return True
@@ -519,24 +556,26 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
             return False
 
         def default(self):
-            return '*'
+            return "*"
 
         def field_name(self):
-            return 'domain'
+            return "domain"
 
         def sanitized(self):
             return self.create_address_object(self.address)
 
         def network_string(self):
             if self.is_default():
-                return '*'
-            return f'{self.address}'
+                return "*"
+            return f"{self.address}"
 
         def network_with_mask(self):
-            return f'{self.address}/{self.address_mask()}'
+            return f"{self.address}/{self.address_mask()}"
 
         def is_valid(self):
-            return self.address == '*' or StringIdentifier.match_regex(StringType.DOMAIN, self.address)
+            return self.address == "*" or StringIdentifier.match_regex(
+                StringType.DOMAIN, self.address
+            )
 
         def network_address(self):
             return self.address
@@ -548,7 +587,9 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
 
 
 class ArtifactRelatedMixin(models.Model):
-    artifact_relation = GenericRelation('ngen.ArtifactRelation', related_query_name='%(class)ss')
+    artifact_relation = GenericRelation(
+        "ngen.ArtifactRelation", related_query_name="%(class)ss"
+    )
 
     class Meta:
         abstract = True
@@ -559,7 +600,9 @@ class ArtifactRelatedMixin(models.Model):
 
     @property
     def artifacts(self):
-        return ngen.models.Artifact.objects.filter(artifact_relation__in=self.artifact_relation.all()).order_by('id')
+        return ngen.models.Artifact.objects.filter(
+            artifact_relation__in=self.artifact_relation.all()
+        ).order_by("id")
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -572,26 +615,25 @@ class ArtifactRelatedMixin(models.Model):
         """
         if self.enrichable:
             for artifact_type, artifact_values in self.artifacts_dict.items():
-                if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(','):
+                if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(","):
                     relations = []
                     for artifact_value in artifact_values:
                         artifact, created = ngen.models.Artifact.objects.get_or_create(
-                            value=artifact_value,
-                            defaults={'type': artifact_type}
+                            value=artifact_value, defaults={"type": artifact_type}
                         )
-                        relation, rel_created = ngen.models.ArtifactRelation.objects.get_or_create(
-                            artifact=artifact,
-                            content_type=ContentType.objects.get_for_model(self),
-                            object_id=self.id,
-                            defaults={'auto_created': True}
+                        relation, rel_created = (
+                            ngen.models.ArtifactRelation.objects.get_or_create(
+                                artifact=artifact,
+                                content_type=ContentType.objects.get_for_model(self),
+                                object_id=self.id,
+                                defaults={"auto_created": True},
+                            )
                         )
                         relations.append(relation)
                         if not created:
                             artifact.enrich()
                     # Delete auto_created relations that are not in the new list
-                    self.artifact_relation.filter(
-                        auto_created=True
-                    ).exclude(
+                    self.artifact_relation.filter(auto_created=True).exclude(
                         pk__in=[relation.pk for relation in relations]
                     ).delete()
 
@@ -602,7 +644,7 @@ class ArtifactRelatedMixin(models.Model):
 
 class ChannelableMixin(models.Model):
     """
-    Mixin for models that have Comunication Channels
+    Mixin for models that have Communication Channels
     """
 
     communication_channels = GenericRelation(

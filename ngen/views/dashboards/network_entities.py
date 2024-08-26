@@ -1,5 +1,6 @@
-from ngen.serializers.dashboard import NetworkEntityDashboardSerializer
 from rest_framework.response import Response
+
+from ngen.serializers.dashboard import NetworkEntityDashboardSerializer
 from ngen.views.dashboards.dashboard import DashboardView
 
 

@@ -2,8 +2,8 @@
 Django Unit Tests for EmailMessage model
 """
 
-from django.utils import timezone
 from django.test import TestCase
+from django.utils import timezone
 
 from ngen.models import EmailMessage
 

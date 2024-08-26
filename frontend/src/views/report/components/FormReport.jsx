@@ -1,135 +1,136 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Button, Col, Form, Row } from 'react-bootstrap'
-import SelectComponent from '../../../components/Select/SelectComponent'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Col, Form, Row } from 'react-bootstrap';
+import SelectComponent from '../../../components/Select/SelectComponent';
+import { useTranslation } from 'react-i18next';
 
 const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
-
-  const [selectTaxonomy, setSelectTaxonomy] = useState()
-  const [selectLanguage, setSelectLanguage] = useState()
-  const { t } = useTranslation()
+  const [selectTaxonomy, setSelectTaxonomy] = useState();
+  const [selectLanguage, setSelectLanguage] = useState();
+  const { t } = useTranslation();
 
   const textareaRefs = {
     problem: useRef(null),
     derived_problem: useRef(null),
     verification: useRef(null),
     recommendations: useRef(null),
-    more_information: useRef(null),
-  }
+    more_information: useRef(null)
+  };
 
   const [maxHeights, setMaxHeights] = useState({
     problem: 'auto',
     derived_problem: 'auto',
     verification: 'auto',
     recommendations: 'auto',
-    more_information: 'auto',
-  })
+    more_information: 'auto'
+  });
 
   const completeField = (event) => {
     setBody({
-        ...body,
-        [event.target.name]: event.target.value,
-      },
-    )
-  }
+      ...body,
+      [event.target.name]: event.target.value
+    });
+  };
   // Función para actualizar la altura máxima del div visualizador
   const updateMaxHeight = (key) => {
     if (textareaRefs[key].current) {
-      const textareaHeight = textareaRefs[key].current.clientHeight
+      const textareaHeight = textareaRefs[key].current.clientHeight;
 
-      setMaxHeights(prevState => ({
+      setMaxHeights((prevState) => ({
         ...prevState,
-        [key]: textareaHeight + 'px',
-      }))
+        [key]: textareaHeight + 'px'
+      }));
     }
-
-  }
+  };
 
   // Manejar el cambio de tamaño de cada textarea
   useEffect(() => {
-    Object.keys(textareaRefs).forEach(key => {
-      updateMaxHeight(key)
-      window.addEventListener('resize', () => updateMaxHeight(key)) // Escuchar al evento resize para cada textarea
-    })
+    Object.keys(textareaRefs).forEach((key) => {
+      updateMaxHeight(key);
+      window.addEventListener('resize', () => updateMaxHeight(key)); // Escuchar al evento resize para cada textarea
+    });
 
     return () => {
-      Object.keys(textareaRefs).forEach(key => {
-        window.removeEventListener('resize', () => updateMaxHeight(key)) // Limpiar el event listener al desmontar el componente
-      })
-    }
-
-  }, []) // Ejecutar una sola vez al montar el componente
+      Object.keys(textareaRefs).forEach((key) => {
+        window.removeEventListener('resize', () => updateMaxHeight(key)); // Limpiar el event listener al desmontar el componente
+      });
+    };
+  }, []); // Ejecutar una sola vez al montar el componente
 
   useEffect(() => {
-
     if (languageOptions.length > 0) {
-      languageOptions.forEach(item => {
+      languageOptions.forEach((item) => {
         if (item.value === body.lang) {
-          setSelectLanguage({ label: item.label, value: item.value })
+          setSelectLanguage({ label: item.label, value: item.value });
         }
-      })
+      });
     }
     if (taxonomies.length > 0) {
-      taxonomies.forEach(item => {
+      taxonomies.forEach((item) => {
         if (item.value === body.taxonomy) {
-          setSelectTaxonomy({ label: item.label, value: item.value })
+          setSelectTaxonomy({ label: item.label, value: item.value });
         }
-      })
+      });
     }
-  }, [taxonomies])
+  }, [taxonomies]);
   const completeField1 = (nameField, event, setOption) => {
     if (event) {
       setBody({
-          ...body,
-          [nameField]: event.value,
-        },
-      )
+        ...body,
+        [nameField]: event.value
+      });
     } else {
       setBody({
-          ...body,
-          [nameField]: '',
-        },
-      )
-
+        ...body,
+        [nameField]: ''
+      });
     }
-    setOption(event)
-
-  }
+    setOption(event);
+  };
   let languageOptions = [
     {
       value: 'en',
-      label: t('w.language.english'),
+      label: t('w.language.english')
     },
     {
       value: 'es',
-      label: t('w.language.spanish'),
-    },
-  ]
+      label: t('w.language.spanish')
+    }
+  ];
 
   return (
     <Form>
       <Row>
         <Col sm={12} lg={6}>
-          <SelectComponent controlId="exampleForm.ControlSelect1"
-                           label={t('ngen.taxonomy_one')} options={taxonomies}
-                           value={selectTaxonomy} nameField="taxonomy"
-                           onChange={completeField1}
-                           placeholder={t('ngen.taxonomy.one.select')}
-                           setOption={setSelectTaxonomy} required={true}/>
+          <SelectComponent
+            controlId="exampleForm.ControlSelect1"
+            label={t('ngen.taxonomy_one')}
+            options={taxonomies}
+            value={selectTaxonomy}
+            nameField="taxonomy"
+            onChange={completeField1}
+            placeholder={t('ngen.taxonomy.one.select')}
+            setOption={setSelectTaxonomy}
+            required={true}
+          />
         </Col>
         <Col sm={12} lg={6}>
-          <SelectComponent controlId="exampleForm.ControlSelect1"
-                           label={t('w.lang')} options={languageOptions}
-                           value={selectLanguage} nameField="lang"
-                           onChange={completeField1}
-                           placeholder={t('w.lang.select')}
-                           setOption={setSelectLanguage}
-                           required={true}/>
+          <SelectComponent
+            controlId="exampleForm.ControlSelect1"
+            label={t('w.lang')}
+            options={languageOptions}
+            value={selectLanguage}
+            nameField="lang"
+            onChange={completeField1}
+            placeholder={t('w.lang.select')}
+            setOption={setSelectLanguage}
+            required={true}
+          />
         </Col>
         <Col sm={12} lg={6}>
           <Form.Group controlId="formGridAddress1">
-            <Form.Label>{t('w.issue')} <b
-              style={{ color: 'red' }}>*</b></Form.Label>
+            <Form.Label>
+              {t('w.issue')} <b style={{ color: 'red' }}>*</b>
+            </Form.Label>
             <Form.Control
               as="textarea"
               name="problem"
@@ -139,8 +140,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
               ref={textareaRefs.problem}
               onInput={() => updateMaxHeight('problem')}
             />
-            <span style={{ color: 'gray', fontSize: '0.8em' }}>{t(
-              'w.text.as.html')}</span>
+            <span style={{ color: 'gray', fontSize: '0.8em' }}>{t('w.text.as.html')}</span>
           </Form.Group>
         </Col>
         <Col sm={12} lg={6}>
@@ -154,7 +154,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
               padding: '10px',
               border: '1px solid #ccc',
               borderRadius: '5px',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
             dangerouslySetInnerHTML={{ __html: body.problem }}
           />
@@ -172,8 +172,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
               ref={textareaRefs.derived_problem}
               onInput={() => updateMaxHeight('derived_problem')}
             />
-            <span style={{ color: 'gray', fontSize: '0.8em' }}>{t(
-              'w.text.as.html')}</span>
+            <span style={{ color: 'gray', fontSize: '0.8em' }}>{t('w.text.as.html')}</span>
           </Form.Group>
         </Col>
         <Col sm={12} lg={6}>
@@ -188,7 +187,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
               padding: '10px',
               border: '1px solid #ccc',
               borderRadius: '5px',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
             dangerouslySetInnerHTML={{ __html: body.derived_problem }}
           />
@@ -206,8 +205,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
               ref={textareaRefs.verification}
               onInput={() => updateMaxHeight('verification')}
             />
-            <span style={{ color: 'gray', fontSize: '0.8em' }}>{t(
-              'w.text.as.html')}</span>
+            <span style={{ color: 'gray', fontSize: '0.8em' }}>{t('w.text.as.html')}</span>
           </Form.Group>
         </Col>
         <Col sm={12} lg={6}>
@@ -222,7 +220,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
               padding: '10px',
               border: '1px solid #ccc',
               borderRadius: '5px',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
             dangerouslySetInnerHTML={{ __html: body.verification }}
           />
@@ -240,8 +238,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
               ref={textareaRefs.recommendations}
               onInput={() => updateMaxHeight('recommendations')}
             />
-            <span style={{ color: 'gray', fontSize: '0.8em' }}>{t(
-              'w.text.as.html')}</span>
+            <span style={{ color: 'gray', fontSize: '0.8em' }}>{t('w.text.as.html')}</span>
           </Form.Group>
         </Col>
         <Col sm={12} lg={6}>
@@ -256,7 +253,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
               padding: '10px',
               border: '1px solid #ccc',
               borderRadius: '5px',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
             dangerouslySetInnerHTML={{ __html: body.recommendations }}
           />
@@ -274,8 +271,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
               ref={textareaRefs.more_information}
               onInput={() => updateMaxHeight('more_information')}
             />
-            <span style={{ color: 'gray', fontSize: '0.8em' }}>{t(
-              'w.text.as.html')}</span>
+            <span style={{ color: 'gray', fontSize: '0.8em' }}>{t('w.text.as.html')}</span>
           </Form.Group>
         </Col>
         <Col sm={12} lg={6}>
@@ -289,26 +285,29 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
               padding: '10px',
               border: '1px solid #ccc',
               borderRadius: '5px',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
             dangerouslySetInnerHTML={{ __html: body.more_information }}
           />
         </Col>
-
       </Row>
 
-
-      {body.problem !== '' && body.lang !== '' && body.taxonomy !== '-1' ?
-        <Button variant="primary" onClick={createOrEdit}>{t(
-          'button.save')} </Button>
-        :
-        <><Button variant="primary" disabled>{t('button.save')}</Button></>
-      }
-      <Button variant="primary" href="/reports">{t('button.cancel')}</Button>
-
-
+      {body.problem !== '' && body.lang !== '' && body.taxonomy !== '-1' ? (
+        <Button variant="primary" onClick={createOrEdit}>
+          {t('button.save')}{' '}
+        </Button>
+      ) : (
+        <>
+          <Button variant="primary" disabled>
+            {t('button.save')}
+          </Button>
+        </>
+      )}
+      <Button variant="primary" href="/reports">
+        {t('button.cancel')}
+      </Button>
     </Form>
-  )
-}
+  );
+};
 
-export default FormReport
+export default FormReport;

@@ -4,6 +4,7 @@
   &.mob-fixed .pcoded-navbar {
     z-index: 1032;
   }
+
   ~ .pcoded-outside {
     &:before {
       content: '';
@@ -17,6 +18,7 @@
     }
   }
 }
+
 .pcoded-header .dropdown .notification .noti-body li {
   width: 100%;
 }
@@ -61,6 +63,7 @@
   padding: 10px;
   box-sizing: border-box;
 }
+
 .img-preview {
   overflow: hidden;
 }
@@ -73,6 +76,7 @@
   overflow: visible;
   z-index: 1050;
 }
+
 @media only screen and (max-width: 991px) {
   .pcoded-header,
   .pcoded-main-container {
@@ -80,6 +84,7 @@
     width: 100%;
   }
 }
+
 .card-header .card-header-right {
   .dropdown-menu.show {
     transform: none !important;
@@ -144,11 +149,13 @@ header.navbar.pcoded-header.navbar-expand-lg.header-default .mobile-menu.on span
   height: auto;
   padding-left: 0.45rem;
 }
+
 .table {
   .badge {
     margin-right: 0.25rem;
   }
 }
+
 .mb-3.row {
   > .col,
   .col.d-flex {
@@ -158,12 +165,15 @@ header.navbar.pcoded-header.navbar-expand-lg.header-default .mobile-menu.on span
       &:nth-child(2) {
         flex-direction: column;
         text-align: left;
+
         > span {
           justify-content: flex-start !important;
+
           .form-control {
             max-width: 150px;
           }
         }
+
         .btn {
           margin-top: 8px;
           max-width: fit-content;
@@ -182,12 +192,15 @@ header.navbar.pcoded-header.navbar-expand-lg.header-default .mobile-menu.on span
   .row.justify-content-between > *[class*='col-'],
   .row.justify-content-between > .col {
     flex: 100%;
+
     .pagination {
       justify-content: flex-start !important;
     }
+
     &:first-child {
       margin-bottom: 8px;
     }
+
     > .d-flex.align-items-center {
       input {
         width: 40px !important;
@@ -197,11 +210,13 @@ header.navbar.pcoded-header.navbar-expand-lg.header-default .mobile-menu.on span
     }
   }
 }
+
 td {
   img.wid-40 {
     max-width: 40px;
   }
 }
+
 .new-cust-card {
   @media (max-width: 1024px) {
     .d-inline-block {
@@ -214,18 +229,22 @@ td {
     }
   }
 }
+
 .table th,
 .table td {
   vertical-align: middle;
 }
+
 .cover-img-block {
   overflow: hidden;
   z-index: 1;
 }
+
 .user-about-block {
   position: relative;
   z-index: 5;
 }
+
 @media only screen and (max-width: 1200px) {
   .user-card .user-about-block {
     margin-top: -10px;
@@ -238,11 +257,13 @@ td {
     float: none !important;
   }
 }
+
 @media (max-width: 768px) {
   .modal-open .modal {
     padding-left: 0 !important;
   }
 }
+
 .carousel.slide {
   overflow: hidden;
 }

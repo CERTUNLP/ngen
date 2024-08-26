@@ -1,7 +1,7 @@
-import avatar1 from 'assets/images/user/avatar-1.jpg'
-import avatar2 from 'assets/images/user/avatar-2.jpg'
-import avatar3 from 'assets/images/user/avatar-3.jpg'
-import avatar4 from 'assets/images/user/avatar-4.jpg'
+import avatar1 from 'assets/images/user/avatar-1.jpg';
+import avatar2 from 'assets/images/user/avatar-2.jpg';
+import avatar3 from 'assets/images/user/avatar-3.jpg';
+import avatar4 from 'assets/images/user/avatar-4.jpg';
 
 const chat = [
   {
@@ -10,20 +10,20 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 2,
@@ -32,24 +32,24 @@ const chat = [
       {
         type: 1,
         msg: 'Hiii!!! Good Morning',
-        time: '6:48 a.m',
+        time: '6:48 a.m'
       },
       {
         type: 0,
         msg: 'Hello, Very Good Morning',
-        time: '6:50 a.m',
+        time: '6:50 a.m'
       },
       {
         type: 0,
         msg: 'How are You?',
-        time: '8:50 a.m',
+        time: '8:50 a.m'
       },
       {
         type: 1,
         msg: 'Fine, What do you do?',
-        time: '8:51 a.m',
-      },
-    ],
+        time: '8:51 a.m'
+      }
+    ]
   },
   {
     friend_id: 4,
@@ -58,24 +58,24 @@ const chat = [
       {
         type: 1,
         msg: 'Hiii!!! Good Morning',
-        time: '6:48 a.m',
+        time: '6:48 a.m'
       },
       {
         type: 0,
         msg: 'Hello, Very Good Morning',
-        time: '6:50 a.m',
+        time: '6:50 a.m'
       },
       {
         type: 0,
         msg: 'How are You?',
-        time: '8:50 a.m',
+        time: '8:50 a.m'
       },
       {
         type: 1,
         msg: 'Fine, What do you do?',
-        time: '8:51 a.m',
-      },
-    ],
+        time: '8:51 a.m'
+      }
+    ]
   },
   {
     friend_id: 5,
@@ -83,20 +83,20 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 6,
@@ -104,80 +104,80 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 7,
@@ -186,24 +186,24 @@ const chat = [
       {
         type: 1,
         msg: 'Hiii!!! Good Morning',
-        time: '6:48 a.m',
+        time: '6:48 a.m'
       },
       {
         type: 0,
         msg: 'Hello, Very Good Morning',
-        time: '6:50 a.m',
+        time: '6:50 a.m'
       },
       {
         type: 0,
         msg: 'How are You?',
-        time: '8:50 a.m',
+        time: '8:50 a.m'
       },
       {
         type: 1,
         msg: 'Fine, What do you do?',
-        time: '8:51 a.m',
-      },
-    ],
+        time: '8:51 a.m'
+      }
+    ]
   },
   {
     friend_id: 8,
@@ -211,20 +211,20 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 9,
@@ -233,24 +233,24 @@ const chat = [
       {
         type: 1,
         msg: 'Hiii!!! Good Morning',
-        time: '6:48 a.m',
+        time: '6:48 a.m'
       },
       {
         type: 0,
         msg: 'Hello, Very Good Morning',
-        time: '6:50 a.m',
+        time: '6:50 a.m'
       },
       {
         type: 0,
         msg: 'How are You?',
-        time: '8:50 a.m',
+        time: '8:50 a.m'
       },
       {
         type: 1,
         msg: 'Fine, What do you do?',
-        time: '8:51 a.m',
-      },
-    ],
+        time: '8:51 a.m'
+      }
+    ]
   },
   {
     friend_id: 10,
@@ -258,20 +258,20 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 11,
@@ -279,20 +279,20 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 12,
@@ -301,24 +301,24 @@ const chat = [
       {
         type: 1,
         msg: 'Hiii!!! Good Morning',
-        time: '6:48 a.m',
+        time: '6:48 a.m'
       },
       {
         type: 0,
         msg: 'Hello, Very Good Morning',
-        time: '6:50 a.m',
+        time: '6:50 a.m'
       },
       {
         type: 0,
         msg: 'How are You?',
-        time: '8:50 a.m',
+        time: '8:50 a.m'
       },
       {
         type: 1,
         msg: 'Fine, What do you do?',
-        time: '8:51 a.m',
-      },
-    ],
+        time: '8:51 a.m'
+      }
+    ]
   },
   {
     friend_id: 13,
@@ -326,20 +326,20 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 14,
@@ -348,24 +348,24 @@ const chat = [
       {
         type: 1,
         msg: 'Hiii!!! Good Morning',
-        time: '6:48 a.m',
+        time: '6:48 a.m'
       },
       {
         type: 0,
         msg: 'Hello, Very Good Morning',
-        time: '6:50 a.m',
+        time: '6:50 a.m'
       },
       {
         type: 0,
         msg: 'How are You?',
-        time: '8:50 a.m',
+        time: '8:50 a.m'
       },
       {
         type: 1,
         msg: 'Fine, What do you do?',
-        time: '8:51 a.m',
-      },
-    ],
+        time: '8:51 a.m'
+      }
+    ]
   },
   {
     friend_id: 15,
@@ -373,20 +373,20 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 16,
@@ -394,20 +394,20 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 17,
@@ -416,24 +416,24 @@ const chat = [
       {
         type: 1,
         msg: 'Hiii!!! Good Morning',
-        time: '6:48 a.m',
+        time: '6:48 a.m'
       },
       {
         type: 0,
         msg: 'Hello, Very Good Morning',
-        time: '6:50 a.m',
+        time: '6:50 a.m'
       },
       {
         type: 0,
         msg: 'How are You?',
-        time: '8:50 a.m',
+        time: '8:50 a.m'
       },
       {
         type: 1,
         msg: 'Fine, What do you do?',
-        time: '8:51 a.m',
-      },
-    ],
+        time: '8:51 a.m'
+      }
+    ]
   },
   {
     friend_id: 18,
@@ -441,20 +441,20 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 19,
@@ -463,24 +463,24 @@ const chat = [
       {
         type: 1,
         msg: 'Hiii!!! Good Morning',
-        time: '6:48 a.m',
+        time: '6:48 a.m'
       },
       {
         type: 0,
         msg: 'Hello, Very Good Morning',
-        time: '6:50 a.m',
+        time: '6:50 a.m'
       },
       {
         type: 0,
         msg: 'How are You?',
-        time: '8:50 a.m',
+        time: '8:50 a.m'
       },
       {
         type: 1,
         msg: 'Fine, What do you do?',
-        time: '8:51 a.m',
-      },
-    ],
+        time: '8:51 a.m'
+      }
+    ]
   },
   {
     friend_id: 20,
@@ -488,20 +488,20 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
+        time: '8:22 a.m'
+      }
+    ]
   },
   {
     friend_id: 21,
@@ -509,21 +509,21 @@ const chat = [
     messages: [
       {
         type: 1,
-        msg: 'I\'m just looking around. Will you tell me something about yourself?',
-        time: '8:20 a.m',
+        msg: "I'm just looking around. Will you tell me something about yourself?",
+        time: '8:20 a.m'
       },
       {
         type: 0,
         msg: 'Ohh! very nice',
-        time: '8:22 a.m',
+        time: '8:22 a.m'
       },
       {
         type: 1,
         msg: 'can you come with me?',
-        time: '8:22 a.m',
-      },
-    ],
-  },
-]
+        time: '8:22 a.m'
+      }
+    ]
+  }
+];
 
-export default chat
+export default chat;

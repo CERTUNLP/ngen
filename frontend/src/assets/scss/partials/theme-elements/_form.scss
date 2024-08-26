@@ -39,6 +39,7 @@
     color: #aaaeb3;
   }
 }
+
 /* input group start */
 
 .input-group {
@@ -48,6 +49,7 @@
     padding-left: 15px;
     padding-right: 15px;
     background: transparent;
+
     i {
       font-size: 20px;
     }
@@ -78,11 +80,13 @@
 .custom-select {
   height: calc(2.25rem + 9px);
 }
+
 /* input group End */
 /**====== Form Componant css end ======**/
 select.form-control:not([size]):not([multiple]) {
   height: calc(2.55rem + 2px);
 }
+
 .input-group-lg > .input-group-append > select.btn:not([size]):not([multiple]),
 .input-group-lg > .input-group-append > select.input-group-text:not([size]):not([multiple]),
 .input-group-lg > .input-group-prepend > select.btn:not([size]):not([multiple]),
@@ -97,11 +101,13 @@ select.form-control-lg:not([size]):not([multiple]) {
     padding: 6px 12px 5px 44px;
   }
 }
+
 /* form-select */
 
 .select2-container {
   width: 100% !important;
 }
+
 .tt-menu {
   position: absolute;
   top: 100%;
@@ -121,16 +127,20 @@ select.form-control-lg:not([size]):not([multiple]) {
   background-clip: padding-box;
   cursor: pointer;
 }
+
 .bootstrap-tagsinput {
   width: 100%;
 }
+
 .custom-file-label {
   height: auto;
+
   &:after {
     height: auto;
     padding: 0.55rem 0.75rem;
   }
 }
+
 .form-control.is-invalid,
 .was-validated .form-control:invalid,
 .was-validated .form-control:valid,

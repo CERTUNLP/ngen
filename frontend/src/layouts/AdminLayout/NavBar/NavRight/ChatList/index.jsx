@@ -1,15 +1,15 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { FormControl } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import PerfectScrollbar from 'react-perfect-scrollbar'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { FormControl } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
-import Friends from './Friends'
+import Friends from './Friends';
 
 const ChatList = ({ listOpen, closed }) => {
-  let listClass = ['header-user-list']
+  let listClass = ['header-user-list'];
   if (listOpen) {
-    listClass = [...listClass, 'open']
+    listClass = [...listClass, 'open'];
   }
 
   return (
@@ -17,31 +17,29 @@ const ChatList = ({ listOpen, closed }) => {
       <div className={listClass.join(' ')}>
         <div className="h-list-header">
           <div className="input-group">
-            <FormControl type="text" id="search-friends"
-                         placeholder="Search Friend . . ."/>
+            <FormControl type="text" id="search-friends" placeholder="Search Friend . . ." />
           </div>
         </div>
         <div className="h-list-body">
           <Link to="#" className="h-close-text" onClick={closed}>
-            <i className="feather icon-chevrons-right"/>
+            <i className="feather icon-chevrons-right" />
           </Link>
           <div className="main-friend-cont scroll-div">
-            <div className="main-friend-list"
-                 style={{ height: 'calc(100vh - 85px)' }}>
+            <div className="main-friend-list" style={{ height: 'calc(100vh - 85px)' }}>
               <PerfectScrollbar>
-                <Friends listOpen={listOpen}/>
+                <Friends listOpen={listOpen} />
               </PerfectScrollbar>
             </div>
           </div>
         </div>
       </div>
     </React.Fragment>
-  )
-}
+  );
+};
 
 ChatList.propTypes = {
   listOpen: PropTypes.bool,
-  closed: PropTypes.func,
-}
+  closed: PropTypes.func
+};
 
-export default ChatList
+export default ChatList;

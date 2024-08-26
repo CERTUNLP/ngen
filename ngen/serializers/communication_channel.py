@@ -1,10 +1,11 @@
 # pylint: disable=protected-access
 from rest_framework import serializers
-from ngen.serializers.communication_type import CommunicationTypeSerializer
-from ngen.serializers.constituency import ContactSerializer
+
 from ngen import models
 from ngen.serializers.case import EventSerializerReduced
 from ngen.serializers.common.fields import GenericRelationField
+from ngen.serializers.communication_type import CommunicationTypeSerializer
+from ngen.serializers.constituency import ContactSerializer
 
 
 class NetworksWithContactsSerializer(serializers.Serializer):

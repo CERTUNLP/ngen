@@ -1,95 +1,95 @@
 version: '3.9'
 services:
-    ngen-postgres:
-        image: postgres:latest
-        restart: always
-        environment:
-            - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=example
-            - POSTGRES_DB=ngen
-        volumes:
-            - ./postgres_data:/var/lib/postgresql/data
-        ports:
-            - "5432:5432"
-    ngen-adminer:
-        image: adminer
-        restart: always
-        command: [ "php", "-d", "upload_max_filesize = 10G", "-d", "post_max_size = 10G", "-S", "[::]:8080", "-t", "/var/www/html" ]
-        ports:
-            - "8080:8080"
-    ngen-django:
-        image: certunlp/ngen-django:latest
-        restart: always
-        command: python manage.py runserver ngen-django:8000
-        ports:
-            - "8000:8000"
-        env_file:
-            - ngen.env
-        depends_on:
-            - ngen-postgres
-            - ngen-rabbitmq
-            - ngen-redis
-            - ngen-mail
-    ngen-celery-worker:
-        image: certunlp/ngen-django:latest
-        restart: always
-        command: celery -A project worker -l info
-        env_file:
-            - ngen.env
-        depends_on:
-            - ngen-django
-            - ngen-rabbitmq
-            - ngen-redis
-    ngen-celery-beat:
-        image: certunlp/ngen-django:latest
-        restart: always
-        command: celery -A project beat -l info
-        env_file:
-            - ngen.env
-        depends_on:
-            - ngen-django
-            - ngen-rabbitmq
-            - ngen-redis
-    ngen-rabbitmq:
-        image: rabbitmq:3-management-alpine
-        ports:
-            - "5672:5672"
-            - "15672:15672"
-    ngen-redis:
-        image: 'redis:alpine'
-        ports:
-            - "6379:6379"
-        volumes:
-            - ./redis:/data
-    redis-commander:
-        image: rediscommander/redis-commander:latest
-        environment:
-            - REDIS_HOSTS=local:ngen-redis:6379
-            - HTTP_USER=ngen
-            - HTTP_PASSWORD=ngen
-        ports:
-            - "8081:8081"
-        depends_on:
-            - ngen-redis
-    ngen-mail:
-        image: mailhog/mailhog
-        ports:
-            - "1025:1025" # smtp server
-            - "8025:8025" # web ui
-    ngen-elasticsearch:
-        image: elasticsearch:7.17.4
-        profiles: ["elastic"] # once you run with this profile you can't run without it, you should prune containers
-        environment:
-            - ES_JAVA_OPTS=-Xms1g -Xmx1g
-            - http.host=0.0.0.0
-            - discovery.type=single-node
-            - script.allowed_types=inline
-            - thread_pool.search.queue_size=100000
-            - thread_pool.write.queue_size=10000
-        volumes:
-            - ./elasticsearch:/usr/share/elasticsearch/data #sudo  chown -R 1000:1000 elasticsearch
-        ports:
-            - "9200:9200"
+  ngen-postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_DB=ngen
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  ngen-adminer:
+    image: adminer
+    restart: always
+    command: [ "php", "-d", "upload_max_filesize = 10G", "-d", "post_max_size = 10G", "-S", "[::]:8080", "-t", "/var/www/html" ]
+    ports:
+      - "8080:8080"
+  ngen-django:
+    image: certunlp/ngen-django:latest
+    restart: always
+    command: python manage.py runserver ngen-django:8000
+    ports:
+      - "8000:8000"
+    env_file:
+      - ngen.env
+    depends_on:
+      - ngen-postgres
+      - ngen-rabbitmq
+      - ngen-redis
+      - ngen-mail
+  ngen-celery-worker:
+    image: certunlp/ngen-django:latest
+    restart: always
+    command: celery -A project worker -l info
+    env_file:
+      - ngen.env
+    depends_on:
+      - ngen-django
+      - ngen-rabbitmq
+      - ngen-redis
+  ngen-celery-beat:
+    image: certunlp/ngen-django:latest
+    restart: always
+    command: celery -A project beat -l info
+    env_file:
+      - ngen.env
+    depends_on:
+      - ngen-django
+      - ngen-rabbitmq
+      - ngen-redis
+  ngen-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  ngen-redis:
+    image: 'redis:alpine'
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis:/data
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:ngen-redis:6379
+      - HTTP_USER=ngen
+      - HTTP_PASSWORD=ngen
+    ports:
+      - "8081:8081"
+    depends_on:
+      - ngen-redis
+  ngen-mail:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025" # smtp server
+      - "8025:8025" # web ui
+  ngen-elasticsearch:
+    image: elasticsearch:7.17.4
+    profiles: [ "elastic" ] # once you run with this profile you can't run without it, you should prune containers
+    environment:
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - http.host=0.0.0.0
+      - discovery.type=single-node
+      - script.allowed_types=inline
+      - thread_pool.search.queue_size=100000
+      - thread_pool.write.queue_size=10000
+    volumes:
+      - ./elasticsearch:/usr/share/elasticsearch/data #sudo  chown -R 1000:1000 elasticsearch
+    ports:
+      - "9200:9200"
 #    ngen-cortex:
 #        image: thehiveproject/cortex:3.1-withdeps
 #        environment:

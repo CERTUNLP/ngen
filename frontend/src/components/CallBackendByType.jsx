@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react'
-import LetterFormat from './LetterFormat'
+import React, { useEffect, useState } from 'react';
+import LetterFormat from './LetterFormat';
 
 const CallBackendByType = ({ url, callback, useBadge }) => {
-  const [data, setData] = useState('')
+  const [data, setData] = useState('');
 
   useEffect(() => {
-    callback(url, setData)
-  }, [])
+    callback(url, setData);
+  }, []);
 
   return (
-    data &&
-    <React.Fragment>
-      <LetterFormat useBadge={useBadge} stringToDisplay={data.value}
-                    color={'#00FFFF'}/>
-    </React.Fragment>
-  )
-}
+    data && (
+      <React.Fragment>
+        <LetterFormat useBadge={useBadge} stringToDisplay={data.value} color={'#00FFFF'} />
+      </React.Fragment>
+    )
+  );
+};
 
-export default CallBackendByType
+export default CallBackendByType;

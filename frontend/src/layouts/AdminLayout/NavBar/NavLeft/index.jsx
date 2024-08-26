@@ -1,15 +1,15 @@
-import React from 'react'
-import { ListGroup } from 'react-bootstrap'
+import React from 'react';
+import { ListGroup } from 'react-bootstrap';
 
-import useWindowSize from '../../../../hooks/useWindowSize'
+import useWindowSize from '../../../../hooks/useWindowSize';
 
 const NavLeft = () => {
-  const windowSize = useWindowSize()
+  const windowSize = useWindowSize();
   // let dropdownRightAlign = false;
-  let navItemClass = ['nav-item']
+  let navItemClass = ['nav-item'];
 
   if (windowSize.width <= 575) {
-    navItemClass = [...navItemClass, 'd-none']
+    navItemClass = [...navItemClass, 'd-none'];
   }
 
   return (
@@ -48,7 +48,7 @@ const NavLeft = () => {
         </ListGroup.Item>
       </ListGroup>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default NavLeft
+export default NavLeft;

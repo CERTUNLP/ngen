@@ -1,6 +1,6 @@
+import magic
 from constance import settings, config
 from django.utils.text import slugify
-import magic
 
 from project import settings as project_settings
 

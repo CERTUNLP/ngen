@@ -1,8 +1,8 @@
-from rest_framework import serializers
 from constance import config
+from rest_framework import serializers
 
-from ngen.utils import slugify_underscore
 from ngen.models import TaxonomyGroup
+from ngen.utils import slugify_underscore
 
 
 class GenericRelationField(serializers.RelatedField):

@@ -21,12 +21,12 @@ import reducers from './reducers';
 //
 
 const store = configureStore({
-    reducer: reducers,
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({
-            serializableCheck: false,
-        }),
-    devTools: true
+  reducer: reducers,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false
+    }),
+  devTools: true
 });
 //
 // // export const useSelector = useReduxSelector;

@@ -1,89 +1,97 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { Card, Col, Row } from 'react-bootstrap'
-import Alert from '../../components/Alert/Alert'
-import { getContact, putContact } from '../../api/services/contacts'
-import FormCreateContact from './components/FormCreateContact'
-import Navigation from '../../components/Navigation/Navigation'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Card, Col, Row } from 'react-bootstrap';
+import Alert from '../../components/Alert/Alert';
+import { getContact, putContact } from '../../api/services/contacts';
+import FormCreateContact from './components/FormCreateContact';
+import Navigation from '../../components/Navigation/Navigation';
+import { useTranslation } from 'react-i18next';
 
 const EditContact = () => {
-  const location = useLocation()
-  const fromState = location.state
-  const [contact, setContact] = useState(fromState)
-  const { t } = useTranslation()
+  const location = useLocation();
+  const fromState = location.state;
+  const [contact, setContact] = useState(fromState);
+  const { t } = useTranslation();
 
-  const [supportedName, setSupportedName] = useState('')
-  const [selectRol, setSelectRol] = useState('')
-  const [supportedPriority, setSupportedPriority] = useState('')
-  const [supportedContact, setSupportedContact] = useState('')
-  const [supportedKey, setSupportedKey] = useState('')
-  const [selectType, setSelectType] = useState('')
+  const [supportedName, setSupportedName] = useState('');
+  const [selectRol, setSelectRol] = useState('');
+  const [supportedPriority, setSupportedPriority] = useState('');
+  const [supportedContact, setSupportedContact] = useState('');
+  const [supportedKey, setSupportedKey] = useState('');
+  const [selectType, setSelectType] = useState('');
 
   //Alert
-  const [showAlert, setShowAlert] = useState(false)
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-
     if (contact) {
-      setSupportedName(contact.name)
-      setSelectRol(contact.role)
-      setSupportedPriority(contact.priority)
-      setSupportedContact(contact.username)
-      setSupportedKey(contact.public_key)
-      setSelectType(contact.type)
+      setSupportedName(contact.name);
+      setSelectRol(contact.role);
+      setSupportedPriority(contact.priority);
+      setSupportedContact(contact.username);
+      setSupportedKey(contact.public_key);
+      setSelectType(contact.type);
     } else {
-      const contactUrl = localStorage.getItem('contact')
-      getContact(contactUrl).then((response) => {
-        setContact(response.data)
-      }).catch(error => console.log(error))
-
+      const contactUrl = localStorage.getItem('contact');
+      getContact(contactUrl)
+        .then((response) => {
+          setContact(response.data);
+        })
+        .catch((error) => console.log(error));
     }
-  }, [contact])
+  }, [contact]);
 
   const editContact = () => {
-    putContact(contact.url, supportedName, supportedContact, supportedKey,
-      selectType, selectRol, supportedPriority).then((response) => {
-      localStorage.removeItem('contact')
-      window.location.href = '/contacts'
-    }).catch(() => {
-      setShowAlert(true)
-    })
-  }
+    putContact(contact.url, supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority)
+      .then((response) => {
+        localStorage.removeItem('contact');
+        window.location.href = '/contacts';
+      })
+      .catch(() => {
+        setShowAlert(true);
+      });
+  };
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)}
-             component="contact"/>
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="contact" />
       <Row>
-        <Navigation actualPosition={t('ngen.edit.contact')} path="/contacts"
-                    index={t('ngen.contact_other')}/>
+        <Navigation actualPosition={t('ngen.edit.contact')} path="/contacts" index={t('ngen.contact_other')} />
       </Row>
       <Row>
         <Col sm={12}>
           <Card>
             <Card.Header>
               <Card.Title as="h5">{t('ngen.contact_other')}</Card.Title>
-              <span className="d-block m-t-5">{t('w.edit')} {t(
-                'ngen.contact_one')}</span>
+              <span className="d-block m-t-5">
+                {t('w.edit')} {t('ngen.contact_one')}
+              </span>
             </Card.Header>
             <Card.Body>
               <FormCreateContact
-                name={supportedName} setName={setSupportedName}
-                role={selectRol} setRole={setSelectRol}
-                priority={supportedPriority} setPriority={setSupportedPriority}
-                type={selectType} setType={setSelectType}
-                contact={supportedContact} setContact={setSupportedContact}
-                keypgp={supportedKey} setKey={setSupportedKey}
-                ifConfirm={editContact} ifCancel={() => {
-                window.location.href = '/contacts'
-              }}/>
+                name={supportedName}
+                setName={setSupportedName}
+                role={selectRol}
+                setRole={setSelectRol}
+                priority={supportedPriority}
+                setPriority={setSupportedPriority}
+                type={selectType}
+                setType={setSelectType}
+                contact={supportedContact}
+                setContact={setSupportedContact}
+                keypgp={supportedKey}
+                setKey={setSupportedKey}
+                ifConfirm={editContact}
+                ifCancel={() => {
+                  window.location.href = '/contacts';
+                }}
+              />
             </Card.Body>
           </Card>
         </Col>
       </Row>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default EditContact
+export default EditContact;

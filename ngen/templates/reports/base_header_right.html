@@ -1,17 +1,17 @@
 {% load i18n %}
 {% language lang %}
-<td align="right">
-    <div class="right-header">
-        {% if tlp %}
-            <h6 style="color: {{ tlp.color }}">
-                TLP{% if not html %}:{% endif %} <br> {{ tlp | upper }}
-            </h6>
-        {% endif %}
-        {% if priority %}
-            <h6 style="color: {{ priority.color }}">
-                {% translate 'Priority' %}{% if not html %}:{% endif %} <br> {% translate priority.name %}
-            </h6>
-        {% endif %}
-    </div>
-</td>
+    <td align="right">
+        <div class="right-header">
+            {% if tlp %}
+                <h6 style="color: {{ tlp.color }}">
+                    TLP{% if not html %}:{% endif %} <br> {{ tlp | upper }}
+                </h6>
+            {% endif %}
+            {% if priority %}
+                <h6 style="color: {{ priority.color }}">
+                    {% translate 'Priority' %}{% if not html %}:{% endif %} <br> {% translate priority.name %}
+                </h6>
+            {% endif %}
+        </div>
+    </td>
 {% endlanguage %}

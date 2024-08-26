@@ -1,20 +1,15 @@
-import {
-  isBlank,
-  isEmpty,
-  validateFieldText,
-  validateLength,
-} from '../validators'
+import { isBlank, isEmpty, validateFieldText, validateLength } from '../validators';
 
 const validateName = (name) => {
-  return (validateFieldText(name) && validateLength(name, 100))
-}
+  return validateFieldText(name) && validateLength(name, 100);
+};
 
 const validateDescription = (description) => {
-  return (validateLength(description, 250) && !isEmpty(description))
-}
+  return validateLength(description, 250) && !isEmpty(description);
+};
 
 const validateUnrequiredInput = (input) => {
-  return (!isBlank(input))
-}
+  return !isBlank(input);
+};
 
-export { validateName, validateDescription, validateUnrequiredInput }
+export { validateName, validateDescription, validateUnrequiredInput };

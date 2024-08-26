@@ -1,68 +1,72 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Row } from 'react-bootstrap'
-import { postPlaybook, putPlaybook } from '../../api/services/playbooks'
-import FormCreatePlaybook from '../playbook/components/FormCreatePlaybook'
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies'
-import ListTask from '../task/ListTask'
-import Navigation from '../../components/Navigation/Navigation'
-import Alert from '../../components/Alert/Alert'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Col, Row } from 'react-bootstrap';
+import { postPlaybook, putPlaybook } from '../../api/services/playbooks';
+import FormCreatePlaybook from '../playbook/components/FormCreatePlaybook';
+import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
+import ListTask from '../task/ListTask';
+import Navigation from '../../components/Navigation/Navigation';
+import Alert from '../../components/Alert/Alert';
+import { useTranslation } from 'react-i18next';
 
 const CreatePlaybook = () => {
-
-  const [url, setUrl] = useState('')
-  const [name, setName] = useState('')
-  const [taxonomy, setTaxonomy] = useState([])
-  const { t } = useTranslation()
+  const [url, setUrl] = useState('');
+  const [name, setName] = useState('');
+  const [taxonomy, setTaxonomy] = useState([]);
+  const { t } = useTranslation();
 
   //Renderizar
-  const [allTaxonomies, setAllTaxonomies] = useState([]) //lista con formato para multiselect value, label
+  const [allTaxonomies, setAllTaxonomies] = useState([]); //lista con formato para multiselect value, label
 
   //Collapse
-  const [sectionAddTask, setSectionAddTask] = useState(false)
+  const [sectionAddTask, setSectionAddTask] = useState(false);
 
   //Alert
-  const [showAlert, setShowAlert] = useState(false)
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-
     getMinifiedTaxonomy().then((response) => {
-      let listTaxonomies = []
+      let listTaxonomies = [];
       response.map((taxonomyItem) => {
-          listTaxonomies.push({ value: taxonomyItem.url, label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] + ')' })
-      })
-      setAllTaxonomies(listTaxonomies)
-      })
-
-  }, [sectionAddTask])
+        listTaxonomies.push({
+          value: taxonomyItem.url,
+          label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] + ')'
+        });
+      });
+      setAllTaxonomies(listTaxonomies);
+    });
+  }, [sectionAddTask]);
 
   const createPlaybook = () => {
-    postPlaybook(name, taxonomy).then((response) => {
-      setUrl(response.data.url) // y la url
-      setSectionAddTask(true)
-    }).catch().finally(() => {
-      setShowAlert(true)
-    })
-  }
+    postPlaybook(name, taxonomy)
+      .then((response) => {
+        setUrl(response.data.url); // y la url
+        setSectionAddTask(true);
+      })
+      .catch()
+      .finally(() => {
+        setShowAlert(true);
+      });
+  };
 
   const editPlaybook = () => {
-    putPlaybook(url, name, taxonomy).then().catch().finally(() => {
-      setShowAlert(true)
-    })
-  }
+    putPlaybook(url, name, taxonomy)
+      .then()
+      .catch()
+      .finally(() => {
+        setShowAlert(true);
+      });
+  };
 
   const labelTaxonomy = {
     vulnerability: 'Vulnerabilidad',
-    incident: 'Incidente',
-  }
+    incident: 'Incidente'
+  };
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)}
-             component="playbook"/>
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="playbook" />
       <Row>
-        <Navigation actualPosition={t('ngen.playbook.add')} path="/playbooks"
-                    index="Playbook"/>
+        <Navigation actualPosition={t('ngen.playbook.add')} path="/playbooks" index="Playbook" />
       </Row>
       <Row>
         <Col sm={12}>
@@ -73,24 +77,26 @@ const CreatePlaybook = () => {
             </Card.Header>
             <Card.Body>
               <FormCreatePlaybook
-                name={name} setName={setName}
-                taxonomy={taxonomy} setTaxonomy={setTaxonomy}
+                name={name}
+                setName={setName}
+                taxonomy={taxonomy}
+                setTaxonomy={setTaxonomy}
                 ifConfirm={!sectionAddTask ? createPlaybook : editPlaybook}
                 allTaxonomies={allTaxonomies}
-                save={!sectionAddTask ? t('button.create') : t(
-                  'button.save_changes')}/>
+                save={!sectionAddTask ? t('button.create') : t('button.save_changes')}
+              />
             </Card.Body>
           </Card>
 
-          <ListTask urlPlaybook={url} sectionAddTask={sectionAddTask}
-                    setShowAlert={setShowAlert}/>
+          <ListTask urlPlaybook={url} sectionAddTask={sectionAddTask} setShowAlert={setShowAlert} />
 
-          <Button variant="primary" href="/playbooks">{t(
-            'button.return')}</Button>
+          <Button variant="primary" href="/playbooks">
+            {t('button.return')}
+          </Button>
         </Col>
       </Row>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default CreatePlaybook
+export default CreatePlaybook;
