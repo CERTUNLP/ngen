@@ -129,9 +129,6 @@ const ReadEvent = () => {
               <div>{body.date ? body.date.slice(0, 10) + ' ' +
                 body.date.slice(11, 19) : '--'}</div>
             </Col>
-          </Row>
-          <p />
-          <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.uuid')}
             </Col>
@@ -150,9 +147,6 @@ const ReadEvent = () => {
                 <CallBackendByName url={body.tlp} callback={callbackTlp} />
                 : '-'}
             </Col>
-          </Row>
-          <p />
-          <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.feed.information')}
             </Col>
@@ -173,9 +167,6 @@ const ReadEvent = () => {
                 <CallBackendByName url={body.taxonomy}
                   callback={callbackTaxonomy} /> : '-'}
             </Col>
-          </Row>
-          <p />
-          <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.event.initial_taxonomy_slug')}
             </Col>
@@ -196,9 +187,6 @@ const ReadEvent = () => {
                 <CallBackendByName url={body.priority}
                   callback={callbackPriority} /> : '-'}
             </Col>
-          </Row>
-          <p />
-          <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('reporter')}
             </Col>
@@ -209,7 +197,6 @@ const ReadEvent = () => {
                   attr={'username'} /> : '-'}
             </Col>
           </Row>
-          <p />
           <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.event.parent')}
@@ -236,9 +223,6 @@ const ReadEvent = () => {
                 '-'
               }
             </Col>
-          </Row>
-          <p />
-          <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.children')}
             </Col>
@@ -256,9 +240,6 @@ const ReadEvent = () => {
               {body.merged !== undefined ?
                 (body.merged ? t('w.yes') : t('w.no')) : '-'}
             </Col>
-          </Row>
-          <p />
-          <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('w.blocked')}
             </Col>
@@ -267,7 +248,6 @@ const ReadEvent = () => {
                 (body.merged ? t('w.yes') : t('w.no')) : '-'}
             </Col>
           </Row>
-          <br />
           <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('notes')}
@@ -285,29 +265,24 @@ const ReadEvent = () => {
         </Card.Header>
         <Card.Body>
           <Row>
-            <p></p>
-
-            <Col sm={12} lg={2} className={'align-self-center'}>{t(
-              'ngen.domain')}</Col>
-            <p></p>
-
+            <Col sm={12} lg={2} className={'align-self-center'}>
+              {t('ngen.domain')}
+            </Col>
             <Col sm={12} lg={4} className={'align-self-center'}> <Form.Control
               plaintext readOnly
-              defaultValue={body.domain} /></Col>
-
-
+              defaultValue={body.domain}/>
+            </Col>
           </Row>
+          <p/>
           <Row>
-
-            <Col sm={12} lg={2} className={'align-self-center'}>{t(
-              'ngen.cidr')}</Col>
-
+            <Col sm={12} lg={2} className={'align-self-center'}>
+              {t('ngen.cidr')}
+            </Col>
             <Col sm={12} lg={4} className={'align-self-center'}> <Form.Control
               plaintext readOnly
-              defaultValue={body.cidr} /></Col>
-
-
-          </Row>
+              defaultValue={body.cidr}/>
+            </Col>
+          </Row>  
         </Card.Body>
       </Card>
 
