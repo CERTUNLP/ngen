@@ -119,12 +119,9 @@ services:
         build:
             context: ../frontend
             dockerfile: Dockerfile
-            args: 
-             REACT_APP_NGEN_LANG: 'en-US'
         volumes:
             - '../frontend/:/app'
             - '/app/node_modules'
-
         ports:
             - "3000:3000"
         environment:
