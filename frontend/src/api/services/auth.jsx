@@ -103,6 +103,7 @@ const logout = (save_url = false) => {
         dispatch({
           type: LOGOUT
         });
+        document.title = 'NGEN';
       } catch (e) {
         console.log(e);
         console.log('Error en el dispatch logout');
