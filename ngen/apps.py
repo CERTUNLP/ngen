@@ -6,4 +6,4 @@ class NgenConfig(AppConfig):
     name = "ngen"
 
     def ready(self):
-        pass
+        from . import signals  # noqa: F401
