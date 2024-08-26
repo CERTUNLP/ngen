@@ -154,8 +154,17 @@ const CreateEvent = () => {
       formDataEvent.append('artifacts', item)
     })
 
-    postEvent(formDataEvent).then(() => {
-      window.location.href = '/events'
+    postEvent(formDataEvent).then((response) => {
+      if (response.data.parent !== null) {
+
+        localStorage.setItem('event', response.data.parent);
+        localStorage.setItem('return', "List events");
+        localStorage.setItem('button return', "")
+        localStorage.setItem('navigation', "")
+        window.location.href = '/events/view'
+      } else {
+        window.location.href = '/events';
+      }
     }).catch((error) => {
       setShowAlert(true)
       console.log(error)
@@ -165,21 +174,21 @@ const CreateEvent = () => {
   return (body &&
     <div>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert}
-             component="event"/>
+        component="event" />
       <Row>
         <Navigation actualPosition={t('ngen.event.add')} path="/events"
-                    index={t('ngen.event_one')}/>
+          index={t('ngen.event_one')} />
       </Row>
       <FormEvent createEvent={createEvent} setBody={setBody} body={body}
-                 feeds={feeds} taxonomy={taxonomy} tlp={TLP}
-                 priorities={priorities}
-                 listArtifact={listArtifact}
-                 setContactsCreated={setContactsCreated}
-                 evidence={evidence} setEvidence={setEvidence}
-                 tlpNames={tlpNames}
-                 priorityNames={priorityNames}
-                 setPriorityNames={setPriorityNames}
-                 userNames={userNames}/>
+        feeds={feeds} taxonomy={taxonomy} tlp={TLP}
+        priorities={priorities}
+        listArtifact={listArtifact}
+        setContactsCreated={setContactsCreated}
+        evidence={evidence} setEvidence={setEvidence}
+        tlpNames={tlpNames}
+        priorityNames={priorityNames}
+        setPriorityNames={setPriorityNames}
+        userNames={userNames} />
     </div>
   )
 }

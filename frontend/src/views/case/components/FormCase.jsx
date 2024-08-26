@@ -20,9 +20,8 @@ import ModalCreateEvent from '../../event/ModalCreateEvent'
 const FormCase = (props) => {  // props: edit, caseitem, allStates 
 
   const [url] = useState(props.edit ? props.caseItem.url : null)
-  const [date, setDate] = useState(props.caseItem.date !== null
-    ? props.caseItem.date.substring(0, 16)
-    : getCurrentDateTime())
+  const [date, setDate] = useState(props.caseItem.date !== null ? props.caseItem.date.substr(0, 16) : getCurrentDateTimeCreated())
+  const [created, setCreated] = useState(props.caseItem.date !== null ? props.caseItem.created.substr(0, 16) : getCurrentDateTimeCreated())
   const [lifecycle, setLifecycle] = useState(props.caseItem.lifecycle)
   const [parent] = useState(props.caseItem.parent)
   const [priority, setPriority] = useState(props.caseItem.priority)
@@ -82,6 +81,8 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
   const [tableDetail, setTableDetail] = useState(false)
   const [showModalEvent, setShowModalEvent] = useState(false)
 
+  const [dateNotification, setDateNotification] = useState(false)
+
   const { t } = useTranslation()
   useEffect(() => {
 
@@ -113,7 +114,7 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
     if (Object.keys(taxonomyNames).length !== 0 &&
       Object.keys(feedNames).length !== 0 && Object.keys(tlpNames).length !== 0
       && events.length > 0) {
-      async function fetchAndSetEvents (events) {
+      async function fetchAndSetEvents(events) {
         try {
           const responses = await Promise.all(
             events.map(event => getEvent(event).then((response) => {
@@ -252,6 +253,24 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
     })
 
   }, [props.allStates])
+
+  function getCurrentDateTimeCreated() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+  const completeDate = (date, setDate) => {
+    if (getCurrentDateTimeCreated() >= date) {
+      setDate(date)
+      setDateNotification(false)
+    } else {
+      setDateNotification(true)
+    }
+  }
 
   const allLifecycles = [
     {
@@ -397,7 +416,7 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
     })
   }
 
-  function getCurrentDateTime () {
+  function getCurrentDateTime() {
     const now = new Date()
     const year = now.getFullYear()
     const month = (now.getMonth() + 1).toString().padStart(2, '0')
@@ -412,13 +431,13 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
     setShowModalListEvent(true)
   }
 
-  function closeModal () {
+  function closeModal() {
     setShowModalListEvent(false)
     setSelectedEvent(eventList)
     setCurrentPage(1)
   }
 
-  function linkEventsToCase () {
+  function linkEventsToCase() {
     setEvents(selectedEvent.map(event => event.url))
     setEventList(selectedEvent)
     setShowModalListEvent(false)
@@ -508,7 +527,7 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
   return (
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)}
-             component="case"/>
+        component="case" />
       <Card>
         {props.disableTitle ?
           ''
@@ -519,7 +538,7 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
         }
         <Card.Body>
           <Row>
-            <Col lg={6} sm={12}>
+            <Col lg={3} sm={12}>
               <Form.Group controlId="Form.Case.Comments">
                 <Form.Label>{t('ngen.case_name')} </Form.Label>
                 <Form.Control
@@ -534,47 +553,59 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
             </Col>
             <Col lg={3} sm={12}>
               <Form.Group controlId="Form.Case.Date">
+                <Form.Label>{t('creation.date')}</Form.Label>
+                <Form.Control type="datetime-local" //2023-03-24T01:40:14.181622Z 
+                  value={created} //yyyy-mm-ddThh:mm
+                  disabled
+                  min="2000-01-01T00:00" max="2030-01-01T00:00"
+                />
+              </Form.Group>
+            </Col>
+            <Col lg={3} sm={12}>
+              <Form.Group controlId="Form.Case.Date">
                 <Form.Label>{t('ngen.case.management_start_date')}</Form.Label>
                 <Form.Control
+                  max={getCurrentDateTimeCreated()}
                   type="datetime-local" //2023-03-24T01:40:14.181622Z
                   value={date} //yyyy-mm-ddThh:mm
-                  max={getCurrentDateTime()}
-                  isInvalid={new Date(date) > new Date()}
-                  onChange={(e) => setDate(e.target.value)}/>
+                  min="2000-01-01T00:00"
+                  isInvalid={dateNotification}
+                  onChange={(e) => completeDate(e.target.value, setDate)} />
+                {dateNotification ? <div className="invalid-feedback"> {t('date.invalid')}</div> : ""}
               </Form.Group>
             </Col>
             <Col lg={3} sm={12}>
               <SelectLabel set={setPriority} setSelect={setSelectPriority}
-                           options={allPriorities}
-                           value={selectPriority}
-                           placeholder={t('ngen.priority_one')}
-                           required={true}/>
+                options={allPriorities}
+                value={selectPriority}
+                placeholder={t('ngen.priority_one')}
+                required={true} />
             </Col>
             <Col lg={3} sm={12}>
               <SelectLabel set={setLifecycle} setSelect={setSelectLifecycle}
-                           options={allLifecycles}
-                           value={selectLifecycle}
-                           placeholder={t('ngen.lifecycle_one')}
-                           required={true}/>
+                options={allLifecycles}
+                value={selectLifecycle}
+                placeholder={t('ngen.lifecycle_one')}
+                required={true} />
             </Col>
             <Col lg={3} sm={12}>
               <SelectLabel set={setTlp} setSelect={setSelectTlp}
-                           options={allTlp}
-                           value={selectTlp} placeholder={t('ngen.tlp')}
-                           required={true}/>
+                options={allTlp}
+                value={selectTlp} placeholder={t('ngen.tlp')}
+                required={true} />
             </Col>
             <Col lg={3} sm={12}>
               <SelectLabel set={setState} setSelect={setSelectState}
-                           options={props.allStates}
-                           value={selectState} placeholder={t('ngen.state_one')}
-                           required={true}/>
+                options={props.allStates}
+                value={selectState} placeholder={t('ngen.state_one')}
+                required={true} />
             </Col>
 
             <Col lg={3} sm={12}>
               <SelectLabel set={setAssigned} setSelect={setSelectAssigned}
-                           options={allUsers}
-                           value={selectAssigned}
-                           placeholder={t('ngen.status.assigned')}/>
+                options={allUsers}
+                value={selectAssigned}
+                placeholder={t('ngen.status.assigned')} />
             </Col>
 
           </Row>
@@ -599,56 +630,56 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
         ''
         :
         <SmallEventTable list={eventList} modalEventDetail={tableCaseDetail}
-                         modalListEvent={modalListEvent}
-                         deleteEventFromForm={deleteEventFromForm}
-                         modalEvent={modalEvent} disableUuid={false}
-                         disableColumOption={false}/>
+          modalListEvent={modalListEvent}
+          deleteEventFromForm={deleteEventFromForm}
+          modalEvent={modalEvent} disableUuid={false}
+          disableColumOption={false} />
       }
 
       <ModalCreateEvent showModalEvent={showModalEvent}
-                        setEventList={setEventList} eventList={eventList}
-                        setShowModalEvent={setShowModalEvent}
-                        setSelectedEvent={setSelectedEvent}
-                        setEvents={setEvents}
-                        setCurrentPage={setCurrentPage}/>
+        setEventList={setEventList} eventList={eventList}
+        setShowModalEvent={setShowModalEvent}
+        setSelectedEvent={setSelectedEvent}
+        setEvents={setEvents}
+        setCurrentPage={setCurrentPage} />
 
       <ModalListEvent showModalListEvent={showModalListEvent}
-                      modalEventDetail={modalEventDetail}
-                      selectFeedFilter={selectFeedFilter}
-                      setSelectFeedFilter={setSelectFeedFilter}
-                      selectTlpFilter={selectTlpFilter}
-                      setSelectTlpFilter={setSelectTlpFilter}
-                      selectTaxonomyFilter={selectTaxonomyFilter}
-                      setSelectTaxonomyFilter={setSelectTaxonomyFilter}
-                      currentPage={currentPage} setCurrentPage={setCurrentPage}
-                      disableColumOption={false}
-                      setUpdatePagination={setUpdatePagination}
-                      updatePagination={updatePagination}
-                      selectedEvent={selectedEvent}
-                      setSelectedEvent={setSelectedEvent}
-                      taxonomyNames={taxonomyNames} feedNames={feedNames}
-                      tlpNames={tlpNames}
-                      closeModal={closeModal}
-                      linkEventsToCase={linkEventsToCase}
-                      wordToSearch={wordToSearch}
-                      setWordToSearch={setWordToSearch}
-                      taxonomyFilter={taxonomyFilter}
-                      setTaxonomyFilter={setTaxonomyFilter}
-                      tlpFilter={tlpFilter} setTlpFilter={setTlpFilter}
-                      feedFilter={feedFilter}
-                      setFeedFilter={setFeedFilter}
-                      taxonomies={taxonomies} feeds={feeds} tlpList={allTlp}
-                      updateList={updateList}/>
+        modalEventDetail={modalEventDetail}
+        selectFeedFilter={selectFeedFilter}
+        setSelectFeedFilter={setSelectFeedFilter}
+        selectTlpFilter={selectTlpFilter}
+        setSelectTlpFilter={setSelectTlpFilter}
+        selectTaxonomyFilter={selectTaxonomyFilter}
+        setSelectTaxonomyFilter={setSelectTaxonomyFilter}
+        currentPage={currentPage} setCurrentPage={setCurrentPage}
+        disableColumOption={false}
+        setUpdatePagination={setUpdatePagination}
+        updatePagination={updatePagination}
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
+        taxonomyNames={taxonomyNames} feedNames={feedNames}
+        tlpNames={tlpNames}
+        closeModal={closeModal}
+        linkEventsToCase={linkEventsToCase}
+        wordToSearch={wordToSearch}
+        setWordToSearch={setWordToSearch}
+        taxonomyFilter={taxonomyFilter}
+        setTaxonomyFilter={setTaxonomyFilter}
+        tlpFilter={tlpFilter} setTlpFilter={setTlpFilter}
+        feedFilter={feedFilter}
+        setFeedFilter={setFeedFilter}
+        taxonomies={taxonomies} feeds={feeds} tlpList={allTlp}
+        updateList={updateList} />
 
       <ModalReadEvent modalShowCase={modalShowEvent} tableDetail={tableDetail}
-                      returnToListOfCases={returnToListOfEvent}
-                      linkCaseToEvent={linkCaseToEvent}
-                      closeModalDetail={closeModalDetail}/>
+        returnToListOfCases={returnToListOfEvent}
+        linkCaseToEvent={linkCaseToEvent}
+        closeModalDetail={closeModalDetail} />
       {props.disableEvidence ?
         '' :
         <EvidenceCard evidences={evidences} setEvidences={setEvidences}
-                      setUpdateCase={props.setUpdateCase}
-                      updateCase={props.updateCase}/>
+          setUpdateCase={props.setUpdateCase}
+          updateCase={props.updateCase} />
       }
 
       {
@@ -662,8 +693,8 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
         <Button variant="primary" href="/cases">{t('button.cancel')}</Button>
         :
         <Button variant="primary"
-                onClick={() => props.setShowModalCase(false)}>{t(
-          'button.cancel')}</Button>
+          onClick={() => props.setShowModalCase(false)}>{t(
+            'button.cancel')}</Button>
       }
 
     </React.Fragment>

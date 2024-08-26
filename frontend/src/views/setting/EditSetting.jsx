@@ -59,7 +59,7 @@ const EditSetting = () => {
     console.log(removePartOfURL(url))
 
     patchSetting(url, item.value).
-      then(response => setIfModify(response)).
+      then(response => setIfModify(response), setCurrentPage(1), setUpdatePagination(true)).
       catch(error => console.log(error))
   }
 
