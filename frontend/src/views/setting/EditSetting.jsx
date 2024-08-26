@@ -60,7 +60,7 @@ const EditSetting = () => {
     let item = list[list.findIndex((item) => item.url === url)];
 
     patchSetting(url, item.value)
-      .then((response) => setIfModify(response))
+      .then(response => setIfModify(response), setCurrentPage(1), setUpdatePagination(true)).
       .catch((error) => console.log(error));
   };
 

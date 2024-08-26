@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { Button, Card, Col, Row } from 'react-bootstrap'
 import { putPlaybook } from '../../api/services/playbooks'
 import FormCreatePlaybook from '../playbook/components/FormCreatePlaybook'
-import { getAllTaxonomies } from '../../api/services/taxonomies'
+import {  getMinifiedTaxonomy  } from '../../api/services/taxonomies'
 import ListTask from '../task/ListTask'
 import Navigation from '../../components/Navigation/Navigation'
 import Alert from '../../components/Alert/Alert'
@@ -26,19 +26,14 @@ const EditPlaybook = () => {
   const [showAlert, setShowAlert] = useState(false)
 
   useEffect(() => {
-    getAllTaxonomies().then((response) => {
-      //allTaxonomies
-      let listAllTaxonomies = response.map((taxonomyItem) => {
-        return {
-          value: taxonomyItem.url,
-          label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] +
-            ')',
-        }
+
+    getMinifiedTaxonomy().then((response) => {
+      let listTaxonomies = []
+      response.map((taxonomyItem) => {
+          listTaxonomies.push({ value: taxonomyItem.url, label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] + ')' })
       })
-      setAllTaxonomies(listAllTaxonomies)
-    }).catch((error) => {
-      console.log(error)
-    })
+      setAllTaxonomies(listTaxonomies)
+      })
 
   }, [])
 

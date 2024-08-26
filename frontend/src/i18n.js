@@ -1,40 +1,55 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
-// don't want to use this?
-// have a look at the Quick start guide
-// for passing in lng and translations on init
 
 const options = {
   order: ['querystring', 'navigator'],
-  lookupQuerystring: 'lng',
-  returnEmptyString: true,
-}
+  lookupQuerystring: 'lng'
+};
 
-i18n
-  // load translation using http -> see /public/locales (i.e. https://github.com/i18next/react-i18next/tree/master/example/react/public/locales)
-  // learn more: https://github.com/i18next/i18next-http-backend
-  // want your translations to be loaded from a professional CDN? => https://github.com/locize/react-tutorial#step-2---use-the-locize-cdn
-  .use(Backend)
-  // detect user language
-  // learn more: https://github.com/i18next/i18next-browser-languageDetector
-  .use(LanguageDetector)
-  // pass the i18n instance to react-i18next.
-  .use(initReactI18next)
-  // init i18next
-  // for all options read: https://www.i18next.com/overview/configuration-options
-  .init({
-    fallbackLng: 'en',
-    debug: true,
-    detection: options,
-    // supportedLngs: ['en-US', 'es'],
+const fetchLanguageSetting = async () => {
+  const localStorageLang = localStorage.getItem('ngen_lang');
+  if (localStorageLang) {
+    return localStorageLang;
+  }
 
-    interpolation: {
-      escapeValue: false, // not needed for react as it escapes by default
-    },
+  try {
+    const response = await fetch('http://localhost:8000/api/ngenconfig/');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
 
-  });
+    const data = await response.json();
+    const langSetting = data.results.find(item => item.key === 'NGEN_LANG');
+    const lang = langSetting ? langSetting.value : 'en';
+
+    localStorage.setItem('ngen_lang', lang);
+    return lang;
+  } catch (error) {
+    console.error('Error fetching language setting:', error);
+    return 'en'; // default to 'en' on error
+  }
+};
+
+const initializeI18n = async () => {
+  const lang = await fetchLanguageSetting();
+
+  i18n
+    .use(Backend)
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+      lng: lang,
+      fallbackLng: 'en',
+      debug: true,
+      detection: options,
+      interpolation: {
+        escapeValue: false, // not needed for react as it escapes by default
+      },
+    });
+};
+
+initializeI18n();
 
 export default i18n;

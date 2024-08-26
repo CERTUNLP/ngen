@@ -1,16 +1,17 @@
 import Pagination from 'react-bootstrap/Pagination'
 import React, { useEffect, useState } from 'react'
+import { settingPageSize } from '../../api/services/setting';
 
-const AdvancedPagination = ({
-  countItems,
-  updatePage,
-  updatePagination,
-  setUpdatePagination,
-  setLoading,
-  disabledPagination,
-  setDisabledPagination,
-  parentCurrentPage = -1,
-}) => {
+const AdvancedPagination = ({ 
+  countItems, 
+  updatePage, 
+  updatePagination, 
+  setUpdatePagination, 
+  setLoading, 
+  disabledPagination, 
+  setDisabledPagination, 
+  parentCurrentPage = -1, 
+  ifModify=true }) => {
 
   const [currentPage, setCurrentPage] = useState(1)
   const [initPage, setInitPage] = useState(1)
@@ -20,44 +21,58 @@ const AdvancedPagination = ({
 
   // arrayPages represents the array of pages to display in view
   const [arrayPages, setArrayPages] = useState([])
+  const [pageSize, setPageSize] = useState(null)
 
   useEffect(() => {
-    if (updatePagination) {
-      setCurrentPage(1)
-    }
-    // First time to set lastPage
-    if (updatePagination && currentPage === 1) {// no se actualiza por lastpage
-      setLastPage(Math.ceil(countItems / 10))
-      setUpdatePagination(false)
-      setInitPage(1)
-      //setLoading(true)
-    }
+    settingPageSize().then((response) => {
+      setPageSize(response.data.value)
+      console.log(response.data.value)
+    })
+      .catch((error) => {
+        console.log(error)
+      })
+  }, [updatePagination])
 
-    if (parentCurrentPage === -1) {
+  useEffect(() => {
+    if (pageSize !== null) {
+        
+      if (updatePagination) {
+        setCurrentPage(1)
+      }
+      // First time to set lastPage
+      if (updatePagination && currentPage === 1) {// no se actualiza por lastpage
+        setLastPage(Math.ceil(countItems / pageSize))
+        setUpdatePagination(false)
+        setInitPage(1)
+        //setLoading(true)
+      }
 
-      let list = []
-      let index
-      if (lastPage >= 4) {
-        index = lastPage - currentPage >= 4 ? currentPage : lastPage - 3
+      if (parentCurrentPage === -1) {
+
+        let list = []
+        let index
+        if (lastPage >= 4) {
+          index = lastPage - currentPage >= 4 ? currentPage : lastPage - 3
+        } else {
+          index = initPage
+        }
+        //let index = initPage ;
+
+        // Array of pages only display 3 numbers 
+        while (index <= lastPage && index <= (currentPage + 3)) {
+          //while (index <= lastPage && index <= (initPage + 3)  ) {
+          list.push(index)
+          ++index
+        }
+        setArrayPages(list)
+
       } else {
-        index = initPage
+
+        if (!arrayPages.includes(parentCurrentPage)) {
+          console.log('No existe la pagina en el array')
+        }
+
       }
-      //let index = initPage ;
-
-      // Array of pages only display 3 numbers 
-      while (index <= lastPage && index <= (currentPage + 3)) {
-        //while (index <= lastPage && index <= (initPage + 3)  ) {
-        list.push(index)
-        ++index
-      }
-      setArrayPages(list)
-
-    } else {
-
-      if (!arrayPages.includes(parentCurrentPage)) {
-        console.log('No existe la pagina en el array')
-      }
-
     }
 
   }, [currentPage, countItems, lastPage, updatePagination])
