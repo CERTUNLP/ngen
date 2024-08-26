@@ -1,7 +1,8 @@
-from ngen.views.dashboards.dashboard_presenter import DashboardPresenter
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from ngen.views.dashboards.dashboard_presenter import DashboardPresenter
 
 
 class DashboardView(APIView):

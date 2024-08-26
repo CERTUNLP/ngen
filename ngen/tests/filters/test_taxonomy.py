@@ -7,7 +7,7 @@ import pytz
 from django.utils import timezone
 
 from ngen.filters import TaxonomyFilter
-from ngen.models import Taxonomy, Playbook, TaxonomyGroup
+from ngen.models import Taxonomy, Playbook
 from ngen.tests.filters.base_filter_test import BaseFilterTest
 
 

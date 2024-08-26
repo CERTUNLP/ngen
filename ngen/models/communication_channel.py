@@ -4,8 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from model_utils import Choices
 
-from ngen.models import ChannelableMixin, Contact
-from ngen.models.common.mixins import AuditModelMixin
+from ngen.models import ChannelableMixin, AuditModelMixin
 
 
 class CommunicationType(AuditModelMixin):
@@ -84,7 +83,7 @@ class CommunicationChannel(AuditModelMixin):
     )
 
     additional_contacts = models.ManyToManyField(
-        Contact, through="CommunicationChannelContactRelation"
+        "ngen.Contact", through="CommunicationChannelContactRelation"
     )
 
     def fetch_contacts(self):
@@ -138,7 +137,7 @@ class CommunicationChannelContactRelation(AuditModelMixin):
     )
 
     contact = models.ForeignKey(
-        Contact,
+        "ngen.Contact",
         on_delete=models.CASCADE,
         related_name="communication_channel_contact_relations",
     )

@@ -2,6 +2,7 @@ from django.db import models
 
 from ngen.models.common.mixins import AuditModelMixin, ValidationModelMixin
 
+
 class Message(AuditModelMixin, ValidationModelMixin):
     data = models.JSONField()
     response = models.JSONField(blank=True, null=True)

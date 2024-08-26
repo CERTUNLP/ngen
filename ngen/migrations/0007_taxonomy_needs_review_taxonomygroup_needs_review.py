@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ngen', '0006_taxonomygroup_event_initial_taxonomy_slug_and_more'),
+        ("ngen", "0006_taxonomygroup_event_initial_taxonomy_slug_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='taxonomy',
-            name='needs_review',
+            model_name="taxonomy",
+            name="needs_review",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='taxonomygroup',
-            name='needs_review',
+            model_name="taxonomygroup",
+            name="needs_review",
             field=models.BooleanField(default=True),
         ),
     ]

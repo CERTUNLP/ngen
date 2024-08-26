@@ -2,12 +2,13 @@
 Django Case Template filter tests. Tests search_fields and filterset_class.
 """
 import datetime
+
 import pytz
 from django.utils import timezone
-from ngen.tests.filters.base_filter_test import BaseFilterTest
-from ngen.filters import CaseTemplateFilter
 
+from ngen.filters import CaseTemplateFilter
 from ngen.models import Tlp, Priority, Taxonomy, Feed, State, CaseTemplate
+from ngen.tests.filters.base_filter_test import BaseFilterTest
 
 
 class CaseTemplateFilterTest(BaseFilterTest):

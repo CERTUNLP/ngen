@@ -2,9 +2,10 @@
 Dashboard Presenter
 """
 from datetime import datetime, timedelta
-from django.db.models import Count, Q
-from ngen.models.administration import Feed
 
+from django.db.models import Count, Q
+
+from ngen.models.administration import Feed
 from ngen.models.auth import User
 from ngen.models.case import Case, Event
 from ngen.models.constituency import NetworkEntity

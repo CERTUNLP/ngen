@@ -3,9 +3,9 @@ from django.db import models
 from django.utils.translation import gettext_lazy
 from model_utils import Choices
 
+from ngen.models import Event
 from ngen.models.common.mixins import AuditModelMixin, PriorityModelMixin, AddressModelMixin, TreeModelMixin, \
     SlugModelMixin, ValidationModelMixin, AddressManager
-from ngen.models import Event
 
 
 class NetworkManager(AddressManager):

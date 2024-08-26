@@ -1,8 +1,5 @@
-from constance import config
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import gettext
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from ngen import models
 

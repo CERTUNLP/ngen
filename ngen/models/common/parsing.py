@@ -5,32 +5,32 @@ from urllib.parse import urlparse
 
 
 class StringType(str, Enum):
-    IP4HOST = 'IP4HOST'
-    IP4NET = 'IP4NET'
-    IP4DEFAULT = 'IP4DEFAULT'
-    IP6HOST = 'IP6HOST'
-    IP6NET = 'IP6NET'
-    IP6DEFAULT = 'IP6DEFAULT'
-    IP = 'IP'
-    CIDR = 'CIDR'
-    FQDN = 'FQDN'
-    DOMAIN = 'DOMAIN'
-    URL = 'URL'
-    EMAIL = 'EMAIL'
-    HASH = 'HASH'
-    FILE = 'FILE'
-    USERAGENT = 'USERAGENT'
-    ASN = 'ASN'
-    SYSTEM = 'SYSTEM'
-    OTHER = 'OTHER'
-    UNKNOWN = 'UNKNOWN'
+    IP4HOST = "IP4HOST"
+    IP4NET = "IP4NET"
+    IP4DEFAULT = "IP4DEFAULT"
+    IP6HOST = "IP6HOST"
+    IP6NET = "IP6NET"
+    IP6DEFAULT = "IP6DEFAULT"
+    IP = "IP"
+    CIDR = "CIDR"
+    FQDN = "FQDN"
+    DOMAIN = "DOMAIN"
+    URL = "URL"
+    EMAIL = "EMAIL"
+    HASH = "HASH"
+    FILE = "FILE"
+    USERAGENT = "USERAGENT"
+    ASN = "ASN"
+    SYSTEM = "SYSTEM"
+    OTHER = "OTHER"
+    UNKNOWN = "UNKNOWN"
 
 
 class StringIdentifier:
     regex_map = {
-        StringType.DOMAIN: r'^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})(?=.*[a-zA-Z])[a-z0-9]+$',
-        StringType.URL: r'\bhttps?://[^\s/$.?#].[^\s]*\b',
-        StringType.EMAIL: r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b',
+        StringType.DOMAIN: r"^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})(?=.*[a-zA-Z])[a-z0-9]+$",
+        StringType.URL: r"\bhttps?://[^\s/$.?#].[^\s]*\b",
+        StringType.EMAIL: r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b",
     }
     network_map = {
         StringType.IP4HOST: StringType.CIDR,
@@ -97,17 +97,18 @@ class StringIdentifier:
             self.parsed_string = urlparse(input_string).hostname
             self.parsed_type = StringIdentifier.guess(self.parsed_string)
         elif g == StringType.EMAIL:
-            self.parsed_string = input_string.split('@')[1]
+            self.parsed_string = input_string.split("@")[1]
             self.parsed_type = StringType.DOMAIN
 
-        if self.parsed_string and self.parsed_type in self.__class__.get_cidr_address_types():
+        if (
+            self.parsed_string
+            and self.parsed_type in self.__class__.get_cidr_address_types()
+        ):
             self.parsed_obj = ipaddress.ip_network(self.parsed_string)
             self.parsed_string = self.parsed_obj.compressed
 
-        self.network_type = StringIdentifier.map_type_network(
-            self.parsed_type)
-        self.artifact_type = StringIdentifier.map_type_artifact(
-            self.input_type)
+        self.network_type = StringIdentifier.map_type_network(self.parsed_type)
+        self.artifact_type = StringIdentifier.map_type_artifact(self.input_type)
 
     @classmethod
     def match_regex(cls, typ, input_string):
@@ -129,9 +130,16 @@ class StringIdentifier:
 
     @classmethod
     def get_cidr_address_types(cls):
-        return [StringType.IP4HOST, StringType.IP4NET, StringType.IP4DEFAULT,
-                StringType.IP6HOST, StringType.IP6NET, StringType.IP6DEFAULT,
-                StringType.IP, StringType.CIDR]
+        return [
+            StringType.IP4HOST,
+            StringType.IP4NET,
+            StringType.IP4DEFAULT,
+            StringType.IP6HOST,
+            StringType.IP6NET,
+            StringType.IP6DEFAULT,
+            StringType.IP,
+            StringType.CIDR,
+        ]
 
     @classmethod
     def get_domain_address_types(cls):

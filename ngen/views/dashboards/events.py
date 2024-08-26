@@ -1,5 +1,6 @@
-from ngen.serializers.dashboard import EventDashboardSerializer
 from rest_framework.response import Response
+
+from ngen.serializers.dashboard import EventDashboardSerializer
 from ngen.views.dashboards.dashboard import DashboardView
 
 

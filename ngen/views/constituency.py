@@ -1,6 +1,7 @@
 import django_filters
-from rest_framework import permissions, filters, viewsets
 from django.db.models import Count
+from rest_framework import permissions, filters, viewsets
+
 from ngen import models, serializers
 from ngen.filters import NetworkFilter, ContactFilter, NetworkEntityFilter
 
