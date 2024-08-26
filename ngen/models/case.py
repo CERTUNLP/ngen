@@ -16,7 +16,14 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
-from django_lifecycle import hook, AFTER_UPDATE, BEFORE_CREATE, BEFORE_DELETE, BEFORE_UPDATE, AFTER_CREATE
+from django_lifecycle import (
+    hook,
+    AFTER_UPDATE,
+    BEFORE_CREATE,
+    BEFORE_DELETE,
+    BEFORE_UPDATE,
+    AFTER_CREATE,
+)
 from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
 from treebeard.al_tree import AL_NodeManager
@@ -25,48 +32,91 @@ import ngen
 from ngen.models.announcement import Communication
 from ngen.utils import get_mime_type
 from . import Priority
-from .common.mixins import MergeModelMixin, AddressModelMixin, ArtifactRelatedMixin, AuditModelMixin, \
-    EvidenceModelMixin, PriorityModelMixin, ValidationModelMixin, AddressManager, ChannelableMixin
+from .common.mixins import (
+    MergeModelMixin,
+    AddressModelMixin,
+    ArtifactRelatedMixin,
+    AuditModelMixin,
+    EvidenceModelMixin,
+    PriorityModelMixin,
+    ValidationModelMixin,
+    AddressManager,
+    ChannelableMixin,
+)
 from ..storage import HashedFilenameStorage
 
-LIFECYCLE = Choices(('manual', gettext_lazy('Manual')), ('auto', gettext_lazy('Auto')), (
-    'auto_open', gettext_lazy('Auto open')), ('auto_close', gettext_lazy('Auto close')))
+LIFECYCLE = Choices(
+    ("manual", gettext_lazy("Manual")),
+    ("auto", gettext_lazy("Auto")),
+    ("auto_open", gettext_lazy("Auto open")),
+    ("auto_close", gettext_lazy("Auto close")),
+)
 
 
-class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMixin, ArtifactRelatedMixin,
-           Communication, ValidationModelMixin, ChannelableMixin):
-    tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
+class Case(
+    MergeModelMixin,
+    AuditModelMixin,
+    PriorityModelMixin,
+    EvidenceModelMixin,
+    ArtifactRelatedMixin,
+    Communication,
+    ValidationModelMixin,
+    ChannelableMixin,
+):
+    tlp = models.ForeignKey("ngen.Tlp", models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
-    name = models.CharField(max_length=255, null=True, blank=True, default='')
+    name = models.CharField(max_length=255, null=True, blank=True, default="")
 
-    casetemplate_creator = models.ForeignKey('ngen.CaseTemplate', models.PROTECT, null=True, blank=True,
-                                             related_name='cases_created', default=None)
-    user_creator = models.ForeignKey('ngen.User', models.PROTECT, null=True, blank=True, related_name='cases_created',
-                                     default=None)
-    assigned = models.ForeignKey('ngen.User', models.PROTECT, null=True, related_name='assigned_cases', blank=True,
-                                 default=None)
-    state = models.ForeignKey('ngen.State', models.PROTECT, related_name='cases')
+    casetemplate_creator = models.ForeignKey(
+        "ngen.CaseTemplate",
+        models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="cases_created",
+        default=None,
+    )
+    user_creator = models.ForeignKey(
+        "ngen.User",
+        models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="cases_created",
+        default=None,
+    )
+    assigned = models.ForeignKey(
+        "ngen.User",
+        models.PROTECT,
+        null=True,
+        related_name="assigned_cases",
+        blank=True,
+        default=None,
+    )
+    state = models.ForeignKey("ngen.State", models.PROTECT, related_name="cases")
 
     attend_date = models.DateTimeField(null=True, blank=True, default=None)
     solve_date = models.DateTimeField(null=True, blank=True, default=None)
 
-    report_message_id = models.CharField(max_length=255, null=True, blank=True, default=None)
-    raw = models.TextField(null=True, blank=True, default='')
-    node_order_by = ['id']
+    report_message_id = models.CharField(
+        max_length=255, null=True, blank=True, default=None
+    )
+    raw = models.TextField(null=True, blank=True, default="")
+    node_order_by = ["id"]
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    lifecycle = models.CharField(choices=LIFECYCLE, default=LIFECYCLE.manual, max_length=20)
+    lifecycle = models.CharField(
+        choices=LIFECYCLE, default=LIFECYCLE.manual, max_length=20
+    )
     notification_count = models.PositiveSmallIntegerField(default=0)
     comments = GenericRelation(Comment)
 
     _temp_events = []
 
     class Meta:
-        db_table = 'case'
+        db_table = "case"
 
     def __init__(self, *args, **kwargs):
-        """ Case should receive `events` list to communicate with events on new event """
-        self._temp_events = kwargs.pop('events', [])
+        """Case should receive `events` list to communicate with events on new event"""
+        self._temp_events = kwargs.pop("_temp_events", []) + kwargs.pop("events", [])
         super().__init__(*args, **kwargs)
 
     def __str__(self):
@@ -90,29 +140,39 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         This allows to edit the case when state changes to blocked and allows to edit the case when state changes from
         blocked to an unblocked state.
         """
-        return ngen.models.State.objects.get(pk=self.initial_value('state')).blocked and self.state.blocked
+        return (
+            ngen.models.State.objects.get(pk=self.initial_value("state")).blocked
+            and self.state.blocked
+        )
 
     @property
     def artifacts_dict(self) -> dict[str, list]:
-        artifacts_dict = {'hashes': [], 'files': []}
+        artifacts_dict = {"hashes": [], "files": []}
         for evidence in self.evidence.all():
-            artifacts_dict['hashes'].append(evidence.filename.split('.')[0])
-            artifacts_dict['files'].append(evidence.file.path)
+            artifacts_dict["hashes"].append(evidence.filename.split(".")[0])
+            artifacts_dict["files"].append(evidence.file.path)
         return artifacts_dict
 
     @property
     def email_headers(self) -> dict:
-        return {'Message-ID': self.report_message_id}
+        return {"Message-ID": self.report_message_id}
 
     @property
     def template_params(self) -> dict:
-        return {'case': self, 'events': self.events.all(), 'tlp': self.tlp, 'priority': self.priority}
+        return {
+            "case": self,
+            "events": self.events.all(),
+            "tlp": self.tlp,
+            "priority": self.priority,
+        }
 
     @property
     def email_attachments(self) -> list[dict]:
         attachments = []
         for evidence in self.evidence_all:
-            attachments.append({'name': evidence.attachment_name, 'file': evidence.file})
+            attachments.append(
+                {"name": evidence.attachment_name, "file": evidence.file}
+            )
         return attachments
 
     @property
@@ -157,12 +217,22 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
     def before_update(self):
         old = self.__class__.objects.get(pk=self.pk)
-        edge = ngen.models.Edge.objects.filter(parent=old.state, child=self.state).first()
+        edge = ngen.models.Edge.objects.filter(
+            parent=old.state, child=self.state
+        ).first()
         if not edge:
             raise ValidationError(
-                {'state': gettext_lazy(
-                    "It\'s not possible to change the state %s to %s. The new possible states are %s") % (
-                              old.state, self.state, ', '.join([str(s) for s in old.state.children.all()]))})
+                {
+                    "state": gettext_lazy(
+                        "It's not possible to change the state %s to %s. The new possible states are %s"
+                    )
+                    % (
+                        old.state,
+                        self.state,
+                        ", ".join([str(s) for s in old.state.children.all()]),
+                    )
+                }
+            )
         if self.state.attended:
             self.attend_date = timezone.now()
             self.solve_date = None
@@ -172,10 +242,13 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
             if old.state.attended and not old.state.solved:
                 self.communicate_close()
         else:
-            if old.state.attended != self.state.attended or old.state.solved != self.state.solved:
+            if (
+                old.state.attended != self.state.attended
+                or old.state.solved != self.state.solved
+            ):
                 self.communicate_update()
 
-    def merge(self, child: 'Case'):
+    def merge(self, child: "Case"):
         super().merge(child)
         for evidence in child.evidence.all():
             self.evidence.add(evidence)
@@ -203,23 +276,35 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         return contacts
 
     def communicate_new(self):
-        self.communicate(gettext_lazy('New case'), 'reports/case_report.html')
+        self.communicate(gettext_lazy("New case"), "reports/case_report.html")
 
     def communicate_close(self):
-        self.communicate(gettext_lazy('Case closed'), 'reports/case_report.html')
+        self.communicate(gettext_lazy("Case closed"), "reports/case_report.html")
 
     def communicate_open(self):
-        title = 'Case reopened' if self.history.filter(changes__contains='solve_date":').exists() else 'Case opened'
-        self.communicate(gettext_lazy(title), 'reports/case_report.html')
+        title = (
+            "Case reopened"
+            if self.history.filter(changes__contains='solve_date":').exists()
+            else "Case opened"
+        )
+        self.communicate(gettext_lazy(title), "reports/case_report.html")
 
     def communicate_new_open(self):
-        self.communicate(gettext_lazy('Case opened'), 'reports/case_report.html')
+        self.communicate(gettext_lazy("Case opened"), "reports/case_report.html")
 
     def communicate_update(self):
-        self.communicate(gettext_lazy('Case status updated'), 'reports/case_change_state.html', )
+        self.communicate(
+            gettext_lazy("Case status updated"),
+            "reports/case_change_state.html",
+        )
 
     def subject(self, title: str = None) -> str:
-        return '[%s][TLP:%s][ID:%s] %s' % (config.TEAM_NAME, gettext_lazy(self.tlp.name), self.uuid, title)
+        return "[%s][TLP:%s][ID:%s] %s" % (
+            config.TEAM_NAME,
+            gettext_lazy(self.tlp.name),
+            self.uuid,
+            title,
+        )
 
     def communicate(self, title: str, template: str, **kwargs):
         """
@@ -232,29 +317,41 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
         :param kwargs: extra params to be passed to template
         :return: None
         """
-        event_by_contacts = kwargs.get('event_by_contacts', self.events_by_contacts())
+        event_by_contacts = kwargs.get("event_by_contacts", self.events_by_contacts())
         template_params = self.template_params
         recipients = self.recipients
         team_recipients = [self.assigned_email, self.team_email]
         for contacts, events in event_by_contacts.items():
             # Case has events, so send email to contacts of each event (and bcc to team)
-            template_params.update({'events': events})
-            recipients.update({'to': [c.username for c in contacts]})
-            recipients.update({'bcc': team_recipients})
-            self.send_mail(self.subject(title), self.render_template(template, extra_params=template_params),
-                           recipients, self.email_attachments, self.email_headers)
+            template_params.update({"events": events})
+            recipients.update({"to": [c.username for c in contacts]})
+            recipients.update({"bcc": team_recipients})
+            self.send_mail(
+                self.subject(title),
+                self.render_template(template, extra_params=template_params),
+                recipients,
+                self.email_attachments,
+                self.email_headers,
+            )
         else:
             # Case has no events, so send email only to team (and assignee)
-            template_params.update({'events': self.events})
-            recipients.update({'to': [recipient for recipient in team_recipients if recipient]})
-            self.send_mail(self.subject(title), self.render_template(template, extra_params=self.template_params),
-                           recipients, self.email_attachments, self.email_headers)
+            template_params.update({"events": self.events})
+            recipients.update(
+                {"to": [recipient for recipient in team_recipients if recipient]}
+            )
+            self.send_mail(
+                self.subject(title),
+                self.render_template(template, extra_params=self.template_params),
+                recipients,
+                self.email_attachments,
+                self.email_headers,
+            )
         # Increment notification_count
         # TODO: make communication a class with objects that can be audited
         self.notification_count += 1
 
     def get_internal_contacts(self):
-        return ['Internal Contact 1', 'Internal Contact 2', 'Internal Contact 3']
+        return ["Internal Contact 1", "Internal Contact 2", "Internal Contact 3"]
 
     def get_affected_contacts(self):
         contacts_from_all_events = []
@@ -270,41 +367,62 @@ class Case(MergeModelMixin, AuditModelMixin, PriorityModelMixin, EvidenceModelMi
 
         return reporters_from_all_events
 
+
 class EventManager(AL_NodeManager, AddressManager):
     pass
 
 
-class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelMixin, ArtifactRelatedMixin,
-            AddressModelMixin, ValidationModelMixin, ChannelableMixin):
-    tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
+class Event(
+    MergeModelMixin,
+    AuditModelMixin,
+    EvidenceModelMixin,
+    PriorityModelMixin,
+    ArtifactRelatedMixin,
+    AddressModelMixin,
+    ValidationModelMixin,
+    ChannelableMixin,
+):
+    tlp = models.ForeignKey("ngen.Tlp", models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
 
-    network = models.ForeignKey('ngen.Network', models.PROTECT, null=True, blank=True, related_name='events',
-                                editable=False)
+    network = models.ForeignKey(
+        "ngen.Network",
+        models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="events",
+        editable=False,
+    )
 
-    taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT, related_name='events')
-    feed = models.ForeignKey('ngen.Feed', models.PROTECT, related_name='events')
-    initial_taxonomy_slug = models.CharField(max_length=255, null=True, blank=True, default='', editable=False)
+    taxonomy = models.ForeignKey("ngen.Taxonomy", models.PROTECT, related_name="events")
+    feed = models.ForeignKey("ngen.Feed", models.PROTECT, related_name="events")
+    initial_taxonomy_slug = models.CharField(
+        max_length=255, null=True, blank=True, default="", editable=False
+    )
 
-    reporter = models.ForeignKey('ngen.User', models.PROTECT, related_name='events_reporter')
+    reporter = models.ForeignKey(
+        "ngen.User", models.PROTECT, related_name="events_reporter"
+    )
     evidence_file_path = models.CharField(max_length=255, null=True, blank=True)
-    notes = models.TextField(null=True, blank=True, default='')
+    notes = models.TextField(null=True, blank=True, default="")
 
-    case = models.ForeignKey('ngen.Case', models.PROTECT, null=True, blank=True, related_name='events')
+    case = models.ForeignKey(
+        "ngen.Case", models.PROTECT, null=True, blank=True, related_name="events"
+    )
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     tasks = models.ManyToManyField(
         "ngen.Task",
-        through='ngen.TodoTask',
+        through="ngen.TodoTask",
         related_name="events",
     )
-    node_order_by = ['id']
+    node_order_by = ["id"]
     comments = GenericRelation(Comment)
 
     objects = EventManager()
 
     class Meta:
-        db_table = 'event'
-        ordering = ['-id']
+        db_table = "event"
+        ordering = ["-id"]
 
     def __str__(self):
         return "%s:%s" % (self.pk, self.address)
@@ -321,14 +439,14 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
 
     @property
     def artifacts_dict(self) -> dict:
-        artifacts_dict = {'hashes': [], 'files': []}
+        artifacts_dict = {"hashes": [], "files": []}
         if self.cidr:
-            artifacts_dict['ip'] = [self.address.network_address().compressed]
+            artifacts_dict["ip"] = [self.address.network_address().compressed]
         if self.domain:
-            artifacts_dict['domain'] = [self.domain]
+            artifacts_dict["domain"] = [self.domain]
         for evidence in self.evidence.all():
-            artifacts_dict['hashes'].append(evidence.filename.split('.')[0])
-            artifacts_dict['files'].append(evidence.file.path)
+            artifacts_dict["hashes"].append(evidence.filename.split(".")[0])
+            artifacts_dict["files"].append(evidence.file.path)
         return artifacts_dict
 
     @property
@@ -348,22 +466,26 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
         if config.AUTO_MERGE_EVENTS:
             extra_filters = {}
             if config.AUTO_MERGE_BY_FEED:
-                extra_filters.update({'feed': self.feed})
+                extra_filters.update({"feed": self.feed})
             if config.AUTO_MERGE_TIME_WINDOW_MINUTES:
                 minutes_limit = config.AUTO_MERGE_TIME_WINDOW_MINUTES
                 date_limit = datetime.now() - timedelta(minutes=minutes_limit)
-                extra_filters.update({'date__gte': date_limit})
+                extra_filters.update({"date__gte": date_limit})
 
             # This will find the last event that is not merged and has the same cidr, domain and taxonomy
             # If this event is blocked it will not be merged
-            event = self.__class__.objects.filter(
-                Q(case__isnull=True) | Q(case__state__blocked=False),
-                parent__isnull=True,
-                cidr=self.cidr,
-                domain=self.domain,
-                taxonomy=self.taxonomy,
-                **extra_filters
-            ).order_by('id').last()
+            event = (
+                self.__class__.objects.filter(
+                    Q(case__isnull=True) | Q(case__state__blocked=False),
+                    parent__isnull=True,
+                    cidr=self.cidr,
+                    domain=self.domain,
+                    taxonomy=self.taxonomy,
+                    **extra_filters,
+                )
+                .order_by("id")
+                .last()
+            )
 
             # Check if event is mergeable (not blocked, not parent, not already merged)
             # Should not be merged because last query will return events without parent
@@ -381,11 +503,13 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
 
     @hook(AFTER_CREATE)
     def create_case(self):
-        """ Check if case should be created and create it """
+        """Check if case should be created and create it"""
         if not self.parent:
-            template = CaseTemplate.objects.parents_of(self).filter(event_taxonomy=self.taxonomy,
-                                                                    event_feed=self.feed,
-                                                                    active=True).first()
+            template = (
+                CaseTemplate.objects.parents_of(self)
+                .filter(event_taxonomy=self.taxonomy, event_feed=self.feed, active=True)
+                .first()
+            )
             if template:
                 self.case = template.create_case(events=[self])
 
@@ -400,20 +524,25 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
     @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
     def case_assign_communication(self):
         if self.case.events.count() >= 1:
-            self.case.communicate(gettext_lazy('New event on case'), 'reports/case_assign.html',
-                                  event_by_contacts={tuple(self.email_contacts()): [self]})
+            self.case.communicate(
+                gettext_lazy("New event on case"),
+                "reports/case_assign.html",
+                event_by_contacts={tuple(self.email_contacts()): [self]},
+            )
 
     def clean(self):
         super().clean()
         self.update_taxonomy()
         if self.date and self.date > timezone.now():
-            raise ValidationError({'date': gettext_lazy('Date cannot be in the future')})
+            raise ValidationError(
+                {"date": gettext_lazy("Date cannot be in the future")}
+            )
 
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
 
-    def merge(self, child: 'Event'):
+    def merge(self, child: "Event"):
         super().merge(child)
         if child.case:
             child.case = None
@@ -432,12 +561,16 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
                 artifact=artifact_relation.artifact,
                 object_id=self.id,
                 content_type=ContentType.objects.get_for_model(self),
-                defaults={'auto_created': False}
+                defaults={"auto_created": False},
             )
 
     def email_contacts(self):
         contacts = []
-        priority = self.case.priority.severity if self.case.priority else self.priority.severity
+        priority = (
+            self.case.priority.severity
+            if self.case.priority
+            else self.priority.severity
+        )
         network = ngen.models.Network.objects.parent_of(self).first()
         if network:
             event_contacts = list(network.email_contacts(priority))
@@ -456,7 +589,7 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
         for network in affected_networks:
             network_cidr_or_domain = network.cidr if network.cidr else network.domain
             contacts = network.contacts.all()
-            network_contacts.append({ network_cidr_or_domain: contacts })
+            network_contacts.append({network_cidr_or_domain: contacts})
 
         self.affected_contacts = network_contacts
         return self
@@ -467,20 +600,31 @@ class Event(MergeModelMixin, AuditModelMixin, EvidenceModelMixin, PriorityModelM
 
 class Evidence(AuditModelMixin, ValidationModelMixin):
     def directory_path(self, filename=None):
-        return f'{self.get_related().evidence_path()}/{filename}'
+        return f"{self.get_related().evidence_path()}/{filename}"
 
-    file = models.FileField(upload_to=directory_path, null=True, storage=HashedFilenameStorage(), unique=True)
+    file = models.FileField(
+        upload_to=directory_path,
+        null=True,
+        storage=HashedFilenameStorage(),
+        unique=True,
+    )
     object_id = models.PositiveIntegerField()
-    assigned_name = models.CharField(max_length=100, null=True, blank=True, default='')
-    original_filename = models.CharField(max_length=255, null=True, blank=True, default='', editable=False)
+    assigned_name = models.CharField(max_length=100, null=True, blank=True, default="")
+    original_filename = models.CharField(
+        max_length=255, null=True, blank=True, default="", editable=False
+    )
     size = models.PositiveIntegerField(default=0, editable=False)
-    extension = models.CharField(max_length=255, null=True, blank=True, default='', editable=False)
-    mime = models.CharField(max_length=255, null=True, blank=True, default='', editable=False)
+    extension = models.CharField(
+        max_length=255, null=True, blank=True, default="", editable=False
+    )
+    mime = models.CharField(
+        max_length=255, null=True, blank=True, default="", editable=False
+    )
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     content_object = GenericForeignKey()
 
     class Meta:
-        db_table = 'evidence'
+        db_table = "evidence"
 
     def get_related(self):
         return self.content_object
@@ -510,33 +654,45 @@ class Evidence(AuditModelMixin, ValidationModelMixin):
             4. replace '_' with '-'
         """
         if self.assigned_name:
-            self.assigned_name = re.sub(r'[\W]+', '-', self.assigned_name.strip().split('.')[0]).replace('_', '-')
+            self.assigned_name = re.sub(
+                r"[\W]+", "-", self.assigned_name.strip().split(".")[0]
+            ).replace("_", "-")
         self.original_filename = self.file.name
         self.size = self.file.size
         self.extension = Path(self.file.name).suffix
-        self.mime = get_mime_type(self.file.open('rb'))
+        self.mime = get_mime_type(self.file.open("rb"))
         super().save(*args, **kwargs)
 
 
-class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, ValidationModelMixin):
-    event_taxonomy = models.ForeignKey('ngen.Taxonomy', models.PROTECT)
-    event_feed = models.ForeignKey('ngen.Feed', models.PROTECT)
+class CaseTemplate(
+    AuditModelMixin, PriorityModelMixin, AddressModelMixin, ValidationModelMixin
+):
+    event_taxonomy = models.ForeignKey("ngen.Taxonomy", models.PROTECT)
+    event_feed = models.ForeignKey("ngen.Feed", models.PROTECT)
 
-    case_tlp = models.ForeignKey('ngen.Tlp', models.PROTECT)
-    case_state = models.ForeignKey('ngen.State', models.PROTECT, related_name='decision_states')
-    case_lifecycle = models.CharField(choices=LIFECYCLE, default=LIFECYCLE.auto, max_length=20)
+    case_tlp = models.ForeignKey("ngen.Tlp", models.PROTECT)
+    case_state = models.ForeignKey(
+        "ngen.State", models.PROTECT, related_name="decision_states"
+    )
+    case_lifecycle = models.CharField(
+        choices=LIFECYCLE, default=LIFECYCLE.auto, max_length=20
+    )
 
     active = models.BooleanField(default=True)
 
     class Meta:
-        db_table = 'case_template'
+        db_table = "case_template"
 
     def validate_unique(self, exclude=None):
         super().validate_unique(exclude)
-        qs = self.__class__.objects.filter(cidr=self.cidr, domain=self.domain, event_taxonomy=self.event_taxonomy,
-                                           event_feed=self.event_feed).exclude(pk=self.pk)
+        qs = self.__class__.objects.filter(
+            cidr=self.cidr,
+            domain=self.domain,
+            event_taxonomy=self.event_taxonomy,
+            event_feed=self.event_feed,
+        ).exclude(pk=self.pk)
         if qs.exists():
-            raise ValidationError('CIDR, Domain, Taxonomy, Feed tuple must be unique')
+            raise ValidationError("CIDR, Domain, Taxonomy, Feed tuple must be unique")
 
     @property
     def event_cidr(self):
@@ -547,12 +703,17 @@ class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, Valid
         return self.domain
 
     @property
-    def case_priority(self) -> 'Priority':
+    def case_priority(self) -> "Priority":
         return self.priority
 
-    def create_case(self, events: list = []) -> 'Case':
-        return Case.objects.create(tlp=self.case_tlp, lifecycle=self.case_lifecycle, state=self.case_state,
-                                   casetemplate_creator=self, events=events)
+    def create_case(self, events: list = []) -> "Case":
+        return Case.objects.create(
+            tlp=self.case_tlp,
+            lifecycle=self.case_lifecycle,
+            state=self.case_state,
+            casetemplate_creator=self,
+            events=events,
+        )
 
     @property
     def matching_events_without_case_count(self):
@@ -563,11 +724,15 @@ class CaseTemplate(AuditModelMixin, PriorityModelMixin, AddressModelMixin, Valid
         pass
 
     def get_matching_events_without_case(self):
-        return Event.objects.children_of(self).filter(case__isnull=True, taxonomy=self.event_taxonomy,
-                                                      feed=self.event_feed)
+        return Event.objects.children_of(self).filter(
+            case__isnull=True, taxonomy=self.event_taxonomy, feed=self.event_feed
+        )
 
     def create_cases_for_matching_events(self):
-        return [self.create_case([event]) for event in self.get_matching_events_without_case()]
+        return [
+            self.create_case([event])
+            for event in self.get_matching_events_without_case()
+        ]
 
     def __str__(self):
         return str(self.id)

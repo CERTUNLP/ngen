@@ -22,8 +22,10 @@ const ReadEvent = () => {
   const [eventItem, setEventItem] = useState(location?.state?.item || null)
   const [navigationRow] = useState(localStorage.getItem('navigation'))
   const [buttonReturn] = useState(localStorage.getItem('button return'))
+
   const [evidences, setEvidences] = useState([])
   const { t } = useTranslation()
+  console.log(buttonReturn)
 
   // const storageEventUrl = (url) => {
   //   localStorage.setItem('event', url);
@@ -98,7 +100,11 @@ const ReadEvent = () => {
     }).catch()
   }
   const returnBack = () => {
-    window.history.back()
+    if (localStorage.getItem('return') === "List events") {
+      window.location.href = '/events';
+    } else {
+      window.history.back()
+    }
   }
 
   return (
@@ -106,7 +112,7 @@ const ReadEvent = () => {
       {navigationRow !== 'false' ?
         <Row>
           <Navigation actualPosition={t('ngen.event.detail')} path="/events"
-                      index={t('ngen.event_one')}/>
+            index={t('ngen.event_one')} />
         </Row>
         : ''
       }
@@ -130,7 +136,7 @@ const ReadEvent = () => {
               <div>{body.uuid}</div>
             </Col>
           </Row>
-          <p/>
+          <p />
           <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.tlp')}
@@ -138,7 +144,7 @@ const ReadEvent = () => {
             <Col sm={12} lg={4} className={'align-self-center'}>
               {body.tlp !== undefined
                 ?
-                <CallBackendByName url={body.tlp} callback={callbackTlp}/>
+                <CallBackendByName url={body.tlp} callback={callbackTlp} />
                 : '-'}
             </Col>
             <Col sm={12} lg={2} className={'align-self-center'}>
@@ -147,11 +153,11 @@ const ReadEvent = () => {
             <Col sm={12} lg={4} className={'align-self-center'}>
               {body.feed !== undefined
                 ?
-                <CallBackendByName url={body.feed} callback={callbackFeed}/>
+                <CallBackendByName url={body.feed} callback={callbackFeed} />
                 : '-'}
             </Col>
           </Row>
-          <p/>
+          <p />
           <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.taxonomy_one')}
@@ -159,7 +165,7 @@ const ReadEvent = () => {
             <Col sm={12} lg={4} className={'align-self-center'}>
               {body.taxonomy !== undefined ?
                 <CallBackendByName url={body.taxonomy}
-                                   callback={callbackTaxonomy}/> : '-'}
+                  callback={callbackTaxonomy} /> : '-'}
             </Col>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.event.initial_taxonomy_slug')}
@@ -171,7 +177,7 @@ const ReadEvent = () => {
                 : '-'}
             </Col>
           </Row>
-          <p/>
+          <p />
           <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.priority_one')}
@@ -179,7 +185,7 @@ const ReadEvent = () => {
             <Col sm={12} lg={4} className={'align-self-center'}>
               {body.priority !== undefined ?
                 <CallBackendByName url={body.priority}
-                                   callback={callbackPriority}/> : '-'}
+                  callback={callbackPriority} /> : '-'}
             </Col>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('reporter')}
@@ -187,11 +193,10 @@ const ReadEvent = () => {
             <Col sm={12} lg={4} className={'align-self-center'}>
               {body.reporter !== undefined ?
                 <CallBackendByName url={body.reporter}
-                                   callback={callbackReporter}
-                                   attr={'username'}/> : '-'}
+                  callback={callbackReporter}
+                  attr={'username'} /> : '-'}
             </Col>
           </Row>
-           <p/>
           <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.event.parent')}
@@ -199,20 +204,20 @@ const ReadEvent = () => {
             <Col sm={12} lg={4} className={'align-self-center'}>
               {body.parent !== undefined ?
                 (body.parent ?
-                    // Esto no funciona por el routing, al acceder al elemento parent y tener la misma URL el componente no recarga
-                    // Y aunque recargue, luego no funciona el history back
-                    // <Link to="/events/view" state={ body.parent }} >
-                    //     <Button className="fa fa-eye mx-auto font-weight-light" variant="outline-primary"
-                    //             onClick={() =>
-                    //                 storageEventUrl(body.parent)
-                    //             }>
-                    //             {' ' + t('ngen.event.parent')}
-                    //     </Button>
-                    // </Link>
-                    <CallBackendByName url={body.parent}
-                                       callback={callbackEvent} attr={'uuid'}/>
-                    :
-                    '-'
+                  // Esto no funciona por el routing, al acceder al elemento parent y tener la misma URL el componente no recarga
+                  // Y aunque recargue, luego no funciona el history back
+                  // <Link to="/events/view" state={ body.parent }} >
+                  //     <Button className="fa fa-eye mx-auto font-weight-light" variant="outline-primary"
+                  //             onClick={() =>
+                  //                 storageEventUrl(body.parent)
+                  //             }>
+                  //             {' ' + t('ngen.event.parent')}
+                  //     </Button>
+                  // </Link>
+                  <CallBackendByName url={body.parent}
+                    callback={callbackEvent} attr={'uuid'} />
+                  :
+                  '-'
                 )
                 :
                 '-'
@@ -226,7 +231,7 @@ const ReadEvent = () => {
                 body.children.length : '0'}
             </Col>
           </Row>
-          <p/>
+          <p />
           <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('ngen.event.merged')}
@@ -243,7 +248,6 @@ const ReadEvent = () => {
                 (body.merged ? t('w.yes') : t('w.no')) : '-'}
             </Col>
           </Row>
-          <p/>
           <Row>
             <Col sm={12} lg={2} className={'align-self-center'}>
               {t('notes')}
@@ -282,7 +286,7 @@ const ReadEvent = () => {
         </Card.Body>
       </Card>
 
-      <SmallCaseTable readCase={body.case} disableColumOption={true}/>
+      <SmallCaseTable readCase={body.case} disableColumOption={true} />
 
       <Card>
         <Card.Header>
@@ -293,8 +297,8 @@ const ReadEvent = () => {
             {body.artifacts !== undefined ?
               body.artifacts.map((url) => {
                 return (<CallBackendByType key={url} url={url}
-                                           callback={callbackArtefact}
-                                           useBadge={true}/>)
+                  callback={callbackArtefact}
+                  useBadge={true} />)
               }) : ''
             }
           </Row>
@@ -302,7 +306,7 @@ const ReadEvent = () => {
       </Card>
 
       <EvidenceCard evidences={evidences} disableDelete={true}
-                    disableDragAndDrop={true}/>
+        disableDragAndDrop={true} />
       <Card>
         <Card.Header>
           <Card.Title as="h5">{t('ngen.event.additional')}</Card.Title>
@@ -310,33 +314,33 @@ const ReadEvent = () => {
         <Card.Body>
           <Table responsive>
             <tbody>
-            <tr>
-              <td>{t('ngen.comments')}</td>
-              <td>
-                <Form.Control plaintext readOnly defaultValue=""/>
-              </td>
-            </tr>
+              <tr>
+                <td>{t('ngen.comments')}</td>
+                <td>
+                  <Form.Control plaintext readOnly defaultValue="" />
+                </td>
+              </tr>
 
-            <tr>
-              <td>{t('ngen.date.created')}</td>
-              <td>
-                <Form.Control plaintext readOnly
-                              defaultValue={body.created !== undefined
-                                ? body.created.slice(0, 10) + ' ' +
-                                body.date.slice(11, 19)
-                                : ''}/>
-              </td>
-            </tr>
-            <tr>
-              <td>{t('ngen.date.modified')}</td>
-              <td>
-                <Form.Control plaintext readOnly
-                              defaultValue={body.modified !== undefined
-                                ? body.modified.slice(0, 10) + ' ' +
-                                body.date.slice(11, 19)
-                                : ''}/>
-              </td>
-            </tr>
+              <tr>
+                <td>{t('ngen.date.created')}</td>
+                <td>
+                  <Form.Control plaintext readOnly
+                    defaultValue={body.created !== undefined
+                      ? body.created.slice(0, 10) + ' ' +
+                      body.date.slice(11, 19)
+                      : ''} />
+                </td>
+              </tr>
+              <tr>
+                <td>{t('ngen.date.modified')}</td>
+                <td>
+                  <Form.Control plaintext readOnly
+                    defaultValue={body.modified !== undefined
+                      ? body.modified.slice(0, 10) + ' ' +
+                      body.date.slice(11, 19)
+                      : ''} />
+                </td>
+              </tr>
             </tbody>
           </Table>
         </Card.Body>
