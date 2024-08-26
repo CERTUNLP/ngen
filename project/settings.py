@@ -27,7 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#j!42e(tj8h#n&nl#cxg#(lu=j9=(pcf*=tep$qv%@1^yst4!*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'false').lower() in ('true', '1', 't')
+VALUES_TRUE = ('True', 'true', '1', 'yes', 'on', 't', 'y')
+DEBUG = os.environ.get('DJANGO_DEBUG', 'false').lower() in VALUES_TRUE
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
 
@@ -256,7 +257,7 @@ CONSTANCE_CONFIG = {
                             'Case comma separated fields that could be modified if the instance is blocked'),
     'ALLOWED_FIELDS_BLOCKED_EVENT': (os.environ.get('ALLOWED_FIELDS_BLOCKED_EVENT'),
                              'Event comma separated fields that could be modified if the instance is blocked. '),
-    'ALLOWED_FIELDS_BLOCKED_EXCEPTION': (os.environ.get('ALLOWED_FIELDS_BLOCKED_EXCEPTION', 'false').lower() in ('true', '1', 't'),
+    'ALLOWED_FIELDS_BLOCKED_EXCEPTION': (os.environ.get('ALLOWED_FIELDS_BLOCKED_EXCEPTION', 'false').lower() in VALUES_TRUE,
                                  'If True, ngen will raise an exception if a blocked field is modified', bool),
     'PRIORITY_ATTEND_TIME_DEFAULT': (
         int(os.environ.get('PRIORITY_ATTEND_TIME_DEFAULT', 10080)), 'Priority default attend time in minutes', int),
@@ -265,29 +266,32 @@ CONSTANCE_CONFIG = {
     'CASE_DEFAULT_LIFECYCLE': (
         os.environ.get('CASE_DEFAULT_LIFECYCLE', 'manual'), 'Case default lifecycle', 'case_lifecycle'),
     'CASE_REPORT_NEW_CASES': (
-        os.environ.get('CASE_REPORT_NEW_CASES', 'false').lower() in ('true', '1', 't'),
+        os.environ.get('CASE_REPORT_NEW_CASES', 'false').lower() in VALUES_TRUE,
         'Send report on new cases.', bool),
     'PRIORITY_DEFAULT': (os.environ.get('PRIORITY_DEFAULT', 'Medium'), 'Default priority', 'priority_field'),
     'ALLOWED_ARTIFACTS_TYPES': (os.environ.get('ALLOWED_ARTIFACTS_TYPES'), 'Allowed artifact types'),
     'ARTIFACT_SAVE_ENRICHMENT_FAILURE': (
-        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'false').lower() in ('true', '1', 't'),
+        os.environ.get('ARTIFACT_SAVE_ENRICHMENT_FAILURE', 'false').lower() in VALUES_TRUE,
         'Save enrichment even if it fails.', bool),
     'ARTIFACT_RECURSIVE_ENRICHMENT': (
-        os.environ.get('ARTIFACT_RECURSIVE_ENRICHMENT', 'false').lower() in ('true', '1', 't'),
+        os.environ.get('ARTIFACT_RECURSIVE_ENRICHMENT', 'false').lower() in VALUES_TRUE,
         'Enrich artifacts from artifacts enrichmets', bool),
     'CORTEX_HOST': (os.environ.get('CORTEX_HOST'), 'Cortex host domain:port'),
     'CORTEX_APIKEY': (os.environ.get('CORTEX_APIKEY', ''), 'Cortex admin apikey'),
     'PAGE_SIZE': (int(os.environ.get('PAGE_SIZE', 10)), 'Default page size', int),
     'PAGE_SIZE_MAX': (int(os.environ.get('PAGE_SIZE_MAX', 100)), 'Max page size (use with caution)', int),
     'AUTO_MERGE_EVENTS':
-        (os.environ.get('AUTO_MERGE_EVENTS', 'true').lower() in ('true', '1', 't'),
+        (os.environ.get('AUTO_MERGE_EVENTS', 'true').lower() in VALUES_TRUE,
          'Auto merge events with same domain/cidr and traxonomy', bool),
     'AUTO_MERGE_BY_FEED':
-        (os.environ.get('AUTO_MERGE_BY_FEED', 'false').lower() in ('true', '1', 't'),
+        (os.environ.get('AUTO_MERGE_BY_FEED', 'false').lower() in VALUES_TRUE,
          'Add `same feed` to the auto merge events condition', bool),
     'AUTO_MERGE_TIME_WINDOW_MINUTES':
         (int(os.environ.get('AUTO_MERGE_TIME_WINDOW_MINUTES', 0)),
          'Add an optional time window to the auto merge events condition (0 disabled)', int),
+    'TAXONOMY_ALLOW_AUTO_CREATE':
+        (os.environ.get('TAXONOMY_ALLOW_AUTO_CREATE', 'true').lower() in VALUES_TRUE,
+         'Allow auto creation of taxonomies and groups by the slug on event creation', bool),
 }
 CONSTANCE_CONFIG_PASSWORDS = ['CORTEX_APIKEY']
 
@@ -351,7 +355,7 @@ CSRF_TRUSTED_ORIGINS = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split('
 COMMENT_ALLOW_SUBSCRIPTION = True
 COMMENT_ALLOW_TRANSLATION = True
 
-ELASTIC_ENABLED = os.environ.get('ELASTIC_ENABLED', 'false').lower() in ('true', '1', 't')
+ELASTIC_ENABLED = os.environ.get('ELASTIC_ENABLED', 'false').lower() in VALUES_TRUE
 if ELASTIC_ENABLED:
     ELASTICSEARCH_DSL = {
         'default': {

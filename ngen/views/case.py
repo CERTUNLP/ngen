@@ -1,11 +1,12 @@
 import django_filters
-from django.db.models import Count, Subquery, F, OuterRef, Value, Case, When, IntegerField
+from django.db.models import Count, Subquery, OuterRef, Value
 from rest_framework import permissions, filters, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from ngen import models, serializers, backends
+from ngen import models, serializers
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
+from ngen.views.communication_channel import BaseCommunicationChannelsViewSet
 
 
 class EvidenceViewSet(viewsets.ModelViewSet):
@@ -15,25 +16,23 @@ class EvidenceViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'head', 'options', 'delete']
 
 
-class EventViewSet(viewsets.ModelViewSet):
+class EventViewSet(BaseCommunicationChannelsViewSet):
     queryset = models.Event.objects.all()
     filter_backends = [
-        backends.MergedModelFilterBackend,
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
     search_fields = ["taxonomy__name", "feed__name", "address_value", "cidr", "domain", "uuid"]
     filterset_class = EventFilter
-    ordering_fields = ["id", "date", "priority", "reporter", "tlp", "taxonomy", "feed", "created"]
+    ordering_fields = ["id", "date", "priority", "reporter", "tlp", "taxonomy", "feed", "created", "modified"]
     serializer_class = serializers.EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class CaseViewSet(viewsets.ModelViewSet):
+class CaseViewSet(BaseCommunicationChannelsViewSet):
     queryset = models.Case.objects.all()
     filter_backends = [
-        backends.MergedModelFilterBackend,
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,

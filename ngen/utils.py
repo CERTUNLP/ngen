@@ -19,7 +19,7 @@ def get_settings():
 
 
 def slugify_underscore(text):
-    return slugify(text).replace('-', '_')
+    return slugify(text.strip()).replace('-', '_')
 
 def get_mime_type(file):
     """

@@ -1,7 +1,7 @@
 version: '3.7'
 services:
-  ngen-frontend:
-    image: ngen-frontend:latest
+  ngen-frontend-new:
+    image: ngen-frontend-new:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,4 +14,11 @@ services:
       - REACT_APP_BASE_URL=/metrics
       - REACT_APP_API_SERVER=http://localhost:8000/api/
       - CHOKIDAR_USEPOLLING=true
-      
+      - VITE_APP_VERSION = v3.0.0
+      - GENERATE_SOURCEMAP = false
+      - PUBLIC_URL = 'http://localhost:3000/'
+      - VITE_APP_BASE_NAME = ""
+      - VITE_APP_BASE_URL = /metrics
+      - VITE_APP_API_SERVER = http://localhost:8000/api/
+      - CHOKIDAR_USEPOLLING = true
+      - VITE_APP_GOOGLE_MAPS_API_KEY=

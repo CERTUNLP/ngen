@@ -6,12 +6,14 @@ from .announcement import *
 from .artifact import *
 from .auth import *
 from .case import *
-from .common.mixins import AuditModelMixin
+from .common.mixins import AuditModelMixin, ChannelableMixin
 from .constituency import *
 from .message import *
 from .state import *
 from .taxonomy import *
 from .common import *
+from .communication_channel import *
+from .email_message import *
 
 for model in apps.all_models['ngen'].values():
     if issubclass(model, AuditModelMixin):

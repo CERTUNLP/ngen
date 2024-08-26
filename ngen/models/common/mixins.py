@@ -36,7 +36,7 @@ class ValidationModelMixin(models.Model):
 
 
 class SlugModelMixin(ValidationModelMixin, models.Model):
-    slug = models.SlugField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
 
     class Meta:
         abstract = True
@@ -44,8 +44,14 @@ class SlugModelMixin(ValidationModelMixin, models.Model):
     def _slug_field(self):
         return 'name'
 
+    def _slugify(self, data):
+        return slugify_underscore(data)
+
+    def slugify(self):
+        return self._slugify(getattr(self, self._slug_field()))
+
     def clean_fields(self, exclude=None):
-        self.slug = slugify_underscore(getattr(self, self._slug_field()))
+        self.slug = self.slugify()
         super().clean_fields(exclude=exclude)
 
 
@@ -146,8 +152,11 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
         return True
 
     def merge(self, child: 'MergeModelMixin'):
-        for child in child.children.all():
-            self.children.add(child)
+        for child_child in child.children.all():
+            child_child.parent = self
+            child_child.save()
+        child.parent = self
+        child.save()
 
     @hook(BEFORE_UPDATE, when="parent", has_changed=True)
     @hook(BEFORE_CREATE, when="parent", was=None)
@@ -165,16 +174,17 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
 
     @hook(BEFORE_UPDATE)
     def check_allowed_fields(self, exclude=None):
-        if self.merged and self.__class__.objects.filter(pk=self.pk).first().merged: # TODO: Avoid query
+        if self.merged and self.__class__.objects.filter(pk=self.pk).first().merged:  # TODO: Avoid query
             for attr in self.__dict__:
                 if attr not in self.allowed_fields_on_merged and self.has_changed(attr):
                     if (attr == 'cidr' and str(self.cidr) == self.initial_value('cidr')) or \
-                        (attr == 'sid' and self.sid == self.initial_value('sid')):
+                            (attr == 'sid' and self.sid == self.initial_value('sid')):
                         # cidr and sid has invalid check of has_changed
                         pass
                     else:
                         raise ValidationError(
-                            {'__all__': gettext(f"Merged instances can\'t be modified: {self}, {self.parent}, {self.children}")})
+                            {'__all__': gettext(
+                                f"Merged instances can\'t be modified: {self}, {self.parent}, {self.children}")})
         if self.blocked:
             exceptions = {}
             for attr in self.__dict__:
@@ -587,4 +597,26 @@ class ArtifactRelatedMixin(models.Model):
 
     @property
     def artifacts_dict(self) -> dict[str, list]:
+        raise NotImplementedError
+
+
+class ChannelableMixin(models.Model):
+    """
+    Mixin for models that have Comunication Channels
+    """
+
+    communication_channels = GenericRelation(
+        "ngen.CommunicationChannel", related_name="communication_channels"
+    )
+
+    class Meta:
+        abstract = True
+
+    def get_internal_contacts(self):
+        raise NotImplementedError
+
+    def get_affected_contacts(self):
+        raise NotImplementedError
+
+    def get_reporter_contacts(self):
         raise NotImplementedError

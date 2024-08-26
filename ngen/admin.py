@@ -50,8 +50,14 @@ admin.site.register(State)
 admin.site.register(Edge)
 
 # taxonomy
+admin.site.register(TaxonomyGroup)
 admin.site.register(Taxonomy)
 admin.site.register(Report)
 admin.site.register(Playbook)
 admin.site.register(Task)
 admin.site.register(TodoTask)
+
+# communication
+admin.site.register(CommunicationChannel)
+admin.site.register(CommunicationType)
+admin.site.register(CommunicationChannelTypeRelation)
