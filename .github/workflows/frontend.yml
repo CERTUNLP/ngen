@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      container_react: docker-ngen-react-1
+      container_react: docker-ngen-frontend-1
 
     steps:
       - uses: actions/checkout@v3
