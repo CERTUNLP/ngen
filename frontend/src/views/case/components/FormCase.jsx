@@ -558,7 +558,7 @@ const FormCase = (props) => {
             </Col>
             <Col lg={3} sm={12}>
               <Form.Group controlId="Form.Case.Date">
-                <Form.Label>{t("creation.date")}</Form.Label>
+                <Form.Label>{t("date.creation")}</Form.Label>
                 <Form.Control
                   type="datetime-local" //2023-03-24T01:40:14.181622Z
                   value={created} //yyyy-mm-ddThh:mm
