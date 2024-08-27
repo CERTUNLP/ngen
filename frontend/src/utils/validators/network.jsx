@@ -9,7 +9,7 @@ const validateNetworkCIDR = (cidr) => {
 };
 
 const validateNetworkDomain = (domain) => {
-  return validateURL(domain) && validateSpaces(domain) && validateLength(domain, 100) && !isEmpty(domain);
+  return validateURL(domain) && validateSpaces(domain) && validateLength(domain, 255) && !isEmpty(domain);
 };
 
 const validateUnrequiredInput = (input) => {

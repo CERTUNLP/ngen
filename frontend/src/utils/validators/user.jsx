@@ -5,11 +5,11 @@ const validateUserName = (name) => {
 };
 
 const validateName = (name) => {
-  return validateFieldText(name) && validateLength(name, 150) && !isEmpty(name);
+  return validateFieldText(name) && validateLength(name, 255) && !isEmpty(name);
 };
 
 const validateUserMail = (mail) => {
-  return validateEmail(mail) && validateLength(mail, 100) && !isEmpty(mail);
+  return validateEmail(mail) && validateLength(mail, 255) && !isEmpty(mail);
 };
 
 const validateSelect = (option) => {

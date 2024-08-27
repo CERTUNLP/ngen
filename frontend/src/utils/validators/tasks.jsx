@@ -1,13 +1,13 @@
-import { isBlank, isNull, validateAlphanumeric, validateLength } from "../validators";
+import { isBlank, isEmpty, isNull, validateAlphanumeric, validateLength } from "../validators";
 
 const validateUnrequiredInput = (input) => {
   return !(isNull(input) || isBlank(input));
 };
 const validateTaskName = (name) => {
-  return validateAlphanumeric(name) && validateLength(name, 25);
+  return validateLength(name, 250) && !isEmpty(name);
 };
 const validateTaskDescription = (description) => {
-  return validateAlphanumeric(description) && validateLength(description, 200);
+  return validateLength(description, 1000);
 };
 
 export { validateTaskDescription, validateTaskName, validateUnrequiredInput };

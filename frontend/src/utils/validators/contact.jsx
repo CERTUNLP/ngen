@@ -1,8 +1,7 @@
 import { isEmpty, validateAlphanumeric, validateEmail, validateLength, validateNumbers, validateSpace, validateURL } from "../validators";
 
 const validateName = (name) => {
-  //return (validateAlphanumeric(name) && validateLength(name, 100) && validateSpace(name))// tengo que ver la funcion de este metodo validateSpace(name)
-  return validateAlphanumeric(name) && validateLength(name, 100);
+  return validateLength(name, 255) && !isEmpty(name);
 };
 
 const validateSelect = (option) => {
