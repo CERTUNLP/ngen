@@ -35,7 +35,7 @@ const auth = (state = initialState, action) => {
       return {
         ...state,
         isLoggedIn: false,
-        token: '',
+        token: "",
         iat: null,
         exp: null,
         user_id: null,

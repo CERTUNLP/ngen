@@ -1,10 +1,10 @@
-import apiInstance from '../api';
-import { COMPONENT_URL } from '../../config/constant';
-import setAlert from '../../utils/setAlert';
-import { LOGIN, LOGOUT, REFRESH_TOKEN, SAVE_URL } from '../../store/actions';
-import store from '../../store';
-import i18next from 'i18next';
-import { jwtDecode } from 'jwt-decode';
+import apiInstance from "../api";
+import { COMPONENT_URL } from "../../config/constant";
+import setAlert from "../../utils/setAlert";
+import { LOGIN, LOGOUT, REFRESH_TOKEN, SAVE_URL } from "../../store/actions";
+import store from "../../store";
+import i18next from "i18next";
+import { jwtDecode } from "jwt-decode";
 
 const register = (username, password, email) => {
   return apiInstance
@@ -15,11 +15,11 @@ const register = (username, password, email) => {
       is_active: true
     })
     .then((response) => {
-      setAlert(i18next.t('ngen.auth.register.success'), 'success');
+      setAlert(i18next.t("ngen.auth.register.success"), "success");
       return response;
     })
     .catch((error) => {
-      setAlert(i18next.t('ngen.auth.register.error'), 'error');
+      setAlert(i18next.t("ngen.auth.register.error"), "error");
       return Promise.reject(error);
     });
 };
@@ -47,10 +47,10 @@ const login = (username, password) => {
     })
     .catch((error) => {
       console.log(error);
-      if (error.response.data.detail === 'La combinación de credenciales no tiene una cuenta activa') {
-        setAlert(i18next.t('ngen.auth.login.invalidCredentials'), 'error');
+      if (error.response.data.detail === "La combinación de credenciales no tiene una cuenta activa") {
+        setAlert(i18next.t("ngen.auth.login.invalidCredentials"), "error");
       } else {
-        setAlert(i18next.t('ngen.auth.login.error'), 'error');
+        setAlert(i18next.t("ngen.auth.login.error"), "error");
       }
       return Promise.reject(error);
     });
@@ -75,7 +75,7 @@ const refreshToken = () => {
         return response;
       } catch (e) {
         console.log(e);
-        console.log('Error en el dispatch refreshToken');
+        console.log("Error en el dispatch refreshToken");
       }
     })
     .catch((error) => {
@@ -103,10 +103,10 @@ const logout = (save_url = false) => {
         dispatch({
           type: LOGOUT
         });
-        document.title = 'NGEN';
+        document.title = "NGEN";
       } catch (e) {
         console.log(e);
-        console.log('Error en el dispatch logout');
+        console.log("Error en el dispatch logout");
       }
     })
     .catch((error) => {

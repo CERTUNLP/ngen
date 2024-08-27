@@ -1,30 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, Row } from 'react-bootstrap';
-import Select from 'react-select';
-import makeAnimated from 'react-select/animated';
-import CrudButton from '../../../components/Button/CrudButton';
-import SelectComponent from '../../../components/Select/SelectComponent';
-import { postArtifact } from '../../../api/services/artifact';
-import { postStringIdentifier } from '../../../api/services/stringIdentifier';
-import Alert from '../../../components/Alert/Alert';
-import { getMinifiedState } from '../../../api/services/states';
-import ModalCreateCase from '../../case/ModalCreateCase';
-import ModalReadCase from '../../case/ModalReadCase';
-import ModalListCase from '../../case/ModalListCase';
-import CreateArtifactModal from '../../artifact/CreateArtifactModal';
-import { getCase } from '../../../api/services/cases';
-import SmallCaseTable from '../../case/components/SmallCaseTable';
-import EvidenceCard from '../../../components/UploadFiles/EvidenceCard';
-import { getEvidence } from '../../../api/services/evidences';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
+import CrudButton from "../../../components/Button/CrudButton";
+import SelectComponent from "../../../components/Select/SelectComponent";
+import { postArtifact } from "../../../api/services/artifact";
+import { postStringIdentifier } from "../../../api/services/stringIdentifier";
+import Alert from "../../../components/Alert/Alert";
+import { getMinifiedState } from "../../../api/services/states";
+import ModalCreateCase from "../../case/ModalCreateCase";
+import ModalReadCase from "../../case/ModalReadCase";
+import ModalListCase from "../../case/ModalListCase";
+import CreateArtifactModal from "../../artifact/CreateArtifactModal";
+import { getCase } from "../../../api/services/cases";
+import SmallCaseTable from "../../case/components/SmallCaseTable";
+import EvidenceCard from "../../../components/UploadFiles/EvidenceCard";
+import { getEvidence } from "../../../api/services/evidences";
+import { useTranslation } from "react-i18next";
 
 const animatedComponents = makeAnimated();
 const FormEvent = (props) => {
   const [date, setDate] = useState(props.body.date ? props.body.date.substring(0, 16) : getCurrentDateTime());
   const [artifactsValueLabel, setArtifactsValueLabel] = useState([]);
   const [modalCreate, setModalCreate] = useState(false);
-  const [typeArtifact, setTypeArtifact] = useState('0');
-  const [value, setValue] = useState('');
+  const [typeArtifact, setTypeArtifact] = useState("0");
+  const [value, setValue] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
@@ -32,22 +32,22 @@ const FormEvent = (props) => {
   const [showModalCase, setShowModalCase] = useState(false);
   const [showModalListCase, setShowModalListCase] = useState(false);
 
-  const [priorityFilter, setPriorityFilter] = useState('');
-  const [tlpFilter, setTlpFilter] = useState('');
-  const [stateFilter, setStateFilter] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState("");
+  const [tlpFilter, setTlpFilter] = useState("");
+  const [stateFilter, setStateFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [wordToSearch, setWordToSearch] = useState('');
+  const [wordToSearch, setWordToSearch] = useState("");
   const [updatePagination, setUpdatePagination] = useState(false);
 
   const [selectedCases, setSelectedCases] = useState([]);
 
   const caseItem = {
-    lifecycle: '', //required
-    priority: '', //required
-    tlp: '', //required
-    state: '', //required
+    lifecycle: "", //required
+    priority: "", //required
+    tlp: "", //required
+    state: "", //required
     date: null, //required
-    name: '',
+    name: "",
     parent: null,
     assigned: null,
     attend_date: null, //imprime la hora actual +3horas
@@ -59,7 +59,7 @@ const FormEvent = (props) => {
   const [selectTlp, setSelectTlp] = useState();
   const [selectTaxonomy, setSelectTaxonomy] = useState();
   const [selectFeed, setSelectFeed] = useState();
-  const [selectCase, setSelectCase] = useState('');
+  const [selectCase, setSelectCase] = useState("");
   const [states, setStates] = useState([]); //multiselect
   const [allStates, setAllStates] = useState({}); //multiselect
 
@@ -87,7 +87,7 @@ const FormEvent = (props) => {
 
         props.setEvidence(data);
       } catch (error) {
-        console.error('Error fetching evidence data:', error);
+        console.error("Error fetching evidence data:", error);
       }
     };
 
@@ -127,7 +127,7 @@ const FormEvent = (props) => {
             name: response.data.name,
             date: response.data.date,
             priority: props.priorityNames[response.data.priority],
-            tlp: response.data.tlp ? props.tlpNames[response.data.tlp].name : '',
+            tlp: response.data.tlp ? props.tlpNames[response.data.tlp].name : "",
             state: allStates[response.data.state],
             user: props.userNames[response.data.user_creator]
           });
@@ -179,10 +179,10 @@ const FormEvent = (props) => {
   }, [props.body.artifacts, props.listArtifact]);
 
   const completeFieldStringIdentifier = (event) => {
-    if (event.target.value !== '') {
+    if (event.target.value !== "") {
       postStringIdentifier(event.target.value)
         .then((response) => {
-          setShowErrorMessage(response.data.artifact_type === 'OTHER' || response.data.artifact_type === 'EMAIL');
+          setShowErrorMessage(response.data.artifact_type === "OTHER" || response.data.artifact_type === "EMAIL");
         })
         .catch((error) => {
           console.log(error);
@@ -190,7 +190,7 @@ const FormEvent = (props) => {
         .finally(() => {});
     }
 
-    if (event.target.value === '') {
+    if (event.target.value === "") {
       setShowErrorMessage(false); //para que no aparesca en rojo si esta esta el input vacio en el formulario
     }
     props.setBody({ ...props.body, [event.target.name]: event.target.value });
@@ -206,18 +206,18 @@ const FormEvent = (props) => {
   const selectArtefact = (event) => {
     props.setBody({
       ...props.body,
-      ['artifacts']: event.map((e) => {
+      ["artifacts"]: event.map((e) => {
         return e.value;
       })
     });
   };
 
   const modalCaseDetail = (url, name, date, priority, tlp, state, user) => {
-    localStorage.setItem('case', url);
+    localStorage.setItem("case", url);
     setModalShowCase(true);
     setShowModalListCase(false);
-    localStorage.setItem('navigation', false);
-    localStorage.setItem('button return', false);
+    localStorage.setItem("navigation", false);
+    localStorage.setItem("button return", false);
     setCaseSelectedFromTheList({
       value: url,
       name: name,
@@ -262,8 +262,8 @@ const FormEvent = (props) => {
       .then((response) => {
         props.setContactsCreated(response); //
         setModalCreate(false); //
-        setTypeArtifact('-1');
-        setValue('');
+        setTypeArtifact("-1");
+        setValue("");
       })
       .catch((error) => {
         console.log(error);
@@ -292,7 +292,7 @@ const FormEvent = (props) => {
     } else {
       props.setBody({
         ...props.body,
-        [nameField]: ''
+        [nameField]: ""
       });
     }
     setOption(event);
@@ -305,43 +305,43 @@ const FormEvent = (props) => {
   };
 
   const linkCaseToEvent = () => {
-    completeField1('case', caseSelectedFromTheList, setSelectCase);
+    completeField1("case", caseSelectedFromTheList, setSelectCase);
     setCaseToLink(caseSelectedFromTheList);
     setShowModalListCase(false);
     setModalShowCase(false);
     setCurrentPage(1);
-    setTlpFilter('');
-    setPriorityFilter('');
-    setStateFilter('');
-    setWordToSearch('');
+    setTlpFilter("");
+    setPriorityFilter("");
+    setStateFilter("");
+    setWordToSearch("");
     setUpdatePagination(true);
   };
 
   function getCurrentDateTime() {
     const now = new Date();
     const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const day = now.getDate().toString().padStart(2, "0");
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
   function closeModal() {
     setShowModalListCase(false);
     setCurrentPage(1);
-    setTlpFilter('');
-    setPriorityFilter('');
-    setStateFilter('');
-    setWordToSearch('');
+    setTlpFilter("");
+    setPriorityFilter("");
+    setStateFilter("");
+    setWordToSearch("");
   }
 
   const tableCaseDetail = (url, name, date, priority, tlp, state, user) => {
-    localStorage.setItem('case', url);
+    localStorage.setItem("case", url);
     setModalShowCase(true);
     setTableDetail(true);
-    localStorage.setItem('navigation', false);
-    localStorage.setItem('button return', false);
+    localStorage.setItem("navigation", false);
+    localStorage.setItem("button return", false);
     setCaseToLink({
       value: url,
       name: name,
@@ -366,7 +366,7 @@ const FormEvent = (props) => {
     <div>
       <Card>
         <Card.Header>
-          <Card.Title as="h5">{t('menu.principal')}</Card.Title>
+          <Card.Title as="h5">{t("menu.principal")}</Card.Title>
         </Card.Header>
         <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
         <Card.Body>
@@ -375,8 +375,8 @@ const FormEvent = (props) => {
               <Col sm={12} lg={4}>
                 <Form.Group controlId="formGridAddress1">
                   <Form.Label>
-                    {t('date.one')}
-                    <b style={{ color: 'red' }}>*</b>
+                    {t("date.one")}
+                    <b style={{ color: "red" }}>*</b>
                   </Form.Label>
                   <Form.Control
                     type="datetime-local"
@@ -388,18 +388,18 @@ const FormEvent = (props) => {
                     onChange={(e) => setDate(e.target.value)}
                     name="date"
                   />
-                  {new Date(date) > new Date() ? <div className="invalid-feedback">{t('date.invalid')}</div> : ''}
+                  {new Date(date) > new Date() ? <div className="invalid-feedback">{t("date.invalid")}</div> : ""}
                 </Form.Group>
               </Col>
               <Col sm={12} lg={4}>
                 <SelectComponent
                   controlId="exampleForm.ControlSelect1"
-                  label={t('ngen.tlp')}
+                  label={t("ngen.tlp")}
                   options={props.tlp}
                   value={selectTlp}
                   nameField="tlp"
                   onChange={completeField1}
-                  placeholder={t('ngen.tlp.select')}
+                  placeholder={t("ngen.tlp.select")}
                   setOption={setSelectTlp}
                   required={true}
                 />
@@ -407,12 +407,12 @@ const FormEvent = (props) => {
               <Col sm={12} lg={4}>
                 <SelectComponent
                   controlId="exampleForm.ControlSelect1"
-                  label={t('ngen.taxonomy_one')}
+                  label={t("ngen.taxonomy_one")}
                   options={props.taxonomy}
                   value={selectTaxonomy}
                   nameField="taxonomy"
                   onChange={completeField1}
-                  placeholder={t('ngen.taxonomy.one.select')}
+                  placeholder={t("ngen.taxonomy.one.select")}
                   setOption={setSelectTaxonomy}
                   required={true}
                   disabled={props.body.children.length > 0 && props.body.children.length > 0 ? true : false}
@@ -423,12 +423,12 @@ const FormEvent = (props) => {
               <Col sm={12} lg={4}>
                 <SelectComponent
                   controlId="exampleForm.ControlSelect1"
-                  label={t('ngen.feed.information')}
+                  label={t("ngen.feed.information")}
                   options={props.feeds}
                   value={selectFeed}
                   nameField="feed"
                   onChange={completeField1}
-                  placeholder={t('ngen.feed.information.select')}
+                  placeholder={t("ngen.feed.information.select")}
                   setOption={setSelectFeed}
                   required={true}
                   disabled={props.body.children.length > 0 && props.body.children.length > 0 ? true : false}
@@ -437,21 +437,21 @@ const FormEvent = (props) => {
               <Col sm={12} lg={4}>
                 <SelectComponent
                   controlId="exampleForm.ControlSelect1"
-                  label={t('ngen.priority_other')}
+                  label={t("ngen.priority_other")}
                   options={props.priorities}
                   value={selectPriority}
                   nameField="priority"
                   onChange={completeField1}
-                  placeholder={t('ngen.priority.select')}
+                  placeholder={t("ngen.priority.select")}
                   setOption={setSelectPriority}
                   required={true}
                 />
               </Col>
             </Row>
             <Form.Group controlId="formGridAddress1">
-              <Form.Label>{t('notes')}</Form.Label>
+              <Form.Label>{t("notes")}</Form.Label>
               <Form.Control
-                placeholder={t('ngen.notes.placeholder')}
+                placeholder={t("ngen.notes.placeholder")}
                 maxLength="150"
                 value={props.body.notes}
                 onChange={(e) => completeField(e)}
@@ -463,22 +463,22 @@ const FormEvent = (props) => {
         </Card.Body>
       </Card>
       {props.disableCardArtifacts ? (
-        ''
+        ""
       ) : (
         <Card>
           <Card.Header>
-            <Card.Title as="h5">{t('ngen.affectedResources')}</Card.Title>
+            <Card.Title as="h5">{t("ngen.affectedResources")}</Card.Title>
           </Card.Header>
           <Card.Body>
             <Form.Label>
-              {t('cidr.domain.email')}
-              <b style={{ color: 'red' }}>*</b>
+              {t("cidr.domain.email")}
+              <b style={{ color: "red" }}>*</b>
             </Form.Label>
             <Row>
               <Col sm={12} lg={6}>
                 <Form.Group controlId="formGridAddress1">
                   <Form.Control
-                    placeholder={t('ngen.enter.ipv4.ipv6.domain.email')}
+                    placeholder={t("ngen.enter.ipv4.ipv6.domain.email")}
                     maxLength="150"
                     value={props.body.address_value}
                     disabled={props.body.children.length > 0 && props.body.children.length > 0 ? true : false}
@@ -486,7 +486,7 @@ const FormEvent = (props) => {
                     isInvalid={showErrorMessage}
                     name="address_value"
                   />
-                  {showErrorMessage ? <div className="invalid-feedback"> {t('error.ipv4.ipv6.domain')}</div> : ''}
+                  {showErrorMessage ? <div className="invalid-feedback"> {t("error.ipv4.ipv6.domain")}</div> : ""}
                 </Form.Group>
               </Col>
             </Row>
@@ -495,7 +495,7 @@ const FormEvent = (props) => {
       )}
       <Card>
         <Card.Header>
-          <Card.Title as="h5">{t('ngen.artifact_other')}</Card.Title>
+          <Card.Title as="h5">{t("ngen.artifact_other")}</Card.Title>
         </Card.Header>
         <Card.Body>
           <Form>
@@ -503,7 +503,7 @@ const FormEvent = (props) => {
               <Row>
                 <Col sm={12} lg={9}>
                   <Select
-                    placeholder={t('ngen.artifact_other_select')}
+                    placeholder={t("ngen.artifact_other_select")}
                     closeMenuOnSelect={false}
                     components={animatedComponents}
                     isMulti
@@ -513,7 +513,7 @@ const FormEvent = (props) => {
                   />
                 </Col>
                 <Col sm={12} lg={3}>
-                  <CrudButton type="create" name={t('ngen.artifact_one')} onClick={() => setModalCreate(true)} />
+                  <CrudButton type="create" name={t("ngen.artifact_one")} onClick={() => setModalCreate(true)} />
                 </Col>
               </Row>
             </Form.Group>
@@ -521,7 +521,7 @@ const FormEvent = (props) => {
         </Card.Body>
       </Card>
       {props.disableCardCase ? (
-        ''
+        ""
       ) : (
         <SmallCaseTable
           readCase={caseToLink.value}
@@ -587,7 +587,7 @@ const FormEvent = (props) => {
       />
 
       {props.disableCardEvidence ? (
-        ''
+        ""
       ) : (
         <EvidenceCard
           evidences={props.evidence}
@@ -608,22 +608,22 @@ const FormEvent = (props) => {
       />
 
       {!(new Date(props.body.date) > new Date()) &&
-      props.body.tlp !== '' &&
-      props.body.taxonomy !== '' &&
-      props.body.feed !== '' &&
-      props.body.priority !== '' &&
-      props.body.address_value !== '' &&
+      props.body.tlp !== "" &&
+      props.body.taxonomy !== "" &&
+      props.body.feed !== "" &&
+      props.body.priority !== "" &&
+      props.body.address_value !== "" &&
       !showErrorMessage ? (
         <Button variant="primary" onClick={props.createEvent}>
-          {t('button.save')}
+          {t("button.save")}
         </Button>
       ) : (
         <Button variant="primary" disabled>
-          {t('button.save')}
+          {t("button.save")}
         </Button>
       )}
       <Button variant="primary" href="/events">
-        {t('button.cancel')}
+        {t("button.cancel")}
       </Button>
     </div>
   );

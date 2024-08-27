@@ -1,9 +1,9 @@
-import React from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
-import InfoBox from './google-maps/InfoBox';
-import MarkerClusterer from './google-maps/MarkerClusterer';
-import Marker from './google-maps/Marker';
-import StreetViewPanorma from './google-maps/StreetViewPanorma';
+import React from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import InfoBox from "./google-maps/InfoBox";
+import MarkerClusterer from "./google-maps/MarkerClusterer";
+import Marker from "./google-maps/Marker";
+import StreetViewPanorma from "./google-maps/StreetViewPanorma";
 
 const GoogleMaps = () => {
   return (

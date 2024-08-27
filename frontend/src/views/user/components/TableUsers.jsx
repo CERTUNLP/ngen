@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from 'react-bootstrap';
-import { deleteUser, isActive } from '../../../api/services/users';
-import CrudButton from '../../../components/Button/CrudButton';
-import ActiveButton from '../../../components/Button/ActiveButton';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import Alert from '../../../components/Alert/Alert';
-import Ordering from '../../../components/Ordering/Ordering';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import { deleteUser, isActive } from "../../../api/services/users";
+import CrudButton from "../../../components/Button/CrudButton";
+import ActiveButton from "../../../components/Button/ActiveButton";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import Alert from "../../../components/Alert/Alert";
+import Ordering from "../../../components/Ordering/Ordering";
+import { useTranslation } from "react-i18next";
 
 function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }) {
   const [remove, setRemove] = useState(false);
-  const [deleteUsername, setDeleteUsername] = useState('');
-  const [deleteUrl, setDeleteUrl] = useState('');
+  const [deleteUsername, setDeleteUsername] = useState("");
+  const [deleteUrl, setDeleteUrl] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [user, setUser] = useState({});
   const [showState, setShowState] = useState(false);
@@ -31,7 +31,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
   const handleDelete = () => {
     deleteUser(deleteUrl)
       .then(() => {
-        window.location.href = '/users';
+        window.location.href = "/users";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -60,7 +60,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
   const changeState = () => {
     isActive(dataState.url, !dataState.state)
       .then(() => {
-        window.location.href = '/users';
+        window.location.href = "/users";
       })
       .catch((error) => {
         console.log(error);
@@ -74,7 +74,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
     setShowAlert(false);
   };
 
-  const letterSize = { fontSize: '1.1em' };
+  const letterSize = { fontSize: "1.1em" };
   return (
     <div>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
@@ -85,7 +85,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
             <tr>
               <Ordering
                 field="username"
-                label={t('ngen.user.username')}
+                label={t("ngen.user.username")}
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
@@ -93,16 +93,16 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
               />
               <Ordering
                 field="email"
-                label={t('w.email')}
+                label={t("w.email")}
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
                 letterSize={letterSize}
               />
-              <th style={letterSize}>{t('ngen.name_one')}</th>
-              <th style={letterSize}>{t('ngen.state_one')}</th>
-              <th style={letterSize}>{t('session.last')}</th>
-              <th style={letterSize}>{t('ngen.options')}</th>
+              <th style={letterSize}>{t("ngen.name_one")}</th>
+              <th style={letterSize}>{t("ngen.state_one")}</th>
+              <th style={letterSize}>{t("session.last")}</th>
+              <th style={letterSize}>{t("ngen.options")}</th>
             </tr>
           </thead>
           <tbody>
@@ -115,7 +115,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                   <td>
                     <ActiveButton active={user.is_active} onClick={() => showModalChangeState(user.url, user.username, user.is_active)} />
                   </td>
-                  <td>{user.last_login ? user.last_login.slice(0, 10) + ' ' + user.last_login.slice(11, 19) : 'No inicio sesion'}</td>
+                  <td>{user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}</td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalUser(user)} />
                     <Link to="/users/edit" state={user}>
@@ -128,7 +128,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
             })}
             <ModalConfirm
               type="delete"
-              component={t('ngen.user')}
+              component={t("ngen.user")}
               name={deleteUsername}
               showModal={remove}
               onHide={() => setRemove(false)}
@@ -136,7 +136,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
             />
             <ModalConfirm
               type="editState"
-              component={t('ngen.user')}
+              component={t("ngen.user")}
               name={dataState.username}
               state={dataState.state}
               showModal={showState}
@@ -151,58 +151,58 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                       <Card.Header>
                         <Row>
                           <Col>
-                            <Card.Title as="h5">{t('ngen.user')}</Card.Title>
-                            <span className="d-block m-t-5">{t('ngen.user.detail')}</span>
+                            <Card.Title as="h5">{t("ngen.user")}</Card.Title>
+                            <span className="d-block m-t-5">{t("ngen.user.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
                             <Link to="/users/edit" state={user}>
                               <CrudButton type="edit" />
                             </Link>
-                            <CloseButton aria-label={t('w.close')} onClick={() => setModalShow(false)} />
+                            <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>
                       </Card.Header>
                       <Card.Body>
                         <Table responsive>
                           <tr>
-                            <td>{t('ngen.user.username')}</td>
+                            <td>{t("ngen.user.username")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={user.username} />
                             </td>
                             <td></td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.name_one')}</td>
+                            <td>{t("ngen.name_one")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={user.first_name} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.last.name')}</td>
+                            <td>{t("ngen.last.name")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={user.last_name} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('w.active')}</td>
+                            <td>{t("w.active")}</td>
                             <td>
                               <Button
                                 className="btn-icon btn-rounded"
-                                variant={user.is_active ? 'outline-success' : 'outline-danger'}
-                                title={user.is_active ? 'Activo' : 'Inactivo'}
+                                variant={user.is_active ? "outline-success" : "outline-danger"}
+                                title={user.is_active ? "Activo" : "Inactivo"}
                               >
-                                <i className={user.is_active ? 'feather icon-check-circle' : 'feather icon-alert-triangle'} />
+                                <i className={user.is_active ? "feather icon-check-circle" : "feather icon-alert-triangle"} />
                               </Button>
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('session.last')}</td>
+                            <td>{t("session.last")}</td>
                             <td>
-                              <Form.Control plaintext readOnly defaultValue={user.last_login ? user.last_login.slice(0, 10) : ''} />
+                              <Form.Control plaintext readOnly defaultValue={user.last_login ? user.last_login.slice(0, 10) : ""} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('info.related')}</td>
+                            <td>{t("info.related")}</td>
                             <td>
                               <Button size="sm" variant="light" className="text-capitalize">
                                 Casos asignados <Badge variant="light" className="ml-1"></Badge>
@@ -210,22 +210,22 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.date.created')}</td>
+                            <td>{t("ngen.date.created")}</td>
                             <td>
                               <Form.Control
                                 plaintext
                                 readOnly
-                                defaultValue={user.created ? user.created.slice(0, 10) + ' ' + user.created.slice(11, 19) : ''}
+                                defaultValue={user.created ? user.created.slice(0, 10) + " " + user.created.slice(11, 19) : ""}
                               />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.date.modified')}</td>
+                            <td>{t("ngen.date.modified")}</td>
                             <td>
                               <Form.Control
                                 plaintext
                                 readOnly
-                                defaultValue={user.modified ? user.modified.slice(0, 10) + ' ' + user.modified.slice(11, 19) : ''}
+                                defaultValue={user.modified ? user.modified.slice(0, 10) + " " + user.modified.slice(11, 19) : ""}
                               />
                             </td>
                           </tr>

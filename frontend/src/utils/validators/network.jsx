@@ -1,4 +1,4 @@
-import { isBlank, isEmpty, isNull, validateCidr, validateLength, validateSpace, validateSpaces, validateURL } from '../validators';
+import { isBlank, isEmpty, isNull, validateCidr, validateLength, validateSpace, validateSpaces, validateURL } from "../validators";
 
 const validateSelect = (option) => {
   return !isEmpty(option);

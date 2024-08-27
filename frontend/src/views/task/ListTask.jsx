@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, CloseButton, Col, Collapse, Modal, Row, Table } from 'react-bootstrap';
-import { getPlaybook } from '../../api/services/playbooks';
-import CrudButton from '../../components/Button/CrudButton';
-import FormCreateTask from './components/FormCreateTask';
-import { postTask } from '../../api/services/tasks';
-import RowTask from './components/RowTask';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Card, CloseButton, Col, Collapse, Modal, Row, Table } from "react-bootstrap";
+import { getPlaybook } from "../../api/services/playbooks";
+import CrudButton from "../../components/Button/CrudButton";
+import FormCreateTask from "./components/FormCreateTask";
+import { postTask } from "../../api/services/tasks";
+import RowTask from "./components/RowTask";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import { useTranslation } from "react-i18next";
 
 const ListTask = (props) => {
   //props setAlert
 
-  const [tasks, setTasks] = useState('');
+  const [tasks, setTasks] = useState("");
 
   //Create Task
   const [modalCreate, setModalCreate] = useState(false);
-  const [name, setName] = useState(''); //required
-  const [priority, setPriority] = useState('0'); //required
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState(""); //required
+  const [priority, setPriority] = useState("0"); //required
+  const [description, setDescription] = useState("");
   const { t } = useTranslation();
 
   const [taskCreated, setTaskCreated] = useState(null);
@@ -49,9 +49,9 @@ const ListTask = (props) => {
     postTask(name, description, priority, props.urlPlaybook)
       .then((response) => {
         setTaskCreated(response);
-        setName('');
-        setPriority('0');
-        setDescription('');
+        setName("");
+        setPriority("0");
+        setDescription("");
         setModalCreate(false);
       })
       .catch((error) => {
@@ -70,16 +70,16 @@ const ListTask = (props) => {
             <Card.Header>
               <Row>
                 <Col sm={12} lg={9}>
-                  <Card.Title as="h5">{t('ngen.tasks')}</Card.Title>
-                  <span className="d-block m-t-5">{t('ngen.tasks.list')}</span>
+                  <Card.Title as="h5">{t("ngen.tasks")}</Card.Title>
+                  <span className="d-block m-t-5">{t("ngen.tasks.list")}</span>
                 </Col>
                 <Col sm={12} lg={3}>
                   {props.sectionAddTask ? (
-                    <CrudButton type="create" name={t('ngen.task')} onClick={() => setModalCreate(true)} />
+                    <CrudButton type="create" name={t("ngen.task")} onClick={() => setModalCreate(true)} />
                   ) : (
                     <>
                       <Button variant="outline-primary" disabled>
-                        {t('ngen.tasks.list')}
+                        {t("ngen.tasks.list")}
                       </Button>
                     </>
                   )}
@@ -94,10 +94,10 @@ const ListTask = (props) => {
                     <thead>
                       <tr>
                         <th>#</th>
-                        <th>{t('ngen.name_one')}</th>
-                        <th>{t('ngen.priority_one')}</th>
-                        <th>{t('ngen.description')}</th>
-                        <th>{t('ngen.action_one')}</th>
+                        <th>{t("ngen.name_one")}</th>
+                        <th>{t("ngen.priority_one")}</th>
+                        <th>{t("ngen.description")}</th>
+                        <th>{t("ngen.action_one")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -142,13 +142,13 @@ const ListTask = (props) => {
                 <Card.Header>
                   <Row>
                     <Col>
-                      <Card.Title as="h5">{t('ngen.tasks')}</Card.Title>
+                      <Card.Title as="h5">{t("ngen.tasks")}</Card.Title>
                       <span className="d-block m-t-5">
-                        {t('w.add')} {t('ngen.tasks')}
+                        {t("w.add")} {t("ngen.tasks")}
                       </span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <CloseButton aria-label={t('w.close')} onClick={() => setModalCreate(false)} />
+                      <CloseButton aria-label={t("w.close")} onClick={() => setModalCreate(false)} />
                     </Col>
                   </Row>
                 </Card.Header>

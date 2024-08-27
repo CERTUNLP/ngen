@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
-import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from 'react-bootstrap';
-import ActiveButton from '../../../components/Button/ActiveButton';
-import CrudButton from '../../../components/Button/CrudButton';
-import { deleteEntity, getEntity, isActive } from '../../../api/services/entities';
-import { Link } from 'react-router-dom';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import Ordering from '../../../components/Ordering/Ordering';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import ActiveButton from "../../../components/Button/ActiveButton";
+import CrudButton from "../../../components/Button/CrudButton";
+import { deleteEntity, getEntity, isActive } from "../../../api/services/entities";
+import { Link } from "react-router-dom";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import Ordering from "../../../components/Ordering/Ordering";
+import { useTranslation } from "react-i18next";
 
 const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder }) => {
-  const [entity, setEntity] = useState('');
+  const [entity, setEntity] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [modalState, setModalState] = useState(false);
-  const [url, setUrl] = useState('');
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
-  const [created, setCreated] = useState('');
-  const [modified, setModified] = useState('');
-  const [active, setActive] = useState('');
+  const [url, setUrl] = useState("");
+  const [id, setId] = useState("");
+  const [name, setName] = useState("");
+  const [created, setCreated] = useState("");
+  const [modified, setModified] = useState("");
+  const [active, setActive] = useState("");
   const { t } = useTranslation();
 
   if (loading) {
@@ -31,16 +31,16 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
 
   //Read Entity
   const showEntity = (url) => {
-    setId(url.split('/')[url.split('/').length - 2]);
+    setId(url.split("/")[url.split("/").length - 2]);
     setUrl(url);
-    setEntity('');
+    setEntity("");
     getEntity(url)
       .then((response) => {
         setEntity(response.data);
-        let datetime = response.data.created.split('T');
-        setCreated(datetime[0] + ' ' + datetime[1].slice(0, 8));
-        datetime = response.data.modified.split('T');
-        setModified(datetime[0] + ' ' + datetime[1].slice(0, 8));
+        let datetime = response.data.created.split("T");
+        setCreated(datetime[0] + " " + datetime[1].slice(0, 8));
+        datetime = response.data.modified.split("T");
+        setModified(datetime[0] + " " + datetime[1].slice(0, 8));
         setModalShow(true);
       })
       .catch((error) => {
@@ -91,10 +91,10 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
   };
 
   const storageEntityUrl = (url) => {
-    localStorage.setItem('entity', url);
+    localStorage.setItem("entity", url);
   };
 
-  const letterSize = { fontSize: '1.1em' };
+  const letterSize = { fontSize: "1.1em" };
   return (
     <React.Fragment>
       <Table responsive hover className="text-center">
@@ -102,15 +102,15 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
           <tr>
             <Ordering
               field="name"
-              label={t('ngen.name_one')}
+              label={t("ngen.name_one")}
               order={order}
               setOrder={setOrder}
               setLoading={setLoading}
               letterSize={letterSize}
             />
-            <th>{t('w.active')}</th>
-            <th>{t('ngen.network.associated')}</th>
-            <th>{t('ngen.action_one')}</th>
+            <th>{t("w.active")}</th>
+            <th>{t("ngen.network.associated")}</th>
+            <th>{t("ngen.action_one")}</th>
           </tr>
         </thead>
         <tbody>
@@ -143,14 +143,14 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                 <Card.Header>
                   <Row>
                     <Col>
-                      <Card.Title as="h5">{t('ngen.entity_other')}</Card.Title>
-                      <span className="d-block m-t-5">{t('ngen.entity_detail')}</span>
+                      <Card.Title as="h5">{t("ngen.entity_other")}</Card.Title>
+                      <span className="d-block m-t-5">{t("ngen.entity_detail")}</span>
                     </Col>
                     <Col sm={12} lg={3}>
                       <Link to="/entities/edit" state={entity}>
                         <CrudButton type="edit" />
                       </Link>
-                      <CloseButton aria-label={t('w.close')} onClick={() => setModalShow(false)} />
+                      <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                     </Col>
                   </Row>
                 </Card.Header>
@@ -158,20 +158,20 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                   <Table responsive>
                     <tbody>
                       <tr>
-                        <td>{t('ngen.system.id')}</td>
+                        <td>{t("ngen.system.id")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={id} />
                         </td>
                         <td></td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.name_one')}</td>
+                        <td>{t("ngen.name_one")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={entity.name} />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('w.active')}</td>
+                        <td>{t("w.active")}</td>
                         <td>
                           <ActiveButton active={entity.active} />
                         </td>
@@ -183,16 +183,16 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.date.created')}</td>
+                        <td>{t("ngen.date.created")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={modified} />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.related.info')}</td>
+                        <td>{t("ngen.related.info")}</td>
                         <td>
                           <Button size="sm" variant="light" className="text-capitalize">
-                            {t('ngen.network_other')}{' '}
+                            {t("ngen.network_other")}{" "}
                             <Badge variant="light" className="ml-1">
                               {entity ? entity.networks.length : 0}
                             </Badge>
@@ -210,7 +210,7 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
 
       <ModalConfirm
         type="delete"
-        component={t('ngen.entity')}
+        component={t("ngen.entity")}
         name={name}
         showModal={modalDelete}
         onHide={() => setModalDelete(false)}
@@ -219,7 +219,7 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
 
       <ModalConfirm
         type="editState"
-        component={t('ngen.entity')}
+        component={t("ngen.entity")}
         name={name}
         state={active}
         showModal={modalState}

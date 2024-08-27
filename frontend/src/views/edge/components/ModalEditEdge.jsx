@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CloseButton, Col, Modal, Row } from 'react-bootstrap';
-import { putEdge } from '../../../api/services/edges';
-import FormCreateEdge from './FormCreateEdge';
-import Alert from '../../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, CloseButton, Col, Modal, Row } from "react-bootstrap";
+import { putEdge } from "../../../api/services/edges";
+import FormCreateEdge from "./FormCreateEdge";
+import Alert from "../../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const ModalEditEdge = (props) => {
   const [body, setBody] = useState(props.edge);
@@ -41,8 +41,8 @@ const ModalEditEdge = (props) => {
                 <Card.Header>
                   <Row>
                     <Col>
-                      <Card.Title as="h5">{t('transition')}</Card.Title>
-                      <span className="d-block m-t-5">{t('editTransition')}</span>
+                      <Card.Title as="h5">{t("transition")}</Card.Title>
+                      <span className="d-block m-t-5">{t("editTransition")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
                       <CloseButton aria-label="Cerrar" onClick={props.onHide} />

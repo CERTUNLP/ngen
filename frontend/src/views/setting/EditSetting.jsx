@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
-import Alert from '../../components/Alert/Alert';
-import Navigation from '../../components/Navigation/Navigation';
-import { getSetting, patchSetting } from '../../api/services/setting';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
+import Alert from "../../components/Alert/Alert";
+import Navigation from "../../components/Navigation/Navigation";
+import { getSetting, patchSetting } from "../../api/services/setting";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import { useTranslation } from "react-i18next";
 
 const EditSetting = () => {
   const [list, setList] = useState([]);
@@ -20,10 +20,10 @@ const EditSetting = () => {
   const { t } = useTranslation();
 
   const textareaStyle = {
-    resize: 'none',
-    backgroundColor: 'transparent',
-    border: 'none',
-    boxShadow: 'none'
+    resize: "none",
+    backgroundColor: "transparent",
+    border: "none",
+    boxShadow: "none"
   };
 
   useEffect(() => {
@@ -51,8 +51,8 @@ const EditSetting = () => {
   // Function to remove a specific part of a URL
   function removePartOfURL(url) {
     // Using a regular expression to find and replace the part to remove
-    var partToRemove = '/?page=' + currentPage;
-    return url.replace(new RegExp(partToRemove + '.*?(/|$)'), '');
+    var partToRemove = "/?page=" + currentPage;
+    return url.replace(new RegExp(partToRemove + ".*?(/|$)"), "");
   }
 
   const PatchSetting = (url) => {
@@ -79,22 +79,22 @@ const EditSetting = () => {
     <div>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="state" />
       <Row>
-        <Navigation actualPosition={t('config')} />
+        <Navigation actualPosition={t("config")} />
       </Row>
       <Card>
         <Card.Header>
-          <Card.Title as="h5">{t('systemConfig')}</Card.Title>
+          <Card.Title as="h5">{t("systemConfig")}</Card.Title>
         </Card.Header>
         <Card.Body>
           <ul className="list-group my-4">
             <Table responsive hover className="text-center">
               <thead>
                 <tr>
-                  <th>{t('ngen.name_one')}</th>
-                  <th>{t('ngen.description')}</th>
-                  <th>{t('ngen.default')}</th>
-                  <th>{t('ngen.value')}</th>
-                  <th>{t('w.modify')}</th>
+                  <th>{t("ngen.name_one")}</th>
+                  <th>{t("ngen.description")}</th>
+                  <th>{t("ngen.default")}</th>
+                  <th>{t("ngen.value")}</th>
+                  <th>{t("w.modify")}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -121,14 +121,14 @@ const EditSetting = () => {
                             name="value"
                             value={setting.value}
                             maxLength="150"
-                            placeholder={t('w.issue.placeholder')}
+                            placeholder={t("w.issue.placeholder")}
                             onChange={(e) => completeField(e, setting.url)}
                           />
                         </Form.Group>
                       </td>
                       <td>
                         <Button variant="outline-warning" onClick={() => PatchSetting(setting.url)}>
-                          {t('button.save')}
+                          {t("button.save")}
                         </Button>
                       </td>
                     </tr>

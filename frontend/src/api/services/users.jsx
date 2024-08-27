@@ -1,6 +1,6 @@
-import apiInstance from '../api';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
-import setAlert from '../../utils/setAlert';
+import apiInstance from "../api";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
+import setAlert from "../../utils/setAlert";
 
 const getMinifiedUser = () => {
   //el parametro es para completar la url con el numero de pagina
@@ -11,7 +11,7 @@ const getMinifiedUser = () => {
       return response.data;
     })
     .catch((error) => {
-      setAlert(messageError, 'error');
+      setAlert(messageError, "error");
       return Promise.reject(error);
     });
 };
@@ -19,12 +19,12 @@ const getUsers = (currentPage, filters, order) => {
   //el parametro es para completar la url con el numero de pagina
   let messageError = `No se pudo recuperar la informacion de los usuarios`;
   return apiInstance
-    .get(COMPONENT_URL.user + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.user + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error');
+      setAlert(messageError, "error");
       return Promise.reject(error);
     });
 };
@@ -37,7 +37,7 @@ const getUser = (url) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error');
+      setAlert(messageError, "error");
       return Promise.reject(error);
     });
 };
@@ -73,21 +73,21 @@ const postUser = (username, first_name, last_name, email, priority, is_active, p
       password: password
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success');
+      setAlert(messageSuccess, "success");
       return response;
     })
     .catch((error) => {
       console.log(error);
       if (error.response.status === 400) {
         //se informa que existe el username con ese nombre
-        if (error.response.data.username === 'A user with that username already exists.') {
+        if (error.response.data.username === "A user with that username already exists.") {
           messageError = `El usuario ${username} se pudo crear correctamente porque ya existe en el sistema`;
         }
       } else if (error.message === "Cannot read properties of undefined (reading 'code')") {
         //el backend o servidor no funciona
         messageError = `El usuario ${username} no puede ser creado porque el servidor no responde`;
       }
-      setAlert(messageError, 'error');
+      setAlert(messageError, "error");
       return Promise.reject(error);
     });
 };
@@ -105,20 +105,20 @@ const putUser = (url, username, first_name, last_name, email, priority, is_activ
       is_active: is_active
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success');
+      setAlert(messageSuccess, "success");
       return response;
     })
     .catch((error) => {
       if (error.response.status === 400) {
         //se informa que existe el username con ese nombre
-        if (error.response.data.username === 'A user with that username already exists.') {
+        if (error.response.data.username === "A user with that username already exists.") {
           messageError = `El usuario ${username} se pudo edita correctamente porque ya existe en el sistema`;
         }
       } else if (error.message === "Cannot read properties of undefined (reading 'code')") {
         //el backend o servidor no funciona
         messageError = `El usuario ${username} no puede ser editado porque el servidor no responde`;
       }
-      setAlert(messageError, 'error');
+      setAlert(messageError, "error");
       return Promise.reject(error);
     });
 };
@@ -131,16 +131,16 @@ const isActive = (url, active) => {
       is_active: active
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success');
+      setAlert(messageSuccess, "success");
       return response;
     })
     .catch((error) => {
       if (error.message === "Cannot read properties of undefined (reading 'code')") {
         //el backend o servidor no funciona
         messageError = !active ? `El usuario no pudo ser desactivado no pudo ser` : `El usuario no pudo ser activado no pudo ser`;
-        setAlert(messageError, 'error');
+        setAlert(messageError, "error");
       }
-      setAlert(messageError, 'error');
+      setAlert(messageError, "error");
       return Promise.reject(error);
     });
 };
@@ -151,24 +151,24 @@ const deleteUser = (url) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success');
+      setAlert(messageSuccess, "success");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
+      let statusText = "";
       if (
         error.response.data.error &&
         error.response.data.error[0].includes(
           "Cannot delete some instances of model 'User' because they are referenced through protected foreign keys"
         )
       ) {
-        statusText = ', esta referenciado.';
+        statusText = ", esta referenciado.";
       } else if (error.message === "Cannot read properties of undefined (reading 'code')") {
         //el backend o servidor no funciona
         statusText = `. El servidor no responde.`;
       }
       messageError += statusText;
-      setAlert(messageError, 'error');
+      setAlert(messageError, "error");
 
       return Promise.reject(error);
     });

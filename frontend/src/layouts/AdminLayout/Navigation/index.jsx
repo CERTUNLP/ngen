@@ -1,31 +1,31 @@
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 
-import { ConfigContext } from '../../../contexts/ConfigContext';
-import useWindowSize from '../../../hooks/useWindowSize';
+import { ConfigContext } from "../../../contexts/ConfigContext";
+import useWindowSize from "../../../hooks/useWindowSize";
 
-import NavLogo from './NavLogo';
-import NavContent from './NavContent';
-import navigation from '../../../menu-items';
+import NavLogo from "./NavLogo";
+import NavContent from "./NavContent";
+import navigation from "../../../menu-items";
 
 const Navigation = () => {
   const configContext = useContext(ConfigContext);
   const { collapseMenu } = configContext.state;
   const windowSize = useWindowSize();
 
-  let navClass = ['pcoded-navbar'];
+  let navClass = ["pcoded-navbar"];
 
   navClass = [...navClass];
 
   if (windowSize.width < 992 && collapseMenu) {
-    navClass = [...navClass, 'mob-open'];
+    navClass = [...navClass, "mob-open"];
   } else if (collapseMenu) {
-    navClass = [...navClass, 'navbar-collapsed'];
+    navClass = [...navClass, "navbar-collapsed"];
   }
 
-  let navBarClass = ['navbar-wrapper'];
+  let navBarClass = ["navbar-wrapper"];
 
   let navContent = (
-    <div className={navBarClass.join(' ')}>
+    <div className={navBarClass.join(" ")}>
       <NavLogo />
       <NavContent navigation={navigation} />
     </div>
@@ -40,7 +40,7 @@ const Navigation = () => {
   }
   return (
     <React.Fragment>
-      <nav className={navClass.join(' ')}>{navContent}</nav>
+      <nav className={navClass.join(" ")}>{navContent}</nav>
     </React.Fragment>
   );
 };

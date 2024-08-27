@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { ResponsivePieCanvas } from '@nivo/pie';
-import { Row, Spinner } from 'react-bootstrap';
+import React, { useEffect, useState } from "react";
+import { ResponsivePieCanvas } from "@nivo/pie";
+import { Row, Spinner } from "react-bootstrap";
 
 const EntityGraph = ({ list, loading }) => {
   const [entity, setEntity] = useState([]);
@@ -37,32 +37,32 @@ const EntityGraph = ({ list, loading }) => {
         padAngle={0.7}
         cornerRadius={3}
         activeOuterRadiusOffset={8}
-        colors={{ scheme: 'set2' }}
+        colors={{ scheme: "set2" }}
         borderColor={{
-          from: 'color',
-          modifiers: [['darker', 0.6]]
+          from: "color",
+          modifiers: [["darker", 0.6]]
         }}
         arcLinkLabelsSkipAngle={10}
         arcLinkLabelsTextColor="#333333"
         arcLinkLabelsThickness={2}
-        arcLinkLabelsColor={{ from: 'color' }}
+        arcLinkLabelsColor={{ from: "color" }}
         arcLabelsSkipAngle={10}
         arcLabelsTextColor="#333333"
         defs={[
           {
-            id: 'dots',
-            type: 'patternDots',
-            background: 'inherit',
-            color: 'rgba(255, 255, 255, 0.3)',
+            id: "dots",
+            type: "patternDots",
+            background: "inherit",
+            color: "rgba(255, 255, 255, 0.3)",
             size: 4,
             padding: 1,
             stagger: true
           },
           {
-            id: 'lines',
-            type: 'patternLines',
-            background: 'inherit',
-            color: 'rgba(255, 255, 255, 0.3)',
+            id: "lines",
+            type: "patternLines",
+            background: "inherit",
+            color: "rgba(255, 255, 255, 0.3)",
             rotation: -45,
             lineWidth: 6,
             spacing: 10
@@ -71,51 +71,51 @@ const EntityGraph = ({ list, loading }) => {
         fill={[
           {
             match: {
-              id: 'ruby'
+              id: "ruby"
             },
-            id: 'dots'
+            id: "dots"
           },
           {
             match: {
-              id: 'c'
+              id: "c"
             },
-            id: 'dots'
+            id: "dots"
           },
           {
             match: {
-              id: 'go'
+              id: "go"
             },
-            id: 'dots'
+            id: "dots"
           },
           {
             match: {
-              id: 'python'
+              id: "python"
             },
-            id: 'dots'
+            id: "dots"
           },
           {
             match: {
-              id: 'scala'
+              id: "scala"
             },
-            id: 'lines'
+            id: "lines"
           },
           {
             match: {
-              id: 'lisp'
+              id: "lisp"
             },
-            id: 'lines'
+            id: "lines"
           },
           {
             match: {
-              id: 'elixir'
+              id: "elixir"
             },
-            id: 'lines'
+            id: "lines"
           },
           {
             match: {
-              id: 'javascript'
+              id: "javascript"
             },
-            id: 'lines'
+            id: "lines"
           }
         ]}
         // legends={[

@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, Col, Collapse, Row } from 'react-bootstrap';
-import CrudButton from '../../components/Button/CrudButton';
-import TableTemplete from './components/TableTemplete';
-import Navigation from '../../components/Navigation/Navigation';
-import Search from '../../components/Search/Search';
-import { getTemplates } from '../../api/services/templates';
-import { getMinifiedFeed } from '../../api/services/feeds';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import Alert from '../../components/Alert/Alert';
-import ButtonFilter from '../../components/Button/ButtonFilter';
-import FilterSelectUrl from '../../components/Filter/FilterSelectUrl';
-import { useTranslation } from 'react-i18next';
-import { getMinifiedTlp } from '../../api/services/tlp';
-import { getMinifiedPriority } from '../../api/services/priorities';
-import { getMinifiedState } from '../../api/services/states';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Card, Col, Collapse, Row } from "react-bootstrap";
+import CrudButton from "../../components/Button/CrudButton";
+import TableTemplete from "./components/TableTemplete";
+import Navigation from "../../components/Navigation/Navigation";
+import Search from "../../components/Search/Search";
+import { getTemplates } from "../../api/services/templates";
+import { getMinifiedFeed } from "../../api/services/feeds";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import Alert from "../../components/Alert/Alert";
+import ButtonFilter from "../../components/Button/ButtonFilter";
+import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
+import { useTranslation } from "react-i18next";
+import { getMinifiedTlp } from "../../api/services/tlp";
+import { getMinifiedPriority } from "../../api/services/priorities";
+import { getMinifiedState } from "../../api/services/states";
 
 const ListTemplete = () => {
   const [templete, setTemplete] = useState([]);
@@ -35,10 +35,10 @@ const ListTemplete = () => {
   // const [tlps, setTlps] = useState([])
   // const [states, setStates] = useState([])
 
-  const [taxonomyFilter, setTaxonomyFilter] = useState('');
-  const [feedFilter, setFeedFilter] = useState('');
-  const [wordToSearch, setWordToSearch] = useState('');
-  const [order, setOrder] = useState('event_feed__name');
+  const [taxonomyFilter, setTaxonomyFilter] = useState("");
+  const [feedFilter, setFeedFilter] = useState("");
+  const [wordToSearch, setWordToSearch] = useState("");
+  const [order, setOrder] = useState("event_feed__name");
 
   const [taxonomyNames, setTaxonomyNames] = useState({});
   const [feedNames, setFeedNames] = useState({});
@@ -133,7 +133,7 @@ const ListTemplete = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
       <Row>
-        <Navigation actualPosition={t('ngen.template')} />
+        <Navigation actualPosition={t("ngen.template")} />
       </Row>
       <Row>
         <Col>
@@ -144,11 +144,11 @@ const ListTemplete = () => {
                   <ButtonFilter open={open} setOpen={setOpen} />
                 </Col>
                 <Col sm={12} lg={8}>
-                  <Search type={t('cidr.domain')} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+                  <Search type={t("cidr.domain")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
                 </Col>
                 <Col sm={12} lg={3}>
                   <Link to="/templates/create">
-                    <CrudButton type="create" name={t('ngen.template')} />
+                    <CrudButton type="create" name={t("ngen.template")} />
                   </Link>
                 </Col>
               </Row>
@@ -159,7 +159,7 @@ const ListTemplete = () => {
                     <Col sm={12} lg={4}>
                       <FilterSelectUrl
                         options={feeds}
-                        itemName={t('ngen.feed_other')}
+                        itemName={t("ngen.feed_other")}
                         partOfTheUrl="event_feed"
                         itemFilter={feedFilter}
                         itemFilterSetter={setFeedFilter}
@@ -169,7 +169,7 @@ const ListTemplete = () => {
                     <Col sm={12} lg={4}>
                       <FilterSelectUrl
                         options={taxonomies}
-                        itemName={t('ngen.taxonomy_one')}
+                        itemName={t("ngen.taxonomy_one")}
                         partOfTheUrl="event_taxonomy"
                         itemFilter={taxonomyFilter}
                         itemFilterSetter={setTaxonomyFilter}

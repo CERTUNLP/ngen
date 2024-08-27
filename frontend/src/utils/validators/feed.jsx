@@ -1,4 +1,4 @@
-import { isBlank, isEmpty, validateFieldText, validateLength } from '../validators';
+import { isBlank, isEmpty, validateFieldText, validateLength } from "../validators";
 
 const validateName = (name) => {
   return validateFieldText(name) && validateLength(name, 100);

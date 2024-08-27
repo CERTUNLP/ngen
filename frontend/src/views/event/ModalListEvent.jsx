@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Modal, Row } from 'react-bootstrap';
-import Search from '../../components/Search/Search';
-import FilterSelectUrl from '../../components/Filter/FilterSelectUrl';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import TableEvents from './components/TableEvents';
-import { getEvents } from '../../api/services/events';
-import './ModalListEvent.css';
-import { useTranslation } from 'react-i18next';
-import Alert from '../../components/Alert/Alert';
+import React, { useEffect, useState } from "react";
+import { Button, Col, Modal, Row } from "react-bootstrap";
+import Search from "../../components/Search/Search";
+import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import TableEvents from "./components/TableEvents";
+import { getEvents } from "../../api/services/events";
+import "./ModalListEvent.css";
+import { useTranslation } from "react-i18next";
+import Alert from "../../components/Alert/Alert";
 
 const ModalListEvent = (props) => {
   const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState('-date');
+  const [order, setOrder] = useState("-date");
   const [countItems, setCountItems] = useState(0);
   const [showAlert, setShowAlert] = useState(false);
   const [events, setEvents] = useState([]);
   const [disabledPagination, setDisabledPagination] = useState(true);
-  const [caseIsNull] = useState('&case__isnull=true');
-  const [parentIsNull] = useState('&parent__isnull=true');
+  const [caseIsNull] = useState("&case__isnull=true");
+  const [parentIsNull] = useState("&parent__isnull=true");
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -54,13 +54,13 @@ const ModalListEvent = (props) => {
     >
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="event" />
       <Modal.Header closeButton>
-        <Modal.Title>{t('ngen.event_link')}</Modal.Title>
+        <Modal.Title>{t("ngen.event_link")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Row>
           <Col sm={12} lg={12}>
             <Search
-              type={t('ngen.event_one')}
+              type={t("ngen.event_one")}
               setWordToSearch={props.setWordToSearch}
               wordToSearch={props.wordToSearch}
               setLoading={setLoading}
@@ -72,7 +72,7 @@ const ModalListEvent = (props) => {
           <Col sm={4} lg={4}>
             <FilterSelectUrl
               options={props.tlpList}
-              itemName={t('ngen.tlp')}
+              itemName={t("ngen.tlp")}
               partOfTheUrl="tlp"
               itemFilter={props.tlpFilter}
               itemFilterSetter={props.setTlpFilter}
@@ -85,7 +85,7 @@ const ModalListEvent = (props) => {
           <Col sm={4} lg={4}>
             <FilterSelectUrl
               options={props.taxonomies}
-              itemName={t('ngen.taxonomy_other')}
+              itemName={t("ngen.taxonomy_other")}
               partOfTheUrl="taxonomy"
               itemFilter={props.taxonomyFilter}
               itemFilterSetter={props.setTaxonomyFilter}
@@ -98,7 +98,7 @@ const ModalListEvent = (props) => {
           <Col sm={4} lg={4}>
             <FilterSelectUrl
               options={props.feeds}
-              itemName={t('ngen.feed_other')}
+              itemName={t("ngen.feed_other")}
               partOfTheUrl="feed"
               itemFilter={props.feedFilter}
               itemFilterSetter={props.setFeedFilter}

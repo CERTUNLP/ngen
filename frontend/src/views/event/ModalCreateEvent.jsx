@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import { getMinifiedArtifact } from '../../api/services/artifact';
-import { postEvent } from '../../api/services/events';
-import { getMinifiedFeed } from '../../api/services/feeds';
-import { getMinifiedPriority } from '../../api/services/priorities';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
-import { getMinifiedTlp } from '../../api/services/tlp';
-import { getMinifiedUser } from '../../api/services/users';
-import FormEvent from './components/FormEvent';
-import { useTranslation } from 'react-i18next';
-import Alert from '../../components/Alert/Alert';
+import React, { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import { getMinifiedArtifact } from "../../api/services/artifact";
+import { postEvent } from "../../api/services/events";
+import { getMinifiedFeed } from "../../api/services/feeds";
+import { getMinifiedPriority } from "../../api/services/priorities";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import { getMinifiedTlp } from "../../api/services/tlp";
+import { getMinifiedUser } from "../../api/services/users";
+import FormEvent from "./components/FormEvent";
+import { useTranslation } from "react-i18next";
+import Alert from "../../components/Alert/Alert";
 
 const ModalCreateEvent = ({
   showModalEvent,
@@ -26,16 +26,16 @@ const ModalCreateEvent = ({
     todos: [],
     artifacts: [],
     comments: null, // verificar aca si escribo y borro todo, se envia "" lo mismo para notes
-    address_value: '', //requerido
-    date: '', //requerido
-    notes: '',
+    address_value: "", //requerido
+    date: "", //requerido
+    notes: "",
     parent: [],
-    priority: '', //requerido
-    tlp: '', //requerido
-    taxonomy: '', //requerido
-    feed: '', //requerido
+    priority: "", //requerido
+    tlp: "", //requerido
+    taxonomy: "", //requerido
+    feed: "", //requerido
     reporter: [],
-    case: '',
+    case: "",
     tasks: [],
     evidence: []
   };
@@ -139,29 +139,29 @@ const ModalCreateEvent = ({
 
   const createEvent = () => {
     const formDataEvent = new FormData();
-    formDataEvent.append('date', body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
-    formDataEvent.append('priority', body.priority);
-    formDataEvent.append('tlp', body.tlp);
-    formDataEvent.append('taxonomy', body.taxonomy);
-    formDataEvent.append('feed', body.feed);
-    formDataEvent.append('todos', body.todos);
-    formDataEvent.append('comments', body.comments);
-    formDataEvent.append('notes', body.notes);
-    formDataEvent.append('parent', body.parent);
-    formDataEvent.append('reporter', body.reporter);
-    formDataEvent.append('case', body.case);
-    formDataEvent.append('tasks', body.tasks);
-    formDataEvent.append('address_value', body.address_value);
+    formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
+    formDataEvent.append("priority", body.priority);
+    formDataEvent.append("tlp", body.tlp);
+    formDataEvent.append("taxonomy", body.taxonomy);
+    formDataEvent.append("feed", body.feed);
+    formDataEvent.append("todos", body.todos);
+    formDataEvent.append("comments", body.comments);
+    formDataEvent.append("notes", body.notes);
+    formDataEvent.append("parent", body.parent);
+    formDataEvent.append("reporter", body.reporter);
+    formDataEvent.append("case", body.case);
+    formDataEvent.append("tasks", body.tasks);
+    formDataEvent.append("address_value", body.address_value);
     if (evidence !== null) {
       for (let index = 0; index < evidence.length; index++) {
-        formDataEvent.append('evidence', evidence[index]);
+        formDataEvent.append("evidence", evidence[index]);
       }
     } else {
-      formDataEvent.append('evidence', evidence);
+      formDataEvent.append("evidence", evidence);
     }
     //no se estan enviando los artefactos revisar backend
     body.artifacts.forEach((item) => {
-      formDataEvent.append('artifacts', item);
+      formDataEvent.append("artifacts", item);
     });
 
     postEvent(formDataEvent)
@@ -184,7 +184,7 @@ const ModalCreateEvent = ({
     <Modal show={showModalEvent} size="lg" onHide={() => setShowModalEvent(false)} aria-labelledby="contained-modal-title-vcenter" centered>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="edge" />
       <Modal.Header closeButton>
-        <Modal.Title>{t('ngen.event.create')}</Modal.Title>
+        <Modal.Title>{t("ngen.event.create")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div id="example-collapse-text">

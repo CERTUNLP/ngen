@@ -1,7 +1,7 @@
-import React from 'react';
-import { Button, Card, Col, Form, Row } from 'react-bootstrap';
-import { validateFieldText, validateHours, validateMinutes, validateNumber } from '../../../utils/validators';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { validateFieldText, validateHours, validateMinutes, validateNumber } from "../../../utils/validators";
+import { useTranslation } from "react-i18next";
 
 const FormPriority = ({ body, setBody, createPriority }) => {
   const completeField = (event) => {
@@ -19,41 +19,41 @@ const FormPriority = ({ body, setBody, createPriority }) => {
     if (!validateNumber(body.severity)) {
       return false;
     }
-    if (body.name === '') {
+    if (body.name === "") {
       return false;
     }
-    if (body.severity === '') {
+    if (body.severity === "") {
       return false;
     }
-    if (body.color === '') {
+    if (body.color === "") {
       return false;
     }
-    if (body.attend_time_days !== '') {
+    if (body.attend_time_days !== "") {
       if (!validateNumber(body.attend_time_days)) {
         return false;
       }
     }
-    if (body.attend_time_hours !== '') {
+    if (body.attend_time_hours !== "") {
       if (!validateHours(body.attend_time_hours)) {
         return false;
       }
     }
-    if (body.attend_time_minutes !== '') {
+    if (body.attend_time_minutes !== "") {
       if (!validateMinutes(body.attend_time_minutes)) {
         return false;
       }
     }
-    if (body.solve_time_days !== '') {
+    if (body.solve_time_days !== "") {
       if (!validateNumber(body.solve_time_days)) {
         return false;
       }
     }
-    if (body.solve_time_hours !== '') {
+    if (body.solve_time_hours !== "") {
       if (!validateHours(body.solve_time_hours)) {
         return false;
       }
     }
-    if (body.solve_time_minutes !== '') {
+    if (body.solve_time_minutes !== "") {
       if (!validateMinutes(body.solve_time_minutes)) {
         return false;
       }
@@ -68,49 +68,49 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           <Col sm={12} lg={4}>
             <Form.Group controlId="formGridAddress1">
               <Form.Label>
-                {t('ngen.name_one')}
-                <b style={{ color: 'red' }}>*</b>
+                {t("ngen.name_one")}
+                <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Form.Control
-                placeholder={t('ngen.name.placeholder')}
+                placeholder={t("ngen.name.placeholder")}
                 maxLength="150"
                 value={body.name}
                 name="name"
                 isInvalid={!validateFieldText(body.name)}
                 onChange={(e) => completeField(e)}
               />
-              {validateFieldText(body.name) ? '' : <div className="invalid-feedback"> {t('w.validate.character')}</div>}
+              {validateFieldText(body.name) ? "" : <div className="invalid-feedback"> {t("w.validate.character")}</div>}
             </Form.Group>
           </Col>
           <Col sm={12} lg={4}>
             <Form.Group controlId="formGridAddress1">
               <Form.Label>
-                {t('ngen.priority.severity')} <b style={{ color: 'red' }}>*</b>
+                {t("ngen.priority.severity")} <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Form.Control
-                placeholder={t('ngen.priority.severity.placeholder')}
+                placeholder={t("ngen.priority.severity.placeholder")}
                 maxLength="150"
                 value={body.severity}
                 name="severity"
                 isInvalid={!validateNumber(body.severity)}
                 onChange={(e) => completeField(e)}
               />
-              {validateNumber(body.severity) ? '' : <div className="invalid-feedback"> {t('w.validate.numbers')} </div>}
+              {validateNumber(body.severity) ? "" : <div className="invalid-feedback"> {t("w.validate.numbers")} </div>}
             </Form.Group>
           </Col>
           <Col sm={12} lg={4}>
             <Form.Group controlId="formGridAddress1">
               <Form.Label>
-                {t('ngen.color')} <b style={{ color: 'red' }}>*</b>
+                {t("ngen.color")} <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Form.Control
-                placeholder={t('ngen.priority.color.placeholder')}
+                placeholder={t("ngen.priority.color.placeholder")}
                 maxLength="150"
                 value={body.color}
                 name="color"
                 onChange={(e) => completeField(e)}
               />
-              {body.color !== '' ? '' : <div className="invalid-feedback">{t('ngen.color.validate')}</div>}
+              {body.color !== "" ? "" : <div className="invalid-feedback">{t("ngen.color.validate")}</div>}
               {
                 //tengo ver un validador para color
               }
@@ -121,85 +121,85 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           <Col sm={12} lg={4}>
             <Form.Group controlId="formGridAddress1">
               <Form.Label>
-                {t('ngen.priority.notification_amount')} <b style={{ color: 'red' }}>*</b>
+                {t("ngen.priority.notification_amount")} <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Form.Control
-                placeholder={t('ngen.priority.notification_amount.placeholder')}
+                placeholder={t("ngen.priority.notification_amount.placeholder")}
                 maxLength="150"
                 value={body.notification_amount}
                 name="notification_amount"
                 isInvalid={!validateNumber(body.notification_amount)}
                 onChange={(e) => completeField(e)}
               />
-              {validateNumber(body.notification_amount) ? '' : <div className="invalid-feedback"> {t('w.validate.numbers')} </div>}
+              {validateNumber(body.notification_amount) ? "" : <div className="invalid-feedback"> {t("w.validate.numbers")} </div>}
             </Form.Group>
           </Col>
         </Row>
 
         <Row>
-          <Form.Label>{t('time.to.attend')}</Form.Label>
+          <Form.Label>{t("time.to.attend")}</Form.Label>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t('date.days')}{' '}
+              {t("date.days")}{" "}
               <Form.Control
-                placeholder={t('placeholder.date')}
+                placeholder={t("placeholder.date")}
                 maxLength="150"
                 value={body.attend_time_days}
                 name="attend_time_days"
-                isInvalid={body.attend_time_days !== '' && !validateNumber(body.attend_time_days)}
+                isInvalid={body.attend_time_days !== "" && !validateNumber(body.attend_time_days)}
                 onChange={(e) => completeField(e)}
               />
             </Form.Group>
           </Col>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t('date.hours')}{' '}
+              {t("date.hours")}{" "}
               <Form.Control
-                placeholder={t('placeholder.hours')}
+                placeholder={t("placeholder.hours")}
                 maxLength="2"
                 value={body.attend_time_hours}
                 name="attend_time_hours"
-                isInvalid={body.attend_time_hours !== '' && !validateHours(body.attend_time_hours)}
+                isInvalid={body.attend_time_hours !== "" && !validateHours(body.attend_time_hours)}
                 onChange={(e) => completeField(e)}
               />
             </Form.Group>
           </Col>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t('date.minutes')}{' '}
+              {t("date.minutes")}{" "}
               <Form.Control
-                placeholder={t('placeholder.minutes')}
+                placeholder={t("placeholder.minutes")}
                 maxLength="2"
                 value={body.attend_time_minutes}
                 name="attend_time_minutes"
-                isInvalid={body.attend_time_minutes !== '' && !validateMinutes(body.attend_time_minutes)}
+                isInvalid={body.attend_time_minutes !== "" && !validateMinutes(body.attend_time_minutes)}
                 onChange={(e) => completeField(e)}
               />
             </Form.Group>
           </Col>
         </Row>
         <Row>
-          <Form.Label>{t('time.to.solve')} </Form.Label>
+          <Form.Label>{t("time.to.solve")} </Form.Label>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t('date.days')}{' '}
+              {t("date.days")}{" "}
               <Form.Control
-                placeholder={t('placeholder.date')}
+                placeholder={t("placeholder.date")}
                 maxLength="150"
                 value={body.solve_time_days}
                 name="solve_time_days"
-                isInvalid={body.solve_time_days !== '' && !validateNumber(body.solve_time_days)}
+                isInvalid={body.solve_time_days !== "" && !validateNumber(body.solve_time_days)}
                 onChange={(e) => completeField(e)}
               />
             </Form.Group>
           </Col>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t('date.hours')}{' '}
+              {t("date.hours")}{" "}
               <Form.Control
-                placeholder={t('placeholder.hours')}
+                placeholder={t("placeholder.hours")}
                 value={body.solve_time_hours}
-                isInvalid={body.solve_time_hours !== '' && !validateHours(body.solve_time_hours)}
+                isInvalid={body.solve_time_hours !== "" && !validateHours(body.solve_time_hours)}
                 name="solve_time_hours"
                 onChange={(e) => completeField(e)}
               />
@@ -207,12 +207,12 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           </Col>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t('date.minutes')}{' '}
+              {t("date.minutes")}{" "}
               <Form.Control
-                placeholder={t('placeholder.minutes')}
+                placeholder={t("placeholder.minutes")}
                 maxLength="2"
                 value={body.solve_time_minutes}
-                isInvalid={body.solve_time_minutes !== '' && !validateMinutes(body.solve_time_minutes)}
+                isInvalid={body.solve_time_minutes !== "" && !validateMinutes(body.solve_time_minutes)}
                 name="solve_time_minutes"
                 onChange={(e) => completeField(e)}
               />
@@ -222,19 +222,19 @@ const FormPriority = ({ body, setBody, createPriority }) => {
         {activateBooton(body) ? (
           <>
             <Button variant="primary" onClick={createPriority}>
-              {t('button.save')}
+              {t("button.save")}
             </Button>
           </>
         ) : (
           <>
             <Button variant="primary" disabled>
-              {t('button.save')}
+              {t("button.save")}
             </Button>
           </>
         )}
 
         <Button variant="primary" href="/priorities">
-          {t('button.cancel')}
+          {t("button.cancel")}
         </Button>
       </Form>
     </Card.Body>

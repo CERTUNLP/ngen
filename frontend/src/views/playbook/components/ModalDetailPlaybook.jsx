@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CloseButton, Col, Form, Modal, Row, Table } from 'react-bootstrap';
-import CrudButton from '../../../components/Button/CrudButton';
-import { Link } from 'react-router-dom';
-import FormGetName from '../../../components/Form/FormGetName';
-import { getTask } from '../../../api/services/tasks';
-import { getTaxonomy } from '../../../api/services/taxonomies';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
+import CrudButton from "../../../components/Button/CrudButton";
+import { Link } from "react-router-dom";
+import FormGetName from "../../../components/Form/FormGetName";
+import { getTask } from "../../../api/services/tasks";
+import { getTaxonomy } from "../../../api/services/taxonomies";
+import { useTranslation } from "react-i18next";
 
 const ModalDetailPlaybook = (props) => {
-  const [created, setCreated] = useState('');
-  const [modified, setModified] = useState('');
+  const [created, setCreated] = useState("");
+  const [modified, setModified] = useState("");
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -20,8 +20,8 @@ const ModalDetailPlaybook = (props) => {
   }, [props.playbook]);
 
   const formatDate = (datetime, set) => {
-    datetime = datetime.split('T');
-    let format = datetime[0] + ' ' + datetime[1].slice(0, 8);
+    datetime = datetime.split("T");
+    let format = datetime[0] + " " + datetime[1].slice(0, 8);
     set(format);
   };
 
@@ -35,14 +35,14 @@ const ModalDetailPlaybook = (props) => {
                 <Card.Header>
                   <Row>
                     <Col>
-                      <Card.Title as="h5">{t('ngen.playbook')}</Card.Title>
-                      <span className="d-block m-t-5">{t('ngen.playbook.detail')}</span>
+                      <Card.Title as="h5">{t("ngen.playbook")}</Card.Title>
+                      <span className="d-block m-t-5">{t("ngen.playbook.detail")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
                       <Link to="/playbooks/edit" state={props.playbook}>
                         <CrudButton type="edit" />
                       </Link>
-                      <CloseButton aria-label={t('button.close')} onClick={props.onHide} />
+                      <CloseButton aria-label={t("button.close")} onClick={props.onHide} />
                     </Col>
                   </Row>
                 </Card.Header>
@@ -51,7 +51,7 @@ const ModalDetailPlaybook = (props) => {
                     <tbody>
                       {props.playbook.name ? (
                         <tr>
-                          <td>{t('ngen.name_one')}</td>
+                          <td>{t("ngen.name_one")}</td>
                           <td>
                             <Form.Control plaintext readOnly defaultValue={props.playbook.name} />
                           </td>
@@ -61,7 +61,7 @@ const ModalDetailPlaybook = (props) => {
                       )}
                       {props.playbook.taxonomy && props.playbook.taxonomy.length > 0 ? (
                         <tr>
-                          <td>{t('ngen.taxonomy_other')}</td>
+                          <td>{t("ngen.taxonomy_other")}</td>
                           <td>
                             {Object.values(props.playbook.taxonomy).map((taxonomyItem, index) => {
                               return <FormGetName form={true} get={getTaxonomy} url={taxonomyItem} key={index} />;
@@ -73,7 +73,7 @@ const ModalDetailPlaybook = (props) => {
                       )}
                       {props.playbook.tasks && props.playbook.tasks.length > 0 ? (
                         <tr>
-                          <td>{t('ngen.tasks')}</td>
+                          <td>{t("ngen.tasks")}</td>
                           <td>
                             {Object.values(props.playbook.tasks).map((taskItem, index) => {
                               return <FormGetName form={true} get={getTask} url={taskItem} key={index} />;
@@ -84,13 +84,13 @@ const ModalDetailPlaybook = (props) => {
                         <></>
                       )}
                       <tr>
-                        <td>{t('ngen.date.created')}</td>
+                        <td>{t("ngen.date.created")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={created} />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.date.modified')}</td>
+                        <td>{t("ngen.date.modified")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={modified} />
                         </td>

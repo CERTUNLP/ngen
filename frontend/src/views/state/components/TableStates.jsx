@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from 'react-bootstrap';
-import CrudButton from '../../../components/Button/CrudButton';
-import { Link } from 'react-router-dom';
-import ActiveButton from '../../../components/Button/ActiveButton';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import { deleteState, getState, isActive } from '../../../api/services/states';
-import Alert from '../../../components/Alert/Alert';
-import CallBackendByName from '../../../components/CallBackendByName';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import CrudButton from "../../../components/Button/CrudButton";
+import { Link } from "react-router-dom";
+import ActiveButton from "../../../components/Button/ActiveButton";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import { deleteState, getState, isActive } from "../../../api/services/states";
+import Alert from "../../../components/Alert/Alert";
+import CallBackendByName from "../../../components/CallBackendByName";
+import { useTranslation } from "react-i18next";
 
 const TableStates = ({ states, callback, loading, currentPage }) => {
   const [deleteName, setDeleteName] = useState();
@@ -36,7 +36,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
   const handleDelete = () => {
     deleteState(deleteUrl, deleteName)
       .then(() => {
-        window.location.href = '/states';
+        window.location.href = "/states";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -60,7 +60,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
   const changeState = () => {
     isActive(dataState.url, +!dataState.state)
       .then(() => {
-        window.location.href = '/states';
+        window.location.href = "/states";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -86,11 +86,11 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
         <Table responsive hover className="text-center">
           <thead>
             <tr>
-              <th>{t('ngen.name_one')}</th>
-              <th>{t('ngen.state_one')}</th>
-              <th>{t('w.attended')}</th>
-              <th>{t('w.solved')}</th>
-              <th>{t('ngen.options')}</th>
+              <th>{t("ngen.name_one")}</th>
+              <th>{t("ngen.state_one")}</th>
+              <th>{t("w.attended")}</th>
+              <th>{t("w.solved")}</th>
+              <th>{t("ngen.options")}</th>
             </tr>
           </thead>
           <tbody>
@@ -101,9 +101,9 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                   <td>
                     <ActiveButton active={state.active} onClick={() => modalChangeState(state.url, state.name, state.active)} />
                   </td>
-                  <td>{state.attended ? t('ngen.true') : t('ngen.false')}</td>
+                  <td>{state.attended ? t("ngen.true") : t("ngen.false")}</td>
 
-                  <td>{state.solved ? t('ngen.true') : t('ngen.false')}</td>
+                  <td>{state.solved ? t("ngen.true") : t("ngen.false")}</td>
 
                   <td>
                     <CrudButton type="read" onClick={() => showModalState(state)} />
@@ -118,7 +118,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
 
             <ModalConfirm
               type="delete"
-              component={t('ngen.state_one')}
+              component={t("ngen.state_one")}
               name={deleteName}
               showModal={remove}
               onHide={() => setRemove(false)}
@@ -126,7 +126,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
             />
             <ModalConfirm
               type="editState"
-              component={t('ngen.state_one')}
+              component={t("ngen.state_one")}
               name={dataState.name}
               state={dataState.state}
               showModal={showState}
@@ -141,34 +141,34 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                       <Card.Header>
                         <Row>
                           <Col>
-                            <Card.Title as="h5">{t('ngen.state_one')}</Card.Title>
-                            <span className="d-block m-t-5">{t('ngen.state.detail')}</span>
+                            <Card.Title as="h5">{t("ngen.state_one")}</Card.Title>
+                            <span className="d-block m-t-5">{t("ngen.state.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
                             <Link to="/states/edit" state={state}>
                               <CrudButton type="edit" />
                             </Link>
-                            <CloseButton aria-label={t('w.close')} onClick={() => setModalShow(false)} />
+                            <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>
                       </Card.Header>
                       <Card.Body>
                         <Table responsive>
                           <tr>
-                            <td>{t('ngen.name_one')}</td>
+                            <td>{t("ngen.name_one")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={state.name} />
                             </td>
                             <td></td>
                           </tr>
                           <tr>
-                            <td>{t('w.attended')}</td>
+                            <td>{t("w.attended")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={state.attended} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('w.solved')}</td>
+                            <td>{t("w.solved")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={state.solved} />
                             </td>
@@ -179,46 +179,46 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                             <td>
                               <Button
                                 className="btn-icon btn-rounded"
-                                variant={state.active ? 'outline-success' : 'outline-danger'}
-                                title={state.active ? 'Activo' : 'Inactivo'}
+                                variant={state.active ? "outline-success" : "outline-danger"}
+                                title={state.active ? "Activo" : "Inactivo"}
                               >
-                                <i className={state.active ? 'feather icon-check-circle' : 'feather icon-alert-triangle'} />
+                                <i className={state.active ? "feather icon-check-circle" : "feather icon-alert-triangle"} />
                               </Button>
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.description')}</td>
+                            <td>{t("ngen.description")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={state.description} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.children')}</td>
+                            <td>{t("ngen.children")}</td>
                             <td>
                               {state.children
                                 ? state.children.map((url) => {
                                     return <CallBackendByName url={url} callback={callbackState} useBadge={false} />;
                                   })
-                                : 'No tiene hijos'}
+                                : "No tiene hijos"}
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.date.created')}</td>
+                            <td>{t("ngen.date.created")}</td>
                             <td>
                               <Form.Control
                                 plaintext
                                 readOnly
-                                defaultValue={state.created ? state.created.slice(0, 10) + ' ' + state.created.slice(11, 19) : ''}
+                                defaultValue={state.created ? state.created.slice(0, 10) + " " + state.created.slice(11, 19) : ""}
                               />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.date.modified')}</td>
+                            <td>{t("ngen.date.modified")}</td>
                             <td>
                               <Form.Control
                                 plaintext
                                 readOnly
-                                defaultValue={state.modified ? state.modified.slice(0, 10) + ' ' + state.modified.slice(11, 19) : ''}
+                                defaultValue={state.modified ? state.modified.slice(0, 10) + " " + state.modified.slice(11, 19) : ""}
                               />
                             </td>
                           </tr>

@@ -1,6 +1,6 @@
-import apiInstance from '../api';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
-import setAlert from '../../utils/setAlert';
+import apiInstance from "../api";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
+import setAlert from "../../utils/setAlert";
 
 const getMinifiedState = () => {
   //el parametro es para completar la url con el numero de pagina
@@ -11,7 +11,7 @@ const getMinifiedState = () => {
       return response.data;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'state');
+      setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };
@@ -20,12 +20,12 @@ const getStates = (currentPage, filters, order) => {
   //el parametro es para completar la url con el numero de pagina
   let messageError = `No se pudo recuperar la informacion de los estados`;
   return apiInstance
-    .get(COMPONENT_URL.state + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.state + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'state');
+      setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };
@@ -59,25 +59,25 @@ const postState = (name, attended, solved, active, description, children) => {
       children: children
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'state');
+      setAlert(messageSuccess, "success", "state");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
+      let statusText = "";
       if (error.response.status === 400) {
-        console.log('status 400');
-        if (error.response.data.attended && error.response.data.attended[0] === 'Must be a valid boolean.') {
+        console.log("status 400");
+        if (error.response.data.attended && error.response.data.attended[0] === "Must be a valid boolean.") {
           statusText = "Debe ingresar un valor en el campo 'Atendido'.";
-        } else if (error.response.data.solved && error.response.data.solved[0] === 'Must be a valid boolean.') {
+        } else if (error.response.data.solved && error.response.data.solved[0] === "Must be a valid boolean.") {
           statusText = "Debe ingresar un valor en el campo 'Resuelto'.";
-        } else if (error.response.data.slug && error.response.data.slug[0].includes('Ya existe una entidad State con slug')) {
-          statusText = 'Ingrese un nombre diferente.';
-          console.log('Error de slug');
+        } else if (error.response.data.slug && error.response.data.slug[0].includes("Ya existe una entidad State con slug")) {
+          statusText = "Ingrese un nombre diferente.";
+          console.log("Error de slug");
         }
       }
 
       messageError += statusText;
-      setAlert(messageError, 'error', 'state');
+      setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };
@@ -94,24 +94,24 @@ const putState = (url, name, attended, solved, active, description, children) =>
       children: JSON.stringify(children)
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'state');
+      setAlert(messageSuccess, "success", "state");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
+      let statusText = "";
       if (error.response.status === 400) {
-        console.log('status 400');
-        if (error.response.data.attended && error.response.data.attended[0] === 'Must be a valid boolean.') {
+        console.log("status 400");
+        if (error.response.data.attended && error.response.data.attended[0] === "Must be a valid boolean.") {
           statusText = "Debe ingresar un valor en el campo 'Atendido'.";
-        } else if (error.response.data.solved && error.response.data.solved[0] === 'Must be a valid boolean.') {
+        } else if (error.response.data.solved && error.response.data.solved[0] === "Must be a valid boolean.") {
           statusText = "Debe ingresar un valor en el campo 'Resuelto'.";
-        } else if (error.response.data.slug && error.response.data.slug[0].includes('Ya existe una entidad State con slug')) {
-          statusText = 'Ingrese un nombre diferente.';
+        } else if (error.response.data.slug && error.response.data.slug[0].includes("Ya existe una entidad State con slug")) {
+          statusText = "Ingrese un nombre diferente.";
         }
       }
 
       messageError += statusText;
-      setAlert(messageError, 'error', 'state');
+      setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };
@@ -124,21 +124,21 @@ const deleteState = (url, name) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'state');
+      setAlert(messageSuccess, "success", "state");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
+      let statusText = "";
       if (
         error.response.data.error &&
         error.response.data.error[0].includes(
           "Cannot delete some instances of model 'State' because they are referenced through protected foreign keys"
         )
       ) {
-        statusText = ', esta referenciado.';
+        statusText = ", esta referenciado.";
       }
       messageError += statusText;
-      setAlert(messageError, 'error', 'state');
+      setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };
@@ -151,11 +151,11 @@ const isActive = (url, active) => {
       active: active
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'state');
+      setAlert(messageSuccess, "success", "state");
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'state');
+      setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };
@@ -168,7 +168,7 @@ const getState = (url) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'state');
+      setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };

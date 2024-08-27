@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Badge, Button, Card, Col, Collapse, Row } from 'react-bootstrap';
-import CrudButton from '../../components/Button/CrudButton';
-import TableCase from './components/TableCase';
-import { getCases, mergeCase } from '../../api/services/cases';
-import { getMinifiedPriority } from '../../api/services/priorities';
-import { getMinifiedTlp } from '../../api/services/tlp';
-import { getMinifiedUser } from '../../api/services/users';
-import { getMinifiedState } from '../../api/services/states';
-import { Link } from 'react-router-dom';
-import Navigation from '../../components/Navigation/Navigation';
-import Search from '../../components/Search/Search';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import ModalConfirm from '../../components/Modal/ModalConfirm';
-import Alert from '../../components/Alert/Alert';
-import ButtonFilter from '../../components/Button/ButtonFilter';
-import FilterSelectUrl from '../../components/Filter/FilterSelectUrl';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Badge, Button, Card, Col, Collapse, Row } from "react-bootstrap";
+import CrudButton from "../../components/Button/CrudButton";
+import TableCase from "./components/TableCase";
+import { getCases, mergeCase } from "../../api/services/cases";
+import { getMinifiedPriority } from "../../api/services/priorities";
+import { getMinifiedTlp } from "../../api/services/tlp";
+import { getMinifiedUser } from "../../api/services/users";
+import { getMinifiedState } from "../../api/services/states";
+import { Link } from "react-router-dom";
+import Navigation from "../../components/Navigation/Navigation";
+import Search from "../../components/Search/Search";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import ModalConfirm from "../../components/Modal/ModalConfirm";
+import Alert from "../../components/Alert/Alert";
+import ButtonFilter from "../../components/Button/ButtonFilter";
+import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
+import { useTranslation } from "react-i18next";
 
 const ListCase = () => {
   const [cases, setCases] = useState([]); //lista de casos
@@ -34,18 +34,18 @@ const ListCase = () => {
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   //filters
-  const [order, setOrder] = useState('-date');
-  const [wordToSearch, setWordToSearch] = useState('');
+  const [order, setOrder] = useState("-date");
+  const [wordToSearch, setWordToSearch] = useState("");
   const [open, setOpen] = useState(false);
 
   const [priorities, setPriorities] = useState([]);
-  const [priorityFilter, setPriorityFilter] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState("");
 
-  const [tlpFilter, setTlpFilter] = useState('');
+  const [tlpFilter, setTlpFilter] = useState("");
   const [tlps, setTlps] = useState([]);
 
   const [states, setStates] = useState([]);
-  const [stateFilter, setStateFilter] = useState('');
+  const [stateFilter, setStateFilter] = useState("");
 
   //url by name
   const [priorityNames, setPriorityNames] = useState({});
@@ -162,7 +162,7 @@ const ListCase = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="case" />
       <Row>
-        <Navigation actualPosition={t('ngen.case_other')} />
+        <Navigation actualPosition={t("ngen.case_other")} />
       </Row>
       <Row>
         <Col>
@@ -173,11 +173,11 @@ const ListCase = () => {
                   <ButtonFilter open={open} setOpen={setOpen} />
                 </Col>
                 <Col sm={1} lg={6}>
-                  <Search type={t('ngen.case_one')} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+                  <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
                 </Col>
                 <Col>
                   <Link to="/cases/create">
-                    <CrudButton type="create" name={t('ngen.case_one')} />
+                    <CrudButton type="create" name={t("ngen.case_one")} />
                   </Link>
 
                   <Button
@@ -215,7 +215,7 @@ const ListCase = () => {
                     <Col sm={4} lg={4}>
                       <FilterSelectUrl
                         options={priorities}
-                        itemName={t('ngen.priority_one')}
+                        itemName={t("ngen.priority_one")}
                         partOfTheUrl="priority"
                         itemFilter={priorityFilter}
                         itemFilterSetter={setPriorityFilter}
@@ -226,7 +226,7 @@ const ListCase = () => {
                     <Col sm={4} lg={4}>
                       <FilterSelectUrl
                         options={tlps}
-                        itemName={t('ngen.tlp')}
+                        itemName={t("ngen.tlp")}
                         partOfTheUrl="tlp"
                         itemFilter={tlpFilter}
                         itemFilterSetter={setTlpFilter}
@@ -237,7 +237,7 @@ const ListCase = () => {
                     <Col sm={4} lg={4}>
                       <FilterSelectUrl
                         options={states}
-                        itemName={t('ngen.state_one')}
+                        itemName={t("ngen.state_one")}
                         partOfTheUrl="state"
                         itemFilter={stateFilter}
                         itemFilterSetter={setStateFilter}
@@ -292,7 +292,7 @@ const ListCase = () => {
       </Row>
       <ModalConfirm
         type="merge"
-        component={t('ngen.case_other')}
+        component={t("ngen.case_other")}
         name={selectedCases}
         showModal={showModal}
         onHide={() => setShowModal(false)}

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, Row } from 'react-bootstrap';
-import DropdownState from '../../components/Dropdown/DropdownState';
-import { useLocation } from 'react-router-dom';
-import Alert from '../../components/Alert/Alert';
-import Navigation from '../../components/Navigation/Navigation';
-import { validateDescription, validateName, validateType, validateUnrequiredInput } from '../../utils/validators/taxonomy';
-import { getMinifiedTaxonomy, putTaxonomy } from '../../api/services/taxonomies';
-import SelectLabel from '../../components/Select/SelectLabel';
-import { useTranslation } from 'react-i18next';
-import { getMinifiedTaxonomyGroups } from '../../api/services/taxonomyGroups';
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import DropdownState from "../../components/Dropdown/DropdownState";
+import { useLocation } from "react-router-dom";
+import Alert from "../../components/Alert/Alert";
+import Navigation from "../../components/Navigation/Navigation";
+import { validateDescription, validateName, validateType, validateUnrequiredInput } from "../../utils/validators/taxonomy";
+import { getMinifiedTaxonomy, putTaxonomy } from "../../api/services/taxonomies";
+import SelectLabel from "../../components/Select/SelectLabel";
+import { useTranslation } from "react-i18next";
+import { getMinifiedTaxonomyGroups } from "../../api/services/taxonomyGroups";
 
 const EditTaxonomy = () => {
   const location = useLocation();
@@ -41,7 +41,7 @@ const EditTaxonomy = () => {
   useEffect(() => {
     getMinifiedTaxonomy().then((response) => {
       let listTaxonomies = [];
-      listTaxonomies.push({ value: '', label: '' });
+      listTaxonomies.push({ value: "", label: "" });
       response.forEach((taxonomy) => {
         listTaxonomies.push({ value: taxonomy.url, label: taxonomy.name });
       });
@@ -116,7 +116,7 @@ const EditTaxonomy = () => {
   const editTaxonomy = () => {
     putTaxonomy(taxonomy.url, type, name, description, active, parent, alias_of, needs_review, group)
       .then(() => {
-        window.location.href = '/taxonomies';
+        window.location.href = "/taxonomies";
       })
       .catch((error) => {
         console.log(error);
@@ -130,16 +130,16 @@ const EditTaxonomy = () => {
 
   let typeOption = [
     {
-      value: 'vulnerability',
-      label: t('ngen.vulnerability')
+      value: "vulnerability",
+      label: t("ngen.vulnerability")
     },
     {
-      value: 'incident',
-      label: t('ngen.incident')
+      value: "incident",
+      label: t("ngen.incident")
     },
     {
-      value: 'other',
-      label: t('ngen.other')
+      value: "other",
+      label: t("ngen.other")
     }
   ];
 
@@ -147,13 +147,13 @@ const EditTaxonomy = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="taxonomy" />
       <Row>
-        <Navigation actualPosition={t('w.edit') + ' ' + t('ngen.taxonomy_one')} path="/taxonomies" index="Taxonomia" />
+        <Navigation actualPosition={t("w.edit") + " " + t("ngen.taxonomy_one")} path="/taxonomies" index="Taxonomia" />
       </Row>
       <Row>
         <Col sm={12}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">{t('ngen.taxonomy_one')}</Card.Title>
+              <Card.Title as="h5">{t("ngen.taxonomy_one")}</Card.Title>
             </Card.Header>
             <Card.Body>
               <Form>
@@ -161,8 +161,8 @@ const EditTaxonomy = () => {
                   <Col sm={12} lg={6}>
                     <Form.Group>
                       <Form.Label>
-                        {t('ngen.name_one')}
-                        <b style={{ color: 'red' }}>*</b>
+                        {t("ngen.name_one")}
+                        <b style={{ color: "red" }}>*</b>
                       </Form.Label>
                       <Form.Control
                         type="text"
@@ -170,7 +170,7 @@ const EditTaxonomy = () => {
                         onChange={(e) => setName(e.target.value)}
                         isInvalid={!validateName(name)}
                       />
-                      {validateName(name) ? '' : <div className="invalid-feedback">{t('ngen.name.invalid')}</div>}
+                      {validateName(name) ? "" : <div className="invalid-feedback">{t("ngen.name.invalid")}</div>}
                     </Form.Group>
                   </Col>
                   <Col sm={12} lg={4}>
@@ -179,19 +179,19 @@ const EditTaxonomy = () => {
                       setSelect={setSelectedType}
                       options={typeOption}
                       value={selectedType}
-                      placeholder={t('ngen.type')}
+                      placeholder={t("ngen.type")}
                       required={true}
                     />
                   </Col>
                   <Col sm={12} lg={1}>
                     <Form.Group>
-                      <Form.Label>{t('ngen.state_one')}</Form.Label>
+                      <Form.Label>{t("ngen.state_one")}</Form.Label>
                       <DropdownState state={taxonomy.active} setActive={setActive}></DropdownState>
                     </Form.Group>
                   </Col>
                   <Col sm={12} lg={1}>
                     <Form.Group>
-                      <Form.Label>{t('ngen.taxonomy.needs_review')}</Form.Label>
+                      <Form.Label>{t("ngen.taxonomy.needs_review")}</Form.Label>
                       <DropdownState state={taxonomy.needs_review} setActive={setNeeds_review} str_true="w.yes" str_false="w.no" />
                     </Form.Group>
                   </Col>
@@ -203,9 +203,9 @@ const EditTaxonomy = () => {
                       setSelect={setSelectParent}
                       options={taxonomies}
                       value={selectParent}
-                      placeholder={t('ngen.taxonomy.parent')}
+                      placeholder={t("ngen.taxonomy.parent")}
                       required={false}
-                      legend={t('ngen.taxonomy.parent.legend.edit')}
+                      legend={t("ngen.taxonomy.parent.legend.edit")}
                     />
                   </Col>
                   <Col sm={12} lg={4}>
@@ -215,9 +215,9 @@ const EditTaxonomy = () => {
                       options={groups}
                       disabled={isGroupDisabled}
                       value={selectGroup}
-                      placeholder={t('ngen.taxonomy.group')}
+                      placeholder={t("ngen.taxonomy.group")}
                       required={false}
-                      legend={t('ngen.taxonomy.group.legend.edit')}
+                      legend={t("ngen.taxonomy.group.legend.edit")}
                     />
                   </Col>
                   <Col sm={12} lg={4}>
@@ -226,7 +226,7 @@ const EditTaxonomy = () => {
                       setSelect={setSelectAlias_of}
                       options={taxonomies}
                       value={selectAlias_of}
-                      placeholder={t('ngen.taxonomy.alias_of')}
+                      placeholder={t("ngen.taxonomy.alias_of")}
                       required={false}
                     />
                   </Col>
@@ -234,7 +234,7 @@ const EditTaxonomy = () => {
                 <Row>
                   <Col sm={12} lg={12}>
                     <Form.Group>
-                      <Form.Label>{t('ngen.description')}</Form.Label>
+                      <Form.Label>{t("ngen.description")}</Form.Label>
                       <Form.Control
                         as="textarea"
                         rows={3}
@@ -242,22 +242,22 @@ const EditTaxonomy = () => {
                         onChange={(e) => setDescription(e.target.value)}
                         isInvalid={validateUnrequiredInput(description) ? !validateDescription(description) : false}
                       />
-                      {validateDescription(description) ? '' : <div className="invalid-feedback">{t('ngen.description.invalid')}</div>}
+                      {validateDescription(description) ? "" : <div className="invalid-feedback">{t("ngen.description.invalid")}</div>}
                     </Form.Group>
                   </Col>
                 </Row>
                 <Form.Group as={Col}>
-                  {validateType(type) && validateName(name) && name !== '' ? (
+                  {validateType(type) && validateName(name) && name !== "" ? (
                     <Button variant="primary" onClick={editTaxonomy}>
-                      {t('button.save')}
+                      {t("button.save")}
                     </Button>
                   ) : (
                     <Button variant="primary" disabled>
-                      {t('button.save')}
+                      {t("button.save")}
                     </Button>
                   )}
                   <Button variant="info" href="/taxonomies">
-                    {t('button.close')}
+                    {t("button.close")}
                   </Button>
                 </Form.Group>
               </Form>

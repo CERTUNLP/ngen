@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Row } from 'react-bootstrap';
-import FormEvent from './components/FormEvent';
-import Navigation from '../../components/Navigation/Navigation';
-import { getEvent, patchEvent, putEvent } from '../../api/services/events';
-import { useLocation } from 'react-router-dom';
-import Alert from '../../components/Alert/Alert';
-import { getMinifiedTlp } from '../../api/services/tlp';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
-import { getMinifiedFeed } from '../../api/services/feeds';
-import { getMinifiedPriority } from '../../api/services/priorities';
-import { deleteEvidence } from '../../api/services/evidences';
-import { getMinifiedUser } from '../../api/services/users';
-import { getMinifiedArtifact } from '../../api/services/artifact';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Row } from "react-bootstrap";
+import FormEvent from "./components/FormEvent";
+import Navigation from "../../components/Navigation/Navigation";
+import { getEvent, patchEvent, putEvent } from "../../api/services/events";
+import { useLocation } from "react-router-dom";
+import Alert from "../../components/Alert/Alert";
+import { getMinifiedTlp } from "../../api/services/tlp";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import { getMinifiedFeed } from "../../api/services/feeds";
+import { getMinifiedPriority } from "../../api/services/priorities";
+import { deleteEvidence } from "../../api/services/evidences";
+import { getMinifiedUser } from "../../api/services/users";
+import { getMinifiedArtifact } from "../../api/services/artifact";
+import { useTranslation } from "react-i18next";
 
 const EditEvent = () => {
   //const [date, setDate] = useState(caseItem.date  != null ? caseItem.date.substring(0,16) : '') //required
@@ -39,7 +39,7 @@ const EditEvent = () => {
   useEffect(() => {
     getEvent(body.url)
       .then((response) => {
-        response.data.case = response.data.case ? response.data.case : '';
+        response.data.case = response.data.case ? response.data.case : "";
         response.data.date = response.data.date.substring(0, 16);
         setBody(response.data);
       })
@@ -149,40 +149,40 @@ const EditEvent = () => {
       }
       //console.log(fecha.toISOString())//YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
 
-      formDataEvent.append('date', body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
+      formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
       //f.append("date", fecha.toISOString())
-      formDataEvent.append('priority', body.priority);
-      formDataEvent.append('tlp', body.tlp);
-      formDataEvent.append('taxonomy', body.taxonomy);
+      formDataEvent.append("priority", body.priority);
+      formDataEvent.append("tlp", body.tlp);
+      formDataEvent.append("taxonomy", body.taxonomy);
       body.artifacts.forEach((item) => {
-        formDataEvent.append('artifacts', item);
+        formDataEvent.append("artifacts", item);
       });
-      formDataEvent.append('feed', body.feed);
-      formDataEvent.append('address_value', body.address_value);
+      formDataEvent.append("feed", body.feed);
+      formDataEvent.append("address_value", body.address_value);
 
-      formDataEvent.append('case', body.case);
+      formDataEvent.append("case", body.case);
 
-      formDataEvent.append('todos', body.todos);
-      formDataEvent.append('comments', body.comments);
+      formDataEvent.append("todos", body.todos);
+      formDataEvent.append("comments", body.comments);
       //f.append("cidr", body.cidr)// 'null' does not appear to be an IPv4 or IPv6 network"
-      formDataEvent.append('notes', body.notes);
+      formDataEvent.append("notes", body.notes);
       //f.append("parent", body.parent) //"Invalid hyperlink - No URL match."]
-      formDataEvent.append('reporter', body.reporter);
+      formDataEvent.append("reporter", body.reporter);
       //f.append("case", body.case) //"Invalid hyperlink - No URL match.
-      formDataEvent.append('tasks', body.tasks);
+      formDataEvent.append("tasks", body.tasks);
 
       if (evidence !== null) {
         for (let index = 0; index < evidence.length; index++) {
-          formDataEvent.append('evidence', evidence[index]);
+          formDataEvent.append("evidence", evidence[index]);
         }
       } else {
-        formDataEvent.append('evidence', evidence);
+        formDataEvent.append("evidence", evidence);
       }
       //formDataEvent.append('artifacts',body.artifacts);
 
       putEvent(body.url, formDataEvent)
         .then(() => {
-          window.location.href = '/events';
+          window.location.href = "/events";
         })
         .catch((error) => {
           setShowAlert(true); //hace falta?
@@ -198,40 +198,40 @@ const EditEvent = () => {
       }
       //console.log(fecha.toISOString())//YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
 
-      formDataEvent.append('date', body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
+      formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
       //f.append("date", fecha.toISOString())
-      formDataEvent.append('priority', body.priority);
-      formDataEvent.append('tlp', body.tlp);
+      formDataEvent.append("priority", body.priority);
+      formDataEvent.append("tlp", body.tlp);
       //formDataEvent.append("taxonomy", body.taxonomy)
       if (body.artifacts.length > 0) {
         body.artifacts.forEach((item) => {
-          formDataEvent.append('artifacts', item);
+          formDataEvent.append("artifacts", item);
         });
       }
       //formDataEvent.append("feed", body.feed)
       //formDataEvent.append("address_value", body.address_value)
-      formDataEvent.append('case', body.case);
-      formDataEvent.append('todos', body.todos);
-      formDataEvent.append('comments', body.comments);
+      formDataEvent.append("case", body.case);
+      formDataEvent.append("todos", body.todos);
+      formDataEvent.append("comments", body.comments);
       //f.append("cidr", body.cidr)// 'null' does not appear to be an IPv4 or IPv6 network"
-      formDataEvent.append('notes', body.notes);
+      formDataEvent.append("notes", body.notes);
       //f.append("parent", body.parent) //"Invalid hyperlink - No URL match."]
-      formDataEvent.append('reporter', body.reporter);
+      formDataEvent.append("reporter", body.reporter);
       //f.append("case", body.case) //"Invalid hyperlink - No URL match.
-      formDataEvent.append('tasks', body.tasks);
+      formDataEvent.append("tasks", body.tasks);
 
       if (evidence !== null) {
         for (let index = 0; index < evidence.length; index++) {
-          formDataEvent.append('evidence', evidence[index]);
+          formDataEvent.append("evidence", evidence[index]);
         }
       } else {
-        formDataEvent.append('evidence', evidence);
+        formDataEvent.append("evidence", evidence);
       }
       //formDataEvent.append('artifacts',body.artifacts);
 
       patchEvent(body.url, formDataEvent)
         .then(() => {
-          window.location.href = '/events';
+          window.location.href = "/events";
         })
         .catch((error) => {
           setShowAlert(true); //hace falta?
@@ -245,7 +245,7 @@ const EditEvent = () => {
       <div>
         <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="event" />
         <Row>
-          <Navigation actualPosition={t('ngen.event.edit')} path="/events" index={t('ngen.event_one')} />
+          <Navigation actualPosition={t("ngen.event.edit")} path="/events" index={t("ngen.event_one")} />
         </Row>
         <FormEvent
           createEvent={editEvent}

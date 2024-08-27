@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import ActiveButton from '../../../components/Button/ActiveButton';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import { putActivationStatus } from '../../../api/services/taxonomies';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import ActiveButton from "../../../components/Button/ActiveButton";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import { putActivationStatus } from "../../../api/services/taxonomies";
+import { useTranslation } from "react-i18next";
 
 function ButtonState({ taxonomy }) {
   const { t } = useTranslation();
@@ -13,7 +13,7 @@ function ButtonState({ taxonomy }) {
   const changeState = (taxonomy) => {
     putActivationStatus(taxonomy.url, !taxonomy.active, taxonomy.name)
       .then(() => {
-        window.location.href = '/taxonomies';
+        window.location.href = "/taxonomies";
       })
       .catch((error) => {
         console.log(error);
@@ -28,7 +28,7 @@ function ButtonState({ taxonomy }) {
       <ActiveButton active={+taxonomy.active} onClick={handleShow} />
       <ModalConfirm
         type="editState"
-        component={t('ngen.taxonomy_one')}
+        component={t("ngen.taxonomy_one")}
         name={taxonomy.name}
         state={+taxonomy.active}
         showModal={show}

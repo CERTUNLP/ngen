@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import CrudButton from '../../components/Button/CrudButton';
-import Navigation from '../../components/Navigation/Navigation';
-import TablePlaybook from './components/TablePlaybook';
-import Search from '../../components/Search/Search';
-import { getPlaybooks } from '../../api/services/playbooks';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
+import React, { useEffect, useState } from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import CrudButton from "../../components/Button/CrudButton";
+import Navigation from "../../components/Navigation/Navigation";
+import TablePlaybook from "./components/TablePlaybook";
+import Search from "../../components/Search/Search";
+import { getPlaybooks } from "../../api/services/playbooks";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 
 const ListPlaybook = () => {
-  const [playbook, setPlaybook] = useState('');
+  const [playbook, setPlaybook] = useState("");
   const [isModify, setIsModify] = useState(null);
 
   const [loading, setLoading] = useState(true);
@@ -22,8 +22,8 @@ const ListPlaybook = () => {
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [taxonomyNames, setTaxonomyNames] = useState({});
 
-  const [wordToSearch, setWordToSearch] = useState('');
-  const [order] = useState('');
+  const [wordToSearch, setWordToSearch] = useState("");
+  const [order] = useState("");
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
@@ -60,7 +60,7 @@ const ListPlaybook = () => {
   return (
     <React.Fragment>
       <Row>
-        <Navigation actualPosition={'Playbook'} />
+        <Navigation actualPosition={"Playbook"} />
       </Row>
       <Row>
         <Col>

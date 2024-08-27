@@ -1,18 +1,18 @@
-import apiInstance from '../api';
-import setAlert from '../../utils/setAlert';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
+import apiInstance from "../api";
+import setAlert from "../../utils/setAlert";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
 
 const getReports = (currentPage, filters, order) => {
   let messageError = `No se ha recuperado la informacion del reporte. `;
   return apiInstance
-    .get(COMPONENT_URL.report + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.report + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'report');
+      setAlert(messageError, "error", "report");
       return Promise.reject(error);
     });
 };
@@ -26,7 +26,7 @@ const getReport = (url) => {
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'report');
+      setAlert(messageError, "error", "report");
       return Promise.reject(error);
     });
 };
@@ -60,21 +60,21 @@ const postReport = (problem, derived_problem, verification, recommendations, mor
       taxonomy: taxonomy
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'report');
+      setAlert(messageSuccess, "success", "report");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
+      let statusText = "";
       if (error.response.status === 400) {
         if (
           error.response.data.non_field_errors &&
-          error.response.data.non_field_errors[0] === 'The fields lang, taxonomy must make a unique set.'
+          error.response.data.non_field_errors[0] === "The fields lang, taxonomy must make a unique set."
         ) {
-          statusText = 'Ya existe para esa taxonomia en ese idioma.';
+          statusText = "Ya existe para esa taxonomia en ese idioma.";
         }
       }
       messageError += statusText;
-      setAlert(messageError, 'error', 'report');
+      setAlert(messageError, "error", "report");
       return Promise.reject(error);
     });
 };
@@ -93,21 +93,21 @@ const putReport = (url, problem, derived_problem, verification, recommendations,
       taxonomy: taxonomy
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'report');
+      setAlert(messageSuccess, "success", "report");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
+      let statusText = "";
       if (error.response.status === 400) {
         if (
           error.response.data.non_field_errors &&
-          error.response.data.non_field_errors[0] === 'The fields lang, taxonomy must make a unique set.'
+          error.response.data.non_field_errors[0] === "The fields lang, taxonomy must make a unique set."
         ) {
-          statusText = 'ya existe esa taxonomia con ese idioma ';
+          statusText = "ya existe esa taxonomia con ese idioma ";
         }
       }
       messageError += statusText;
-      setAlert(messageError, 'error', 'report');
+      setAlert(messageError, "error", "report");
       return Promise.reject(error);
     });
 };
@@ -118,13 +118,13 @@ const deleteReport = (url) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'report');
+      setAlert(messageSuccess, "success", "report");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'report');
+      setAlert(messageError, "error", "report");
       return Promise.reject(error);
     });
 };

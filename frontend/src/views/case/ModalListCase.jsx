@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Modal, Row } from 'react-bootstrap';
-import Search from '../../components/Search/Search';
-import FilterSelectUrl from '../../components/Filter/FilterSelectUrl';
-import TableCase from './components/TableCase';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import { getCases } from '../../api/services/cases';
-import { useTranslation } from 'react-i18next';
-import './ModalListCase.css';
-import Alert from '../../components/Alert/Alert';
+import React, { useEffect, useState } from "react";
+import { Button, Col, Modal, Row } from "react-bootstrap";
+import Search from "../../components/Search/Search";
+import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
+import TableCase from "./components/TableCase";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import { getCases } from "../../api/services/cases";
+import { useTranslation } from "react-i18next";
+import "./ModalListCase.css";
+import Alert from "../../components/Alert/Alert";
 
 const ModalListCase = (props) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState('-date');
+  const [order, setOrder] = useState("-date");
 
   const [cases, setCases] = useState([]);
   const [countItems, setCountItems] = useState(0);
@@ -53,14 +53,14 @@ const ModalListCase = (props) => {
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>{t('ngen.case_link')}</Modal.Title>
+        <Modal.Title>{t("ngen.case_link")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {showAlert && <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="case" />}
         <Row>
           <Col sm={12} lg={12}>
             <Search
-              type={t('ngen.case_one')}
+              type={t("ngen.case_one")}
               setWordToSearch={props.setWordToSearch}
               wordToSearch={props.wordToSearch}
               setLoading={setLoading}
@@ -72,7 +72,7 @@ const ModalListCase = (props) => {
           <Col sm={4} lg={4}>
             <FilterSelectUrl
               options={props.priorities}
-              itemName={t('ngen.priority_one')}
+              itemName={t("ngen.priority_one")}
               partOfTheUrl="priority"
               itemFilter={props.priorityFilter}
               itemFilterSetter={props.setPriorityFilter}
@@ -83,7 +83,7 @@ const ModalListCase = (props) => {
           <Col sm={4} lg={4}>
             <FilterSelectUrl
               options={props.tlp}
-              itemName={t('ngen.tlp')}
+              itemName={t("ngen.tlp")}
               partOfTheUrl="tlp"
               itemFilter={props.tlpFilter}
               itemFilterSetter={props.setTlpFilter}
@@ -94,7 +94,7 @@ const ModalListCase = (props) => {
           <Col sm={4} lg={4}>
             <FilterSelectUrl
               options={props.allStates}
-              itemName={t('ngen.state_one')}
+              itemName={t("ngen.state_one")}
               partOfTheUrl="state"
               itemFilter={props.stateFilter}
               itemFilterSetter={props.setStateFilter}
@@ -146,10 +146,10 @@ const ModalListCase = (props) => {
       </Modal.Footer>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={props.linkCaseToEvent}>
-          {t('button.link')}
+          {t("button.link")}
         </Button>
         <Button variant="outline-secondary" onClick={props.closeModal}>
-          {t('button.cancel')}
+          {t("button.cancel")}
         </Button>
       </Modal.Footer>
     </Modal>

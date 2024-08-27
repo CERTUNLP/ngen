@@ -5,14 +5,14 @@ const validateEmail = (email) => {
 };
 
 const validateFieldText = (text) => {
-  if (text === '') {
+  if (text === "") {
     return true;
   }
   return /^[A-Za-zÁÉÍÓÚáéíóúñÑ' ]+$/g.test(text);
 };
 
 const validateUsername = (text) => {
-  if (text === '') {
+  if (text === "") {
     return true;
   }
   return /^[a-zA-Z0-9@.+_-]+$/.test(text);
@@ -22,7 +22,7 @@ const validateSpaces = (text) => {
   return !/ /.test(text);
 };
 const validateSpace = (text) => {
-  return text.trim() !== '';
+  return text.trim() !== "";
 };
 
 const validateLength = (text, maxLength) => {
@@ -34,7 +34,7 @@ const isEmpty = (text) => {
 };
 
 const isBlank = (text) => {
-  return text === '';
+  return text === "";
 };
 
 const isNull = (text) => {
@@ -42,14 +42,14 @@ const isNull = (text) => {
 };
 
 const validateAlphanumeric = (text) => {
-  if (text === '') {
+  if (text === "") {
     return true;
   }
   return /^[A-Za-zÁÉÍÓÚáéíóúñÑ'0-9 ]+$/g.test(text);
 };
 
 const validateNumbers = (text) => {
-  if (text === '') {
+  if (text === "") {
     return true;
   }
   return /^[0-9]+$/g.test(text);
@@ -67,14 +67,14 @@ const validateMinutes = (minutes) => {
 };
 
 const validateNumber = (number) => {
-  if (number === '') {
+  if (number === "") {
     return true;
   }
   return /^[0-9]+$/g.test(number);
 };
 
 const validateCidr = (address) => {
-  var ipCidr = require('ip-cidr');
+  var ipCidr = require("ip-cidr");
   var cidr = null;
 
   try {
@@ -94,7 +94,7 @@ const validateIP = (ip) => {
     return false; // No coincide con el formato xxx.xxx.xxx.xxx
   }
 
-  const octets = ip.split('.');
+  const octets = ip.split(".");
   for (let i = 0; i < octets.length; i++) {
     const octet = parseInt(octets[i], 10);
     if (octet < 0 || octet > 255) {

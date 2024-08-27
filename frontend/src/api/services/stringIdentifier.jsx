@@ -1,5 +1,5 @@
-import apiInstance from '../api';
-import { COMPONENT_URL } from '../../config/constant';
+import apiInstance from "../api";
+import { COMPONENT_URL } from "../../config/constant";
 
 const postStringIdentifier = (identifier) => {
   return apiInstance

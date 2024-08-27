@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Row } from 'react-bootstrap';
-import FormCase from './components/FormCase';
-import Navigation from '../../components/Navigation/Navigation';
-import { getAllStates } from '../../api/services/states';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Row } from "react-bootstrap";
+import FormCase from "./components/FormCase";
+import Navigation from "../../components/Navigation/Navigation";
+import { getAllStates } from "../../api/services/states";
+import { useTranslation } from "react-i18next";
 
 const CreateCase = () => {
   const [allStates, setAllStates] = useState([]); //multiselect
   const [stateName, setStatesName] = useState([]);
 
   const caseItem = {
-    lifecycle: '', //required
-    priority: '', //required
-    tlp: '', //required
-    state: '', //required
+    lifecycle: "", //required
+    priority: "", //required
+    tlp: "", //required
+    state: "", //required
     date: null, //required
-    name: '',
+    name: "",
     parent: null,
     assigned: null,
     attend_date: null, //imprime la hora actual +3horas
@@ -51,13 +51,13 @@ const CreateCase = () => {
   return (
     <React.Fragment>
       <Row>
-        <Navigation actualPosition={t('button.case_create')} path="/cases" index={t('ngen.case_other')} />
+        <Navigation actualPosition={t("button.case_create")} path="/cases" index={t("ngen.case_other")} />
       </Row>
       <FormCase
         caseItem={caseItem}
         allStates={allStates}
         edit={false}
-        save={t('button.case_create')}
+        save={t("button.case_create")}
         evidenceColum={true}
         stateName={stateName}
         setStatesName={setStatesName}

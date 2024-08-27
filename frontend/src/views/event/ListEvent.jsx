@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Badge, Button, Card, Col, Collapse, Form, Modal, Row } from 'react-bootstrap';
-import Navigation from '../../components/Navigation/Navigation';
-import Search from '../../components/Search/Search';
-import CrudButton from '../../components/Button/CrudButton';
-import TableEvents from './components/TableEvents';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Badge, Button, Card, Col, Collapse, Form, Modal, Row } from "react-bootstrap";
+import Navigation from "../../components/Navigation/Navigation";
+import Search from "../../components/Search/Search";
+import CrudButton from "../../components/Button/CrudButton";
+import TableEvents from "./components/TableEvents";
 //filters
-import FilterSelectUrl from '../../components/Filter/FilterSelectUrl';
-import FilterSelect from '../../components/Filter/FilterSelect';
-import FilterSelectWithDefault from '../../components/Filter/FilterSelectWithDefault';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import ModalConfirm from '../../components/Modal/ModalConfirm';
-import Alert from '../../components/Alert/Alert';
-import ButtonFilter from '../../components/Button/ButtonFilter';
-import { patchCase } from '../../api/services/cases';
+import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
+import FilterSelect from "../../components/Filter/FilterSelect";
+import FilterSelectWithDefault from "../../components/Filter/FilterSelectWithDefault";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import ModalConfirm from "../../components/Modal/ModalConfirm";
+import Alert from "../../components/Alert/Alert";
+import ButtonFilter from "../../components/Button/ButtonFilter";
+import { patchCase } from "../../api/services/cases";
 //filters
-import { getEvents, mergeEvent } from '../../api/services/events';
-import { getMinifiedFeed } from '../../api/services/feeds';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
-import { getMinifiedTlp } from '../../api/services/tlp';
-import { getMinifiedState } from '../../api/services/states';
-import ModalCreateCase from '../case/ModalCreateCase';
-import ModalListCase from '../case/ModalListCase';
-import { getMinifiedPriority } from '../../api/services/priorities';
-import ModalReadCase from '../case/ModalReadCase';
-import { getMinifiedUser } from '../../api/services/users';
-import { useTranslation } from 'react-i18next';
+import { getEvents, mergeEvent } from "../../api/services/events";
+import { getMinifiedFeed } from "../../api/services/feeds";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import { getMinifiedTlp } from "../../api/services/tlp";
+import { getMinifiedState } from "../../api/services/states";
+import ModalCreateCase from "../case/ModalCreateCase";
+import ModalListCase from "../case/ModalListCase";
+import { getMinifiedPriority } from "../../api/services/priorities";
+import ModalReadCase from "../case/ModalReadCase";
+import { getMinifiedUser } from "../../api/services/users";
+import { useTranslation } from "react-i18next";
 
 const ListEvent = () => {
   const { t } = useTranslation();
@@ -50,32 +50,32 @@ const ListEvent = () => {
   const [selectedEvent, setSelectedEvent] = useState([]);
   const [showModal, setShowModal] = useState(false);
   //filters and search
-  const [wordToSearch, setWordToSearch] = useState('');
-  const [taxonomyFilter, setTaxonomyFilter] = useState('');
+  const [wordToSearch, setWordToSearch] = useState("");
+  const [taxonomyFilter, setTaxonomyFilter] = useState("");
 
-  const [tlpFilter, setTlpFilter] = useState('');
-  const [feedFilter, setFeedFilter] = useState('');
+  const [tlpFilter, setTlpFilter] = useState("");
+  const [feedFilter, setFeedFilter] = useState("");
 
   const [tlpList, setTlpList] = useState([]);
   const [taxonomies, setTaxonomies] = useState([]);
   const [feeds, setFeeds] = useState([]);
 
-  const [order, setOrder] = useState('-modified');
-  const [starDateFilter, setStarDateFilter] = useState('');
-  const [endDateFilter, setEndDateFilter] = useState('');
-  const [starDate, setStarDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [order, setOrder] = useState("-modified");
+  const [starDateFilter, setStarDateFilter] = useState("");
+  const [endDateFilter, setEndDateFilter] = useState("");
+  const [starDate, setStarDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [filterDate, setFilterDate] = useState(false);
   const [open, setOpen] = useState(false);
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const types = [
-    { value: 'true', label: t('w.not_assigned') },
-    { value: 'false', label: t('w.assigned') }
+    { value: "true", label: t("w.not_assigned") },
+    { value: "false", label: t("w.assigned") }
   ];
-  const [caseIsNull, setCaseIsNull] = useState('');
-  const [parentIsNull, setParentIsNull] = useState('');
-  const [valueParentIsNull, setValueParentIsNull] = useState({ value: 'true', label: t('w.not_assigned') });
+  const [caseIsNull, setCaseIsNull] = useState("");
+  const [parentIsNull, setParentIsNull] = useState("");
+  const [valueParentIsNull, setValueParentIsNull] = useState({ value: "true", label: t("w.not_assigned") });
   //add to cases
   const [openCases] = useState(true);
 
@@ -86,12 +86,12 @@ const ListEvent = () => {
   const [showModalListCase, setShowModalListCase] = useState(false);
 
   const caseItem = {
-    lifecycle: '', //required
-    priority: '', //required
-    tlp: '', //required
-    state: '', //required
+    lifecycle: "", //required
+    priority: "", //required
+    tlp: "", //required
+    state: "", //required
     date: null, //required
-    name: '',
+    name: "",
     parent: null,
     assigned: null,
     attend_date: null, //imprime la hora actual +3horas
@@ -110,11 +110,11 @@ const ListEvent = () => {
 
   //case variables
   const [currentPageCase, setCurrentPageCase] = useState(1);
-  const [tlpFilterCase, setTlpFilterCase] = useState('');
-  const [wordToSearchCase, setWordToSearchCase] = useState('');
-  const [stateFilter, setStateFilter] = useState('');
-  const [priorityFilter, setPriorityFilter] = useState('');
-  const [selectCase, setSelectCase] = useState(''); //puede que se use en el multiselect, tengo ver bien cual es su utilidad
+  const [tlpFilterCase, setTlpFilterCase] = useState("");
+  const [wordToSearchCase, setWordToSearchCase] = useState("");
+  const [stateFilter, setStateFilter] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("");
+  const [selectCase, setSelectCase] = useState(""); //puede que se use en el multiselect, tengo ver bien cual es su utilidad
   const [updatePaginationCase, setUpdatePaginationCase] = useState(false);
 
   useEffect(() => {
@@ -251,8 +251,8 @@ const ListEvent = () => {
 
   const completeDateStar = (date) => {
     setStarDate(date);
-    setStarDateFilter('created_range_after=' + date + '&');
-    if (endDateFilter !== '' && starDateFilter !== 'created_range_after=' + date + '&') {
+    setStarDateFilter("created_range_after=" + date + "&");
+    if (endDateFilter !== "" && starDateFilter !== "created_range_after=" + date + "&") {
       // este if esta porque si no hay cambios en el WordToSearch
       //haciendo que no se vuelva a ejecutar el useEffect y qeu al setearce setloading en true quede en un bucle infinito
       setFilterDate(true);
@@ -262,8 +262,8 @@ const ListEvent = () => {
 
   const completeDateEnd = (date) => {
     setEndDate(date);
-    setEndDateFilter('created_range_before=' + date + '&');
-    if (endDateFilter !== 'created_range_before=' + date + '&' && starDateFilter !== '') {
+    setEndDateFilter("created_range_before=" + date + "&");
+    if (endDateFilter !== "created_range_before=" + date + "&" && starDateFilter !== "") {
       // este if esta porque si no hay cambios en el WordToSearch
       //haciendo que no se vuelva a ejecutar el useEffect y qeu al setearce setloading en true quede en un bucle infinito
       setFilterDate(true);
@@ -286,10 +286,10 @@ const ListEvent = () => {
     setShowModalListCase(false);
     //setUpdatePagination(true)
     setCurrentPageCase(1);
-    setTlpFilterCase('');
-    setPriorityFilter('');
-    setStateFilter('');
-    setWordToSearchCase('');
+    setTlpFilterCase("");
+    setPriorityFilter("");
+    setStateFilter("");
+    setWordToSearchCase("");
   }
 
   const handleClickRadio = (event, url, name, date, priority, tlp, state, user) => {
@@ -315,11 +315,11 @@ const ListEvent = () => {
   };
 
   const modalCaseDetail = (url, name, date, priority, tlp, state, user) => {
-    localStorage.setItem('case', url);
+    localStorage.setItem("case", url);
     setModalShowCase(true);
     setShowModalListCase(false);
-    localStorage.setItem('navigation', false);
-    localStorage.setItem('button return', false);
+    localStorage.setItem("navigation", false);
+    localStorage.setItem("button return", false);
     setCaseToLink({
       value: url,
       name: name,
@@ -339,15 +339,15 @@ const ListEvent = () => {
   const linkCaseToEvent = () => {
     patchCase(caseToLink.value, selectedEvent).then((response) => {
       setSelectedEvent([]);
-      setSelectedCases('');
+      setSelectedCases("");
       setIfModify(response);
       setShowModalListCase(false);
       setModalShowCase(false);
       setCurrentPageCase(1);
-      setTlpFilterCase('');
-      setPriorityFilter('');
-      setStateFilter('');
-      setWordToSearchCase('');
+      setTlpFilterCase("");
+      setPriorityFilter("");
+      setStateFilter("");
+      setWordToSearchCase("");
       setUpdatePaginationCase(true);
     });
   };
@@ -355,7 +355,7 @@ const ListEvent = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="event" />
       <Row>
-        <Navigation actualPosition={t('ngen.event_other')} />
+        <Navigation actualPosition={t("ngen.event_other")} />
       </Row>
       <Card>
         <Card.Header>
@@ -365,7 +365,7 @@ const ListEvent = () => {
             </Col>
             <Col sm={8} lg={4}>
               <Search
-                type={t('search.taxonomy_feed_affectedresource')}
+                type={t("search.taxonomy_feed_affectedresource")}
                 setWordToSearch={setWordToSearch}
                 wordToSearch={wordToSearch}
                 setLoading={setLoading}
@@ -373,7 +373,7 @@ const ListEvent = () => {
             </Col>
             <Col>
               <Link to="/events/create">
-                <CrudButton type="create" name={t('ngen.event_one')} />
+                <CrudButton type="create" name={t("ngen.event_one")} />
               </Link>
               <Button
                 disabled={selectedEvent.length > 1 ? false : true}
@@ -384,11 +384,11 @@ const ListEvent = () => {
                 onClick={() => mergeConfirm()}
               >
                 <i className="fa fa-code-branch" />
-                {t('ngen.merge')}&nbsp;
+                {t("ngen.merge")}&nbsp;
                 <Badge className="badge mr-1">{selectedEvent.length}</Badge>
               </Button>
               <Button disabled={selectedEvent.length > 0 ? false : true} size="lm" variant="outline-dark" onClick={() => modalCase()}>
-                {t('ngen.case.addto')}
+                {t("ngen.case.addto")}
                 <Badge className="badge mr-1">{selectedEvent.length}</Badge>
               </Button>
               <Button size="lm" variant="outline-dark" onClick={() => reloadPage()}>
@@ -411,11 +411,11 @@ const ListEvent = () => {
               <Row>
                 <Col sm={12} lg={6}>
                   <Form.Group controlId="formGridAddress1">
-                    <Form.Label>{t('date.condition_from')}</Form.Label>
+                    <Form.Label>{t("date.condition_from")}</Form.Label>
                     <Form.Control
                       type="date"
                       maxLength="150"
-                      placeholder={t('date.condition_from')}
+                      placeholder={t("date.condition_from")}
                       value={starDate}
                       onChange={(e) => completeDateStar(e.target.value)}
                       name="date"
@@ -424,7 +424,7 @@ const ListEvent = () => {
                 </Col>
                 <Col sm={12} lg={6}>
                   <Form.Group controlId="formGridAddress1">
-                    <Form.Label>{t('date.condition_to')}</Form.Label>
+                    <Form.Label>{t("date.condition_to")}</Form.Label>
                     <Form.Control
                       type="date"
                       maxLength="150"
@@ -439,7 +439,7 @@ const ListEvent = () => {
                 <Col sm={4} lg={4}>
                   <FilterSelectUrl
                     options={tlpList}
-                    itemName={t('ngen.tlp')}
+                    itemName={t("ngen.tlp")}
                     partOfTheUrl="tlp"
                     itemFilter={tlpFilter}
                     itemFilterSetter={setTlpFilter}
@@ -450,7 +450,7 @@ const ListEvent = () => {
                 <Col sm={4} lg={4}>
                   <FilterSelectUrl
                     options={taxonomies}
-                    itemName={t('ngen.taxonomy_one')}
+                    itemName={t("ngen.taxonomy_one")}
                     partOfTheUrl="taxonomy"
                     itemFilter={taxonomyFilter}
                     itemFilterSetter={setTaxonomyFilter}
@@ -461,7 +461,7 @@ const ListEvent = () => {
                 <Col sm={4} lg={4}>
                   <FilterSelectUrl
                     options={feeds}
-                    itemName={t('ngen.feed_other')}
+                    itemName={t("ngen.feed_other")}
                     partOfTheUrl="feed"
                     itemFilter={feedFilter}
                     itemFilterSetter={setFeedFilter}
@@ -478,7 +478,7 @@ const ListEvent = () => {
                     setFilter={setCaseIsNull}
                     currentFilter={caseIsNull}
                     setLoading={setLoading}
-                    placeholder={t('ngen.filter_by') + ' ' + t('ngen.case_one')}
+                    placeholder={t("ngen.filter_by") + " " + t("ngen.case_one")}
                   />
                 </Col>
                 <Col sm={4} lg={4}>
@@ -490,7 +490,7 @@ const ListEvent = () => {
                     setValue={setValueParentIsNull}
                     value={valueParentIsNull}
                     setLoading={setLoading}
-                    placeholder={t('ngen.filter_by') + ' ' + t('ngen.event.parent')}
+                    placeholder={t("ngen.filter_by") + " " + t("ngen.event.parent")}
                   />
                 </Col>
               </Row>
@@ -536,7 +536,7 @@ const ListEvent = () => {
 
         <ModalConfirm
           type="merge"
-          component={t('ngen.event_other')}
+          component={t("ngen.event_other")}
           name={selectedEvent}
           showModal={showModal}
           onHide={() => setShowModal(false)}
@@ -551,14 +551,14 @@ const ListEvent = () => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>{t('ngen.add.eventcase')}</Modal.Title>
+            <Modal.Title>{t("ngen.add.eventcase")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Button variant="primary" className="text-capitalize" size="sm" onClick={() => closeOptionsList()} aria-expanded={openCases}>
-              {t('button.case_existing')}
+              {t("button.case_existing")}
             </Button>
             <Button variant="primary" className="text-capitalize" size="sm" onClick={() => closeOptionsCreate()} aria-expanded={openCases}>
-              {t('button.case_new')}
+              {t("button.case_new")}
             </Button>
           </Modal.Body>
         </Modal>

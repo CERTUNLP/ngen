@@ -1,6 +1,6 @@
-import apiInstance from '../api';
-import setAlert from '../../utils/setAlert';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
+import apiInstance from "../api";
+import setAlert from "../../utils/setAlert";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
 
 const getTasks = (currentPage) => {
   return apiInstance
@@ -37,7 +37,7 @@ const getTask = (url) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'playbook');
+      setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
     });
 };
@@ -53,13 +53,13 @@ const postTask = (name, description, priority, playbook) => {
       playbook: playbook
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'playbook');
+      setAlert(messageSuccess, "success", "playbook");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'playbook');
+      setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
     });
 };
@@ -75,13 +75,13 @@ const putTask = (url, name, description, priority, playbook) => {
       playbook: playbook
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'playbook');
+      setAlert(messageSuccess, "success", "playbook");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'playbook');
+      setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
     });
 };
@@ -92,13 +92,13 @@ const deleteTask = (url, name) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'playbook');
+      setAlert(messageSuccess, "success", "playbook");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'playbook');
+      setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
     });
 };

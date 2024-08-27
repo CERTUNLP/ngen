@@ -1,6 +1,6 @@
-import apiInstance from '../api';
-import setAlert from '../../utils/setAlert';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
+import apiInstance from "../api";
+import setAlert from "../../utils/setAlert";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
 
 const getEdges = (currentPage) => {
   return apiInstance
@@ -37,7 +37,7 @@ const getEdge = (url) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'state');
+      setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };
@@ -52,16 +52,16 @@ const postEdge = (discr, parent, child) => {
       child: child
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'state');
+      setAlert(messageSuccess, "success", "state");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
-      if (error.response.data && error.response.data.non_field_errors[0] === 'The fields parent, child must make a unique set.') {
-        statusText = 'Ya existe la transición ';
+      let statusText = "";
+      if (error.response.data && error.response.data.non_field_errors[0] === "The fields parent, child must make a unique set.") {
+        statusText = "Ya existe la transición ";
       }
       messageError += statusText;
-      setAlert(messageError, 'error', 'edge');
+      setAlert(messageError, "error", "edge");
       return Promise.reject(error);
     });
 };
@@ -76,16 +76,16 @@ const putEdge = (url, discr, parent, child) => {
       child: child
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'state');
+      setAlert(messageSuccess, "success", "state");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
-      if (error.response.data && error.response.data.non_field_errors[0] === 'The fields parent, child must make a unique set.') {
-        statusText = 'Ya existe la transición ';
+      let statusText = "";
+      if (error.response.data && error.response.data.non_field_errors[0] === "The fields parent, child must make a unique set.") {
+        statusText = "Ya existe la transición ";
       }
       messageError += statusText;
-      setAlert(messageError, 'error', 'edge');
+      setAlert(messageError, "error", "edge");
       return Promise.reject(error);
     });
 };
@@ -96,13 +96,13 @@ const deleteEdge = (url, name) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'edge');
+      setAlert(messageSuccess, "success", "edge");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'edge');
+      setAlert(messageError, "error", "edge");
       return Promise.reject(error);
     });
 };

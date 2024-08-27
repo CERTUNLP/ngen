@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { GoogleMap, InfoWindow, Marker, useJsApiLoader } from '@react-google-maps/api';
+import React, { useState } from "react";
+import { GoogleMap, InfoWindow, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 const StyledMapWithAnInfoBox = () => {
   const { isLoaded } = useJsApiLoader({
@@ -16,8 +16,8 @@ const StyledMapWithAnInfoBox = () => {
   const markers = [
     {
       position: { lat: 22.309425, lng: 72.4396583 },
-      title: 'India',
-      content: 'Hello Gujarat!'
+      title: "India",
+      content: "Hello Gujarat!"
     }
   ];
 
@@ -26,7 +26,7 @@ const StyledMapWithAnInfoBox = () => {
   };
 
   return isLoaded ? (
-    <GoogleMap mapContainerStyle={{ width: '100%', height: '400px' }} center={center} zoom={4}>
+    <GoogleMap mapContainerStyle={{ width: "100%", height: "400px" }} center={center} zoom={4}>
       {markers.map((marker, index) => (
         <Marker key={index} position={marker.position} onClick={() => handleMarkerClick(marker)} />
       ))}

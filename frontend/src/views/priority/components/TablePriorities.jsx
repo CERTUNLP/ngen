@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { deletePriority } from '../../../api/services/priorities';
-import CrudButton from '../../../components/Button/CrudButton';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import Alert from '../../../components/Alert/Alert';
-import Ordering from '../../../components/Ordering/Ordering';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { deletePriority } from "../../../api/services/priorities";
+import CrudButton from "../../../components/Button/CrudButton";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import Alert from "../../../components/Alert/Alert";
+import Ordering from "../../../components/Ordering/Ordering";
+import { useTranslation } from "react-i18next";
 
 const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, currentPage }) => {
   const [remove, setRemove] = useState(false);
-  const [deleteName, setDeleteName] = useState('');
-  const [deleteUrl, setDeleteUrl] = useState('');
+  const [deleteName, setDeleteName] = useState("");
+  const [deleteUrl, setDeleteUrl] = useState("");
   const [priority, setPriority] = useState({});
   const [modalShow, setModalShow] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -38,7 +38,7 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
   const handleDelete = () => {
     deletePriority(deleteUrl)
       .then(() => {
-        window.location.href = '/priorities';
+        window.location.href = "/priorities";
       })
       .catch((error) => {
         setRemove(false);
@@ -51,7 +51,7 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
     setModalShow(true);
   };
 
-  const letterSize = { fontSize: '1.1em' };
+  const letterSize = { fontSize: "1.1em" };
   return (
     <div>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
@@ -62,18 +62,18 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
             <tr>
               <Ordering
                 field="name"
-                label={t('ngen.name_one')}
+                label={t("ngen.name_one")}
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
                 letterSize={letterSize}
               />
-              <th style={letterSize}>{t('date.limit.response')}</th>
-              <th style={letterSize}>{t('date.limit.resolution')}</th>
-              <th style={letterSize}>{t('ngen.priority.severity')}</th>
-              <th style={letterSize}>{t('ngen.priority.notification_amount')}</th>
-              <th style={letterSize}>{t('ngen.priority.color')}</th>
-              <th style={letterSize}>{t('ngen.options')}</th>
+              <th style={letterSize}>{t("date.limit.response")}</th>
+              <th style={letterSize}>{t("date.limit.resolution")}</th>
+              <th style={letterSize}>{t("ngen.priority.severity")}</th>
+              <th style={letterSize}>{t("ngen.priority.notification_amount")}</th>
+              <th style={letterSize}>{t("ngen.priority.color")}</th>
+              <th style={letterSize}>{t("ngen.options")}</th>
             </tr>
           </thead>
           <tbody>
@@ -110,73 +110,73 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
                       <Card.Header>
                         <Row>
                           <Col>
-                            <Card.Title as="h5">{t('ngen.priority_one')}</Card.Title>
-                            <span className="d-block m-t-5">{t('ngen.priority.detail')}</span>
+                            <Card.Title as="h5">{t("ngen.priority_one")}</Card.Title>
+                            <span className="d-block m-t-5">{t("ngen.priority.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
                             <Link to="/priorities/edit" state={priority}>
                               <CrudButton type="edit" />
                             </Link>
-                            <CloseButton aria-label={t('w.close')} onClick={() => setModalShow(false)} />
+                            <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>
                       </Card.Header>
                       <Card.Body>
                         <Table responsive>
                           <tr>
-                            <td>{t('ngen.name_one')}</td>
+                            <td>{t("ngen.name_one")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={priority.name} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('date.limit.response')}</td>
+                            <td>{t("date.limit.response")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={priority.attend_time} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('date.limit.resolution')}</td>
+                            <td>{t("date.limit.resolution")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={priority.solve_time} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.priority.severity')}</td>
+                            <td>{t("ngen.priority.severity")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={priority.severity} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.priority.color')}</td>
+                            <td>{t("ngen.priority.color")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={priority.color} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.priority.notification_amount')}</td>
+                            <td>{t("ngen.priority.notification_amount")}</td>
                             <td>
                               <Form.Control plaintext readOnly defaultValue={priority.notification_amount} />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.date.created')}</td>
+                            <td>{t("ngen.date.created")}</td>
                             <td>
                               <Form.Control
                                 plaintext
                                 readOnly
-                                defaultValue={priority.created ? priority.created.slice(0, 10) + ' ' + priority.created.slice(11, 19) : ''}
+                                defaultValue={priority.created ? priority.created.slice(0, 10) + " " + priority.created.slice(11, 19) : ""}
                               />
                             </td>
                           </tr>
                           <tr>
-                            <td>{t('ngen.date.modified')}</td>
+                            <td>{t("ngen.date.modified")}</td>
                             <td>
                               <Form.Control
                                 plaintext
                                 readOnly
                                 defaultValue={
-                                  priority.modified ? priority.modified.slice(0, 10) + ' ' + priority.modified.slice(11, 19) : ''
+                                  priority.modified ? priority.modified.slice(0, 10) + " " + priority.modified.slice(11, 19) : ""
                                 }
                               />
                             </td>
@@ -190,7 +190,7 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
             </Modal>
             <ModalConfirm
               type="delete"
-              component={t('ngen.priority_one')}
+              component={t("ngen.priority_one")}
               name={deleteName}
               showModal={remove}
               onHide={() => setRemove(false)}

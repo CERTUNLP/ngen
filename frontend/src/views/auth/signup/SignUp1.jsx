@@ -1,12 +1,12 @@
-import React from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
-import { NavLink } from 'react-router-dom';
+import React from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 
-import { API_SERVER } from '../../../config/constant';
-import RestRegister from './RestRegister';
-import Breadcrumb from '../../../layouts/AdminLayout/Breadcrumb';
+import { API_SERVER } from "../../../config/constant";
+import RestRegister from "./RestRegister";
+import Breadcrumb from "../../../layouts/AdminLayout/Breadcrumb";
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const SignUp1 = () => {
   const { t } = useTranslation();
@@ -27,7 +27,7 @@ const SignUp1 = () => {
               <Col>
                 <Card.Body className="text-center">
                   <div className="mb-4">
-                    <img src={API_SERVER + 'static/img/ngenlogo_inv.png'} alt="NGEN" className="logo" id="teamlogo_login" />
+                    <img src={API_SERVER + "static/img/ngenlogo_inv.png"} alt="NGEN" className="logo" id="teamlogo_login" />
                   </div>
 
                   <div className="mb-4">
@@ -37,9 +37,9 @@ const SignUp1 = () => {
                   <RestRegister />
 
                   <p className="mb-2">
-                    {t('signup.already_have_an_account')}{' '}
+                    {t("signup.already_have_an_account")}{" "}
                     <NavLink to="/auth/signin" className="f-w-400">
-                      {t('button.signin')}
+                      {t("button.signin")}
                     </NavLink>
                   </p>
 

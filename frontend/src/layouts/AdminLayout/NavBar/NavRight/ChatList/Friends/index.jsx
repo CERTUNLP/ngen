@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
 
-import friend from './friends';
-import Friend from './Friend';
-import Chat from './Chat';
+import friend from "./friends";
+import Friend from "./Friend";
+import Chat from "./Chat";
 
 const Friends = ({ listOpen }) => {
   const [chatOpen, setChatOpen] = useState(listOpen);

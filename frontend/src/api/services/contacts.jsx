@@ -1,18 +1,18 @@
-import apiInstance from '../api';
-import setAlert from '../../utils/setAlert';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
+import apiInstance from "../api";
+import setAlert from "../../utils/setAlert";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
 
 const getContacts = (currentPage, filters, order) => {
   let messageError = `No se ha recuperado la informacion de contactos. `;
   return apiInstance
-    .get(COMPONENT_URL.contact + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.contact + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'contact');
+      setAlert(messageError, "error", "contact");
       return Promise.reject(error);
     });
 };
@@ -27,7 +27,7 @@ const getContact = (url) => {
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'contact');
+      setAlert(messageError, "error", "contact");
       return Promise.reject(error);
     });
 };
@@ -61,19 +61,19 @@ const postContact = (name, username, public_key, type, role, priority) => {
       priority: priority //*
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'contact');
+      setAlert(messageSuccess, "success", "contact");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
+      let statusText = "";
       console.log(error.response.data.username[0]);
       if (error.response.data.username[0] !== null) {
-        if (error.response.data.username[0] === 'contact with this username already exists.') {
-          statusText = ' El contacto ya existe';
+        if (error.response.data.username[0] === "contact with this username already exists.") {
+          statusText = " El contacto ya existe";
         }
       }
       messageError += statusText;
-      setAlert(messageError, 'error', 'contact');
+      setAlert(messageError, "error", "contact");
       return Promise.reject(error);
     });
 };
@@ -91,13 +91,13 @@ const putContact = (url, name, username, public_key, type, role, priority) => {
       priority: priority
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'contact');
+      setAlert(messageSuccess, "success", "contact");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'contact');
+      setAlert(messageError, "error", "contact");
       return Promise.reject(error);
     });
 };
@@ -108,13 +108,13 @@ const deleteContact = (url, name) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'contact');
+      setAlert(messageSuccess, "success", "contact");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'contact');
+      setAlert(messageError, "error", "contact");
       return Promise.reject(error);
     });
 };
@@ -127,7 +127,7 @@ const getMinifiedContact = () => {
       return response.data;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'case');
+      setAlert(messageError, "error", "case");
       return Promise.reject(error);
     });
 };

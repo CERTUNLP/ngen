@@ -1,11 +1,11 @@
-import apiInstance from '../api';
-import setAlert from '../../utils/setAlert';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
+import apiInstance from "../api";
+import setAlert from "../../utils/setAlert";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
 
 const getNetworks = (currentPage, filters, order) => {
   let messageError = `No se ha recuperado la informacion de redes. `;
   return apiInstance
-    .get(COMPONENT_URL.network + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.network + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
@@ -13,7 +13,7 @@ const getNetworks = (currentPage, filters, order) => {
       let statusText = error.response.statusText;
       console.log(error.response.statusText);
       messageError += statusText;
-      setAlert(messageError, 'error', 'network');
+      setAlert(messageError, "error", "network");
       return Promise.reject(error);
     });
 };
@@ -27,7 +27,7 @@ const getNetwork = (url) => {
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'network');
+      setAlert(messageError, "error", "network");
       return Promise.reject(error);
     });
 };
@@ -61,16 +61,16 @@ const postNetwork = (children, active, type, parent, network_entity, contacts, a
       contacts: contacts //*
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'network');
+      setAlert(messageSuccess, "success", "network");
       return response;
     })
     .catch((error) => {
       if (error.response.status === 400) {
-        if (error.response.data.domain[0] === 'Already exists a network with this domain') {
-          messageError = 'El cidr o dominio ya existe ';
+        if (error.response.data.domain[0] === "Already exists a network with this domain") {
+          messageError = "El cidr o dominio ya existe ";
         }
       }
-      setAlert(messageError, 'error', 'network');
+      setAlert(messageError, "error", "network");
       return Promise.reject(error);
     });
 };
@@ -89,13 +89,13 @@ const putNetwork = (url, children, active, type, parent, network_entity, contact
       contacts: contacts //*
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'network');
+      setAlert(messageSuccess, "success", "network");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'network');
+      setAlert(messageError, "error", "network");
       return Promise.reject(error);
     });
 };
@@ -106,13 +106,13 @@ const deleteNetwork = (url, name) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'network');
+      setAlert(messageSuccess, "success", "network");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'network');
+      setAlert(messageError, "error", "network");
       return Promise.reject(error);
     });
 };
@@ -125,13 +125,13 @@ const isActive = (url, active, name) => {
       active: active
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'network');
+      setAlert(messageSuccess, "success", "network");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'network');
+      setAlert(messageError, "error", "network");
       return Promise.reject(error);
     });
 };

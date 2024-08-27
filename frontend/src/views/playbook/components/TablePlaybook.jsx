@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { Row, Spinner, Table } from 'react-bootstrap';
-import CrudButton from '../../../components/Button/CrudButton';
-import { deletePlaybook, getPlaybook } from '../../../api/services/playbooks';
-import { Link } from 'react-router-dom';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import ModalDetailPlaybook from './ModalDetailPlaybook';
-import Alert from '../../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { Row, Spinner, Table } from "react-bootstrap";
+import CrudButton from "../../../components/Button/CrudButton";
+import { deletePlaybook, getPlaybook } from "../../../api/services/playbooks";
+import { Link } from "react-router-dom";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import ModalDetailPlaybook from "./ModalDetailPlaybook";
+import Alert from "../../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
-  const [playbook, setPlaybook] = useState('');
+  const [playbook, setPlaybook] = useState("");
 
   const [modalDelete, setModalDelete] = useState(false);
   const [modalShow, setModalShow] = useState(false);
@@ -32,7 +32,7 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
   //Read Playbook
   const showPlaybook = (url) => {
     setUrl(url);
-    setPlaybook('');
+    setPlaybook("");
     getPlaybook(url)
       .then((response) => {
         setPlaybook(response.data);
@@ -71,9 +71,9 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
       <Table responsive hover className="text-center">
         <thead>
           <tr>
-            <th>{t('ngen.name_one')}</th>
-            <th>{t('ngen.taxonomy_one')}</th>
-            <th>{t('ngen.action_one')}</th>
+            <th>{t("ngen.name_one")}</th>
+            <th>{t("ngen.taxonomy_one")}</th>
+            <th>{t("ngen.action_one")}</th>
           </tr>
         </thead>
         <tbody>

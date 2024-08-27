@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { Row, Spinner } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
-import FormTemplate from './components/FormTemplate';
-import Navigation from '../../components/Navigation/Navigation';
-import { postTemplate } from '../../api/services/templates';
-import { getMinifiedTlp } from '../../api/services/tlp';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
-import { getMinifiedFeed } from '../../api/services/feeds';
-import { getMinifiedPriority } from '../../api/services/priorities';
-import { getMinifiedState } from '../../api/services/states';
-import Alert from '../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Row, Spinner } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
+import FormTemplate from "./components/FormTemplate";
+import Navigation from "../../components/Navigation/Navigation";
+import { postTemplate } from "../../api/services/templates";
+import { getMinifiedTlp } from "../../api/services/tlp";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import { getMinifiedFeed } from "../../api/services/feeds";
+import { getMinifiedPriority } from "../../api/services/priorities";
+import { getMinifiedState } from "../../api/services/states";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const CreateTemplate = () => {
   const location = useLocation();
-  const formEvent = location.state ? location.state : '';
+  const formEvent = location.state ? location.state : "";
   const formEmpty = {
-    cidr: '',
-    domain: '',
-    address_value: formEvent.address_value ? formEvent.address_value : '',
+    cidr: "",
+    domain: "",
+    address_value: formEvent.address_value ? formEvent.address_value : "",
     active: true,
-    priority: '-1',
-    event_taxonomy: formEvent.taxonomy ? formEvent.taxonomy : '',
-    event_feed: formEvent.feed ? formEvent.feed : '',
-    case_lifecycle: 'auto',
-    case_tlp: '-1',
-    case_state: '-1'
+    priority: "-1",
+    event_taxonomy: formEvent.taxonomy ? formEvent.taxonomy : "",
+    event_feed: formEvent.feed ? formEvent.feed : "",
+    case_lifecycle: "auto",
+    case_tlp: "-1",
+    case_state: "-1"
   };
   const [body, setBody] = useState(formEmpty);
   const [TLP, setTLP] = useState([]);
@@ -129,7 +129,7 @@ const CreateTemplate = () => {
       body.case_state
     )
       .then(() => {
-        window.location.href = '/templates';
+        window.location.href = "/templates";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -140,7 +140,7 @@ const CreateTemplate = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
       <Row>
-        <Navigation actualPosition={t('ngen.template.add')} path="/templates" index={t('ngen.template_other')} />
+        <Navigation actualPosition={t("ngen.template.add")} path="/templates" index={t("ngen.template_other")} />
       </Row>
       {loading ? (
         <Spinner animation="border" />

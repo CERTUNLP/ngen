@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, Row, Spinner } from 'react-bootstrap';
-import { validateSpaces } from '../../../utils/validators';
+import React, { useEffect, useState } from "react";
+import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
+import { validateSpaces } from "../../../utils/validators";
 import {
   validateName,
   validatePassword,
@@ -8,9 +8,9 @@ import {
   validateUnrequiredInput,
   validateUserMail,
   validateUserName
-} from '../../../utils/validators/user';
-import SelectComponent from '../../../components/Select/SelectComponent';
-import { useTranslation } from 'react-i18next';
+} from "../../../utils/validators/user";
+import SelectComponent from "../../../components/Select/SelectComponent";
+import { useTranslation } from "react-i18next";
 
 const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequired }) => {
   const [selectPriority, setSelectPriority] = useState();
@@ -65,7 +65,7 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
     } else {
       setBody({
         ...body,
-        [nameField]: ''
+        [nameField]: ""
       });
     }
     setOption(event);
@@ -76,17 +76,17 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
         <Col sm={12} lg={4}>
           <Form.Group controlId="formGridAddress1">
             <Form.Label>
-              {t('ngen.user.username')} <b style={{ color: 'red' }}>*</b>
+              {t("ngen.user.username")} <b style={{ color: "red" }}>*</b>
             </Form.Label>
             <Form.Control
-              placeholder={t('ngen.user.placeholder')}
+              placeholder={t("ngen.user.placeholder")}
               maxLength="150"
               value={body.username}
               name="username"
               isInvalid={!validateUserName(body.username)}
               onChange={(e) => FieldUsername(e)}
             />
-            {validateUserName(body.username) ? '' : <div className="invalid-feedback"> {t('validate.username')}</div>}
+            {validateUserName(body.username) ? "" : <div className="invalid-feedback"> {t("validate.username")}</div>}
           </Form.Group>
         </Col>
         <Col sm={12} lg={3}>
@@ -97,54 +97,54 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
             value={selectPriority}
             nameField="priority"
             onChange={completeField1}
-            placeholder={t('ngen.priority.select')}
+            placeholder={t("ngen.priority.select")}
             setOption={setSelectPriority}
             required={true}
           />
         </Col>
         <Col sm={12} lg={5}>
           <Form.Group controlId="formGridEmail">
-            <Form.Label>{t('w.email')}</Form.Label>
+            <Form.Label>{t("w.email")}</Form.Label>
             <Form.Control
-              placeholder={t('w.email.placeholder')}
+              placeholder={t("w.email.placeholder")}
               maxLength="100"
               value={body.email}
               name="email"
               onChange={(e) => completeField(e)}
               isInvalid={validateUnrequiredInput(body.email) ? !validateUserMail(body.email) : false}
             />
-            {validateUserMail(body.email) ? '' : <div className="invalid-feedback"> {t('w.email.validate')}</div>}
+            {validateUserMail(body.email) ? "" : <div className="invalid-feedback"> {t("w.email.validate")}</div>}
           </Form.Group>
         </Col>
       </Row>
       <Row>
         <Col sm={12} lg={6}>
           <Form.Group controlId="formGridAddress1">
-            <Form.Label>{t('ngen.name_one')}</Form.Label>
+            <Form.Label>{t("ngen.name_one")}</Form.Label>
             <Form.Control
-              placeholder={t('ngen.name.placeholder')}
+              placeholder={t("ngen.name.placeholder")}
               maxLength="150"
               name="first_name"
               value={body.first_name}
               onChange={(e) => completeField(e)}
               isInvalid={validateUnrequiredInput(body.first_name) ? !validateName(body.first_name) : false}
             />
-            {validateName(body.first_name) ? '' : <div className="invalid-feedback"> {t('ngen.name.invalid')} </div>}
+            {validateName(body.first_name) ? "" : <div className="invalid-feedback"> {t("ngen.name.invalid")} </div>}
           </Form.Group>
         </Col>
 
         <Col sm={12} lg={6}>
           <Form.Group controlId="formGridAddress1">
-            <Form.Label>{t('ngen.last.name')}</Form.Label>
+            <Form.Label>{t("ngen.last.name")}</Form.Label>
             <Form.Control
-              placeholder={t('ngen.last.name.placeholder')}
+              placeholder={t("ngen.last.name.placeholder")}
               maxLength="150"
               value={body.last_name}
               name="last_name"
               onChange={(e) => completeField(e)}
               isInvalid={validateUnrequiredInput(body.last_name) ? !validateName(body.last_name) : false}
             />
-            {validateName(body.last_name) ? '' : <div className="invalid-feedback"> {t('ngen.name.invalid')} </div>}
+            {validateName(body.last_name) ? "" : <div className="invalid-feedback"> {t("ngen.name.invalid")} </div>}
           </Form.Group>
         </Col>
       </Row>
@@ -152,11 +152,11 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
         <Col sm={12} lg={6}>
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>
-              {t('ngen.password')} {passwordRequired ? <b style={{ color: 'red' }}>*</b> : ''}
+              {t("ngen.password")} {passwordRequired ? <b style={{ color: "red" }}>*</b> : ""}
             </Form.Label>
             <Form.Control
               type="password"
-              placeholder={passwordRequired ? t('ngen.password.placeholder') : '********'}
+              placeholder={passwordRequired ? t("ngen.password.placeholder") : "********"}
               name="password"
               onChange={(e) => fieldPassword(e)}
             />
@@ -166,42 +166,42 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
         <Col sm={12} lg={6}>
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>
-              {t('ngen.password.confirm')} {passwordRequired ? <b style={{ color: 'red' }}>*</b> : ''}
+              {t("ngen.password.confirm")} {passwordRequired ? <b style={{ color: "red" }}>*</b> : ""}
             </Form.Label>
             <Form.Control
               type="password"
-              placeholder={passwordRequired ? t('ngen.password.placeholder') : '********'}
+              placeholder={passwordRequired ? t("ngen.password.placeholder") : "********"}
               name="passwordConfirmation"
               isInvalid={validateUnrequiredInput(body.password) ? !validatePassword(body.password, body.passwordConfirmation) : false}
               onChange={(e) => fieldPassword(e)}
             />
             {!validatePassword(body.password, body.passwordConfirmation) ? (
-              ''
+              ""
             ) : (
-              <div className="invalid-feedback"> {t('ngen.password.validation')}</div>
+              <div className="invalid-feedback"> {t("ngen.password.validation")}</div>
             )}
           </Form.Group>
         </Col>
       </Row>
 
-      {(body.password === '' || (body.password !== '' && validatePassword(body.password, body.passwordConfirmation))) &&
-      body.username !== '' &&
+      {(body.password === "" || (body.password !== "" && validatePassword(body.password, body.passwordConfirmation))) &&
+      body.username !== "" &&
       validateUserName(body.username) &&
       validateSelect(body.priority) ? (
         <>
           <Button variant="primary" onClick={createUser}>
-            {t('button.save')}
+            {t("button.save")}
           </Button>
         </>
       ) : (
         <>
           <Button variant="primary" disabled>
-            {t('button.save')}
+            {t("button.save")}
           </Button>
         </>
       )}
       <Button variant="primary" href="/users">
-        {t('button.cancel')}
+        {t("button.cancel")}
       </Button>
     </Form>
   );

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
-import { validateAlphanumeric } from '../../../utils/validators';
-import Select from 'react-select';
-import makeAnimated from 'react-select/animated';
-import { validatePlaybookName, validateUnrequiredInput } from '../../../utils/validators/playbooks';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Col, Form, Row } from "react-bootstrap";
+import { validateAlphanumeric } from "../../../utils/validators";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
+import { validatePlaybookName, validateUnrequiredInput } from "../../../utils/validators/playbooks";
+import { useTranslation } from "react-i18next";
 
 const animatedComponents = makeAnimated();
 
@@ -40,16 +40,16 @@ const FormCreatePlaybook = (props) => {
           <Col sm={12} lg={6}>
             <Form.Group controlId="Form.Playbook.Name">
               <Form.Label>
-                {t('ngen.name_one')} <b style={{ color: 'red' }}>*</b>
+                {t("ngen.name_one")} <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Form.Control
                 type="name"
-                placeholder={t('ngen.name.placeholder')}
+                placeholder={t("ngen.name.placeholder")}
                 value={props.name}
                 onChange={(e) => props.setName(e.target.value)}
                 isInvalid={validateUnrequiredInput(props.name) ? !validateAlphanumeric(props.name) : false}
               />
-              {!validatePlaybookName(props.name) ? <div className="invalid-feedback">{t('w.validate.character')}</div> : ''}
+              {!validatePlaybookName(props.name) ? <div className="invalid-feedback">{t("w.validate.character")}</div> : ""}
             </Form.Group>
           </Col>
         </Row>
@@ -57,17 +57,17 @@ const FormCreatePlaybook = (props) => {
           <Col sm={12} lg={6}>
             <Form.Group controlId="Form.Playbook.Taxonomy.Multiselect">
               <Form.Label>
-                {t('ngen.taxonomy_other')} <b style={{ color: 'red' }}>*</b>
+                {t("ngen.taxonomy_other")} <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Select
                 value={taxonomiesDefaultValue}
-                placeholder={t('ngen.taxonomy.other.select')}
+                placeholder={t("ngen.taxonomy.other.select")}
                 closeMenuOnSelect={false}
                 components={animatedComponents}
                 isMulti
                 onChange={selectTaxonomies}
                 options={props.allTaxonomies}
-                className={'invalid-select'}
+                className={"invalid-select"}
               />
             </Form.Group>
           </Col>
@@ -75,7 +75,7 @@ const FormCreatePlaybook = (props) => {
         <Row>
           <Col>
             <Form.Group>
-              {props.name !== '' && validatePlaybookName(props.name) && props.taxonomy.length > 0 ? ( //
+              {props.name !== "" && validatePlaybookName(props.name) && props.taxonomy.length > 0 ? ( //
                 <>
                   <Button variant="primary" onClick={props.ifConfirm}>
                     {props.save}

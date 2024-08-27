@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Button, Col, Row } from 'react-bootstrap';
+import React, { useState } from "react";
+import { Button, Col, Row } from "react-bootstrap";
 
-import * as Yup from 'yup';
-import { Formik } from 'formik';
-import { login } from '../../../api/services/auth';
-import store from './../../../store';
-import Alert from './../../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import * as Yup from "yup";
+import { Formik } from "formik";
+import { login } from "../../../api/services/auth";
+import store from "./../../../store";
+import Alert from "./../../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const RestLogin = ({ className, ...rest }) => {
   const { t } = useTranslation();
@@ -14,8 +14,8 @@ const RestLogin = ({ className, ...rest }) => {
   const { dispatch } = store;
 
   const validationMessages = {
-    un: t('validation.username'),
-    pw: t('validation.password')
+    un: t("validation.username"),
+    pw: t("validation.password")
   };
 
   const resetShowAlert = () => {
@@ -27,8 +27,8 @@ const RestLogin = ({ className, ...rest }) => {
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
       <Formik
         initialValues={{
-          username: '',
-          password: '',
+          username: "",
+          password: "",
           submit: null
         }}
         validationSchema={Yup.object().shape({
@@ -46,7 +46,7 @@ const RestLogin = ({ className, ...rest }) => {
                 className="form-control"
                 error={touched.username && errors.username}
                 label="Username"
-                placeholder={t('ngen.user.username')}
+                placeholder={t("ngen.user.username")}
                 name="username"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -60,7 +60,7 @@ const RestLogin = ({ className, ...rest }) => {
                 className="form-control"
                 error={touched.password && errors.password}
                 label="Password"
-                placeholder={t('ngen.password')}
+                placeholder={t("ngen.password")}
                 name="password"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -73,7 +73,7 @@ const RestLogin = ({ className, ...rest }) => {
             <Row>
               <Col mt={2}>
                 <Button className="btn-block" color="primary" disabled={isSubmitting} size="large" type="submit" variant="primary">
-                  {t('button.login')}
+                  {t("button.login")}
                 </Button>
               </Col>
             </Row>

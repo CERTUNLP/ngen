@@ -30,16 +30,16 @@ const FormCreateTask = (props) => {
           <Col sm={12} lg={12}>
             <Form.Group controlId="Form.Task.Name">
               <Form.Label>
-                {t('ngen.name_one')} <b style={{ color: 'red' }}>*</b>
+                {t("ngen.name_one")} <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Form.Control
-                placeholder={t('ngen.name_one')}
+                placeholder={t("ngen.name_one")}
                 maxLength="100"
                 value={props.name}
                 onChange={(e) => props.setName(e.target.value)}
                 isInvalid={validateUnrequiredInput(props.name) ? !validateAlphanumeric(props.name) : false}
               />
-              {!validateTaskName(props.name) ? <div className="invalid-feedback">{t('w.validate.character')}</div> : ''}
+              {!validateTaskName(props.name) ? <div className="invalid-feedback">{t("w.validate.character")}</div> : ""}
             </Form.Group>
           </Col>
         </Row>
@@ -47,7 +47,7 @@ const FormCreateTask = (props) => {
           <Col sm={12} lg={12}>
             <Form.Group controlId="Form.Task.Priority">
               <Form.Label>
-                {t('ngen.priority_one')} <b style={{ color: 'red' }}>*</b>
+                {t("ngen.priority_one")} <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Form.Control
                 name="priority"
@@ -56,7 +56,7 @@ const FormCreateTask = (props) => {
                 value={props.priority}
                 onChange={(e) => props.setPriority(e.target.value)}
               >
-                <option value="0">{t('w.select')}</option>
+                <option value="0">{t("w.select")}</option>
                 {priorityOption.map((priorityItem, index) => {
                   return (
                     <option key={index} value={priorityItem.url}>
@@ -65,7 +65,7 @@ const FormCreateTask = (props) => {
                   );
                 })}
               </Form.Control>
-              {props.priority ? '' : <div className="invalid-feedback">{t('ngen.priority.select')}</div>}
+              {props.priority ? "" : <div className="invalid-feedback">{t("ngen.priority.select")}</div>}
             </Form.Group>
           </Col>
         </Row>
@@ -73,19 +73,19 @@ const FormCreateTask = (props) => {
           <Col sm={12} lg={12}>
             <Form.Group controlId="Form.Task.Description">
               <Form.Label>
-                {t('ngen.description')}
-                <b style={{ color: 'red' }}>*</b>
+                {t("ngen.description")}
+                <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Form.Control
                 as="textarea"
-                placeholder={t('ngen.description')}
+                placeholder={t("ngen.description")}
                 maxLength="250"
                 rows={4}
                 value={props.description}
                 onChange={(e) => props.setDescription(e.target.value)}
                 isInvalid={validateUnrequiredInput(props.description) ? !validateAlphanumeric(props.description) : false}
               />
-              {!validateTaskDescription(props.description) ? <div className="invalid-feedback">{t('ngen.description.invalid')}</div> : ''}
+              {!validateTaskDescription(props.description) ? <div className="invalid-feedback">{t("ngen.description.invalid")}</div> : ""}
               <p>{props.description.length}/200</p>
             </Form.Group>
           </Col>
@@ -94,22 +94,22 @@ const FormCreateTask = (props) => {
           <Form.Group>
             {!validateSpace(props.name) ||
             !validateAlphanumeric(props.name) ||
-            props.priority === '0' ||
+            props.priority === "0" ||
             !validateSpace(props.description) ? (
               <>
                 <Button variant="primary" disabled>
-                  {t('button.save')}
+                  {t("button.save")}
                 </Button>
               </>
             ) : (
               <>
                 <Button variant="primary" onClick={props.ifConfirm}>
-                  {t('button.save')}
+                  {t("button.save")}
                 </Button>
               </>
             )}
             <Button variant="primary" onClick={props.ifCancel}>
-              {t('button.cancel')}
+              {t("button.cancel")}
             </Button>
           </Form.Group>
         </Row>

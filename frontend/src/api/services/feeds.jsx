@@ -1,6 +1,6 @@
-import apiInstance from '../api';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
-import setAlert from '../../utils/setAlert';
+import apiInstance from "../api";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
+import setAlert from "../../utils/setAlert";
 
 const getMinifiedFeed = () => {
   //+- id, name, slug, created, modified
@@ -11,7 +11,7 @@ const getMinifiedFeed = () => {
       return response.data;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };
@@ -20,12 +20,12 @@ const getFeeds = (currentPage, filters, order) => {
   //+- id, name, slug, created, modified
   let messageError = `No se pudo recuperar la informacion de las fuentes de informacion`;
   return apiInstance
-    .get(COMPONENT_URL.feed + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.feed + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };
@@ -38,7 +38,7 @@ const getFeed = (url) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };
@@ -56,7 +56,7 @@ const getAllFeeds = (currentPage = 1, results = [], limit = 100) => {
       }
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };
@@ -71,11 +71,11 @@ const postFeed = (name, description, active) => {
       active: active
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'feed');
+      setAlert(messageSuccess, "success", "feed");
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };
@@ -90,11 +90,11 @@ const putFeed = (url, name, description, active) => {
       active: active
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'feed');
+      setAlert(messageSuccess, "success", "feed");
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };
@@ -109,11 +109,11 @@ const putActivationStatus = (url, state, name) => {
       active: state
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'feed');
+      setAlert(messageSuccess, "success", "feed");
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };
@@ -124,11 +124,11 @@ const deleteFeed = (url, name) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'feed');
+      setAlert(messageSuccess, "success", "feed");
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };

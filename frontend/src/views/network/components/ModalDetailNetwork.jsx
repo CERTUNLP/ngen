@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CloseButton, Col, Form, Modal, Row, Table } from 'react-bootstrap';
-import CrudButton from '../../../components/Button/CrudButton';
-import { Link } from 'react-router-dom';
-import FormNetworkLabelCidr from './FormNetworkLabelCidr';
-import BadgeNetworkLabelContact from './BadgeNetworkLabelContact';
-import ActiveButton from '../../../components/Button/ActiveButton';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
+import CrudButton from "../../../components/Button/CrudButton";
+import { Link } from "react-router-dom";
+import FormNetworkLabelCidr from "./FormNetworkLabelCidr";
+import BadgeNetworkLabelContact from "./BadgeNetworkLabelContact";
+import ActiveButton from "../../../components/Button/ActiveButton";
+import { useTranslation } from "react-i18next";
 
 const ModalDetailNetwork = (props) => {
-  const [created, setCreated] = useState('');
-  const [modified, setModified] = useState('');
+  const [created, setCreated] = useState("");
+  const [modified, setModified] = useState("");
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -20,8 +20,8 @@ const ModalDetailNetwork = (props) => {
   }, [props.network]);
 
   const formatDate = (datetime, set) => {
-    datetime = datetime.split('T');
-    let format = datetime[0] + ' ' + datetime[1].slice(0, 8);
+    datetime = datetime.split("T");
+    let format = datetime[0] + " " + datetime[1].slice(0, 8);
     set(format);
   };
 
@@ -35,14 +35,14 @@ const ModalDetailNetwork = (props) => {
                 <Card.Header>
                   <Row>
                     <Col>
-                      <Card.Title as="h5">{t('ngen.network_other')}</Card.Title>
-                      <span className="d-block m-t-5">{t('ngen.network.detail')}</span>
+                      <Card.Title as="h5">{t("ngen.network_other")}</Card.Title>
+                      <span className="d-block m-t-5">{t("ngen.network.detail")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
                       <Link to="/networks/edit" state={props.network}>
                         <CrudButton type="edit" />
                       </Link>
-                      <CloseButton aria-label={t('button.close')} onClick={props.onHide} />
+                      <CloseButton aria-label={t("button.close")} onClick={props.onHide} />
                     </Col>
                   </Row>
                 </Card.Header>
@@ -51,7 +51,7 @@ const ModalDetailNetwork = (props) => {
                     <tbody>
                       {props.network.cidr ? (
                         <tr>
-                          <td>{t('ngen.cidr')}</td>
+                          <td>{t("ngen.cidr")}</td>
                           <td>
                             <Form.Control plaintext readOnly defaultValue={props.network.cidr} />
                           </td>
@@ -60,14 +60,14 @@ const ModalDetailNetwork = (props) => {
                         <></>
                       )}
                       <tr>
-                        <td>{t('w.active')}</td>
+                        <td>{t("w.active")}</td>
                         <td>
                           <ActiveButton active={props.network.active} />
                         </td>
                       </tr>
                       {props.network.domain ? (
                         <tr>
-                          <td>{t('ngen.domain')}</td>
+                          <td>{t("ngen.domain")}</td>
                           <td>
                             <Form.Control plaintext readOnly defaultValue={props.network.domain} />
                           </td>
@@ -77,7 +77,7 @@ const ModalDetailNetwork = (props) => {
                       )}
                       {props.network.parent ? (
                         <tr>
-                          <td>{t('ngen.network.main')}</td>
+                          <td>{t("ngen.network.main")}</td>
                           <td>
                             <FormNetworkLabelCidr url={props.network.parent} />
                           </td>
@@ -87,7 +87,7 @@ const ModalDetailNetwork = (props) => {
                       )}
                       {props.network.children && props.network.children.length > 0 ? (
                         <tr>
-                          <td>{t('ngen.network.subnets')}</td>
+                          <td>{t("ngen.network.subnets")}</td>
                           <td>
                             {Object.values(props.network.children).map((net, index) => {
                               return <FormNetworkLabelCidr url={net} key={index} />;
@@ -100,7 +100,7 @@ const ModalDetailNetwork = (props) => {
                       {props.network.contacts && props.network.contacts.length > 0 ? (
                         <tr>
                           <td>
-                            {t('ngen.related')} {t('ngen.contact_other')}{' '}
+                            {t("ngen.related")} {t("ngen.contact_other")}{" "}
                           </td>
                           <td>
                             {Object.values(props.network.contacts).map((contactItem, index) => {
@@ -112,13 +112,13 @@ const ModalDetailNetwork = (props) => {
                         <></>
                       )}
                       <tr>
-                        <td>{t('ngen.date.created')}</td>
+                        <td>{t("ngen.date.created")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={created} />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.date.modified')}</td>
+                        <td>{t("ngen.date.modified")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={modified} />
                         </td>

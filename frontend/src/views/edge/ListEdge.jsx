@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, CloseButton, Col, Collapse, Modal, Row, Table } from 'react-bootstrap';
-import CrudButton from '../../components/Button/CrudButton';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import FormCreateEdge from './components/FormCreateEdge';
-import { getAllStates, getState } from '../../api/services/states';
-import { getAllEdges, postEdge } from '../../api/services/edges';
-import RowEdge from './components/RowEdge';
-import Alert from '../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Card, CloseButton, Col, Collapse, Modal, Row, Table } from "react-bootstrap";
+import CrudButton from "../../components/Button/CrudButton";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import FormCreateEdge from "./components/FormCreateEdge";
+import { getAllStates, getState } from "../../api/services/states";
+import { getAllEdges, postEdge } from "../../api/services/edges";
+import RowEdge from "./components/RowEdge";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const ListEdge = (props) => {
   const [states, setStates] = useState([]);
@@ -16,11 +16,11 @@ const ListEdge = (props) => {
   const [children, setChildren] = useState([]);
   const [urlByStateName, setUrlByStateName] = useState({});
   const [edge, setEdge] = useState({
-    discr: '',
-    parent: '',
+    discr: "",
+    parent: "",
     child: null
   });
-  const [selectChild, setSelectChild] = useState('');
+  const [selectChild, setSelectChild] = useState("");
 
   const [showAlert, setShowAlert] = useState(false);
 
@@ -114,11 +114,11 @@ const ListEdge = (props) => {
 
   const closeModal = () => {
     setEdge({
-      discr: '',
+      discr: "",
       parent: null,
       child: null
     });
-    setSelectChild('');
+    setSelectChild("");
     setModalCreate(false);
   };
 
@@ -127,11 +127,11 @@ const ListEdge = (props) => {
       .then((response) => {
         setEdgeCreated(response);
         setEdge({
-          discr: '',
+          discr: "",
           parent: null,
           child: null
         });
-        setSelectChild('');
+        setSelectChild("");
         setModalCreate(false);
       })
       .catch((error) => {
@@ -152,16 +152,16 @@ const ListEdge = (props) => {
               <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="edge" />
               <Row>
                 <Col sm={12} lg={9}>
-                  <Card.Title as="h5">{t('transition_other')}</Card.Title>
-                  <span className="d-block m-t-5">{t('transitionList')}</span>
+                  <Card.Title as="h5">{t("transition_other")}</Card.Title>
+                  <span className="d-block m-t-5">{t("transitionList")}</span>
                 </Col>
                 <Col sm={12} lg={3}>
                   {props.sectionAddEdge ? (
-                    <CrudButton type="create" name={t('transition')} onClick={() => setModalCreate(true)} />
+                    <CrudButton type="create" name={t("transition")} onClick={() => setModalCreate(true)} />
                   ) : (
                     <>
                       <Button variant="outline-primary" disabled>
-                        {t('transitionAdd')}
+                        {t("transitionAdd")}
                       </Button>
                     </>
                   )}
@@ -176,9 +176,9 @@ const ListEdge = (props) => {
                     <thead>
                       <tr>
                         <th>#</th>
-                        <th>{t('transitionName')}</th>
-                        <th>{t('w.posteriorState')}</th>
-                        <th>{t('ngen.action_one')}</th>
+                        <th>{t("transitionName")}</th>
+                        <th>{t("w.posteriorState")}</th>
+                        <th>{t("ngen.action_one")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -231,11 +231,11 @@ const ListEdge = (props) => {
                   <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="edge" />
                   <Row>
                     <Col>
-                      <Card.Title as="h5">{t('transition')}</Card.Title>
-                      <span className="d-block m-t-5">{t('transitionAdd')}</span>
+                      <Card.Title as="h5">{t("transition")}</Card.Title>
+                      <span className="d-block m-t-5">{t("transitionAdd")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <CloseButton aria-label={t('w.close')} onClick={() => closeModal()} />
+                      <CloseButton aria-label={t("w.close")} onClick={() => closeModal()} />
                     </Col>
                   </Row>
                 </Card.Header>

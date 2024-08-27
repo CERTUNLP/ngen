@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { getEvent } from '../../../api/services/events';
+import React, { useEffect, useState } from "react";
+import { getEvent } from "../../../api/services/events";
 
 const ListDomain = ({ events }) => {
   const [eventDomains, setEventDomains] = useState([]);
@@ -17,7 +17,7 @@ const ListDomain = ({ events }) => {
         const ListDomain = responses.map((response) => response.domain);
         setEventDomains(ListDomain);
       } catch (error) {
-        console.error('Error fetching events:', error);
+        console.error("Error fetching events:", error);
       }
     }
 

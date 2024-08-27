@@ -1,10 +1,10 @@
-import React from 'react';
-import { Card } from 'react-bootstrap';
-import { NavLink } from 'react-router-dom';
+import React from "react";
+import { Card } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 
-import Breadcrumb from '../../../layouts/AdminLayout/Breadcrumb';
+import Breadcrumb from "../../../layouts/AdminLayout/Breadcrumb";
 
-import RestLogin from './RestLogin';
+import RestLogin from "./RestLogin";
 
 const Signin1 = () => {
   return (

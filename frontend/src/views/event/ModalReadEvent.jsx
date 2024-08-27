@@ -1,7 +1,7 @@
-import React from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import ReadEvent from './ReadEvent';
-import './ModalReadEvent.css';
+import React from "react";
+import { Button, Modal } from "react-bootstrap";
+import ReadEvent from "./ReadEvent";
+import "./ModalReadEvent.css";
 
 const ModalReadEvent = ({ modalShowCase, returnToListOfCases, linkCaseToEvent, tableDetail, closeModalDetail }) => {
   return (
@@ -20,7 +20,7 @@ const ModalReadEvent = ({ modalShowCase, returnToListOfCases, linkCaseToEvent, t
         </div>
       </Modal.Body>
       {tableDetail ? (
-        ''
+        ""
       ) : (
         <Modal.Footer>
           <Button variant="outline-primary" onClick={linkCaseToEvent}>

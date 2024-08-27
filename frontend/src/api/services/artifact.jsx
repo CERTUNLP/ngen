@@ -1,23 +1,23 @@
-import apiInstance from '../api';
-import { COMPONENT_URL } from '../../config/constant';
-import setAlert from '../../utils/setAlert';
-import i18next from 'i18next';
+import apiInstance from "../api";
+import { COMPONENT_URL } from "../../config/constant";
+import setAlert from "../../utils/setAlert";
+import i18next from "i18next";
 
 const getMinifiedArtifact = () => {
   //el parametro es para completar la url con el numero de pagina
-  let messageError = i18next.t('ngen.artifact.error');
+  let messageError = i18next.t("ngen.artifact.error");
   return apiInstance
     .get(COMPONENT_URL.artifactMinifiedList)
     .then((response) => {
       return response.data;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'case');
+      setAlert(messageError, "error", "case");
       return Promise.reject(error);
     });
 };
 
-const getArtefacts = (page = '') => {
+const getArtefacts = (page = "") => {
   //el parametro es para completar la url con el numero de pagina
   return apiInstance.get(COMPONENT_URL.artifact + page);
 };

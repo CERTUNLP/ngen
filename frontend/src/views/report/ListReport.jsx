@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { getReports } from '../../api/services/reports';
-import { Card, Col, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import Navigation from '../../components/Navigation/Navigation';
-import Search from '../../components/Search/Search';
-import CrudButton from '../../components/Button/CrudButton';
-import TableReport from './components/TableReport';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import Alert from '../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { getReports } from "../../api/services/reports";
+import { Card, Col, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import Navigation from "../../components/Navigation/Navigation";
+import Search from "../../components/Search/Search";
+import CrudButton from "../../components/Button/CrudButton";
+import TableReport from "./components/TableReport";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const ListReport = () => {
   const [loading, setLoading] = useState(true);
@@ -22,8 +22,8 @@ const ListReport = () => {
 
   const [showAlert, setShowAlert] = useState(false);
 
-  const [wordToSearch, setWordToSearch] = useState('');
-  const [order, setOrder] = useState('taxonomy__name');
+  const [wordToSearch, setWordToSearch] = useState("");
+  const [order, setOrder] = useState("taxonomy__name");
   const { t } = useTranslation();
 
   function updatePage(chosenPage) {
@@ -61,7 +61,7 @@ const ListReport = () => {
     <div>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="report" />
       <Row>
-        <Navigation actualPosition={t('ngen.report')} />
+        <Navigation actualPosition={t("ngen.report")} />
       </Row>
       <Card>
         <Card.Header>
@@ -71,7 +71,7 @@ const ListReport = () => {
             </Col>
             <Col sm={12} lg={3}>
               <Link to="/reports/create">
-                <CrudButton type="create" name={t('ngen.report')} />
+                <CrudButton type="create" name={t("ngen.report")} />
               </Link>
             </Col>
           </Row>
