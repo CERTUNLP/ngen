@@ -1,6 +1,7 @@
 """
 Base filter test class.
 """
+
 from urllib.parse import urlparse
 
 from django.urls import reverse
@@ -18,5 +19,4 @@ class BaseFilterTest(APITestCaseWithLogin):
         super().setUpTestData()
         cls.url_list = reverse(f"{cls.basename}-list")
         cls.search_url = lambda query: f"{cls.url_list}?search={query}"
-        cls.get_id_from_url = lambda url: int(
-            urlparse(url).path.split('/')[-2])
+        cls.get_id_from_url = lambda url: int(urlparse(url).path.split("/")[-2])

@@ -16,13 +16,24 @@ class NetworkViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ["cidr", "type", "domain"]
     filterset_class = NetworkFilter
-    ordering_fields = ["id", "created", "modified", "cidr", "domain", "type", "address_value", "network_entity",
-                       "network_entity__name"]
+    ordering_fields = [
+        "id",
+        "created",
+        "modified",
+        "cidr",
+        "domain",
+        "type",
+        "address_value",
+        "network_entity",
+        "network_entity__name",
+    ]
     permission_classes = [permissions.IsAuthenticated]
 
 
 class NetworkEntityViewSet(viewsets.ModelViewSet):
-    queryset = models.NetworkEntity.objects.annotate(networks_count=Count('networks')).order_by("id")
+    queryset = models.NetworkEntity.objects.annotate(
+        networks_count=Count("networks")
+    ).order_by("id")
     serializer_class = serializers.NetworkEntitySerializer
     filter_backends = [
         filters.SearchFilter,

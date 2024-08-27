@@ -20,15 +20,13 @@ class HashedFilenameStorage(FileSystemStorage):
     def _get_content_name(self, name, content, chunk_size=None):
         dir_name, file_name = os.path.split(name)
         file_ext = os.path.splitext(file_name)[1].lower()
-        file_root = self._compute_hash(content=content,
-                                       chunk_size=chunk_size)
+        file_root = self._compute_hash(content=content, chunk_size=chunk_size)
         # file_ext includes the dot.
         return os.path.join(dir_name, file_root + file_ext)
 
     def _compute_hash(self, content, chunk_size=None):
         if chunk_size is None:
-            chunk_size = getattr(content, 'DEFAULT_CHUNK_SIZE',
-                                 File.DEFAULT_CHUNK_SIZE)
+            chunk_size = getattr(content, "DEFAULT_CHUNK_SIZE", File.DEFAULT_CHUNK_SIZE)
 
         hasher = hashlib.sha1()
 
@@ -40,7 +38,7 @@ class HashedFilenameStorage(FileSystemStorage):
                 if not data:
                     break
                 if not isinstance(data, bytes):
-                    data = data.encode('utf-8')
+                    data = data.encode("utf-8")
                 hasher.update(data)
             return hasher.hexdigest()
         finally:
@@ -54,7 +52,7 @@ class HashedFilenameStorage(FileSystemStorage):
         name = self._save(name, content)
 
         # Store filenames with forward slashes, even on Windows
-        return force_str(name.replace('\\', '/'))
+        return force_str(name.replace("\\", "/"))
 
     def _save(self, name, content, *args, **kwargs):
         name = self._get_content_name(name=name, content=content)

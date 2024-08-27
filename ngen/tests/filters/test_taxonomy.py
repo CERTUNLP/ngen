@@ -1,6 +1,7 @@
 """
 Django Taxonomy filter tests. Tests search_fields and filterset_class.
 """
+
 import datetime
 
 import pytz
@@ -16,23 +17,21 @@ class TaxonomyFilterTest(BaseFilterTest):
     Taxonomy filter test class.
     """
 
-    fixtures = ['priority.json', 'user.json']
+    fixtures = ["priority.json", "user.json"]
 
     @classmethod
     def setUpTestData(cls):
         cls.basename = "taxonomy"
         super().setUpTestData()
 
-        cls.playbook_1 = Playbook.objects.create(
-            name="Botnet Playbook"
-        )
+        cls.playbook_1 = Playbook.objects.create(name="Botnet Playbook")
 
         cls.taxonomy_1 = Taxonomy.objects.create(
             name="Botnet",
             slug="botnet",
             type="vulnerability",
             active=True,
-            description="First taxonomy"
+            description="First taxonomy",
         )
         cls.taxonomy_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.taxonomy_1.save()
@@ -45,7 +44,7 @@ class TaxonomyFilterTest(BaseFilterTest):
             type="vulnerability",
             active=True,
             description="Second taxonomy",
-            parent=cls.taxonomy_1
+            parent=cls.taxonomy_1,
         )
 
         cls.taxonomy_3 = Taxonomy.objects.create(
@@ -54,14 +53,13 @@ class TaxonomyFilterTest(BaseFilterTest):
             type="incident",
             active=False,
             description="Third taxonomy",
-            parent=cls.taxonomy_1
+            parent=cls.taxonomy_1,
         )
 
         cls.queryset = Taxonomy.objects.all()
 
         cls.filter = lambda query_params: TaxonomyFilter(
-            query_params,
-            queryset=cls.queryset
+            query_params, queryset=cls.queryset
         )
 
     def test_search_filter(self):
@@ -74,8 +72,7 @@ class TaxonomyFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.taxonomy_1.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.taxonomy_1.id
         )
 
         # Searching by description
@@ -83,8 +80,7 @@ class TaxonomyFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.taxonomy_2.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.taxonomy_2.id
         )
 
         # Searching with no results
@@ -97,9 +93,7 @@ class TaxonomyFilterTest(BaseFilterTest):
         Test filter by id.
         """
 
-        params = {
-            "id": self.taxonomy_1.id
-        }
+        params = {"id": self.taxonomy_1.id}
 
         filtered_queryset = self.filter(params).qs
 
@@ -112,7 +106,7 @@ class TaxonomyFilterTest(BaseFilterTest):
 
         params = {
             "created_range_after": "2000-01-01",
-            "created_range_before": "2000-01-02"
+            "created_range_before": "2000-01-02",
         }
 
         filtered_queryset = self.filter(params).qs
@@ -129,7 +123,7 @@ class TaxonomyFilterTest(BaseFilterTest):
 
         params = {
             "modified_range_after": today.isoformat(),
-            "modified_range_before": tomorrow.isoformat()
+            "modified_range_before": tomorrow.isoformat(),
         }
 
         filtered_queryset = self.filter(params).qs
@@ -137,7 +131,7 @@ class TaxonomyFilterTest(BaseFilterTest):
         self.assertQuerysetEqual(
             filtered_queryset,
             [self.taxonomy_1, self.taxonomy_2, self.taxonomy_3],
-            ordered=False
+            ordered=False,
         )
 
     def test_filter_by_name(self):
@@ -145,16 +139,12 @@ class TaxonomyFilterTest(BaseFilterTest):
         Test filter by name.
         """
 
-        params = {
-            "name__icontains": "leak"
-        }
+        params = {"name__icontains": "leak"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.taxonomy_2, self.taxonomy_3],
-            ordered=False
+            filtered_queryset, [self.taxonomy_2, self.taxonomy_3], ordered=False
         )
 
     def test_filter_by_slug(self):
@@ -162,16 +152,12 @@ class TaxonomyFilterTest(BaseFilterTest):
         Test filter by slug.
         """
 
-        params = {
-            "slug__icontains": "leak"
-        }
+        params = {"slug__icontains": "leak"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.taxonomy_2, self.taxonomy_3],
-            ordered=False
+            filtered_queryset, [self.taxonomy_2, self.taxonomy_3], ordered=False
         )
 
     def test_filter_by_description(self):
@@ -179,9 +165,7 @@ class TaxonomyFilterTest(BaseFilterTest):
         Test filter by description.
         """
 
-        params = {
-            "description__icontains": "second"
-        }
+        params = {"description__icontains": "second"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -192,16 +176,12 @@ class TaxonomyFilterTest(BaseFilterTest):
         Test filter by active.
         """
 
-        params = {
-            "active": True
-        }
+        params = {"active": True}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.taxonomy_1, self.taxonomy_2],
-            ordered=False
+            filtered_queryset, [self.taxonomy_1, self.taxonomy_2], ordered=False
         )
 
     def test_filter_by_type(self):
@@ -209,16 +189,12 @@ class TaxonomyFilterTest(BaseFilterTest):
         Test filter by type.
         """
 
-        params = {
-            "type": "vulnerability"
-        }
+        params = {"type": "vulnerability"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.taxonomy_1, self.taxonomy_2],
-            ordered=False
+            filtered_queryset, [self.taxonomy_1, self.taxonomy_2], ordered=False
         )
 
     def test_filter_by_playbooks(self):
@@ -226,9 +202,7 @@ class TaxonomyFilterTest(BaseFilterTest):
         Test filter by playbooks.
         """
 
-        params = {
-            "playbooks": [self.playbook_1]
-        }
+        params = {"playbooks": [self.playbook_1]}
 
         filtered_queryset = self.filter(params).qs
 
@@ -239,52 +213,35 @@ class TaxonomyFilterTest(BaseFilterTest):
         Test filter by parent.
         """
 
-        params = {
-            "parent": self.taxonomy_1
-        }
+        params = {"parent": self.taxonomy_1}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.taxonomy_2, self.taxonomy_3],
-            ordered=False
+            filtered_queryset, [self.taxonomy_2, self.taxonomy_3], ordered=False
         )
 
-        params = {
-            "parent__isnull": True
-        }
+        params = {"parent__isnull": True}
 
         filtered_queryset = self.filter(params).qs
 
-        self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.taxonomy_1],
-            ordered=False
-        )
+        self.assertQuerysetEqual(filtered_queryset, [self.taxonomy_1], ordered=False)
 
     def test_filter_by_children(self):
         """
         Test filter by children.
         """
 
-        params = {
-            "children": [self.taxonomy_2]
-        }
+        params = {"children": [self.taxonomy_2]}
+
+        filtered_queryset = self.filter(params).qs
+
+        self.assertQuerysetEqual(filtered_queryset, [self.taxonomy_1])
+
+        params = {"children__isnull": True}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset, [self.taxonomy_1])
-
-        params = {
-            "children__isnull": True
-        }
-
-        filtered_queryset = self.filter(params).qs
-
-        self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.taxonomy_2, self.taxonomy_3],
-            ordered=False
+            filtered_queryset, [self.taxonomy_2, self.taxonomy_3], ordered=False
         )

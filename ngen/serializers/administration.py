@@ -10,8 +10,8 @@ class FeedSerializer(AuditSerializerMixin):
 
     class Meta:
         model = models.Feed
-        fields = '__all__'
-        read_only_fields = ['slug']
+        fields = "__all__"
+        read_only_fields = ["slug"]
 
     def get_events_count(self, obj):
         return models.Event.objects.filter(feed=obj).count()
@@ -22,8 +22,8 @@ class TlpSerializer(AuditSerializerMixin):
 
     class Meta:
         model = models.Tlp
-        fields = '__all__'
-        read_only_fields = ['slug']
+        fields = "__all__"
+        read_only_fields = ["slug"]
 
 
 class PrioritySerializer(AuditSerializerMixin):
@@ -31,23 +31,23 @@ class PrioritySerializer(AuditSerializerMixin):
 
     class Meta:
         model = models.Priority
-        fields = '__all__'
-        read_only_fields = ['slug']
+        fields = "__all__"
+        read_only_fields = ["slug"]
 
 
 class FeedMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Feed
-        fields = ['url', 'name']
+        fields = ["url", "name"]
 
 
 class TlpMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Tlp
-        fields = ['url', 'name', 'color']
+        fields = ["url", "name", "color"]
 
 
 class PriorityMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Priority
-        fields = ['url', 'name', 'color']
+        fields = ["url", "name", "color"]

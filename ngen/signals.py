@@ -20,7 +20,11 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 @receiver(config_updated)
 def team_logo_updated(sender, key, old_value, new_value, **kwargs):
-    if key == 'TEAM_LOGO' and new_value and new_value != settings.CONSTANCE_CONFIG['TEAM_LOGO'][0]:
+    if (
+        key == "TEAM_LOGO"
+        and new_value
+        and new_value != settings.CONSTANCE_CONFIG["TEAM_LOGO"][0]
+    ):
         new_file = os.path.join(settings.MEDIA_ROOT, new_value)
 
         if os.path.exists(new_file):
@@ -32,7 +36,7 @@ def team_logo_updated(sender, key, old_value, new_value, **kwargs):
             image.thumbnail(settings.LOGO_WIDE_SIZE)
             image.save(settings.LOGO_WIDE_PATH)
 
-            config.TEAM_LOGO = settings.CONSTANCE_CONFIG['TEAM_LOGO'][0]
+            config.TEAM_LOGO = settings.CONSTANCE_CONFIG["TEAM_LOGO"][0]
 
 
 @receiver(post_delete, sender=ArtifactRelation)

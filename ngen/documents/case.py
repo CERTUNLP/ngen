@@ -1,12 +1,26 @@
 from django_elasticsearch_dsl import Document, Index, fields
 from django_elasticsearch_dsl_drf.compat import KeywordField, StringField
-from django_elasticsearch_dsl_drf.constants import LOOKUP_FILTER_RANGE, LOOKUP_QUERY_GT, LOOKUP_QUERY_IN, \
-    LOOKUP_QUERY_GTE, LOOKUP_QUERY_LT, LOOKUP_QUERY_LTE, LOOKUP_FILTER_TERMS, LOOKUP_FILTER_PREFIX, \
-    LOOKUP_FILTER_WILDCARD, LOOKUP_QUERY_EXCLUDE, LOOKUP_QUERY_ISNULL, LOOKUP_FILTER_EXISTS
+from django_elasticsearch_dsl_drf.constants import (
+    LOOKUP_FILTER_RANGE,
+    LOOKUP_QUERY_GT,
+    LOOKUP_QUERY_IN,
+    LOOKUP_QUERY_GTE,
+    LOOKUP_QUERY_LT,
+    LOOKUP_QUERY_LTE,
+    LOOKUP_FILTER_TERMS,
+    LOOKUP_FILTER_PREFIX,
+    LOOKUP_FILTER_WILDCARD,
+    LOOKUP_QUERY_EXCLUDE,
+    LOOKUP_QUERY_ISNULL,
+    LOOKUP_FILTER_EXISTS,
+)
 from django_elasticsearch_dsl_drf.filter_backends import (
     FilteringFilterBackend,
     DefaultOrderingFilterBackend,
-    IdsFilterBackend, OrderingFilterBackend, SearchFilterBackend, )
+    IdsFilterBackend,
+    OrderingFilterBackend,
+    SearchFilterBackend,
+)
 from django_elasticsearch_dsl_drf.pagination import QueryFriendlyPageNumberPagination
 from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
@@ -14,20 +28,14 @@ from elasticsearch_dsl import analyzer
 
 from ngen.models import Case
 
-INDEX = Index('case')
+INDEX = Index("case")
 
-INDEX.settings(
-    number_of_shards=1,
-    number_of_replicas=1
-)
+INDEX.settings(number_of_shards=1, number_of_replicas=1)
 
 _filters = ["lowercase", "stop", "snowball"]
 
 html_strip = analyzer(
-    'html_strip',
-    tokenizer="standard",
-    filter=_filters,
-    char_filter=["html_strip"]
+    "html_strip", tokenizer="standard", filter=_filters, char_filter=["html_strip"]
 )
 
 
@@ -37,63 +45,72 @@ class CaseDocument(Document):
         attr="tlp.name",
         analyzer=html_strip,
         fields={
-            'raw': KeywordField(),
-            'suggest': fields.CompletionField(),
-        }
+            "raw": KeywordField(),
+            "suggest": fields.CompletionField(),
+        },
     )
     state = StringField(
         attr="state.name",
         analyzer=html_strip,
         fields={
-            'raw': KeywordField(),
-            'suggest': fields.CompletionField(),
-        }
+            "raw": KeywordField(),
+            "suggest": fields.CompletionField(),
+        },
     )
     priority = StringField(
         attr="priority.name",
         analyzer=html_strip,
         fields={
-            'raw': KeywordField(),
-            'suggest': fields.CompletionField(),
-        }
+            "raw": KeywordField(),
+            "suggest": fields.CompletionField(),
+        },
     )
     assigned = fields.ObjectField(
         properties={
-            'username': StringField(
+            "username": StringField(
                 analyzer=html_strip,
                 fields={
-                    'raw': KeywordField(),
-                    'suggest': fields.CompletionField(),
-                }),
-            'first_name': StringField(
+                    "raw": KeywordField(),
+                    "suggest": fields.CompletionField(),
+                },
+            ),
+            "first_name": StringField(
                 analyzer=html_strip,
                 fields={
-                    'raw': KeywordField(),
-                    'suggest': fields.CompletionField(),
-                }),
-            'last_name': StringField(
+                    "raw": KeywordField(),
+                    "suggest": fields.CompletionField(),
+                },
+            ),
+            "last_name": StringField(
                 analyzer=html_strip,
                 fields={
-                    'raw': KeywordField(),
-                    'suggest': fields.CompletionField(),
-                }),
-            'email': StringField(
+                    "raw": KeywordField(),
+                    "suggest": fields.CompletionField(),
+                },
+            ),
+            "email": StringField(
                 analyzer=html_strip,
                 fields={
-                    'raw': KeywordField(),
-                    'suggest': fields.CompletionField(),
-                })
-        })
+                    "raw": KeywordField(),
+                    "suggest": fields.CompletionField(),
+                },
+            ),
+        }
+    )
 
     comments = fields.ListField(
         fields.ObjectField(
             properties={
-                'content': StringField(
+                "content": StringField(
                     analyzer=html_strip,
                     fields={
-                        'raw': KeywordField(),
-                        'suggest': fields.CompletionField(),
-                    })}))
+                        "raw": KeywordField(),
+                        "suggest": fields.CompletionField(),
+                    },
+                )
+            }
+        )
+    )
 
     merged = fields.BooleanField()
 
@@ -104,103 +121,126 @@ class CaseDocument(Document):
     evidence = fields.ListField(
         fields.ObjectField(
             properties={
-                'filename': StringField(
+                "filename": StringField(
                     analyzer=html_strip,
                     fields={
-                        'raw': KeywordField(),
-                        'suggest': fields.CompletionField(),
-                    }),
-            }))
+                        "raw": KeywordField(),
+                        "suggest": fields.CompletionField(),
+                    },
+                ),
+            }
+        )
+    )
 
     artifacts = fields.ListField(
         fields.ObjectField(
             properties={
-                'type': StringField(
+                "type": StringField(
                     analyzer=html_strip,
                     fields={
-                        'raw': KeywordField(),
-                        'suggest': fields.CompletionField(),
-                    }),
-                'value': StringField(
+                        "raw": KeywordField(),
+                        "suggest": fields.CompletionField(),
+                    },
+                ),
+                "value": StringField(
                     analyzer=html_strip,
                     fields={
-                        'raw': KeywordField(),
-                        'suggest': fields.CompletionField(),
-                    }),
-            }))
+                        "raw": KeywordField(),
+                        "suggest": fields.CompletionField(),
+                    },
+                ),
+            }
+        )
+    )
 
     parent = fields.ObjectField(
         properties={
-            'uuid': StringField(
+            "uuid": StringField(
                 analyzer=html_strip,
                 fields={
-                    'raw': KeywordField(),
-                    'suggest': fields.CompletionField(),
-                }),
-            'id': fields.IntegerField()
-        })
+                    "raw": KeywordField(),
+                    "suggest": fields.CompletionField(),
+                },
+            ),
+            "id": fields.IntegerField(),
+        }
+    )
     children = fields.ListField(
         fields.ObjectField(
             properties={
-                'uuid': StringField(
+                "uuid": StringField(
                     analyzer=html_strip,
                     fields={
-                        'raw': KeywordField(),
-                        'suggest': fields.CompletionField(),
-                    }),
-                'id': fields.IntegerField()
-            }))
+                        "raw": KeywordField(),
+                        "suggest": fields.CompletionField(),
+                    },
+                ),
+                "id": fields.IntegerField(),
+            }
+        )
+    )
 
     events = fields.ListField(
         fields.ObjectField(
             properties={
-                'uuid': StringField(
+                "uuid": StringField(
                     analyzer=html_strip,
                     fields={
-                        'raw': KeywordField(),
-                        'suggest': fields.CompletionField(),
-                    }),
-                'id': fields.IntegerField(),
-                'address': StringField(
-                    attr='address.address.__str__',
+                        "raw": KeywordField(),
+                        "suggest": fields.CompletionField(),
+                    },
+                ),
+                "id": fields.IntegerField(),
+                "address": StringField(
+                    attr="address.address.__str__",
                     analyzer=html_strip,
                     fields={
-                        'raw': KeywordField(),
-                    }),
-                'cidr': fields.IpField(
-                    attr='cidr.network_address.exploded',
+                        "raw": KeywordField(),
+                    },
+                ),
+                "cidr": fields.IpField(
+                    attr="cidr.network_address.exploded",
                     fields={
-                        'raw': KeywordField(),
-                    }),
-                'domain': StringField(
+                        "raw": KeywordField(),
+                    },
+                ),
+                "domain": StringField(
                     fields={
-                        'raw': KeywordField(),
-                    }),
-                'date': fields.DateField(
+                        "raw": KeywordField(),
+                    }
+                ),
+                "date": fields.DateField(
                     fields={
-                        'raw': KeywordField(),
-                    }),
-                'priority': StringField(
-                    attr='priority.name',
+                        "raw": KeywordField(),
+                    }
+                ),
+                "priority": StringField(
+                    attr="priority.name",
                     fields={
-                        'raw': KeywordField(),
-                    }),
-                'tlp': StringField(
-                    attr='tlp.name',
+                        "raw": KeywordField(),
+                    },
+                ),
+                "tlp": StringField(
+                    attr="tlp.name",
                     fields={
-                        'raw': KeywordField(),
-                    }),
-                'feed': StringField(
-                    attr='feed.name',
+                        "raw": KeywordField(),
+                    },
+                ),
+                "feed": StringField(
+                    attr="feed.name",
                     fields={
-                        'raw': KeywordField(),
-                    }),
-                'reporter': StringField(
-                    attr='reporter.username',
+                        "raw": KeywordField(),
+                    },
+                ),
+                "reporter": StringField(
+                    attr="reporter.username",
                     fields={
-                        'raw': KeywordField(),
-                    }),
-            }))
+                        "raw": KeywordField(),
+                    },
+                ),
+            }
+        )
+    )
 
     # "priority": "http://localhost:8000/api/administration/priority/5/",
     # "tlp": "http://localhost:8000/api/administration/tlp/1/",
@@ -210,13 +250,13 @@ class CaseDocument(Document):
     class Django(object):
         model = Case
         fields = [
-            'id',
-            'date',
-            'attend_date',
-            'solve_date',
-            'report_message_id',
-            'uuid',
-            'lifecycle',
+            "id",
+            "date",
+            "attend_date",
+            "solve_date",
+            "report_message_id",
+            "uuid",
+            "lifecycle",
         ]
 
 
@@ -224,32 +264,32 @@ class CaseDocumentSerializer(DocumentSerializer):
     class Meta:
         document = CaseDocument
         fields = [
-            'id',
-            'date',
-            'attend_date',
-            'solve_date',
-            'report_message_id',
-            'uuid',
-            'tlp',
-            'assigned',
-            'state',
-            'priority',
-            'comments',
-            'merged',
-            'mergeable',
-            'blocked',
-            'evidence',
-            'artifacts',
-            'parent',
-            'children',
-            'events'
+            "id",
+            "date",
+            "attend_date",
+            "solve_date",
+            "report_message_id",
+            "uuid",
+            "tlp",
+            "assigned",
+            "state",
+            "priority",
+            "comments",
+            "merged",
+            "mergeable",
+            "blocked",
+            "evidence",
+            "artifacts",
+            "parent",
+            "children",
+            "events",
         ]
 
 
 class CaseDocumentViewSet(DocumentViewSet):
     document = CaseDocument
     serializer_class = CaseDocumentSerializer
-    lookup_field = 'id'
+    lookup_field = "id"
     filter_backends = [
         FilteringFilterBackend,
         IdsFilterBackend,
@@ -260,30 +300,27 @@ class CaseDocumentViewSet(DocumentViewSet):
     pagination_class = QueryFriendlyPageNumberPagination
     # Define search fields
     search_fields = (
-        'report_message_id',
-        'uuid',
-        'tlp',
-        'state',
-        'priority',
-        'assigned.username',
-        'assigned.first_name',
-        'assigned.last_name',
-        'assigned.email',
-        'comments.content',
-        'evidence.filename',
-        'artifacts.type',
-        'artifacts.value',
-        'parent.uuid',
-        'children.uuid',
-        'events.address'
-        'events.feed'
-        'events.reporter'
-        'events.uuid'
+        "report_message_id",
+        "uuid",
+        "tlp",
+        "state",
+        "priority",
+        "assigned.username",
+        "assigned.first_name",
+        "assigned.last_name",
+        "assigned.email",
+        "comments.content",
+        "evidence.filename",
+        "artifacts.type",
+        "artifacts.value",
+        "parent.uuid",
+        "children.uuid",
+        "events.address" "events.feed" "events.reporter" "events.uuid",
     )
     filter_fields = {
-        'id': {
-            'field': 'id',
-            'lookups': [
+        "id": {
+            "field": "id",
+            "lookups": [
                 LOOKUP_FILTER_RANGE,
                 LOOKUP_QUERY_IN,
                 LOOKUP_QUERY_GT,
@@ -293,9 +330,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_FILTER_TERMS,
             ],
         },
-        'date': {
-            'field': 'date',
-            'lookups': [
+        "date": {
+            "field": "date",
+            "lookups": [
                 LOOKUP_FILTER_RANGE,
                 LOOKUP_QUERY_IN,
                 LOOKUP_QUERY_GT,
@@ -305,9 +342,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_FILTER_TERMS,
             ],
         },
-        'attend_date': {
-            'field': 'attend_date',
-            'lookups': [
+        "attend_date": {
+            "field": "attend_date",
+            "lookups": [
                 LOOKUP_FILTER_RANGE,
                 LOOKUP_QUERY_IN,
                 LOOKUP_QUERY_GT,
@@ -317,9 +354,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_FILTER_TERMS,
             ],
         },
-        'solve_date': {
-            'field': 'solve_date',
-            'lookups': [
+        "solve_date": {
+            "field": "solve_date",
+            "lookups": [
                 LOOKUP_FILTER_RANGE,
                 LOOKUP_QUERY_IN,
                 LOOKUP_QUERY_GT,
@@ -329,13 +366,13 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_FILTER_TERMS,
             ],
         },
-        'merged': 'merged',
-        'mergeable': 'mergeable',
-        'blocked': 'blocked',
-        'lifecycle': 'lifecycle',
-        'state': {
-            'field': 'state',
-            'lookups': [
+        "merged": "merged",
+        "mergeable": "mergeable",
+        "blocked": "blocked",
+        "lifecycle": "lifecycle",
+        "state": {
+            "field": "state",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -344,9 +381,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_QUERY_ISNULL,
             ],
         },
-        'priority': {
-            'field': 'priority',
-            'lookups': [
+        "priority": {
+            "field": "priority",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -355,9 +392,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_QUERY_ISNULL,
             ],
         },
-        'tlp': {
-            'field': 'tlp',
-            'lookups': [
+        "tlp": {
+            "field": "tlp",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -366,9 +403,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_QUERY_ISNULL,
             ],
         },
-        'uuid': {
-            'field': 'uuid',
-            'lookups': [
+        "uuid": {
+            "field": "uuid",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -377,9 +414,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_QUERY_ISNULL,
             ],
         },
-        'parent.uuid': {
-            'field': 'parent.uuid',
-            'lookups': [
+        "parent.uuid": {
+            "field": "parent.uuid",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -388,9 +425,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_QUERY_ISNULL,
             ],
         },
-        'children.uuid': {
-            'field': 'children.uuid',
-            'lookups': [
+        "children.uuid": {
+            "field": "children.uuid",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -399,9 +436,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_FILTER_EXISTS,
             ],
         },
-        'events.address': {
-            'field': 'events.address',
-            'lookups': [
+        "events.address": {
+            "field": "events.address",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -410,9 +447,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_FILTER_EXISTS,
             ],
         },
-        'events.feed': {
-            'field': 'events.feed',
-            'lookups': [
+        "events.feed": {
+            "field": "events.feed",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -421,9 +458,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_FILTER_EXISTS,
             ],
         },
-        'events.tlp': {
-            'field': 'events.tlp',
-            'lookups': [
+        "events.tlp": {
+            "field": "events.tlp",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -432,9 +469,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_FILTER_EXISTS,
             ],
         },
-        'events.priority': {
-            'field': 'events.priority',
-            'lookups': [
+        "events.priority": {
+            "field": "events.priority",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -443,9 +480,9 @@ class CaseDocumentViewSet(DocumentViewSet):
                 LOOKUP_FILTER_EXISTS,
             ],
         },
-        'events.reporter': {
-            'field': 'events.reporter',
-            'lookups': [
+        "events.reporter": {
+            "field": "events.reporter",
+            "lookups": [
                 LOOKUP_FILTER_TERMS,
                 LOOKUP_FILTER_PREFIX,
                 LOOKUP_FILTER_WILDCARD,
@@ -456,13 +493,13 @@ class CaseDocumentViewSet(DocumentViewSet):
         },
     }
     ordering_fields = {
-        'id': None,
-        'tlp': None,
-        'state': None,
-        'priority': None,
+        "id": None,
+        "tlp": None,
+        "state": None,
+        "priority": None,
     }
-    ordering = 'id'
+    ordering = "id"
 
     multi_match_options = {
-        'type': 'phrase',
+        "type": "phrase",
     }

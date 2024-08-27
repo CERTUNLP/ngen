@@ -5,11 +5,11 @@ from ngen.models import *
 
 
 class NetworkAdmin(admin.ModelAdmin):
-    readonly_fields = ['parent']
+    readonly_fields = ["parent"]
 
 
 class EventAdmin(admin.ModelAdmin):
-    readonly_fields = ['parent']
+    readonly_fields = ["parent"]
 
     def save_model(self, request, obj, form, change):
         if not obj.reporter:

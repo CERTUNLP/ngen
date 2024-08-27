@@ -58,14 +58,18 @@ class ConstanceViewSet(viewsets.ModelViewSet):
         """POST - Add new"""
         return Response(
             status=status.HTTP_405_METHOD_NOT_ALLOWED,
-            data={"message": "POST method is not allowed. Use PATCH or PUT method instead to /path/<key> endpoint."},
+            data={
+                "message": "POST method is not allowed. Use PATCH or PUT method instead to /path/<key> endpoint."
+            },
         )
 
     def retrieve(self, request, key=None):
         """GET - Show <key>"""
         result = next((item for item in get_settings() if item["key"] == key), None)
         if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "Key not found."})
+            return Response(
+                status=status.HTTP_404_NOT_FOUND, data={"message": "Key not found."}
+            )
         return Response(result)
 
     def partial_update(self, request, key=None):
@@ -73,11 +77,16 @@ class ConstanceViewSet(viewsets.ModelViewSet):
         data = request.data.copy()
         data["key"] = key
         if not key in [item["key"] for item in get_settings()]:
-            return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "Key not found."})
+            return Response(
+                status=status.HTTP_404_NOT_FOUND, data={"message": "Key not found."}
+            )
         serializer = serializers.ConstanceSerializer(data=data)
         if serializer.is_valid():
             if key is None:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Key not provided."})
+                return Response(
+                    status=status.HTTP_400_BAD_REQUEST,
+                    data={"message": "Key not provided."},
+                )
             serializer.create(serializer.validated_data)
             return Response(status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -88,7 +97,10 @@ class ConstanceViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, key=None):
         """DETELE - Delete <key>"""
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED, data={"message": "DELETE method is not allowed."})
+        return Response(
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
+            data={"message": "DELETE method is not allowed."},
+        )
 
 
 class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -104,9 +116,13 @@ class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
 
     def retrieve(self, request, key=None):
         """GET - Show <key>"""
-        result = next((item for item in self.get_queryset() if item["key"] == key), None)
+        result = next(
+            (item for item in self.get_queryset() if item["key"] == key), None
+        )
         if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "Key not found."})
+            return Response(
+                status=status.HTTP_404_NOT_FOUND, data={"message": "Key not found."}
+            )
         return Response(result)
 
 
@@ -123,7 +139,9 @@ class StringIdentifierViewSet(viewsets.ViewSet):
         return Response(string_identifier, status=status.HTTP_201_CREATED)
 
     def list(self, request, format=None):
-        return Response(serializers.StringIdentifierSerializer().list(), status=status.HTTP_200_OK)
+        return Response(
+            serializers.StringIdentifierSerializer().list(), status=status.HTTP_200_OK
+        )
 
 
 class UserAuditsListView(viewsets.ModelViewSet):

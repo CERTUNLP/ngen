@@ -1,6 +1,7 @@
 """
 Dashboard Presenter
 """
+
 from datetime import datetime, timedelta
 
 from django.db.models import Count, Q

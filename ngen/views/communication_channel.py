@@ -72,7 +72,7 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["get"],
-        url_path="communicationchannels/(?P<communication_channel_id>[^/.]+)", # <int:communication_channel_id> !!!!!!!!!!
+        url_path="communicationchannels/(?P<communication_channel_id>[^/.]+)",  # <int:communication_channel_id> !!!!!!!!!!
     )
     def communication_channels_detail(
         self, request, pk=None, communication_channel_id=None
