@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Dropdown } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Dropdown } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
-function DropdownState({ state, setActive, str_true = 'w.active', str_false = 'w.inactive' }) {
+function DropdownState({ state, setActive, str_true = "w.active", str_false = "w.inactive" }) {
   const { t } = useTranslation();
 
   const options = {
@@ -32,8 +32,8 @@ function DropdownState({ state, setActive, str_true = 'w.active', str_false = 'w
         variant="secondary"
         className="btn-block"
         style={{
-          textOverflow: 'ellipsis',
-          overflow: 'hidden' // force to avoid overflow and colision with other elements
+          textOverflow: "ellipsis",
+          overflow: "hidden" // force to avoid overflow and colision with other elements
         }}
       >
         {selected}

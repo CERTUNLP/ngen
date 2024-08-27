@@ -1,5 +1,5 @@
-import React from 'react';
-import FileItem from '../FileItem/FileItem';
+import React from "react";
+import FileItem from "../FileItem/FileItem";
 
 const FileList = ({ files, removeFile }) => {
   const deleteFileHandler = (_name) => {

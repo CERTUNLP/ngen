@@ -1,6 +1,6 @@
-import Pagination from 'react-bootstrap/Pagination';
-import React, { useEffect, useState } from 'react';
-import { settingPageSize } from '../../api/services/setting';
+import Pagination from "react-bootstrap/Pagination";
+import React, { useEffect, useState } from "react";
+import { settingPageSize } from "../../api/services/setting";
 
 const AdvancedPagination = ({
   countItems,
@@ -67,7 +67,7 @@ const AdvancedPagination = ({
         setArrayPages(list);
       } else {
         if (!arrayPages.includes(parentCurrentPage)) {
-          console.log('No existe la pagina en el array');
+          console.log("No existe la pagina en el array");
         }
       }
     }

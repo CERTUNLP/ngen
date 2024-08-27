@@ -1,5 +1,5 @@
-import React from 'react';
-import { Badge } from 'react-bootstrap';
+import React from "react";
+import { Badge } from "react-bootstrap";
 
 const BadgeItem = ({ item }) => {
   return (
@@ -9,7 +9,7 @@ const BadgeItem = ({ item }) => {
           className="badge mr-1"
           style={{
             background: `${item.color}`,
-            color: '#111111'
+            color: "#111111"
           }}
         >
           {item.name}

@@ -1,12 +1,12 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from "prop-types";
+import React from "react";
 
 const Container = ({ animationDuration, children, isFinished }) => {
   return (
     <div
       style={{
         opacity: isFinished ? 0 : 1,
-        pointerEvents: 'none',
+        pointerEvents: "none",
         transition: `opacity ${animationDuration}ms linear`
       }}
     >

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const Search = ({ type, setWordToSearch, wordToSearch, setLoading }) => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const { t } = useTranslation();
 
   const searcher = (e) => {
@@ -10,13 +10,13 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading }) => {
   };
 
   const action = () => {
-    setWordToSearch('search=' + search + '&');
-    if (wordToSearch !== 'search=' + search + '&') {
+    setWordToSearch("search=" + search + "&");
+    if (wordToSearch !== "search=" + search + "&") {
       setLoading(true);
     }
   };
 
-  const text = `${t('search')} ${type} `;
+  const text = `${t("search")} ${type} `;
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Evita que se envíe el formulario (recarga la página)

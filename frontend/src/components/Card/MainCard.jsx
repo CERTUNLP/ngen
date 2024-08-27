@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { Card, Collapse, Dropdown } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import PropTypes from "prop-types";
+import React, { useState } from "react";
+import { Card, Collapse, Dropdown } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
-import useWindowSize from '../../hooks/useWindowSize';
+import useWindowSize from "../../hooks/useWindowSize";
 
 const MainCard = (props) => {
   const { isOption, title, children, cardClass, optionClass } = props;
@@ -27,24 +27,24 @@ const MainCard = (props) => {
   };
 
   let fullScreenStyle, loader, cardHeaderRight, cardHeader;
-  let card = '';
+  let card = "";
   let mainCardClass = [];
 
   if (isOption) {
     cardHeaderRight = (
-      <div className={'card-header-right ' + optionClass}>
+      <div className={"card-header-right " + optionClass}>
         <Dropdown align="end" className="btn-group card-option">
           <Dropdown.Toggle id="dropdown-basic" className="btn-icon">
             <i className="feather icon-more-horizontal" />
           </Dropdown.Toggle>
           <Dropdown.Menu as="ul" className="list-unstyled card-option">
             <Dropdown.Item as="li" className="dropdown-item" onClick={() => setFullCard(!fullCard)}>
-              <i className={fullCard ? 'feather icon-minimize' : 'feather icon-maximize'} />
-              <Link to="#"> {fullCard ? 'Restore' : 'Maximize'} </Link>
+              <i className={fullCard ? "feather icon-minimize" : "feather icon-maximize"} />
+              <Link to="#"> {fullCard ? "Restore" : "Maximize"} </Link>
             </Dropdown.Item>
             <Dropdown.Item as="li" className="dropdown-item" onClick={() => setCollapseCard(!collapseCard)}>
-              <i className={collapseCard ? 'feather icon-plus' : 'feather icon-minus'} />
-              <Link to="#"> {collapseCard ? 'Expand' : 'Collapse'} </Link>
+              <i className={collapseCard ? "feather icon-plus" : "feather icon-minus"} />
+              <Link to="#"> {collapseCard ? "Expand" : "Collapse"} </Link>
             </Dropdown.Item>
             <Dropdown.Item as="li" className="dropdown-item" onClick={cardReloadHandler}>
               <i className="feather icon-refresh-cw" />
@@ -68,9 +68,9 @@ const MainCard = (props) => {
   );
 
   if (fullCard) {
-    mainCardClass = [...mainCardClass, 'full-card'];
+    mainCardClass = [...mainCardClass, "full-card"];
     fullScreenStyle = {
-      position: 'fixed',
+      position: "fixed",
       top: 0,
       left: 0,
       right: 0,
@@ -80,7 +80,7 @@ const MainCard = (props) => {
   }
 
   if (loadCard) {
-    mainCardClass = [...mainCardClass, 'card-load'];
+    mainCardClass = [...mainCardClass, "card-load"];
     loader = (
       <div className="card-loader">
         <i className="pct-loader1 anim-rotate" />
@@ -89,7 +89,7 @@ const MainCard = (props) => {
   }
 
   if (cardRemove) {
-    mainCardClass = [...mainCardClass, 'd-none'];
+    mainCardClass = [...mainCardClass, "d-none"];
   }
 
   if (cardClass) {
@@ -97,7 +97,7 @@ const MainCard = (props) => {
   }
 
   card = (
-    <Card className={mainCardClass.join(' ')} style={fullScreenStyle}>
+    <Card className={mainCardClass.join(" ")} style={fullScreenStyle}>
       {cardHeader}
       <Collapse in={!collapseCard}>
         <div>

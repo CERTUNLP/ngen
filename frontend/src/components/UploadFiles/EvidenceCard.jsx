@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import { Card, Col, Form, Row } from 'react-bootstrap';
-import ViewFiles from '../Button/ViewFiles';
-import FileUpload from './FileUpload/FileUpload';
-import './EvidenceCard.css';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect } from "react";
+import { Card, Col, Form, Row } from "react-bootstrap";
+import ViewFiles from "../Button/ViewFiles";
+import FileUpload from "./FileUpload/FileUpload";
+import "./EvidenceCard.css";
+import { useTranslation } from "react-i18next";
 
 const EvidenceCard = (props) => {
   const { t } = useTranslation();
@@ -29,12 +29,12 @@ const EvidenceCard = (props) => {
   return (
     <Card>
       <Card.Header>
-        <Card.Title as="h5">{t('ngen.evidences')}</Card.Title>
+        <Card.Title as="h5">{t("ngen.evidences")}</Card.Title>
       </Card.Header>
       <Card.Body>
         <Form>
           {props.disableDragAndDrop ? (
-            ''
+            ""
           ) : (
             <Form.Group controlId="Form.Case.Evidences.Drag&Drop">
               <div className="dropzone" onDragOver={handleDragOver} onDrop={handleDrop}>

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { BASE_URL, COMPONENT_URL } from '../../config/constant';
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { BASE_URL, COMPONENT_URL } from "../../config/constant";
 
 const GuestGuard = ({ children }) => {
   const account = useSelector((state) => state.account);

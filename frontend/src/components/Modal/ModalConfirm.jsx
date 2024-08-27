@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import { getTaxonomy } from '../../api/services/taxonomies';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Modal } from "react-bootstrap";
+import { getTaxonomy } from "../../api/services/taxonomies";
+import { useTranslation } from "react-i18next";
 
 const ModalConfirm = (props) => {
   // props: showModal, onHide, ifConfirm, type, component, state, name
-  const [warning, setWarning] = useState('');
-  const [eventOrCase, setEventOrCase] = useState('');
+  const [warning, setWarning] = useState("");
+  const [eventOrCase, setEventOrCase] = useState("");
   const { t } = useTranslation();
 
   useEffect(() => {
-    const eventOrCase = props.component.toLowerCase().includes('event') ? 'events' : 'cases';
+    const eventOrCase = props.component.toLowerCase().includes("event") ? "events" : "cases";
     setEventOrCase(eventOrCase);
   }, [props.component]);
 
   useEffect(() => {
-    if (props.type === 'merge' && eventOrCase.includes('event')) {
+    if (props.type === "merge" && eventOrCase.includes("event")) {
       const fetchTaxonomies = async () => {
         try {
           let names = Object.values(props.name);
@@ -31,15 +31,15 @@ const ModalConfirm = (props) => {
           const diffDOrCidr = new Set(dOrCidr).size > 1;
           const warning =
             diffTax && diffDOrCidr
-              ? `(${t('ngen.warning.modal.taxonomy.domain')})`
+              ? `(${t("ngen.warning.modal.taxonomy.domain")})`
               : diffTax
-                ? `(${t('ngen.warning.modal.taxonomy')})`
+                ? `(${t("ngen.warning.modal.taxonomy")})`
                 : diffDOrCidr
-                  ? `(${t('ngen.warning.modal.domain')})`
-                  : '';
+                  ? `(${t("ngen.warning.modal.domain")})`
+                  : "";
           setWarning(warning);
         } catch (error) {
-          console.error('Error fetching taxonomies:', error);
+          console.error("Error fetching taxonomies:", error);
         }
       };
 
@@ -49,24 +49,24 @@ const ModalConfirm = (props) => {
 
   const type = {
     editState: {
-      header: `${props.component ? `${t('ngen.edit.header.of')} ${props.component}` : t('ngen.edit.header')}`,
-      message: `${props.state ? `${t('ngen.edit.message.disable')} ${props.name}?` : `${t('ngen.edit.message.enable')} ${props.name}?`}`,
-      variantButtonConfirm: `${props.state ? 'outline-danger' : 'outline-primary'}`,
-      textButtonConfirm: `${props.state ? t('ngen.disable') : t('ngen.enable')}`
+      header: `${props.component ? `${t("ngen.edit.header.of")} ${props.component}` : t("ngen.edit.header")}`,
+      message: `${props.state ? `${t("ngen.edit.message.disable")} ${props.name}?` : `${t("ngen.edit.message.enable")} ${props.name}?`}`,
+      variantButtonConfirm: `${props.state ? "outline-danger" : "outline-primary"}`,
+      textButtonConfirm: `${props.state ? t("ngen.disable") : t("ngen.enable")}`
     },
     delete: {
       header: `${
-        props.component ? (eventOrCase.includes('event') ? t('ngen.delete.header.event') : t('ngen.delete.header.case')) : t('ngen.delete')
+        props.component ? (eventOrCase.includes("event") ? t("ngen.delete.header.event") : t("ngen.delete.header.case")) : t("ngen.delete")
       }`,
-      message: `${`${t('ngen.delete.message')} ${props.name}?`}`,
-      variantButtonConfirm: 'outline-danger',
-      textButtonConfirm: t('ngen.delete')
+      message: `${`${t("ngen.delete.message")} ${props.name}?`}`,
+      variantButtonConfirm: "outline-danger",
+      textButtonConfirm: t("ngen.delete")
     },
     merge: {
-      header: `${props.component ? (eventOrCase.includes('event') ? t('ngen.merge.header.event') : t('ngen.merge.header.case')) : 'Merge'}`,
-      message: eventOrCase.includes('event') ? `${t('ngen.merge.message.event')} ${warning}` : `${t('ngen.merge.message.case')} ${warning}`,
-      variantButtonConfirm: 'outline-primary',
-      textButtonConfirm: t('ngen.accept')
+      header: `${props.component ? (eventOrCase.includes("event") ? t("ngen.merge.header.event") : t("ngen.merge.header.case")) : "Merge"}`,
+      message: eventOrCase.includes("event") ? `${t("ngen.merge.message.event")} ${warning}` : `${t("ngen.merge.message.case")} ${warning}`,
+      variantButtonConfirm: "outline-primary",
+      textButtonConfirm: t("ngen.accept")
     }
   };
 
@@ -83,7 +83,7 @@ const ModalConfirm = (props) => {
           </Button>
 
           <Button variant="outline-secondary" onClick={props.onHide}>
-            {t('ngen.cancel')}
+            {t("ngen.cancel")}
           </Button>
         </Modal.Footer>
       </Modal>

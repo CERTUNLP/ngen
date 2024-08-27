@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import LetterFormat from './LetterFormat';
+import React, { useEffect, useState } from "react";
+import LetterFormat from "./LetterFormat";
 
-const CallBackendByName = ({ url, callback, useBadge, attr = 'name' }) => {
-  const [data, setData] = useState('');
+const CallBackendByName = ({ url, callback, useBadge, attr = "name" }) => {
+  const [data, setData] = useState("");
 
   useEffect(() => {
     callback(url, setData);

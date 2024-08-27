@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Form } from 'react-bootstrap';
+import React, { useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
 
 const FormGetName = (props) => {
   // url, get, key, Form: true o false
-  const [item, setItem] = useState('');
+  const [item, setItem] = useState("");
 
   useEffect(() => {
     showName(props.url);

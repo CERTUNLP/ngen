@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
-const Ordering = ({ field, label, order, setOrder, setLoading, letterSize = '' }) => {
-  const getIconColor = (field) => (order === field || order === `-${field}` ? 'red' : 'black');
+const Ordering = ({ field, label, order, setOrder, setLoading, letterSize = "" }) => {
+  const getIconColor = (field) => (order === field || order === `-${field}` ? "red" : "black");
 
   const getIcon = (field) =>
     order === field || order === `-${field}`
-      ? order.startsWith('-')
-        ? 'fa fa-sort-alpha-up'
-        : 'fa fa-sort-alpha-down'
-      : 'fa fa-sort-alpha-down';
+      ? order.startsWith("-")
+        ? "fa fa-sort-alpha-up"
+        : "fa fa-sort-alpha-down"
+      : "fa fa-sort-alpha-down";
 
   const orderBy = (ordering) => {
     setOrder(ordering);
@@ -25,11 +25,11 @@ const Ordering = ({ field, label, order, setOrder, setLoading, letterSize = '' }
       <span
         className={getIcon(field)}
         style={{
-          marginLeft: '8px',
+          marginLeft: "8px",
           color: getIconColor(field),
-          cursor: 'pointer',
-          fontSize: 'inherit',
-          verticalAlign: 'middle'
+          cursor: "pointer",
+          fontSize: "inherit",
+          verticalAlign: "middle"
         }}
         onClick={() => orderBy(field_order)}
       ></span>

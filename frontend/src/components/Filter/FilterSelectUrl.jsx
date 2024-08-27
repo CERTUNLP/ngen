@@ -1,7 +1,7 @@
-import React from 'react';
-import { Form } from 'react-bootstrap';
-import Select from 'react-select';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Form } from "react-bootstrap";
+import Select from "react-select";
+import { useTranslation } from "react-i18next";
 
 const FilterSelectUrl = ({
   options,
@@ -17,9 +17,9 @@ const FilterSelectUrl = ({
   const { t } = useTranslation();
 
   const getUrlNumber = (item) => {
-    let itemNumber = '';
+    let itemNumber = "";
     if (item !== null) {
-      const parts = item.value.split('/');
+      const parts = item.value.split("/");
       itemNumber = parts[parts.length - 2];
       setCurrentPage(1);
       itemFilterSetter(`${partOfTheUrl}=${itemNumber}&`);
@@ -41,7 +41,7 @@ const FilterSelectUrl = ({
       <Select
         options={options}
         isClearable
-        placeholder={`${t('ngen.filter_by')} ${itemName}`}
+        placeholder={`${t("ngen.filter_by")} ${itemName}`}
         value={value}
         onChange={(e) => getUrlNumber(e)}
       />

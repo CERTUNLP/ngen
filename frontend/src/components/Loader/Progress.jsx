@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { withNProgress } from '@tanem/react-nprogress';
+import PropTypes from "prop-types";
+import React from "react";
+import { withNProgress } from "@tanem/react-nprogress";
 
-import Bar from './Bar';
-import Container from './Container';
-import Spinner from './Spinner';
+import Bar from "./Bar";
+import Container from "./Container";
+import Spinner from "./Spinner";
 
 const Progress = ({ isFinished, progress, animationDuration }) => {
   return (

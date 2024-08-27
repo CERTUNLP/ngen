@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import React, { createContext, useReducer } from 'react';
-import * as actionType from '../store/actions';
-import { CONFIG } from '../config/constant';
+import PropTypes from "prop-types";
+import React, { createContext, useReducer } from "react";
+import * as actionType from "../store/actions";
+import { CONFIG } from "../config/constant";
 
 const initialState = {
   ...CONFIG,
@@ -28,7 +28,7 @@ const ConfigProvider = ({ children }) => {
           collapseMenu: !state.collapseMenu
         };
       case actionType.COLLAPSE_TOGGLE:
-        if (action.menu.type === 'sub') {
+        if (action.menu.type === "sub") {
           open = state.isOpen;
           trigger = state.isTrigger;
 
@@ -54,7 +54,7 @@ const ConfigProvider = ({ children }) => {
           isTrigger: trigger
         };
       case actionType.NAV_COLLAPSE_LEAVE:
-        if (action.menu.type === 'sub') {
+        if (action.menu.type === "sub") {
           open = state.isOpen;
           trigger = state.isTrigger;
 

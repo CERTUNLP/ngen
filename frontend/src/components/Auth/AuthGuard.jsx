@@ -1,6 +1,6 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const AuthGuard = ({ children }) => {
   const account = useSelector((state) => state.account);

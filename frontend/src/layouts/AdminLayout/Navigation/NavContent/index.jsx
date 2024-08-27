@@ -1,16 +1,16 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { ListGroup } from 'react-bootstrap';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import PropTypes from "prop-types";
+import React from "react";
+import { ListGroup } from "react-bootstrap";
+import PerfectScrollbar from "react-perfect-scrollbar";
 
-import NavGroup from './NavGroup';
-import NavCard from './NavCard';
+import NavGroup from "./NavGroup";
+import NavCard from "./NavCard";
 
 const NavContent = ({ navigation }) => {
   const navItems = navigation.items.map((item) => {
     switch (item.type) {
-      case 'group':
-        return <NavGroup key={'nav-group-' + item.id} group={item} />;
+      case "group":
+        return <NavGroup key={"nav-group-" + item.id} group={item} />;
       default:
         return false;
     }
@@ -18,14 +18,14 @@ const NavContent = ({ navigation }) => {
 
   const navItemsBottom = navigation.itemsBottom.map((item) => {
     switch (item.type) {
-      case 'group':
-        return <NavGroup layout="vertical" key={'nav-group-' + item.id} group={item} />;
+      case "group":
+        return <NavGroup layout="vertical" key={"nav-group-" + item.id} group={item} />;
       default:
         return false;
     }
   });
 
-  let mainContent = '';
+  let mainContent = "";
 
   mainContent = (
     <div className="navbar-content datta-scroll">

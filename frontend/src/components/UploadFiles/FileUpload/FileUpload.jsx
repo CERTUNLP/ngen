@@ -1,6 +1,6 @@
-import React from 'react';
-import './FileUpload.css';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import "./FileUpload.css";
+import { useTranslation } from "react-i18next";
 
 const FileUpload = ({ files, setFiles, removeFile }) => {
   const uploadHandler = (event) => {
@@ -15,10 +15,10 @@ const FileUpload = ({ files, setFiles, removeFile }) => {
       <div className="file-card">
         <div className="file-inputs">
           <input type="file" onChange={uploadHandler} multiple />
-          <button>{t('file.upload')}</button>
+          <button>{t("file.upload")}</button>
         </div>
 
-        <p className="main">{t('ngen.file_upload_type')}</p>
+        <p className="main">{t("ngen.file_upload_type")}</p>
         <p className="info">PDF, JPG, PNG, TXT, DOC</p>
       </div>
     </>

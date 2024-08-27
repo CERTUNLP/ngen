@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
 // import sidebarImages from '../../../../assets/images/Datta-able-img.svg';
 
-let itemTarget = '_blank';
+let itemTarget = "_blank";
 
 const NavCard = () => {
   return (

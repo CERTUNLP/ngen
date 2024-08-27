@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import Toast from 'react-bootstrap/Toast';
+import React, { useEffect, useState } from "react";
+import Toast from "react-bootstrap/Toast";
 
-import store from '../../store';
-import { CLEAR_MESSAGE } from '../../store/actions';
+import store from "../../store";
+import { CLEAR_MESSAGE } from "../../store/actions";
 
 const Alert = ({ showAlert, resetShowAlert, component }) => {
   const [show, setShow] = useState(false);
-  const [text, setText] = useState('');
-  const [type, setType] = useState('');
+  const [text, setText] = useState("");
+  const [type, setType] = useState("");
 
-  const textMessage = 'changeme'; // store.getState().message.text;
-  const typeAlert = 'changeme'; //store.getState().message.typeMessage;
-  const typeComponent = 'changeme'; //store.getState().message.typeComponent;
+  const textMessage = "changeme"; // store.getState().message.text;
+  const typeAlert = "changeme"; //store.getState().message.typeMessage;
+  const typeComponent = "changeme"; //store.getState().message.typeComponent;
 
   useEffect(() => {
-    if (showAlert === true && textMessage !== '' && typeComponent === component) {
+    if (showAlert === true && textMessage !== "" && typeComponent === component) {
       setText(textMessage);
       setType(typeAlert);
       setShow(true);
-    } else if (showAlert === true && textMessage !== '' && typeComponent !== component) {
+    } else if (showAlert === true && textMessage !== "" && typeComponent !== component) {
       resetAlert();
     }
   });
@@ -35,8 +35,8 @@ const Alert = ({ showAlert, resetShowAlert, component }) => {
 
   return (
     <div id="toastAlert">
-      <Toast id={type === 'success' ? 'alertStyleGreen' : 'alertStyleRed'} onClose={() => resetAlert()} show={show} autohide>
-        <i id="alertStyle__icon" className={type === 'success' ? 'feather icon-check-circle mx-1' : 'feather icon-alert-triangle mx-1'} />
+      <Toast id={type === "success" ? "alertStyleGreen" : "alertStyleRed"} onClose={() => resetAlert()} show={show} autohide>
+        <i id="alertStyle__icon" className={type === "success" ? "feather icon-check-circle mx-1" : "feather icon-alert-triangle mx-1"} />
         <span id="alertStyle__text">{text}</span>
         <i id="alertStyle__close" className="material-icons" title="Cerrar" onClick={() => resetAlert()}>
           close

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Badge } from 'react-bootstrap';
-import { getPriority } from '../../api/services/priorities';
+import React, { useEffect, useState } from "react";
+import { Badge } from "react-bootstrap";
+import { getPriority } from "../../api/services/priorities";
 
 const PriorityButton = (props) => {
-  const [priority, setPriority] = useState('');
+  const [priority, setPriority] = useState("");
   // const [colorText, setColorText] = useState('');
 
   useEffect(() => {
@@ -25,8 +25,8 @@ const PriorityButton = (props) => {
           className="badge mr-1"
           ref={(element) => {
             if (element) {
-              element.style.setProperty('color', '#333', 'important');
-              element.style.setProperty('background', priority.color, 'important');
+              element.style.setProperty("color", "#333", "important");
+              element.style.setProperty("background", priority.color, "important");
             }
           }}
         >

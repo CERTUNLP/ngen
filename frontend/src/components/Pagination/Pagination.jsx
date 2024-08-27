@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import './Pagination.css';
+import React, { useEffect, useState } from "react";
+import "./Pagination.css";
 
 function Pagination({ pages, setCurrentPage, setjumpPage }) {
   // Current active button number
@@ -11,9 +11,9 @@ function Pagination({ pages, setCurrentPage, setjumpPage }) {
   useEffect(() => {
     let tempNumberOfPages = [...arrOfCurrButtons];
 
-    let dotsInitial = '...';
-    let dotsLeft = '... ';
-    let dotsRight = ' ...';
+    let dotsInitial = "...";
+    let dotsLeft = "... ";
+    let dotsRight = " ...";
 
     if (numberOfPages.length < 6) {
       tempNumberOfPages = numberOfPages;
@@ -65,15 +65,15 @@ function Pagination({ pages, setCurrentPage, setjumpPage }) {
 
   const activePage = (item, index) => {
     switch (item) {
-      case '...':
+      case "...":
         setCurrentButton(arrOfCurrButtons[index - 1] + 1);
         setJump(true);
         break;
-      case ' ...':
+      case " ...":
         setCurrentButton(arrOfCurrButtons[index + 1] - 1);
         setJump(true);
         break;
-      case '... ':
+      case "... ":
         setCurrentButton(arrOfCurrButtons[index - 1] + 1);
         setJump(true);
         break;
@@ -90,8 +90,8 @@ function Pagination({ pages, setCurrentPage, setjumpPage }) {
 
   return (
     <div className="pagination-container">
-      <a href="#" className={`${currentButton === 1 ? 'disabled' : ''}`} onClick={() => previousPage()}>
-        {'<< '}
+      <a href="#" className={`${currentButton === 1 ? "disabled" : ""}`} onClick={() => previousPage()}>
+        {"<< "}
       </a>
 
       {arrOfCurrButtons.map((item, index) => {
@@ -103,15 +103,15 @@ function Pagination({ pages, setCurrentPage, setjumpPage }) {
           );
         } else {
           return (
-            <a href="#" key={index} className={`${currentButton === item ? 'active' : ''}`} onClick={() => activePage(item, index)}>
+            <a href="#" key={index} className={`${currentButton === item ? "active" : ""}`} onClick={() => activePage(item, index)}>
               {item}
             </a>
           );
         }
       })}
 
-      <a href="#" className={`${currentButton === numberOfPages.length ? 'disabled' : ''}`} onClick={() => nextPage()}>
-        {' >>'}
+      <a href="#" className={`${currentButton === numberOfPages.length ? "disabled" : ""}`} onClick={() => nextPage()}>
+        {" >>"}
       </a>
     </div>
   );
