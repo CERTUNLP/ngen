@@ -212,6 +212,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "ngen.tasks.solve_cases",
         "schedule": crontab(minute="*/1"),
     },
+    "retrieve_emails": {
+        "task": "ngen.tasks.retrieve_emails",
+        "schedule": crontab(minute="*/1"),
+    },
 }
 
 CONSTANCE_BACKEND = "constance.backends.redisd.CachingRedisBackend"
@@ -297,13 +301,17 @@ CONSTANCE_CONFIG = {
         ),
     ),
     "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name"),
+    "EMAIL_HOST": (os.environ.get("EMAIL_HOST"), "Email host"),
     "EMAIL_SENDER": (
         os.environ.get("EMAIL_SENDER"),
         gettext_lazy(
             "SMTP sender email address. This is the email that will be used to send emails from ngen"
         ),
     ),
-    "NGEN_LANG": (os.environ.get("NGEN_LANG"), gettext_lazy("NGEN default language")),
+    "EMAIL_USERNAME": (os.environ.get("EMAIL_USERNAME"), "Email username"),
+    "EMAIL_PASSWORD": (os.environ.get("EMAIL_PASSWORD"), "Email password"),
+    "EMAIL_PORT": (os.environ.get("EMAIL_PORT"), "Email port"),
+    "NGEN_LANG": (os.environ.get("NGEN_LANG"), "NGEN default language"),
     "NGEN_LANG_EXTERNAL": (
         os.environ.get("NGEN_LANG_EXTERNAL"),
         gettext_lazy("NGEN language for external reports"),

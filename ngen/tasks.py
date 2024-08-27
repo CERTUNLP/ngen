@@ -1,9 +1,15 @@
+# pylint: disable=broad-exception-caught
+
 from celery import shared_task
 from constance import config
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
+from django.core.mail import EmailMessage
+from django.core.mail.backends.smtp import EmailBackend
+from django.conf import settings
 
+from ngen.mailer.email_client import EmailClient
 import ngen.models
 from ngen import cortex
 from ngen import kintun
@@ -211,3 +217,88 @@ def retest_event_kintun(event):
         return kintun_data
     except Exception as e:
         return {"error": str(e)}
+
+
+@shared_task
+def async_send_email(email_message_id: int):
+    """
+    Task to send an email asynchronously.
+
+    :param int email_message_id: Email message id to send
+    """
+    if not email_message_id:
+        return False
+
+    try:
+        email_message = ngen.models.EmailMessage.objects.get(id=email_message_id)
+    except ngen.models.EmailMessage.DoesNotExist:
+        return False
+
+    host = settings.CONSTANCE_CONFIG["EMAIL_HOST"][0]
+    username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
+    password = settings.CONSTANCE_CONFIG["EMAIL_PASSWORD"][0]
+    port = settings.CONSTANCE_CONFIG["EMAIL_PORT"][0]
+
+    try:
+        email_connection = EmailBackend(
+            host=host,
+            username=username,
+            password=password,
+            use_tls=True,
+            port=port or 587,
+            fail_silently=False,
+        )
+
+        headers = {
+            "Message-ID": email_message.message_id,
+        }
+
+        if email_message.parent_message_id:
+            headers["References"] = " ".join(email_message.references)
+            headers["In-Reply-To"] = email_message.parent_message_id
+
+        email = EmailMessage(
+            subject=email_message.subject,
+            body=email_message.body,
+            from_email=email_message.senders[0]["email"],
+            to=[recipient["email"] for recipient in email_message.recipients],
+            connection=email_connection,
+        )
+
+        email.extra_headers = headers
+
+        email.send(fail_silently=False)
+
+        email_message.sent = True
+        email_message.date = timezone.now()
+        email_message.save()
+        return True
+    except Exception:
+        email_message.send_attempt_failed = True
+        email_message.save()
+        return False
+
+
+@shared_task
+def retrieve_emails():
+    """
+    Task to retrieve unread imbox emails.
+    Unread emails are stored and marked as read.
+    """
+    host = settings.CONSTANCE_CONFIG["EMAIL_HOST"][0]
+    username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
+    password = settings.CONSTANCE_CONFIG["EMAIL_PASSWORD"][0]
+
+    try:
+        email_client = EmailClient(host=host, username=username, password=password)
+        unread_emails = email_client.fetch_unread_emails()
+        if unread_emails:
+            email_messages = email_client.map_emails(unread_emails)
+            created_messages = ngen.models.EmailMessage.objects.bulk_create(
+                email_messages
+            )
+            if len(created_messages) == len(unread_emails):
+                email_client.mark_emails_as_read(unread_emails)
+        return True
+    except Exception:
+        return False
