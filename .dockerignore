@@ -6,3 +6,5 @@ docker/elasticsearch/
 docker/redis/
 docker/
 docker/*
+frontend/node_modules/
+frontend/dist/
