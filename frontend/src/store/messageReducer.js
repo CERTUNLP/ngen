@@ -1,9 +1,9 @@
-import { SET_MESSAGE, CLEAR_MESSAGE } from './actions';
+import { CLEAR_MESSAGE, SET_MESSAGE } from "./actions";
 
 const initialState = {
-  text: '',
-  typeMessage: '',
-  typeComponent: ''
+  text: "",
+  typeMessage: "",
+  typeComponent: ""
 };
 
 const messageReducer = (state = initialState, action) => {
@@ -12,17 +12,19 @@ const messageReducer = (state = initialState, action) => {
   switch (type) {
     case SET_MESSAGE: {
       const { text, typeMessage, typeComponent } = payload;
-      return { ...state,
-                  text: text, 
-                  typeMessage: typeMessage,
-                  typeComponent: typeComponent
+      return {
+        ...state,
+        text: text,
+        typeMessage: typeMessage,
+        typeComponent: typeComponent
       };
     }
     case CLEAR_MESSAGE: {
-      return { ...state, 
-                  text: '', 
-                  typeMessage: '',
-                  typeComponent: '' 
+      return {
+        ...state,
+        text: "",
+        typeMessage: "",
+        typeComponent: ""
       };
     }
     default:

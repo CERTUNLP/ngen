@@ -1,6 +1,7 @@
 """
 Django Contact filter tests. Tests search_fields and filterset_class.
 """
+
 import datetime
 
 import pytz
@@ -16,7 +17,7 @@ class ContactFilterTest(BaseFilterTest):
     Contact filter test class.
     """
 
-    fixtures = ['priority.json', 'user.json']
+    fixtures = ["priority.json", "user.json"]
 
     @classmethod
     def setUpTestData(cls):
@@ -32,7 +33,7 @@ class ContactFilterTest(BaseFilterTest):
             username="soporte@cert.unlp.edu.ar",
             type="email",
             role="administrative",
-            priority=cls.priority_1
+            priority=cls.priority_1,
         )
         cls.contact_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.contact_1.save()
@@ -42,7 +43,7 @@ class ContactFilterTest(BaseFilterTest):
             username="+5492211234567",
             type="phone",
             role="abuse",
-            priority=cls.priority_2
+            priority=cls.priority_2,
         )
 
         cls.contact_3 = Contact.objects.create(
@@ -50,14 +51,13 @@ class ContactFilterTest(BaseFilterTest):
             username="soporte_tecnico",
             type="telegram",
             role="technical",
-            priority=cls.priority_3
+            priority=cls.priority_3,
         )
 
         cls.queryset = Contact.objects.all()
 
         cls.filter = lambda query_params: ContactFilter(
-            query_params,
-            queryset=cls.queryset
+            query_params, queryset=cls.queryset
         )
 
     def test_search_filter(self):
@@ -65,15 +65,12 @@ class ContactFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by name
         query = "cert"
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.contact_1.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.contact_1.id
         )
 
         # Searching by username
@@ -81,8 +78,7 @@ class ContactFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.contact_2.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.contact_2.id
         )
 
         # Searching by role
@@ -90,8 +86,7 @@ class ContactFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.contact_1.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.contact_1.id
         )
 
         # Searching with no results
@@ -104,9 +99,7 @@ class ContactFilterTest(BaseFilterTest):
         Test filter by id.
         """
 
-        params = {
-            "id": self.contact_1.id
-        }
+        params = {"id": self.contact_1.id}
 
         filtered_queryset = self.filter(params).qs
 
@@ -119,7 +112,7 @@ class ContactFilterTest(BaseFilterTest):
 
         params = {
             "created_range_after": "2000-01-01",
-            "created_range_before": "2000-01-02"
+            "created_range_before": "2000-01-02",
         }
 
         filtered_queryset = self.filter(params).qs
@@ -136,7 +129,7 @@ class ContactFilterTest(BaseFilterTest):
 
         params = {
             "modified_range_after": today.isoformat(),
-            "modified_range_before": tomorrow.isoformat()
+            "modified_range_before": tomorrow.isoformat(),
         }
 
         filtered_queryset = self.filter(params).qs
@@ -144,7 +137,7 @@ class ContactFilterTest(BaseFilterTest):
         self.assertQuerysetEqual(
             filtered_queryset,
             [self.contact_1, self.contact_2, self.contact_3],
-            ordered=False
+            ordered=False,
         )
 
     def test_filter_by_name(self):
@@ -152,9 +145,7 @@ class ContactFilterTest(BaseFilterTest):
         Test filter by name.
         """
 
-        params = {
-            "name__icontains": "cert"
-        }
+        params = {"name__icontains": "cert"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -165,9 +156,7 @@ class ContactFilterTest(BaseFilterTest):
         Test filter by username.
         """
 
-        params = {
-            "username__icontains": "cert"
-        }
+        params = {"username__icontains": "cert"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -178,9 +167,7 @@ class ContactFilterTest(BaseFilterTest):
         Test filter by type.
         """
 
-        params = {
-            "type": "phone"
-        }
+        params = {"type": "phone"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -191,9 +178,7 @@ class ContactFilterTest(BaseFilterTest):
         Test filter by role.
         """
 
-        params = {
-            "role": "technical"
-        }
+        params = {"role": "technical"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -204,9 +189,7 @@ class ContactFilterTest(BaseFilterTest):
         Test filter by priority.
         """
 
-        params = {
-            "priority": self.priority_1.id
-        }
+        params = {"priority": self.priority_1.id}
 
         filtered_queryset = self.filter(params).qs
 

@@ -1,11 +1,10 @@
 from datetime import timedelta
 
-from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import Token
 
 from ngen.models import Priority, Tlp, Feed, config
+from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
 
 
 class MyToken(Token):
@@ -13,20 +12,12 @@ class MyToken(Token):
     lifetime = timedelta(days=1)
 
 
-class TestAdministration(APITestCase):
-    '''
+class TestAdministration(APITestCaseWithLogin):
+    """
     This will handle Administration testcases
-    '''
+    """
 
-    fixtures = ["priority.json", "tlp.json", "user.json",
-                "feed.json"
-                ]
-
-    def setUp(self):
-        url_login_jwt = reverse("token-create")
-        json_login = {"username": "ngen", "password": "ngen"}
-        resp = self.client.post(url_login_jwt, data=json_login, format="json")
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + resp.data["access"])
+    fixtures = ["priority.json", "tlp.json", "user.json", "feed.json"]
 
     # --------------------------------------------------------TLP----------------------------------------------------------
 
@@ -34,7 +25,7 @@ class TestAdministration(APITestCase):
         """
         Test TLP listing
         """
-        response = self.client.get('/api/administration/tlp/')
+        response = self.client.get("/api/administration/tlp/")
         # Assertions for a successful response (status code 200)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -54,8 +45,8 @@ class TestAdministration(APITestCase):
             "code": 122,
         }
 
-        # POST the data 
-        response = self.client.post('/api/administration/tlp/', TLP_data, format='json')
+        # POST the data
+        response = self.client.post("/api/administration/tlp/", TLP_data, format="json")
 
         # Assertions for a successful creation (status code 201)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -89,14 +80,16 @@ class TestAdministration(APITestCase):
         }
 
         # PUT the data
-        response = self.client.put(f'/api/administration/tlp/{tlp.id}/', updated_data, format='json')
+        response = self.client.put(
+            f"/api/administration/tlp/{tlp.id}/", updated_data, format="json"
+        )
 
         # Assertions for a successful update (status code 200)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Assertions to check the object is updated in the database
         tlp.refresh_from_db()
-        self.assertEqual(tlp.name, 'Updated TLP')
+        self.assertEqual(tlp.name, "Updated TLP")
 
     def test_delete_tlp(self):
         """
@@ -115,7 +108,7 @@ class TestAdministration(APITestCase):
         )
 
         # DELETE the TLP
-        response = self.client.delete(f'/api/administration/tlp/{tlp.id}/')
+        response = self.client.delete(f"/api/administration/tlp/{tlp.id}/")
 
         # Assertions for a successful deletion (status code 204)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -139,7 +132,9 @@ class TestAdministration(APITestCase):
         }
 
         # POST the data
-        response = self.client.post('/api/administration/feed/', feed_data, format='json')
+        response = self.client.post(
+            "/api/administration/feed/", feed_data, format="json"
+        )
 
         # Assertions for a successful creation (status code 201)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -163,14 +158,16 @@ class TestAdministration(APITestCase):
         }
 
         # PUT the data
-        response = self.client.put(f'/api/administration/feed/{feed.id}/', updated_data, format='json')
+        response = self.client.put(
+            f"/api/administration/feed/{feed.id}/", updated_data, format="json"
+        )
 
         # Assertions for a successful update (status code 200)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Assertions to check the object is updated in the database
         feed.refresh_from_db()
-        self.assertEqual(feed.name, 'Updated Feed')
+        self.assertEqual(feed.name, "Updated Feed")
 
     def test_delete_feed(self):
         """
@@ -184,7 +181,7 @@ class TestAdministration(APITestCase):
         )
 
         # DELETE the Feed
-        response = self.client.delete(f'/api/administration/feed/{feed.id}/')
+        response = self.client.delete(f"/api/administration/feed/{feed.id}/")
 
         # Assertions for a successful deletion (status code 204)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -212,14 +209,14 @@ class TestAdministration(APITestCase):
         ]
 
         # GET the list of priorities
-        response = self.client.get('/api/administration/priority/')
+        response = self.client.get("/api/administration/priority/")
 
         # Assertions for a successful listing (status code 200)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Assertions to check the list number equals to # of db objects
         response_data = response.data
-        self.assertEqual(response_data['count'], Priority.objects.count())
+        self.assertEqual(response_data["count"], Priority.objects.count())
 
     def test_create_priority(self):
         """
@@ -236,7 +233,9 @@ class TestAdministration(APITestCase):
         }
 
         # POST the data
-        response = self.client.post('/api/administration/priority/', priority_data, format='json')
+        response = self.client.post(
+            "/api/administration/priority/", priority_data, format="json"
+        )
 
         # Assertions for a successful creation (status code 201)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -266,14 +265,16 @@ class TestAdministration(APITestCase):
         }
 
         # PUT the data
-        response = self.client.put(f'/api/administration/priority/{priority.id}/', updated_data, format='json')
+        response = self.client.put(
+            f"/api/administration/priority/{priority.id}/", updated_data, format="json"
+        )
 
         # Assertions for a successful update (status code 200)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Assertions to check the object is updated in the database
         priority.refresh_from_db()
-        self.assertEqual(priority.name, 'Updated Priority')
+        self.assertEqual(priority.name, "Updated Priority")
 
     def test_delete_priority(self):
         """
@@ -290,7 +291,7 @@ class TestAdministration(APITestCase):
         )
 
         # DELETE the Priority
-        response = self.client.delete(f'/api/administration/priority/{priority.id}/')
+        response = self.client.delete(f"/api/administration/priority/{priority.id}/")
 
         # Assertions for a successful deletion (status code 204)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

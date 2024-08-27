@@ -20,7 +20,7 @@ File: style.css
         -   Invoice, Full Calender, File Upload,
 =================================================================================
 =================================================================================== */
-@import '~bootstrap/dist/css/bootstrap';
+@import 'bootstrap/dist/css/bootstrap';
 // General theme contents
 @import 'partials/variables';
 @import 'partials/general';
@@ -31,8 +31,6 @@ File: style.css
 @import 'partials/font/next-icon';
 @import 'partials/font/feather';
 @import 'partials/font/fontawesome';
-@import 'partials/font/flaticon';
-@import 'partials/font/cryptofont';
 
 // important Element
 @import 'partials/menu/menu-lite';
@@ -40,14 +38,18 @@ File: style.css
 
 // Theme Element
 @import 'partials/theme-elements/form';
+@import 'partials/theme-elements/radiobox-checkbox';
 @import 'partials/theme-elements/labels-badges';
 @import 'partials/theme-elements/data-tables';
 @import 'partials/theme-elements/authentication';
 @import 'partials/theme-elements/button';
 @import 'partials/theme-elements/breadcrumb-pagination';
+@import 'partials/theme-elements/progress';
+@import 'partials/theme-elements/nav';
 
 // Other
 @import 'partials/other/chat';
+
 @import 'partials/third-party/third-party';
 
 // Custom

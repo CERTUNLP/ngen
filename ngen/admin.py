@@ -5,11 +5,11 @@ from ngen.models import *
 
 
 class NetworkAdmin(admin.ModelAdmin):
-    readonly_fields = ['parent']
+    readonly_fields = ["parent"]
 
 
 class EventAdmin(admin.ModelAdmin):
-    readonly_fields = ['parent']
+    readonly_fields = ["parent"]
 
     def save_model(self, request, obj, form, change):
         if not obj.reporter:
@@ -50,8 +50,14 @@ admin.site.register(State)
 admin.site.register(Edge)
 
 # taxonomy
+admin.site.register(TaxonomyGroup)
 admin.site.register(Taxonomy)
 admin.site.register(Report)
 admin.site.register(Playbook)
 admin.site.register(Task)
 admin.site.register(TodoTask)
+
+# communication
+admin.site.register(CommunicationChannel)
+admin.site.register(CommunicationType)
+admin.site.register(CommunicationChannelTypeRelation)

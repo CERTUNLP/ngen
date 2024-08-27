@@ -1,7 +1,5 @@
-import ipaddress
-from django.db.models import Q
 from rest_framework import serializers
-from ngen import models
+
 from ngen.serializers import (
     EventSerializerReduced,
     CaseSerializerReducedWithEventsCount,
@@ -40,7 +38,7 @@ class FeedsInEventsSerializer(serializers.Serializer):
     """
 
     feed_name = serializers.CharField()
-    event_count = serializers.IntegerField()
+    events_count = serializers.IntegerField()
 
 
 class FeedDashboardSerializer(DashboardSerializer):
@@ -85,7 +83,6 @@ class NetworkEntitiesWithEventsSerializer(NetworkEntitySerializerReduced):
         #         if cidr is not None:
         #             cidr_list.append(cidr)
         #             entity_events += models.Event.objects.children_of_cidr(cidr)
-
 
         # for network in network_entity.networks.all():
         #     domain = network.domain

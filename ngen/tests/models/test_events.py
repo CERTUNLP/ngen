@@ -1,11 +1,24 @@
 """
 Django Unit Tests for Event model
 """
+
 import uuid
 
 from django.test import TestCase
 
-from ngen.models import Event, User, Taxonomy, Feed, Tlp, Priority, CaseTemplate, Playbook, Task, State, Case
+from ngen.models import (
+    Event,
+    User,
+    Taxonomy,
+    Feed,
+    Tlp,
+    Priority,
+    CaseTemplate,
+    Playbook,
+    Task,
+    State,
+    Case,
+)
 
 
 class EventTest(TestCase):
@@ -13,15 +26,16 @@ class EventTest(TestCase):
     This will handle Event model tests
     """
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         """
         Event model test setup
         """
-        self.taxonomy = Taxonomy.objects.create(
+        cls.taxonomy = Taxonomy.objects.create(
             type="incident", name="Phising", slug="phising"
         )
-        self.feed = Feed.objects.create(slug="shodan", name="Shodan")
-        self.tlp = Tlp.objects.create(
+        cls.feed = Feed.objects.create(slug="shodan", name="Shodan")
+        cls.tlp = Tlp.objects.create(
             slug="white",
             when="Given some circumstance",
             why="Some reason",
@@ -30,44 +44,44 @@ class EventTest(TestCase):
             name="White",
             code=0,
         )
-        self.priority = Priority.objects.create(name="Medium", severity=3)
-        self.user = User.objects.create(
-            username="test", password="test", priority=self.priority
+        cls.priority = Priority.objects.create(name="Medium", severity=3)
+        cls.user = User.objects.create(
+            username="test", password="test", priority=cls.priority
         )
-        self.playbook = Playbook.objects.create(
+        cls.playbook = Playbook.objects.create(
             name="Test playbook",
         )
-        self.task = Task.objects.create(
+        cls.task = Task.objects.create(
             name="Test task",
             description="Test description",
-            playbook=self.playbook,
-            priority=self.priority,
+            playbook=cls.playbook,
+            priority=cls.priority,
         )
-        self.state = State.objects.create(name="Open")
+        cls.state = State.objects.create(name="Open")
 
-        self.case_template = CaseTemplate.objects.create(
-            priority=self.priority,
+        cls.case_template = CaseTemplate.objects.create(
+            priority=cls.priority,
             cidr=None,
             domain="info.unlp.edu.ar",
-            event_taxonomy=self.taxonomy,
-            event_feed=self.feed,
-            case_tlp=self.tlp,
-            case_state=self.state,
+            event_taxonomy=cls.taxonomy,
+            event_feed=cls.feed,
+            case_tlp=cls.tlp,
+            case_state=cls.state,
             case_lifecycle="auto_open",
             active=True,
         )
 
-        self.event = Event.objects.create(
+        cls.event = Event.objects.create(
             domain="info.unlp.edu.ar",
-            taxonomy=self.taxonomy,
-            feed=self.feed,
-            tlp=self.tlp,
-            reporter=self.user,
+            taxonomy=cls.taxonomy,
+            feed=cls.feed,
+            tlp=cls.tlp,
+            reporter=cls.user,
             notes="Some notes",
-            priority=self.priority,
+            priority=cls.priority,
         )
 
-        self.event.tasks.add(self.task)
+        cls.event.tasks.add(cls.task)
 
     def test_event_creation(self):
         """

@@ -5,52 +5,54 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from ngen import models
-from ngen.serializers.common.fields import GenericRelationField, SlugOrHyperlinkedRelatedField
-from ngen.serializers.common.mixins import AuditSerializerMixin, MergeSerializerMixin, EvidenceSerializerMixin, \
-    ArtifactSerializerMixin
+from ngen.serializers.common.fields import (
+    GenericRelationField,
+    SlugOrHyperlinkedRelatedField,
+    TaxonomySlugOrHyperlinkedRelatedField,
+)
+from ngen.serializers.common.mixins import (
+    AuditSerializerMixin,
+    MergeSerializerMixin,
+    EvidenceSerializerMixin,
+    ArtifactSerializerMixin,
+)
 
 
-class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSerializerMixin, AuditSerializerMixin):
+class EventSerializer(
+    MergeSerializerMixin,
+    EvidenceSerializerMixin,
+    ArtifactSerializerMixin,
+    AuditSerializerMixin,
+):
     feed = SlugOrHyperlinkedRelatedField(
-        slug_field='slug',
-        queryset=models.Feed.objects.all(),
-        view_name='feed-detail'
+        slug_field="slug", queryset=models.Feed.objects.all(), view_name="feed-detail"
     )
     tlp = SlugOrHyperlinkedRelatedField(
-        slug_field='slug',
-        queryset=models.Tlp.objects.all(),
-        view_name='tlp-detail'
+        slug_field="slug", queryset=models.Tlp.objects.all(), view_name="tlp-detail"
     )
     priority = SlugOrHyperlinkedRelatedField(
-        slug_field='slug',
+        slug_field="slug",
         queryset=models.Priority.objects.all(),
-        view_name='priority-detail'
+        view_name="priority-detail",
     )
-    taxonomy = SlugOrHyperlinkedRelatedField(
-        slug_field='slug',
+    taxonomy = TaxonomySlugOrHyperlinkedRelatedField(
+        slug_field="slug",
         queryset=models.Taxonomy.objects.all(),
-        view_name='taxonomy-detail'
+        view_name="taxonomy-detail",
     )
     evidence = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='evidence-detail'
+        many=True, read_only=True, view_name="evidence-detail"
     )
     children = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='event-detail'
+        many=True, read_only=True, view_name="event-detail"
     )
     todos = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='todo-detail'
+        many=True, read_only=True, view_name="todo-detail"
     )
     reporter = serializers.HyperlinkedRelatedField(
-        default=serializers.CreateOnlyDefault(
-            serializers.CurrentUserDefault()),
+        default=serializers.CreateOnlyDefault(serializers.CurrentUserDefault()),
         queryset=models.User.objects.all(),
-        view_name='user-detail'
+        view_name="user-detail",
     )
     # network = serializers.HyperlinkedRelatedField(
     #     many=False,
@@ -61,31 +63,60 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
 
     class Meta:
         model = models.Event
-        fields = ('url', 'history', 'artifacts', 'feed', 'tlp', 'priority', 'taxonomy', 'evidence', 'children', 'todos',
-                  'reporter', 'comments', 'created', 'modified', 'cidr', 'domain', 'address_value', 'date',
-                  'evidence_file_path', 'notes', 'uuid', 'parent', 'case', 'tasks', 'blocked', 'merged', 'network')
+        fields = (
+            "url",
+            "history",
+            "artifacts",
+            "feed",
+            "tlp",
+            "priority",
+            "taxonomy",
+            "evidence",
+            "children",
+            "todos",
+            "reporter",
+            "comments",
+            "created",
+            "modified",
+            "cidr",
+            "domain",
+            "address_value",
+            "date",
+            "evidence_file_path",
+            "notes",
+            "uuid",
+            "parent",
+            "case",
+            "tasks",
+            "blocked",
+            "merged",
+            "network",
+            "initial_taxonomy_slug",
+        )
 
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
-        return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
+        return GenericRelationField(read_only=True).generic_detail_links(
+            comments_qs, self.context.get("request")
+        )
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_BLOCKED_EVENT.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_EVENT.split(",")
 
     @staticmethod
     def not_allowed_fields():
-        return ['taxonomy', 'feed', 'network']
+        return ["taxonomy", "feed", "network"]
 
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
-        action = self.context['view'].action
-        if action in ['update', 'partial_update', 'retrieve']:
+        action = self.context["view"].action
+        if action in ["update", "partial_update", "retrieve"]:
             if self.instance and self.instance.is_parent():
                 for field in self.instance._meta.fields:
                     if field.name in self.not_allowed_fields():
                         kwargs = extra_kwargs.get(field.name, {})
-                        kwargs['read_only'] = True
+                        kwargs["read_only"] = True
                         extra_kwargs[field.name] = kwargs
 
         return extra_kwargs
@@ -99,16 +130,22 @@ class EventSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSer
                     if attr in self.not_allowed_fields():
                         if config.ALLOWED_FIELDS_BLOCKED_EXCEPTION:
                             raise ValidationError(
-                                {attr: gettext('%s of merged events can\'t be modified') % self.not_allowed_fields()})
+                                {
+                                    attr: gettext(
+                                        "%s of merged events can't be modified"
+                                    )
+                                    % self.not_allowed_fields()
+                                }
+                            )
                         attrs.pop(attr)
         return attrs
 
 
-class EventSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
+class EventSerializerReduced(EvidenceSerializerMixin, AuditSerializerMixin):
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_BLOCKED_EVENT.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_EVENT.split(",")
 
     class Meta:
         model = models.Event
@@ -126,64 +163,121 @@ class EventSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, Audi
             "address_value",
             "date",
             "reporter",
+            "parent",
+            "children",
+            "merged",
+            "blocked",
+            "case",
+            "network",
+            "initial_taxonomy_slug",
         ]
 
 
-class CaseSerializer(MergeSerializerMixin, EvidenceSerializerMixin, ArtifactSerializerMixin, AuditSerializerMixin):
+class CaseSerializer(
+    MergeSerializerMixin,
+    EvidenceSerializerMixin,
+    ArtifactSerializerMixin,
+    AuditSerializerMixin,
+):
     events = serializers.HyperlinkedRelatedField(
-        many=True,
-        queryset=models.Event.objects.all(),
-        view_name='event-detail'
+        many=True, queryset=models.Event.objects.all(), view_name="event-detail"
     )
     children = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='case-detail'
+        many=True, read_only=True, view_name="case-detail"
     )
     evidence = serializers.SerializerMethodField(read_only=True)
     comments = serializers.SerializerMethodField()
     user_creator = serializers.HyperlinkedRelatedField(
-        default=serializers.CreateOnlyDefault(
-            serializers.CurrentUserDefault()),
+        default=serializers.CreateOnlyDefault(serializers.CurrentUserDefault()),
         queryset=models.User.objects.all(),
-        view_name='user-detail'
+        view_name="user-detail",
     )
     state = SlugOrHyperlinkedRelatedField(
-        slug_field='slug',
-        queryset=models.State.objects.all(),
-        view_name='state-detail'
+        slug_field="slug", queryset=models.State.objects.all(), view_name="state-detail"
     )
     template_creator = serializers.HyperlinkedRelatedField(
-        read_only=True,
-        view_name='casetemplate-detail'
+        read_only=True, view_name="casetemplate-detail"
     )
 
     class Meta:
         model = models.Case
-        fields = ('url', 'history', 'artifacts', 'events', 'children', 'evidence', 'comments', 'user_creator', 'state',
-                  'created', 'modified', 'date', 'name', 'attend_date', 'solve_date', 'report_message_id', 'raw',
-                  'uuid', 'lifecycle', 'notification_count', 'parent', 'priority', 'tlp', 'template_creator',
-                  'assigned', 'blocked', 'merged')
-        read_only_fields = ['attend_date', 'solve_date',
-                            'report_message_id', 'raw', 'created_by', 'notification_count', 'blocked']
+        fields = (
+            "url",
+            "history",
+            "artifacts",
+            "events",
+            "children",
+            "evidence",
+            "comments",
+            "user_creator",
+            "state",
+            "created",
+            "modified",
+            "date",
+            "name",
+            "attend_date",
+            "solve_date",
+            "report_message_id",
+            "raw",
+            "uuid",
+            "lifecycle",
+            "notification_count",
+            "parent",
+            "priority",
+            "tlp",
+            "template_creator",
+            "assigned",
+            "blocked",
+            "merged",
+        )
+        read_only_fields = [
+            "attend_date",
+            "solve_date",
+            "report_message_id",
+            "raw",
+            "created_by",
+            "notification_count",
+            "blocked",
+        ]
 
     def get_evidence(self, obj):
-        return GenericRelationField(read_only=True).generic_detail_links(obj.evidence_all, self.context.get('request'))
+        return GenericRelationField(read_only=True).generic_detail_links(
+            obj.evidence_all, self.context.get("request")
+        )
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_BLOCKED_CASE.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_CASE.split(",")
 
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
-        return GenericRelationField(read_only=True).generic_detail_links(comments_qs, self.context.get('request'))
+        return GenericRelationField(read_only=True).generic_detail_links(
+            comments_qs, self.context.get("request")
+        )
+
+    def create(self, validated_data):
+        """
+        Create a case and add the events to the case.
+        This function must be refactored to avoid the use of _temp_events for events and should be similar to the
+        artifact relation usage.
+        The problem is that the events/artifacts are not created yet and the case needs to be created first.
+        This problem may be solved at the model level and here should be only data validation. Same with parent
+        mixin ArtifactSerializerMixin.
+        """
+        # the model takes care of the events saving this relation
+        # should do the same with the artifacts and the serializer mixin can be removed
+        validated_data["_temp_events"] = validated_data.pop("events", None)
+        case = super().create(validated_data)
+        return case
 
 
-class CaseSerializerReduced(MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin):
+class CaseSerializerReduced(
+    MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin
+):
 
     @staticmethod
     def allowed_fields():
-        return config.ALLOWED_FIELDS_BLOCKED_CASE.split(',')
+        return config.ALLOWED_FIELDS_BLOCKED_CASE.split(",")
 
     class Meta:
         model = models.Case
@@ -218,7 +312,7 @@ class CaseTemplateSerializer(AuditSerializerMixin):
 
     class Meta:
         model = models.CaseTemplate
-        fields = '__all__'
+        fields = "__all__"
 
 
 class EvidenceSerializer(AuditSerializerMixin):
@@ -226,13 +320,15 @@ class EvidenceSerializer(AuditSerializerMixin):
 
     class Meta:
         model = models.Evidence
-        exclude = ['content_type', 'object_id']
+        exclude = ["content_type", "object_id"]
 
     def get_related(self, obj):
-        return GenericRelationField(read_only=True).generic_detail_link(obj.content_object, self.context.get('request'))
+        return GenericRelationField(read_only=True).generic_detail_link(
+            obj.content_object, self.context.get("request")
+        )
 
 
 class CaseMinifiedSerializer(AuditSerializerMixin):
     class Meta:
         model = models.Case
-        fields = ['url', 'uuid', 'name']
+        fields = ["url", "uuid", "name"]

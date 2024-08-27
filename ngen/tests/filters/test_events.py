@@ -1,6 +1,7 @@
 """
 Django Event filter tests. Tests search_fields and filterset_class.
 """
+
 import datetime
 
 import pytz
@@ -17,7 +18,12 @@ class EventFilterTest(BaseFilterTest):
     """
 
     fixtures = [
-        "priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json", "state.json",
+        "priority.json",
+        "feed.json",
+        "tlp.json",
+        "user.json",
+        "taxonomy.json",
+        "state.json",
         "case_template.json",
     ]
 
@@ -114,8 +120,7 @@ class EventFilterTest(BaseFilterTest):
         cls.queryset = Event.objects.all()
 
         cls.filter = lambda query_params: EventFilter(
-            query_params,
-            queryset=cls.queryset
+            query_params, queryset=cls.queryset
         )
 
     def test_search_filter(self):
@@ -123,19 +128,18 @@ class EventFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by taxonomy name
         query = "black"  # matches with taxonomy 1: "Blacklist"
         response = self.client.get(self.search_url(query))
-        self.assertEqual(response.data["count"], 2)
+        self.assertEqual(response.data["count"], 3)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.event_1.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.event_1.id
         )
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][1]["url"]),
-            self.event_4.id
+            self.get_id_from_url(response.data["results"][1]["url"]), self.event_4.id
+        )
+        self.assertEqual(
+            self.get_id_from_url(response.data["results"][2]["url"]), self.event_5.id
         )
 
         # Searching by feed name
@@ -143,12 +147,10 @@ class EventFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.event_2.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.event_2.id
         )
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][1]["url"]),
-            self.event_4.id
+            self.get_id_from_url(response.data["results"][1]["url"]), self.event_4.id
         )
 
         # Searching by cidr
@@ -156,17 +158,15 @@ class EventFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.event_4.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.event_4.id
         )
 
         # Searching by domain
         query = "info.unlp"
         response = self.client.get(self.search_url(query))
-        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.event_1.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.event_1.id
         )
 
         # Searching with no results
@@ -179,9 +179,7 @@ class EventFilterTest(BaseFilterTest):
         Test filter by id.
         """
 
-        params = {
-            "id": self.event_1.id
-        }
+        params = {"id": self.event_1.id}
 
         filtered_queryset = self.filter(params).qs
 
@@ -194,7 +192,7 @@ class EventFilterTest(BaseFilterTest):
 
         params = {
             "created_range_after": "2000-01-01",
-            "created_range_before": "2000-01-02"
+            "created_range_before": "2000-01-02",
         }
 
         filtered_queryset = self.filter(params).qs
@@ -211,15 +209,22 @@ class EventFilterTest(BaseFilterTest):
 
         params = {
             "modified_range_after": today.isoformat(),
-            "modified_range_before": tomorrow.isoformat()
+            "modified_range_before": tomorrow.isoformat(),
         }
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
             filtered_queryset,
-            [self.event_1, self.event_2, self.event_3, self.event_4, self.event_5, self.event_6],
-            ordered=False
+            [
+                self.event_1,
+                self.event_2,
+                self.event_3,
+                self.event_4,
+                self.event_5,
+                self.event_6,
+            ],
+            ordered=False,
         )
 
     def test_filter_by_date(self):
@@ -227,9 +232,7 @@ class EventFilterTest(BaseFilterTest):
         Test filter by date.
         """
 
-        params = {
-            "date": "2000-01-01"
-        }
+        params = {"date": "2000-01-01"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -240,16 +243,12 @@ class EventFilterTest(BaseFilterTest):
         Test filter by feed.
         """
 
-        params = {
-            "feed": self.feed_2
-        }
+        params = {"feed": self.feed_2}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.event_2, self.event_4],
-            ordered=False
+            filtered_queryset, [self.event_2, self.event_4], ordered=False
         )
 
     def test_filter_by_tlp(self):
@@ -257,16 +256,12 @@ class EventFilterTest(BaseFilterTest):
         Test filter by tlp.
         """
 
-        params = {
-            "tlp": self.tlp_3
-        }
+        params = {"tlp": self.tlp_3}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.event_3, self.event_4],
-            ordered=False
+            filtered_queryset, [self.event_3, self.event_4], ordered=False
         )
 
     def test_filter_by_priority(self):
@@ -274,9 +269,7 @@ class EventFilterTest(BaseFilterTest):
         Test filter by priority.
         """
 
-        params = {
-            "priority": self.priority_2
-        }
+        params = {"priority": self.priority_2}
 
         filtered_queryset = self.filter(params).qs
 
@@ -287,16 +280,12 @@ class EventFilterTest(BaseFilterTest):
         Test filter by taxonomy.
         """
 
-        params = {
-            "taxonomy": self.taxonomy_1
-        }
+        params = {"taxonomy": self.taxonomy_1}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.event_1, self.event_4, self.event_5],
-            ordered=False
+            filtered_queryset, [self.event_1, self.event_4, self.event_5], ordered=False
         )
 
     def test_filter_by_parent(self):
@@ -304,24 +293,43 @@ class EventFilterTest(BaseFilterTest):
         Test filter by parent.
         """
 
-        params = {
-            "parent": self.event_1
-        }
+        params = {"parent": self.event_1}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(filtered_queryset, [self.event_5])
 
-        params = {
-            "parent__isnull": True
-        }
+        params = {"parent__isnull": True}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
             filtered_queryset,
             [self.event_1, self.event_2, self.event_3, self.event_4, self.event_6],
-            ordered=False
+            ordered=False,
+        )
+
+        params = {"parent__isnull": False}
+
+        filtered_queryset = self.filter(params).qs
+
+        self.assertQuerysetEqual(filtered_queryset, [self.event_5], ordered=False)
+
+        params = {}
+
+        filtered_queryset = self.filter(params).qs
+
+        self.assertQuerysetEqual(
+            filtered_queryset,
+            [
+                self.event_1,
+                self.event_2,
+                self.event_3,
+                self.event_4,
+                self.event_5,
+                self.event_6,
+            ],
+            ordered=False,
         )
 
     def test_filter_by_case(self):
@@ -329,24 +337,20 @@ class EventFilterTest(BaseFilterTest):
         Test filter by case.
         """
 
-        params = {
-            "case": Case.objects.first()
-        }
+        params = {"case": Case.objects.first()}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(filtered_queryset, [self.event_1])
 
-        params = {
-            "case__isnull": True
-        }
+        params = {"case__isnull": True}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
             filtered_queryset,
             [self.event_2, self.event_3, self.event_4, self.event_5, self.event_6],
-            ordered=False
+            ordered=False,
         )
 
     def test_filter_by_reporter(self):
@@ -354,16 +358,14 @@ class EventFilterTest(BaseFilterTest):
         Test filter by reporter.
         """
 
-        params = {
-            "reporter": self.user_1
-        }
+        params = {"reporter": self.user_1}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
             filtered_queryset,
             [self.event_1, self.event_2, self.event_3, self.event_4, self.event_5],
-            ordered=False
+            ordered=False,
         )
 
     def test_filter_by_uuid(self):
@@ -371,9 +373,7 @@ class EventFilterTest(BaseFilterTest):
         Test filter by uuid.
         """
 
-        params = {
-            "uuid": "00000000-0000-0000-0000-000000000002"
-        }
+        params = {"uuid": "00000000-0000-0000-0000-000000000002"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -384,24 +384,18 @@ class EventFilterTest(BaseFilterTest):
         Test filter by cidr.
         """
 
-        params = {
-            "cidr": "10.0.0.0/16"
-        }
+        params = {"cidr": "10.0.0.0/16"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(filtered_queryset, [self.event_4])
 
-        params = {
-            "is_subnet_of": "10.0.0.0/16"
-        }
+        params = {"is_subnet_of": "10.0.0.0/16"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.event_4, self.event_6],
-            ordered=False
+            filtered_queryset, [self.event_4, self.event_6], ordered=False
         )
 
     def test_filter_by_domain(self):
@@ -409,22 +403,16 @@ class EventFilterTest(BaseFilterTest):
         Test filter by domain.
         """
 
-        params = {
-            "domain": "cert.edu.ar"
-        }
+        params = {"domain": "cert.edu.ar"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(filtered_queryset, [self.event_3])
 
-        params = {
-            "is_subdomain_of": "unlp.edu.ar"
-        }
+        params = {"is_subdomain_of": "unlp.edu.ar"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.event_1, self.event_2, self.event_5],
-            ordered=False
+            filtered_queryset, [self.event_1, self.event_2, self.event_5], ordered=False
         )

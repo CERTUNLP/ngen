@@ -1,0 +1,17 @@
+import apiInstance from "../api";
+import { COMPONENT_URL } from "../../config/constant";
+
+const postStringIdentifier = (identifier) => {
+  return apiInstance
+    .post(COMPONENT_URL.stringidentifier, {
+      input_string: identifier
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
+};
+
+export { postStringIdentifier };

@@ -3,19 +3,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="{{ lang|default:config.NGEN_LANG }}">
-    <head>
+<head>
     {% block head %}
         {% include 'reports/base_head.html' %}
     {% endblock %}
-    </head>
-    <body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
-    {% block header %}
-        {% include 'reports/base_header.html' with tlp=case.tlp priority=case.priority %}
-    {% endblock %}
-    {% block content %}
-    {% endblock %}
-    {% block footer %}
-        {% include 'reports/base_footer.html' %}
-    {% endblock %}
-    </body>
+</head>
+<body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
+{% block header %}
+    {% include 'reports/base_header.html' with tlp=case.tlp priority=case.priority %}
+{% endblock %}
+{% block content %}
+{% endblock %}
+{% block footer %}
+    {% include 'reports/base_footer.html' %}
+{% endblock %}
+</body>
 </html>

@@ -1,6 +1,7 @@
 """
 Django Playbook filter tests. Tests search_fields and filterset_class.
 """
+
 import datetime
 
 import pytz
@@ -16,7 +17,7 @@ class PlaybookFilterTest(BaseFilterTest):
     Playbook filter test class.
     """
 
-    fixtures = ['priority.json', 'user.json', 'taxonomy.json']
+    fixtures = ["priority.json", "user.json", "taxonomy.json"]
 
     @classmethod
     def setUpTestData(cls):
@@ -39,8 +40,7 @@ class PlaybookFilterTest(BaseFilterTest):
         cls.queryset = Playbook.objects.all()
 
         cls.filter = lambda query_params: PlaybookFilter(
-            query_params,
-            queryset=cls.queryset
+            query_params, queryset=cls.queryset
         )
 
     def test_search_filter(self):
@@ -48,15 +48,12 @@ class PlaybookFilterTest(BaseFilterTest):
         SearchFilter tests.
         """
 
-        self.authenticate()
-
         # Searching by name
         query = "phish"
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.playbook_1.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.playbook_1.id
         )
 
         # Searching by taxonomy name
@@ -64,8 +61,7 @@ class PlaybookFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.playbook_1.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.playbook_1.id
         )
 
         # Searching with no results
@@ -78,9 +74,7 @@ class PlaybookFilterTest(BaseFilterTest):
         Test filter by id.
         """
 
-        params = {
-            "id": self.playbook_1.id
-        }
+        params = {"id": self.playbook_1.id}
 
         filtered_queryset = self.filter(params).qs
 
@@ -93,7 +87,7 @@ class PlaybookFilterTest(BaseFilterTest):
 
         params = {
             "created_range_after": "2000-01-01",
-            "created_range_before": "2000-01-02"
+            "created_range_before": "2000-01-02",
         }
 
         filtered_queryset = self.filter(params).qs
@@ -110,15 +104,13 @@ class PlaybookFilterTest(BaseFilterTest):
 
         params = {
             "modified_range_after": today.isoformat(),
-            "modified_range_before": tomorrow.isoformat()
+            "modified_range_before": tomorrow.isoformat(),
         }
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.playbook_1, self.playbook_2],
-            ordered=False
+            filtered_queryset, [self.playbook_1, self.playbook_2], ordered=False
         )
 
     def test_filter_by_name(self):
@@ -126,9 +118,7 @@ class PlaybookFilterTest(BaseFilterTest):
         Test filter by name.
         """
 
-        params = {
-            "name__icontains": "phish"
-        }
+        params = {"name__icontains": "phish"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -139,9 +129,7 @@ class PlaybookFilterTest(BaseFilterTest):
         Test filter by taxonomy.
         """
 
-        params = {
-            "taxonomy": [self.taxonomy_1]
-        }
+        params = {"taxonomy": [self.taxonomy_1]}
 
         filtered_queryset = self.filter(params).qs
 

@@ -1,6 +1,7 @@
 """
 Django Network Entity filter tests. Tests search_fields and filterset_class.
 """
+
 import datetime
 
 import pytz
@@ -16,7 +17,7 @@ class NetworkEntityFilterTest(BaseFilterTest):
     Network Entity filter test class.
     """
 
-    fixtures = ['priority.json', 'user.json']
+    fixtures = ["priority.json", "user.json"]
 
     @classmethod
     def setUpTestData(cls):
@@ -60,8 +61,6 @@ class NetworkEntityFilterTest(BaseFilterTest):
         """
         SearchFilter tests.
         """
-
-        self.authenticate()
 
         # Searching by name
         query = "plata"

@@ -1,33 +1,28 @@
-from constance import config
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import gettext
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from ngen import models
 
 
 class AuditSerializerMixin(serializers.HyperlinkedModelSerializer):
     history = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='logentry-detail'
+        many=True, read_only=True, view_name="logentry-detail"
     )
 
 
 class EvidenceSerializerMixin(AuditSerializerMixin):
 
     def update(self, instance, validated_data):
-        files = self.context.get('request').FILES
+        files = self.context.get("request").FILES
         if files:
-            validated_data['files'] = files.getlist('evidence')
+            validated_data["files"] = files.getlist("evidence")
         event = super().update(instance, validated_data)
         return event
 
     def create(self, validated_data):
-        files = self.context.get('request').FILES
+        files = self.context.get("request").FILES
         if files:
-            validated_data['files'] = files.getlist('evidence')
+            validated_data["files"] = files.getlist("evidence")
         event = super().create(validated_data)
         return event
 
@@ -35,7 +30,7 @@ class EvidenceSerializerMixin(AuditSerializerMixin):
 class ArtifactSerializerMixin(serializers.HyperlinkedModelSerializer):
     artifacts = serializers.HyperlinkedRelatedField(
         many=True,
-        view_name='artifact-detail',
+        view_name="artifact-detail",
         queryset=models.Artifact.objects.all(),
     )
 
@@ -44,54 +39,76 @@ class ArtifactSerializerMixin(serializers.HyperlinkedModelSerializer):
         Update automatic artifacts relations deleting all and adding the new ones.
         Update manual artifacts relations deleting the ones that are not in the new list and adding the new ones.
         """
-        artifacts = validated_data.pop('artifacts', [])
-        super().update(instance, validated_data)
         ct = ContentType.objects.get_for_model(instance)
-        # remove manual relations that are not in the new list and are not auto_created
-        models.ArtifactRelation.objects.filter(
+        artifacts = validated_data.pop("artifacts", [])
+
+        # Change automatic relations to manual relations
+        art_relations = models.ArtifactRelation.objects.filter(
+            pk__in=[artifact.pk for artifact in artifacts],
             object_id=instance.id,
             content_type=ct,
-            auto_created=False
-        ).exclude(
-            artifact__in=artifacts
-        ).delete()
+            auto_created=True,
+        )
+        for art_rel in art_relations:
+            art_rel.auto_created = False
+            art_rel.save()
+
+        # Update automatic artifacts relations
+        # This will delete all automatic relations and add the new ones
+        super().update(instance, validated_data)
+
+        # Update manual artifacts relations
+        # remove manual (not auto_created) relations that are not in the new list
+        models.ArtifactRelation.objects.filter(
+            object_id=instance.id, content_type=ct, auto_created=False
+        ).exclude(artifact__in=artifacts).delete()
+
         # find new manual relations
         new_artifacts = models.Artifact.objects.filter(
             pk__in=[artifact.pk for artifact in artifacts]
         ).exclude(
-            artifact_relation__object_id=instance.id,
-            artifact_relation__content_type=ct
+            artifact_relation__object_id=instance.id, artifact_relation__content_type=ct
         )
+
         # add new manual relations
         for artifact_obj in new_artifacts:
             models.ArtifactRelation.objects.get_or_create(
                 artifact=artifact_obj,
                 object_id=instance.id,
                 content_type=ct,
-                defaults={'auto_created': False}
+                defaults={"auto_created": False},
             )
+
         return instance
 
     def create(self, validated_data):
-        artifacts = validated_data.pop('artifacts', [])
-        event = super().create(validated_data)
+        artifacts = validated_data.pop("artifacts", [])
+        instance = super().create(validated_data)
+
         # add new manual relations
         for artifact in artifacts:
             artifact_obj = models.Artifact.objects.get(pk=artifact.pk)
-            models.ArtifactRelation.objects.create(artifact=artifact_obj, related=event, auto_created=False)
-        return event
+            models.ArtifactRelation.objects.create(
+                artifact=artifact_obj, related=instance, auto_created=False
+            )
+
+        return instance
 
 
 class MergeSerializerMixin:
-    blocked = serializers.Field(source='blocked')
+    blocked = serializers.Field(source="blocked")
 
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
         try:
-            action = self.context['view'].action
+            action = self.context["view"].action
         except KeyError:
             action = None
-        if action in ['update', 'partial_update', 'retrieve'] and self.instance and not self.instance.mergeable:
+        if (
+            action in ["update", "partial_update", "retrieve"]
+            and self.instance
+            and not self.instance.mergeable
+        ):
             if self.instance.blocked:
                 allowed_fields = self.allowed_fields()
             elif self.instance.merged:
@@ -99,9 +116,9 @@ class MergeSerializerMixin:
             for field in self.instance._meta.fields:
                 if field.name not in allowed_fields:
                     kwargs = extra_kwargs.get(field.name, {})
-                    kwargs['read_only'] = True
+                    kwargs["read_only"] = True
                     if field.is_relation:
-                        kwargs['queryset'] = None
+                        kwargs["queryset"] = None
                     extra_kwargs[field.name] = kwargs
 
         return extra_kwargs

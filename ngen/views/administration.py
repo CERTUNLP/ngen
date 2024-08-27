@@ -1,21 +1,21 @@
 import django_filters
-from rest_framework import permissions, filters, viewsets
 from django.db.models import Count
+from rest_framework import permissions, filters, viewsets
 
 from ngen import models, serializers
 from ngen.filters import FeedFilter, PriorityFilter, TlpFilter
 
 
 class FeedViewSet(viewsets.ModelViewSet):
-    queryset = models.Feed.objects.annotate(events_count=Count('event')).order_by('id')
+    queryset = models.Feed.objects.annotate(events_count=Count("events")).order_by("id")
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.OrderingFilter
+        filters.OrderingFilter,
     ]
-    search_fields = ['name', 'description']
+    search_fields = ["name", "description"]
     filterset_class = FeedFilter
-    ordering_fields = ['id', 'created', 'modified', 'name', 'slug', 'events_count']
+    ordering_fields = ["id", "created", "modified", "name", "slug", "events_count"]
     serializer_class = serializers.FeedSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -25,25 +25,34 @@ class PriorityViewSet(viewsets.ModelViewSet):
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.OrderingFilter
+        filters.OrderingFilter,
     ]
-    search_fields = ['name']
+    search_fields = ["name"]
     filterset_class = PriorityFilter
-    ordering_fields = ['id', 'created', 'modified', 'name', 'slug', 'severity', 'attend_time', 'solve_time']
+    ordering_fields = [
+        "id",
+        "created",
+        "modified",
+        "name",
+        "slug",
+        "severity",
+        "attend_time",
+        "solve_time",
+    ]
     serializer_class = serializers.PrioritySerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class TlpViewSet(viewsets.ModelViewSet):
-    queryset = models.Tlp.objects.all().order_by('id')
+    queryset = models.Tlp.objects.all().order_by("id")
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.OrderingFilter
+        filters.OrderingFilter,
     ]
-    search_fields = ['name']
+    search_fields = ["name"]
     filterset_class = TlpFilter
-    ordering_fields = ['id', 'created', 'modified', 'name', 'slug', 'code']
+    ordering_fields = ["id", "created", "modified", "name", "slug", "code"]
     serializer_class = serializers.TlpSerializer
     permission_classes = [permissions.IsAuthenticated]
 

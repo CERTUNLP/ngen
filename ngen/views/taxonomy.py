@@ -10,12 +10,51 @@ class TaxonomyViewSet(viewsets.ModelViewSet):
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.OrderingFilter
+        filters.OrderingFilter,
     ]
-    search_fields = ['name', 'description']
+    search_fields = [
+        "name",
+        "description",
+        "slug",
+        "group__name",
+        "group__slug",
+        "alias_of__name",
+        "alias_of__slug",
+    ]
     filterset_class = TaxonomyFilter
-    ordering_fields = ['id', 'created', 'modified', 'name', 'reports']
+    ordering_fields = [
+        "id",
+        "created",
+        "modified",
+        "name",
+        "reports",
+        "group__name",
+        "alias_of__name",
+        "needs_review",
+        "type",
+        "active",
+    ]
     serializer_class = serializers.TaxonomySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class TaxonomyGroupViewSet(viewsets.ModelViewSet):
+    queryset = models.TaxonomyGroup.objects.all()
+    filter_backends = [
+        filters.SearchFilter,
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter,
+    ]
+    search_fields = ["name", "description", "slug"]
+    ordering_fields = [
+        "id",
+        "created",
+        "modified",
+        "name",
+        "taxonomies",
+        "needs_review",
+    ]
+    serializer_class = serializers.TaxonomyGroupSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -24,11 +63,11 @@ class PlaybookViewSet(viewsets.ModelViewSet):
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.OrderingFilter
+        filters.OrderingFilter,
     ]
-    search_fields = ['name', 'taxonomy__name']
+    search_fields = ["name", "taxonomy__name"]
     filterset_class = PlaybookFilter
-    ordering_fields = ['id', 'created', 'modified', 'name', 'taxonomy__name']
+    ordering_fields = ["id", "created", "modified", "name", "taxonomy__name"]
     serializer_class = serializers.PlaybookSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -38,10 +77,10 @@ class TaskViewSet(viewsets.ModelViewSet):
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.OrderingFilter
+        filters.OrderingFilter,
     ]
-    search_fields = ['name', 'description']
-    ordering_fields = ['id', 'created', 'modified', 'name', 'playbook', 'priority']
+    search_fields = ["name", "description"]
+    ordering_fields = ["id", "created", "modified", "name", "playbook", "priority"]
     serializer_class = serializers.TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -51,10 +90,18 @@ class TodoTaskViewSet(viewsets.ModelViewSet):
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.OrderingFilter
+        filters.OrderingFilter,
     ]
-    search_fields = ['note', 'assigned_to__username']
-    ordering_fields = ['id', 'created', 'modified', 'completed', 'assigned_to', 'note', 'reports']
+    search_fields = ["note", "assigned_to__username"]
+    ordering_fields = [
+        "id",
+        "created",
+        "modified",
+        "completed",
+        "assigned_to",
+        "note",
+        "reports",
+    ]
     serializer_class = serializers.TodoTaskSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -64,11 +111,22 @@ class ReportViewSet(viewsets.ModelViewSet):
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.OrderingFilter
+        filters.OrderingFilter,
     ]
-    search_fields = ['taxonomy__name']
-    ordering_fields = ['id', 'created', 'modified', 'problem', 'derived_problem', 'taxonomy', 'verification',
-                       'recommendations', 'more_information', 'lang', 'taxonomy__name']
+    search_fields = ["taxonomy__name"]
+    ordering_fields = [
+        "id",
+        "created",
+        "modified",
+        "problem",
+        "derived_problem",
+        "taxonomy",
+        "verification",
+        "recommendations",
+        "more_information",
+        "lang",
+        "taxonomy__name",
+    ]
     serializer_class = serializers.ReportSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -76,5 +134,12 @@ class ReportViewSet(viewsets.ModelViewSet):
 class TaxonomyMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Taxonomy.objects.all()
     serializer_class = serializers.TaxonomyMinifiedSerializer
+    pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class TaxonomyGroupMinifiedViewSet(viewsets.ModelViewSet):
+    queryset = models.TaxonomyGroup.objects.all()
+    serializer_class = serializers.TaxonomyGroupMinifiedSerializer
     pagination_class = None
     permission_classes = [permissions.IsAuthenticated]

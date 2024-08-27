@@ -1,0 +1,38 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      container_react: docker-ngen-frontend-1
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build docker container for Vite
+        run: |
+          cd docker
+          docker compose build ngen-frontend
+          docker compose up -d ngen-frontend
+          
+          # Test if react container is running
+          max_retries=30
+          retries=0
+          while [[ "$(docker inspect -f '{{.State.Running}}' "$container_react")" != "true" ]]; do
+            retries=$((retries + 1))
+            if [ $retries -ge $max_retries ]; then
+              echo "Container '$container_react' did not start within the timeout."
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Run Vite build
+        run: docker exec "$container_react" npm run build

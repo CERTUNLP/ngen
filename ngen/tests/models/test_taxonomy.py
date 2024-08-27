@@ -1,22 +1,62 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from ngen.models import Taxonomy
+from ngen.models import Taxonomy, TaxonomyGroup
 
 
 class TaxonomyTestCase(TestCase):
 
-    def setUp(self):
-        """ 
+    @classmethod
+    def setUpTestData(cls):
+        """
         Create instances of Taxonomy
         """
-        self.parent = Taxonomy.objects.create(type='vulnerability', name='Parent')
-        self.child1 = Taxonomy.objects.create(type='vulnerability', name='Child 1', parent=self.parent)
-        self.child2 = Taxonomy.objects.create(type='vulnerability', name='Child 2', parent=self.child1)
-        self.aRootNode = Taxonomy.objects.create(type='vulnerability', name='A Root Node')
-        self.aNode_Parent = Taxonomy.objects.create(type='vulnerability', name='A Node Parent')
-        self.aNode = Taxonomy.objects.create(type='vulnerability', name='a Node', parent=self.aNode_Parent)
-        self.aNode_child1 = Taxonomy.objects.create(type='vulnerability', name='Node Child 1', parent=self.aNode)
-        self.Node_child2 = Taxonomy.objects.create(type='vulnerability', name='Node Child 2', parent=self.aNode)
+        cls.parent = Taxonomy.objects.create(type="vulnerability", name="Parent")
+        cls.child1 = Taxonomy.objects.create(
+            type="vulnerability", name="Child 1", parent=cls.parent
+        )
+        cls.child2 = Taxonomy.objects.create(
+            type="vulnerability", name="Child 2", parent=cls.child1
+        )
+        cls.aRootNode = Taxonomy.objects.create(
+            type="vulnerability", name="A Root Node"
+        )
+        cls.aNode_Parent = Taxonomy.objects.create(
+            type="vulnerability", name="A Node Parent"
+        )
+        cls.aNode = Taxonomy.objects.create(
+            type="vulnerability", name="a Node", parent=cls.aNode_Parent
+        )
+        cls.aNode_child1 = Taxonomy.objects.create(
+            type="vulnerability", name="Node Child 1", parent=cls.aNode
+        )
+        cls.aNode_child2 = Taxonomy.objects.create(
+            type="vulnerability", name="Node Child 2", parent=cls.aNode
+        )
+        cls.aNode_child3 = Taxonomy.objects.create(
+            type="vulnerability", name="Node Child 3", alias_of=cls.aNode
+        )
+        cls.aNode_child4 = Taxonomy.objects.create(
+            type="vulnerability", name="Node Child 4", alias_of=cls.child1
+        )
+
+        cls.taxonomy_group2 = TaxonomyGroup.objects.create(name="Shadowserver")
+        cls.parent2 = Taxonomy.objects.create(
+            type="incident", name="Parent2", group=cls.taxonomy_group2
+        )
+        cls.p2_child1 = Taxonomy.objects.create(
+            type="incident", name="P2 Child 1", parent=cls.parent2
+        )
+        cls.p2_child2 = Taxonomy.objects.create(
+            type="incident", name="P2 Child 2", parent=cls.parent2
+        )
+        cls.p2_child1_child1 = Taxonomy.objects.create(
+            type="incident",
+            name="P2 Child 1 Child 1",
+            parent=cls.p2_child1,
+            alias_of=cls.aNode_child2,
+        )
+
         # self.aNode = Taxonomy.objects.create(type='vulnerability' name= 'Node')
 
     # def test_duplicated_taxonomy(self):
@@ -43,14 +83,18 @@ class TaxonomyTestCase(TestCase):
         Test: Simple deletion
         """
         self.aNode.delete()  # Delete aNode
-        deleted_node = Taxonomy.objects.filter(id=self.aNode.id).first()  # Check for deleted node ID in the DB
+        deleted_node = Taxonomy.objects.filter(
+            id=self.aNode.id
+        ).first()  # Check for deleted node ID in the DB
         self.assertIsNone(deleted_node)
 
     def test_parent_deletion(self):
         """
         Test: If a root parent is deleted, all children must NOT have a parent
         """
-        children_queryset = self.aRootNode.get_children()  # Getting children from Root before deletion
+        children_queryset = (
+            self.aRootNode.get_children()
+        )  # Getting children from Root before deletion
 
         # Convert the queryset to a list or other data structure
         children = list(children_queryset)
@@ -98,4 +142,82 @@ class TaxonomyTestCase(TestCase):
         Test: if the taxonomy tree has cycles
         """
         self.parent.parent = self.child2
-        self.assertRaises(Exception, self.parent.save) # ToDo: Espero excepcion especifica para cuando se produce un ciclo
+        self.assertRaises(
+            Exception, self.parent.save
+        )  # ToDo: Espero excepcion especifica para cuando se produce un ciclo
+
+    def test_taxonomy_root(self):
+        """
+        Test: Root node
+        """
+        self.assertIsNone(self.parent.get_parent())
+
+    def test_taxonomy_is_alias(self):
+        """
+        Test: Alias node
+        """
+        self.assertTrue(self.aNode_child3.is_alias)
+        self.assertFalse(self.aNode_child1.is_alias)
+
+    def test_taxonomy_is_internal(self):
+        """
+        Test: Alias node
+        """
+        self.assertTrue(self.aNode_child3.is_internal)
+        self.assertFalse(self.p2_child1.is_internal)
+
+    def test_taxonomy_internal_creation_parent_and_alias(self):
+        """
+        Test: Alias parent
+        """
+        self.assertRaises(
+            ValidationError,
+            Taxonomy.objects.create,
+            type="vulnerability",
+            name="Alias Parent",
+            alias_of=self.aNode_child1,
+            parent=self.parent,
+        )
+
+    def test_taxonomy_external_creation_parent_and_alias(self):
+        """
+        Test: Alias parent
+        """
+        self.assertIsInstance(
+            Taxonomy.objects.create(
+                type="vulnerability",
+                name="Alias Parent",
+                alias_of=self.aNode_child1,
+                parent=None,
+                group=self.taxonomy_group2,
+            ),
+            Taxonomy,
+        )
+
+    def test_taxonomy_alias_creation_parent_alias(self):
+        """
+        Test: Alias parent
+        """
+        self.assertRaises(
+            ValidationError,
+            Taxonomy.objects.create,
+            type="vulnerability",
+            name="Alias Parent",
+            alias_of=self.p2_child1_child1,
+        )
+
+    def test_taxonomy_alias_update_alias_is_alias(self):
+        """
+        Test: Alias parent
+        """
+        with self.assertRaises(ValidationError):
+            self.aNode_child1.alias_of = self.aNode_child1
+            self.aNode_child1.save()
+
+    def test_taxonomy_alias_update_parent_is_alias(self):
+        """
+        Test: Alias parent
+        """
+        with self.assertRaises(ValidationError):
+            self.aNode_child4.parent = self.aNode_child3
+            self.aNode_child4.save()
