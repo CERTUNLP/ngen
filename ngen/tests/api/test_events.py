@@ -465,12 +465,8 @@ class TestEvent(APITestCaseWithLogin):
         artifacts = Event.objects.last().artifacts
         self.assertEqual(len(artifacts), 2)
         self.assertEqual(artifacts[0].related[0], Event.objects.last())
-        self.assertTrue(
-            "another.domain3.com" in [artifact.value for artifact in artifacts]
-        )
-        self.assertTrue(
-            "another.domain5.com" in [artifact.value for artifact in artifacts]
-        )
+        self.assertIn("another.domain3.com", [artifact.value for artifact in artifacts])
+        self.assertIn("another.domain5.com", [artifact.value for artifact in artifacts])
 
     def test_event_delete(self):
         """
