@@ -1,6 +1,6 @@
-import apiInstance from '../api';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
-import setAlert from '../../utils/setAlert';
+import apiInstance from "../api";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
+import setAlert from "../../utils/setAlert";
 
 const getMinifiedPriority = () => {
   //el parametro es para completar la url con el numero de pagina
@@ -11,7 +11,7 @@ const getMinifiedPriority = () => {
       return response.data;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'priority');
+      setAlert(messageError, "error", "priority");
       return Promise.reject(error);
     });
 };
@@ -20,12 +20,12 @@ const getPriorities = (currentPage, filters, order) => {
   //el parametro es para completar la url con el numero de pagina
   let messageError = `No se pudo recuperar la informacion de las prioridades`;
   return apiInstance
-    .get(COMPONENT_URL.priority + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.priority + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'priority');
+      setAlert(messageError, "error", "priority");
       return Promise.reject(error);
     });
 };
@@ -38,7 +38,7 @@ const getPriority = (url) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'priority');
+      setAlert(messageError, "error", "priority");
       return Promise.reject(error);
     });
 };
@@ -60,7 +60,7 @@ const getAllPriorities = (currentPage = 1, results = [], limit = 100) => {
       }
     })
     .catch((error) => {
-      return Promise.reject(error, 'priority');
+      return Promise.reject(error, "priority");
     });
 };
 
@@ -76,24 +76,24 @@ const postPriority = (name, color, severity, attend_time, solve_time) => {
       solve_time: solve_time
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'priority');
+      setAlert(messageSuccess, "success", "priority");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
+      let statusText = "";
 
       if (error.response.status === 400) {
-        console.log('status 400');
+        console.log("status 400");
 
         //se informa que existe el username con ese nombre
-        if (error.response.data.slug && error.response.data.slug[0].substring(0, 39) === 'Ya existe una entidad Priority con slug') {
-          statusText = 'Ingrese un nombre diferente. ';
-        } else if (error.response.data.severity && error.response.data.severity[0] === 'priority with this severity already exists.') {
+        if (error.response.data.slug && error.response.data.slug[0].substring(0, 39) === "Ya existe una entidad Priority con slug") {
+          statusText = "Ingrese un nombre diferente. ";
+        } else if (error.response.data.severity && error.response.data.severity[0] === "priority with this severity already exists.") {
           statusText = `Ingrese una severidad diferente.`;
-          console.log('SEVERIDAD');
-        } else if (error.response.data.color && error.response.data.color[0] === 'Enter a valid hex color, eg. #000000') {
-          statusText = 'Ingrese un color valido. ';
-          console.log('COLOR');
+          console.log("SEVERIDAD");
+        } else if (error.response.data.color && error.response.data.color[0] === "Enter a valid hex color, eg. #000000") {
+          statusText = "Ingrese un color valido. ";
+          console.log("COLOR");
         }
       } else if (error.message === "Cannot read properties of undefined (reading 'code')") {
         //el backend o servidor no funciona
@@ -102,7 +102,7 @@ const postPriority = (name, color, severity, attend_time, solve_time) => {
         statusText = error.response.statusText;
       }
       messageError += statusText;
-      setAlert(messageError, 'error', 'priority');
+      setAlert(messageError, "error", "priority");
       return Promise.reject(error);
     });
 };
@@ -119,21 +119,21 @@ const putPriority = (url, name, color, severity, attend_time, solve_time) => {
       solve_time: solve_time
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'priority');
+      setAlert(messageSuccess, "success", "priority");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
+      let statusText = "";
       if (error.response.status === 400) {
-        console.log('status 400');
+        console.log("status 400");
 
         //se informa que existe el username con ese nombre
-        if (error.response.data.slug && error.response.data.slug[0].substring(0, 39) === 'Ya existe una entidad Priority con slug') {
-          statusText = 'Ingrese un nombre diferente. ';
-        } else if (error.response.data.severity && error.response.data.severity[0] === 'priority with this severity already exists.') {
+        if (error.response.data.slug && error.response.data.slug[0].substring(0, 39) === "Ya existe una entidad Priority con slug") {
+          statusText = "Ingrese un nombre diferente. ";
+        } else if (error.response.data.severity && error.response.data.severity[0] === "priority with this severity already exists.") {
           statusText = `Ingrese una severidad diferente.`;
-        } else if (error.response.data.color && error.response.data.color[0] === 'Enter a valid hex color, eg. #000000') {
-          statusText = 'Ingrese un color valido. ';
+        } else if (error.response.data.color && error.response.data.color[0] === "Enter a valid hex color, eg. #000000") {
+          statusText = "Ingrese un color valido. ";
         }
       } else if (error.message === "Cannot read properties of undefined (reading 'code')") {
         //el backend o servidor no funciona
@@ -142,7 +142,7 @@ const putPriority = (url, name, color, severity, attend_time, solve_time) => {
         statusText = error.response.statusText;
       }
       messageError += statusText;
-      setAlert(messageError, 'error', 'priority');
+      setAlert(messageError, "error", "priority");
       return Promise.reject(error);
     });
 };
@@ -153,21 +153,21 @@ const deletePriority = (url) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'priority');
+      setAlert(messageSuccess, "success", "priority");
       return response;
     })
     .catch((error) => {
-      let statusText = '';
+      let statusText = "";
       if (
         error.response.data.error &&
         error.response.data.error[0].includes(
           "Cannot delete some instances of model 'Priority' because they are referenced through protected foreign keys"
         )
       ) {
-        statusText = ', esta referenciada.';
+        statusText = ", esta referenciada.";
       }
       messageError += statusText;
-      setAlert(messageError, 'error', 'priority');
+      setAlert(messageError, "error", "priority");
       return Promise.reject(error);
     });
 };

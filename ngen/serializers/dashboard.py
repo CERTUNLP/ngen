@@ -84,7 +84,6 @@ class NetworkEntitiesWithEventsSerializer(NetworkEntitySerializerReduced):
         #             cidr_list.append(cidr)
         #             entity_events += models.Event.objects.children_of_cidr(cidr)
 
-
         # for network in network_entity.networks.all():
         #     domain = network.domain
         #     cidr = network.cidr

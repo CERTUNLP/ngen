@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import CrudButton from '../../components/Button/CrudButton';
-import Alert from '../../components/Alert/Alert';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import Navigation from '../../components/Navigation/Navigation';
-import { getMinifiedTaxonomy, getTaxonomies } from '../../api/services/taxonomies';
-import Search from '../../components/Search/Search';
-import TableTaxonomy from './components/TableTaxonomy';
-import { useTranslation } from 'react-i18next';
-import { getMinifiedTaxonomyGroups } from '../../api/services/taxonomyGroups';
+import React, { useEffect, useState } from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import CrudButton from "../../components/Button/CrudButton";
+import Alert from "../../components/Alert/Alert";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import Navigation from "../../components/Navigation/Navigation";
+import { getMinifiedTaxonomy, getTaxonomies } from "../../api/services/taxonomies";
+import Search from "../../components/Search/Search";
+import TableTaxonomy from "./components/TableTaxonomy";
+import { useTranslation } from "react-i18next";
+import { getMinifiedTaxonomyGroups } from "../../api/services/taxonomyGroups";
 
 const ListTaxonomies = () => {
   const [taxonomies, setTaxonomies] = useState([]);
@@ -25,9 +25,9 @@ const ListTaxonomies = () => {
   const [countItems, setCountItems] = useState(0);
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
-  const [wordToSearch, setWordToSearch] = useState('');
+  const [wordToSearch, setWordToSearch] = useState("");
 
-  const [order, setOrder] = useState('name');
+  const [order, setOrder] = useState("name");
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
@@ -98,7 +98,7 @@ const ListTaxonomies = () => {
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="taxonomy" />
 
       <Row>
-        <Navigation actualPosition={t('ngen.taxonomy_other')} />
+        <Navigation actualPosition={t("ngen.taxonomy_other")} />
       </Row>
       <Row>
         <Col>
@@ -107,7 +107,7 @@ const ListTaxonomies = () => {
               <Row>
                 <Col sm={12} lg={9}>
                   <Search
-                    type={t('search.by.name')}
+                    type={t("search.by.name")}
                     setWordToSearch={setWordToSearch}
                     wordToSearch={wordToSearch}
                     setLoading={setLoading}
@@ -116,7 +116,7 @@ const ListTaxonomies = () => {
 
                 <Col sm={12} lg={3}>
                   <Link to="/taxonomies/create">
-                    <CrudButton type="create" name={t('ngen.taxonomy_one')} />
+                    <CrudButton type="create" name={t("ngen.taxonomy_one")} />
                   </Link>
                 </Col>
               </Row>

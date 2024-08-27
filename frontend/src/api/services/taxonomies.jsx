@@ -1,6 +1,6 @@
-import apiInstance from '../api';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
-import setAlert from '../../utils/setAlert';
+import apiInstance from "../api";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
+import setAlert from "../../utils/setAlert";
 
 const getMinifiedTaxonomy = () => {
   let messageError = `No se pudo recuperar la informacion de las taxonomias`;
@@ -10,7 +10,7 @@ const getMinifiedTaxonomy = () => {
       return response.data;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'taxonomy');
+      setAlert(messageError, "error", "taxonomy");
       return Promise.reject(error);
     });
 };
@@ -18,12 +18,12 @@ const getMinifiedTaxonomy = () => {
 const getTaxonomies = (currentPage, filters, order) => {
   let messageError = `No se pudo recuperar la informacion de las taxonomias`;
   return apiInstance
-    .get(COMPONENT_URL.taxonomy + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.taxonomy + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'taxonomy');
+      setAlert(messageError, "error", "taxonomy");
       return Promise.reject(error);
     });
 };
@@ -36,7 +36,7 @@ const getTaxonomy = (url) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'taxonomy');
+      setAlert(messageError, "error", "taxonomy");
       return Promise.reject(error);
     });
 };
@@ -57,7 +57,7 @@ const getAllTaxonomies = (currentPage = 1, results = [], limit = 100) => {
       }
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'taxonomy');
+      setAlert(messageError, "error", "taxonomy");
       return Promise.reject(error);
     });
 };
@@ -77,24 +77,24 @@ const postTaxonomy = (type, name, description, active, parent, alias_of, needs_r
       group: group
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'taxonomy');
+      setAlert(messageSuccess, "success", "taxonomy");
       return response;
     })
     .catch((error) => {
       //"slug": ["Ya existe una entidad Taxonomy con slug=copyright." ],
       console.log(error);
 
-      let statusText = '';
+      let statusText = "";
       if (error.response.status === 400) {
-        console.log('status 400');
-        if (error.response.data.slug && error.response.data.slug[0].includes('Ya existe una entidad Taxonomy con slug')) {
-          statusText = 'Ingrese un nombre diferente.';
-          console.log('Error de slug');
+        console.log("status 400");
+        if (error.response.data.slug && error.response.data.slug[0].includes("Ya existe una entidad Taxonomy con slug")) {
+          statusText = "Ingrese un nombre diferente.";
+          console.log("Error de slug");
         }
       }
 
       messageError += statusText;
-      setAlert(messageError, 'error', 'taxonomy');
+      setAlert(messageError, "error", "taxonomy");
       return Promise.reject(error);
     });
 };
@@ -114,11 +114,11 @@ const putTaxonomy = (url, type, name, description, active, parent, alias_of, nee
       group: group
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'taxonomy');
+      setAlert(messageSuccess, "success", "taxonomy");
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'taxonomy');
+      setAlert(messageError, "error", "taxonomy");
       return Promise.reject(error);
     });
 };
@@ -131,11 +131,11 @@ const putActivationStatus = (url, state, name) => {
       active: state
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'taxonomy');
+      setAlert(messageSuccess, "success", "taxonomy");
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'taxonomy');
+      setAlert(messageError, "error", "taxonomy");
       return Promise.reject(error);
     });
 };
@@ -146,14 +146,14 @@ const deleteTaxonomy = (url, name) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'taxonomy');
+      setAlert(messageSuccess, "success", "taxonomy");
       return response;
     })
     .catch((error) => {
-      if (error.response.detail && error.response.detail === 'Not found') {
+      if (error.response.detail && error.response.detail === "Not found") {
         messageError = `La taxonomia ${name} no se ha encontrado.`;
       }
-      setAlert(messageError, 'error', 'taxonomy');
+      setAlert(messageError, "error", "taxonomy");
       return Promise.reject(error);
     });
 };

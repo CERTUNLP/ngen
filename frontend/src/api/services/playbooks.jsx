@@ -1,18 +1,18 @@
-import apiInstance from '../api';
-import setAlert from '../../utils/setAlert';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
+import apiInstance from "../api";
+import setAlert from "../../utils/setAlert";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
 
 const getPlaybooks = (currentPage, filters, order) => {
   let messageError = `No se ha recuperado la informacion de playbooks. `;
   return apiInstance
-    .get(COMPONENT_URL.playbook + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.playbook + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'playbook');
+      setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
     });
 };
@@ -43,7 +43,7 @@ const getPlaybook = (url) => {
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'playbook');
+      setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
     });
 };
@@ -57,13 +57,13 @@ const postPlaybook = (name, taxonomy) => {
       taxonomy: taxonomy //[]
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'playbook');
+      setAlert(messageSuccess, "success", "playbook");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'playbook');
+      setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
     });
 };
@@ -77,13 +77,13 @@ const putPlaybook = (url, name, taxonomy) => {
       taxonomy: taxonomy
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'playbook');
+      setAlert(messageSuccess, "success", "playbook");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'playbook');
+      setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
     });
 };
@@ -94,13 +94,13 @@ const deletePlaybook = (url, name) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'playbook');
+      setAlert(messageSuccess, "success", "playbook");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'playbook');
+      setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
     });
 };

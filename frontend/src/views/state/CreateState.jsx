@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import FormState from './components/FormState';
-import Navigation from '../../components/Navigation/Navigation';
-import Alert from '../../components/Alert/Alert';
-import { postState, putState } from '../../api/services/states';
-import ListEdge from '../edge/ListEdge';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import FormState from "./components/FormState";
+import Navigation from "../../components/Navigation/Navigation";
+import Alert from "../../components/Alert/Alert";
+import { postState, putState } from "../../api/services/states";
+import ListEdge from "../edge/ListEdge";
+import { useTranslation } from "react-i18next";
 
 const AddState = () => {
   const formEmpty = {
-    name: '', //requerido
-    attended: '', //requerido
-    solved: '', //requerido
+    name: "", //requerido
+    attended: "", //requerido
+    solved: "", //requerido
     active: null,
-    description: '',
+    description: "",
     children: []
   };
   // const [state, setState] = useState({});
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
   const [body, setBody] = useState(formEmpty);
   const [showAlert, setShowAlert] = useState(false);
   const { t } = useTranslation();
@@ -65,8 +65,8 @@ const AddState = () => {
   return (
     <div>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="state" />
-      <Navigation actualPosition={t('ngen.state.add')} path="/states" index={t('ngen.state_other')} />
-      <FormState body={body} setBody={setBody} createState={!sectionAddEdge ? createState : editState} type={t('w.add')} />
+      <Navigation actualPosition={t("ngen.state.add")} path="/states" index={t("ngen.state_other")} />
+      <FormState body={body} setBody={setBody} createState={!sectionAddEdge ? createState : editState} type={t("w.add")} />
       <ListEdge url={url} sectionAddEdge={sectionAddEdge} setShowAlert={setShowAlert} />
     </div>
   );

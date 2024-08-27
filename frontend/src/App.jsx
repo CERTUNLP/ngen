@@ -1,10 +1,10 @@
-import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { useIdleTimer } from 'react-idle-timer';
-import store from './store';
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import { useIdleTimer } from "react-idle-timer";
+import store from "./store";
 
-import routes, { renderRoutes } from './routes';
-import { logout, refreshToken } from './api/services/auth';
+import routes, { renderRoutes } from "./routes";
+import { logout, refreshToken } from "./api/services/auth";
 
 const App = () => {
   const onIdle = () => {
@@ -41,18 +41,18 @@ const App = () => {
     timeout: 1000 * 60 * 14, // TODO: Change to backend configuration and equal this to refresh token expiration time - 1 minute
     promptBeforeIdle: 0,
     events: [
-      'mousemove',
-      'keydown',
-      'wheel',
-      'DOMMouseScroll',
-      'mousewheel',
-      'mousedown',
-      'touchstart',
-      'touchmove',
-      'MSPointerDown',
-      'MSPointerMove',
-      'visibilitychange',
-      'focus'
+      "mousemove",
+      "keydown",
+      "wheel",
+      "DOMMouseScroll",
+      "mousewheel",
+      "mousedown",
+      "touchstart",
+      "touchmove",
+      "MSPointerDown",
+      "MSPointerMove",
+      "visibilitychange",
+      "focus"
     ],
     immediateEvents: [],
     debounce: 0,
@@ -63,7 +63,7 @@ const App = () => {
     startManually: false,
     stopOnIdle: false,
     crossTab: true,
-    name: 'idle-timer',
+    name: "idle-timer",
     syncTimers: 1000,
     leaderElection: false
   });

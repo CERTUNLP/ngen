@@ -1,7 +1,7 @@
-import React from 'react';
-import { Col, Row } from 'react-bootstrap';
+import React from "react";
+import { Col, Row } from "react-bootstrap";
 
-import Card from '../../components/Card/MainCard';
+import Card from "../../components/Card/MainCard";
 
 const SamplePage = () => {
   return (

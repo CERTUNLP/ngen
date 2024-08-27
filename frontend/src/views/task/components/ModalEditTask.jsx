@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Card, CloseButton, Col, Modal, Row } from 'react-bootstrap';
-import { putTask } from '../../../api/services/tasks';
-import FormCreateTask from './FormCreateTask';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { Card, CloseButton, Col, Modal, Row } from "react-bootstrap";
+import { putTask } from "../../../api/services/tasks";
+import FormCreateTask from "./FormCreateTask";
+import { useTranslation } from "react-i18next";
 
 const ModalEditTask = (props) => {
   //show, task, onHide, ifEdit, setShowAlert
@@ -37,13 +37,13 @@ const ModalEditTask = (props) => {
                 <Card.Header>
                   <Row>
                     <Col>
-                      <Card.Title as="h5">{t('ngen.tasks')}</Card.Title>
+                      <Card.Title as="h5">{t("ngen.tasks")}</Card.Title>
                       <span className="d-block m-t-5">
-                        {t('w.edit')} {t('ngen.task')}
+                        {t("w.edit")} {t("ngen.task")}
                       </span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <CloseButton aria-label={t('w.close')} onClick={props.onHide} />
+                      <CloseButton aria-label={t("w.close")} onClick={props.onHide} />
                     </Col>
                   </Row>
                 </Card.Header>

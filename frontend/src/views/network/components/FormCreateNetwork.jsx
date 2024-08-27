@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, CloseButton, Col, Form, Modal, Row } from 'react-bootstrap';
-import { getMinifiedEntity } from '../../../api/services/entities';
-import CrudButton from '../../../components/Button/CrudButton';
-import FormCreateContact from '../../contact/components/FormCreateContact';
-import { postContact } from '../../../api/services/contacts';
-import { validateSelect } from '../../../utils/validators/network';
-import Select from 'react-select';
-import makeAnimated from 'react-select/animated';
-import DropdownState from '../../../components/Dropdown/DropdownState';
-import Alert from '../../../components/Alert/Alert';
-import { postStringIdentifier } from '../../../api/services/stringIdentifier';
-import SelectLabel from '../../../components/Select/SelectLabel';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Card, CloseButton, Col, Form, Modal, Row } from "react-bootstrap";
+import { getMinifiedEntity } from "../../../api/services/entities";
+import CrudButton from "../../../components/Button/CrudButton";
+import FormCreateContact from "../../contact/components/FormCreateContact";
+import { postContact } from "../../../api/services/contacts";
+import { validateSelect } from "../../../utils/validators/network";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
+import DropdownState from "../../../components/Dropdown/DropdownState";
+import Alert from "../../../components/Alert/Alert";
+import { postStringIdentifier } from "../../../api/services/stringIdentifier";
+import SelectLabel from "../../../components/Select/SelectLabel";
+import { useTranslation } from "react-i18next";
 
 const animatedComponents = makeAnimated();
 
@@ -28,12 +28,12 @@ const FormCreateNetwork = (props) => {
 
   //Create Contact
   const [modalCreate, setModalCreate] = useState(false);
-  const [supportedName, setSupportedName] = useState('');
-  const [selectRol, setSelectRol] = useState('');
-  const [supportedPriority, setSupportedPriority] = useState('');
-  const [supportedContact, setSupportedContact] = useState('');
+  const [supportedName, setSupportedName] = useState("");
+  const [selectRol, setSelectRol] = useState("");
+  const [supportedPriority, setSupportedPriority] = useState("");
+  const [supportedContact, setSupportedContact] = useState("");
   const [supportedKey, setSupportedKey] = useState(null);
-  const [selectType, setSelectType] = useState('');
+  const [selectType, setSelectType] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   const [selectEntity, setSelectEntity] = useState();
@@ -45,12 +45,12 @@ const FormCreateNetwork = (props) => {
 
   let typeOption = [
     {
-      value: 'internal',
-      label: t('ngen.network.type.internal')
+      value: "internal",
+      label: t("ngen.network.type.internal")
     },
     {
-      value: 'external',
-      label: t('ngen.network.type.external')
+      value: "external",
+      label: t("ngen.network.type.external")
     }
   ];
 
@@ -103,10 +103,10 @@ const FormCreateNetwork = (props) => {
   };
 
   const completeFieldStringIdentifier = (event) => {
-    if (event.target.value !== '') {
+    if (event.target.value !== "") {
       postStringIdentifier(event.target.value)
         .then((response) => {
-          setShowErrorMessage(response.data.artifact_type === 'OTHER' || response.data.artifact_type === 'EMAIL');
+          setShowErrorMessage(response.data.artifact_type === "OTHER" || response.data.artifact_type === "EMAIL");
         })
         .catch((error) => {
           console.log(error);
@@ -114,7 +114,7 @@ const FormCreateNetwork = (props) => {
         .finally(() => {});
     }
 
-    if (event.target.value === '') {
+    if (event.target.value === "") {
       setShowErrorMessage(false); //para que no aparesca en rojo si esta esta el input vacio en el formulario
     }
     props.setAddress_value(event.target.value);
@@ -147,7 +147,7 @@ const FormCreateNetwork = (props) => {
               setSelect={setSelectedType}
               options={typeOption}
               value={selectedType}
-              placeholder={t('ngen.type')}
+              placeholder={t("ngen.type")}
               required={true}
             />
           </Col>
@@ -157,7 +157,7 @@ const FormCreateNetwork = (props) => {
               setSelect={setSelectEntity}
               options={entitiesOption}
               value={selectEntity}
-              placeholder={t('ngen.entity')}
+              placeholder={t("ngen.entity")}
             />
           </Col>
         </Row>
@@ -165,19 +165,19 @@ const FormCreateNetwork = (props) => {
         <Row>
           <Col sm={12} lg={8}>
             <Form.Label>
-              {t('cidr.domain')}
-              <b style={{ color: 'red' }}>*</b>
+              {t("cidr.domain")}
+              <b style={{ color: "red" }}>*</b>
             </Form.Label>
             <Form.Group controlId="formGridAddress1">
               <Form.Control
-                placeholder={t('ngen.enter.ipv4.ipv6.domain.email')}
+                placeholder={t("ngen.enter.ipv4.ipv6.domain.email")}
                 maxLength="150"
                 onChange={(e) => completeFieldStringIdentifier(e)}
                 value={props.address_value}
                 isInvalid={showErrorMessage}
                 name="address_value"
               />
-              {showErrorMessage ? <div className="invalid-feedback"> {t('error.ipv4.ipv6.domain')} </div> : ''}
+              {showErrorMessage ? <div className="invalid-feedback"> {t("error.ipv4.ipv6.domain")} </div> : ""}
             </Form.Group>
           </Col>
         </Row>
@@ -185,11 +185,11 @@ const FormCreateNetwork = (props) => {
           <Col sm={12} lg={8}>
             <Form.Group controlId="Form.Network.Contacts.Multiselect">
               <Form.Label>
-                {t('ngen.contact_other')} <b style={{ color: 'red' }}>*</b>
+                {t("ngen.contact_other")} <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Select
                 value={contactsValueLabel}
-                placeholder={t('ngen.contact.select')}
+                placeholder={t("ngen.contact.select")}
                 closeMenuOnSelect={false}
                 components={animatedComponents}
                 isMulti
@@ -201,14 +201,14 @@ const FormCreateNetwork = (props) => {
         </Row>
         <Row>
           <Col sm={12} lg={4}>
-            <CrudButton type="create" name={t('ngen.contact_one')} onClick={() => setModalCreate(true)} />
+            <CrudButton type="create" name={t("ngen.contact_one")} onClick={() => setModalCreate(true)} />
           </Col>
         </Row>
         {props.edit ? (
           <Row>
             <Col>
               <Form.Group>
-                <Form.Label>{t('ngen.state_one')}</Form.Label>
+                <Form.Label>{t("ngen.state_one")}</Form.Label>
                 <DropdownState state={props.active} setActive={props.setActive}></DropdownState>
               </Form.Group>
             </Col>
@@ -221,22 +221,22 @@ const FormCreateNetwork = (props) => {
           <Col>
             <Form.Group>
               {
-                props.address_value !== '' && !showErrorMessage && validateSelect(props.type) && props.contacts.length > 0 ? (
+                props.address_value !== "" && !showErrorMessage && validateSelect(props.type) && props.contacts.length > 0 ? (
                   <>
                     <Button variant="primary" onClick={props.ifConfirm}>
-                      {t('button.save')}
+                      {t("button.save")}
                     </Button>
                   </>
                 ) : (
                   <>
                     <Button variant="primary" disabled>
-                      {t('button.save')}
+                      {t("button.save")}
                     </Button>
                   </>
                 ) //disabled
               }
               <Button variant="primary" href="/networks">
-                {t('button.cancel')}
+                {t("button.cancel")}
               </Button>
             </Form.Group>
           </Col>
@@ -251,11 +251,11 @@ const FormCreateNetwork = (props) => {
                 <Card.Header>
                   <Row>
                     <Col>
-                      <Card.Title as="h5">{t('ngen.contact_other')}</Card.Title>
-                      <span className="d-block m-t-5">{t('ngen.contact.create')}</span>
+                      <Card.Title as="h5">{t("ngen.contact_other")}</Card.Title>
+                      <span className="d-block m-t-5">{t("ngen.contact.create")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <CloseButton aria-label={t('w.close')} onClick={() => setModalCreate(false)} />
+                      <CloseButton aria-label={t("w.close")} onClick={() => setModalCreate(false)} />
                     </Col>
                   </Row>
                 </Card.Header>

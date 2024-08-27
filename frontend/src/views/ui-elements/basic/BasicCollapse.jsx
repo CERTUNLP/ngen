@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Button, Card, Col, Collapse, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Button, Card, Col, Collapse, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const BasicCollapse = () => {
   const [isBasic, setIsBasic] = useState(false);
@@ -20,7 +20,7 @@ const BasicCollapse = () => {
   };
 
   const multiTargetHandler = () => {
-    const allTarget = ['target1', 'target2'];
+    const allTarget = ["target1", "target2"];
     allTarget.map((target) => targetHandler(target));
   };
 
@@ -53,16 +53,16 @@ const BasicCollapse = () => {
           <h5>Multiple Targets</h5>
           <hr />
           <Button
-            onClick={() => targetHandler('target1')}
+            onClick={() => targetHandler("target1")}
             aria-controls="target1"
-            aria-expanded={isMultiTarget.findIndex((item) => item === 'target1') > -1}
+            aria-expanded={isMultiTarget.findIndex((item) => item === "target1") > -1}
           >
             Toggle first element
           </Button>
           <Button
-            onClick={() => targetHandler('target2')}
+            onClick={() => targetHandler("target2")}
             aria-controls="target2"
-            aria-expanded={isMultiTarget.findIndex((item) => item === 'target2') > -1}
+            aria-expanded={isMultiTarget.findIndex((item) => item === "target2") > -1}
           >
             Toggle second element
           </Button>
@@ -70,7 +70,7 @@ const BasicCollapse = () => {
           <Row>
             <Col>
               <Card className="mt-2">
-                <Collapse in={isMultiTarget.some((target) => target === 'target1')}>
+                <Collapse in={isMultiTarget.some((target) => target === "target1")}>
                   <div id="target1">
                     <Card.Header>
                       <Card.Title as="h5">First Element</Card.Title>
@@ -87,7 +87,7 @@ const BasicCollapse = () => {
             </Col>
             <Col>
               <Card className="mt-2">
-                <Collapse in={isMultiTarget.some((target) => target === 'target2')}>
+                <Collapse in={isMultiTarget.some((target) => target === "target2")}>
                   <div id="target2">
                     <Card.Header>
                       <Card.Title as="h5">Second Element</Card.Title>

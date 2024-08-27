@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { getFeeds } from '../../api/services/feeds';
-import CrudButton from '../../components/Button/CrudButton';
-import Alert from '../../components/Alert/Alert';
-import Navigation from '../../components/Navigation/Navigation';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import TableFeed from './components/TableFeed';
-import Search from '../../components/Search/Search';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { getFeeds } from "../../api/services/feeds";
+import CrudButton from "../../components/Button/CrudButton";
+import Alert from "../../components/Alert/Alert";
+import Navigation from "../../components/Navigation/Navigation";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import TableFeed from "./components/TableFeed";
+import Search from "../../components/Search/Search";
+import { useTranslation } from "react-i18next";
 
 const ListFeed = () => {
   const [feeds, setFeeds] = useState([]);
@@ -17,8 +17,8 @@ const ListFeed = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [countItems, setCountItems] = useState(0);
 
-  const [order, setOrder] = useState('name');
-  const [wordToSearch, setWordToSearch] = useState('');
+  const [order, setOrder] = useState("name");
+  const [wordToSearch, setWordToSearch] = useState("");
 
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
@@ -56,7 +56,7 @@ const ListFeed = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="feed" />
       <Row>
-        <Navigation actualPosition={t('ngen.feed.information')} />
+        <Navigation actualPosition={t("ngen.feed.information")} />
       </Row>
       <Row>
         <Col>
@@ -65,7 +65,7 @@ const ListFeed = () => {
               <Row>
                 <Col sm={12} lg={9}>
                   <Search
-                    type={t('search.by.name.description')}
+                    type={t("search.by.name.description")}
                     setWordToSearch={setWordToSearch}
                     wordToSearch={wordToSearch}
                     setLoading={setLoading}
@@ -73,7 +73,7 @@ const ListFeed = () => {
                 </Col>
                 <Col sm={12} lg={3}>
                   <Link to="/feeds/create">
-                    <CrudButton type="create" name={t('ngen.feed')} />
+                    <CrudButton type="create" name={t("ngen.feed")} />
                   </Link>
                 </Col>
               </Row>

@@ -1,8 +1,8 @@
-import axios from 'axios';
-import apiInstance from './api';
-import { refreshToken } from './services/auth';
-import setAlert from '../utils/setAlert';
-import { LOGOUT } from '../store/actions';
+import axios from "axios";
+import apiInstance from "./api";
+import { refreshToken } from "./services/auth";
+import setAlert from "../utils/setAlert";
+import { LOGOUT } from "../store/actions";
 
 const setup = (store) => {
   let isRefreshing = false;
@@ -20,11 +20,11 @@ const setup = (store) => {
     const state = store.getState();
     const token = state.account.token;
 
-    if (request.url.includes('refresh')) {
-      delete apiInstance.defaults.headers.common['Authorization'];
+    if (request.url.includes("refresh")) {
+      delete apiInstance.defaults.headers.common["Authorization"];
     } else if (token) {
       request.headers.Authorization = `Bearer ${token}`;
-      apiInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      apiInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
 
     return request;
@@ -36,16 +36,16 @@ const setup = (store) => {
     },
     (error) => {
       if (error.response === undefined) {
-        console.log('Falló la conexión al servidor');
+        console.log("Falló la conexión al servidor");
         return Promise.reject(error);
       }
 
       const originalRequest = error.config;
 
       if (
-        error.response.data.code === 'token_not_valid' &&
+        error.response.data.code === "token_not_valid" &&
         !originalRequest._retry &&
-        !JSON.stringify(originalRequest.url).includes('refresh')
+        !JSON.stringify(originalRequest.url).includes("refresh")
       ) {
         originalRequest._retry = true;
 
@@ -60,7 +60,7 @@ const setup = (store) => {
               store.dispatch({
                 type: LOGOUT
               });
-              setAlert('Su sesión ha expirado', 'error');
+              setAlert("Su sesión ha expirado", "error");
             })
             .finally(() => {
               refreshSubscribers = [];
@@ -71,12 +71,12 @@ const setup = (store) => {
         return new Promise((resolve) => {
           subscribeTokenRefresh((token) => {
             // replace the expired token and retry
-            originalRequest.headers['Authorization'] = 'Bearer ' + token;
+            originalRequest.headers["Authorization"] = "Bearer " + token;
             return resolve(axios(originalRequest));
           });
         });
       } else {
-        console.log('Error en el setup-interceptor');
+        console.log("Error en el setup-interceptor");
         console.log(error);
         return Promise.reject(error);
       }

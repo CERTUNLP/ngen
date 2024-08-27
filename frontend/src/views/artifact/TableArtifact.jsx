@@ -1,8 +1,8 @@
-import React from 'react';
-import { Card, Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import CrudButton from '../../components/Button/CrudButton';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Card, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import CrudButton from "../../components/Button/CrudButton";
+import { useTranslation } from "react-i18next";
 
 const TableArtifact = ({ artifact }) => {
   const { t } = useTranslation();
@@ -16,9 +16,9 @@ const TableArtifact = ({ artifact }) => {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>{t('ngen.type')}</th>
-                  <th>{t('ngen.value')}</th>
-                  <th>{t('ngen.related')}</th>
+                  <th>{t("ngen.type")}</th>
+                  <th>{t("ngen.value")}</th>
+                  <th>{t("ngen.related")}</th>
                 </tr>
               </thead>
               <tbody>

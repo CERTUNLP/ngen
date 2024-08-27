@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
-import CrudButton from '../../components/Button/CrudButton';
-import TableEntity from './components/TableEntity';
-import { getEntities } from '../../api/services/entities';
-import { Link } from 'react-router-dom';
-import Navigation from '../../components/Navigation/Navigation';
-import Search from '../../components/Search/Search';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import Alert from '../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import CrudButton from "../../components/Button/CrudButton";
+import TableEntity from "./components/TableEntity";
+import { getEntities } from "../../api/services/entities";
+import { Link } from "react-router-dom";
+import Navigation from "../../components/Navigation/Navigation";
+import Search from "../../components/Search/Search";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const ListEntity = () => {
   const [entities, setEntities] = useState([]);
@@ -25,8 +25,8 @@ const ListEntity = () => {
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
 
-  const [wordToSearch, setWordToSearch] = useState('');
-  const [order, setOrder] = useState('name');
+  const [wordToSearch, setWordToSearch] = useState("");
+  const [order, setOrder] = useState("name");
   const { t } = useTranslation();
 
   function updatePage(chosenPage) {
@@ -57,7 +57,7 @@ const ListEntity = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="entity" />
       <Row>
-        <Navigation actualPosition={t('ngen.entity_other')} />
+        <Navigation actualPosition={t("ngen.entity_other")} />
       </Row>
       <Row>
         <Col>
@@ -66,7 +66,7 @@ const ListEntity = () => {
               <Row>
                 <Col sm={12} lg={9}>
                   <Search
-                    type={t('w.entityByName')}
+                    type={t("w.entityByName")}
                     setWordToSearch={setWordToSearch}
                     wordToSearch={wordToSearch}
                     setLoading={setLoading}
@@ -74,7 +74,7 @@ const ListEntity = () => {
                 </Col>
                 <Col sm={12} lg={3}>
                   <Link to="/entities/create">
-                    <CrudButton type="create" name={t('ngen.entity')} />
+                    <CrudButton type="create" name={t("ngen.entity")} />
                   </Link>
                 </Col>
               </Row>

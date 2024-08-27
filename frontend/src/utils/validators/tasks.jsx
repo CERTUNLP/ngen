@@ -1,4 +1,4 @@
-import { isBlank, isNull, validateAlphanumeric, validateLength } from '../validators';
+import { isBlank, isNull, validateAlphanumeric, validateLength } from "../validators";
 
 const validateUnrequiredInput = (input) => {
   return !(isNull(input) || isBlank(input));

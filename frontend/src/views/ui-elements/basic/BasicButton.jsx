@@ -1,18 +1,18 @@
-import React from 'react';
-import { Button, ButtonToolbar, Col, Dropdown, DropdownButton, OverlayTrigger, Row, SplitButton, Tooltip } from 'react-bootstrap';
+import React from "react";
+import { Button, ButtonToolbar, Col, Dropdown, DropdownButton, OverlayTrigger, Row, SplitButton, Tooltip } from "react-bootstrap";
 
-import Card from '../../../components/Card/MainCard';
+import Card from "../../../components/Card/MainCard";
 
 const BasicButton = () => {
-  const buttonVariants = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'];
+  const buttonVariants = ["primary", "secondary", "success", "danger", "warning", "info", "light", "dark"];
 
   const buttonOptions = [
-    { variant: 'primary', icon: 'feather icon-thumbs-up mx-1' },
-    { variant: 'secondary', icon: 'feather icon-camera mx-1' },
-    { variant: 'success', icon: 'feather icon-check-circle mx-1' },
-    { variant: 'danger', icon: 'feather icon-slash mx-1' },
-    { variant: 'warning', icon: 'feather icon-alert-triangle mx-1' },
-    { variant: 'info', icon: 'feather icon-info mx-1' }
+    { variant: "primary", icon: "feather icon-thumbs-up mx-1" },
+    { variant: "secondary", icon: "feather icon-camera mx-1" },
+    { variant: "success", icon: "feather icon-check-circle mx-1" },
+    { variant: "danger", icon: "feather icon-slash mx-1" },
+    { variant: "warning", icon: "feather icon-alert-triangle mx-1" },
+    { variant: "info", icon: "feather icon-info mx-1" }
   ];
 
   const basicButtons = buttonVariants.map((variant, idx) => {
@@ -31,8 +31,8 @@ const BasicButton = () => {
   });
 
   const outlineButtons = buttonVariants.map((variant, idx) => (
-    <OverlayTrigger key={idx} placement="top" overlay={<Tooltip className="mb-2">{'outline-' + variant}</Tooltip>}>
-      <Button variant={'outline-' + variant} style={{ color: variant === 'light' ? 'black' : '' }} className="text-capitalize">
+    <OverlayTrigger key={idx} placement="top" overlay={<Tooltip className="mb-2">{"outline-" + variant}</Tooltip>}>
+      <Button variant={"outline-" + variant} style={{ color: variant === "light" ? "black" : "" }} className="text-capitalize">
         {variant}
       </Button>
     </OverlayTrigger>

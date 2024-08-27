@@ -1,22 +1,22 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Card } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import PropTypes from "prop-types";
+import React from "react";
+import { Card } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const Friend = ({ data, activeId, clicked }) => {
-  let timeClass = ['d-block f-w-400'];
+  let timeClass = ["d-block f-w-400"];
   if (data.status) {
-    timeClass = [...timeClass, 'text-c-green'];
+    timeClass = [...timeClass, "text-c-green"];
   } else {
-    timeClass = [...timeClass, 'text-muted'];
+    timeClass = [...timeClass, "text-muted"];
   }
 
-  let time = '';
+  let time = "";
   if (data.time) {
-    time = <small className={timeClass.join(' ')}>{data.time}</small>;
+    time = <small className={timeClass.join(" ")}>{data.time}</small>;
   }
 
-  let newFriend = '';
+  let newFriend = "";
   if (data.new) {
     newFriend = <div className="live-status">{data.new}</div>;
   }
@@ -25,13 +25,13 @@ const Friend = ({ data, activeId, clicked }) => {
     <React.Fragment>
       {/* eslint-disable-next-line */}
       <Card
-        className={activeId === data.id ? 'userlist-box mb-0 shadow-none active' : 'userlist-box mb-0 shadow-none'}
-        style={{ flexDirection: 'row', backgroundColor: 'unset' }}
+        className={activeId === data.id ? "userlist-box mb-0 shadow-none active" : "userlist-box mb-0 shadow-none"}
+        style={{ flexDirection: "row", backgroundColor: "unset" }}
         onClick={clicked}
         onKeyDown={clicked}
       >
         <Link to="#" className="media-left">
-          {' '}
+          {" "}
           <img className="media-object img-radius" src={data.photo} alt={data.name} />
           {newFriend}
         </Link>

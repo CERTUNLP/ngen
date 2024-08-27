@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from 'react-bootstrap';
-import { getUser, putUser } from '../../api/services/users';
-import { useLocation } from 'react-router-dom';
-import Alert from '../../components/Alert/Alert';
-import { getMinifiedPriority } from '../../api/services/priorities';
-import FormUser from './components/FormUser';
-import Navigation from '../../components/Navigation/Navigation';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card } from "react-bootstrap";
+import { getUser, putUser } from "../../api/services/users";
+import { useLocation } from "react-router-dom";
+import Alert from "../../components/Alert/Alert";
+import { getMinifiedPriority } from "../../api/services/priorities";
+import FormUser from "./components/FormUser";
+import Navigation from "../../components/Navigation/Navigation";
+import { useTranslation } from "react-i18next";
 
 const EditUser = () => {
   const location = useLocation();
@@ -51,7 +51,7 @@ const EditUser = () => {
   const editUser = (e) => {
     putUser(user.url, user.username, user.first_name, user.last_name, user.email, user.priority)
       .then(() => {
-        window.location.href = '/users';
+        window.location.href = "/users";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -61,11 +61,11 @@ const EditUser = () => {
   return (
     <>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
-      <Navigation actualPosition={t('w.edit') + t('ngen.user')} path="/users" index={t('ngen.user_other')} />
+      <Navigation actualPosition={t("w.edit") + t("ngen.user")} path="/users" index={t("ngen.user_other")} />
       <Card>
         <Card.Header>
           <Card.Title as="h5">
-            {t('w.edit')} {t('ngen.user')}
+            {t("w.edit")} {t("ngen.user")}
           </Card.Title>
         </Card.Header>
         <Card.Body>

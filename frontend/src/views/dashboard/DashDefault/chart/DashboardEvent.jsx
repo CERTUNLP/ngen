@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from 'react-bootstrap';
-import { getMinifiedTaxonomy } from '../../../../api/services/taxonomies';
-import { getMinifiedFeed } from '../../../../api/services/feeds';
-import TableEvents from '../../../event/components/TableEvents';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card } from "react-bootstrap";
+import { getMinifiedTaxonomy } from "../../../../api/services/taxonomies";
+import { getMinifiedFeed } from "../../../../api/services/feeds";
+import TableEvents from "../../../event/components/TableEvents";
+import { useTranslation } from "react-i18next";
 
 const DashboardEvent = ({ list, loading }) => {
   const { t } = useTranslation();
@@ -31,7 +31,7 @@ const DashboardEvent = ({ list, loading }) => {
     <div>
       <Card>
         <Card.Header>
-          <Card.Title as="h5">{t('event.last10')}</Card.Title>
+          <Card.Title as="h5">{t("event.last10")}</Card.Title>
         </Card.Header>
         <TableEvents
           events={list}

@@ -1,4 +1,4 @@
-import { isBlank, isEmpty, validateEmail, validateFieldText, validateLength, validateUsername } from '../validators';
+import { isBlank, isEmpty, validateEmail, validateFieldText, validateLength, validateUsername } from "../validators";
 
 const validateUserName = (name) => {
   return validateUsername(name) && validateLength(name, 150);

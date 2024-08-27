@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Form, Row, Spinner, Table } from 'react-bootstrap';
-import CrudButton from '../../../components/Button/CrudButton';
-import { deleteCase } from '../../../api/services/cases';
-import { Link } from 'react-router-dom';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import Ordering from '../../../components/Ordering/Ordering';
-import LetterFormat from '../../../components/LetterFormat';
-import ListDomain from './ListDomain';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Form, Row, Spinner, Table } from "react-bootstrap";
+import CrudButton from "../../../components/Button/CrudButton";
+import { deleteCase } from "../../../api/services/cases";
+import { Link } from "react-router-dom";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import Ordering from "../../../components/Ordering/Ordering";
+import LetterFormat from "../../../components/LetterFormat";
+import ListDomain from "./ListDomain";
+import { useTranslation } from "react-i18next";
 
 const TableCase = ({
   setIfModify,
@@ -59,19 +59,19 @@ const TableCase = ({
   }, [cases]);
 
   const storageCaseUrl = (url) => {
-    localStorage.removeItem('case');
-    localStorage.removeItem('navigation');
-    localStorage.removeItem('button return');
-    localStorage.setItem('case', url);
-    localStorage.setItem('navigation', navigationRow);
-    localStorage.setItem('button return', navigationRow);
-    window.location.href = '/cases/edit';
+    localStorage.removeItem("case");
+    localStorage.removeItem("navigation");
+    localStorage.removeItem("button return");
+    localStorage.setItem("case", url);
+    localStorage.setItem("navigation", navigationRow);
+    localStorage.setItem("button return", navigationRow);
+    window.location.href = "/cases/edit";
   };
 
   const handleOnClick = (url) => {
-    localStorage.setItem('case', url);
-    localStorage.setItem('navigation', navigationRow);
-    localStorage.setItem('button return', navigationRow);
+    localStorage.setItem("case", url);
+    localStorage.setItem("navigation", navigationRow);
+    localStorage.setItem("button return", navigationRow);
   };
 
   if (loading) {
@@ -118,7 +118,7 @@ const TableCase = ({
     }
   };
 
-  const letterSize = { fontSize: '1.0em' };
+  const letterSize = { fontSize: "1.0em" };
   return (
     <React.Fragment>
       <Table responsive hover className="text-center">
@@ -132,7 +132,7 @@ const TableCase = ({
                   <Form.Group>
                     <Form.Check
                       type="checkbox"
-                      id={'selectAll'}
+                      id={"selectAll"}
                       onChange={handleSelectAll}
                       checked={selectedCases.length !== 0 ? selectedCases.length === list.length : false}
                     />
@@ -148,7 +148,7 @@ const TableCase = ({
             {!disableDate && (
               <Ordering
                 field="created"
-                label={t('creation.date')}
+                label={t("creation.date")}
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
@@ -158,31 +158,31 @@ const TableCase = ({
             {!disableDateModified && (
               <Ordering
                 field="modified"
-                label={t('ngen.date.modified')}
+                label={t("ngen.date.modified")}
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
                 letterSize={letterSize}
               />
             )}
-            {!disableUuid && <th style={letterSize}> {t('ngen.uuid')} </th>}
-            {!disableName && <th style={letterSize}> {t('ngen.name_one')} </th>}
+            {!disableUuid && <th style={letterSize}> {t("ngen.uuid")} </th>}
+            {!disableName && <th style={letterSize}> {t("ngen.name_one")} </th>}
             {!disablePriority && (
               <Ordering
                 field="priority"
-                label={t('ngen.priority_one')}
+                label={t("ngen.priority_one")}
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
                 letterSize={letterSize}
               />
             )}
-            {!disableTlp && <th style={letterSize}> {t('ngen.tlp')} </th>}
-            <th style={letterSize}> {t('ngen.state_one')} </th>
-            <th style={letterSize}> {t('ngen.event_other')} </th>
-            {!disableNubersOfEvents && <th style={letterSize}> {t('ngen.event.quantity')} </th>}
-            <th style={letterSize}> {t('ngen.status.assigned')} </th>
-            {!disableColumOption && <th style={letterSize}> {t('ngen.action_one')} </th>}
+            {!disableTlp && <th style={letterSize}> {t("ngen.tlp")} </th>}
+            <th style={letterSize}> {t("ngen.state_one")} </th>
+            <th style={letterSize}> {t("ngen.event_other")} </th>
+            {!disableNubersOfEvents && <th style={letterSize}> {t("ngen.event.quantity")} </th>}
+            <th style={letterSize}> {t("ngen.status.assigned")} </th>
+            {!disableColumOption && <th style={letterSize}> {t("ngen.action_one")} </th>}
           </tr>
         </thead>
         <tbody>
@@ -224,13 +224,13 @@ const TableCase = ({
                     )}
                   </td>
                 )}
-                {!disableDate && <td>{caseItem ? caseItem.date.slice(0, 10) + ' ' + caseItem.date.slice(11, 19) : ''}</td>}
+                {!disableDate && <td>{caseItem ? caseItem.date.slice(0, 10) + " " + caseItem.date.slice(11, 19) : ""}</td>}
 
-                {!disableDateModified && <td>{caseItem ? caseItem.modified.slice(0, 10) + ' ' + caseItem.modified.slice(11, 19) : ''}</td>}
+                {!disableDateModified && <td>{caseItem ? caseItem.modified.slice(0, 10) + " " + caseItem.modified.slice(11, 19) : ""}</td>}
 
                 {!disableUuid && <td>{caseItem.uuid}</td>}
 
-                {!disableName && <td>{caseItem.name || '-'}</td>}
+                {!disableName && <td>{caseItem.name || "-"}</td>}
 
                 {!disablePriority && <td>{priorityNames[caseItem.priority]}</td>}
                 {!disableTlp && (
@@ -238,12 +238,12 @@ const TableCase = ({
                     <LetterFormat useBadge={true} stringToDisplay={tlpNames[caseItem.tlp].name} color={tlpNames[caseItem.tlp].color} />
                   </td>
                 )}
-                <td>{stateNames[caseItem.state] || '-'}</td>
+                <td>{stateNames[caseItem.state] || "-"}</td>
                 <td>
                   <ListDomain events={caseItem.events} />
                 </td>
                 {!disableNubersOfEvents && <td>{caseItem.events_count}</td>}
-                <td>{userNames[caseItem.assigned] || '-'}</td>
+                <td>{userNames[caseItem.assigned] || "-"}</td>
                 <td>
                   {!disableColumOption && detailModal ? (
                     <CrudButton
@@ -277,15 +277,15 @@ const TableCase = ({
                         id="button_hover"
                         className="btn-icon btn-rounded"
                         variant="outline-warning"
-                        title={t('ngen.case_one') + t('w.solved')}
+                        title={t("ngen.case_one") + t("w.solved")}
                         disabled
                         style={{
-                          border: '1px solid #555',
-                          borderRadius: '50px',
-                          color: '#555'
+                          border: "1px solid #555",
+                          borderRadius: "50px",
+                          color: "#555"
                         }}
                       >
-                        <i className="fa fa-edit" style={{ color: '#555' }}></i>
+                        <i className="fa fa-edit" style={{ color: "#555" }}></i>
                       </Button>
                     ))}
                   {!disableColumOption &&
@@ -304,7 +304,7 @@ const TableCase = ({
       <ModalConfirm
         type="delete"
         component="Caso"
-        name={`${t('ngen.case_one')}${id}`}
+        name={`${t("ngen.case_one")}${id}`}
         showModal={modalDelete}
         onHide={() => setModalDelete(false)}
         ifConfirm={() => removeCase(url)}

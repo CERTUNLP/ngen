@@ -1,6 +1,6 @@
-import apiInstance from '../api';
-import { COMPONENT_URL } from '../../config/constant';
-import setAlert from '../../utils/setAlert';
+import apiInstance from "../api";
+import { COMPONENT_URL } from "../../config/constant";
+import setAlert from "../../utils/setAlert";
 
 const getEvidences = () => {
   return apiInstance.get(COMPONENT_URL.evidence);
@@ -19,7 +19,7 @@ const deleteEvidence = (url) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'evidence');
+      setAlert(messageSuccess, "success", "evidence");
       return response;
     })
     .catch((error) => {

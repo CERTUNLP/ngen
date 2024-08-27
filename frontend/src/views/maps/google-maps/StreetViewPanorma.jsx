@@ -1,5 +1,5 @@
-import React from 'react';
-import { GoogleMap, StreetViewPanorama, useJsApiLoader } from '@react-google-maps/api';
+import React from "react";
+import { GoogleMap, StreetViewPanorama, useJsApiLoader } from "@react-google-maps/api";
 
 const StreetViewMap = () => {
   const { isLoaded } = useJsApiLoader({
@@ -17,7 +17,7 @@ const StreetViewMap = () => {
   };
 
   return isLoaded ? (
-    <GoogleMap mapContainerStyle={{ width: '100%', height: '400px' }} center={center} zoom={8}>
+    <GoogleMap mapContainerStyle={{ width: "100%", height: "400px" }} center={center} zoom={8}>
       <StreetViewPanorama
         position={position}
         visible

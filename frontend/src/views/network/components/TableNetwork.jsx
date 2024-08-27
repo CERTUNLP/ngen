@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Row, Spinner, Table } from 'react-bootstrap';
-import CrudButton from '../../../components/Button/CrudButton';
-import { deleteNetwork, getNetwork, isActive } from '../../../api/services/networks';
-import { Link } from 'react-router-dom';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import ActiveButton from '../../../components/Button/ActiveButton';
-import ModalDetailNetwork from './ModalDetailNetwork';
-import Ordering from '../../../components/Ordering/Ordering';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { Row, Spinner, Table } from "react-bootstrap";
+import CrudButton from "../../../components/Button/CrudButton";
+import { deleteNetwork, getNetwork, isActive } from "../../../api/services/networks";
+import { Link } from "react-router-dom";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import ActiveButton from "../../../components/Button/ActiveButton";
+import ModalDetailNetwork from "./ModalDetailNetwork";
+import Ordering from "../../../components/Ordering/Ordering";
+import { useTranslation } from "react-i18next";
 
 const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading, currentPage, entityNames }) => {
   const { t } = useTranslation();
-  const [network, setNetwork] = useState('');
+  const [network, setNetwork] = useState("");
 
   const [modalDelete, setModalDelete] = useState(false);
   const [modalState, setModalState] = useState(false);
@@ -33,7 +33,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
   //Read Network
   const showNetwork = (url) => {
     setUrl(url);
-    setNetwork('');
+    setNetwork("");
     getNetwork(url)
       .then((response) => {
         setNetwork(response.data);
@@ -86,34 +86,34 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
         setModalDelete(false);
       });
   };
-  const letterSize = { fontSize: '1.1em' };
+  const letterSize = { fontSize: "1.1em" };
 
   return (
     <React.Fragment>
       <Table responsive hover className="text-center">
         <thead>
           <tr>
-            <th style={letterSize}>{t('ngen.addressvalue')} </th>
-            <th style={letterSize}>{t('ngen.domain')}</th>
-            <th style={letterSize}>{t('ngen.cidr')}</th>
+            <th style={letterSize}>{t("ngen.addressvalue")} </th>
+            <th style={letterSize}>{t("ngen.domain")}</th>
+            <th style={letterSize}>{t("ngen.cidr")}</th>
             <Ordering
               field="type"
-              label={t('ngen.type')}
+              label={t("ngen.type")}
               order={order}
               setOrder={setOrder}
               setLoading={setLoading}
               letterSize={letterSize}
             />
-            <th style={letterSize}>{t('w.active')}</th>
+            <th style={letterSize}>{t("w.active")}</th>
             <Ordering
-              field={t('ngen.entity')}
-              label={t('ngen.entity')}
+              field={t("ngen.entity")}
+              label={t("ngen.entity")}
               order={order}
               setOrder={setOrder}
               setLoading={setLoading}
               letterSize={letterSize}
             />
-            <th style={letterSize}>{t('ngen.action_one')}</th>
+            <th style={letterSize}>{t("ngen.action_one")}</th>
             <th style={letterSize}></th>
           </tr>
         </thead>
@@ -124,14 +124,14 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
                 <td>{network.address_value}</td>
                 <td>{network.domain}</td>
                 <td>{network.cidr}</td>
-                <td>{network.type === 'internal' ? t('ngen.network.type.internal') : t('ngen.network.type.external')}</td>
+                <td>{network.type === "internal" ? t("ngen.network.type.internal") : t("ngen.network.type.external")}</td>
                 <td>
                   <ActiveButton
                     active={network.active}
                     onClick={() => pressActive(network.domain, network.cidr, network.active, network.url)}
                   />
                 </td>
-                <td>{network.network_entity ? entityNames[network.network_entity] : '-'}</td>
+                <td>{network.network_entity ? entityNames[network.network_entity] : "-"}</td>
                 <td>
                   <CrudButton type="read" onClick={() => showNetwork(network.url)} />
                   <Link to="/networks/edit" state={network}>

@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Col, Row } from 'react-bootstrap';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, Col, Row } from "react-bootstrap";
 
-import * as Yup from 'yup';
-import { Formik } from 'formik';
-import { register } from '../../../api/services/auth';
-import Alert from './../../../components/Alert/Alert';
+import * as Yup from "yup";
+import { Formik } from "formik";
+import { register } from "../../../api/services/auth";
+import Alert from "./../../../components/Alert/Alert";
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const RestRegister = ({ className, ...rest }) => {
   const [showAlert, setShowAlert] = useState(false);
@@ -18,7 +18,7 @@ const RestRegister = ({ className, ...rest }) => {
 
   const resetShowAlert = () => {
     if (registered === true) {
-      history.push('/auth/signin', { from: '/auth/signup' });
+      history.push("/auth/signin", { from: "/auth/signup" });
     } else {
       setShowAlert(false);
       setDelayAlert(5000);
@@ -30,15 +30,15 @@ const RestRegister = ({ className, ...rest }) => {
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} delay={delayAlert} />
       <Formik
         initialValues={{
-          username: '',
-          email: '',
-          password: '',
+          username: "",
+          email: "",
+          password: "",
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email(t('signup.error.email.invalid')).max(255).required(t('signup.error.email.required')),
-          username: Yup.string().required(t('signup.error.username.required')),
-          password: Yup.string().max(255).required(t('signup.error.password.required'))
+          email: Yup.string().email(t("signup.error.email.invalid")).max(255).required(t("signup.error.email.required")),
+          username: Yup.string().required(t("signup.error.username.required")),
+          password: Yup.string().max(255).required(t("signup.error.password.required"))
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           register(values.username, values.password, values.email)
@@ -59,7 +59,7 @@ const RestRegister = ({ className, ...rest }) => {
                 className="form-control"
                 error={touched.username && errors.username}
                 label="Username"
-                placeholder={t('ngen.user.username')}
+                placeholder={t("ngen.user.username")}
                 name="username"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -73,7 +73,7 @@ const RestRegister = ({ className, ...rest }) => {
                 className="form-control"
                 error={touched.email && errors.email}
                 label="Email Address"
-                placeholder={t('w.email')}
+                placeholder={t("w.email")}
                 name="email"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -87,7 +87,7 @@ const RestRegister = ({ className, ...rest }) => {
                 className="form-control"
                 error={touched.password && errors.password}
                 label="Password"
-                placeholder={t('ngen.password')}
+                placeholder={t("ngen.password")}
                 name="password"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -100,7 +100,7 @@ const RestRegister = ({ className, ...rest }) => {
             <Row>
               <Col mt={2}>
                 <Button className="btn-block" color="primary" disabled={isSubmitting} size="large" type="submit" variant="primary">
-                  {t('button.signup')}
+                  {t("button.signup")}
                 </Button>
               </Col>
             </Row>

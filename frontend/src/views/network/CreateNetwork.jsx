@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
-import { getAllContacts } from '../../api/services/contacts';
-import { postNetwork } from '../../api/services/networks';
-import FormCreateNetwork from './components/FormCreateNetwork';
-import Navigation from '../../components/Navigation/Navigation';
-import Alert from '../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import { getAllContacts } from "../../api/services/contacts";
+import { postNetwork } from "../../api/services/networks";
+import FormCreateNetwork from "./components/FormCreateNetwork";
+import Navigation from "../../components/Navigation/Navigation";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const CreateNetwork = () => {
-  const [cidr, setCidr] = useState(''); //required
-  const [type, setType] = useState(''); //required
+  const [cidr, setCidr] = useState(""); //required
+  const [type, setType] = useState(""); //required
   const [contacts, setContacts] = useState([]); //required
   const active = true; //required: true
   const children = useState(null); //?
   const [domain, setDomain] = useState(null); // null
   const [parent, setParent] = useState(null);
   const [network_entity, setNetwork_entity] = useState(null);
-  const [address_value, setAddress_value] = useState('');
+  const [address_value, setAddress_value] = useState("");
   const { t } = useTranslation();
 
   //Dropdown
@@ -32,7 +32,7 @@ const CreateNetwork = () => {
         let listContact = response.map((contactsItem) => {
           return {
             value: contactsItem.url,
-            label: contactsItem.name + ' (' + labelRole[contactsItem.role] + ')'
+            label: contactsItem.name + " (" + labelRole[contactsItem.role] + ")"
           };
         });
         setContactsOption(listContact);
@@ -43,17 +43,17 @@ const CreateNetwork = () => {
   }, [contactCreated]);
 
   const labelRole = {
-    technical: `${t('ngen.role.technical')}`,
-    administrative: `${t('ngen.role.administrative')}`,
-    abuse: `${t('ngen.role.abuse')}`,
-    notifications: `${t('ngen.role.notifications')}`,
-    noc: `${t('ngen.role.noc')}`
+    technical: `${t("ngen.role.technical")}`,
+    administrative: `${t("ngen.role.administrative")}`,
+    abuse: `${t("ngen.role.abuse")}`,
+    notifications: `${t("ngen.role.notifications")}`,
+    noc: `${t("ngen.role.noc")}`
   };
 
   const createNetwork = () => {
     postNetwork(children, active, type, parent, network_entity, contacts, address_value)
       .then((response) => {
-        window.location.href = '/networks';
+        window.location.href = "/networks";
       })
       .catch(() => {
         setShowAlert(true);
@@ -64,15 +64,15 @@ const CreateNetwork = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="network" />
       <Row>
-        <Navigation actualPosition={t('ngen.network.create')} path="/networks" index={t('ngen.network_other')} />
+        <Navigation actualPosition={t("ngen.network.create")} path="/networks" index={t("ngen.network_other")} />
       </Row>
       <Row>
         <Col sm={12}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">{t('ngen.network_other')}</Card.Title>
+              <Card.Title as="h5">{t("ngen.network_other")}</Card.Title>
               <span className="d-block m-t-5">
-                {t('crud.add')} {t('ngen.network_one')}
+                {t("crud.add")} {t("ngen.network_one")}
               </span>
             </Card.Header>
             <Card.Body>

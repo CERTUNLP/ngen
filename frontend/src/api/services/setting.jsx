@@ -1,6 +1,6 @@
-import apiInstance from '../api';
-import { COMPONENT_URL, PAGE, PAGE_SIZE } from '../../config/constant';
-import setAlert from '../../utils/setAlert';
+import apiInstance from "../api";
+import { COMPONENT_URL, PAGE, PAGE_SIZE } from "../../config/constant";
+import setAlert from "../../utils/setAlert";
 
 const getAllSetting = (currentPage = 1, results = [], limit = 100) => {
   return apiInstance
@@ -32,7 +32,7 @@ const getSetting = (currentPage) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'state');
+      setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };
@@ -46,13 +46,13 @@ const patchSetting = (url, value) => {
       value: value
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success');
+      setAlert(messageSuccess, "success");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error');
+      setAlert(messageError, "error");
       return Promise.reject(error);
     });
 };
@@ -64,7 +64,7 @@ const settingPageSize = () => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'state');
+      setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };

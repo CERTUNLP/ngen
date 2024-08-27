@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { Form } from 'react-bootstrap';
-import { validateContactMail, validateContactPhone, validateContactTelegram, validateContactURI } from '../../../utils/validators/contact';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect } from "react";
+import { Form } from "react-bootstrap";
+import { validateContactMail, validateContactPhone, validateContactTelegram, validateContactURI } from "../../../utils/validators/contact";
+import { useTranslation } from "react-i18next";
 
 const FormContactSelectUsername = (props) => {
   // props: selectedType, contact, setContact, setValidContact
@@ -13,32 +13,32 @@ const FormContactSelectUsername = (props) => {
   const { t } = useTranslation();
   const typeValue = [
     {
-      name: 'email',
-      placeholder: t('ngen.email_add'),
+      name: "email",
+      placeholder: t("ngen.email_add"),
       isInvalid: JSON.parse(!validateContactMail(props.contact)),
       condition: JSON.parse(validateContactMail(props.contact)),
-      messageDanger: t('ngen.email_valid')
+      messageDanger: t("ngen.email_valid")
     },
     {
-      name: 'telegram',
-      placeholder: t('ngen.telegram_add'),
+      name: "telegram",
+      placeholder: t("ngen.telegram_add"),
       isInvalid: JSON.parse(!validateContactTelegram(props.contact)),
       condition: JSON.parse(validateContactTelegram(props.contact)),
-      messageDanger: t('ngen.telegram_valid')
+      messageDanger: t("ngen.telegram_valid")
     },
     {
-      name: 'phone',
-      placeholder: t('ngen.phone_add'),
+      name: "phone",
+      placeholder: t("ngen.phone_add"),
       isInvalid: JSON.parse(!validateContactPhone(props.contact)),
       condition: JSON.parse(validateContactPhone(props.contact)),
-      messageDanger: t('ngen.phone_valid')
+      messageDanger: t("ngen.phone_valid")
     },
     {
-      name: 'uri',
-      placeholder: t('ngen.URI_add'),
+      name: "uri",
+      placeholder: t("ngen.URI_add"),
       isInvalid: JSON.parse(!validateContactURI(props.contact)),
       condition: JSON.parse(validateContactURI(props.contact)),
-      messageDanger: t('ngen.URI_valid')
+      messageDanger: t("ngen.URI_valid")
     }
   ];
 
@@ -49,8 +49,8 @@ const FormContactSelectUsername = (props) => {
       <React.Fragment>
         <Form.Group controlId="Form.Contact.Username">
           <Form.Label>
-            {t('ngen.contact_one')}
-            <b style={{ color: 'red' }}>*</b>
+            {t("ngen.contact_one")}
+            <b style={{ color: "red" }}>*</b>
           </Form.Label>
           <Form.Control
             name="Form.Contact.Username__username"
@@ -62,7 +62,7 @@ const FormContactSelectUsername = (props) => {
             }}
             isInvalid={username.isInvalid}
           />
-          {!props.contact || username.condition ? '' : <div className="invalid-feedback"> {username.messageDanger} </div>}
+          {!props.contact || username.condition ? "" : <div className="invalid-feedback"> {username.messageDanger} </div>}
         </Form.Group>
       </React.Fragment>
     );
@@ -71,9 +71,9 @@ const FormContactSelectUsername = (props) => {
       <React.Fragment>
         <Form.Group controlId="Form.Contact.Username.readOnly">
           <Form.Label>
-            {t('ngen.contact_one')} <b style={{ color: 'red' }}>*</b>
+            {t("ngen.contact_one")} <b style={{ color: "red" }}>*</b>
           </Form.Label>
-          <Form.Control readOnly placeholder={t('placeholder.contact')} name="username" />
+          <Form.Control readOnly placeholder={t("placeholder.contact")} name="username" />
         </Form.Group>
       </React.Fragment>
     );

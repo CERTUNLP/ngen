@@ -1,6 +1,7 @@
 """
 Django Feed filter tests. Tests search_fields and filterset_class.
 """
+
 import datetime
 
 import pytz
@@ -16,7 +17,7 @@ class FeedFilterTest(BaseFilterTest):
     Feed filter test class.
     """
 
-    fixtures = ['priority.json', 'user.json']
+    fixtures = ["priority.json", "user.json"]
 
     @classmethod
     def setUpTestData(cls):
@@ -24,28 +25,23 @@ class FeedFilterTest(BaseFilterTest):
         super().setUpTestData()
 
         cls.feed_1 = Feed.objects.create(
-            name="ABC",
-            description="Feed ABC description 123"
+            name="ABC", description="Feed ABC description 123"
         )
         cls.feed_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.feed_1.save()
 
         cls.feed_2 = Feed.objects.create(
-            name="BCD",
-            description="Feed BCD description 456"
+            name="BCD", description="Feed BCD description 456"
         )
 
         cls.feed_3 = Feed.objects.create(
-            name="CDE-1",
-            description="Feed CDE description 789",
-            active=False
+            name="CDE-1", description="Feed CDE description 789", active=False
         )
 
         cls.queryset = Feed.objects.all()
 
         cls.filter = lambda query_params: FeedFilter(
-            query_params,
-            queryset=cls.queryset
+            query_params, queryset=cls.queryset
         )
 
     def test_search_filter(self):
@@ -59,12 +55,10 @@ class FeedFilterTest(BaseFilterTest):
         self.assertEqual(response.data["count"], 2)
 
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.feed_1.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.feed_1.id
         )
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][1]["url"]),
-            self.feed_2.id
+            self.get_id_from_url(response.data["results"][1]["url"]), self.feed_2.id
         )
 
         # Searching by description
@@ -72,8 +66,7 @@ class FeedFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.feed_3.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.feed_3.id
         )
 
         # Searching with no results
@@ -86,9 +79,7 @@ class FeedFilterTest(BaseFilterTest):
         Test filter by id.
         """
 
-        params = {
-            "id": self.feed_1.id
-        }
+        params = {"id": self.feed_1.id}
 
         filtered_queryset = self.filter(params).qs
 
@@ -101,7 +92,7 @@ class FeedFilterTest(BaseFilterTest):
 
         params = {
             "created_range_after": "2000-01-01",
-            "created_range_before": "2000-01-02"
+            "created_range_before": "2000-01-02",
         }
 
         filtered_queryset = self.filter(params).qs
@@ -118,15 +109,13 @@ class FeedFilterTest(BaseFilterTest):
 
         params = {
             "modified_range_after": today.isoformat(),
-            "modified_range_before": tomorrow.isoformat()
+            "modified_range_before": tomorrow.isoformat(),
         }
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.feed_1, self.feed_2, self.feed_3],
-            ordered=False
+            filtered_queryset, [self.feed_1, self.feed_2, self.feed_3], ordered=False
         )
 
     def test_filter_by_name(self):
@@ -134,18 +123,15 @@ class FeedFilterTest(BaseFilterTest):
         Test filter by name.
         """
 
-        params = {
-            "name__icontains": "bc"
-        }
+        params = {"name__icontains": "bc"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset, [self.feed_1, self.feed_2], ordered=False)
+            filtered_queryset, [self.feed_1, self.feed_2], ordered=False
+        )
 
-        params = {
-            "name__icontains": "ABC"
-        }
+        params = {"name__icontains": "ABC"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -156,18 +142,15 @@ class FeedFilterTest(BaseFilterTest):
         Test filter by slug.
         """
 
-        params = {
-            "slug__icontains": "bc"
-        }
+        params = {"slug__icontains": "bc"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset, [self.feed_1, self.feed_2], ordered=False)
+            filtered_queryset, [self.feed_1, self.feed_2], ordered=False
+        )
 
-        params = {
-            "slug__icontains": "cde_1"
-        }
+        params = {"slug__icontains": "cde_1"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -178,31 +161,26 @@ class FeedFilterTest(BaseFilterTest):
         Test filter by description.
         """
 
-        params = {
-            "description__icontains": "456"
-        }
+        params = {"description__icontains": "456"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(filtered_queryset, [self.feed_2])
 
-        params = {
-            "description__icontains": "description"
-        }
+        params = {"description__icontains": "description"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset, [self.feed_1, self.feed_2, self.feed_3], ordered=False)
+            filtered_queryset, [self.feed_1, self.feed_2, self.feed_3], ordered=False
+        )
 
     def test_filter_by_active(self):
         """
         Test filter by active.
         """
 
-        params = {
-            "active": False
-        }
+        params = {"active": False}
 
         filtered_queryset = self.filter(params).qs
 

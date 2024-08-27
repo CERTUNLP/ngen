@@ -1,5 +1,5 @@
-import React from 'react';
-import { GoogleMap, Marker, MarkerClusterer, useJsApiLoader } from '@react-google-maps/api';
+import React from "react";
+import { GoogleMap, Marker, MarkerClusterer, useJsApiLoader } from "@react-google-maps/api";
 
 const MapWithAMarkerClusterer = () => {
   const { isLoaded } = useJsApiLoader({
@@ -19,7 +19,7 @@ const MapWithAMarkerClusterer = () => {
   ];
 
   return isLoaded ? (
-    <GoogleMap mapContainerStyle={{ width: '100%', height: '400px' }} center={center} zoom={10}>
+    <GoogleMap mapContainerStyle={{ width: "100%", height: "400px" }} center={center} zoom={10}>
       <MarkerClusterer gridSize={60}>
         {(cluserer) => markers.map((marker, index) => <Marker key={index} position={marker.position} clusterer={cluserer} />)}
       </MarkerClusterer>

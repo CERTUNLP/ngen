@@ -1,16 +1,16 @@
-import apiInstance from '../api';
-import setAlert from '../../utils/setAlert';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
+import apiInstance from "../api";
+import setAlert from "../../utils/setAlert";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
 
 const getTemplates = (currentPage, filters, order) => {
   let messageError = `No se pudo recuperar la informacion de las plantillas`;
   return apiInstance
-    .get(COMPONENT_URL.template + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.template + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'template');
+      setAlert(messageError, "error", "template");
       return Promise.reject(error);
     });
 };
@@ -18,12 +18,12 @@ const getTemplates = (currentPage, filters, order) => {
 const createCases = (url) => {
   let messageError = `No se pudo recuperar la  plantilla`;
   return apiInstance
-    .get(url + 'create-cases/')
+    .get(url + "create-cases/")
     .then((response) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'template');
+      setAlert(messageError, "error", "template");
       return Promise.reject(error);
     });
 };
@@ -36,7 +36,7 @@ const getTemplate = (url) => {
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'template');
+      setAlert(messageError, "error", "template");
       return Promise.reject(error);
     });
 };
@@ -57,18 +57,18 @@ const postTemplate = (address_value, active, priority, event_taxonomy, event_fee
   return apiInstance
     .post(COMPONENT_URL.template, body)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'template');
+      setAlert(messageSuccess, "success", "template");
       return response;
     })
     .catch((error) => {
       console.log(error);
       //
       if (error.response.status === 400) {
-        if (error.response.data.__all__[0] === 'CIDR, Domain, Taxonomy, Feed tuple must be unique') {
-          messageError += '. Ya existe una plantilla para eventos con esas caracteristicas ';
+        if (error.response.data.__all__[0] === "CIDR, Domain, Taxonomy, Feed tuple must be unique") {
+          messageError += ". Ya existe una plantilla para eventos con esas caracteristicas ";
         }
       }
-      setAlert(messageError, 'error', 'template');
+      setAlert(messageError, "error", "template");
       return Promise.reject(error);
     });
 };
@@ -88,11 +88,11 @@ const putTemplate = (url, address_value, active, priority, event_taxonomy, event
       case_state: case_state
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'template');
+      setAlert(messageSuccess, "success", "template");
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'template');
+      setAlert(messageError, "error", "template");
       return Promise.reject(error);
     });
 };
@@ -103,11 +103,11 @@ const deleteTemplate = (url) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'template');
+      setAlert(messageSuccess, "success", "template");
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'template');
+      setAlert(messageError, "error", "template");
       return Promise.reject(error);
     });
 };
@@ -141,11 +141,11 @@ const isActive = (url, active) => {
       active: active
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'template');
+      setAlert(messageSuccess, "success", "template");
       return response;
     })
     .catch((error) => {
-      setAlert(messageError, 'error', 'template');
+      setAlert(messageError, "error", "template");
       return Promise.reject(error);
     });
 };

@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
-import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from 'react-bootstrap';
-import CrudButton from '../../../components/Button/CrudButton';
-import { deleteContact, getContact } from '../../../api/services/contacts';
-import { Link } from 'react-router-dom';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import PriorityButton from '../../../components/Button/PriorityButton';
-import Ordering from '../../../components/Ordering/Ordering';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import CrudButton from "../../../components/Button/CrudButton";
+import { deleteContact, getContact } from "../../../api/services/contacts";
+import { Link } from "react-router-dom";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import PriorityButton from "../../../components/Button/PriorityButton";
+import Ordering from "../../../components/Ordering/Ordering";
+import { useTranslation } from "react-i18next";
 
 const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder }) => {
-  const [contact, setContact] = useState('');
+  const [contact, setContact] = useState("");
 
   const [modalShow, setModalShow] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  const [url, setUrl] = useState('');
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
-  const [created, setCreated] = useState('');
-  const [modified, setModified] = useState('');
-  const [type, setType] = useState('');
-  const [role, setRole] = useState('');
+  const [url, setUrl] = useState("");
+  const [id, setId] = useState("");
+  const [name, setName] = useState("");
+  const [created, setCreated] = useState("");
+  const [modified, setModified] = useState("");
+  const [type, setType] = useState("");
+  const [role, setRole] = useState("");
   const { t } = useTranslation();
 
   if (loading) {
@@ -32,16 +32,16 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
 
   //Read Contact
   const showContact = (url) => {
-    setId(url.split('/')[url.split('/').length - 2]);
+    setId(url.split("/")[url.split("/").length - 2]);
     setUrl(url);
-    setContact('');
+    setContact("");
     getContact(url)
       .then((response) => {
         setContact(response.data);
-        let datetime = response.data.created.split('T');
-        setCreated(datetime[0] + ' ' + datetime[1].slice(0, 8));
-        datetime = response.data.modified.split('T');
-        setModified(datetime[0] + ' ' + datetime[1].slice(0, 8));
+        let datetime = response.data.created.split("T");
+        setCreated(datetime[0] + " " + datetime[1].slice(0, 8));
+        datetime = response.data.modified.split("T");
+        setModified(datetime[0] + " " + datetime[1].slice(0, 8));
         let rol = labelRole[response.data.role];
         setRole(rol);
         let type = labelContact[response.data.type];
@@ -72,25 +72,25 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
   };
 
   const labelRole = {
-    technical: `${t('ngen.role.technical')}`,
-    administrative: `${t('ngen.role.administrative')}`,
-    abuse: `${t('ngen.role.abuse')}`,
-    notifications: `${t('ngen.role.notifications')}`,
-    noc: `${t('ngen.role.noc')}`
+    technical: `${t("ngen.role.technical")}`,
+    administrative: `${t("ngen.role.administrative")}`,
+    abuse: `${t("ngen.role.abuse")}`,
+    notifications: `${t("ngen.role.notifications")}`,
+    noc: `${t("ngen.role.noc")}`
   };
 
   const labelContact = {
-    email: 'Correo electrónico',
-    telegram: 'Telegram',
-    phone: 'Teléfono',
-    uri: 'URI'
+    email: "Correo electrónico",
+    telegram: "Telegram",
+    phone: "Teléfono",
+    uri: "URI"
   };
 
   const storageContactUrl = (url) => {
-    localStorage.setItem('contact', url);
+    localStorage.setItem("contact", url);
   };
 
-  const letterSize = { fontSize: '1.1em' };
+  const letterSize = { fontSize: "1.1em" };
 
   return (
     <React.Fragment>
@@ -99,16 +99,16 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
           <tr>
             <Ordering
               field="name"
-              label={t('ngen.name_one')}
+              label={t("ngen.name_one")}
               order={order}
               setOrder={setOrder}
               setLoading={setLoading}
               letterSize={letterSize}
             />
-            <th>{t('ngen.role_one')}</th>
-            <th>{t('ngen.contact_other')}</th>
-            <th>{t('ngen.priority_one')}</th>
-            <th>{t('ngen.action_one')}</th>
+            <th>{t("ngen.role_one")}</th>
+            <th>{t("ngen.contact_other")}</th>
+            <th>{t("ngen.priority_one")}</th>
+            <th>{t("ngen.action_one")}</th>
           </tr>
         </thead>
         <tbody>
@@ -142,14 +142,14 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                 <Card.Header>
                   <Row>
                     <Col>
-                      <Card.Title as="h5">{t('ngen.contact_other')}</Card.Title>
-                      <span className="d-block m-t-5">{t('ngen.contact.detail')}</span>
+                      <Card.Title as="h5">{t("ngen.contact_other")}</Card.Title>
+                      <span className="d-block m-t-5">{t("ngen.contact.detail")}</span>
                     </Col>
                     <Col sm={2} lg={2}>
                       <Link to="/contacts/edit" state={contact}>
                         <CrudButton type="edit" />
                       </Link>
-                      <CloseButton aria-label={t('w.close')} onClick={() => setModalShow(false)} />
+                      <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                     </Col>
                   </Row>
                 </Card.Header>
@@ -157,19 +157,19 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                   <Table responsive>
                     <tbody>
                       <tr>
-                        <td>{t('ngen.system.id')}</td>
+                        <td>{t("ngen.system.id")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={id} />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.name_one')}</td>
+                        <td>{t("ngen.name_one")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={contact.name} />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.role_one')}</td>
+                        <td>{t("ngen.role_one")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={role} />
                         </td>
@@ -182,7 +182,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                       </tr>
                       {contact.public_key ? (
                         <tr>
-                          <td>{t('ngen.public.key')}</td>
+                          <td>{t("ngen.public.key")}</td>
                           <td>
                             <Form.Control plaintext readOnly defaultValue={contact.public_key} />
                           </td>
@@ -191,7 +191,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                         <></>
                       )}
                       <tr>
-                        <td>{t('info.related')}</td>
+                        <td>{t("info.related")}</td>
                         <td>
                           <Button size="sm" variant="light" className="text-capitalize">
                             Redes
@@ -200,19 +200,19 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                             </Badge>
                           </Button>
                           <Button size="sm" variant="light" className="text-capitalize">
-                            {t('ngen.priority_one')}
+                            {t("ngen.priority_one")}
                             <PriorityButton url={contact.priority} />
                           </Button>
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.date.created')}</td>
+                        <td>{t("ngen.date.created")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={created} />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.date.modified')}</td>
+                        <td>{t("ngen.date.modified")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={modified} />
                         </td>

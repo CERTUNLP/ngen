@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Row } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
-import Alert from '../../components/Alert/Alert';
-import FormState from './components/FormState';
-import Navigation from '../../components/Navigation/Navigation';
-import { getAllStates, putState } from '../../api/services/states';
-import ListEdge from '../edge/ListEdge';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Row } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
+import Alert from "../../components/Alert/Alert";
+import FormState from "./components/FormState";
+import Navigation from "../../components/Navigation/Navigation";
+import { getAllStates, putState } from "../../api/services/states";
+import ListEdge from "../edge/ListEdge";
+import { useTranslation } from "react-i18next";
 
 const EditState = () => {
   const location = useLocation();
@@ -48,7 +48,7 @@ const EditState = () => {
   const editState = () => {
     putState(body.url, body.name, body.attended, body.solved, body.active, body.description, body.children)
       .then(() => {
-        window.location.href = '/states';
+        window.location.href = "/states";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -59,9 +59,9 @@ const EditState = () => {
     <div>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="state" />
       <Row>
-        <Navigation actualPosition={t('ngen.state.edit')} path="/states" index={t('ngen.state_other')} />
+        <Navigation actualPosition={t("ngen.state.edit")} path="/states" index={t("ngen.state_other")} />
       </Row>
-      <FormState body={body} setBody={setBody} createState={editState} childernes={states} type={t('w.edit')} />
+      <FormState body={body} setBody={setBody} createState={editState} childernes={states} type={t("w.edit")} />
       <ListEdge url={body.url} sectionAddEdge={sectionAddEdge} setShowAlert={setShowAlert} />
     </div>
   );

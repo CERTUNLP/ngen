@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Row } from 'react-bootstrap';
-import { getCase } from '../../../api/services/cases';
-import { getMinifiedPriority } from '../../../api/services/priorities';
-import { getMinifiedState } from '../../../api/services/states';
-import { getMinifiedTlp } from '../../../api/services/tlp';
-import { getMinifiedUser } from '../../../api/services/users';
-import TableCase from './TableCase';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Row } from "react-bootstrap";
+import { getCase } from "../../../api/services/cases";
+import { getMinifiedPriority } from "../../../api/services/priorities";
+import { getMinifiedState } from "../../../api/services/states";
+import { getMinifiedTlp } from "../../../api/services/tlp";
+import { getMinifiedUser } from "../../../api/services/users";
+import TableCase from "./TableCase";
+import { useTranslation } from "react-i18next";
 
 const SmallCaseTable = ({ readCase, disableLink, modalCase, modalListCase, modalCaseDetail, deleteCaseFromForm, disableColumOption }) => {
   const [userNames, setUserNames] = useState({});
@@ -77,25 +77,25 @@ const SmallCaseTable = ({ readCase, disableLink, modalCase, modalListCase, modal
         <Card.Header>
           <Row>
             <Col sm={12} lg={8}>
-              <Card.Title as="h5">{t('ngen.case_one')}</Card.Title>
+              <Card.Title as="h5">{t("ngen.case_one")}</Card.Title>
             </Col>
             {disableLink ? (
               <Col sm={12} lg={2}>
                 <Button size="lm" variant="outline-dark" onClick={() => modalCase()}>
-                  {t('ngen.case.create')}
+                  {t("ngen.case.create")}
                 </Button>
               </Col>
             ) : (
-              ''
+              ""
             )}
             {disableLink ? (
               <Col sm={12} lg={2}>
                 <Button size="lm" variant="outline-dark" onClick={() => modalListCase()}>
-                  {t('ngen.case_link')}
+                  {t("ngen.case_link")}
                 </Button>
               </Col>
             ) : (
-              ''
+              ""
             )}
           </Row>
         </Card.Header>

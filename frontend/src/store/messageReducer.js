@@ -1,9 +1,9 @@
-import { CLEAR_MESSAGE, SET_MESSAGE } from './actions';
+import { CLEAR_MESSAGE, SET_MESSAGE } from "./actions";
 
 const initialState = {
-  text: '',
-  typeMessage: '',
-  typeComponent: ''
+  text: "",
+  typeMessage: "",
+  typeComponent: ""
 };
 
 const messageReducer = (state = initialState, action) => {
@@ -22,9 +22,9 @@ const messageReducer = (state = initialState, action) => {
     case CLEAR_MESSAGE: {
       return {
         ...state,
-        text: '',
-        typeMessage: '',
-        typeComponent: ''
+        text: "",
+        typeMessage: "",
+        typeComponent: ""
       };
     }
     default:

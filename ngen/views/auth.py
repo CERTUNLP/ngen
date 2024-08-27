@@ -10,7 +10,11 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 from ngen import models, serializers
 from ngen.filters import UserFilter
-from ngen.serializers import RegisterSerializer, CustomTokenObtainPairSerializer, CookieTokenRefreshSerializer
+from ngen.serializers import (
+    RegisterSerializer,
+    CustomTokenObtainPairSerializer,
+    CookieTokenRefreshSerializer,
+)
 
 
 class IsSelf(permissions.BasePermission):
@@ -18,22 +22,36 @@ class IsSelf(permissions.BasePermission):
         # Permite el acceso solo si el usuario autenticado es el mismo que el objeto
         return obj == request.user
 
+
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = models.User.objects.all().order_by('id')
+    queryset = models.User.objects.all().order_by("id")
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.OrderingFilter
+        filters.OrderingFilter,
     ]
-    search_fields = ['username', 'email', 'first_name', 'last_name']
+    search_fields = ["username", "email", "first_name", "last_name"]
     filterset_class = UserFilter
-    ordering_fields = ['id', 'created', 'modified',
-                       'username', 'email', 'priority', 'first_name', 'last_name']
+    ordering_fields = [
+        "id",
+        "created",
+        "modified",
+        "username",
+        "email",
+        "priority",
+        "first_name",
+        "last_name",
+    ]
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, GenericViewSet):
+class UserProfileViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     serializer_class = serializers.UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated, IsSelf]
     pagination_class = None
@@ -98,11 +116,16 @@ class CookieTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
     def finalize_response(self, request, response, *args, **kwargs):
-        if response.data.get('refresh'):
+        if response.data.get("refresh"):
             cookie_max_age = 3600 * 24 * 14  # 14 days
-            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True,
-                                path=reverse('ctoken-refresh'))
-            del response.data['refresh']
+            response.set_cookie(
+                "refresh_token",
+                response.data["refresh"],
+                max_age=cookie_max_age,
+                httponly=True,
+                path=reverse("ctoken-refresh"),
+            )
+            del response.data["refresh"]
         return super().finalize_response(request, response, *args, **kwargs)
 
 
@@ -110,11 +133,16 @@ class CookieTokenRefreshView(TokenRefreshView):
     serializer_class = CookieTokenRefreshSerializer
 
     def finalize_response(self, request, response, *args, **kwargs):
-        if response.data.get('refresh'):
+        if response.data.get("refresh"):
             cookie_max_age = 3600 * 24 * 14  # 14 days
-            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True,
-                                path=reverse('ctoken-refresh'))
-            del response.data['refresh']
+            response.set_cookie(
+                "refresh_token",
+                response.data["refresh"],
+                max_age=cookie_max_age,
+                httponly=True,
+                path=reverse("ctoken-refresh"),
+            )
+            del response.data["refresh"]
         return super().finalize_response(request, response, *args, **kwargs)
 
 
@@ -123,7 +151,7 @@ class CookieTokenLogoutView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.COOKIES.get('refresh_token')
+            refresh_token = request.COOKIES.get("refresh_token")
             token = RefreshToken(refresh_token)
             token.blacklist()
 

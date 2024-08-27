@@ -1,6 +1,6 @@
-import apiInstance from '../api';
-import setAlert from '../../utils/setAlert';
-import { COMPONENT_URL, PAGE } from '../../config/constant';
+import apiInstance from "../api";
+import setAlert from "../../utils/setAlert";
+import { COMPONENT_URL, PAGE } from "../../config/constant";
 
 const getMinifiedEntity = () => {
   let messageError = `No ha recuperado la informacion de entidades. `;
@@ -12,7 +12,7 @@ const getMinifiedEntity = () => {
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'entity');
+      setAlert(messageError, "error", "entity");
       return Promise.reject(error);
     });
 };
@@ -20,14 +20,14 @@ const getMinifiedEntity = () => {
 const getEntities = (currentPage, filters, order) => {
   let messageError = `No ha recuperado la informacion de entidades. `;
   return apiInstance
-    .get(COMPONENT_URL.entity + PAGE + currentPage + '&ordering=' + order + '&' + filters)
+    .get(COMPONENT_URL.entity + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'entity');
+      setAlert(messageError, "error", "entity");
       return Promise.reject(error);
     });
 };
@@ -44,7 +44,7 @@ const getEntity = (url) => {
       //let statusText = error.response.statusText;
 
       //messageError += statusText;
-      setAlert(messageError, 'error', 'entity');
+      setAlert(messageError, "error", "entity");
       return Promise.reject(error);
       //return
     });
@@ -78,20 +78,20 @@ const postEntity = (name, active) => {
       active: active
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'entity');
+      setAlert(messageSuccess, "success", "entity");
       return response;
     })
     .catch((error) => {
       console.log(error.response);
-      let statusText = '';
+      let statusText = "";
       let substring = error.response.data.slug[0].substring(0, 44);
-      if (substring === 'Ya existe una entidad NetworkEntity con slug') {
-        statusText = 'Ingrese un nombre diferente. ';
+      if (substring === "Ya existe una entidad NetworkEntity con slug") {
+        statusText = "Ingrese un nombre diferente. ";
       } else {
-        statusText = 'CAPTURAR NUEVO ERROR';
+        statusText = "CAPTURAR NUEVO ERROR";
       }
       messageError += statusText;
-      setAlert(messageError, 'error', 'entity');
+      setAlert(messageError, "error", "entity");
       return Promise.reject(error);
     });
 };
@@ -104,14 +104,14 @@ const putEntity = (url, name, active) => {
       active: active
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'entity');
+      setAlert(messageSuccess, "success", "entity");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.data;
 
       messageError += statusText;
-      setAlert(messageError, 'error', 'entity');
+      setAlert(messageError, "error", "entity");
       return Promise.reject(error);
     });
 };
@@ -122,14 +122,14 @@ const deleteEntity = (url, name) => {
   return apiInstance
     .delete(url)
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'entity');
+      setAlert(messageSuccess, "success", "entity");
       return response;
     })
     .catch((error) => {
       console.log(error.response.data);
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'entity');
+      setAlert(messageError, "error", "entity");
       return Promise.reject(error);
     });
 };
@@ -142,13 +142,13 @@ const isActive = (url, active, name) => {
       active: active
     })
     .then((response) => {
-      setAlert(messageSuccess, 'success', 'entity');
+      setAlert(messageSuccess, "success", "entity");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'entity');
+      setAlert(messageError, "error", "entity");
       return Promise.reject(error);
     });
 };

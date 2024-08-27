@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
-import { validateContact, validateName, validateSelect } from '../../../utils/validators/contact';
-import FormContactSelectUsername from './FormContactSelectUSername';
-import { getMinifiedPriority } from '../../../api/services/priorities';
-import SelectLabel from '../../../components/Select/SelectLabel';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Col, Form, Row } from "react-bootstrap";
+import { validateContact, validateName, validateSelect } from "../../../utils/validators/contact";
+import FormContactSelectUsername from "./FormContactSelectUSername";
+import { getMinifiedPriority } from "../../../api/services/priorities";
+import SelectLabel from "../../../components/Select/SelectLabel";
+import { useTranslation } from "react-i18next";
 
 const FormCreateContact = (props) => {
   // props: name, setName, role, setRole, priority, setPriority, type, setType, contact, setContact, keypgp, setKey, ifConfirm, ifCancel
@@ -55,43 +55,43 @@ const FormCreateContact = (props) => {
 
   const roleOptions = [
     {
-      value: 'technical',
-      label: `${t('ngen.role.technical')}`
+      value: "technical",
+      label: `${t("ngen.role.technical")}`
     },
     {
-      value: 'administrative',
-      label: `${t('ngen.role.administrative')}`
+      value: "administrative",
+      label: `${t("ngen.role.administrative")}`
     },
     {
-      value: 'abuse',
-      label: `${t('ngen.role.abuse')}`
+      value: "abuse",
+      label: `${t("ngen.role.abuse")}`
     },
     {
-      value: 'notifications',
-      label: `${t('ngen.role.notifications')}`
+      value: "notifications",
+      label: `${t("ngen.role.notifications")}`
     },
     {
-      value: 'noc',
-      label: `${t('ngen.role.noc')}`
+      value: "noc",
+      label: `${t("ngen.role.noc")}`
     }
   ];
 
   const typeOptions = [
     {
-      value: 'email',
-      label: 'Correo Electronico'
+      value: "email",
+      label: "Correo Electronico"
     },
     {
-      value: 'telegram',
-      label: 'Telegram'
+      value: "telegram",
+      label: "Telegram"
     },
     {
-      value: 'phone',
-      label: 'Telefono'
+      value: "phone",
+      label: "Telefono"
     },
     {
-      value: 'uri',
-      label: 'URI'
+      value: "uri",
+      label: "URI"
     }
   ];
 
@@ -102,11 +102,11 @@ const FormCreateContact = (props) => {
           <Col sm={12} lg={4}>
             <Form.Group controlId="Form.Contact.Name">
               <Form.Label>
-                {t('ngen.name_one')} <b style={{ color: 'red' }}>*</b>
+                {t("ngen.name_one")} <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Form.Control
                 type="nombre"
-                placeholder={t('ngen.name_one')}
+                placeholder={t("ngen.name_one")}
                 maxLength="100"
                 value={props.name}
                 onChange={(e) => props.setName(e.target.value)}
@@ -120,7 +120,7 @@ const FormCreateContact = (props) => {
               setSelect={setSelectRole}
               options={roleOptions}
               value={selectRole}
-              placeholder={t('ngen.role_one')}
+              placeholder={t("ngen.role_one")}
               required={true}
             />
           </Col>
@@ -130,7 +130,7 @@ const FormCreateContact = (props) => {
               setSelect={setSelectPriority}
               options={prioritiesOption}
               value={selectPriority}
-              placeholder={t('ngen.priority_one')}
+              placeholder={t("ngen.priority_one")}
               required={true}
             />
           </Col>
@@ -142,7 +142,7 @@ const FormCreateContact = (props) => {
               setSelect={setSelectType}
               options={typeOptions}
               value={selectType}
-              placeholder={t('ngen.type')}
+              placeholder={t("ngen.type")}
               required={true}
             />
           </Col>
@@ -156,10 +156,10 @@ const FormCreateContact = (props) => {
           </Col>
         </Row>
         <Form.Group controlId="Form.Contact.Key">
-          <Form.Label>{t('ngen.public.key')}</Form.Label>
+          <Form.Label>{t("ngen.public.key")}</Form.Label>
           <Form.Control
             type="string"
-            placeholder={t('ngen.key.placeholder')}
+            placeholder={t("ngen.key.placeholder")}
             value={props.keypgp}
             maxLength="100"
             onChange={(e) => {
@@ -168,7 +168,7 @@ const FormCreateContact = (props) => {
           />
         </Form.Group>
         <Form.Group>
-          {props.name !== '' &&
+          {props.name !== "" &&
           validateName(props.name) &&
           validateSelect(props.role) &&
           validateSelect(props.priority) &&
@@ -177,18 +177,18 @@ const FormCreateContact = (props) => {
           validContact ? (
             <>
               <Button variant="primary" onClick={props.ifConfirm}>
-                {t('button.save')}
+                {t("button.save")}
               </Button>
             </>
           ) : (
             <>
               <Button variant="primary" disabled>
-                {t('button.save')}
+                {t("button.save")}
               </Button>
             </>
           )}
           <Button variant="primary" onClick={props.ifCancel}>
-            {t('button.cancel')}
+            {t("button.cancel")}
           </Button>
         </Form.Group>
       </Form>

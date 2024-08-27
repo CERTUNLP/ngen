@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Form, Row, Spinner, Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import CrudButton from '../../../components/Button/CrudButton';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import { deleteEvent } from '../../../api/services/events';
-import Ordering from '../../../components/Ordering/Ordering';
-import LetterFormat from '../../../components/LetterFormat';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Form, Row, Spinner, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import CrudButton from "../../../components/Button/CrudButton";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import { deleteEvent } from "../../../api/services/events";
+import Ordering from "../../../components/Ordering/Ordering";
+import LetterFormat from "../../../components/LetterFormat";
+import { useTranslation } from "react-i18next";
 
 const TableEvents = ({
   events,
@@ -72,7 +72,7 @@ const TableEvents = ({
   const handleDelete = () => {
     deleteEvent(deleteUrl)
       .then(() => {
-        window.location.href = '/events';
+        window.location.href = "/events";
       })
       .catch((error) => {
         console.log(error);
@@ -116,10 +116,10 @@ const TableEvents = ({
   };
 
   const storageEventUrl = (url) => {
-    localStorage.setItem('event', url);
+    localStorage.setItem("event", url);
   };
 
-  const letterSize = { fontSize: '1.1em' };
+  const letterSize = { fontSize: "1.1em" };
   return (
     <React.Fragment>
       <ul className="list-group my-4">
@@ -131,7 +131,7 @@ const TableEvents = ({
                   <Form.Group>
                     <Form.Check
                       type="checkbox"
-                      id={'selectAll'}
+                      id={"selectAll"}
                       onChange={handleSelectAll}
                       checked={selectedEvent.length !== 0 ? isCheckAll : false}
                     />
@@ -141,11 +141,11 @@ const TableEvents = ({
 
               {!disableDateModified ? (
                 disableOrdering ? (
-                  <th style={letterSize}>{t('ngen.event.date')} </th>
+                  <th style={letterSize}>{t("ngen.event.date")} </th>
                 ) : (
                   <Ordering
                     field="modified"
-                    label={t('ngen.date.modified')}
+                    label={t("ngen.date.modified")}
                     order={order}
                     setOrder={setOrder}
                     setLoading={setLoading}
@@ -153,15 +153,15 @@ const TableEvents = ({
                   />
                 )
               ) : (
-                ''
+                ""
               )}
               {!disableDate ? (
                 disableOrdering ? (
-                  <th style={letterSize}>{t('ngen.event.date')} </th>
+                  <th style={letterSize}>{t("ngen.event.date")} </th>
                 ) : (
                   <Ordering
                     field="date"
-                    label={t('ngen.event.date')}
+                    label={t("ngen.event.date")}
                     order={order}
                     setOrder={setOrder}
                     setLoading={setLoading}
@@ -169,15 +169,15 @@ const TableEvents = ({
                   />
                 )
               ) : (
-                ''
+                ""
               )}
-              {!disableUuid && <th style={letterSize}>{t('ngen.uuid')}</th>}
-              <th style={letterSize}>{t('ngen.identifier')}</th>
-              {!disableTlp && <th style={letterSize}>{t('ngen.tlp')}</th>}
-              {!disableMerged && <th style={letterSize}>{t('ngen.event.merged')}</th>}
-              <th style={letterSize}>{t('ngen.taxonomy_one')}</th>
-              <th style={letterSize}>{t('ngen.feed.information')}</th>
-              {!disableColumOption && <th style={letterSize}>{t('ngen.options')}</th>}
+              {!disableUuid && <th style={letterSize}>{t("ngen.uuid")}</th>}
+              <th style={letterSize}>{t("ngen.identifier")}</th>
+              {!disableTlp && <th style={letterSize}>{t("ngen.tlp")}</th>}
+              {!disableMerged && <th style={letterSize}>{t("ngen.event.merged")}</th>}
+              <th style={letterSize}>{t("ngen.taxonomy_one")}</th>
+              <th style={letterSize}>{t("ngen.feed.information")}</th>
+              {!disableColumOption && <th style={letterSize}>{t("ngen.options")}</th>}
             </tr>
           </thead>
           <tbody>
@@ -221,8 +221,8 @@ const TableEvents = ({
                       )}
                     </th>
                   )}
-                  {!disableDateModified ? <td>{event.modified.slice(0, 10) + ' ' + event.modified.slice(11, 19)}</td> : ''}
-                  {!disableDate ? <td>{event.date ? event.date.slice(0, 10) + ' ' + event.date.slice(11, 19) : ''}</td> : ''}
+                  {!disableDateModified ? <td>{event.modified.slice(0, 10) + " " + event.modified.slice(11, 19)}</td> : ""}
+                  {!disableDate ? <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : ""}</td> : ""}
                   {!disableUuid && <td>{event.uuid}</td>}
                   <td>{event.address_value}</td>
                   {!disableTlp && (
@@ -238,7 +238,7 @@ const TableEvents = ({
                           variant="outline-primary"
                           onClick={() => storageEventUrl(event.parent)}
                         >
-                          {' ' + t('ngen.event.parent')}
+                          {" " + t("ngen.event.parent")}
                         </Button>
                       </Link>
                     </td>
@@ -253,16 +253,16 @@ const TableEvents = ({
                   {!disableColumOption ? (
                     <td>
                       {disableColumView ? (
-                        ''
+                        ""
                       ) : (
                         <Link to="/events/view" state={event}>
                           <CrudButton type="read" onClick={() => storageEventUrl(event.url)} />
                         </Link>
                       )}
                       {disableColumOption ? (
-                        ''
+                        ""
                       ) : disableColumnEdit ? (
-                        ''
+                        ""
                       ) : event.blocked || event.parent ? (
                         <CrudButton type="edit" disabled={true} />
                       ) : (
@@ -271,40 +271,40 @@ const TableEvents = ({
                         </Link>
                       )}
                       {disableColumOption ? (
-                        ''
+                        ""
                       ) : disableColumnDelete ? (
-                        ''
+                        ""
                       ) : deleteColumForm ? (
                         <CrudButton type="delete" onClick={() => deleteEventFromForm(event.url)} />
                       ) : (
                         <CrudButton type="delete" onClick={() => modalDelete(event.name, event.url)} />
                       )}
                       {disableTemplate ? (
-                        ''
+                        ""
                       ) : event.case ? (
                         <Button
                           className="btn-icon btn-rounded"
                           disabled
                           variant="outline-primary"
                           style={{
-                            border: '1px solid #555',
-                            borderRadius: '50px',
-                            color: '#555'
+                            border: "1px solid #555",
+                            borderRadius: "50px",
+                            color: "#555"
                           }}
-                          onClick={() => console.log('')}
+                          onClick={() => console.log("")}
                         >
                           <i className="fa fa-plus" aria-hidden="true"></i>
                         </Button>
                       ) : (
                         <Link to="/templates/create" state={event}>
-                          <Button className="btn-icon btn-rounded" variant="outline-primary" onClick={() => console.log('')}>
+                          <Button className="btn-icon btn-rounded" variant="outline-primary" onClick={() => console.log("")}>
                             <i className="fa fa-plus" aria-hidden="true"></i>
                           </Button>
                         </Link>
                       )}
                     </td>
                   ) : (
-                    ''
+                    ""
                   )}
                 </tr>
               ) : (
@@ -319,7 +319,7 @@ const TableEvents = ({
       <ModalConfirm
         type="delete"
         component="Evento"
-        name={`${t('ngen.event_one')}`}
+        name={`${t("ngen.event_one")}`}
         showModal={remove}
         onHide={() => setRemove(false)}
         ifConfirm={() => handleDelete(deleteUrl)}

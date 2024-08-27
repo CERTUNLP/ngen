@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { deleteFeed, getFeed, putActivationStatus } from '../../../api/services/feeds';
-import CrudButton from '../../../components/Button/CrudButton';
-import ActiveButton from '../../../components/Button/ActiveButton';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import Alert from '../../../components/Alert/Alert';
-import Ordering from '../../../components/Ordering/Ordering';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { deleteFeed, getFeed, putActivationStatus } from "../../../api/services/feeds";
+import CrudButton from "../../../components/Button/CrudButton";
+import ActiveButton from "../../../components/Button/ActiveButton";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import Alert from "../../../components/Alert/Alert";
+import Ordering from "../../../components/Ordering/Ordering";
+import { useTranslation } from "react-i18next";
 
 const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage }) => {
   const [remove, setRemove] = useState(false);
-  const [deleteName, setDeleteName] = useState('');
-  const [deleteUrl, setDeleteUrl] = useState('');
+  const [deleteName, setDeleteName] = useState("");
+  const [deleteUrl, setDeleteUrl] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [feed, setFeed] = useState({});
   const [showState, setShowState] = useState(false);
@@ -35,7 +35,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
   const changeState = () => {
     putActivationStatus(dataState.url, !dataState.state)
       .then(() => {
-        window.location.href = '/feeds';
+        window.location.href = "/feeds";
       })
       .catch((error) => {
         console.log(error);
@@ -54,7 +54,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
   const handleDelete = () => {
     deleteFeed(deleteUrl)
       .then(() => {
-        window.location.href = '/feeds';
+        window.location.href = "/feeds";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -75,7 +75,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
   const resetShowAlert = () => {
     setShowAlert(false);
   };
-  const letterSize = { fontSize: '1.1em' };
+  const letterSize = { fontSize: "1.1em" };
 
   return (
     <div>
@@ -86,15 +86,15 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
             <tr>
               <Ordering
                 field="name"
-                label={t('ngen.name_one')}
+                label={t("ngen.name_one")}
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
                 letterSize={letterSize}
               />
-              <th style={letterSize}>{t('w.active')}</th>
-              <th style={letterSize}>{t('ngen.feed.associated_events')}</th>
-              <th style={letterSize}>{t('ngen.options')}</th>
+              <th style={letterSize}>{t("w.active")}</th>
+              <th style={letterSize}>{t("ngen.feed.associated_events")}</th>
+              <th style={letterSize}>{t("ngen.options")}</th>
             </tr>
           </thead>
           <tbody>
@@ -120,7 +120,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
         </Table>
         <ModalConfirm
           type="delete"
-          component={t('ngen.feed.information')}
+          component={t("ngen.feed.information")}
           name={deleteName}
           showModal={remove}
           onHide={() => setRemove(false)}
@@ -128,7 +128,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
         />
         <ModalConfirm
           type="editState"
-          component={t('ngen.feed.information')}
+          component={t("ngen.feed.information")}
           name={dataState.name}
           state={dataState.state}
           showModal={showState}
@@ -143,48 +143,48 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                   <Card.Header>
                     <Row>
                       <Col>
-                        <Card.Title as="h5">{t('ngen.feed.information')}</Card.Title>
+                        <Card.Title as="h5">{t("ngen.feed.information")}</Card.Title>
                         <span className="d-block m-t-5">
-                          {t('ngen.feed.information')} {t('w.detail')}
+                          {t("ngen.feed.information")} {t("w.detail")}
                         </span>
                       </Col>
                       <Col sm={12} lg={2}>
                         <Link to="/feeds/edit" state={feed}>
                           <CrudButton type="edit" />
                         </Link>
-                        <CloseButton aria-label={t('w.close')} onClick={() => setModalShow(false)} />
+                        <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                       </Col>
                     </Row>
                   </Card.Header>
                   <Card.Body>
                     <Table responsive>
                       <tr>
-                        <td>{t('ngen.system.id')}</td>
+                        <td>{t("ngen.system.id")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={feed.slug} />
                         </td>
                         <td></td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.name_one')}</td>
+                        <td>{t("ngen.name_one")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={feed.name} />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('w.active')}</td>
+                        <td>{t("w.active")}</td>
                         <td>
                           <ActiveButton active={feed.active} />
                         </td>
                       </tr>
                       {feed.description === undefined ? (
-                        ''
+                        ""
                       ) : (
                         <tr>
-                          <td>{t('ngen.description')}</td>
+                          <td>{t("ngen.description")}</td>
                           <td>
                             <Form.Control
-                              style={{ resize: 'none' }}
+                              style={{ resize: "none" }}
                               as="textarea"
                               rows={3}
                               plaintext
@@ -195,10 +195,10 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                         </tr>
                       )}
                       <tr>
-                        <td>{t('ngen.related.info')}</td>
+                        <td>{t("ngen.related.info")}</td>
                         <td>
                           <Button size="sm" variant="light" className="text-capitalize">
-                            {t('ngen.incident_other')}
+                            {t("ngen.incident_other")}
                             <Badge variant="light" className="ml-1">
                               24256
                             </Badge>
@@ -206,22 +206,22 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.date.created')}</td>
+                        <td>{t("ngen.date.created")}</td>
                         <td>
                           <Form.Control
                             plaintext
                             readOnly
-                            defaultValue={feed.created ? feed.created.slice(0, 10) + ' ' + feed.created.slice(11, 19) : ''}
+                            defaultValue={feed.created ? feed.created.slice(0, 10) + " " + feed.created.slice(11, 19) : ""}
                           />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.date.modified')}</td>
+                        <td>{t("ngen.date.modified")}</td>
                         <td>
                           <Form.Control
                             plaintext
                             readOnly
-                            defaultValue={feed.modified ? feed.modified.slice(0, 10) + ' ' + feed.modified.slice(11, 19) : ''}
+                            defaultValue={feed.modified ? feed.modified.slice(0, 10) + " " + feed.modified.slice(11, 19) : ""}
                           />
                         </td>
                       </tr>

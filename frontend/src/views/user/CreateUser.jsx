@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from 'react-bootstrap';
-import { postUser } from '../../api/services/users';
-import { getMinifiedPriority } from '../../api/services/priorities';
-import Alert from '../../components/Alert/Alert';
-import FormUser from './components/FormUser';
-import Navigation from '../../components/Navigation/Navigation';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card } from "react-bootstrap";
+import { postUser } from "../../api/services/users";
+import { getMinifiedPriority } from "../../api/services/priorities";
+import Alert from "../../components/Alert/Alert";
+import FormUser from "./components/FormUser";
+import Navigation from "../../components/Navigation/Navigation";
+import { useTranslation } from "react-i18next";
 
 const AddUser = () => {
   const formEmpty = {
-    username: '',
-    first_name: '',
-    last_name: '',
-    email: '',
+    username: "",
+    first_name: "",
+    last_name: "",
+    email: "",
     is_active: true,
-    priority: '',
-    password: '',
-    passwordConfirmation: ''
+    priority: "",
+    password: "",
+    passwordConfirmation: ""
   };
 
   const [body, setBody] = useState(formEmpty);
@@ -53,7 +53,7 @@ const AddUser = () => {
   const createUser = (e) => {
     postUser(body.username, body.first_name, body.last_name, body.email, body.priority, body.is_active, body.password)
       .then(() => {
-        window.location.href = '/users';
+        window.location.href = "/users";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -63,11 +63,11 @@ const AddUser = () => {
   return (
     <>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
-      <Navigation actualPosition={t('w.add') + t('ngen.user')} path="/users" index={t('ngen.user_other')} />
+      <Navigation actualPosition={t("w.add") + t("ngen.user")} path="/users" index={t("ngen.user_other")} />
       <Card>
         <Card.Header>
           <Card.Title as="h5">
-            {t('w.add')} {t('ngen.user')}
+            {t("w.add")} {t("ngen.user")}
           </Card.Title>
         </Card.Header>
         <Card.Body>

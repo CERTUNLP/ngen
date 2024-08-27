@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, Row } from 'react-bootstrap';
-import { validateDescription, validateName, validateUnrequiredInput } from '../../../utils/validators/state';
-import SelectComponent from '../../../components/Select/SelectComponent';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { validateDescription, validateName, validateUnrequiredInput } from "../../../utils/validators/state";
+import SelectComponent from "../../../components/Select/SelectComponent";
+import { useTranslation } from "react-i18next";
 
 const FormState = ({ body, setBody, createState, type }) => {
   const [selectAttended, setSelecAttended] = useState();
   const [selectSolved, setSelectSolved] = useState();
   const { t } = useTranslation();
   let solvedOptions = [
-    { value: true, label: t('ngen.true') },
-    { value: false, label: t('ngen.false') }
+    { value: true, label: t("ngen.true") },
+    { value: false, label: t("ngen.false") }
   ];
   let attendedOptions = [
-    { value: true, label: t('ngen.true') },
-    { value: false, label: t('ngen.false') }
+    { value: true, label: t("ngen.true") },
+    { value: false, label: t("ngen.false") }
   ];
   useEffect(() => {
     if (solvedOptions.length > 0) {
@@ -49,7 +49,7 @@ const FormState = ({ body, setBody, createState, type }) => {
     } else {
       setBody({
         ...body,
-        [nameField]: ''
+        [nameField]: ""
       });
     }
     setOption(event);
@@ -60,7 +60,7 @@ const FormState = ({ body, setBody, createState, type }) => {
       <Card>
         <Card.Header>
           <Card.Title as="h5">
-            {type} {t('ngen.state_one')}
+            {type} {t("ngen.state_one")}
           </Card.Title>
         </Card.Header>
         <Card.Body>
@@ -69,28 +69,28 @@ const FormState = ({ body, setBody, createState, type }) => {
               <Col>
                 <Form.Group controlId="formGridAddress1">
                   <Form.Label>
-                    {t('ngen.name_one')} <b style={{ color: 'red' }}>*</b>
+                    {t("ngen.name_one")} <b style={{ color: "red" }}>*</b>
                   </Form.Label>
                   <Form.Control
-                    placeholder={t('ngen.name.placeholder')}
+                    placeholder={t("ngen.name.placeholder")}
                     maxLength="100"
                     value={body.name}
                     name="name"
                     isInvalid={!validateName(body.name)}
                     onChange={(e) => completeField(e)}
                   />
-                  {validateName(body.name) ? '' : <div className="invalid-feedback">{t('w.validateName')} </div>}
+                  {validateName(body.name) ? "" : <div className="invalid-feedback">{t("w.validateName")} </div>}
                 </Form.Group>
               </Col>
               <Col>
                 <SelectComponent
                   controlId="exampleForm.ControlSelect1"
-                  label={t('w.attended')}
+                  label={t("w.attended")}
                   options={attendedOptions}
                   value={selectAttended}
                   nameField="attended"
                   onChange={completeField1}
-                  placeholder={t('selectOption')}
+                  placeholder={t("selectOption")}
                   setOption={setSelecAttended}
                   required={true}
                 />
@@ -98,12 +98,12 @@ const FormState = ({ body, setBody, createState, type }) => {
               <Col>
                 <SelectComponent
                   controlId="exampleForm.ControlSelect1"
-                  label={t('w.solved')}
+                  label={t("w.solved")}
                   options={attendedOptions}
                   value={selectSolved}
                   nameField="solved"
                   onChange={completeField1}
-                  placeholder={t('selectOption')}
+                  placeholder={t("selectOption")}
                   setOption={setSelectSolved}
                   required={true}
                 />
@@ -111,30 +111,30 @@ const FormState = ({ body, setBody, createState, type }) => {
             </Row>
 
             <Form.Group controlId="formGridAddress1">
-              <Form.Label>{t('ngen.description')}</Form.Label>
+              <Form.Label>{t("ngen.description")}</Form.Label>
               <Form.Control
-                placeholder={t('ngen.description.placeholder')}
+                placeholder={t("ngen.description.placeholder")}
                 maxLength="150"
-                value={body.description || ''}
+                value={body.description || ""}
                 name="description"
                 isInvalid={validateUnrequiredInput(body.description) ? !validateDescription(body.description) : false}
                 onChange={(e) => completeField(e)}
               />
-              {validateDescription(body.description) ? '' : <div className="invalid-feedback">{t('ngen.description.invalid')}</div>}
+              {validateDescription(body.description) ? "" : <div className="invalid-feedback">{t("ngen.description.invalid")}</div>}
             </Form.Group>
 
-            {body.name !== '' && validateName(body.name) && body.attended !== '' && body.solved !== '' ? (
+            {body.name !== "" && validateName(body.name) && body.attended !== "" && body.solved !== "" ? (
               <Button variant="primary" onClick={createState}>
-                {t('button.save')}
+                {t("button.save")}
               </Button>
             ) : (
               <Button variant="primary" disabled>
-                {t('button.save')}
+                {t("button.save")}
               </Button>
             )}
 
             <Button variant="primary" href="/states">
-              {t('button.cancel')}
+              {t("button.cancel")}
             </Button>
           </Form>
         </Card.Body>

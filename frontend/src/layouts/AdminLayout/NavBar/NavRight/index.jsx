@@ -1,29 +1,29 @@
-import React, { useState } from 'react';
-import avatar2 from '../../../../assets/images/user/avatar-2.jpg';
-import avatar3 from '../../../../assets/images/user/avatar-3.jpg';
-import avatar4 from '../../../../assets/images/user/avatar-4.jpg';
+import React, { useState } from "react";
+import avatar2 from "../../../../assets/images/user/avatar-2.jpg";
+import avatar3 from "../../../../assets/images/user/avatar-3.jpg";
+import avatar4 from "../../../../assets/images/user/avatar-4.jpg";
 
 const NavRight = () => {
   const [listOpen, setListOpen] = useState(false);
 
   const notiData = [
     {
-      name: 'Joseph William',
+      name: "Joseph William",
       image: avatar2,
-      details: 'Purchase New Theme and make payment',
-      activity: '30 min'
+      details: "Purchase New Theme and make payment",
+      activity: "30 min"
     },
     {
-      name: 'Sara Soudein',
+      name: "Sara Soudein",
       image: avatar3,
-      details: 'currently login',
-      activity: '30 min'
+      details: "currently login",
+      activity: "30 min"
     },
     {
-      name: 'Suzen',
+      name: "Suzen",
       image: avatar4,
-      details: 'Purchase New Theme and make payment',
-      activity: 'yesterday'
+      details: "Purchase New Theme and make payment",
+      activity: "yesterday"
     }
   ];
 

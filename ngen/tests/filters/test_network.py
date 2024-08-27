@@ -1,6 +1,7 @@
 """
 Django Network filter tests. Tests search_fields and filterset_class.
 """
+
 import datetime
 
 import pytz
@@ -30,7 +31,7 @@ class NetworkFilterTest(BaseFilterTest):
             domain="unlp.edu.ar",
             active=True,
             type="internal",
-            network_entity=cls.entity_1
+            network_entity=cls.entity_1,
         )
         cls.network_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.network_1.save()
@@ -40,21 +41,18 @@ class NetworkFilterTest(BaseFilterTest):
             domain="info.unlp.edu.ar",
             active=True,
             type="external",
-            parent=cls.network_1
+            parent=cls.network_1,
         )
         cls.network_1.children.set([cls.network_2])
 
         cls.network_3 = Network.objects.create(
-            cidr="10.0.0.0/24",
-            active=False,
-            type="internal"
+            cidr="10.0.0.0/24", active=False, type="internal"
         )
 
         cls.queryset = Network.objects.all()
 
         cls.filter = lambda query_params: NetworkFilter(
-            query_params,
-            queryset=cls.queryset
+            query_params, queryset=cls.queryset
         )
 
     def test_search_filter(self):
@@ -67,8 +65,7 @@ class NetworkFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.network_3.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.network_3.id
         )
 
         # Searching by domain
@@ -76,8 +73,7 @@ class NetworkFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.network_2.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.network_2.id
         )
 
         # Searching by type
@@ -85,12 +81,10 @@ class NetworkFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.network_1.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.network_1.id
         )
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][1]["url"]),
-            self.network_3.id
+            self.get_id_from_url(response.data["results"][1]["url"]), self.network_3.id
         )
 
         # Searching with no results
@@ -103,9 +97,7 @@ class NetworkFilterTest(BaseFilterTest):
         Test filter by id.
         """
 
-        params = {
-            "id": self.network_1.id
-        }
+        params = {"id": self.network_1.id}
 
         filtered_queryset = self.filter(params).qs
 
@@ -118,7 +110,7 @@ class NetworkFilterTest(BaseFilterTest):
 
         params = {
             "created_range_after": "2000-01-01",
-            "created_range_before": "2000-01-02"
+            "created_range_before": "2000-01-02",
         }
 
         filtered_queryset = self.filter(params).qs
@@ -135,7 +127,7 @@ class NetworkFilterTest(BaseFilterTest):
 
         params = {
             "modified_range_after": today.isoformat(),
-            "modified_range_before": tomorrow.isoformat()
+            "modified_range_before": tomorrow.isoformat(),
         }
 
         filtered_queryset = self.filter(params).qs
@@ -143,7 +135,7 @@ class NetworkFilterTest(BaseFilterTest):
         self.assertQuerysetEqual(
             filtered_queryset,
             [self.network_1, self.network_2, self.network_3],
-            ordered=False
+            ordered=False,
         )
 
     def test_filter_by_cidr(self):
@@ -151,17 +143,13 @@ class NetworkFilterTest(BaseFilterTest):
         Test filter by cidr.
         """
 
-        params = {
-            "cidr": "10.0.0.0/24"
-        }
+        params = {"cidr": "10.0.0.0/24"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(filtered_queryset, [self.network_3])
 
-        params = {
-            "is_subnet_of": "10.0.0.0/16"
-        }
+        params = {"is_subnet_of": "10.0.0.0/16"}
 
         filtered_queryset = self.filter(params).qs
 
@@ -172,24 +160,18 @@ class NetworkFilterTest(BaseFilterTest):
         Test filter by domain.
         """
 
-        params = {
-            "domain": "unlp.edu.ar"
-        }
+        params = {"domain": "unlp.edu.ar"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(filtered_queryset, [self.network_1])
 
-        params = {
-            "is_subdomain_of": "unlp.edu.ar"
-        }
+        params = {"is_subdomain_of": "unlp.edu.ar"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.network_1, self.network_2],
-            ordered=False
+            filtered_queryset, [self.network_1, self.network_2], ordered=False
         )
 
     def test_filter_by_active(self):
@@ -197,16 +179,12 @@ class NetworkFilterTest(BaseFilterTest):
         Test filter by active.
         """
 
-        params = {
-            "active": True
-        }
+        params = {"active": True}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.network_1, self.network_2],
-            ordered=False
+            filtered_queryset, [self.network_1, self.network_2], ordered=False
         )
 
     def test_filter_by_type(self):
@@ -214,16 +192,12 @@ class NetworkFilterTest(BaseFilterTest):
         Test filter by type.
         """
 
-        params = {
-            "type": "internal"
-        }
+        params = {"type": "internal"}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.network_1, self.network_3],
-            ordered=False
+            filtered_queryset, [self.network_1, self.network_3], ordered=False
         )
 
     def test_filter_by_network_entity(self):
@@ -231,9 +205,7 @@ class NetworkFilterTest(BaseFilterTest):
         Test filter by network_entity.
         """
 
-        params = {
-            "network_entity": self.entity_1
-        }
+        params = {"network_entity": self.entity_1}
 
         filtered_queryset = self.filter(params).qs
 
@@ -244,9 +216,7 @@ class NetworkFilterTest(BaseFilterTest):
         Test filter by contacts.
         """
 
-        params = {
-            "contacts": [self.contact_1]
-        }
+        params = {"contacts": [self.contact_1]}
 
         filtered_queryset = self.filter(params).qs
 
@@ -257,24 +227,18 @@ class NetworkFilterTest(BaseFilterTest):
         Test filter by parent.
         """
 
-        params = {
-            "parent": self.network_1
-        }
+        params = {"parent": self.network_1}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(filtered_queryset, [self.network_2])
 
-        params = {
-            "parent__isnull": True
-        }
+        params = {"parent__isnull": True}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.network_1, self.network_3],
-            ordered=False
+            filtered_queryset, [self.network_1, self.network_3], ordered=False
         )
 
     def test_filter_by_children(self):
@@ -282,22 +246,16 @@ class NetworkFilterTest(BaseFilterTest):
         Test filter by children.
         """
 
-        params = {
-            "children": [self.network_2]
-        }
+        params = {"children": [self.network_2]}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(filtered_queryset, [self.network_1])
 
-        params = {
-            "children__isnull": True
-        }
+        params = {"children__isnull": True}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.network_2, self.network_3],
-            ordered=False
+            filtered_queryset, [self.network_2, self.network_3], ordered=False
         )

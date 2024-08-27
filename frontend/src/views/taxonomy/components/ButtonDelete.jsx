@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import CrudButton from '../../../components/Button/CrudButton';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import { deleteTaxonomy } from '../../../api/services/taxonomies';
+import React, { useState } from "react";
+import CrudButton from "../../../components/Button/CrudButton";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import { deleteTaxonomy } from "../../../api/services/taxonomies";
 
 function ButtonDelete({ taxonomy }) {
   const [show, setShow] = useState(false);
@@ -11,7 +11,7 @@ function ButtonDelete({ taxonomy }) {
   const removeTaxonomy = (taxonomy) => {
     deleteTaxonomy(taxonomy.url, taxonomy.name)
       .then(() => {
-        window.location.href = '/taxonomies';
+        window.location.href = "/taxonomies";
       })
       .catch((error) => {
         console.log(error);

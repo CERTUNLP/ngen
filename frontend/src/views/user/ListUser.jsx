@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import TableUsers from './components/TableUsers';
-import Navigation from '../../components/Navigation/Navigation';
-import Search from '../../components/Search/Search';
-import CrudButton from '../../components/Button/CrudButton';
-import { getUsers } from '../../api/services/users';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import Alert from '../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import TableUsers from "./components/TableUsers";
+import Navigation from "../../components/Navigation/Navigation";
+import Search from "../../components/Search/Search";
+import CrudButton from "../../components/Button/CrudButton";
+import { getUsers } from "../../api/services/users";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 function ListUser() {
   const [users, setUsers] = useState([]);
@@ -24,8 +24,8 @@ function ListUser() {
 
   const [showAlert, setShowAlert] = useState(false);
 
-  const [wordToSearch, setWordToSearch] = useState('');
-  const [order, setOrder] = useState('');
+  const [wordToSearch, setWordToSearch] = useState("");
+  const [order, setOrder] = useState("");
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
@@ -55,21 +55,21 @@ function ListUser() {
   }, [currentPage, wordToSearch, order]);
 
   if (error) {
-    return <p>{t('user.error.fetch')}</p>;
+    return <p>{t("user.error.fetch")}</p>;
   }
 
   return (
     <div>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
       <Row>
-        <Navigation actualPosition={t('menu.users')} />
+        <Navigation actualPosition={t("menu.users")} />
       </Row>
       <Card>
         <Card.Header>
           <Row>
             <Col sm={12} lg={8}>
               <Search
-                type={t('search.by.name.user.email')}
+                type={t("search.by.name.user.email")}
                 setWordToSearch={setWordToSearch}
                 wordToSearch={wordToSearch}
                 setLoading={setLoading}
@@ -77,7 +77,7 @@ function ListUser() {
             </Col>
             <Col sm={12} lg={3}>
               <Link to="/users/create">
-                <CrudButton type="create" name={t('ngen.user')} />
+                <CrudButton type="create" name={t("ngen.user")} />
               </Link>
             </Col>
           </Row>

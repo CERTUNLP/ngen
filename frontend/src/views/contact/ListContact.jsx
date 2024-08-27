@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
-import TableContact from './components/TableContact';
-import CrudButton from '../../components/Button/CrudButton';
-import { getContacts } from '../../api/services/contacts';
-import { Link } from 'react-router-dom';
-import Navigation from '../../components/Navigation/Navigation';
-import Search from '../../components/Search/Search';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import Alert from '../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import TableContact from "./components/TableContact";
+import CrudButton from "../../components/Button/CrudButton";
+import { getContacts } from "../../api/services/contacts";
+import { Link } from "react-router-dom";
+import Navigation from "../../components/Navigation/Navigation";
+import Search from "../../components/Search/Search";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const ListContact = () => {
   const { t } = useTranslation();
@@ -26,9 +26,9 @@ const ListContact = () => {
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
 
-  const [wordToSearch, setWordToSearch] = useState('');
+  const [wordToSearch, setWordToSearch] = useState("");
 
-  const [order, setOrder] = useState('name');
+  const [order, setOrder] = useState("name");
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
@@ -71,7 +71,7 @@ const ListContact = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="contact" />
       <Row>
-        <Navigation actualPosition={t('ngen.contact_other')} />
+        <Navigation actualPosition={t("ngen.contact_other")} />
       </Row>
       <Row>
         <Col>
@@ -80,7 +80,7 @@ const ListContact = () => {
               <Row>
                 <Col>
                   <Search
-                    type={t('w.entityByName')}
+                    type={t("w.entityByName")}
                     setWordToSearch={setWordToSearch}
                     wordToSearch={wordToSearch}
                     setLoading={setLoading}
@@ -88,7 +88,7 @@ const ListContact = () => {
                 </Col>
                 <Col sm={3} lg={3}>
                   <Link to="/contacts/create">
-                    <CrudButton type="create" name={t('ngen.contact_one')} />
+                    <CrudButton type="create" name={t("ngen.contact_one")} />
                   </Link>
                 </Col>
               </Row>

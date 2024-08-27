@@ -1,6 +1,7 @@
 """
 Django State filter tests. Tests search_fields and filterset_class.
 """
+
 import datetime
 
 import pytz
@@ -16,7 +17,7 @@ class StateFilterTest(BaseFilterTest):
     State filter test class.
     """
 
-    fixtures = ['priority.json', 'user.json']
+    fixtures = ["priority.json", "user.json"]
 
     @classmethod
     def setUpTestData(cls):
@@ -30,7 +31,7 @@ class StateFilterTest(BaseFilterTest):
             attended=False,
             solved=False,
             active=True,
-            description="Initial state"
+            description="Initial state",
         )
         cls.state_1.created = timezone.datetime(2000, 1, 1, tzinfo=pytz.UTC)
         cls.state_1.save()
@@ -42,7 +43,7 @@ class StateFilterTest(BaseFilterTest):
             attended=True,
             solved=False,
             active=True,
-            description="Open state"
+            description="Open state",
         )
 
         cls.state_3 = State.objects.create(
@@ -52,7 +53,7 @@ class StateFilterTest(BaseFilterTest):
             attended=False,
             solved=True,
             active=False,
-            description="Closed state"
+            description="Closed state",
         )
 
         cls.state_1.children.set([cls.state_3])
@@ -60,8 +61,7 @@ class StateFilterTest(BaseFilterTest):
         cls.queryset = State.objects.all()
 
         cls.filter = lambda query_params: StateFilter(
-            query_params,
-            queryset=cls.queryset
+            query_params, queryset=cls.queryset
         )
 
     def test_search_filter(self):
@@ -74,8 +74,7 @@ class StateFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.state_1.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.state_1.id
         )
 
         # Searching by description
@@ -83,8 +82,7 @@ class StateFilterTest(BaseFilterTest):
         response = self.client.get(self.search_url(query))
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(
-            self.get_id_from_url(response.data["results"][0]["url"]),
-            self.state_2.id
+            self.get_id_from_url(response.data["results"][0]["url"]), self.state_2.id
         )
 
         # Searching with no results
@@ -97,9 +95,7 @@ class StateFilterTest(BaseFilterTest):
         Test filter by id.
         """
 
-        params = {
-            "id": self.state_1.id
-        }
+        params = {"id": self.state_1.id}
 
         filtered_queryset = self.filter(params).qs
 
@@ -112,7 +108,7 @@ class StateFilterTest(BaseFilterTest):
 
         params = {
             "created_range_after": "2000-01-01",
-            "created_range_before": "2000-01-02"
+            "created_range_before": "2000-01-02",
         }
 
         filtered_queryset = self.filter(params).qs
@@ -129,15 +125,13 @@ class StateFilterTest(BaseFilterTest):
 
         params = {
             "modified_range_after": today.isoformat(),
-            "modified_range_before": tomorrow.isoformat()
+            "modified_range_before": tomorrow.isoformat(),
         }
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset,
-            [self.state_1, self.state_2, self.state_3],
-            ordered=False
+            filtered_queryset, [self.state_1, self.state_2, self.state_3], ordered=False
         )
 
     def test_filter_by_slug(self):
@@ -145,118 +139,95 @@ class StateFilterTest(BaseFilterTest):
         Test filter by slug.
         """
 
-        params = {
-            "slug__icontains": "open"
-        }
+        params = {"slug__icontains": "open"}
 
         filtered_queryset = self.filter(params).qs
 
-        self.assertQuerysetEqual(
-            filtered_queryset, [self.state_2])
+        self.assertQuerysetEqual(filtered_queryset, [self.state_2])
 
     def test_filter_by_name(self):
         """
         Test filter by name.
         """
 
-        params = {
-            "name__icontains": "closed"
-        }
+        params = {"name__icontains": "closed"}
 
         filtered_queryset = self.filter(params).qs
 
-        self.assertQuerysetEqual(
-            filtered_queryset, [self.state_3])
+        self.assertQuerysetEqual(filtered_queryset, [self.state_3])
 
     def test_filter_by_blocked(self):
         """
         Test filter by blocked.
         """
 
-        params = {
-            "blocked": True
-        }
+        params = {"blocked": True}
 
         filtered_queryset = self.filter(params).qs
 
-        self.assertQuerysetEqual(
-            filtered_queryset, [self.state_3])
+        self.assertQuerysetEqual(filtered_queryset, [self.state_3])
 
     def test_filter_by_attended(self):
         """
         Test filter by attended.
         """
 
-        params = {
-            "attended": True
-        }
+        params = {"attended": True}
 
         filtered_queryset = self.filter(params).qs
 
-        self.assertQuerysetEqual(
-            filtered_queryset, [self.state_2])
+        self.assertQuerysetEqual(filtered_queryset, [self.state_2])
 
     def test_filter_by_solved(self):
         """
         Test filter by solved.
         """
 
-        params = {
-            "solved": True
-        }
+        params = {"solved": True}
 
         filtered_queryset = self.filter(params).qs
 
-        self.assertQuerysetEqual(
-            filtered_queryset, [self.state_3])
+        self.assertQuerysetEqual(filtered_queryset, [self.state_3])
 
     def test_filter_by_active(self):
         """
         Test filter by active.
         """
 
-        params = {
-            "active": True
-        }
+        params = {"active": True}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset, [self.state_1, self.state_2], ordered=False)
+            filtered_queryset, [self.state_1, self.state_2], ordered=False
+        )
 
     def test_filter_by_description(self):
         """
         Test filter by description.
         """
 
-        params = {
-            "description__icontains": "open"
-        }
+        params = {"description__icontains": "open"}
 
         filtered_queryset = self.filter(params).qs
 
-        self.assertQuerysetEqual(
-            filtered_queryset, [self.state_2])
+        self.assertQuerysetEqual(filtered_queryset, [self.state_2])
 
     def test_filter_by_children(self):
         """
         Test filter by children.
         """
 
-        params = {
-            "children": [self.state_3]
-        }
+        params = {"children": [self.state_3]}
+
+        filtered_queryset = self.filter(params).qs
+
+        self.assertQuerysetEqual(filtered_queryset, [self.state_1])
+
+        params = {"children__isnull": True}
 
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(
-            filtered_queryset, [self.state_1])
-
-        params = {
-            "children__isnull": True
-        }
-
-        filtered_queryset = self.filter(params).qs
-
-        self.assertQuerysetEqual(
-            filtered_queryset, [self.state_2, self.state_3], ordered=False)
+            filtered_queryset, [self.state_2, self.state_3], ordered=False
+        )

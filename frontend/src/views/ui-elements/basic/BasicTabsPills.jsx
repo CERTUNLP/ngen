@@ -1,5 +1,5 @@
-import React from 'react';
-import { Col, Nav, Row, Tab, Tabs } from 'react-bootstrap';
+import React from "react";
+import { Col, Nav, Row, Tab, Tabs } from "react-bootstrap";
 
 const BasicTabsPills = () => {
   return (

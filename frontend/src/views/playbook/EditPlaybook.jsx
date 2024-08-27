@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Button, Card, Col, Row } from 'react-bootstrap';
-import { putPlaybook } from '../../api/services/playbooks';
-import FormCreatePlaybook from '../playbook/components/FormCreatePlaybook';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
-import ListTask from '../task/ListTask';
-import Navigation from '../../components/Navigation/Navigation';
-import Alert from '../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { Button, Card, Col, Row } from "react-bootstrap";
+import { putPlaybook } from "../../api/services/playbooks";
+import FormCreatePlaybook from "../playbook/components/FormCreatePlaybook";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import ListTask from "../task/ListTask";
+import Navigation from "../../components/Navigation/Navigation";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const EditPlaybook = () => {
   const location = useLocation();
@@ -31,7 +31,7 @@ const EditPlaybook = () => {
       response.map((taxonomyItem) => {
         listTaxonomies.push({
           value: taxonomyItem.url,
-          label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] + ')'
+          label: taxonomyItem.name + " (" + labelTaxonomy[taxonomyItem.type] + ")"
         });
       });
       setAllTaxonomies(listTaxonomies);
@@ -39,8 +39,8 @@ const EditPlaybook = () => {
   }, []);
 
   const labelTaxonomy = {
-    vulnerability: 'Vulnerabilidad',
-    incident: 'Incidente'
+    vulnerability: "Vulnerabilidad",
+    incident: "Incidente"
   };
 
   const editPlaybook = () => {
@@ -56,15 +56,15 @@ const EditPlaybook = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="playbook" />
       <Row>
-        <Navigation actualPosition={t('ngen.playbook.edit')} path="/playbooks" index="Playbook" />
+        <Navigation actualPosition={t("ngen.playbook.edit")} path="/playbooks" index="Playbook" />
       </Row>
 
       <Row>
         <Col>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">{t('ngen.playbook')}</Card.Title>
-              <span className="d-block m-t-5">{t('ngen.playbook.edit')}</span>
+              <Card.Title as="h5">{t("ngen.playbook")}</Card.Title>
+              <span className="d-block m-t-5">{t("ngen.playbook.edit")}</span>
             </Card.Header>
             <Card.Body>
               <FormCreatePlaybook
@@ -74,7 +74,7 @@ const EditPlaybook = () => {
                 setTaxonomy={setTaxonomy}
                 ifConfirm={editPlaybook}
                 allTaxonomies={allTaxonomies}
-                save={t('button.save_changes')}
+                save={t("button.save_changes")}
               />
             </Card.Body>
           </Card>
@@ -82,7 +82,7 @@ const EditPlaybook = () => {
           <ListTask urlPlaybook={url} sectionAddTask={true} setShowAlert={setShowAlert} />
 
           <Button variant="primary" href="/playbooks">
-            {t('button.return')}
+            {t("button.return")}
           </Button>
         </Col>
       </Row>

@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, Col, Collapse, Row } from 'react-bootstrap';
-import CrudButton from '../../components/Button/CrudButton';
-import { getNetworks } from '../../api/services/networks';
-import { getMinifiedEntity } from '../../api/services/entities';
-import TableNetwork from './components/TableNetwork';
-import Navigation from '../../components/Navigation/Navigation';
-import Search from '../../components/Search/Search';
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination';
-import Alert from '../../components/Alert/Alert';
-import ButtonFilter from '../../components/Button/ButtonFilter';
-import FilterSelectUrl from '../../components/Filter/FilterSelectUrl';
-import FilterSelect from '../../components/Filter/FilterSelect';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Card, Col, Collapse, Row } from "react-bootstrap";
+import CrudButton from "../../components/Button/CrudButton";
+import { getNetworks } from "../../api/services/networks";
+import { getMinifiedEntity } from "../../api/services/entities";
+import TableNetwork from "./components/TableNetwork";
+import Navigation from "../../components/Navigation/Navigation";
+import Search from "../../components/Search/Search";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import Alert from "../../components/Alert/Alert";
+import ButtonFilter from "../../components/Button/ButtonFilter";
+import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
+import FilterSelect from "../../components/Filter/FilterSelect";
+import { useTranslation } from "react-i18next";
 
 const ListNetwork = () => {
   const { t } = useTranslation();
@@ -33,17 +33,17 @@ const ListNetwork = () => {
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
 
-  const [wordToSearch, setWordToSearch] = useState('');
+  const [wordToSearch, setWordToSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const [typeFilter, setTypeFilter] = useState('');
-  const [entitiesFilter, setEntitiesFilter] = useState('');
-  const [order, setOrder] = useState('network_entity__name');
+  const [typeFilter, setTypeFilter] = useState("");
+  const [entitiesFilter, setEntitiesFilter] = useState("");
+  const [order, setOrder] = useState("network_entity__name");
 
   const [entityNames, setEntityNames] = useState({});
 
   const types = [
-    { value: 'internal', label: t('ngen.network.type.internal') },
-    { value: 'external', label: t('ngen.network.type.external') }
+    { value: "internal", label: t("ngen.network.type.internal") },
+    { value: "external", label: t("ngen.network.type.external") }
   ];
 
   function updatePage(chosenPage) {
@@ -92,7 +92,7 @@ const ListNetwork = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="network" />
       <Row>
-        <Navigation actualPosition={t('ngen.network_other')} />
+        <Navigation actualPosition={t("ngen.network_other")} />
       </Row>
       <Row>
         <Col>
@@ -104,7 +104,7 @@ const ListNetwork = () => {
                 </Col>
                 <Col sm={12} lg={8}>
                   <Search
-                    type={t('filter.cidr_domain')}
+                    type={t("filter.cidr_domain")}
                     setWordToSearch={setWordToSearch}
                     wordToSearch={wordToSearch}
                     setLoading={setLoading}
@@ -112,7 +112,7 @@ const ListNetwork = () => {
                 </Col>
                 <Col sm={12} lg={3}>
                   <Link to="/networks/create">
-                    <CrudButton type="create" name={t('ngen.network_one')} />
+                    <CrudButton type="create" name={t("ngen.network_one")} />
                   </Link>
                 </Col>
               </Row>
@@ -123,7 +123,7 @@ const ListNetwork = () => {
                     <Col sm={4} lg={4}>
                       <FilterSelectUrl
                         options={entities}
-                        itemName={t('ngen.entity_other')}
+                        itemName={t("ngen.entity_other")}
                         partOfTheUrl="network_entity"
                         itemFilter={entitiesFilter}
                         itemFilterSetter={setEntitiesFilter}
@@ -138,7 +138,7 @@ const ListNetwork = () => {
                         setFilter={setTypeFilter}
                         currentFilter={typeFilter}
                         setLoading={setLoading}
-                        placeholder={t('ngen.filter_by') + ' ' + t('ngen.type')}
+                        placeholder={t("ngen.filter_by") + " " + t("ngen.type")}
                       />
                     </Col>
                   </Row>

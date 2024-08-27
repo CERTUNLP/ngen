@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Form } from 'react-bootstrap';
-import { getEntity } from '../../../api/services/entities';
+import React, { useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
+import { getEntity } from "../../../api/services/entities";
 
 const BadgeNetwork_Entity = (props) => {
   //TODO
-  const [entity, setEntity] = useState('');
+  const [entity, setEntity] = useState("");
 
   useEffect(() => {
     showEntity(props.url);

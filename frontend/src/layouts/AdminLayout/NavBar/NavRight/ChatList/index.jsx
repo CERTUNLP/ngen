@@ -1,20 +1,20 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { FormControl } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import PropTypes from "prop-types";
+import React from "react";
+import { FormControl } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import PerfectScrollbar from "react-perfect-scrollbar";
 
-import Friends from './Friends';
+import Friends from "./Friends";
 
 const ChatList = ({ listOpen, closed }) => {
-  let listClass = ['header-user-list'];
+  let listClass = ["header-user-list"];
   if (listOpen) {
-    listClass = [...listClass, 'open'];
+    listClass = [...listClass, "open"];
   }
 
   return (
     <React.Fragment>
-      <div className={listClass.join(' ')}>
+      <div className={listClass.join(" ")}>
         <div className="h-list-header">
           <div className="input-group">
             <FormControl type="text" id="search-friends" placeholder="Search Friend . . ." />
@@ -25,7 +25,7 @@ const ChatList = ({ listOpen, closed }) => {
             <i className="feather icon-chevrons-right" />
           </Link>
           <div className="main-friend-cont scroll-div">
-            <div className="main-friend-list" style={{ height: 'calc(100vh - 85px)' }}>
+            <div className="main-friend-list" style={{ height: "calc(100vh - 85px)" }}>
               <PerfectScrollbar>
                 <Friends listOpen={listOpen} />
               </PerfectScrollbar>

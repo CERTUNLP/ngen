@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CloseButton, Col, Form, Modal, Row, Table } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const ModalDetailEdge = (props) => {
-  const [created, setCreated] = useState('');
-  const [modified, setModified] = useState('');
+  const [created, setCreated] = useState("");
+  const [modified, setModified] = useState("");
   const { t } = useTranslation();
 
   const [row] = useState(1);
@@ -17,16 +17,16 @@ const ModalDetailEdge = (props) => {
   }, [props.task]);
 
   const formatDate = (datetime, set) => {
-    datetime = datetime.split('T');
-    let format = datetime[0] + ' ' + datetime[1].slice(0, 8);
+    datetime = datetime.split("T");
+    let format = datetime[0] + " " + datetime[1].slice(0, 8);
     set(format);
   };
 
   const textareaStyle = {
-    resize: 'none',
-    backgroundColor: 'transparent',
-    border: 'none',
-    boxShadow: 'none'
+    resize: "none",
+    backgroundColor: "transparent",
+    border: "none",
+    boxShadow: "none"
   };
 
   return (
@@ -39,11 +39,11 @@ const ModalDetailEdge = (props) => {
                 <Card.Header>
                   <Row>
                     <Col>
-                      <Card.Title as="h5">{t('ngen.task')}</Card.Title>
-                      <span className="d-block m-t-5">{t('ngen.task_details')}</span>
+                      <Card.Title as="h5">{t("ngen.task")}</Card.Title>
+                      <span className="d-block m-t-5">{t("ngen.task_details")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <CloseButton aria-label={t('w.close')} onClick={props.onHide} />
+                      <CloseButton aria-label={t("w.close")} onClick={props.onHide} />
                     </Col>
                   </Row>
                 </Card.Header>
@@ -51,7 +51,7 @@ const ModalDetailEdge = (props) => {
                   <Table responsive>
                     <tbody>
                       <tr>
-                        <td>{t('transitionName')}</td>
+                        <td>{t("transitionName")}</td>
                         <td>
                           <Form.Control plaintext readOnly value={props.edge.discr} style={textareaStyle} as="textarea" rows={row} />
                         </td>
@@ -59,7 +59,7 @@ const ModalDetailEdge = (props) => {
 
                       {props.laterStateName ? (
                         <tr>
-                          <td>{t('w.posteriorStateName')}</td>
+                          <td>{t("w.posteriorStateName")}</td>
                           <td>
                             <Form.Control plaintext readOnly defaultValue={props.laterStateName} />
                           </td>
@@ -69,13 +69,13 @@ const ModalDetailEdge = (props) => {
                       )}
 
                       <tr>
-                        <td>{t('ngen.date.created')}</td>
+                        <td>{t("ngen.date.created")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={created} />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t('ngen.date.modified')}</td>
+                        <td>{t("ngen.date.modified")}</td>
                         <td>
                           <Form.Control plaintext readOnly defaultValue={modified} />
                         </td>

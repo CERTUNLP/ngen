@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
-import Alert from '../../components/Alert/Alert';
-import Navigation from '../../components/Navigation/Navigation';
-import { getTLP } from '../../api/services/tlp';
-import Search from '../../components/Search/Search';
-import Ordering from '../../components/Ordering/Ordering';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
+import Alert from "../../components/Alert/Alert";
+import Navigation from "../../components/Navigation/Navigation";
+import { getTLP } from "../../api/services/tlp";
+import Search from "../../components/Search/Search";
+import Ordering from "../../components/Ordering/Ordering";
+import { useTranslation } from "react-i18next";
 
 const ListTLP = () => {
   const { t } = useTranslation();
   const [tlp, setTLP] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
-  const [wordToSearch, setWordToSearch] = useState('');
+  const [wordToSearch, setWordToSearch] = useState("");
 
-  const [order, setOrder] = useState('');
+  const [order, setOrder] = useState("");
 
   const textareaStyle = {
-    resize: 'none',
-    backgroundColor: 'transparent',
-    border: 'none',
-    boxShadow: 'none'
+    resize: "none",
+    backgroundColor: "transparent",
+    border: "none",
+    boxShadow: "none"
   };
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const ListTLP = () => {
     setShowAlert(false);
   };
 
-  const letterSize = { fontSize: '1.1em' };
+  const letterSize = { fontSize: "1.1em" };
 
   return (
     <React.Fragment>
@@ -57,7 +57,7 @@ const ListTLP = () => {
                 <Col>
                   <div className="input-group">
                     <Search
-                      type={t('search.bycode')}
+                      type={t("search.bycode")}
                       setWordToSearch={setWordToSearch}
                       wordToSearch={wordToSearch}
                       setLoading={setLoading}
@@ -72,15 +72,15 @@ const ListTLP = () => {
                   <tr>
                     <Ordering
                       field="code"
-                      label={t('ngen.tlp.code')}
+                      label={t("ngen.tlp.code")}
                       order={order}
                       setOrder={setOrder}
                       setLoading={setLoading}
                       letterSize={letterSize}
                     />
-                    <th style={letterSize}>{t('ngen.description')}</th>
-                    <th style={letterSize}>{t('when.use')}</th>
-                    <th style={letterSize}>{t('when.share')}</th>
+                    <th style={letterSize}>{t("ngen.description")}</th>
+                    <th style={letterSize}>{t("when.use")}</th>
+                    <th style={letterSize}>{t("when.share")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -92,7 +92,7 @@ const ListTLP = () => {
                     </tr>
                   )}
                   {tlp.map((item) => {
-                    const parts = item.url.split('/');
+                    const parts = item.url.split("/");
                     let itemNumber = parts[parts.length - 2];
 
                     return (

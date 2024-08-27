@@ -1,8 +1,8 @@
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 const mapContainerStyle = {
-  width: '100%',
-  height: '400px'
+  width: "100%",
+  height: "400px"
 };
 const center = {
   lat: 28.5274851,

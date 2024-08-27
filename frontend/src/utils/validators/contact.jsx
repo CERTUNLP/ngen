@@ -1,4 +1,4 @@
-import { isEmpty, validateAlphanumeric, validateEmail, validateLength, validateNumbers, validateSpace, validateURL } from '../validators';
+import { isEmpty, validateAlphanumeric, validateEmail, validateLength, validateNumbers, validateSpace, validateURL } from "../validators";
 
 const validateName = (name) => {
   //return (validateAlphanumeric(name) && validateLength(name, 100) && validateSpace(name))// tengo que ver la funcion de este metodo validateSpace(name)

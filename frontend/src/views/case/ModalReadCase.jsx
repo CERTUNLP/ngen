@@ -1,8 +1,8 @@
-import React from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import ReadCase from './ReadCase';
-import { useTranslation } from 'react-i18next';
-import './ModalReadCase.css';
+import React from "react";
+import { Button, Modal } from "react-bootstrap";
+import ReadCase from "./ReadCase";
+import { useTranslation } from "react-i18next";
+import "./ModalReadCase.css";
 
 const ModalReadCase = ({ modalShowCase, tableDetail, returnToListOfCases, linkCaseToEvent, closeModalDetail }) => {
   const { t } = useTranslation();
@@ -23,16 +23,16 @@ const ModalReadCase = ({ modalShowCase, tableDetail, returnToListOfCases, linkCa
         </div>
       </Modal.Body>
       {tableDetail ? (
-        ''
+        ""
       ) : (
         <Modal.Footer>
           <Button variant="outline-primary" onClick={linkCaseToEvent}>
-            {' '}
-            {t('button.link')}
+            {" "}
+            {t("button.link")}
           </Button>
           <Button variant="outline-secondary" onClick={returnToListOfCases}>
-            {' '}
-            {t('button.return')}
+            {" "}
+            {t("button.return")}
           </Button>
         </Modal.Footer>
       )}

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Row, Spinner } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
-import Alert from '../../components/Alert/Alert';
-import FormTemplate from './components/FormTemplate';
-import Navigation from '../../components/Navigation/Navigation';
-import { putTemplate } from '../../api/services/templates';
-import { getMinifiedTlp } from '../../api/services/tlp';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
-import { getMinifiedFeed } from '../../api/services/feeds';
-import { getMinifiedPriority } from '../../api/services/priorities';
-import { getMinifiedState } from '../../api/services/states';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Row, Spinner } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
+import Alert from "../../components/Alert/Alert";
+import FormTemplate from "./components/FormTemplate";
+import Navigation from "../../components/Navigation/Navigation";
+import { putTemplate } from "../../api/services/templates";
+import { getMinifiedTlp } from "../../api/services/tlp";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import { getMinifiedFeed } from "../../api/services/feeds";
+import { getMinifiedPriority } from "../../api/services/priorities";
+import { getMinifiedState } from "../../api/services/states";
+import { useTranslation } from "react-i18next";
 
 const EditTemplate = () => {
   const location = useLocation();
@@ -117,7 +117,7 @@ const EditTemplate = () => {
       body.case_state
     )
       .then(() => {
-        window.location.href = '/templates';
+        window.location.href = "/templates";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -129,7 +129,7 @@ const EditTemplate = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
       <Row>
-        <Navigation actualPosition={t('ngen.template.edit')} path="/templates" index={t('ngen.template')} />
+        <Navigation actualPosition={t("ngen.template.edit")} path="/templates" index={t("ngen.template")} />
       </Row>
       {loading ? (
         <Spinner animation="border" role="status" />

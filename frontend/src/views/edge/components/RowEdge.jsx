@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import ModalDetailEdge from './ModalDetailEdge';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import CrudButton from '../../../components/Button/CrudButton';
-import ModalEditEdge from './ModalEditEdge';
-import { deleteEdge, getEdge } from '../../../api/services/edges';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import ModalDetailEdge from "./ModalDetailEdge";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import CrudButton from "../../../components/Button/CrudButton";
+import ModalEditEdge from "./ModalEditEdge";
+import { deleteEdge, getEdge } from "../../../api/services/edges";
+import { useTranslation } from "react-i18next";
 
 const RowEdge = (props) => {
-  const [edge, setEdge] = useState('');
+  const [edge, setEdge] = useState("");
 
   const [modalShow, setModalShow] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
@@ -79,7 +79,7 @@ const RowEdge = (props) => {
       <ModalConfirm
         showModal={modalDelete}
         type="delete"
-        component={t('ngen.edge_one')}
+        component={t("ngen.edge_one")}
         name={edge.discr}
         onHide={() => setModalDelete(false)}
         ifConfirm={() => removeEdge(edge.url, edge.discr)}

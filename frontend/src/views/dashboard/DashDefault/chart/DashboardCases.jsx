@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from 'react-bootstrap';
+import React, { useEffect, useState } from "react";
+import { Card } from "react-bootstrap";
 
-import { getMinifiedState } from '../../../../api/services/states';
-import { getMinifiedUser } from '../../../../api/services/users';
-import TableCase from '../../../case/components/TableCase';
-import { useTranslation } from 'react-i18next';
+import { getMinifiedState } from "../../../../api/services/states";
+import { getMinifiedUser } from "../../../../api/services/users";
+import TableCase from "../../../case/components/TableCase";
+import { useTranslation } from "react-i18next";
 
 const DashboardCases = ({ list, loading }) => {
   const [userNames, setUserNames] = useState({});
@@ -38,7 +38,7 @@ const DashboardCases = ({ list, loading }) => {
     <div>
       <Card>
         <Card.Header>
-          <Card.Title as="h5">{t('case.last10')}</Card.Title>
+          <Card.Title as="h5">{t("case.last10")}</Card.Title>
         </Card.Header>
         <TableCase
           cases={list}

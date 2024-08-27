@@ -1,18 +1,18 @@
-import apiInstance from '../api';
-import setAlert from '../../utils/setAlert';
-import { COMPONENT_URL } from '../../config/constant';
+import apiInstance from "../api";
+import setAlert from "../../utils/setAlert";
+import { COMPONENT_URL } from "../../config/constant";
 
 const getDashboardFeed = (filter) => {
   let messageError = `No ha recuperado la informacion de las fuentes de información. `;
   return apiInstance
-    .get(COMPONENT_URL.dashboardFeed + '?' + filter)
+    .get(COMPONENT_URL.dashboardFeed + "?" + filter)
     .then((response) => {
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };
@@ -20,14 +20,14 @@ const getDashboardFeed = (filter) => {
 const getDashboardEvent = (filter) => {
   let messageError = `No ha recuperado la informacion de las fuentes de información. `;
   return apiInstance
-    .get(COMPONENT_URL.dashboardEvent + '?' + filter)
+    .get(COMPONENT_URL.dashboardEvent + "?" + filter)
     .then((response) => {
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };
@@ -35,14 +35,14 @@ const getDashboardEvent = (filter) => {
 const getDashboardCases = (filter) => {
   let messageError = `No ha recuperado la informacion de las fuentes de información. `;
   return apiInstance
-    .get(COMPONENT_URL.dashboardCases + '?' + filter)
+    .get(COMPONENT_URL.dashboardCases + "?" + filter)
     .then((response) => {
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };
@@ -50,14 +50,14 @@ const getDashboardCases = (filter) => {
 const getDashboardNetworkEntities = (filter) => {
   let messageError = `No ha recuperado la informacion de las fuentes de información. `;
   return apiInstance
-    .get(COMPONENT_URL.dashboardNetworkEntities + '?' + filter)
+    .get(COMPONENT_URL.dashboardNetworkEntities + "?" + filter)
     .then((response) => {
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, 'error', 'feed');
+      setAlert(messageError, "error", "feed");
       return Promise.reject(error);
     });
 };

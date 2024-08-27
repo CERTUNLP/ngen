@@ -1,22 +1,22 @@
-import React from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
-import Select from 'react-select';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Button, Col, Form, Row } from "react-bootstrap";
+import Select from "react-select";
+import { useTranslation } from "react-i18next";
 
 const FormCreateEdge = ({ body, setBody, selectChild, setSelectChild, childernes, ifConfirm, ifCancel }) => {
   const { t } = useTranslation();
-  const messageToPlaceholder = t('selectOption');
-  const messageWithoutOptions = t('noOption');
+  const messageToPlaceholder = t("selectOption");
+  const messageWithoutOptions = t("noOption");
 
   const completeChildernes = (event) => {
     if (event) {
       setBody({
         ...body,
-        ['child']: event.value
+        ["child"]: event.value
       });
       setSelectChild(event);
     } else {
-      setSelectChild('');
+      setSelectChild("");
     }
   };
 
@@ -34,11 +34,11 @@ const FormCreateEdge = ({ body, setBody, selectChild, setSelectChild, childernes
           <Col>
             <Form.Group controlId="formGridAddress1">
               <Form.Label>
-                {t('transitionName')}
-                <b style={{ color: 'red' }}>*</b>
+                {t("transitionName")}
+                <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Form.Control
-                placeholder={t('enterDiscriminator')}
+                placeholder={t("enterDiscriminator")}
                 maxLength="150"
                 value={body.discr}
                 name="discr"
@@ -50,8 +50,8 @@ const FormCreateEdge = ({ body, setBody, selectChild, setSelectChild, childernes
           <Col>
             <Form.Group controlId="formGridAddress1">
               <Form.Label>
-                {t('w.nextState')}
-                <b style={{ color: 'red' }}>*</b>
+                {t("w.nextState")}
+                <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Select
                 value={selectChild}
@@ -67,21 +67,21 @@ const FormCreateEdge = ({ body, setBody, selectChild, setSelectChild, childernes
         </Row>
         <Row className="justify-content-center">
           <Form.Group>
-            {body.discr.trim() !== '' && selectChild !== '' ? (
+            {body.discr.trim() !== "" && selectChild !== "" ? (
               <>
                 <Button variant="primary" onClick={ifConfirm}>
-                  {t('button.save')}
+                  {t("button.save")}
                 </Button>
               </>
             ) : (
               <>
                 <Button variant="primary" disabled>
-                  {t('button.save')}
+                  {t("button.save")}
                 </Button>
               </>
             )}
             <Button variant="primary" onClick={ifCancel}>
-              {t('button.cancel')}
+              {t("button.cancel")}
             </Button>
           </Form.Group>
         </Row>

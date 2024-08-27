@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, Row } from 'react-bootstrap';
-import { getMinifiedPriority } from '../../../api/services/priorities';
-import { getMinifiedTlp } from '../../../api/services/tlp';
-import { getMinifiedUser } from '../../../api/services/users';
-import Alert from '../../../components/Alert/Alert';
-import { postCase, putCase } from '../../../api/services/cases';
-import SelectLabel from '../../../components/Select/SelectLabel';
-import SmallEventTable from '../../event/components/SmallEventTable';
-import { useTranslation } from 'react-i18next';
-import ModalListEvent from '../../event/ModalListEvent';
-import { getMinifiedFeed } from '../../../api/services/feeds';
-import { getMinifiedTaxonomy } from '../../../api/services/taxonomies';
-import ModalReadEvent from '../../event/ModalReadEvent';
-import { getEvent } from '../../../api/services/events';
-import EvidenceCard from '../../../components/UploadFiles/EvidenceCard';
-import { getEvidence } from '../../../api/services/evidences';
-import ModalCreateEvent from '../../event/ModalCreateEvent';
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { getMinifiedPriority } from "../../../api/services/priorities";
+import { getMinifiedTlp } from "../../../api/services/tlp";
+import { getMinifiedUser } from "../../../api/services/users";
+import Alert from "../../../components/Alert/Alert";
+import { postCase, putCase } from "../../../api/services/cases";
+import SelectLabel from "../../../components/Select/SelectLabel";
+import SmallEventTable from "../../event/components/SmallEventTable";
+import { useTranslation } from "react-i18next";
+import ModalListEvent from "../../event/ModalListEvent";
+import { getMinifiedFeed } from "../../../api/services/feeds";
+import { getMinifiedTaxonomy } from "../../../api/services/taxonomies";
+import ModalReadEvent from "../../event/ModalReadEvent";
+import { getEvent } from "../../../api/services/events";
+import EvidenceCard from "../../../components/UploadFiles/EvidenceCard";
+import { getEvidence } from "../../../api/services/evidences";
+import ModalCreateEvent from "../../event/ModalCreateEvent";
 
 const FormCase = (props) => {
   // props: edit, caseitem, allStates
@@ -48,11 +48,11 @@ const FormCase = (props) => {
   //commet
   const [comm, setComm] = useState();
 
-  const [selectPriority, setSelectPriority] = useState('');
-  const [selectTlp, setSelectTlp] = useState('');
-  const [selectLifecycle, setSelectLifecycle] = useState('');
-  const [selectState, setSelectState] = useState('');
-  const [selectAssigned, setSelectAssigned] = useState('');
+  const [selectPriority, setSelectPriority] = useState("");
+  const [selectTlp, setSelectTlp] = useState("");
+  const [selectLifecycle, setSelectLifecycle] = useState("");
+  const [selectState, setSelectState] = useState("");
+  const [selectAssigned, setSelectAssigned] = useState("");
 
   const [taxonomyNames, setTaxonomyNames] = useState({});
   const [tlpNames, setTlpNames] = useState({});
@@ -66,18 +66,18 @@ const FormCase = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedEvent, setSelectedEvent] = useState([]);
   const [eventList, setEventList] = useState([]);
-  const [taxonomyFilter, setTaxonomyFilter] = useState('');
-  const [tlpFilter, setTlpFilter] = useState('');
-  const [feedFilter, setFeedFilter] = useState('');
+  const [taxonomyFilter, setTaxonomyFilter] = useState("");
+  const [tlpFilter, setTlpFilter] = useState("");
+  const [feedFilter, setFeedFilter] = useState("");
   const [taxonomies, setTaxonomies] = useState([]);
   const [feeds, setFeeds] = useState([]);
-  const [wordToSearch, setWordToSearch] = useState('');
+  const [wordToSearch, setWordToSearch] = useState("");
   const [modalShowEvent, setModalShowEvent] = useState(false);
   const [selectedEventDetail, setSelectedEventDetail] = useState({});
   const [updateList, setUpdateList] = useState(false);
-  const [selectFeedFilter, setSelectFeedFilter] = useState('');
-  const [selectTlpFilter, setSelectTlpFilter] = useState('');
-  const [selectTaxonomyFilter, setSelectTaxonomyFilter] = useState('');
+  const [selectFeedFilter, setSelectFeedFilter] = useState("");
+  const [selectTlpFilter, setSelectTlpFilter] = useState("");
+  const [selectTaxonomyFilter, setSelectTaxonomyFilter] = useState("");
   const [tableDetail, setTableDetail] = useState(false);
   const [showModalEvent, setShowModalEvent] = useState(false);
 
@@ -99,7 +99,7 @@ const FormCase = (props) => {
         });
         setEvidences(data);
       } catch (error) {
-        console.error('Error fetching evidence data:', error);
+        console.error("Error fetching evidence data:", error);
       }
     };
 
@@ -137,7 +137,7 @@ const FormCase = (props) => {
           setEventList(newEventList);
           setSelectedEvent(newEventList);
         } catch (error) {
-          console.error('Error fetching events:', error);
+          console.error("Error fetching events:", error);
         }
       }
 
@@ -265,10 +265,10 @@ const FormCase = (props) => {
   function getCurrentDateTimeCreated() {
     const now = new Date();
     const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const day = now.getDate().toString().padStart(2, "0");
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
@@ -283,58 +283,58 @@ const FormCase = (props) => {
 
   const allLifecycles = [
     {
-      value: 'manual',
-      label: 'Manual'
+      value: "manual",
+      label: "Manual"
     },
     {
-      value: 'auto',
-      label: 'Auto'
+      value: "auto",
+      label: "Auto"
     },
     {
-      value: 'auto_open',
-      label: 'Auto open'
+      value: "auto_open",
+      label: "Auto open"
     },
     {
-      value: 'auto_close',
-      label: 'Auto close'
+      value: "auto_close",
+      label: "Auto close"
     }
   ];
   //Edit
   const editCase = () => {
     // setIfClick(true);
     const form = new FormData();
-    form.append('date', date);
-    form.append('lifecycle', lifecycle);
+    form.append("date", date);
+    form.append("lifecycle", lifecycle);
     if (parent !== null) {
-      form.append('parent', parent);
+      form.append("parent", parent);
     }
-    form.append('priority', priority);
-    form.append('tlp', tlp);
+    form.append("priority", priority);
+    form.append("tlp", tlp);
     if (assigned !== null) {
-      form.append('assigned', assigned);
+      form.append("assigned", assigned);
     }
-    form.append('state', state);
+    form.append("state", state);
     //form.append("evidence", evidences)
     if (evidences !== null) {
       for (let index = 0; index < evidences.length; index++) {
-        form.append('evidence', evidences[index]);
+        form.append("evidence", evidences[index]);
       }
     }
     if (events.length > 0) {
       events.forEach((selectedEvent) => {
-        form.append('events', selectedEvent);
+        form.append("events", selectedEvent);
       });
     }
     if (comm !== null) {
       let array = comments;
       array.push(comm);
       setComments((e) => [...e, comm]);
-      form.append('comments', comm);
+      form.append("comments", comm);
     }
 
     putCase(url, form)
       .then((response) => {
-        window.location.href = '/cases';
+        window.location.href = "/cases";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -346,40 +346,40 @@ const FormCase = (props) => {
   const addCase = () => {
     // setIfClick(true);
     const form = new FormData();
-    form.append('date', date);
-    form.append('lifecycle', lifecycle);
+    form.append("date", date);
+    form.append("lifecycle", lifecycle);
     if (parent !== null) {
-      form.append('parent', parent);
+      form.append("parent", parent);
     }
-    form.append('priority', priority);
-    form.append('name', name);
-    form.append('tlp', tlp);
+    form.append("priority", priority);
+    form.append("name", name);
+    form.append("tlp", tlp);
     if (assigned !== null) {
-      form.append('assigned', assigned);
+      form.append("assigned", assigned);
     }
-    form.append('state', state);
+    form.append("state", state);
     if (props.selectedEvent !== undefined) {
       props.selectedEvent.forEach((selectedEvent) => {
-        form.append('events', selectedEvent);
+        form.append("events", selectedEvent);
       });
     }
     if (events.length > 0 && events !== undefined) {
       events.forEach((selectedEvent) => {
-        form.append('events', selectedEvent);
+        form.append("events", selectedEvent);
       });
     }
 
     //form.append("evidence", evidences)
     if (evidences !== null) {
       for (let index = 0; index < evidences.length; index++) {
-        form.append('evidence', evidences[index]);
+        form.append("evidence", evidences[index]);
       }
     }
     if (comm !== null) {
       let array = comments;
       array.push(comm);
       setComments((e) => [...e, comm]);
-      form.append('comments', array);
+      form.append("comments", array);
     }
 
     postCase(form)
@@ -397,7 +397,7 @@ const FormCase = (props) => {
             });
 
             props.completeField1(
-              'case',
+              "case",
               {
                 value: response.data.url,
                 name: response.data.name,
@@ -412,13 +412,13 @@ const FormCase = (props) => {
           }
           if (props.selectedEvent !== undefined) {
             props.setSelectedEvent([]);
-            props.setSelectCase('');
+            props.setSelectCase("");
             props.setRefresh(!props.refresh);
           }
           props.setShowModalCase(false);
           //props.setUpdateCases(response)
         } else {
-          window.location.href = '/cases';
+          window.location.href = "/cases";
         }
       })
       .catch((error) => {
@@ -431,10 +431,10 @@ const FormCase = (props) => {
   function getCurrentDateTime() {
     const now = new Date();
     const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const day = now.getDate().toString().padStart(2, "0");
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
@@ -473,11 +473,11 @@ const FormCase = (props) => {
   };
 
   const modalEventDetail = (url, date, address_value, domain, cidr, tlp, taxonomy, feed) => {
-    localStorage.setItem('event', url);
+    localStorage.setItem("event", url);
     setModalShowEvent(true);
     setShowModalListEvent(false);
-    localStorage.setItem('navigation', false);
-    localStorage.setItem('button return', false);
+    localStorage.setItem("navigation", false);
+    localStorage.setItem("button return", false);
     setSelectedEventDetail({
       url: url,
       date: date,
@@ -491,11 +491,11 @@ const FormCase = (props) => {
   };
 
   const tableCaseDetail = (url, date, address_value, domain, cidr, tlp, taxonomy, feed) => {
-    localStorage.setItem('event', url);
+    localStorage.setItem("event", url);
     setModalShowEvent(true);
     setTableDetail(true);
-    localStorage.setItem('navigation', false);
-    localStorage.setItem('button return', false);
+    localStorage.setItem("navigation", false);
+    localStorage.setItem("button return", false);
     setSelectedEventDetail({
       url: url,
       date: date,
@@ -535,21 +535,21 @@ const FormCase = (props) => {
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="case" />
       <Card>
         {props.disableTitle ? (
-          ''
+          ""
         ) : (
           <Card.Header>
-            <Card.Title as="h5">{t('menu.main')}</Card.Title>
+            <Card.Title as="h5">{t("menu.main")}</Card.Title>
           </Card.Header>
         )}
         <Card.Body>
           <Row>
             <Col lg={3} sm={12}>
               <Form.Group controlId="Form.Case.Comments">
-                <Form.Label>{t('ngen.case_name')} </Form.Label>
+                <Form.Label>{t("ngen.case_name")} </Form.Label>
                 <Form.Control
                   type="text"
                   name="name"
-                  placeholder={t('ngen.case_name')}
+                  placeholder={t("ngen.case_name")}
                   maxLength="100"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -558,7 +558,7 @@ const FormCase = (props) => {
             </Col>
             <Col lg={3} sm={12}>
               <Form.Group controlId="Form.Case.Date">
-                <Form.Label>{t('creation.date')}</Form.Label>
+                <Form.Label>{t("creation.date")}</Form.Label>
                 <Form.Control
                   type="datetime-local" //2023-03-24T01:40:14.181622Z
                   value={created} //yyyy-mm-ddThh:mm
@@ -570,7 +570,7 @@ const FormCase = (props) => {
             </Col>
             <Col lg={3} sm={12}>
               <Form.Group controlId="Form.Case.Date">
-                <Form.Label>{t('ngen.case.management_start_date')}</Form.Label>
+                <Form.Label>{t("ngen.case.management_start_date")}</Form.Label>
                 <Form.Control
                   max={getCurrentDateTimeCreated()}
                   type="datetime-local" //2023-03-24T01:40:14.181622Z
@@ -579,7 +579,7 @@ const FormCase = (props) => {
                   isInvalid={dateNotification}
                   onChange={(e) => completeDate(e.target.value, setDate)}
                 />
-                {dateNotification ? <div className="invalid-feedback"> {t('date.invalid')}</div> : ''}
+                {dateNotification ? <div className="invalid-feedback"> {t("date.invalid")}</div> : ""}
               </Form.Group>
             </Col>
             <Col lg={3} sm={12}>
@@ -588,7 +588,7 @@ const FormCase = (props) => {
                 setSelect={setSelectPriority}
                 options={allPriorities}
                 value={selectPriority}
-                placeholder={t('ngen.priority_one')}
+                placeholder={t("ngen.priority_one")}
                 required={true}
               />
             </Col>
@@ -598,7 +598,7 @@ const FormCase = (props) => {
                 setSelect={setSelectLifecycle}
                 options={allLifecycles}
                 value={selectLifecycle}
-                placeholder={t('ngen.lifecycle_one')}
+                placeholder={t("ngen.lifecycle_one")}
                 required={true}
               />
             </Col>
@@ -608,7 +608,7 @@ const FormCase = (props) => {
                 setSelect={setSelectTlp}
                 options={allTlp}
                 value={selectTlp}
-                placeholder={t('ngen.tlp')}
+                placeholder={t("ngen.tlp")}
                 required={true}
               />
             </Col>
@@ -618,7 +618,7 @@ const FormCase = (props) => {
                 setSelect={setSelectState}
                 options={props.allStates}
                 value={selectState}
-                placeholder={t('ngen.state_one')}
+                placeholder={t("ngen.state_one")}
                 required={true}
               />
             </Col>
@@ -629,18 +629,18 @@ const FormCase = (props) => {
                 setSelect={setSelectAssigned}
                 options={allUsers}
                 value={selectAssigned}
-                placeholder={t('ngen.status.assigned')}
+                placeholder={t("ngen.status.assigned")}
               />
             </Col>
           </Row>
           <Row>
             <Col>
               <Form.Group controlId="Form.Case.Comments">
-                <Form.Label>{t('ngen.comments')}</Form.Label>
+                <Form.Label>{t("ngen.comments")}</Form.Label>
                 <Form.Control
                   as="textarea"
                   name="comment"
-                  placeholder={t('ngen.comments')}
+                  placeholder={t("ngen.comments")}
                   maxLength="500"
                   value={comm}
                   onChange={(e) => setComm(e.target.value)}
@@ -651,7 +651,7 @@ const FormCase = (props) => {
         </Card.Body>
       </Card>
       {props.disableTableEvent ? (
-        ''
+        ""
       ) : (
         <SmallEventTable
           list={eventList}
@@ -717,12 +717,12 @@ const FormCase = (props) => {
         closeModalDetail={closeModalDetail}
       />
       {props.disableEvidence ? (
-        ''
+        ""
       ) : (
         <EvidenceCard evidences={evidences} setEvidences={setEvidences} setUpdateCase={props.setUpdateCase} updateCase={props.updateCase} />
       )}
 
-      {priority !== '' && lifecycle !== '' && tlp !== '' && state !== '' ? (
+      {priority !== "" && lifecycle !== "" && tlp !== "" && state !== "" ? (
         <>
           <Button variant="primary" onClick={props.edit ? editCase : addCase}>
             {props.save}
@@ -737,11 +737,11 @@ const FormCase = (props) => {
       )}
       {props.buttonsModalColum ? (
         <Button variant="primary" href="/cases">
-          {t('button.cancel')}
+          {t("button.cancel")}
         </Button>
       ) : (
         <Button variant="primary" onClick={() => props.setShowModalCase(false)}>
-          {t('button.cancel')}
+          {t("button.cancel")}
         </Button>
       )}
     </React.Fragment>

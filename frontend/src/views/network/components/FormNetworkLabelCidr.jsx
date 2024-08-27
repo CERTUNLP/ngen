@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Form } from 'react-bootstrap';
-import { getNetwork } from '../../../api/services/networks';
+import React, { useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
+import { getNetwork } from "../../../api/services/networks";
 
 const FormNetworkLabelCidr = (props) => {
   //TODO refactorizar los Form
-  const [network, setNetwork] = useState('');
+  const [network, setNetwork] = useState("");
 
   useEffect(() => {
     showParentCidr(props.url);

@@ -1,20 +1,20 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Button, Card, FormControl, InputGroup } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import PropTypes from "prop-types";
+import React from "react";
+import { Button, Card, FormControl, InputGroup } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import PerfectScrollbar from "react-perfect-scrollbar";
 
-import chatMsg from './chat';
-import Messages from './Messages';
+import chatMsg from "./chat";
+import Messages from "./Messages";
 
 const Chat = ({ user, chatOpen, listOpen, closed }) => {
-  let chatClass = ['header-chat'];
+  let chatClass = ["header-chat"];
   if (chatOpen && listOpen) {
-    chatClass = [...chatClass, 'open'];
+    chatClass = [...chatClass, "open"];
   }
 
   let message = (
-    <Card className="d-flex align-items-center shadow-none mb-0 p-0" style={{ flexDirection: 'row', backgroundColor: 'unset' }}>
+    <Card className="d-flex align-items-center shadow-none mb-0 p-0" style={{ flexDirection: "row", backgroundColor: "unset" }}>
       <Card.Body className="p-0 chat-menu-content">
         <div className="">
           <p className="chat-cont">CHAT NOT FOUND</p>
@@ -34,7 +34,7 @@ const Chat = ({ user, chatOpen, listOpen, closed }) => {
 
   return (
     <React.Fragment>
-      <div className={chatClass.join(' ')}>
+      <div className={chatClass.join(" ")}>
         <div className="h-list-header">
           <h6>{user.name}</h6>
           <Link to="#" className="h-back-user-list" onClick={closed}>

@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types';
-import React, { useContext, useEffect, useRef } from 'react';
+import PropTypes from "prop-types";
+import React, { useContext, useEffect, useRef } from "react";
 
-import Navigation from './Navigation';
-import NavBar from './NavBar';
-import Breadcrumb from './Breadcrumb';
+import Navigation from "./Navigation";
+import NavBar from "./NavBar";
+import Breadcrumb from "./Breadcrumb";
 
-import useWindowSize from '../../hooks/useWindowSize';
-import useOutsideClick from '../../hooks/useOutsideClick';
-import { ConfigContext } from '../../contexts/ConfigContext';
-import * as actionType from '../../store/actions';
+import useWindowSize from "../../hooks/useWindowSize";
+import useOutsideClick from "../../hooks/useOutsideClick";
+import { ConfigContext } from "../../contexts/ConfigContext";
+import * as actionType from "../../store/actions";
 
 const AdminLayout = ({ children }) => {
   const windowSize = useWindowSize();
@@ -24,7 +24,7 @@ const AdminLayout = ({ children }) => {
     }
 
     if (windowSize.width < 992) {
-      dispatch({ type: actionType.CHANGE_LAYOUT, layout: 'vertical' });
+      dispatch({ type: actionType.CHANGE_LAYOUT, layout: "vertical" });
     }
   }, [dispatch, windowSize]);
 
@@ -40,7 +40,7 @@ const AdminLayout = ({ children }) => {
     }
   };
 
-  let mainClass = ['pcoded-wrapper'];
+  let mainClass = ["pcoded-wrapper"];
 
   let common = (
     <React.Fragment>
@@ -52,7 +52,7 @@ const AdminLayout = ({ children }) => {
   let mainContainer = (
     <React.Fragment>
       <div className="pcoded-main-container">
-        <div className={mainClass.join(' ')}>
+        <div className={mainClass.join(" ")}>
           <div className="pcoded-content">
             <div className="pcoded-inner-content">
               <Breadcrumb />
@@ -65,16 +65,16 @@ const AdminLayout = ({ children }) => {
   );
 
   if (windowSize.width < 992) {
-    let outSideClass = ['nav-outside'];
+    let outSideClass = ["nav-outside"];
     if (collapseMenu) {
-      outSideClass = [...outSideClass, 'mob-backdrop'];
+      outSideClass = [...outSideClass, "mob-backdrop"];
     }
     if (headerFixedLayout) {
-      outSideClass = [...outSideClass, 'mob-fixed'];
+      outSideClass = [...outSideClass, "mob-fixed"];
     }
 
     common = (
-      <div className={outSideClass.join(' ')} ref={ref}>
+      <div className={outSideClass.join(" ")} ref={ref}>
         {common}
       </div>
     );

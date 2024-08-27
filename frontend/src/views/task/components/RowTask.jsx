@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Form } from 'react-bootstrap';
-import { deleteTask, getTask } from '../../../api/services/tasks';
-import PriorityButton from '../../../components/Button/PriorityButton';
-import ModalDetailTask from './ModalDetailTask';
-import ModalConfirm from '../../../components/Modal/ModalConfirm';
-import CrudButton from '../../../components/Button/CrudButton';
-import ModalEditTask from './ModalEditTask';
+import React, { useCallback, useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
+import { deleteTask, getTask } from "../../../api/services/tasks";
+import PriorityButton from "../../../components/Button/PriorityButton";
+import ModalDetailTask from "./ModalDetailTask";
+import ModalConfirm from "../../../components/Modal/ModalConfirm";
+import CrudButton from "../../../components/Button/CrudButton";
+import ModalEditTask from "./ModalEditTask";
 
 const RowTask = (props) => {
   //url, key, taskDeleted,  setTaskDeleted, setTaskUpdated, setShowAlert
 
-  const [task, setTask] = useState('');
+  const [task, setTask] = useState("");
 
   const [modalShow, setModalShow] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
@@ -55,10 +55,10 @@ const RowTask = (props) => {
   };
 
   const textareaStyle = {
-    resize: 'none',
-    backgroundColor: 'transparent',
-    border: 'none',
-    boxShadow: 'none'
+    resize: "none",
+    backgroundColor: "transparent",
+    border: "none",
+    boxShadow: "none"
   };
 
   return task ? (
@@ -74,7 +74,7 @@ const RowTask = (props) => {
             readOnly
             className="text-center"
             vertical-align="middle"
-            value={task.description === null ? 'No tiene descripcion' : task.description}
+            value={task.description === null ? "No tiene descripcion" : task.description}
             style={textareaStyle}
             as="textarea"
             rows={row}

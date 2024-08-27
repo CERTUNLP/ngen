@@ -1,5 +1,5 @@
-import store from '../store';
-import { SET_MESSAGE } from '../store/actions';
+import store from "../store";
+import { SET_MESSAGE } from "../store/actions";
 
 const setAlert = (text, type, component) => {
   const { dispatch } = store;

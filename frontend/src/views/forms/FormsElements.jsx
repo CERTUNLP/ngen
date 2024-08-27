@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Card, Col, Dropdown, DropdownButton, Form, FormControl, InputGroup, Row } from 'react-bootstrap';
+import React from "react";
+import { Button, Card, Col, Dropdown, DropdownButton, Form, FormControl, InputGroup, Row } from "react-bootstrap";
 
 const FormsElements = () => {
   return (
@@ -95,7 +95,7 @@ const FormsElements = () => {
             </Card.Header>
             <Card.Body>
               <Row>
-                <Col sm={12} style={{ overflowX: 'auto' }}>
+                <Col sm={12} style={{ overflowX: "auto" }}>
                   <Form className="d-inline-flex">
                     <Form.Group className="d-inline-flex mx-3 align-items-center">
                       <Form.Label className="mb-0">Email:</Form.Label>
@@ -105,7 +105,7 @@ const FormsElements = () => {
                       <Form.Label className="mb-0">Password:</Form.Label>
                       <Form.Control className="mx-2" type="password" placeholder="Password" />
                     </Form.Group>
-                    <Form.Group className="d-inline-flex mx-3" style={{ overflow: 'unset' }}>
+                    <Form.Group className="d-inline-flex mx-3" style={{ overflow: "unset" }}>
                       <Button className="mb-0">Confirm Identity</Button>
                     </Form.Group>
                   </Form>

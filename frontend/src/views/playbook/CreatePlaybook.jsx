@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Row } from 'react-bootstrap';
-import { postPlaybook, putPlaybook } from '../../api/services/playbooks';
-import FormCreatePlaybook from '../playbook/components/FormCreatePlaybook';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
-import ListTask from '../task/ListTask';
-import Navigation from '../../components/Navigation/Navigation';
-import Alert from '../../components/Alert/Alert';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Row } from "react-bootstrap";
+import { postPlaybook, putPlaybook } from "../../api/services/playbooks";
+import FormCreatePlaybook from "../playbook/components/FormCreatePlaybook";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import ListTask from "../task/ListTask";
+import Navigation from "../../components/Navigation/Navigation";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const CreatePlaybook = () => {
-  const [url, setUrl] = useState('');
-  const [name, setName] = useState('');
+  const [url, setUrl] = useState("");
+  const [name, setName] = useState("");
   const [taxonomy, setTaxonomy] = useState([]);
   const { t } = useTranslation();
 
@@ -29,7 +29,7 @@ const CreatePlaybook = () => {
       response.map((taxonomyItem) => {
         listTaxonomies.push({
           value: taxonomyItem.url,
-          label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] + ')'
+          label: taxonomyItem.name + " (" + labelTaxonomy[taxonomyItem.type] + ")"
         });
       });
       setAllTaxonomies(listTaxonomies);
@@ -58,22 +58,22 @@ const CreatePlaybook = () => {
   };
 
   const labelTaxonomy = {
-    vulnerability: 'Vulnerabilidad',
-    incident: 'Incidente'
+    vulnerability: "Vulnerabilidad",
+    incident: "Incidente"
   };
 
   return (
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="playbook" />
       <Row>
-        <Navigation actualPosition={t('ngen.playbook.add')} path="/playbooks" index="Playbook" />
+        <Navigation actualPosition={t("ngen.playbook.add")} path="/playbooks" index="Playbook" />
       </Row>
       <Row>
         <Col sm={12}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">{t('ngen.playbook')}</Card.Title>
-              <span className="d-block m-t-5">{t('ngen.playbook.add')}</span>
+              <Card.Title as="h5">{t("ngen.playbook")}</Card.Title>
+              <span className="d-block m-t-5">{t("ngen.playbook.add")}</span>
             </Card.Header>
             <Card.Body>
               <FormCreatePlaybook
@@ -83,7 +83,7 @@ const CreatePlaybook = () => {
                 setTaxonomy={setTaxonomy}
                 ifConfirm={!sectionAddTask ? createPlaybook : editPlaybook}
                 allTaxonomies={allTaxonomies}
-                save={!sectionAddTask ? t('button.create') : t('button.save_changes')}
+                save={!sectionAddTask ? t("button.create") : t("button.save_changes")}
               />
             </Card.Body>
           </Card>
@@ -91,7 +91,7 @@ const CreatePlaybook = () => {
           <ListTask urlPlaybook={url} sectionAddTask={sectionAddTask} setShowAlert={setShowAlert} />
 
           <Button variant="primary" href="/playbooks">
-            {t('button.return')}
+            {t("button.return")}
           </Button>
         </Col>
       </Row>

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Form } from 'react-bootstrap';
+import React, { useEffect } from "react";
+import { Form } from "react-bootstrap";
 import {
   validateAutonomousSystem,
   validateDomain,
@@ -11,8 +11,8 @@ import {
   validateIP,
   validateSpace,
   validateUserAgent
-} from '../../../utils/validators';
-import { useTranslation } from 'react-i18next';
+} from "../../../utils/validators";
+import { useTranslation } from "react-i18next";
 
 const FormArtifactsSelect = (props) => {
   // props: selectedType,.value, setContact, setValidContact
@@ -25,64 +25,64 @@ const FormArtifactsSelect = (props) => {
   const { t } = useTranslation();
   const typeValue = [
     {
-      name: 'mail',
-      placeholder: t('ngen.email_add'),
+      name: "mail",
+      placeholder: t("ngen.email_add"),
       isInvalid: JSON.parse(!validateSpace(props.value) || !validateEmail(props.value)),
       condition: JSON.parse(validateEmail(props.value)),
-      messageDanger: t('ngen.email_valid')
+      messageDanger: t("ngen.email_valid")
     },
     {
-      name: 'domain',
-      placeholder: t('ngen.domain_add'),
+      name: "domain",
+      placeholder: t("ngen.domain_add"),
       isInvalid: JSON.parse(!validateSpace(props.value) || !validateDomain(props.value)),
-      condition: '',
-      messageDanger: t('ngen.domain_valid')
+      condition: "",
+      messageDanger: t("ngen.domain_valid")
     },
     {
-      name: 'url',
-      placeholder: t('ngen.url_add'),
+      name: "url",
+      placeholder: t("ngen.url_add"),
       isInvalid: JSON.parse(!validateSpace(props.value)),
-      condition: '',
-      messageDanger: t('ngen.url_valid')
+      condition: "",
+      messageDanger: t("ngen.url_valid")
     },
     {
-      name: 'ip',
-      placeholder: t('ngen.ip_add'),
+      name: "ip",
+      placeholder: t("ngen.ip_add"),
       isInvalid: JSON.parse(!validateSpace(props.value) || !validateIP(props.value)),
       condition: JSON.parse(validateIP(props.value)),
-      messageDanger: t('ngen.ip_valid')
+      messageDanger: t("ngen.ip_valid")
     },
     {
-      name: 'autonomous-system',
-      placeholder: t('ngen.auSys_add'),
+      name: "autonomous-system",
+      placeholder: t("ngen.auSys_add"),
       isInvalid: JSON.parse(!validateSpace(props.value) || !validateAutonomousSystem(props.value)),
       condition: JSON.parse(validateAutonomousSystem(props.value)),
-      messageDanger: t('ngen.auSys_valid')
+      messageDanger: t("ngen.auSys_valid")
     },
     {
-      name: 'user-agent',
-      placeholder: t('ngen.userAgent_add'),
+      name: "user-agent",
+      placeholder: t("ngen.userAgent_add"),
       isInvalid: JSON.parse(!validateSpace(props.value) || !validateUserAgent(props.value)),
       condition: JSON.parse(validateUserAgent(props.value)),
-      messageDanger: t('ngen.userAgent_valid')
+      messageDanger: t("ngen.userAgent_valid")
     },
     {
-      name: 'fqdn',
-      placeholder: t('ngen.fqdn_add'),
+      name: "fqdn",
+      placeholder: t("ngen.fqdn_add"),
       isInvalid: JSON.parse(!validateSpace(props.value) || !validateDomain(props.value)),
       condition: JSON.parse(validateDomain(props.value)),
-      messageDanger: t('ngen.fqdn_valid')
+      messageDanger: t("ngen.fqdn_valid")
     },
     {
-      name: 'other',
-      placeholder: t('ngen.other_add'),
+      name: "other",
+      placeholder: t("ngen.other_add"),
       isInvalid: JSON.parse(!validateSpace(props.value)),
-      condition: '',
-      messageDanger: t('ngen.URI_valid')
+      condition: "",
+      messageDanger: t("ngen.URI_valid")
     },
     {
-      name: 'hash',
-      placeholder: t('ngen.hex32_add'),
+      name: "hash",
+      placeholder: t("ngen.hex32_add"),
       isInvalid: JSON.parse(
         !validateSpace(props.value) ||
           (!validateHexadecimal32(props.value) &&
@@ -96,7 +96,7 @@ const FormArtifactsSelect = (props) => {
           validateHexadecimal64(props.value) ||
           validateHexadecimal128(props.value)
       ),
-      messageDanger: t('ngen.hex32_valid')
+      messageDanger: t("ngen.hex32_valid")
     }
   ];
 
@@ -106,7 +106,7 @@ const FormArtifactsSelect = (props) => {
     return (
       <React.Fragment>
         <Form.Group controlId="formGridAddress1">
-          <Form.Label>{t('ngen.value')}</Form.Label>
+          <Form.Label>{t("ngen.value")}</Form.Label>
           <Form.Control
             placeholder={username.placeholder}
             value={props.value}
@@ -117,7 +117,7 @@ const FormArtifactsSelect = (props) => {
             isInvalid={username.isInvalid}
           />
 
-          {!props.value || username.condition ? '' : <div className="invalid-feedback"> {username.messageDanger} </div>}
+          {!props.value || username.condition ? "" : <div className="invalid-feedback"> {username.messageDanger} </div>}
         </Form.Group>
       </React.Fragment>
     );
@@ -125,8 +125,8 @@ const FormArtifactsSelect = (props) => {
     return (
       <React.Fragment>
         <Form.Group controlId="Form.Contact.Username.readOnly">
-          <Form.Label>{t('ngen.value')}</Form.Label>
-          <Form.Control readOnly placeholder={t('ngen.contact.placeholder')} name="username" />
+          <Form.Label>{t("ngen.value")}</Form.Label>
+          <Form.Control readOnly placeholder={t("ngen.contact.placeholder")} name="username" />
         </Form.Group>
       </React.Fragment>
     );

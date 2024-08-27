@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Row, Spinner } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
-import Alert from '../../components/Alert/Alert';
-import FormReport from './components/FormReport';
-import Navigation from '../../components/Navigation/Navigation';
-import { putReport } from '../../api/services/reports';
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { Card, Row, Spinner } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
+import Alert from "../../components/Alert/Alert";
+import FormReport from "./components/FormReport";
+import Navigation from "../../components/Navigation/Navigation";
+import { putReport } from "../../api/services/reports";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import { useTranslation } from "react-i18next";
 
 const EditReport = () => {
   const location = useLocation();
@@ -46,7 +46,7 @@ const EditReport = () => {
       body.taxonomy
     )
       .then((response) => {
-        window.location.href = '/reports';
+        window.location.href = "/reports";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -57,12 +57,12 @@ const EditReport = () => {
     <div>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="report" />
       <Row>
-        <Navigation actualPosition={t('ngen.report.edit')} path="/reports" index={t('ngen.report')} />
+        <Navigation actualPosition={t("ngen.report.edit")} path="/reports" index={t("ngen.report")} />
       </Row>
 
       <Card>
         <Card.Header>
-          <Card.Title as="h5">{t('ngen.report.edit')}</Card.Title>
+          <Card.Title as="h5">{t("ngen.report.edit")}</Card.Title>
         </Card.Header>
         <Card.Body>
           {loading && <Spinner animation="border" variant="primary" />}
