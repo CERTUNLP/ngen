@@ -41,10 +41,26 @@ class ArtifactSerializerMixin(serializers.HyperlinkedModelSerializer):
         Update automatic artifacts relations deleting all and adding the new ones.
         Update manual artifacts relations deleting the ones that are not in the new list and adding the new ones.
         """
-        artifacts = validated_data.pop('artifacts', [])
-        super().update(instance, validated_data)
         ct = ContentType.objects.get_for_model(instance)
-        # remove manual relations that are not in the new list and are not auto_created
+        artifacts = validated_data.pop('artifacts', [])
+
+        # Change automatic relations to manual relations
+        art_relations = models.ArtifactRelation.objects.filter(
+            pk__in=[artifact.pk for artifact in artifacts],
+            object_id=instance.id,
+            content_type=ct,
+            auto_created=True
+        )
+        for art_rel in art_relations:
+            art_rel.auto_created = False
+            art_rel.save()
+
+        # Update automatic artifacts relations
+        # This will delete all automatic relations and add the new ones
+        super().update(instance, validated_data)
+
+        # Update manual artifacts relations
+        # remove manual (not auto_created) relations that are not in the new list
         models.ArtifactRelation.objects.filter(
             object_id=instance.id,
             content_type=ct,
@@ -52,6 +68,7 @@ class ArtifactSerializerMixin(serializers.HyperlinkedModelSerializer):
         ).exclude(
             artifact__in=artifacts
         ).delete()
+
         # find new manual relations
         new_artifacts = models.Artifact.objects.filter(
             pk__in=[artifact.pk for artifact in artifacts]
@@ -59,6 +76,7 @@ class ArtifactSerializerMixin(serializers.HyperlinkedModelSerializer):
             artifact_relation__object_id=instance.id,
             artifact_relation__content_type=ct
         )
+
         # add new manual relations
         for artifact_obj in new_artifacts:
             models.ArtifactRelation.objects.get_or_create(

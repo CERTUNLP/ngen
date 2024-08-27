@@ -399,9 +399,11 @@ class TestEvent(APITestCaseWithLogin):
         response = self.client.put(self.url_detail(event.pk), data=json_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         artifacts = Event.objects.last().artifacts
-        self.assertEqual(len(artifacts), 1)
+        self.assertEqual(len(artifacts), 2)
         self.assertEqual(artifacts[0].related[0], Event.objects.last())
-        self.assertEqual(artifacts[0].value, 'another.domain3.com')
+        self.assertEqual(artifacts[1].related[0], Event.objects.last())
+        self.assertIn('*', [artifact.value for artifact in artifacts])
+        self.assertIn('another.domain3.com', [artifact.value for artifact in artifacts])
 
     def test_event_put_another_manual_artifact(self):
         '''
