@@ -2,6 +2,8 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import Backend from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
+import apiInstance from "./api/api";
+import { COMPONENT_URL } from "./config/constant";
 
 const options = {
   order: ["querystring", "navigator"],
@@ -15,7 +17,7 @@ const fetchLanguageSetting = async () => {
   }
 
   try {
-    const response = await fetch("http://localhost:8000/api/ngenconfig/");
+    const response = apiInstance.get(COMPONENT_URL.configPublic);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
