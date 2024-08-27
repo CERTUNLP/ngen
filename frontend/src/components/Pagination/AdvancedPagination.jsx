@@ -27,7 +27,6 @@ const AdvancedPagination = ({
     settingPageSize()
       .then((response) => {
         setPageSize(response.data.value);
-        console.log(response.data.value);
       })
       .catch((error) => {
         console.log(error);
