@@ -111,11 +111,11 @@ const DashDefault = () => {
     const now = new Date();
 
     // Get the year, month, day, hour, and minute
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based, so we add 1
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, "0"); // Months are zero-based, so we add 1
+    const day = String(now.getUTCDate()).padStart(2, "0");
+    const hours = String(now.getUTCHours()).padStart(2, "0");
+    const minutes = String(now.getUTCMinutes()).padStart(2, "0");
 
     // Format the date and time in the desired format
     const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
