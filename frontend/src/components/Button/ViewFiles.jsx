@@ -91,7 +91,7 @@ const ViewFiles = (props) => {
                 </p>
                 <p className="file-meta">Mime: {props.file.mime || props.file.type}</p>
                 <p className="file-meta">
-                  {t("w.size")}: {props.file.size} KB
+                  {t("w.size")}: {props.file.size} Bytes
                 </p>
                 <p className="file-meta">
                   {t("date.creation")}:{" "}
