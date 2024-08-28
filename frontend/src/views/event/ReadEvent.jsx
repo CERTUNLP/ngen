@@ -193,6 +193,7 @@ const ReadEvent = () => {
               {body.reporter !== undefined ? <CallBackendByName url={body.reporter} callback={callbackReporter} attr={"username"} /> : "-"}
             </Col>
           </Row>
+          <p />
           <Row>
             <Col sm={12} lg={2} className={"align-self-center"}>
               {t("ngen.event.parent")}
@@ -240,6 +241,7 @@ const ReadEvent = () => {
               {body.blocked !== undefined ? (body.merged ? t("w.yes") : t("w.no")) : "-"}
             </Col>
           </Row>
+          <p />
           <Row>
             <Col sm={12} lg={2} className={"align-self-center"}>
               {t("notes")}

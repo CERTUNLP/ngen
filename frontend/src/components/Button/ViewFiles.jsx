@@ -91,13 +91,13 @@ const ViewFiles = (props) => {
                 </p>
                 <p className="file-meta">Mime: {props.file.mime || props.file.type}</p>
                 <p className="file-meta">
-                  {t("w.size")}: {props.file.size} KB
+                  {t("w.size")}: {props.file.size} Bytes
                 </p>
                 <p className="file-meta">
                   {t("date.creation")}:{" "}
                   {props.file.created
                     ? props.file.created.slice(0, 10) + " " + props.file.created.slice(11, 19)
-                    : "No creado en el sistema"}
+                    : t("ngen.not.created.in.system")}
                 </p>
               </div>
             </div>
