@@ -51,7 +51,7 @@ cron-descriptor==1.4.0
     # via django-celery-beat
 decorator==5.1.1
     # via validators
-django==4.2.15
+django==4.2.7
     # via
     #   -r requirements.in
     #   django-appconf
@@ -258,6 +258,9 @@ webencodings==0.5.1
     #   tinycss2
 wheel==0.41.0
     # via pip-tools
+
+imapclient==3.0.1
+imbox
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

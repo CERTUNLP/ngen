@@ -9,3 +9,4 @@ from .dashboards import *  # noqa: F401
 from .state import *  # noqa: F401
 from .taxonomy import *  # noqa: F401
 from .tools import *  # noqa: F401
+from .email_message import * # noqa: F401
