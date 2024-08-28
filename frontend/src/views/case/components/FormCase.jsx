@@ -277,6 +277,7 @@ const FormCase = (props) => {  // props: edit, caseitem, allStates
     const form = new FormData()
     form.append('date', date)
     form.append('lifecycle', lifecycle)
+    form.append('name', name)
     if (parent !== null) {
       form.append('parent', parent)
     }

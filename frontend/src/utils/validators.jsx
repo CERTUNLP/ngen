@@ -22,7 +22,10 @@ const validateSpaces = (text) => {
 
 }
 const validateSpace = (text) => {
-
+  
+  if (text === undefined) {
+    return true
+  }
   return (text.trim() !== '')
 }
 

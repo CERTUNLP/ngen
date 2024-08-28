@@ -10,15 +10,24 @@ import {
 
 const validateName = (name) => {
   //return (validateAlphanumeric(name) && validateLength(name, 100) && validateSpace(name))// tengo que ver la funcion de este metodo validateSpace(name)
-  return (validateAlphanumeric(name) && validateLength(name, 100))
+  if(name){
+    return (validateAlphanumeric(name) && validateLength(name, 100))
+  }
+  return null
 }
 
 const validateSelect = (option) => {
-  return (!isEmpty(option))
+  if(option){
+    return (!isEmpty(option))
+  }
+  return null
 }
 
 const validateContact = (contact) => {
-  return (validateSpace(contact))// no entinedo porque un selec
+  if (contact){
+    return (validateSpace(contact))// no entinedo porque un selec
+  }
+  return null
 }
 
 const validateContactMail = (contactMail) => {

@@ -124,6 +124,8 @@ const TableContact = ({
         </thead>
         <tbody>
         {list.map((contact, index) => {
+          const parts = contact.url.split("/");
+          let itemNumber = parts[parts.length - 2];
           return (
             <tr key={contact.url}>
               <td>{contact.name}</td>
@@ -133,7 +135,7 @@ const TableContact = ({
               <td>
                 <CrudButton type="read"
                             onClick={() => showContact(contact.url)}/>
-                <Link to="/contacts/edit" state={contact}>
+                <Link to={`/contacts/edit/${itemNumber}`}>
                   <CrudButton type="edit"
                               onClick={() => storageContactUrl(contact.url)}/>
                 </Link>

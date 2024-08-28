@@ -110,7 +110,7 @@ const routes = [
       },
       {
         exact: 'true',
-        path: '/contacts/edit',
+        path: '/contacts/edit/:id',
         element: lazy(() => import('./views/contact/EditContact')),
       },
       {
@@ -200,12 +200,12 @@ const routes = [
       },
       {
         exact: 'true',
-        path: '/events/edit',
+        path: '/events/edit/:id',
         element: lazy(() => import('./views/event/EditEvent')),
       },
       {
         exact: 'true',
-        path: '/events/view',
+        path: '/events/view/:id',
         element: lazy(() => import('./views/event/ReadEvent')),
       },
       {
@@ -235,12 +235,12 @@ const routes = [
       },
       {
         exact: 'true',
-        path: '/cases/edit',
+        path: '/cases/edit/:id',
         element: lazy(() => import('./views/case/EditCase')),
       },
       {
         exact: 'true',
-        path: '/cases/view',
+        path: '/cases/view/:id',
         element: lazy(() => import('./views/case/ReadCase')),
       },
       {
@@ -255,7 +255,7 @@ const routes = [
       },
       {
         exact: 'true',
-        path: '/templates/edit',
+        path: '/templates/edit/:id',
         element: lazy(() => import('./views/template/EditTemplate')),
       },
       {

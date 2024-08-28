@@ -9,7 +9,7 @@ import {
   Row,
   Table,
 } from 'react-bootstrap'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import Navigation from '../../components/Navigation/Navigation'
 import SmallEventTable from '../event/components/SmallEventTable'
 import { getCase } from '../../api/services/cases'
@@ -18,14 +18,15 @@ import { getEvent } from '../../api/services/events'
 import { getEvidence } from '../../api/services/evidences'
 import EvidenceCard from '../../components/UploadFiles/EvidenceCard'
 import { useTranslation } from 'react-i18next'
+import { COMPONENT_URL } from 'config/constant'
 
 const ReadCase = () => {
   const location = useLocation()
-  const [caseItem, setCaseItem] = useState(location?.state?.item || null)
+  const [caseItem, setCaseItem] = useState(null)
   const [navigationRow] = useState(localStorage.getItem('navigation'))
   const [buttonReturn] = useState(localStorage.getItem('button return'))
 
-  const [id, setId] = useState('')
+  const [id] = useState(useParams());
   const [date, setDate] = useState('')
   const [attend_date, setAttend_Date] = useState('')
   const [solve_date, setSolve_Date] = useState('')
@@ -46,6 +47,15 @@ const ReadCase = () => {
   const { t } = useTranslation()
 
   useEffect(() => {
+    if (id.id) {
+      getCase(COMPONENT_URL.case + id.id + "/")
+        .then((response) => {
+          setCaseItem(response.data)
+        }).catch(error => console.log(error));
+    }
+  }, [id]);
+
+  useEffect(() => {
 
     if (caseItem !== null) {
       const eventPromises = caseItem.events.map(url => getEvent(url))
@@ -59,13 +69,6 @@ const ReadCase = () => {
         const errorMessage = t('error.event')
         console.error(errorMessage, error)
       })
-    }
-    if (!caseItem) {
-      const caseUrl = localStorage.getItem('case')
-      getCase(caseUrl).then((response) => {
-        setCaseItem(response.data)
-      }).catch(error => console.log(error))
-
     }
 
     const getEvidenceFile = (url) => {
@@ -117,9 +120,6 @@ const ReadCase = () => {
       }
       getName(caseItem.state, setState)
 
-      let idItem = caseItem.url.split('/')[(caseItem.url.split('/')).length - 2]
-      setId(idItem)
-
       let datetime = caseItem.created.split('T')
       setCreated(datetime[0] + ' ' + datetime[1].slice(0, 8))
       datetime = caseItem.modified.split('T')
@@ -164,7 +164,7 @@ const ReadCase = () => {
       {navigationRow !== 'false' ?
         <Row>
           <Navigation actualPosition={t('w.detail')} path="/cases"
-                      index={t('ngen.case_other')}/>
+            index={t('ngen.case_other')} />
         </Row>
         : ' '
       }
@@ -177,48 +177,44 @@ const ReadCase = () => {
             <Card.Body>
               <Table responsive>
                 <tbody>
-                <tr>
-                  <td>{t('ngen.uuid')}</td>
-                  <td>
-                    <Form.Control plaintext readOnly
-                                  defaultValue={caseItem.uuid}/>
-                  </td>
-                  <td>{t('ngen.system.id')}</td>
-                  <td>
-                    <Form.Control plaintext readOnly defaultValue={id}/>
-                  </td>
-                  <td> {t('ngen.name_one')}</td>
-                  <td>
-                    <Form.Control plaintext readOnly defaultValue={caseItem.name
-                      ? caseItem.name
-                      : '-'}/>
-                  </td>
-                </tr>
-                <tr>
-                  <td>{t('ngen.priority_one')}</td>
-                  <td>
-                    <Form.Control plaintext readOnly defaultValue={priority}/>
-                  </td>
-                  <td>{t('ngen.tlp')}</td>
-                  <td>
-                    <Form.Control plaintext readOnly defaultValue={tlp}/>
-                  </td>
-                  <td>{t('ngen.lifecycle_one')}</td>
-                  < td>
-                    <Form.Control plaintext readOnly
-                                  defaultValue={caseItem.lifecycle}/>
-                  </td>
-                </tr>
-                <tr>
-                  <td>{t('ngen.state_one')}</td>
-                  <td>
-                    <Form.Control plaintext readOnly defaultValue={state}/>
-                  </td>
-                  <td>{t('ngen.status.assigned')}</td>
-                  <td>
-                    <Form.Control plaintext readOnly defaultValue={assigned}/>
-                  </td>
-                </tr>
+                  <tr>
+                    <td>{t('ngen.uuid')}</td>
+                    <td>
+                      <Form.Control plaintext readOnly
+                        defaultValue={caseItem.uuid} />
+                    </td>
+                    <td> {t('ngen.name_one')}</td>
+                    <td>
+                      <Form.Control plaintext readOnly defaultValue={caseItem.name
+                        ? caseItem.name
+                        : '-'} />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>{t('ngen.priority_one')}</td>
+                    <td>
+                      <Form.Control plaintext readOnly defaultValue={priority} />
+                    </td>
+                    <td>{t('ngen.tlp')}</td>
+                    <td>
+                      <Form.Control plaintext readOnly defaultValue={tlp} />
+                    </td>
+                    <td>{t('ngen.lifecycle_one')}</td>
+                    < td>
+                      <Form.Control plaintext readOnly
+                        defaultValue={caseItem.lifecycle} />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>{t('ngen.state_one')}</td>
+                    <td>
+                      <Form.Control plaintext readOnly defaultValue={state} />
+                    </td>
+                    <td>{t('ngen.status.assigned')}</td>
+                    <td>
+                      <Form.Control plaintext readOnly defaultValue={assigned} />
+                    </td>
+                  </tr>
                 </tbody>
               </Table>
             </Card.Body>
@@ -231,59 +227,59 @@ const ReadCase = () => {
             <Card.Body>
               <Table responsive>
                 <tbody>
-                <tr>
-                  <td>{t('ngen.case.management_start_date')}</td>
-                  <td>
-                    <Form.Control plaintext readOnly defaultValue={date}/>
-                  </td>
-                  <td>{t('w.attended')}</td>
-                  {caseItem.attend_date ?
+                  <tr>
+                    <td>{t('ngen.case.management_start_date')}</td>
                     <td>
-                      <Form.Control plaintext readOnly
-                                    defaultValue={attend_date}/>
+                      <Form.Control plaintext readOnly defaultValue={date} />
                     </td>
-                    :
-                    <td>
-                      <Form.Control plaintext readOnly
-                                    defaultValue={t('w.attended.no')}/>
-                    </td>
-                  }
+                    <td>{t('w.attended')}</td>
+                    {caseItem.attend_date ?
+                      <td>
+                        <Form.Control plaintext readOnly
+                          defaultValue={attend_date} />
+                      </td>
+                      :
+                      <td>
+                        <Form.Control plaintext readOnly
+                          defaultValue={t('w.attended.no')} />
+                      </td>
+                    }
 
-                  <td>{t('w.solved')}</td>
-                  {caseItem.solve_date ?
+                    <td>{t('w.solved')}</td>
+                    {caseItem.solve_date ?
+                      <td>
+                        <Form.Control plaintext readOnly
+                          defaultValue={solve_date} />
+                      </td>
+                      :
+                      <td>
+                        <Form.Control plaintext readOnly
+                          defaultValue={t('w.solved.no')} />
+                      </td>
+                    }
+                  </tr>
+                  <tr>
+                    <td>{t('ngen.date.created')}</td>
                     <td>
-                      <Form.Control plaintext readOnly
-                                    defaultValue={solve_date}/>
+                      <Form.Control plaintext readOnly defaultValue={created} />
                     </td>
-                    :
+                    <td>{t('ngen.date.modified')}</td>
                     <td>
-                      <Form.Control plaintext readOnly
-                                    defaultValue={t('w.solved.no')}/>
+                      <Form.Control plaintext readOnly defaultValue={modified} />
                     </td>
-                  }
-                </tr>
-                <tr>
-                  <td>{t('ngen.date.created')}</td>
-                  <td>
-                    <Form.Control plaintext readOnly defaultValue={created}/>
-                  </td>
-                  <td>{t('ngen.date.modified')}</td>
-                  <td>
-                    <Form.Control plaintext readOnly defaultValue={modified}/>
-                  </td>
-                  <td></td>
-                  <td></td>
-                </tr>
+                    <td></td>
+                    <td></td>
+                  </tr>
                 </tbody>
               </Table>
             </Card.Body>
           </Card>
 
           <EvidenceCard evidences={evidences} disableDelete={true}
-                        disableDragAndDrop={true}/>
+            disableDragAndDrop={true} />
 
           <SmallEventTable list={list} disableLink={true}
-                           disableColumOption={true} disableUuid={false}/>
+            disableColumOption={true} disableUuid={false} />
 
 
           <Card>
@@ -297,7 +293,7 @@ const ReadCase = () => {
                 </Col>
                 <Col>
                   <Form.Control plaintext readOnly
-                                defaultValue={caseItem.comments}/>
+                    defaultValue={caseItem.comments} />
                 </Col>
               </Row>
             </Card.Body>
@@ -312,7 +308,7 @@ const ReadCase = () => {
                   <Col sm={6} lg={3}>{t('ngen.children')}</Col>
                   <Col>
                     <Form.Control plaintext readOnly
-                                  defaultValue={caseItem.children}/>
+                      defaultValue={caseItem.children} />
                   </Col>
                 </Row>
               </Card.Body>
@@ -331,8 +327,8 @@ const ReadCase = () => {
       </Row>
 
       <Modal size="lg" show={modalShowEvent}
-             onHide={() => setModalShowEvent(false)}
-             aria-labelledby="contained-modal-title-vcenter" centered>
+        onHide={() => setModalShowEvent(false)}
+        aria-labelledby="contained-modal-title-vcenter" centered>
         <Modal.Body>
           <Row>
             <Col>
@@ -346,7 +342,7 @@ const ReadCase = () => {
                     </Col>
                     <Col sm={12} lg={4}>
                       <CloseButton aria-label={t('w.close')}
-                                   onClick={() => setModalShowEvent(false)}/>
+                        onClick={() => setModalShowEvent(false)} />
                     </Col>
                   </Row>
                 </Card.Header>

@@ -147,6 +147,8 @@ const TableTemplete = ({
           </thead>
           <tbody>
           {list.map((template, index) => {
+            const parts = template.url.split("/");
+            let itemNumber = parts[parts.length - 2];
             return (
               <tr key={index}>
                 <td>{template.cidr || template.domain}</td>
@@ -206,7 +208,7 @@ const TableTemplete = ({
                 <td>
                   <CrudButton type="read"
                               onClick={() => showModalTemplate(template)}/>
-                  <Link to="/templates/edit" state={template}>
+                  <Link to={`/templates/edit/${itemNumber}`}>
                     <CrudButton type="edit"/>
                   </Link>
                   <CrudButton type="delete"
@@ -242,7 +244,7 @@ const TableTemplete = ({
                             'ngen.template.detail')}</span>
                         </Col>
                         <Col sm={12} lg={4}>
-                          <Link to="/templates/edit" state={template}>
+                          <Link to="/templates/edit" state={template}> 
                             <CrudButton type="edit"/>
                           </Link>
                           <CloseButton aria-label={t('w.close')}

@@ -176,6 +176,8 @@ const TableCase = ({
           /*let datetime = caseItem.date.split('T');
           datetime = datetime[0] + ' ' + datetime[1].slice(0, 8);
           let idItem = caseItem.url.split('/').slice(-2)[0];*/
+          const parts = caseItem.url.split("/");
+          let itemNumber = parts[parts.length - 2];
 
           return (
             <tr key={index}>
@@ -252,7 +254,7 @@ const TableCase = ({
                                 stateNames[caseItem.state],
                                 userNames[caseItem.user_creator])}/>
                 ) : (
-                  <Link to="/cases/view">
+                  <Link to={`/cases/view/${itemNumber}`}>
                     <CrudButton type="read"
                                 onClick={() => storageCaseUrl(caseItem.url)}/>
                   </Link>
@@ -260,7 +262,7 @@ const TableCase = ({
                 {!disableColumOption &&
                   editColum && (
                     !caseItem.blocked ? (
-                      <Link to="/cases/edit" state={caseItem.url}>
+                      <Link to={`/cases/edit/${itemNumber}`}>
                         <CrudButton type="edit"/>
                       </Link>
                     ) : (

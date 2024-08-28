@@ -61,7 +61,7 @@ const TableEvents = ({
   if (loading) {
     return (
       <Row className="justify-content-md-center">
-        <Spinner animation="border" variant="primary"/>
+        <Spinner animation="border" variant="primary" />
       </Row>
     )
   }
@@ -125,62 +125,64 @@ const TableEvents = ({
       <ul className="list-group my-4">
         <Table responsive hover className="text-center">
           <thead>
-          <tr>
-            {!disableCheckboxAll && !disableCheckbox &&
-              <th>
-                <Form.Group>
-                  <Form.Check type="checkbox" id={'selectAll'}
-                              onChange={handleSelectAll}
-                              checked={selectedEvent.length !== 0
-                                ? isCheckAll
-                                : false}/>
-                </Form.Group>
-              </th>}
+            <tr>
+              {!disableCheckboxAll && !disableCheckbox &&
+                <th>
+                  <Form.Group>
+                    <Form.Check type="checkbox" id={'selectAll'}
+                      onChange={handleSelectAll}
+                      checked={selectedEvent.length !== 0
+                        ? isCheckAll
+                        : false} />
+                  </Form.Group>
+                </th>}
 
-            {!disableDateModified ?
-              (disableOrdering ?
+              {!disableDateModified ?
+                (disableOrdering ?
                   <th style={letterSize}>{t('ngen.event.date')} </th>
                   :
                   <Ordering field="modified" label={t('ngen.date.modified')}
-                            order={order}
-                            setOrder={setOrder} setLoading={setLoading}
-                            letterSize={letterSize}/>
-              )
-              :
-              ''
-            }
-            {!disableDate ?
-              (disableOrdering ?
+                    order={order}
+                    setOrder={setOrder} setLoading={setLoading}
+                    letterSize={letterSize} />
+                )
+                :
+                ''
+              }
+              {!disableDate ?
+                (disableOrdering ?
                   <th style={letterSize}>{t('ngen.event.date')} </th>
                   :
                   <Ordering field="date" label={t('ngen.event.date')}
-                            order={order} setOrder={setOrder}
-                            setLoading={setLoading} letterSize={letterSize}/>
-              )
-              :
-              ''
-            }
-            {!disableUuid &&
-              <th style={letterSize}>{t('ngen.uuid')}</th>
-            }
-            <th style={letterSize}>{t('ngen.identifier')}</th>
-            <th style={letterSize}>{t('ngen.domain')}/{t('ngen.cidr')}</th>
-            {!disableTlp &&
-              <th style={letterSize}>{t('ngen.tlp')}</th>
-            }
-            {!disableMerged &&
-              <th style={letterSize}>{t('ngen.event.merged')}</th>
-            }
-            <th style={letterSize}>{t('ngen.taxonomy_one')}</th>
-            <th style={letterSize}>{t('ngen.feed.information')}</th>
-            {!disableColumOption &&
-              <th style={letterSize}>{t('ngen.options')}</th>
-            }
-          </tr>
+                    order={order} setOrder={setOrder}
+                    setLoading={setLoading} letterSize={letterSize} />
+                )
+                :
+                ''
+              }
+              {!disableUuid &&
+                <th style={letterSize}>{t('ngen.uuid')}</th>
+              }
+              <th style={letterSize}>{t('ngen.identifier')}</th>
+              <th style={letterSize}>{t('ngen.domain')}/{t('ngen.cidr')}</th>
+              {!disableTlp &&
+                <th style={letterSize}>{t('ngen.tlp')}</th>
+              }
+              {!disableMerged &&
+                <th style={letterSize}>{t('ngen.event.merged')}</th>
+              }
+              <th style={letterSize}>{t('ngen.taxonomy_one')}</th>
+              <th style={letterSize}>{t('ngen.feed.information')}</th>
+              {!disableColumOption &&
+                <th style={letterSize}>{t('ngen.options')}</th>
+              }
+            </tr>
           </thead>
           <tbody>
-          {
-            list.map((event, index) => {
+            {
+              list.map((event, index) => {
+                const parts = event.url.split("/");
+                let itemNumber = parts[parts.length - 2];
                 return event ?
                   (
                     <tr key={index}>
@@ -234,12 +236,12 @@ const TableEvents = ({
                       {!disableTlp &&
                         <td>
                           <LetterFormat useBadge={true}
-                                        stringToDisplay={tlpNames[event.tlp].name}
-                                        color={tlpNames[event.tlp].color}/>
+                            stringToDisplay={tlpNames[event.tlp].name}
+                            color={tlpNames[event.tlp].color} />
                         </td>
                       }
                       {!disableMerged &&
-                      event.parent ?
+                        event.parent ?
                         <td>
                           <Link to="/events/view" state={event.parent}>
                             <Button
@@ -265,25 +267,25 @@ const TableEvents = ({
                           {disableColumView ?
                             ''
                             :
-                            <Link to="/events/view" state={event}>
+                            <Link to={`/events/view/${itemNumber}`}>
                               <CrudButton type="read"
-                                          onClick={() => storageEventUrl(
-                                            event.url)}/>
+                                onClick={() => storageEventUrl(
+                                  event.url)} />
                             </Link>
                           }
                           {disableColumOption ?
                             ''
                             :
                             (disableColumnEdit ?
-                                ''
+                              ''
+                              :
+                              ((event.blocked || event.parent) ?
+                                (<CrudButton type="edit" disabled={true} />)
                                 :
-                                ((event.blocked || event.parent) ?
-                                    (<CrudButton type="edit" disabled={true}/>)
-                                    :
-                                    (<Link to="/events/edit" state={event}>
-                                      <CrudButton type="edit"/>
-                                    </Link>)
-                                )
+                                (<Link to={`/events/edit/${itemNumber}`}>
+                                  <CrudButton type="edit" />
+                                </Link>)
+                              )
                             )
                           }
                           {disableColumOption ?
@@ -294,33 +296,33 @@ const TableEvents = ({
                               :
                               deleteColumForm ?
                                 <CrudButton type="delete"
-                                            onClick={() => deleteEventFromForm(
-                                              event.url)}/>
+                                  onClick={() => deleteEventFromForm(
+                                    event.url)} />
                                 :
                                 <CrudButton type="delete"
-                                            onClick={() => modalDelete(event.name,
-                                              event.url)}/>
+                                  onClick={() => modalDelete(event.name,
+                                    event.url)} />
                           }
                           {disableTemplate ?
                             ''
                             :
                             event.case ? <Button className="btn-icon btn-rounded"
-                                                 disabled
-                                                 variant="outline-primary"
-                                                 style={{
-                                                   border: '1px solid #555',
-                                                   borderRadius: '50px',
-                                                   color: '#555',
-                                                 }}
-                                                 onClick={() => console.log('')}>
-                                <i className="fa fa-plus" aria-hidden="true"></i>
-                              </Button> :
+                              disabled
+                              variant="outline-primary"
+                              style={{
+                                border: '1px solid #555',
+                                borderRadius: '50px',
+                                color: '#555',
+                              }}
+                              onClick={() => console.log('')}>
+                              <i className="fa fa-plus" aria-hidden="true"></i>
+                            </Button> :
                               <Link to="/templates/create" state={event}>
                                 <Button className="btn-icon btn-rounded"
-                                        variant="outline-primary"
-                                        onClick={() => console.log('')}>
+                                  variant="outline-primary"
+                                  onClick={() => console.log('')}>
                                   <i className="fa fa-plus"
-                                     aria-hidden="true"></i>
+                                    aria-hidden="true"></i>
                                 </Button>
                               </Link>}
                         </td>
@@ -334,16 +336,16 @@ const TableEvents = ({
                     <td colSpan="9"></td>
                   </tr>
               },
-            )
-          }
+              )
+            }
 
           </tbody>
         </Table>
       </ul>
       <ModalConfirm type="delete" component="Evento"
-                    name={`${t('ngen.event_one')}`} showModal={remove}
-                    onHide={() => setRemove(false)}
-                    ifConfirm={() => handleDelete(deleteUrl)}/>
+        name={`${t('ngen.event_one')}`} showModal={remove}
+        onHide={() => setRemove(false)}
+        ifConfirm={() => handleDelete(deleteUrl)} />
     </div>
   )
 }
