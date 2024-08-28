@@ -117,6 +117,8 @@ const TableNetwork = ({
         </thead>
         <tbody>
         {list.map((network, index) => {
+          const parts = network.url.split("/");
+          let itemNumber = parts[parts.length - 2];
           return (
             <tr key={index}>
               <td>{network.address_value}</td>
@@ -139,7 +141,7 @@ const TableNetwork = ({
               <td>
                 <CrudButton type="read"
                             onClick={() => showNetwork(network.url)}/>
-                <Link to="/networks/edit" state={network}>
+                <Link to={`/networks/edit/${itemNumber}`}>
                   <CrudButton type="edit"/>
                 </Link>
                 <CrudButton type="delete"

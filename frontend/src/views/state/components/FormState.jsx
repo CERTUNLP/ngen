@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Form, Row } from 'react-bootstrap'
+import { Card, Form, Button, Row, Col, Spinner } from 'react-bootstrap'
 import {
   validateDescription,
   validateName,
@@ -8,7 +8,7 @@ import {
 import SelectComponent from '../../../components/Select/SelectComponent'
 import { useTranslation } from 'react-i18next'
 
-const FormState = ({ body, setBody, createState, type }) => {
+const FormState = ({ body, setBody, createState, type, loading }) => {
   const [selectAttended, setSelecAttended] = useState()
   const [selectSolved, setSelectSolved] = useState()
   const { t } = useTranslation()
@@ -35,7 +35,15 @@ const FormState = ({ body, setBody, createState, type }) => {
         }
       })
     }
-  }, [])
+  }, [body.solved, body.attended])
+
+  if (loading) {
+    return (
+        <Row className='justify-content-md-center'>
+            <Spinner animation='border' variant='primary' size='sm' />
+        </Row>
+    );
+}
 
   const completeField = (event) => {
     setBody({

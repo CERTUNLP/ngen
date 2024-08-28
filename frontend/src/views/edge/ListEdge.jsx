@@ -8,6 +8,7 @@ import {
   Modal,
   Row,
   Table,
+  Spinner,
 } from 'react-bootstrap'
 import CrudButton from '../../components/Button/CrudButton'
 import AdvancedPagination from '../../components/Pagination/AdvancedPagination'
@@ -82,8 +83,15 @@ const ListEdge = (props) => {
 
     })
 
-  }, [edgeCreated, edgeDeleted, edgeUpdated])
+  }, [edgeCreated, edgeDeleted, edgeUpdated, props.url])
 
+  if (props.loading) {
+    return (
+        <Row className='justify-content-md-center'>
+            <Spinner animation='border' variant='primary' size='sm' />
+        </Row>
+    );
+}
   /**/
 
   function updatePage (chosenPage) {

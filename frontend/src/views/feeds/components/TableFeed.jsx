@@ -114,6 +114,8 @@ const TableFeed = ({
           </thead>
           <tbody>
           {feeds.map((feed, index) => {
+            const parts = feed.url.split("/");
+            let itemNumber = parts[parts.length - 2];
             return (
               <tr key={index}>
                 <td>{feed.name}</td>
@@ -125,7 +127,7 @@ const TableFeed = ({
                 <td>{feed.events_count}</td>
                 <td>
                   <CrudButton type="read" onClick={() => showModalFeed(feed)}/>
-                  <Link to="/feeds/edit" state={feed}>
+                  <Link to={`/feeds/edit/${itemNumber}`}>
                     <CrudButton type="edit"/>
                   </Link>
                   <CrudButton type="delete"

@@ -101,6 +101,8 @@ const TableReport = ({
           </thead>
           <tbody>
           {list.map((report, index) => {
+            const parts = report.url.split("/");
+            let itemNumber = parts[parts.length - 2];
             return (
               <tr key={index}>
 
@@ -113,7 +115,7 @@ const TableReport = ({
                 <td>
                   <CrudButton type="read"
                               onClick={() => showModalReport(report)}/>
-                  <Link to="/reports/edit" state={report}>
+                  <Link to={`/reports/edit/${itemNumber}`}>
                     <CrudButton type="edit"/>
                   </Link>
                   <CrudButton type="delete"

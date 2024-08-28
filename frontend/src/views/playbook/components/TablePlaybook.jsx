@@ -74,6 +74,8 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
         </thead>
         <tbody>
         {list.map((book, index) => {
+          const parts = book.url.split("/");
+          let itemNumber = parts[parts.length - 2];
           return (
             <tr key={index}>
               <td>{book.name}</td>
@@ -86,7 +88,7 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
               </td>
               <td>
                 <CrudButton type="read" onClick={() => showPlaybook(book.url)}/>
-                <Link to="/playbooks/edit" state={book}>
+                <Link to={`/playbooks/edit/${itemNumber}`}>
                   <CrudButton type="edit"/>
                 </Link>
                 <CrudButton type="delete"

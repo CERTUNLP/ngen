@@ -87,6 +87,8 @@ const TablePriorities = ({
           </thead>
           <tbody>
           {Priorities.map((priority, index) => {
+            const parts = priority.url.split("/");
+            let itemNumber = parts[parts.length - 2];
             return (
               <tr key={index}>
                 <td>{priority.name}</td>
@@ -98,7 +100,7 @@ const TablePriorities = ({
                     showModalPriority(priority)
                   }}/>
 
-                  <Link to="/priorities/edit" state={priority}>
+                  <Link to={`/priorities/edit/${itemNumber}`}>
                     <CrudButton type="edit"/>
                   </Link>
                   <CrudButton type="delete"

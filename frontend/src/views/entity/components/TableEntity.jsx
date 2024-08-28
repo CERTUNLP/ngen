@@ -125,7 +125,8 @@ const TableEntity = ({
         </thead>
         <tbody>
         {list.map((entity, index) => {
-
+          const parts = entity.url.split("/");
+          let itemNumber = parts[parts.length - 2];
           return (
             <tr key={index}>
               <td>{entity.name}</td>
@@ -137,7 +138,7 @@ const TableEntity = ({
               <td>{entity.networks.length}</td>
               <td>
                 <CrudButton type="read" onClick={() => showEntity(entity.url)}/>
-                <Link to="/entities/edit" state={entity}>
+                <Link to={`/entities/edit/${itemNumber}`}>
                   <CrudButton type="edit"
                               onClick={() => storageEntityUrl(entity.url)}/>
                 </Link>

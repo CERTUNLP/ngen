@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { Button, Card, Col, Row } from 'react-bootstrap'
-import { putPlaybook } from '../../api/services/playbooks'
+import { putPlaybook, getPlaybook } from '../../api/services/playbooks'
 import FormCreatePlaybook from '../playbook/components/FormCreatePlaybook'
-import { getAllTaxonomies } from '../../api/services/taxonomies'
+import { getMinifiedTaxonomy } from '../../api/services/taxonomies'
 import ListTask from '../task/ListTask'
 import Navigation from '../../components/Navigation/Navigation'
 import Alert from '../../components/Alert/Alert'
 import { useTranslation } from 'react-i18next'
+import { COMPONENT_URL } from 'config/constant'
 
 const EditPlaybook = () => {
-  const location = useLocation()
-  const fromState = location.state
-  const [playbook] = useState(fromState)
+  const [playbook, setPlaybook] = useState({})
+  const [id] = useState(useParams());
   const { t } = useTranslation()
 
-  const [url] = useState(playbook.url)
-  const [name, setName] = useState(playbook.name)
-  const [taxonomy, setTaxonomy] = useState(playbook.taxonomy)
+  const [url, setUrl] = useState()
+  const [name, setName] = useState()
+  const [taxonomy, setTaxonomy] = useState()
 
   //Dropdown
   const [allTaxonomies, setAllTaxonomies] = useState([])
@@ -26,7 +26,27 @@ const EditPlaybook = () => {
   const [showAlert, setShowAlert] = useState(false)
 
   useEffect(() => {
-    getAllTaxonomies().then((response) => {
+
+    if (id.id) {
+      getPlaybook(COMPONENT_URL.playbook + id.id + "/")
+        .then((response) => {
+          setPlaybook(response.data)
+        }).catch(error => console.log(error));
+
+    }
+  }, [id]);
+
+  useEffect(() => {
+
+    if (playbook) {
+      setUrl(playbook.url)
+      setName(playbook.name)
+      setTaxonomy(playbook.taxonomy)
+    }
+  }, [playbook]);
+
+  useEffect(() => {
+    getMinifiedTaxonomy().then((response) => {
       //allTaxonomies
       let listAllTaxonomies = response.map((taxonomyItem) => {
         return {

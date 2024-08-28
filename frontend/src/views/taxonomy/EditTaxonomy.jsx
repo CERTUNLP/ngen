@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Form, Row } from 'react-bootstrap'
+import { Button, Card, Col, Form, Row, Spinner } from 'react-bootstrap'
 import DropdownState from '../../components/Dropdown/DropdownState'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom';
 import Alert from '../../components/Alert/Alert'
 import Navigation from '../../components/Navigation/Navigation'
 import {
@@ -13,15 +13,17 @@ import {
 import {
   getMinifiedTaxonomy,
   putTaxonomy,
+  getTaxonomy
 } from '../../api/services/taxonomies'
 import SelectLabel from '../../components/Select/SelectLabel'
 import { useTranslation } from 'react-i18next'
 import { getMinifiedTaxonomyGroups } from '../../api/services/taxonomyGroups'
+import { COMPONENT_URL } from 'config/constant';
 
 const EditTaxonomy = () => {
   const location = useLocation()
   const fromState = location.state
-  const [taxonomy] = useState(fromState)
+  const [taxonomy, seTaxonomy] = useState({})
   const { t } = useTranslation()
 
   const [type, setType] = useState(taxonomy.type)
@@ -45,6 +47,46 @@ const EditTaxonomy = () => {
   const [selectAlias_of, setSelectAlias_of] = useState()
   const [selectedType, setSelectedType] = useState()
   const [isGroupDisabled, setIsGroupDisabled] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [id, setId] = useState(useParams());
+
+  let typeOption = [
+    {
+      value: 'vulnerability',
+      label: t('ngen.vulnerability'),
+    },
+    {
+      value: 'incident',
+      label: t('ngen.incident'),
+    },
+    {
+      value: 'other',
+      label: t('ngen.other'),
+    },
+  ]
+
+  useEffect(() => {
+
+    if (id.id) {
+      getTaxonomy(COMPONENT_URL.taxonomy + id.id + "/")
+        .then((response) => {
+          seTaxonomy(response.data)
+
+          setType(response.data.type)
+          setName(response.data.name)
+          setDescription(response.data.description)
+          setParent(response.data.parent)
+          setGroup(response.data.group)
+          setAlias_of(response.data.alias_of)
+          setActive(+response.data.active)
+          setNeeds_review(+response.data.needs_review)
+        }).catch(error => console.log(error)).finally(() => {
+          setShowAlert(true)
+          setLoading(false)
+        });
+
+    }
+  }, [id]);
 
   useEffect(() => {
     getMinifiedTaxonomy().then((response) => {
@@ -64,24 +106,6 @@ const EditTaxonomy = () => {
       })
       setGroups(listTaxonomyGroups)
     })
-    //
-    // {
-    //     (parent != undefined) ?
-    //         getTaxonomy(parent)
-    //             .then((response) => {
-    //                 setSelectParent(response.data.name)
-    //             })
-    //         : setSelectParent("Sin padre")
-    // }
-
-    // {
-    //     (alias_of != undefined) ?
-    //         getTaxonomy(alias_of)
-    //             .then((response) => {
-    //                 setSelectAlias_of(response.data.name)
-    //             })
-    //         : setSelectAlias_of("Sin alias")
-    // }
   }, [])
 
   useEffect(() => {
@@ -112,6 +136,14 @@ const EditTaxonomy = () => {
 
   }, [taxonomies, parent, group, alias_of, groups, type])
 
+  if (loading) {
+    return (
+      <Row className="justify-content-md-center">
+        <Spinner animation="border" variant="primary" />
+      </Row>
+    )
+  }
+
   const handleParentChange = (value) => {
     setParent(value)
     setGroup(null)
@@ -126,39 +158,26 @@ const EditTaxonomy = () => {
   const editTaxonomy = () => {
     putTaxonomy(taxonomy.url, type, name, description, active, parent, alias_of,
       needs_review, group).then(() => {
-      window.location.href = '/taxonomies'
-    }).catch((error) => {
-      console.log(error)
-      setShowAlert(true)
-    })
+        window.location.href = '/taxonomies'
+      }).catch((error) => {
+        console.log(error)
+        setShowAlert(true)
+      })
   }
 
   const resetShowAlert = () => {
     setShowAlert(false)
   }
 
-  let typeOption = [
-    {
-      value: 'vulnerability',
-      label: t('ngen.vulnerability'),
-    },
-    {
-      value: 'incident',
-      label: t('ngen.incident'),
-    },
-    {
-      value: 'other',
-      label: t('ngen.other'),
-    },
-  ]
+  
 
   return (
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert}
-             component="taxonomy"/>
+        component="taxonomy" />
       <Row>
         <Navigation actualPosition={t('w.edit') + ' ' + t('ngen.taxonomy_one')}
-                    path="/taxonomies" index="Taxonomia"/>
+          path="/taxonomies" index="Taxonomia" />
       </Row>
       <Row>
         <Col sm={12}>
@@ -181,56 +200,56 @@ const EditTaxonomy = () => {
                       />
                       {validateName(name) ? '' : <div
                         className="invalid-feedback">{t(
-                        'ngen.name.invalid')}</div>}
+                          'ngen.name.invalid')}</div>}
                     </Form.Group>
                   </Col>
                   <Col sm={12} lg={4}>
                     <SelectLabel set={setType} setSelect={setSelectedType}
-                                 options={typeOption}
-                                 value={selectedType}
-                                 placeholder={t('ngen.type')} required={true}/>
+                      options={typeOption}
+                      value={selectedType}
+                      placeholder={t('ngen.type')} required={true} />
                   </Col>
                   <Col sm={12} lg={1}>
                     <Form.Group>
                       <Form.Label>{t('ngen.state_one')}</Form.Label>
                       <DropdownState state={taxonomy.active}
-                                     setActive={setActive}></DropdownState>
+                        setActive={setActive}></DropdownState>
                     </Form.Group>
                   </Col>
                   <Col sm={12} lg={1}>
                     <Form.Group>
                       <Form.Label>{t('ngen.taxonomy.needs_review')}</Form.Label>
                       <DropdownState state={taxonomy.needs_review}
-                                     setActive={setNeeds_review}
-                                     str_true="w.yes" str_false="w.no"/>
+                        setActive={setNeeds_review}
+                        str_true="w.yes" str_false="w.no" />
                     </Form.Group>
                   </Col>
                 </Row>
                 <Row>
                   <Col sm={12} lg={4}>
                     <SelectLabel set={handleParentChange}
-                                 setSelect={setSelectParent}
-                                 options={taxonomies}
-                                 value={selectParent}
-                                 placeholder={t('ngen.taxonomy.parent')}
-                                 required={false}
-                                 legend={t(
-                                   'ngen.taxonomy.parent.legend.edit')}/>
+                      setSelect={setSelectParent}
+                      options={taxonomies}
+                      value={selectParent}
+                      placeholder={t('ngen.taxonomy.parent')}
+                      required={false}
+                      legend={t(
+                        'ngen.taxonomy.parent.legend.edit')} />
                   </Col>
                   <Col sm={12} lg={4}>
                     <SelectLabel set={setGroup} setSelect={setSelectGroup}
-                                 options={groups} disabled={isGroupDisabled}
-                                 value={selectGroup}
-                                 placeholder={t('ngen.taxonomy.group')}
-                                 required={false}
-                                 legend={t('ngen.taxonomy.group.legend.edit')}/>
+                      options={groups} disabled={isGroupDisabled}
+                      value={selectGroup}
+                      placeholder={t('ngen.taxonomy.group')}
+                      required={false}
+                      legend={t('ngen.taxonomy.group.legend.edit')} />
                   </Col>
                   <Col sm={12} lg={4}>
                     <SelectLabel set={setAlias_of} setSelect={setSelectAlias_of}
-                                 options={taxonomies}
-                                 value={selectAlias_of}
-                                 placeholder={t('ngen.taxonomy.alias_of')}
-                                 required={false}/>
+                      options={taxonomies}
+                      value={selectAlias_of}
+                      placeholder={t('ngen.taxonomy.alias_of')}
+                      required={false} />
                   </Col>
                 </Row>
                 <Row>

@@ -1,71 +1,92 @@
 import React, { useEffect, useState } from 'react'
 import { Row } from 'react-bootstrap'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom';
 import Alert from '../../components/Alert/Alert'
 import FormState from './components/FormState'
 import Navigation from '../../components/Navigation/Navigation'
-import { getAllStates, putState } from '../../api/services/states'
+import { putState, getState, getMinifiedState } from "../../api/services/states";
 import ListEdge from '../edge/ListEdge'
 import { useTranslation } from 'react-i18next'
+import { COMPONENT_URL } from '../../config/constant';
 
 const EditState = () => {
-  const location = useLocation()
-  const fromState = location.state
-  const [body, setBody] = useState(fromState)
+  const location = useLocation();
+  const fromState = location.state;
+  const [body, setBody] = useState({});
 
   const [states, setStates] = useState([])
-  // const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
   const [showAlert, setShowAlert] = useState(false)
-  const { t } = useTranslation()
+  const [edge, setEdge] = useState()
+  const [id, setId] = useState(useParams());
+  const { t } = useTranslation();
 
-  const [sectionAddEdge, setSectionAddEdge] = useState(false)
+  const [sectionAddEdge, setSectionAddEdge] = useState(false);
 
   useEffect(() => {
-    if (body.children.length > 0) {
+    if (body.children !== []) {
       setSectionAddEdge(true)
     }
-    const fetchPosts = async () => {
-      getAllStates().then((response) => {
+
+  }, [body]);
+
+  useEffect(() => {
+    if (body.url) {
+      getMinifiedState().then((response) => {
 
         var listChildren = []
-        response.forEach((state) => {
+        response.map((state) => {
+          console.log(body.url)
           if (state.url !== body.url) {
             listChildren.push({ value: state.url, label: state.name })
           }
         })
         setStates(listChildren)
+      })
+        .catch((error) => {
+          console.log(error)
+        })
+
+    }
+  }, [body]);
+
+  useEffect(() => {
+    if (id) {
+      getState(COMPONENT_URL.state + id.id + "/").then((response) => {
+        setBody(response.data)
       }).catch((error) => {
         console.log(error)
+
+      }).finally(() => {
+        setLoading(false)
       })
     }
-    fetchPosts()
-  }, [])
-  // const resetShowAlert = () => {
-  //   setShowAlert(false);
-  // }
+  }, [id]);
 
   const editState = () => {
     putState(body.url, body.name, body.attended, body.solved, body.active,
       body.description, body.children).then(() => {
-      window.location.href = '/states'
-    }).catch((error) => {
-      setShowAlert(true)
-      console.log(error)
-    })
+        window.location.href = '/states'
+      }).catch((error) => {
+        setShowAlert(true)
+        console.log(error)
+      })
   }
   return (
     <div>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)}
-             component="state"/>
+        component="state" />
       <Row>
         <Navigation actualPosition={t('ngen.state.edit')} path="/states"
-                    index={t('ngen.state_other')}/>
+          index={t('ngen.state_other')} />
       </Row>
       <FormState body={body} setBody={setBody} createState={editState}
-                 childernes={states}
-                 type={t('w.edit')}/>
-      <ListEdge url={body.url} sectionAddEdge={sectionAddEdge}
-                setShowAlert={setShowAlert}/>
+        childernes={states}
+        type={t('w.edit')} loading={loading} />
+      {body ?
+        <ListEdge url={body.url} sectionAddEdge={sectionAddEdge} setShowAlert={setShowAlert} loading={loading} />
+        : ""
+      }
     </div>
   )
 }
