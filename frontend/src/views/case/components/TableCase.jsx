@@ -65,7 +65,7 @@ const TableCase = ({
     localStorage.setItem("case", url);
     localStorage.setItem("navigation", navigationRow);
     localStorage.setItem("button return", navigationRow);
-    window.location.href = "/cases/edit";
+    window.location.href = "/cases/view";
   };
 
   const handleOnClick = (url) => {
