@@ -97,7 +97,7 @@ const ViewFiles = (props) => {
                   {t("date.creation")}:{" "}
                   {props.file.created
                     ? props.file.created.slice(0, 10) + " " + props.file.created.slice(11, 19)
-                    : "No creado en el sistema"}
+                    : t("ngen.not.created.in.system")}
                 </p>
               </div>
             </div>
