@@ -10,12 +10,20 @@ class StateViewSet(viewsets.ModelViewSet):
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.OrderingFilter
+        filters.OrderingFilter,
     ]
-    search_fields = ['name', 'description']
+    search_fields = ["name", "description"]
     filterset_class = StateFilter
-    ordering_fields = ['id', 'created', 'modified',
-                       'name', 'blocked', 'attended', 'solved', 'active']
+    ordering_fields = [
+        "id",
+        "created",
+        "modified",
+        "name",
+        "blocked",
+        "attended",
+        "solved",
+        "active",
+    ]
     serializer_class = serializers.StateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -31,4 +39,3 @@ class StateMinifiedViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.StateMinifiedSerializer
     pagination_class = None
     permission_classes = [permissions.IsAuthenticated]
-    

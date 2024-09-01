@@ -1,99 +1,99 @@
-import PropTypes from 'prop-types'
-import React, { createContext, useReducer } from 'react'
-import * as actionType from '../store/actions'
-import { CONFIG } from '../config/constant'
+import PropTypes from "prop-types";
+import React, { createContext, useReducer } from "react";
+import * as actionType from "../store/actions";
+import { CONFIG } from "../config/constant";
 
 const initialState = {
   ...CONFIG,
   isOpen: [],
-  isTrigger: [],
-}
-const ConfigContext = createContext(initialState)
-const { Provider } = ConfigContext
+  isTrigger: []
+};
+const ConfigContext = createContext(initialState);
+const { Provider } = ConfigContext;
 
 const ConfigProvider = ({ children }) => {
-  let trigger = []
-  let open = []
+  let trigger = [];
+  let open = [];
 
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case actionType.CHANGE_LAYOUT:
         return {
           ...state,
-          layout: action.layout,
-        }
+          layout: action.layout
+        };
       case actionType.COLLAPSE_MENU:
         return {
           ...state,
-          collapseMenu: !state.collapseMenu,
-        }
+          collapseMenu: !state.collapseMenu
+        };
       case actionType.COLLAPSE_TOGGLE:
-        if (action.menu.type === 'sub') {
-          open = state.isOpen
-          trigger = state.isTrigger
+        if (action.menu.type === "sub") {
+          open = state.isOpen;
+          trigger = state.isTrigger;
 
-          const triggerIndex = trigger.indexOf(action.menu.id)
+          const triggerIndex = trigger.indexOf(action.menu.id);
           if (triggerIndex > -1) {
-            open = open.filter((item) => item !== action.menu.id)
-            trigger = trigger.filter((item) => item !== action.menu.id)
+            open = open.filter((item) => item !== action.menu.id);
+            trigger = trigger.filter((item) => item !== action.menu.id);
           }
 
           if (triggerIndex === -1) {
-            open = [...open, action.menu.id]
-            trigger = [...trigger, action.menu.id]
+            open = [...open, action.menu.id];
+            trigger = [...trigger, action.menu.id];
           }
         } else {
-          open = state.isOpen
-          const triggerIndex = state.isTrigger.indexOf(action.menu.id)
-          trigger = triggerIndex === -1 ? [action.menu.id] : []
-          open = triggerIndex === -1 ? [action.menu.id] : []
+          open = state.isOpen;
+          const triggerIndex = state.isTrigger.indexOf(action.menu.id);
+          trigger = triggerIndex === -1 ? [action.menu.id] : [];
+          open = triggerIndex === -1 ? [action.menu.id] : [];
         }
         return {
           ...state,
           isOpen: open,
-          isTrigger: trigger,
-        }
+          isTrigger: trigger
+        };
       case actionType.NAV_COLLAPSE_LEAVE:
-        if (action.menu.type === 'sub') {
-          open = state.isOpen
-          trigger = state.isTrigger
+        if (action.menu.type === "sub") {
+          open = state.isOpen;
+          trigger = state.isTrigger;
 
-          const triggerIndex = trigger.indexOf(action.menu.id)
+          const triggerIndex = trigger.indexOf(action.menu.id);
           if (triggerIndex > -1) {
-            open = open.filter((item) => item !== action.menu.id)
-            trigger = trigger.filter((item) => item !== action.menu.id)
+            open = open.filter((item) => item !== action.menu.id);
+            trigger = trigger.filter((item) => item !== action.menu.id);
           }
           return {
             ...state,
             isOpen: open,
-            isTrigger: trigger,
-          }
+            isTrigger: trigger
+          };
         }
-        return { ...state }
+        return { ...state };
       case actionType.NAV_CONTENT_LEAVE:
         return {
           ...state,
           isOpen: open,
-          isTrigger: trigger,
-        }
+          isTrigger: trigger
+        };
       case actionType.RESET:
         return {
           ...state,
           layout: initialState.layout,
-          collapseMenu: initialState.collapseMenu,
-        }
+          collapseMenu: initialState.collapseMenu
+        };
       default:
-        throw new Error()
+        throw new Error();
     }
-  }, initialState)
+  }, initialState);
 
-  return <Provider value={{ state, dispatch }}>{children}</Provider>
+  return <Provider value={{ state, dispatch }}>{children}</Provider>;
   // return (
   //   <ConfigContext.Provider value={{ state, dispatch }}>
   //     {children}
   //   </ConfigContext.Provider>
   // );
-}
+};
 
 // ConfigProvider.propTypes = {
 //   children: PropTypes.object
@@ -109,10 +109,7 @@ const ConfigProvider = ({ children }) => {
 // };
 
 ConfigProvider.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.arrayOf(PropTypes.node),
-  ]).isRequired,
-}
+  children: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.node)]).isRequired
+};
 
-export { ConfigContext, ConfigProvider }
+export { ConfigContext, ConfigProvider };

@@ -1,6 +1,10 @@
 from django.db import models
 
-from ngen.models.common.mixins import AuditModelMixin, SlugModelMixin, ValidationModelMixin
+from ngen.models.common.mixins import (
+    AuditModelMixin,
+    SlugModelMixin,
+    ValidationModelMixin,
+)
 
 
 class State(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
@@ -9,11 +13,11 @@ class State(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
     attended = models.BooleanField(default=False)
     solved = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
-    description = models.CharField(max_length=250, null=True, blank=True, default='')
+    description = models.CharField(max_length=250, null=True, blank=True, default="")
     children = models.ManyToManyField(
         "self",
         symmetrical=False,
-        through='Edge',
+        through="Edge",
         related_name="parents",
     )
 
@@ -30,7 +34,9 @@ class State(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
         return self.partners_with_self().exclude(pk=self.pk)
 
     def partners_with_self(self):
-        return self.__class__.objects.filter(children__in=self.children.all()).distinct()
+        return self.__class__.objects.filter(
+            children__in=self.children.all()
+        ).distinct()
 
     def is_root(self):
         return bool(self.children.exists() and not self.parents.exists())
@@ -52,24 +58,24 @@ class State(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
 
     @classmethod
     def get_initial(cls):
-        return cls.objects.get(name='Initial')
+        return cls.objects.get(name="Initial")
 
     @classmethod
     def get_default(cls):
-        return cls.objects.get(name='Staging')
+        return cls.objects.get(name="Staging")
 
     class Meta:
-        db_table = 'state'
+        db_table = "state"
 
 
 class Edge(AuditModelMixin, ValidationModelMixin):
-    parent = models.ForeignKey(State, models.CASCADE, related_name='children_edge')
-    child = models.ForeignKey(State, models.CASCADE, related_name='parents_edge')
+    parent = models.ForeignKey(State, models.CASCADE, related_name="children_edge")
+    child = models.ForeignKey(State, models.CASCADE, related_name="parents_edge")
     discr = models.CharField(max_length=255)
 
     def __str__(self):
         return "%s -> %s" % (self.parent, self.child)
 
     class Meta:
-        db_table = 'edge'
-        unique_together = ['parent', 'child']
+        db_table = "edge"
+        unique_together = ["parent", "child"]

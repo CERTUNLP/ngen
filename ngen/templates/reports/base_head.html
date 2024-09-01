@@ -1,13 +1,13 @@
 {% load i18n ngen_tags %}
 {% language lang %}
-<!-- If you delete this meta tag, the ground will open and swallow you. -->
-<meta name="viewport" content="width=device-width"/>
+    <!-- If you delete this meta tag, the ground will open and swallow you. -->
+    <meta name="viewport" content="width=device-width"/>
 
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>{{ config.TEAM_NAME }}</title>
-{% if html %}
-    <style type="text/css">
-        {% include 'reports/email.css' %}
-    </style>
-{% endif %}
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>{{ config.TEAM_NAME }}</title>
+    {% if html %}
+        <style type="text/css">
+            {% include 'reports/email.css' %}
+        </style>
+    {% endif %}
 {% endlanguage %}

@@ -11,6 +11,7 @@
       width: 5px;
     }
   }
+
   .ps__thumb-y {
     background-color: #aaa;
     border-radius: 6px;
@@ -26,16 +27,19 @@ perfect-scrollbar.config-scroll > .ps,
 perfect-scrollbar.main-friend-list > .ps {
   &.ps--active-y > .ps__rail-y {
     width: 5px;
+
     &:hover,
     &.ps--clicking {
       width: 5px;
     }
   }
+
   &.ps--scrolling-y > .ps__rail-y,
   &.ps--scrolling-x > .ps__rail-x {
     opacity: 0.4;
     background-color: transparent;
   }
+
   &.ps--active-y > .ps__rail-y {
     &:hover,
     &.ps--clicking {

@@ -1,12 +1,4 @@
-import {
-  isEmpty,
-  validateAlphanumeric,
-  validateEmail,
-  validateLength,
-  validateNumbers,
-  validateSpace,
-  validateURL,
-} from '../validators'
+import { isEmpty, validateAlphanumeric, validateEmail, validateLength, validateNumbers, validateSpace, validateURL } from "../validators";
 
 const validateName = (name) => {
   //return (validateAlphanumeric(name) && validateLength(name, 100) && validateSpace(name))// tengo que ver la funcion de este metodo validateSpace(name)
@@ -31,21 +23,20 @@ const validateContact = (contact) => {
 }
 
 const validateContactMail = (contactMail) => {
-  return (validateSpace(contactMail) && validateEmail(contactMail))
-}
+  return validateSpace(contactMail) && validateEmail(contactMail);
+};
 
 const validateContactPhone = (contactPhone) => {
-  return (validateSpace(contactPhone) && validateNumbers(contactPhone))
-}
+  return validateSpace(contactPhone) && validateNumbers(contactPhone);
+};
 
 const validateContactURI = (contactURI) => {
-  return (validateSpace(contactURI) && validateURL(contactURI))
-}
+  return validateSpace(contactURI) && validateURL(contactURI);
+};
 
 const validateContactTelegram = (contactTelegram) => {
-  return (validateSpace(contactTelegram) &&
-    validateAlphanumeric(contactTelegram))
-}
+  return validateSpace(contactTelegram) && validateAlphanumeric(contactTelegram);
+};
 
 export {
   validateName,
@@ -54,5 +45,5 @@ export {
   validateContactMail,
   validateContactPhone,
   validateContactURI,
-  validateContactTelegram,
-}
+  validateContactTelegram
+};

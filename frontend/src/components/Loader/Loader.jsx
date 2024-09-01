@@ -1,12 +1,12 @@
-import React from 'react'
-import Progress from './Progress'
+import React from "react";
+import Progress from "./Progress";
 
 const Loader = () => {
   return (
     <React.Fragment>
-      <Progress isAnimating/>
+      <Progress isAnimating />
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default Loader
+export default Loader;

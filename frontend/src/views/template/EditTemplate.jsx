@@ -42,97 +42,120 @@ const EditTemplate = () => {
     getMinifiedTlp().then((response) => {
       let listTlp = response.map((tlp) => {
         return { value: tlp.url, label: tlp.name }
-      })
-      setTLP(listTlp)
-    }).catch((error) => {
-      console.log(error)
-
-    }).finally(() => {
-      setLoading(false)
+      });
+      setTLP(listTlp);
     })
-
-    getMinifiedTaxonomy().then((response) => {
-      let listTaxonomies = response.map((taxonomy) => {
-        return { value: taxonomy.url, label: taxonomy.name }
+      .catch((error) => {
+        console.log(error);
       })
-      setTaxonomy(listTaxonomies)
-    }).catch((error) => {
-      console.log(error)
+      .finally(() => {
+        setLoading(false);
+      });
 
-    }).finally(() => {
-      setLoading(false)
-    })
-
-    getMinifiedFeed().then((response) => { //se hardcodea las paginas
-      let listFeed = response.map((feed) => {
-        return { value: feed.url, label: feed.name }
+    getMinifiedTaxonomy()
+      .then((response) => {
+        let listTaxonomies = response.map((taxonomy) => {
+          return { value: taxonomy.url, label: taxonomy.name };
+        });
+        setTaxonomy(listTaxonomies);
       })
-      setFeeds(listFeed)
-    }).catch((error) => {
-      console.log(error)
-
-    }).finally(() => {
-      setLoading(false)
-    })
-
-    getMinifiedPriority().then((response) => { //se hardcodea las paginas
-      let listPriority = response.map((priority) => {
-        return { value: priority.url, label: priority.name }
+      .catch((error) => {
+        console.log(error);
       })
-      setPriorities(listPriority)
-    }).catch((error) => {
-      console.log(error)
+      .finally(() => {
+        setLoading(false);
+      });
 
-    }).finally(() => {
-      setLoading(false)
-    })
-
-    getMinifiedState().then((response) => {
-      let listStates = response.map((stateItem) => {
-        return { value: stateItem.url, label: stateItem.name }
+    getMinifiedFeed()
+      .then((response) => {
+        //se hardcodea las paginas
+        let listFeed = response.map((feed) => {
+          return { value: feed.url, label: feed.name };
+        });
+        setFeeds(listFeed);
       })
-      setStates(listStates)
-    }).catch((error) => {
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
-    }).finally(() => {
-      setLoading(false)
-    })
-  }, [])
+    getMinifiedPriority()
+      .then((response) => {
+        //se hardcodea las paginas
+        let listPriority = response.map((priority) => {
+          return { value: priority.url, label: priority.name };
+        });
+        setPriorities(listPriority);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    getMinifiedState()
+      .then((response) => {
+        let listStates = response.map((stateItem) => {
+          return { value: stateItem.url, label: stateItem.name };
+        });
+        setStates(listStates);
+      })
+      .catch((error) => { })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const resetShowAlert = () => {
-    setShowAlert(false)
-  }
+    setShowAlert(false);
+  };
 
   const editState = () => {
-    putTemplate(body.url, body.address_value, body.active, body.priority,
-      body.event_taxonomy, body.event_feed, body.case_lifecycle, body.case_tlp,
-      body.case_state).then(() => {
-      window.location.href = '/templates'
-    }).catch((error) => {
-      setShowAlert(true)
-      console.log(error)
-    })
-
-  }
+    putTemplate(
+      body.url,
+      body.address_value,
+      body.active,
+      body.priority,
+      body.event_taxonomy,
+      body.event_feed,
+      body.case_lifecycle,
+      body.case_tlp,
+      body.case_state
+    )
+      .then(() => {
+        window.location.href = "/templates";
+      })
+      .catch((error) => {
+        setShowAlert(true);
+        console.log(error);
+      });
+  };
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert}
-             component="template"/>
+      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
       <Row>
-        <Navigation actualPosition={t('ngen.template.edit')} path="/templates"
-                    index={t('ngen.template')}/>
+        <Navigation actualPosition={t("ngen.template.edit")} path="/templates" index={t("ngen.template")} />
       </Row>
-      {loading ?
-        <Spinner animation="border" role="status"/>
-        :
-        <FormTemplate body={body} setBody={setBody} createTemplate={editState}
-                      tlp={TLP} feeds={feeds}
-                      taxonomy={taxonomy}
-                      priorities={priorities} states={states}/>
-      }
+      {loading ? (
+        <Spinner animation="border" role="status" />
+      ) : (
+        <FormTemplate
+          body={body}
+          setBody={setBody}
+          createTemplate={editState}
+          tlp={TLP}
+          feeds={feeds}
+          taxonomy={taxonomy}
+          priorities={priorities}
+          states={states}
+        />
+      )}
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default EditTemplate
+export default EditTemplate;

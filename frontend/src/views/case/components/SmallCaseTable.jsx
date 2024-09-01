@@ -1,81 +1,75 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Row } from 'react-bootstrap'
-import { getCase } from '../../../api/services/cases'
-import { getMinifiedPriority } from '../../../api/services/priorities'
-import { getMinifiedState } from '../../../api/services/states'
-import { getMinifiedTlp } from '../../../api/services/tlp'
-import { getMinifiedUser } from '../../../api/services/users'
-import TableCase from './TableCase'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Row } from "react-bootstrap";
+import { getCase } from "../../../api/services/cases";
+import { getMinifiedPriority } from "../../../api/services/priorities";
+import { getMinifiedState } from "../../../api/services/states";
+import { getMinifiedTlp } from "../../../api/services/tlp";
+import { getMinifiedUser } from "../../../api/services/users";
+import TableCase from "./TableCase";
+import { useTranslation } from "react-i18next";
 
-const SmallCaseTable = ({
-  readCase,
-  disableLink,
-  modalCase,
-  modalListCase,
-  modalCaseDetail,
-  deleteCaseFromForm,
-  disableColumOption,
-}) => {
-
-  const [userNames, setUserNames] = useState({})
-  const [stateNames, setStateNames] = useState({})
-  const [priorityNames, setPriorityNames] = useState({})
-  const [caseItem, setCaseItem] = useState([])
-  const [tlpNames, setTlpNames] = useState({})
-  const { t } = useTranslation()
+const SmallCaseTable = ({ readCase, disableLink, modalCase, modalListCase, modalCaseDetail, deleteCaseFromForm, disableColumOption }) => {
+  const [userNames, setUserNames] = useState({});
+  const [stateNames, setStateNames] = useState({});
+  const [priorityNames, setPriorityNames] = useState({});
+  const [caseItem, setCaseItem] = useState([]);
+  const [tlpNames, setTlpNames] = useState({});
+  const { t } = useTranslation();
 
   useEffect(() => {
-
     if (readCase) {
-      getCase(readCase).then((response) => {
-        setCaseItem([response.data])
-
-      }).catch((error) => {
-        console.log(error)
-      })
+      getCase(readCase)
+        .then((response) => {
+          setCaseItem([response.data]);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
     if (readCase === undefined) {
-      setCaseItem([])
+      setCaseItem([]);
     }
 
     getMinifiedTlp().then((response) => {
-      let dicTlp = {}
+      let dicTlp = {};
       response.forEach((tlp) => {
-        dicTlp[tlp.url] = { name: tlp.name, color: tlp.color }
-      })
-      setTlpNames(dicTlp)
-    })
+        dicTlp[tlp.url] = { name: tlp.name, color: tlp.color };
+      });
+      setTlpNames(dicTlp);
+    });
 
-    getMinifiedPriority().then((response) => {
-      let dicPriority = {}
-      response.forEach((priority) => {
-        dicPriority[priority.url] = priority.name
+    getMinifiedPriority()
+      .then((response) => {
+        let dicPriority = {};
+        response.forEach((priority) => {
+          dicPriority[priority.url] = priority.name;
+        });
+        setPriorityNames(dicPriority);
       })
-      setPriorityNames(dicPriority)
-    }).catch((error) => {
-      console.log(error)
-    })
+      .catch((error) => {
+        console.log(error);
+      });
 
-    getMinifiedUser().then((response) => {
-      let dicUser = {}
-      response.forEach((user) => {
-        dicUser[user.url] = user.username
+    getMinifiedUser()
+      .then((response) => {
+        let dicUser = {};
+        response.forEach((user) => {
+          dicUser[user.url] = user.username;
+        });
+        setUserNames(dicUser);
       })
-      setUserNames(dicUser)
-    }).catch((error) => {
-      console.log(error)
-    })
+      .catch((error) => {
+        console.log(error);
+      });
 
     getMinifiedState().then((response) => {
-      let dicState = {}
+      let dicState = {};
       response.forEach((state) => {
-        dicState[state.url] = state.name
-      })
-      setStateNames(dicState)
-    })
-
-  }, [readCase])
+        dicState[state.url] = state.name;
+      });
+      setStateNames(dicState);
+    });
+  }, [readCase]);
 
   return (
     <React.Fragment>
@@ -83,53 +77,54 @@ const SmallCaseTable = ({
         <Card.Header>
           <Row>
             <Col sm={12} lg={8}>
-              <Card.Title as="h5">{t('ngen.case_one')}</Card.Title>
+              <Card.Title as="h5">{t("ngen.case_one")}</Card.Title>
             </Col>
-            {disableLink ?
+            {disableLink ? (
               <Col sm={12} lg={2}>
-                <Button
-                  size="lm"
-                  variant="outline-dark"
-                  onClick={() => modalCase()}
-                >
-                  {t('ngen.case.create')}
+                <Button size="lm" variant="outline-dark" onClick={() => modalCase()}>
+                  {t("ngen.case.create")}
                 </Button>
               </Col>
-              :
-              ''
-            }
-            {disableLink ?
+            ) : (
+              ""
+            )}
+            {disableLink ? (
               <Col sm={12} lg={2}>
-                <Button
-                  size="lm"
-                  variant="outline-dark"
-                  onClick={() => modalListCase()}
-                >
-                  {t('ngen.case_link')}
+                <Button size="lm" variant="outline-dark" onClick={() => modalListCase()}>
+                  {t("ngen.case_link")}
                 </Button>
               </Col>
-              :
-              ''
-            }
+            ) : (
+              ""
+            )}
           </Row>
         </Card.Header>
         <Card.Body>
-          <TableCase cases={caseItem} disableCheckbox={true}
-                     disableDateOrdering={true}
-                     priorityNames={priorityNames} stateNames={stateNames}
-                     userNames={userNames} tlpNames={tlpNames}
-                     editColum={false} deleteColum={true} deleteColumForm={true}
-                     detailModal={true}
-                     navigationRow={false} selectCase={true}
-                     disableNubersOfEvents={true}
-                     modalCaseDetail={modalCaseDetail}
-                     deleteCaseFromForm={deleteCaseFromForm}
-                     disableColumOption={disableColumOption}
-                     disableDateModified={true} disableDate={true}/>
+          <TableCase
+            cases={caseItem}
+            disableCheckbox={true}
+            disableDateOrdering={true}
+            priorityNames={priorityNames}
+            stateNames={stateNames}
+            userNames={userNames}
+            tlpNames={tlpNames}
+            editColum={false}
+            deleteColum={true}
+            deleteColumForm={true}
+            detailModal={true}
+            navigationRow={false}
+            selectCase={true}
+            disableNubersOfEvents={true}
+            modalCaseDetail={modalCaseDetail}
+            deleteCaseFromForm={deleteCaseFromForm}
+            disableColumOption={disableColumOption}
+            disableDateModified={true}
+            disableDate={true}
+          />
         </Card.Body>
       </Card>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default SmallCaseTable
+export default SmallCaseTable;

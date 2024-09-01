@@ -1,5 +1,5 @@
 # pull official base image
-FROM node:22-alpine as ngen-frontend-new
+FROM node:22-alpine as ngen-frontend
 
 # set working directory
 WORKDIR /app

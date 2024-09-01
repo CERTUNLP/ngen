@@ -49,8 +49,8 @@ const EditUser = () => {
   }, [id]);
 
   const resetShowAlert = () => {
-    setShowAlert(false)
-  }
+    setShowAlert(false);
+  };
 
   const editUser = (e) => {
 
@@ -70,16 +70,23 @@ const EditUser = () => {
         index={t('ngen.user_other')} />
       <Card>
         <Card.Header>
-          <Card.Title as="h5">{t('w.edit')} {t('ngen.user')}</Card.Title>
+          <Card.Title as="h5">
+            {t("w.edit")} {t("ngen.user")}
+          </Card.Title>
         </Card.Header>
         <Card.Body>
-          <FormUser body={user} setBody={setUser} priorities={priorities}
-            createUser={editUser} loading={loading}
-            passwordRequired={false} />
+          <FormUser
+            body={user}
+            setBody={setUser}
+            priorities={priorities}
+            createUser={editUser}
+            loading={loading}
+            passwordRequired={false}
+          />
         </Card.Body>
       </Card>
     </>
-  )
-}
+  );
+};
 
-export default EditUser
+export default EditUser;

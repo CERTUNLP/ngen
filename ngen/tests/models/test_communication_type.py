@@ -2,8 +2,8 @@
 Django Unit Tests for Communication Type model
 """
 
-from django.test import TestCase
 from django.core.exceptions import ValidationError
+from django.test import TestCase
 
 from ngen.models import (
     Tlp,

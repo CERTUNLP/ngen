@@ -1,7 +1,7 @@
-import React from 'react'
-import { Modal } from 'react-bootstrap'
-import FormCase from './components/FormCase'
-import { useTranslation } from 'react-i18next'
+import React from "react";
+import { Modal } from "react-bootstrap";
+import FormCase from "./components/FormCase";
+import { useTranslation } from "react-i18next";
 
 const ModalCreateCase = ({
   showModalCase,
@@ -15,14 +15,13 @@ const ModalCreateCase = ({
   selectedEvent,
   setSelectedEvent,
   refresh,
-  setRefresh,
+  setRefresh
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
-    <Modal show={showModalCase} size="lg" onHide={() => setShowModalCase(false)}
-           aria-labelledby="contained-modal-title-vcenter" centered>
+    <Modal show={showModalCase} size="lg" onHide={() => setShowModalCase(false)} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>
-        <Modal.Title>{t('ngen.case.create')}</Modal.Title>
+        <Modal.Title>{t("ngen.case.create")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div id="example-collapse-text">
@@ -30,7 +29,7 @@ const ModalCreateCase = ({
             caseItem={caseItem}
             allStates={states}
             edit={false}
-            save={t('ngen.case.create')}
+            save={t("ngen.case.create")}
             evidenceColum={false}
             buttonsModalColum={false}
             createCaseModal={true}
@@ -50,7 +49,7 @@ const ModalCreateCase = ({
         </div>
       </Modal.Body>
     </Modal>
-  )
-}
+  );
+};
 
-export default ModalCreateCase
+export default ModalCreateCase;

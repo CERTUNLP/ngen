@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next'
 import { COMPONENT_URL } from 'config/constant';
 
 const EditReport = () => {
-
   const [body, setBody] = useState({})
   const [taxonomies, setTaxonomies] = useState([])
   const { t } = useTranslation()
@@ -31,55 +30,58 @@ const EditReport = () => {
   }, [id])
 
   useEffect(() => {
-    getMinifiedTaxonomy().then((response) => {
-      let listTaxonomies = response.map((taxonomy) => {
-        return { value: taxonomy.url, label: taxonomy.name }
+    getMinifiedTaxonomy()
+      .then((response) => {
+        let listTaxonomies = response.map((taxonomy) => {
+          return { value: taxonomy.url, label: taxonomy.name };
+        });
+        setTaxonomies(listTaxonomies);
       })
-      setTaxonomies(listTaxonomies)
-    }).catch((error) => {
-      console.log(error)
-    }).finally(() => {
-      setLoading(false)
-    })
-
-  }, [])
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const editReport = () => {
-    putReport(body.url, body.problem, body.derived_problem, body.verification,
-      body.recommendations, body.more_information, body.lang, body.taxonomy).
-      then((response) => {
-        window.location.href = '/reports'
-      }).
-      catch((error) => {
-        setShowAlert(true)
+    putReport(
+      body.url,
+      body.problem,
+      body.derived_problem,
+      body.verification,
+      body.recommendations,
+      body.more_information,
+      body.lang,
+      body.taxonomy
+    )
+      .then((response) => {
+        window.location.href = "/reports";
       })
-
-  }
+      .catch((error) => {
+        setShowAlert(true);
+      });
+  };
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)}
-             component="report"/>
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="report" />
       <Row>
-        <Navigation actualPosition={t('ngen.report.edit')} path="/reports"
-                    index={t('ngen.report')}/>
+        <Navigation actualPosition={t("ngen.report.edit")} path="/reports" index={t("ngen.report")} />
       </Row>
 
       <Card>
         <Card.Header>
-          <Card.Title as="h5">{t('ngen.report.edit')}</Card.Title>
+          <Card.Title as="h5">{t("ngen.report.edit")}</Card.Title>
         </Card.Header>
         <Card.Body>
-          {loading &&
-            <Spinner animation="border" variant="primary"/>
-          }
-          <FormReport body={body} setBody={setBody} taxonomies={taxonomies}
-                      createOrEdit={editReport}/>
+          {loading && <Spinner animation="border" variant="primary" />}
+          <FormReport body={body} setBody={setBody} taxonomies={taxonomies} createOrEdit={editReport} />
         </Card.Body>
       </Card>
-
     </div>
-  )
-}
+  );
+};
 
-export default EditReport
+export default EditReport;

@@ -15,18 +15,26 @@
   ],
   "settings": {
     "react": {
-      "createClass": "createReactClass", // Regex for Component Factory to use,
+      "createClass": "createReactClass",
+      // Regex for Component Factory to use,
       // default to "createReactClass"
-      "pragma": "React", // Pragma to use, default to "React"
-      "fragment": "Fragment", // Fragment to use (may be a property of <pragma>), default to "Fragment"
-      "version": "detect", // React version. "detect" automatically picks the version you have installed.
+      "pragma": "React",
+      // Pragma to use, default to "React"
+      "fragment": "Fragment",
+      // Fragment to use (may be a property of <pragma>), default to "Fragment"
+      "version": "detect",
+      // React version. "detect" automatically picks the version you have installed.
       // You can also use `16.0`, `16.3`, etc, if you want to override the detected value.
       // It will default to "latest" and warn if missing, and to "detect" in the future
-      "flowVersion": "0.53" // Flow version
+      "flowVersion": "0.53"
+      // Flow version
     },
     "import/resolver": {
       "node": {
-        "moduleDirectory": ["node_modules", "src/"]
+        "moduleDirectory": [
+          "node_modules",
+          "src/"
+        ]
       }
     }
   },
@@ -39,11 +47,17 @@
       "jsx": true
     },
     "babelOptions": {
-      "presets": ["@babel/preset-react"]
+      "presets": [
+        "@babel/preset-react"
+      ]
     },
     "ecmaVersion": 12
   },
-  "plugins": ["prettier", "react", "react-hooks"],
+  "plugins": [
+    "prettier",
+    "react",
+    "react-hooks"
+  ],
   "rules": {
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
@@ -71,7 +85,10 @@
     "no-restricted-imports": [
       "error",
       {
-        "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
+        "patterns": [
+          "@mui/*/*/*",
+          "!@mui/material/test-utils/*"
+        ]
       }
     ],
     "no-unused-vars": [
@@ -85,7 +102,7 @@
       {
         "bracketSpacing": true,
         "printWidth": 140,
-        "singleQuote": true,
+        "singleQuote": false,
         "trailingComma": "none",
         "tabWidth": 2,
         "useTabs": false,

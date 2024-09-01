@@ -40,42 +40,48 @@ const EditFeed = () => {
   }, [feed])
 
   const editFeed = () => {
-    putFeed(url, name, description, active).then(() => {
-      window.location.href = '/feeds'
-    }).catch((error) => {
-      setShowAlert(true)
-      console.log(error)
-    })
-  }
+    putFeed(url, name, description, active)
+      .then(() => {
+        window.location.href = "/feeds";
+      })
+      .catch((error) => {
+        setShowAlert(true);
+        console.log(error);
+      });
+  };
 
   const resetShowAlert = () => {
-    setShowAlert(false)
-  }
+    setShowAlert(false);
+  };
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert}
-             component="feed"/>
+      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="feed" />
       <Row>
-        <Navigation actualPosition={t('ngen.feed.information.edit')}
-                    path="/feeds" index={t('ngen.feed.information')}/>
+        <Navigation actualPosition={t("ngen.feed.information.edit")} path="/feeds" index={t("ngen.feed.information")} />
       </Row>
       <Row>
         <Col sm={12}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">{t('ngen.feed.information')}</Card.Title>
+              <Card.Title as="h5">{t("ngen.feed.information")}</Card.Title>
             </Card.Header>
             <Card.Body>
-              <FormFeed name={name} setName={setName} active={active}
-                        setActive={setActive} description={description}
-                        setDescription={setDescription} createFeed={editFeed}/>
+              <FormFeed
+                name={name}
+                setName={setName}
+                active={active}
+                setActive={setActive}
+                description={description}
+                setDescription={setDescription}
+                createFeed={editFeed}
+              />
             </Card.Body>
           </Card>
         </Col>
       </Row>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default EditFeed
+export default EditFeed;

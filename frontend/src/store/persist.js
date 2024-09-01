@@ -1,5 +1,5 @@
-import { persistStore } from 'redux-persist';
-import store from './index';
+import { persistStore } from "redux-persist";
+import store from "./index";
 
 const persist = persistStore(store);
 

@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from 'react'
-import { Form } from 'react-bootstrap'
-import { getEntity } from '../../../api/services/entities'
+import React, { useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
+import { getEntity } from "../../../api/services/entities";
 
-const BadgeNetwork_Entity = (props) => { //TODO
-  const [entity, setEntity] = useState('')
+const BadgeNetwork_Entity = (props) => {
+  //TODO
+  const [entity, setEntity] = useState("");
 
   useEffect(() => {
-
-    showEntity(props.url)
-
-  }, [])
+    showEntity(props.url);
+  }, []);
 
   const showEntity = (url) => {
-    getEntity(url).then((response) => {
-      console.log(response)
-      setEntity(response.data)
-    }).catch()
-  }
+    getEntity(url)
+      .then((response) => {
+        setEntity(response.data);
+      })
+      .catch();
+  };
   return (
-    entity &&
-    <React.Fragment>
-      <Form.Control plaintext readOnly defaultValue={entity.name}/>
-    </React.Fragment>
-  )
-}
+    entity && (
+      <React.Fragment>
+        <Form.Control plaintext readOnly defaultValue={entity.name} />
+      </React.Fragment>
+    )
+  );
+};
 
-export default BadgeNetwork_Entity
+export default BadgeNetwork_Entity;

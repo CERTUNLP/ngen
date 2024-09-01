@@ -18,7 +18,7 @@ body {
 
 a {
   text-decoration: none;
-  
+
   &:hover {
     outline: none;
   }
@@ -132,6 +132,7 @@ p.text-muted {
   margin-bottom: 30px;
   transition: all 0.5s ease-in-out;
   --bs-card-title-color: #111;
+
   .card-header {
     background-color: transparent;
     border-bottom: 1px solid #f1f1f1;
@@ -166,6 +167,7 @@ p.text-muted {
         display: none;
       }
     }
+
     .card-header-right {
       right: 10px;
       top: 10px;

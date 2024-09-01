@@ -18,7 +18,7 @@ const EditEntity = () => {
   const [id] = useState(useParams());
 
   //Alert
-  const [showAlert, setShowAlert] = useState(false)
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
 
@@ -42,36 +42,33 @@ const EditEntity = () => {
 
   //Update
   const editEntity = () => {
-    putEntity(entity.url, name, active).then((response) => {
-      localStorage.removeItem('entity')
-      window.location.href = '/entities'
-    }).catch(() => {
-      setShowAlert(true)
-    })
-  }
+    putEntity(entity.url, name, active)
+      .then((response) => {
+        localStorage.removeItem("entity");
+        window.location.href = "/entities";
+      })
+      .catch(() => {
+        setShowAlert(true);
+      });
+  };
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)}
-        component="entity" />
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="entity" />
       <Row>
-        <Navigation actualPosition={t('ngen.entity_edit')} path="/entities"
-          index={t('ngen.entity_other')} />
+        <Navigation actualPosition={t("ngen.entity_edit")} path="/entities" index={t("ngen.entity_other")} />
       </Row>
       <Row>
         <Col sm={12}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">{t('ngen.entity_other')}</Card.Title>
-              <span className="d-block m-t-5">{t('ngen.entity_edit')}</span>
+              <Card.Title as="h5">{t("ngen.entity_other")}</Card.Title>
+              <span className="d-block m-t-5">{t("ngen.entity_edit")}</span>
             </Card.Header>
             <Card.Body>
               <Row>
                 <Col sm={12}>
-                  <FormEntity
-                    name={name} setName={setName}
-                    active={active} setActive={setActive}
-                    ifConfirm={editEntity} edit={true} />
+                  <FormEntity name={name} setName={setName} active={active} setActive={setActive} ifConfirm={editEntity} edit={true} />
                 </Col>
               </Row>
             </Card.Body>
@@ -79,7 +76,7 @@ const EditEntity = () => {
         </Col>
       </Row>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default EditEntity
+export default EditEntity;

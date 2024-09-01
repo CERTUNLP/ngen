@@ -25,6 +25,7 @@
   padding: 15px;
   background-color: #fff;
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.05);
+
   .nav-link {
     border-radius: 5px;
   }
@@ -41,9 +42,11 @@
 
 .nav-tabs {
   border-bottom: none;
+
   .nav-link {
     border: none;
     color: $theme-font-color;
+
     &:hover {
       color: $primary-color;
     }

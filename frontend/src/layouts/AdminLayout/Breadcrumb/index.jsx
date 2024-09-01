@@ -1,63 +1,63 @@
-import React, { useEffect, useState } from 'react'
-import { ListGroup } from 'react-bootstrap'
-import { Link, useLocation } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import { ListGroup } from "react-bootstrap";
+import { Link, useLocation } from "react-router-dom";
 
-import navigation from '../../../menu-items'
-import { BASE_TITLE } from '../../../config/constant'
+import navigation from "../../../menu-items";
+import { BASE_TITLE } from "../../../config/constant";
 
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from "react-i18next";
 
 const Breadcrumb = () => {
-  const location = useLocation()
-  const { t } = useTranslation()
+  const location = useLocation();
+  const { t } = useTranslation();
 
-  const [main, setMain] = useState([])
-  const [item, setItem] = useState([])
+  const [main, setMain] = useState([]);
+  const [item, setItem] = useState([]);
 
   useEffect(() => {
     navigation.items.map((item, index) => {
-      if (item.type && item.type === 'group') {
-        getCollapse(item, index)
+      if (item.type && item.type === "group") {
+        getCollapse(item, index);
       }
-      return false
-    })
-  })
+      return false;
+    });
+  });
 
   const getCollapse = (item, index) => {
     if (item.children) {
       item.children.filter((collapse) => {
-        if (collapse.type && collapse.type === 'collapse') {
-          getCollapse(collapse, index)
-        } else if (collapse.type && collapse.type === 'item') {
+        if (collapse.type && collapse.type === "collapse") {
+          getCollapse(collapse, index);
+        } else if (collapse.type && collapse.type === "item") {
           if (location.pathname === collapse.url) {
-            setMain(item)
-            setItem(collapse)
+            setMain(item);
+            setItem(collapse);
           }
         }
-        return false
-      })
+        return false;
+      });
     }
-  }
+  };
 
-  let mainContent, itemContent
-  let breadcrumbContent = ''
-  let title = ''
+  let mainContent, itemContent;
+  let breadcrumbContent = "";
+  let title = "";
 
-  if (main && main.type === 'collapse') {
+  if (main && main.type === "collapse") {
     mainContent = (
       <ListGroup.Item as="li" bsPrefix=" " className="breadcrumb-item">
-        <Link to="#">{main.title ? t(main.title) : ''}</Link>
+        <Link to="#">{main.title ? t(main.title) : ""}</Link>
       </ListGroup.Item>
-    )
+    );
   }
 
-  if (item && item.type === 'item') {
-    title = item.title ? t(item.title) : ''
+  if (item && item.type === "item") {
+    title = item.title ? t(item.title) : "";
     itemContent = (
       <ListGroup.Item as="li" bsPrefix=" " className="breadcrumb-item">
         <Link to="#">{title}</Link>
       </ListGroup.Item>
-    )
+    );
 
     if (item.breadcrumbs !== false) {
       breadcrumbContent = (
@@ -69,10 +69,9 @@ const Breadcrumb = () => {
                   <h5 className="m-b-10">{title}</h5>
                 </div>
                 <ListGroup as="ul" bsPrefix=" " className="breadcrumb">
-                  <ListGroup.Item as="li" bsPrefix=" "
-                                  className="breadcrumb-item">
+                  <ListGroup.Item as="li" bsPrefix=" " className="breadcrumb-item">
                     <Link to="/">
-                      <i className="feather icon-home"/>
+                      <i className="feather icon-home" />
                     </Link>
                   </ListGroup.Item>
                   {mainContent}
@@ -82,13 +81,13 @@ const Breadcrumb = () => {
             </div>
           </div>
         </div>
-      )
+      );
     }
 
-    document.title = title + BASE_TITLE
+    document.title = title + BASE_TITLE;
   }
 
-  return <React.Fragment>{breadcrumbContent}</React.Fragment>
-}
+  return <React.Fragment>{breadcrumbContent}</React.Fragment>;
+};
 
-export default Breadcrumb
+export default Breadcrumb;

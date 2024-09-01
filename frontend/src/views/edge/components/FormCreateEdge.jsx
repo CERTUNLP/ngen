@@ -1,50 +1,44 @@
-import React from 'react'
-import { Button, Col, Form, Row } from 'react-bootstrap'
-import Select from 'react-select'
-import { useTranslation } from 'react-i18next'
+import React from "react";
+import { Button, Col, Form, Row } from "react-bootstrap";
+import Select from "react-select";
+import { useTranslation } from "react-i18next";
 
-const FormCreateEdge = ({
-  body,
-  setBody,
-  selectChild,
-  setSelectChild,
-  childernes,
-  ifConfirm,
-  ifCancel,
-}) => {
-  const { t } = useTranslation()
-  const messageToPlaceholder = t('selectOption')
-  const messageWithoutOptions = t('noOption')
+const FormCreateEdge = ({ body, setBody, selectChild, setSelectChild, childernes, ifConfirm, ifCancel }) => {
+  const { t } = useTranslation();
+  const messageToPlaceholder = t("selectOption");
+  const messageWithoutOptions = t("noOption");
 
   const completeChildernes = (event) => {
     if (event) {
       setBody({
         ...body,
-        ['child']: event.value,
-      })
-      setSelectChild(event)
+        ["child"]: event.value
+      });
+      setSelectChild(event);
     } else {
-      setSelectChild('')
+      setSelectChild("");
     }
-  }
+  };
 
   const completeField = (event) => {
     setBody({
       ...body,
-      [event.target.name]: event.target.value,
-    })
-  }
+      [event.target.name]: event.target.value
+    });
+  };
 
   return (
     <React.Fragment>
       <Form>
         <Row>
           <Col>
-
             <Form.Group controlId="formGridAddress1">
-              <Form.Label>{t('transitionName')}<b style={{ color: 'red' }}>*</b></Form.Label>
+              <Form.Label>
+                {t("transitionName")}
+                <b style={{ color: "red" }}>*</b>
+              </Form.Label>
               <Form.Control
-                placeholder={t('enterDiscriminator')}
+                placeholder={t("enterDiscriminator")}
                 maxLength="150"
                 value={body.discr}
                 name="discr"
@@ -55,8 +49,10 @@ const FormCreateEdge = ({
           </Col>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              <Form.Label>{t('w.nextState')}<b
-                style={{ color: 'red' }}>*</b></Form.Label>
+              <Form.Label>
+                {t("w.nextState")}
+                <b style={{ color: "red" }}>*</b>
+              </Form.Label>
               <Select
                 value={selectChild}
                 isClearable
@@ -71,20 +67,27 @@ const FormCreateEdge = ({
         </Row>
         <Row className="justify-content-center">
           <Form.Group>
-            {body.discr.trim() !== '' && selectChild !== '' ?
-              <><Button variant="primary" onClick={ifConfirm}>{t(
-                'button.save')}</Button></>
-              :
-              <><Button variant="primary" disabled>{t(
-                'button.save')}</Button></>}
-            <Button variant="primary" onClick={ifCancel}>{t(
-              'button.cancel')}</Button>
+            {body.discr.trim() !== "" && selectChild !== "" ? (
+              <>
+                <Button variant="primary" onClick={ifConfirm}>
+                  {t("button.save")}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="primary" disabled>
+                  {t("button.save")}
+                </Button>
+              </>
+            )}
+            <Button variant="primary" onClick={ifCancel}>
+              {t("button.cancel")}
+            </Button>
           </Form.Group>
         </Row>
       </Form>
-
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default FormCreateEdge
+export default FormCreateEdge;

@@ -1,18 +1,10 @@
-import React from 'react'
-import { Badge, Button, Col, Row } from 'react-bootstrap'
+import React from "react";
+import { Badge, Button, Col, Row } from "react-bootstrap";
 
-import Card from '../../../components/Card/MainCard'
+import Card from "../../../components/Card/MainCard";
 
 const BasicBadges = () => {
-  const buttonVariants = [
-    'primary',
-    'secondary',
-    'success',
-    'danger',
-    'warning',
-    'info',
-    'light',
-    'dark']
+  const buttonVariants = ["primary", "secondary", "success", "danger", "warning", "info", "light", "dark"];
 
   const buttonBadges = buttonVariants.map((variant, idx) => (
     <Button key={idx} variant={variant} className="text-capitalize">
@@ -21,7 +13,7 @@ const BasicBadges = () => {
         4
       </Badge>
     </Button>
-  ))
+  ));
 
   return (
     <React.Fragment>
@@ -51,7 +43,7 @@ const BasicBadges = () => {
         </Col>
       </Row>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default BasicBadges
+export default BasicBadges;

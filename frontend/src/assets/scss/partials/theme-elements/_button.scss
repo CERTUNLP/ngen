@@ -1,4 +1,5 @@
 @import '../mixins/buttons';
+
 /**  =====================
       Button css start
 ==========================  **/
@@ -172,18 +173,21 @@ a.btn-theme {
     @include button-variant-pc($value, $value);
   }
 }
+
 /* outline buttons */
 @each $color, $value in $theme-colors {
   .btn-outline-#{$color} {
     @include button-outline-variant-pc($value);
   }
 }
+
 /* glow buttons */
 @each $color, $value in $theme-colors {
   .btn-glow-#{$color} {
     @include button-glow-variant-pc($value);
   }
 }
+
 /**====== Button css end ======**/
 
 .drp-icon {
@@ -195,6 +199,7 @@ a.btn-theme {
     > i {
       margin-right: 0;
     }
+
     &.dropdown-toggle:after {
       display: none;
     }
@@ -203,6 +208,7 @@ a.btn-theme {
   + .dropdown-menu {
     margin-left: -10px;
   }
+
   &.btn-rounded {
     .btn {
       &.dropdown-toggle {

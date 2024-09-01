@@ -1,5 +1,5 @@
-import React from 'react'
-import { Alert } from 'react-bootstrap'
+import React from "react";
+import { Alert } from "react-bootstrap";
 
 const Notification = (props) => {
   return (
@@ -11,7 +11,7 @@ const Notification = (props) => {
         </Alert.Link>
       </Alert>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default Notification
+export default Notification;

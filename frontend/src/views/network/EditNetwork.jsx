@@ -27,11 +27,11 @@ const EditNetwork = () => {
   const [contacts, setContacts] = useState() //*
 
   //Dropdown
-  const [contactsOption, setContactsOption] = useState([])
-  const [contactCreated, setContactsCreated] = useState(null) // si creo se renderiza
+  const [contactsOption, setContactsOption] = useState([]);
+  const [contactCreated, setContactsCreated] = useState(null); // si creo se renderiza
 
   //Alert
-  const [showAlert, setShowAlert] = useState(false)
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
 
@@ -62,32 +62,33 @@ const EditNetwork = () => {
 
   useEffect(() => {
     //multiselect all options
-    getAllContacts().then((response) => {
-      let listContact = response.map((contactsItem) => {
-        return {
-          value: contactsItem.url,
-          label: contactsItem.name + ' (' + labelRole[contactsItem.role] +
-            ') ' + contactsItem.username,
-        }
+    getAllContacts()
+      .then((response) => {
+        let listContact = response.map((contactsItem) => {
+          return {
+            value: contactsItem.url,
+            label: contactsItem.name + " (" + labelRole[contactsItem.role] + ") " + contactsItem.username
+          };
+        });
+        setContactsOption(listContact);
       })
-      setContactsOption(listContact)
-    }).catch((error) => {
-      console.log(error)
-    })
-  }, [contactCreated])
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [contactCreated]);
 
   const labelRole = {
-    technical: `${t('ngen.role.technical')}`,
-    administrative: `${t('ngen.role.administrative')}`,
-    abuse: `${t('ngen.role.abuse')}`,
-    notifications: `${t('ngen.role.notifications')}`,
-    noc: `${t('ngen.role.noc')}`,
-  }
+    technical: `${t("ngen.role.technical")}`,
+    administrative: `${t("ngen.role.administrative")}`,
+    abuse: `${t("ngen.role.abuse")}`,
+    notifications: `${t("ngen.role.notifications")}`,
+    noc: `${t("ngen.role.noc")}`
+  };
 
   //Update
   const editNetwork = () => {
-    putNetwork(url, children, active, type, parent, network_entity, contacts,
-      address_value).then((response) => {
+    putNetwork(url, children, active, type, parent, network_entity, contacts,address_value)
+      .then((response) => {
         window.location.href = '/networks'
       }).catch((error) => {
         setShowAlert(true)
@@ -97,11 +98,9 @@ const EditNetwork = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)}
-        component="network" />
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="network" />
       <Row>
-        <Navigation actualPosition={t('ngen.network.edit')} path="/networks"
-          index={t('ngen.network_other')} />
+        <Navigation actualPosition={t('ngen.network.edit')} path="/networks" index={t('ngen.network_other')} />
       </Row>
       <Row>
         <Col sm={12}>
@@ -109,9 +108,8 @@ const EditNetwork = () => {
             <Card.Header>
               <Row>
                 <Col>
-                  <Card.Title as="h5">{t('ngen.network_other')}</Card.Title>
-                  <span className="d-block m-t-5">{t(
-                    'ngen.network.edit')}</span>
+                  <Card.Title as="h5">{t("ngen.network_other")}</Card.Title>
+                  <span className="d-block m-t-5">{t("ngen.network.edit")}</span>
                 </Col>
               </Row>
             </Card.Header>
@@ -125,9 +123,12 @@ const EditNetwork = () => {
                 setNetwork_entity={setNetwork_entity}
                 address_value={address_value}
                 setAddress_value={setAddress_value}
-                active={active} setActive={setActive}
-                ifConfirm={editNetwork} edit={true}
-                contacts={contacts} setContacts={setContacts}
+                active={active}
+                setActive={setActive}
+                ifConfirm={editNetwork}
+                edit={true}
+                contacts={contacts}
+                setContacts={setContacts}
                 allContacts={contactsOption}
                 setContactsCreated={setContactsCreated} />
                 : ""
@@ -138,7 +139,7 @@ const EditNetwork = () => {
         </Col>
       </Row>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default EditNetwork
+export default EditNetwork;

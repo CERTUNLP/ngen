@@ -9,12 +9,12 @@ import { useTranslation } from 'react-i18next'
 import { COMPONENT_URL } from 'config/constant'
 
 const EditCase = () => {
-  const { t } = useTranslation()
-  const location = useLocation()
-  const fromState = location.state
-  const [url] = useState(fromState)
+  const { t } = useTranslation();
+  const location = useLocation();
+  const fromState = location.state;
+  const [url] = useState(fromState);
 
-  const [caseItem, setCaseItem] = useState(null)
+  const [caseItem, setCaseItem] = useState(null);
 
   //multiselect
   const [allStates, setSupportedStates] = useState([])
@@ -33,41 +33,48 @@ const EditCase = () => {
   }, [id]);
 
   useEffect(() => {
-    let listStates = []
+    let listStates = [];
     if (caseItem) {
-
-      getState(caseItem.state).then((response) => {
-        listStates.push({ value: response.data.url, label: response.data.name })
-        let children = response.data.children
-        children.forEach((child) => {
-          getState(child).then((responseChild) => {
-            listStates.push(
-              { value: responseChild.data.url, label: responseChild.data.name })
-          }).catch((error) => {
-            console.log(error)
-          })
+      getState(caseItem.state)
+        .then((response) => {
+          listStates.push({ value: response.data.url, label: response.data.name });
+          let children = response.data.children;
+          children.forEach((child) => {
+            getState(child)
+              .then((responseChild) => {
+                listStates.push({ value: responseChild.data.url, label: responseChild.data.name });
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          });
+          setSupportedStates(listStates);
         })
-        setSupportedStates(listStates)
-      }).catch((error) => {
-        console.log(error)
-      })
+        .catch((error) => {
+          console.log(error);
+        });
     }
+  }, [caseItem]);
 
-  }, [caseItem])
+  return (
+    caseItem && (
+      <React.Fragment>
+        <Row>
+          <Navigation actualPosition={t("ngen.case_edit")} path="/cases" index={t("ngen.case_other")} />
+        </Row>
+        <FormCase
+          caseItem={caseItem}
+          allStates={allStates}
+          edit={true}
+          save={t("button.save_changes")}
+          evidenceColum={true}
+          buttonsModalColum={true}
+          setUpdateCase={setUpdateCase}
+          updateCase={updateCase}
+        />
+      </React.Fragment>
+    )
+  );
+};
 
-  return (caseItem &&
-    <React.Fragment>
-      <Row>
-        <Navigation actualPosition={t('ngen.case_edit')} path="/cases"
-                    index={t('ngen.case_other')}/>
-      </Row>
-      <FormCase caseItem={caseItem} allStates={allStates} edit={true}
-                save={t('button.save_changes')}
-                evidenceColum={true}
-                buttonsModalColum={true} setUpdateCase={setUpdateCase}
-                updateCase={updateCase}/>
-    </React.Fragment>
-  )
-}
-
-export default EditCase
+export default EditCase;

@@ -1,5 +1,5 @@
 // action - state management
-import { LOGIN, LOGOUT, REFRESH_TOKEN, REGISTER } from './actions';
+import { LOGIN, LOGOUT, REFRESH_TOKEN, REGISTER, SAVE_URL } from './actions';
 
 // initial state
 export const initialState = {
@@ -20,27 +20,44 @@ const auth = (state = initialState, action) => {
       };
     }
     case LOGIN: {
-      const { user, token } = action.payload;
+      const { user, token, iat, exp, user_id } = action.payload;
       return {
         ...state,
         isLoggedIn: true,
         user: user,
-        token: token
+        token: token,
+        iat: iat,
+        exp: exp,
+        user_id: user_id
       };
     }
     case LOGOUT: {
       return {
         ...state,
         isLoggedIn: false,
-        token: '',
+        token: "",
+        iat: null,
+        exp: null,
+        user_id: null,
         user: null
       };
     }
     case REFRESH_TOKEN: {
-      const { token } = action.payload;
+      const { token, iat, exp } = action.payload;
       return {
         ...state,
-        token: token
+        token: token,
+        isLoggedIn: true,
+        isInitialized: true,
+        iat: iat,
+        exp: exp
+      };
+    }
+    case SAVE_URL: {
+      const { url } = action.payload;
+      return {
+        ...state,
+        last_url: url
       };
     }
     default: {

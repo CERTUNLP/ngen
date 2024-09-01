@@ -1,55 +1,31 @@
-import React, { useState } from 'react'
-import { Card, Dropdown, ListGroup } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import PerfectScrollbar from 'react-perfect-scrollbar'
-
-import ChatList from './ChatList'
-
-import avatar1 from '../../../../assets/images/user/avatar-1.jpg'
-import avatar2 from '../../../../assets/images/user/avatar-2.jpg'
-import avatar3 from '../../../../assets/images/user/avatar-3.jpg'
-import avatar4 from '../../../../assets/images/user/avatar-4.jpg'
-
-import { CLEAR_MESSAGE, LOGOUT } from './../../../../store/actions'
-import { logout } from '../../../../api/services/auth'
-import store from './../../../../store'
-
-const { dispatch } = store
-
-const handleLogout = () => {
-  logout().finally(() => {
-    dispatch({
-      type: LOGOUT,
-    })
-    dispatch({
-      type: CLEAR_MESSAGE,
-    })
-  })
-}
+import React, { useState } from "react";
+import avatar2 from "../../../../assets/images/user/avatar-2.jpg";
+import avatar3 from "../../../../assets/images/user/avatar-3.jpg";
+import avatar4 from "../../../../assets/images/user/avatar-4.jpg";
 
 const NavRight = () => {
-  const [listOpen, setListOpen] = useState(false)
+  const [listOpen, setListOpen] = useState(false);
 
   const notiData = [
     {
-      name: 'Joseph William',
+      name: "Joseph William",
       image: avatar2,
-      details: 'Purchase New Theme and make payment',
-      activity: '30 min',
+      details: "Purchase New Theme and make payment",
+      activity: "30 min"
     },
     {
-      name: 'Sara Soudein',
+      name: "Sara Soudein",
       image: avatar3,
-      details: 'currently login',
-      activity: '30 min',
+      details: "currently login",
+      activity: "30 min"
     },
     {
-      name: 'Suzen',
+      name: "Suzen",
       image: avatar4,
-      details: 'Purchase New Theme and make payment',
-      activity: 'yesterday',
-    },
-  ]
+      details: "Purchase New Theme and make payment",
+      activity: "yesterday"
+    }
+  ];
 
   return (
     <React.Fragment>
@@ -197,8 +173,7 @@ const NavRight = () => {
       {/*</ListGroup>*/}
       {/*<ChatList listOpen={listOpen} closed={() => setListOpen(false)}/>*/}
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default NavRight
-export { handleLogout }
+export default NavRight;

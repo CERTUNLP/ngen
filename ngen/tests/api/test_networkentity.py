@@ -14,61 +14,70 @@ class MyToken(Token):
 
 
 class TestNetworkEntity(APITestCaseWithLogin):
-    '''
+    """
     This will handle entity testcases
-    '''
+    """
 
-    fixtures = ["priority.json", "feed.json", "tlp.json", "user.json", "taxonomy.json",
-                "state.json", "edge.json", "report.json", "network_entity.json", "network.json", "contact.json"]
+    fixtures = [
+        "priority.json",
+        "feed.json",
+        "tlp.json",
+        "user.json",
+        "taxonomy.json",
+        "state.json",
+        "edge.json",
+        "report.json",
+        "network_entity.json",
+        "network.json",
+        "contact.json",
+    ]
 
     def setUp(self):
         super().setUp()
-        self.basename_list = 'networkentity-list'
-        self.basename_detail = 'networkentity-detail'
+        self.basename_list = "networkentity-list"
+        self.basename_detail = "networkentity-detail"
         self.url_list = reverse(self.basename_list)
 
     def test_entity_post(self):
-        '''
+        """
         This will test successfull entity post
-        '''
+        """
         json_data = {
-            'name': 'test',
-            'slug': 'test',
+            "name": "test",
+            "slug": "test",
         }
         response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_entity_delete(self):
-        '''
+        """
         This will test successfull entity post
-        '''
+        """
         json_data = {
-            'name': 'test',
-            'slug': 'test',
+            "name": "test",
+            "slug": "test",
         }
         obj = NetworkEntity.objects.create(**json_data)
 
-        url = reverse(self.basename_detail, kwargs={'pk': obj.pk})
+        url = reverse(self.basename_detail, kwargs={"pk": obj.pk})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_entity_delete_with_networks(self):
-        '''
+        """
         This will test successfull entity post
-        '''
-        json_data = {
-            'name': 'test'
-        }
+        """
+        json_data = {"name": "test"}
         entity = NetworkEntity.objects.create(**json_data)
         network_data = {
-            "cidr": '1.1.1.4',
-            "type": 'internal',
+            "cidr": "1.1.1.4",
+            "type": "internal",
             "network_entity": entity,
         }
         network = Network.objects.create(**network_data)
 
-        url = reverse(self.basename_detail, kwargs={'pk': entity.pk})
+        url = reverse(self.basename_detail, kwargs={"pk": entity.pk})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

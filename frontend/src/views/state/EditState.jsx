@@ -88,6 +88,6 @@ const EditState = () => {
         : ""
       }
     </div>
-  )
-}
-export default EditState
+  );
+};
+export default EditState;

@@ -3,12 +3,13 @@ Communication channel views
 """
 
 import django_filters
-from rest_framework import permissions, filters, viewsets, status
+from django.core.exceptions import ObjectDoesNotExist
+from django.urls import resolve
+from rest_framework import permissions, filters, status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.urls import resolve
-from django.core.exceptions import ObjectDoesNotExist
+
 from ngen import models
 from ngen.serializers.communication_channel import (
     CommunicationChannelSerializer,
@@ -71,7 +72,7 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["get"],
-        url_path="communicationchannels/(?P<communication_channel_id>[^/.]+)", # <int:communication_channel_id> !!!!!!!!!!
+        url_path="communicationchannels/(?P<communication_channel_id>[^/.]+)",  # <int:communication_channel_id> !!!!!!!!!!
     )
     def communication_channels_detail(
         self, request, pk=None, communication_channel_id=None

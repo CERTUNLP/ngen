@@ -20,10 +20,10 @@ const EditPlaybook = () => {
   const [taxonomy, setTaxonomy] = useState()
 
   //Dropdown
-  const [allTaxonomies, setAllTaxonomies] = useState([])
+  const [allTaxonomies, setAllTaxonomies] = useState([]);
 
   //Alert
-  const [showAlert, setShowAlert] = useState(false)
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
 
@@ -59,55 +59,58 @@ const EditPlaybook = () => {
     }).catch((error) => {
       console.log(error)
     })
-
-  }, [])
+  }, []);
 
   const labelTaxonomy = {
-    vulnerability: 'Vulnerabilidad',
-    incident: 'Incidente',
-  }
+    vulnerability: "Vulnerabilidad",
+    incident: "Incidente"
+  };
 
   const editPlaybook = () => {
-    putPlaybook(url, name, taxonomy).then().catch().finally(() => {
-      setShowAlert(true)
-    })
-  }
+    putPlaybook(url, name, taxonomy)
+      .then()
+      .catch()
+      .finally(() => {
+        setShowAlert(true);
+      });
+  };
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)}
-             component="playbook"/>
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="playbook" />
       <Row>
-        <Navigation actualPosition={t('ngen.playbook.edit')} path="/playbooks"
-                    index="Playbook"/>
+        <Navigation actualPosition={t("ngen.playbook.edit")} path="/playbooks" index="Playbook" />
       </Row>
 
       <Row>
         <Col>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">{t('ngen.playbook')}</Card.Title>
-              <span className="d-block m-t-5">{t('ngen.playbook.edit')}</span>
+              <Card.Title as="h5">{t("ngen.playbook")}</Card.Title>
+              <span className="d-block m-t-5">{t("ngen.playbook.edit")}</span>
             </Card.Header>
             <Card.Body>
               <FormCreatePlaybook
-                name={name} setName={setName}
-                taxonomy={taxonomy} setTaxonomy={setTaxonomy}
+                name={name}
+                setName={setName}
+                taxonomy={taxonomy}
+                setTaxonomy={setTaxonomy}
                 ifConfirm={editPlaybook}
                 allTaxonomies={allTaxonomies}
-                save={t('button.save_changes')}/>
+                save={t("button.save_changes")}
+              />
             </Card.Body>
           </Card>
 
-          <ListTask urlPlaybook={url} sectionAddTask={true}
-                    setShowAlert={setShowAlert}/>
+          <ListTask urlPlaybook={url} sectionAddTask={true} setShowAlert={setShowAlert} />
 
-          <Button variant="primary" href="/playbooks">{t(
-            'button.return')}</Button>
+          <Button variant="primary" href="/playbooks">
+            {t("button.return")}
+          </Button>
         </Col>
       </Row>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default EditPlaybook
+export default EditPlaybook;
