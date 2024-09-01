@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }) {
   const [remove, setRemove] = useState(false);
   const [deleteUsername, setDeleteUsername] = useState("");
+  const [id, setId] = useState("");
   const [deleteUrl, setDeleteUrl] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [user, setUser] = useState({});
@@ -49,6 +50,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
   };
 
   const showModalUser = (user) => {
+    setId(user.url.split("/")[user.url.split("/").length - 2]);
     setUser(user);
     setModalShow(true);
   };
@@ -120,9 +122,9 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                   <td>{user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}</td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalUser(user)} />
-                    <Link to={{ pathname: `/users/edit/${itemNumber}`, state: user }} >
-                    <CrudButton type="edit"/>
-                  </Link>
+                    <Link to={{ pathname: `/users/edit/${itemNumber}` }} >
+                      <CrudButton type="edit" />
+                    </Link>
                     <CrudButton type="delete" onClick={() => handleShow(user.username, user.url)} />
                   </td>
                 </tr>
@@ -157,7 +159,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                             <span className="d-block m-t-5">{t("ngen.user.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <Link to="/users/edit" state={user}>
+                            <Link to={{ pathname: `/users/edit/${id}` }} >
                               <CrudButton type="edit" />
                             </Link>
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />

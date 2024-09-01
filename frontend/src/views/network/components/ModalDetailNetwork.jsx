@@ -39,7 +39,7 @@ const ModalDetailNetwork = (props) => {
                       <span className="d-block m-t-5">{t("ngen.network.detail")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <Link to="/networks/edit" state={props.network}>
+                      <Link to={`/networks/edit/${props.id}`}>
                         <CrudButton type="edit" />
                       </Link>
                       <CloseButton aria-label={t("button.close")} onClick={props.onHide} />

@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 const TableStates = ({ states, callback, loading, currentPage }) => {
   const [deleteName, setDeleteName] = useState();
   const [deleteUrl, setDeleteUrl] = useState();
+  const [id, setId] = useState("");
   const [remove, setRemove] = useState();
   const [dataState, setDataState] = useState({});
   const [showState, setShowState] = useState();
@@ -71,6 +72,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
       });
   };
   const showModalState = (state) => {
+    setId(state.url.split("/")[state.url.split("/").length - 2]);
     setState(state);
     setModalShow(true);
   };
@@ -113,7 +115,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                   <td>
                     <CrudButton type="read"
                       onClick={() => showModalState(state)} />
-                    <Link to={{ pathname: `/states/edit/${itemNumber}`, state: state }} >
+                    <Link to={{ pathname: `/states/edit/${itemNumber}`}} >
                       <CrudButton type="edit" />
                     </Link>
                     <CrudButton type="delete"
@@ -145,7 +147,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                             <span className="d-block m-t-5">{t("ngen.state.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <Link to="/states/edit" state={state}>
+                          <Link to={{ pathname: `/states/edit/${id}`}} >
                               <CrudButton type="edit" />
                             </Link>
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />

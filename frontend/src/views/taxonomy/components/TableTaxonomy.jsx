@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading, taxonomyGroups, minifiedTaxonomies }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [url, setUrl] = useState(null);
+  const [id, setId] = useState("");
   const [name, setName] = useState(null);
   const [taxonomy, setTaxonomy] = useState();
   const [modalShow, setModalShow] = useState(false);
@@ -38,6 +39,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
     getTaxonomy(url)
       .then((response) => {
         setTaxonomy(response.data);
+        setId(response.data.url.split("/")[response.data.url.split("/").length - 2]);
         setModalShow(true);
       })
       .catch((error) => {
@@ -151,27 +153,27 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
           {list.map((taxonomy, index) => {
             const parts = taxonomy.url.split("/");
             let itemNumber = parts[parts.length - 2];
-            return(
-            <tr key={index}>
-              <td>{taxonomy.created.slice(0, 10) + " " + taxonomy.created.slice(11, 19)}</td>
-              <td>{taxonomy.name}</td>
-              <td>{taxonomy.type}</td>
-              <td>{minifiedTaxonomies[taxonomy.parent]}</td>
-              <td>{taxonomyGroups[taxonomy.group]}</td>
-              <td>{minifiedTaxonomies[taxonomy.alias_of]}</td>
-              <td>{taxonomy.needs_review ? t("w.yes") : t("w.no")}</td>
-              <td>{taxonomy.reports.length}</td>
-              <td>
-                <ButtonState taxonomy={taxonomy} />
-              </td>
-              <td>
-                <CrudButton type="read" onClick={() => showTaxonomy(taxonomy.url)} />
-                <Link to={`/taxonomies/edit/${itemNumber}`}>
+            return (
+              <tr key={index}>
+                <td>{taxonomy.created.slice(0, 10) + " " + taxonomy.created.slice(11, 19)}</td>
+                <td>{taxonomy.name}</td>
+                <td>{taxonomy.type}</td>
+                <td>{minifiedTaxonomies[taxonomy.parent]}</td>
+                <td>{taxonomyGroups[taxonomy.group]}</td>
+                <td>{minifiedTaxonomies[taxonomy.alias_of]}</td>
+                <td>{taxonomy.needs_review ? t("w.yes") : t("w.no")}</td>
+                <td>{taxonomy.reports.length}</td>
+                <td>
+                  <ButtonState taxonomy={taxonomy} />
+                </td>
+                <td>
+                  <CrudButton type="read" onClick={() => showTaxonomy(taxonomy.url)} />
+                  <Link to={`/taxonomies/edit/${itemNumber}`}>
                     <CrudButton type="edit" />
                   </Link>
-                <CrudButton type="delete" onClick={() => Delete(taxonomy.url, taxonomy.name)} />
-              </td>
-            </tr>
+                  <CrudButton type="delete" onClick={() => Delete(taxonomy.url, taxonomy.name)} />
+                </td>
+              </tr>
             )
           }
           )
@@ -190,7 +192,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                       <span className="d-block m-t-5">{t("ngen.taxonomy.detail")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <Link to="/taxonomies/edit" state={taxonomy}>
+                      <Link to={`/taxonomies/edit/${id}`}>
                         <CrudButton type="edit" />
                       </Link>
                       <CloseButton aria-label={t("w.close")} onClick={handleClose} />

@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 
 const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading }) => {
   const [report, setReport] = useState({});
+  const [id, setId] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const { t } = useTranslation();
@@ -42,8 +43,9 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
     setRemove(true);
   };
 
-  const showModalReport = (user) => {
-    setReport(user);
+  const showModalReport = (report) => {
+    setId(report.url.split("/")[report.url.split("/").length - 2]);
+    setReport(report);
     setModalShow(true);
   };
 
@@ -138,7 +140,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                         <span className="d-block m-t-5">{t("ngen.report.detail")}</span>
                       </Col>
                       <Col sm={12} lg={4}>
-                        <Link to="/reports/edit" state={report}>
+                      <Link to={`/reports/edit/${id}`}>
                           <CrudButton type="edit" />
                         </Link>
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />

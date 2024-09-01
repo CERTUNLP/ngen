@@ -21,6 +21,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
   const [cidr, setCidr] = useState(null);
   const [domain, setDomain] = useState(null);
   const [active, setActive] = useState(null);
+  const [id, setId] = useState("");
 
   if (loading) {
     return (
@@ -32,6 +33,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
 
   //Read Network
   const showNetwork = (url) => {
+    setId(url.split("/")[url.split("/").length - 2]);
     setUrl(url);
     setNetwork("");
     getNetwork(url)
@@ -146,7 +148,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
           })}
         </tbody>
       </Table>
-      <ModalDetailNetwork show={modalShow} network={network} onHide={() => setModalShow(false)} />
+      <ModalDetailNetwork show={modalShow} network={network} onHide={() => setModalShow(false)} id={id}/>
       <ModalConfirm
         type="delete"
         component="Red"

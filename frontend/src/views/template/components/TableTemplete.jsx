@@ -24,6 +24,7 @@ const TableTemplete = ({
 }) => {
   const [deleteName, setDeleteName] = useState();
   const [deleteUrl, setDeleteUrl] = useState();
+  const [id, setId] = useState("");
   const [remove, setRemove] = useState();
   const [template, setTemplate] = useState({});
   const [modalShow, setModalShow] = useState(false);
@@ -62,6 +63,7 @@ const TableTemplete = ({
   };
 
   const showModalTemplate = (template) => {
+    setId(template.url.split("/")[template.url.split("/").length - 2]);
     setTemplate(template);
     setModalShow(true);
   };
@@ -300,7 +302,7 @@ const TableTemplete = ({
                             <span className="d-block m-t-5">{t("ngen.template.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <Link to="/templates/edit" state={template}>
+                          <Link to={`/templates/edit/${id}`}>
                               <CrudButton type="edit" />
                             </Link>
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />

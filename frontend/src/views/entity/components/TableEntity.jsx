@@ -149,7 +149,7 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                       <span className="d-block m-t-5">{t("ngen.entity_detail")}</span>
                     </Col>
                     <Col sm={12} lg={3}>
-                      <Link to="/entities/edit" state={entity}>
+                      <Link to={`/entities/edit/${id}`}>
                         <CrudButton type="edit" />
                       </Link>
                       <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />

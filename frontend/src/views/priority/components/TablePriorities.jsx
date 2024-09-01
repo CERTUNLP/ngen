@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, currentPage }) => {
   const [remove, setRemove] = useState(false);
   const [deleteName, setDeleteName] = useState("");
+  const [id, setId] = useState("");
   const [deleteUrl, setDeleteUrl] = useState("");
   const [priority, setPriority] = useState({});
   const [modalShow, setModalShow] = useState(false);
@@ -47,6 +48,7 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
       });
   };
   const showModalPriority = (priority) => {
+    setId(priority.url.split("/")[priority.data.url.split("/").length - 2]);
     setPriority(priority);
     setModalShow(true);
   };
@@ -116,7 +118,7 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
                             <span className="d-block m-t-5">{t("ngen.priority.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <Link to="/priorities/edit" state={priority}>
+                            <Link to={`/priorities/edit/${id}`}>
                               <CrudButton type="edit" />
                             </Link>
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />

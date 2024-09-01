@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage }) => {
   const [remove, setRemove] = useState(false);
   const [deleteName, setDeleteName] = useState("");
+  const [id, setId] = useState("");
   const [deleteUrl, setDeleteUrl] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [feed, setFeed] = useState({});
@@ -29,6 +30,8 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
   }
 
   const showModalChangeState = (url, name, active) => {
+    setId(url.split("/")[url.split("/").length - 2]);
+    console.log(id)
     setDataState({ url: url, name: name, state: active });
     setShowState(true);
   };
@@ -67,6 +70,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
 
   const showModalFeed = (feed) => {
     getFeed(feed.url).then((response) => {
+      setId(response.data.url.split("/")[response.data.url.split("/").length - 2]);
       setFeed(response.data);
     });
     setModalShow(true);
@@ -151,7 +155,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                         </span>
                       </Col>
                       <Col sm={12} lg={2}>
-                        <Link to="/feeds/edit" state={feed}>
+                        <Link to={`/feeds/edit/${id}`}>
                           <CrudButton type="edit" />
                         </Link>
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
