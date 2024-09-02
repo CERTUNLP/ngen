@@ -122,7 +122,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                   <td>{user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}</td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalUser(user)} />
-                    <Link to={{ pathname: `/users/edit/${itemNumber}` }} >
+                    <Link to={{ pathname: `/users/edit/${itemNumber}` }}>
                       <CrudButton type="edit" />
                     </Link>
                     <CrudButton type="delete" onClick={() => handleShow(user.username, user.url)} />
@@ -159,7 +159,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                             <span className="d-block m-t-5">{t("ngen.user.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <Link to={{ pathname: `/users/edit/${id}` }} >
+                            <Link to={{ pathname: `/users/edit/${id}` }}>
                               <CrudButton type="edit" />
                             </Link>
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
@@ -240,10 +240,10 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                 </Row>
               </Modal.Body>
             </Modal>
-          </tbody >
-        </Table >
-      </ul >
-    </div >
+          </tbody>
+        </Table>
+      </ul>
+    </div>
   );
 }
 

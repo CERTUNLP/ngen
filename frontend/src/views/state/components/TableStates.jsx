@@ -103,39 +103,41 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                 <tr key={index}>
                   <td>{state.name}</td>
                   <td>
-                    <ActiveButton active={state.active}
-                      onClick={() => modalChangeState(state.url,
-                        state.name, state.active)} />
+                    <ActiveButton active={state.active} onClick={() => modalChangeState(state.url, state.name, state.active)} />
                   </td>
-                  <td>{state.attended ? t('ngen.true') : t('ngen.false')}</td>
+                  <td>{state.attended ? t("ngen.true") : t("ngen.false")}</td>
 
-                  <td>{state.solved ? t('ngen.true') : t('ngen.false')}</td>
-
+                  <td>{state.solved ? t("ngen.true") : t("ngen.false")}</td>
 
                   <td>
-                    <CrudButton type="read"
-                      onClick={() => showModalState(state)} />
-                    <Link to={{ pathname: `/states/edit/${itemNumber}`}} >
+                    <CrudButton type="read" onClick={() => showModalState(state)} />
+                    <Link to={{ pathname: `/states/edit/${itemNumber}` }}>
                       <CrudButton type="edit" />
                     </Link>
-                    <CrudButton type="delete"
-                      onClick={() => modalDelete(state.name,
-                        state.url)} />
+                    <CrudButton type="delete" onClick={() => modalDelete(state.name, state.url)} />
                   </td>
                 </tr>
-              )
+              );
             })}
 
-            <ModalConfirm type="delete" component={t('ngen.state_one')}
-              name={deleteName} showModal={remove}
+            <ModalConfirm
+              type="delete"
+              component={t("ngen.state_one")}
+              name={deleteName}
+              showModal={remove}
               onHide={() => setRemove(false)}
-              ifConfirm={() => handleDelete(deleteUrl)} />
-            <ModalConfirm type="editState" component={t('ngen.state_one')}
-              name={dataState.name} state={dataState.state}
-              showModal={showState} onHide={() => setShowState(false)}
-              ifConfirm={() => changeState()} />
-            <Modal size="lg" show={modalShow} onHide={() => setModalShow(false)}
-              aria-labelledby="contained-modal-title-vcenter" centered>
+              ifConfirm={() => handleDelete(deleteUrl)}
+            />
+            <ModalConfirm
+              type="editState"
+              component={t("ngen.state_one")}
+              name={dataState.name}
+              state={dataState.state}
+              showModal={showState}
+              onHide={() => setShowState(false)}
+              ifConfirm={() => changeState()}
+            />
+            <Modal size="lg" show={modalShow} onHide={() => setModalShow(false)} aria-labelledby="contained-modal-title-vcenter" centered>
               <Modal.Body>
                 <Row>
                   <Col>
@@ -147,7 +149,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                             <span className="d-block m-t-5">{t("ngen.state.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                          <Link to={{ pathname: `/states/edit/${id}`}} >
+                            <Link to={{ pathname: `/states/edit/${id}` }}>
                               <CrudButton type="edit" />
                             </Link>
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
@@ -199,8 +201,8 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                             <td>
                               {state.children
                                 ? state.children.map((url) => {
-                                    return <CallBackendByName url={url} callback={callbackState} useBadge={false} />;
-                                  })
+                                  return <CallBackendByName url={url} callback={callbackState} useBadge={false} />;
+                                })
                                 : "No tiene hijos"}
                             </td>
                           </tr>

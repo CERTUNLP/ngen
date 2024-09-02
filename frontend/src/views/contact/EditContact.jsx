@@ -1,52 +1,48 @@
-import React, { useEffect, useState } from 'react'
-import { Card, Col, Row } from 'react-bootstrap'
-import Alert from '../../components/Alert/Alert'
-import { getContact, putContact } from '../../api/services/contacts'
-import FormCreateContact from './components/FormCreateContact'
-import Navigation from '../../components/Navigation/Navigation'
-import { useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next'
-import { COMPONENT_URL } from 'config/constant'
+import React, { useEffect, useState } from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import Alert from "../../components/Alert/Alert";
+import { getContact, putContact } from "../../api/services/contacts";
+import FormCreateContact from "./components/FormCreateContact";
+import Navigation from "../../components/Navigation/Navigation";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const EditContact = () => {
+  const [contact, setContact] = useState({});
+  const { t } = useTranslation();
 
-  const [contact, setContact] = useState({})
-  const { t } = useTranslation()
-
-  const [supportedName, setSupportedName] = useState('')
-  const [selectRol, setSelectRol] = useState('')
-  const [supportedPriority, setSupportedPriority] = useState('')
-  const [supportedContact, setSupportedContact] = useState('')
-  const [supportedKey, setSupportedKey] = useState('')
-  const [selectType, setSelectType] = useState('')
+  const [supportedName, setSupportedName] = useState("");
+  const [selectRol, setSelectRol] = useState("");
+  const [supportedPriority, setSupportedPriority] = useState("");
+  const [supportedContact, setSupportedContact] = useState("");
+  const [supportedKey, setSupportedKey] = useState("");
+  const [selectType, setSelectType] = useState("");
   const [id] = useState(useParams());
 
   //Alert
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-
     if (id.id) {
       getContact(COMPONENT_URL.contact + id.id + "/")
         .then((response) => {
-          setContact(response.data)
-        }).catch(error => console.log(error));
-
+          setContact(response.data);
+        })
+        .catch((error) => console.log(error));
     }
   }, [id]);
 
   useEffect(() => {
-
     if (contact) {
-      setSupportedName(contact.name)
-      setSelectRol(contact.role)
-      setSupportedPriority(contact.priority)
-      setSupportedContact(contact.username)
-      setSupportedKey(contact.public_key)
-      setSelectType(contact.type)
+      setSupportedName(contact.name);
+      setSelectRol(contact.role);
+      setSupportedPriority(contact.priority);
+      setSupportedContact(contact.username);
+      setSupportedKey(contact.public_key);
+      setSelectType(contact.type);
     }
-
-  }, [contact])
+  }, [contact]);
 
   const editContact = () => {
     putContact(contact.url, supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority)

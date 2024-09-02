@@ -82,21 +82,20 @@ const FormCreateNetwork = (props) => {
         }
       });
     }
-
-  }, [props.network_entity, entitiesOption])
+  }, [props.network_entity, entitiesOption]);
 
   useEffect(() => {
-    if(props.contacts && props.allContacts){
+    if (props.contacts && props.allContacts) {
       //selected contacts
-      let listDefaultContact = props.allContacts.filter(
-        elemento => props.contacts.includes(elemento.value)).map(elemento => ({
-        value: elemento.value,
-        label: elemento.label,
-      }))
-      setContactsValueLabel(listDefaultContact)
+      let listDefaultContact = props.allContacts
+        .filter((elemento) => props.contacts.includes(elemento.value))
+        .map((elemento) => ({
+          value: elemento.value,
+          label: elemento.label
+        }));
+      setContactsValueLabel(listDefaultContact);
     }
-
-  }, [props.contacts, props.allContacts])
+  }, [props.contacts, props.allContacts]);
 
   //Multiselect
   const selectContacts = (event) => {
@@ -116,7 +115,7 @@ const FormCreateNetwork = (props) => {
         .catch((error) => {
           console.log(error);
         })
-        .finally(() => {});
+        .finally(() => { });
     }
 
     if (event.target.value === "") {
@@ -225,13 +224,20 @@ const FormCreateNetwork = (props) => {
         <Row>
           <Col>
             <Form.Group>
-              {props.address_value !== '' && !showErrorMessage &&
-              props.type!==undefined && (props.contacts!== undefined) ?
-                <><Button variant="primary" onClick={props.ifConfirm}>{t(
-                  'button.save')}</Button></>
-                :
-                <><Button variant="primary" disabled>{t(
-                  'button.save')}</Button></> //disabled
+              {
+                props.address_value !== "" && !showErrorMessage && props.type !== undefined && props.contacts !== undefined ? (
+                  <>
+                    <Button variant="primary" onClick={props.ifConfirm}>
+                      {t("button.save")}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="primary" disabled>
+                      {t("button.save")}
+                    </Button>
+                  </>
+                ) //disabled
               }
               <Button variant="primary" href="/networks">
                 {t("button.cancel")}

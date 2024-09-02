@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
-import { Button, Card, Col, Row } from 'react-bootstrap'
-import { putPlaybook, getPlaybook } from '../../api/services/playbooks'
-import FormCreatePlaybook from '../playbook/components/FormCreatePlaybook'
-import { getMinifiedTaxonomy } from '../../api/services/taxonomies'
-import ListTask from '../task/ListTask'
-import Navigation from '../../components/Navigation/Navigation'
-import Alert from '../../components/Alert/Alert'
-import { useTranslation } from 'react-i18next'
-import { COMPONENT_URL } from 'config/constant'
+import React, { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { Button, Card, Col, Row } from "react-bootstrap";
+import { putPlaybook, getPlaybook } from "../../api/services/playbooks";
+import FormCreatePlaybook from "../playbook/components/FormCreatePlaybook";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import ListTask from "../task/ListTask";
+import Navigation from "../../components/Navigation/Navigation";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const EditPlaybook = () => {
-  const [playbook, setPlaybook] = useState({})
+  const [playbook, setPlaybook] = useState({});
   const [id] = useState(useParams());
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const [url, setUrl] = useState()
-  const [name, setName] = useState()
-  const [taxonomy, setTaxonomy] = useState()
+  const [url, setUrl] = useState();
+  const [name, setName] = useState();
+  const [taxonomy, setTaxonomy] = useState();
 
   //Dropdown
   const [allTaxonomies, setAllTaxonomies] = useState([]);
@@ -26,39 +26,38 @@ const EditPlaybook = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-
     if (id.id) {
       getPlaybook(COMPONENT_URL.playbook + id.id + "/")
         .then((response) => {
-          setPlaybook(response.data)
-        }).catch(error => console.log(error));
-
+          setPlaybook(response.data);
+        })
+        .catch((error) => console.log(error));
     }
   }, [id]);
 
   useEffect(() => {
-
     if (playbook) {
-      setUrl(playbook.url)
-      setName(playbook.name)
-      setTaxonomy(playbook.taxonomy)
+      setUrl(playbook.url);
+      setName(playbook.name);
+      setTaxonomy(playbook.taxonomy);
     }
   }, [playbook]);
 
   useEffect(() => {
-    getMinifiedTaxonomy().then((response) => {
-      //allTaxonomies
-      let listAllTaxonomies = response.map((taxonomyItem) => {
-        return {
-          value: taxonomyItem.url,
-          label: taxonomyItem.name + ' (' + labelTaxonomy[taxonomyItem.type] +
-            ')',
-        }
+    getMinifiedTaxonomy()
+      .then((response) => {
+        //allTaxonomies
+        let listAllTaxonomies = response.map((taxonomyItem) => {
+          return {
+            value: taxonomyItem.url,
+            label: taxonomyItem.name + " (" + labelTaxonomy[taxonomyItem.type] + ")"
+          };
+        });
+        setAllTaxonomies(listAllTaxonomies);
       })
-      setAllTaxonomies(listAllTaxonomies)
-    }).catch((error) => {
-      console.log(error)
-    })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   const labelTaxonomy = {

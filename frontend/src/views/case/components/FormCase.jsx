@@ -302,10 +302,10 @@ const FormCase = (props) => {
   //Edit
   const editCase = () => {
     // setIfClick(true);
-    const form = new FormData()
-    form.append('date', date)
-    form.append('lifecycle', lifecycle)
-    form.append('name', name)
+    const form = new FormData();
+    form.append("date", date);
+    form.append("lifecycle", lifecycle);
+    form.append("name", name);
     if (parent !== null) {
       form.append("parent", parent);
     }

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
-import { Row } from 'react-bootstrap'
-import { getCase } from '../../api/services/cases'
-import FormCase from './components/FormCase'
-import Navigation from '../../components/Navigation/Navigation'
-import { getState } from '../../api/services/states'
-import { useTranslation } from 'react-i18next'
-import { COMPONENT_URL } from 'config/constant'
+import React, { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { Row } from "react-bootstrap";
+import { getCase } from "../../api/services/cases";
+import FormCase from "./components/FormCase";
+import Navigation from "../../components/Navigation/Navigation";
+import { getState } from "../../api/services/states";
+import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const EditCase = () => {
   const { t } = useTranslation();
@@ -17,18 +17,17 @@ const EditCase = () => {
   const [caseItem, setCaseItem] = useState(null);
 
   //multiselect
-  const [allStates, setSupportedStates] = useState([])
-  const [updateCase, setUpdateCase] = useState([])
+  const [allStates, setSupportedStates] = useState([]);
+  const [updateCase, setUpdateCase] = useState([]);
   const [id] = useState(useParams());
 
   useEffect(() => {
-
     if (id.id) {
       getCase(COMPONENT_URL.case + id.id + "/")
         .then((response) => {
-          setCaseItem(response.data)
-        }).catch(error => console.log(error));
-
+          setCaseItem(response.data);
+        })
+        .catch((error) => console.log(error));
     }
   }, [id]);
 

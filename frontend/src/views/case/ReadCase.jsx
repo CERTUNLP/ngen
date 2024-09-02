@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Card, CloseButton, Col, Form, Modal, Row, Table, } from 'react-bootstrap'
-import { useLocation, useParams } from 'react-router-dom'
-import Navigation from '../../components/Navigation/Navigation'
-import SmallEventTable from '../event/components/SmallEventTable'
-import { getCase } from '../../api/services/cases'
-import apiInstance from '../../api/api'
-import { getEvent } from '../../api/services/events'
-import { getEvidence } from '../../api/services/evidences'
-import EvidenceCard from '../../components/UploadFiles/EvidenceCard'
-import { useTranslation } from 'react-i18next'
-import { COMPONENT_URL } from 'config/constant'
+import React, { useEffect, useState } from "react";
+import { Button, Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
+import { useLocation, useParams } from "react-router-dom";
+import Navigation from "../../components/Navigation/Navigation";
+import SmallEventTable from "../event/components/SmallEventTable";
+import { getCase } from "../../api/services/cases";
+import apiInstance from "../../api/api";
+import { getEvent } from "../../api/services/events";
+import { getEvidence } from "../../api/services/evidences";
+import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
+import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const ReadCase = () => {
-  const location = useLocation()
-  const [caseItem, setCaseItem] = useState(null)
-  const [navigationRow] = useState(localStorage.getItem('navigation'))
-  const [buttonReturn] = useState(localStorage.getItem('button return'))
+  const location = useLocation();
+  const [caseItem, setCaseItem] = useState(null);
+  const [navigationRow] = useState(localStorage.getItem("navigation"));
+  const [buttonReturn] = useState(localStorage.getItem("button return"));
 
   const [id] = useState(useParams());
-  const [date, setDate] = useState('')
-  const [attend_date, setAttend_Date] = useState('')
-  const [solve_date, setSolve_Date] = useState('')
-  const [created, setCreated] = useState('')
-  const [modified, setModified] = useState('')
+  const [date, setDate] = useState("");
+  const [attend_date, setAttend_Date] = useState("");
+  const [solve_date, setSolve_Date] = useState("");
+  const [created, setCreated] = useState("");
+  const [modified, setModified] = useState("");
 
   const [assigned, setAssigned] = useState("");
   const [priority, setPriority] = useState("");
@@ -41,19 +41,20 @@ const ReadCase = () => {
     if (id.id) {
       getCase(COMPONENT_URL.case + id.id + "/")
         .then((response) => {
-          setCaseItem(response.data)
-        }).catch(error => console.log(error));
-    }else{
-      const url=localStorage.getItem('case')
+          setCaseItem(response.data);
+        })
+        .catch((error) => console.log(error));
+    } else {
+      const url = localStorage.getItem("case");
       getCase(url)
         .then((response) => {
-          setCaseItem(response.data)
-        }).catch(error => console.log(error));
+          setCaseItem(response.data);
+        })
+        .catch((error) => console.log(error));
     }
   }, [id]);
 
   useEffect(() => {
-
     if (caseItem !== null) {
       const eventPromises = caseItem.events.map((url) => getEvent(url));
 
@@ -130,10 +131,10 @@ const ReadCase = () => {
       }
       getName(caseItem.state, setState);
 
-      let datetime = caseItem.created.split('T')
-      setCreated(datetime[0] + ' ' + datetime[1].slice(0, 8))
-      datetime = caseItem.modified.split('T')
-      setModified(datetime[0] + ' ' + datetime[1].slice(0, 8))
+      let datetime = caseItem.created.split("T");
+      setCreated(datetime[0] + " " + datetime[1].slice(0, 8));
+      datetime = caseItem.modified.split("T");
+      setModified(datetime[0] + " " + datetime[1].slice(0, 8));
 
       if (caseItem.date) {
         formatDate(caseItem.date, setDate);

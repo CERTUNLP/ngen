@@ -14,17 +14,17 @@ const FormCreatePlaybook = (props) => {
   const { t } = useTranslation();
 
   useEffect(() => {
-      //selected taxonomies: value-label
-      if(props.taxonomy){
-        let listDefaultTaxonomies = props.allTaxonomies.filter(
-          elemento => props.taxonomy.includes(elemento.value)).map(elemento => ({
+    //selected taxonomies: value-label
+    if (props.taxonomy) {
+      let listDefaultTaxonomies = props.allTaxonomies
+        .filter((elemento) => props.taxonomy.includes(elemento.value))
+        .map((elemento) => ({
           value: elemento.value,
-          label: elemento.label,
-        }))
-        setTaxonomiesDefaultValue(listDefaultTaxonomies)
-      }
+          label: elemento.label
+        }));
+      setTaxonomiesDefaultValue(listDefaultTaxonomies);
     }
-    , [props.allTaxonomies, props.taxonomy])
+  }, [props.allTaxonomies, props.taxonomy]);
 
   //Multiselect
   const selectTaxonomies = (event) => {

@@ -140,7 +140,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                         <span className="d-block m-t-5">{t("ngen.report.detail")}</span>
                       </Col>
                       <Col sm={12} lg={4}>
-                      <Link to={`/reports/edit/${id}`}>
+                        <Link to={`/reports/edit/${id}`}>
                           <CrudButton type="edit" />
                         </Link>
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />

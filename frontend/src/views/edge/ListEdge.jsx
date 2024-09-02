@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Card, CloseButton, Col, Collapse, Modal, Row, Table, Spinner, } from 'react-bootstrap'
-import CrudButton from '../../components/Button/CrudButton'
-import AdvancedPagination from '../../components/Pagination/AdvancedPagination'
-import FormCreateEdge from './components/FormCreateEdge'
-import { getAllStates, getState } from '../../api/services/states'
-import { getAllEdges, postEdge } from '../../api/services/edges'
-import RowEdge from './components/RowEdge'
-import Alert from '../../components/Alert/Alert'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect, useState } from "react";
+import { Button, Card, CloseButton, Col, Collapse, Modal, Row, Table, Spinner } from "react-bootstrap";
+import CrudButton from "../../components/Button/CrudButton";
+import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import FormCreateEdge from "./components/FormCreateEdge";
+import { getAllStates, getState } from "../../api/services/states";
+import { getAllEdges, postEdge } from "../../api/services/edges";
+import RowEdge from "./components/RowEdge";
+import Alert from "../../components/Alert/Alert";
+import { useTranslation } from "react-i18next";
 
 const ListEdge = (props) => {
   const [states, setStates] = useState([]);
@@ -74,19 +74,17 @@ const ListEdge = (props) => {
         setUrlByStateName(dicState);
       })
       .catch((error) => {
-      console.log(error)
-
-    })
-
-  }, [edgeCreated, edgeDeleted, edgeUpdated, props.url])
+        console.log(error);
+      });
+  }, [edgeCreated, edgeDeleted, edgeUpdated, props.url]);
 
   if (props.loading) {
     return (
-        <Row className='justify-content-md-center'>
-            <Spinner animation='border' variant='primary' size='sm' />
-        </Row>
+      <Row className="justify-content-md-center">
+        <Spinner animation="border" variant="primary" size="sm" />
+      </Row>
     );
-}
+  }
   /**/
 
   function updatePage(chosenPage) {

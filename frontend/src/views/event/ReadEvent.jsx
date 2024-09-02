@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
-import { Button, Card, Col, Form, Row, Table } from 'react-bootstrap'
-import CallBackendByName from '../../components/CallBackendByName'
-import CallBackendByType from '../../components/CallBackendByType'
-import { getTaxonomy } from '../../api/services/taxonomies'
-import { getPriority } from '../../api/services/priorities'
-import { getUser } from '../../api/services/users'
-import { getTLPSpecific } from '../../api/services/tlp'
-import { getFeed } from '../../api/services/feeds'
-import { getEvent } from '../../api/services/events'
-import Navigation from '../../components/Navigation/Navigation'
-import { getArtefact } from '../../api/services/artifact'
-import SmallCaseTable from '../case/components/SmallCaseTable'
-import { getEvidence } from '../../api/services/evidences'
-import EvidenceCard from '../../components/UploadFiles/EvidenceCard'
-import { useTranslation } from 'react-i18next'
-import { COMPONENT_URL } from 'config/constant'
+import React, { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { Button, Card, Col, Form, Row, Table } from "react-bootstrap";
+import CallBackendByName from "../../components/CallBackendByName";
+import CallBackendByType from "../../components/CallBackendByType";
+import { getTaxonomy } from "../../api/services/taxonomies";
+import { getPriority } from "../../api/services/priorities";
+import { getUser } from "../../api/services/users";
+import { getTLPSpecific } from "../../api/services/tlp";
+import { getFeed } from "../../api/services/feeds";
+import { getEvent } from "../../api/services/events";
+import Navigation from "../../components/Navigation/Navigation";
+import { getArtefact } from "../../api/services/artifact";
+import SmallCaseTable from "../case/components/SmallCaseTable";
+import { getEvidence } from "../../api/services/evidences";
+import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
+import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const ReadEvent = (props) => {
-  const location = useLocation()
-  const [body, setBody] = useState({})
-  const [eventItem, setEventItem] = useState(location?.state?.item || null)
-  const [navigationRow] = useState(localStorage.getItem('navigation'))
-  const [buttonReturn] = useState(localStorage.getItem('button return'))
-  const [evidences, setEvidences] = useState([])
+  const location = useLocation();
+  const [body, setBody] = useState({});
+  const [eventItem, setEventItem] = useState(location?.state?.item || null);
+  const [navigationRow] = useState(localStorage.getItem("navigation"));
+  const [buttonReturn] = useState(localStorage.getItem("button return"));
+  const [evidences, setEvidences] = useState([]);
   const [id] = useState(useParams());
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   // const storageEventUrl = (url) => {
   //   localStorage.setItem('event', url);
   // };
@@ -34,16 +34,18 @@ const ReadEvent = (props) => {
     if (id.id) {
       getEvent(COMPONENT_URL.event + id.id + "/")
         .then((response) => {
-          setBody(response.data)
-          setEventItem(response.data)
-        }).catch(error => console.log(error));
-    }else{
-      const url=localStorage.getItem('event')
+          setBody(response.data);
+          setEventItem(response.data);
+        })
+        .catch((error) => console.log(error));
+    } else {
+      const url = localStorage.getItem("event");
       getEvent(url)
         .then((response) => {
-          setBody(response.data)
-          setEventItem(response.data)
-        }).catch(error => console.log(error));
+          setBody(response.data);
+          setEventItem(response.data);
+        })
+        .catch((error) => console.log(error));
     }
   }, [id]);
 
@@ -294,8 +296,8 @@ const ReadEvent = (props) => {
           <Row>
             {body.artifacts !== undefined
               ? body.artifacts.map((url) => {
-                  return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
-                })
+                return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
+              })
               : ""}
           </Row>
         </Card.Body>

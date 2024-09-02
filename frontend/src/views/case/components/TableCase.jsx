@@ -188,7 +188,7 @@ const TableCase = ({
         <tbody>
           {list.map((caseItem, index) => {
             const parts = caseItem.url.split("/");
-          let itemNumber = parts[parts.length - 2];
+            let itemNumber = parts[parts.length - 2];
             return (
               <tr key={index}>
                 {!disableCheckbox && (
@@ -265,14 +265,14 @@ const TableCase = ({
                     />
                   ) : (
                     <Link to={`/cases/view/${itemNumber}`}>
-                    <CrudButton type="read" onClick={() => storageCaseUrl(caseItem.url)}/>
-                  </Link>
+                      <CrudButton type="read" onClick={() => storageCaseUrl(caseItem.url)} />
+                    </Link>
                   )}
                   {!disableColumOption &&
                     editColum &&
                     (!caseItem.blocked ? (
                       <Link to={`/cases/edit/${itemNumber}`}>
-                        <CrudButton type="edit"/>
+                        <CrudButton type="edit" />
                       </Link>
                     ) : (
                       <Button

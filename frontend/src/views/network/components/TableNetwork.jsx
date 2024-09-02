@@ -148,7 +148,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
           })}
         </tbody>
       </Table>
-      <ModalDetailNetwork show={modalShow} network={network} onHide={() => setModalShow(false)} id={id}/>
+      <ModalDetailNetwork show={modalShow} network={network} onHide={() => setModalShow(false)} id={id} />
       <ModalConfirm
         type="delete"
         component="Red"

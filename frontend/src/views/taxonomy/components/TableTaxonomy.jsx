@@ -174,10 +174,8 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                   <CrudButton type="delete" onClick={() => Delete(taxonomy.url, taxonomy.name)} />
                 </td>
               </tr>
-            )
-          }
-          )
-          }
+            );
+          })}
         </tbody>
       </Table>
       <Modal size="lg" show={modalShow} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>

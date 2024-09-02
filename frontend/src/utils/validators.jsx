@@ -22,12 +22,11 @@ const validateSpaces = (text) => {
   return !/ /.test(text);
 };
 const validateSpace = (text) => {
-  
   if (text === undefined) {
-    return true
+    return true;
   }
-  return (text.trim() !== '')
-}
+  return text.trim() !== "";
+};
 
 const validateLength = (text, maxLength) => {
   return text && text.length <= maxLength;

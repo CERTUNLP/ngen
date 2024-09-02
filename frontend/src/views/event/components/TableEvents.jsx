@@ -258,9 +258,7 @@ const TableEvents = ({
                         ""
                       ) : (
                         <Link to={`/events/view/${itemNumber}`}>
-                          <CrudButton type="read"
-                            onClick={() => storageEventUrl(
-                              event.url)} />
+                          <CrudButton type="read" onClick={() => storageEventUrl(event.url)} />
                         </Link>
                       )}
                       {disableColumOption ? (

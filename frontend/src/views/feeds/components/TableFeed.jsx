@@ -31,7 +31,6 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
 
   const showModalChangeState = (url, name, active) => {
     setId(url.split("/")[url.split("/").length - 2]);
-    console.log(id)
     setDataState({ url: url, name: name, state: active });
     setShowState(true);
   };

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { Card, Form, Button, Row, Col, Spinner } from 'react-bootstrap'
-import { validateDescription, validateName, validateUnrequiredInput,} from '../../../utils/validators/state'
-import SelectComponent from '../../../components/Select/SelectComponent'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect, useState } from "react";
+import { Card, Form, Button, Row, Col, Spinner } from "react-bootstrap";
+import { validateDescription, validateName, validateUnrequiredInput } from "../../../utils/validators/state";
+import SelectComponent from "../../../components/Select/SelectComponent";
+import { useTranslation } from "react-i18next";
 
 const FormState = ({ body, setBody, createState, type, loading }) => {
-  const [selectAttended, setSelecAttended] = useState()
-  const [selectSolved, setSelectSolved] = useState()
-  const { t } = useTranslation()
+  const [selectAttended, setSelecAttended] = useState();
+  const [selectSolved, setSelectSolved] = useState();
+  const { t } = useTranslation();
   let solvedOptions = [
     { value: true, label: t("ngen.true") },
     { value: false, label: t("ngen.false") }
@@ -31,15 +31,15 @@ const FormState = ({ body, setBody, createState, type, loading }) => {
         }
       });
     }
-  }, [body.solved, body.attended])
+  }, [body.solved, body.attended]);
 
   if (loading) {
     return (
-        <Row className='justify-content-md-center'>
-            <Spinner animation='border' variant='primary' size='sm' />
-        </Row>
+      <Row className="justify-content-md-center">
+        <Spinner animation="border" variant="primary" size="sm" />
+      </Row>
     );
-}
+  }
 
   const completeField = (event) => {
     setBody({

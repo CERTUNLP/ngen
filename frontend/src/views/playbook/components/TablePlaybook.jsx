@@ -102,7 +102,7 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
           })}
         </tbody>
       </Table>
-      <ModalDetailPlaybook show={modalShow} playbook={playbook} onHide={() => setModalShow(false)} id={id}/>
+      <ModalDetailPlaybook show={modalShow} playbook={playbook} onHide={() => setModalShow(false)} id={id} />
       <ModalConfirm
         type="delete"
         component="Playbook"
