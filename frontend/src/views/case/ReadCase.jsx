@@ -43,6 +43,12 @@ const ReadCase = () => {
         .then((response) => {
           setCaseItem(response.data)
         }).catch(error => console.log(error));
+    }else{
+      const url=localStorage.getItem('case')
+      getCase(url)
+        .then((response) => {
+          setCaseItem(response.data)
+        }).catch(error => console.log(error));
     }
   }, [id]);
 

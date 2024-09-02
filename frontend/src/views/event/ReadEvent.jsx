@@ -17,7 +17,7 @@ import EvidenceCard from '../../components/UploadFiles/EvidenceCard'
 import { useTranslation } from 'react-i18next'
 import { COMPONENT_URL } from 'config/constant'
 
-const ReadEvent = () => {
+const ReadEvent = (props) => {
   const location = useLocation()
   const [body, setBody] = useState({})
   const [eventItem, setEventItem] = useState(location?.state?.item || null)
@@ -26,7 +26,6 @@ const ReadEvent = () => {
   const [evidences, setEvidences] = useState([])
   const [id] = useState(useParams());
   const { t } = useTranslation()
-
   // const storageEventUrl = (url) => {
   //   localStorage.setItem('event', url);
   // };
@@ -34,6 +33,13 @@ const ReadEvent = () => {
   useEffect(() => {
     if (id.id) {
       getEvent(COMPONENT_URL.event + id.id + "/")
+        .then((response) => {
+          setBody(response.data)
+          setEventItem(response.data)
+        }).catch(error => console.log(error));
+    }else{
+      const url=localStorage.getItem('event')
+      getEvent(url)
         .then((response) => {
           setBody(response.data)
           setEventItem(response.data)
