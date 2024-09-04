@@ -369,7 +369,7 @@
   "transitionList": "Lista de transiciones",
   "transitionName": "Nombre de la transición",
   "transition_other": "Transiciones",
-  "user.error.fetch": "¡Ups! Hubo un error al obtener los usuarios.",
+  "user.error.fetch": "Se produjo un error al obtener los usuarios.",
   "validate.username": "Solo se permiten letras, números y los caracteres especiales '@', '.', '+', '-', '_'",
   "validation.password": "Se requiere una contraseña",
   "validation.username": "Se requiere un nombre de usuario",
