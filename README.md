@@ -31,7 +31,8 @@ $ cd ngen
 
 ```bash
 $ cd docker
-$ docker compose up --build 
+$ docker compose build
+$ docker compose up
 ```
 
 - Frontend server on port `3000`

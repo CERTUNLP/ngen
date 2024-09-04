@@ -14,7 +14,7 @@ const ListDomain = ({ events }) => {
             })
           )
         );
-        const ListDomain = responses.map((response) => response.domain);
+        const ListDomain = responses.map((response) => response.address_value);
         setEventDomains(ListDomain);
       } catch (error) {
         console.error("Error fetching events:", error);
