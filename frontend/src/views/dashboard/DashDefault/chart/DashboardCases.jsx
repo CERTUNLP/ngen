@@ -58,6 +58,7 @@ const DashboardCases = ({ list, loading }) => {
           disableNubersOfEvents={false}
           disableUuid={true}
           disableDateModified={true}
+          disableEvents={true}
         />
       </Card>
     </div>

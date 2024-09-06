@@ -25,8 +25,8 @@ const AdvancedPagination = ({
 
   useEffect(() => {
     settingPageSize()
-      .then((response) => {
-        setPageSize(response.data.value);
+      .then((value) => {
+        setPageSize(value);
       })
       .catch((error) => {
         console.log(error);

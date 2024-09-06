@@ -40,7 +40,8 @@ const TableCase = ({
   deleteCaseFromForm,
   disableColumOption,
   disableUuid,
-  disableDateModified
+  disableDateModified,
+  disableEvents
 }) => {
   const [url, setUrl] = useState(null);
   const [modalDelete, setModalDelete] = useState(false);
@@ -179,7 +180,7 @@ const TableCase = ({
             )}
             {!disableTlp && <th style={letterSize}> {t("ngen.tlp")} </th>}
             <th style={letterSize}> {t("ngen.state_one")} </th>
-            <th style={letterSize}> {t("ngen.event_other")} </th>
+            {!disableEvents && <th style={letterSize}> {t("ngen.event_other")} </th>}
             {!disableNubersOfEvents && <th style={letterSize}> {t("ngen.event.quantity")} </th>}
             <th style={letterSize}> {t("ngen.status.assigned")} </th>
             {!disableColumOption && <th style={letterSize}> {t("ngen.action_one")} </th>}
@@ -239,9 +240,11 @@ const TableCase = ({
                   </td>
                 )}
                 <td>{stateNames[caseItem.state] || "-"}</td>
-                <td>
-                  <ListDomain events={caseItem.events} />
-                </td>
+                {!disableEvents && (
+                  <td>
+                    <ListDomain events={caseItem.events} />
+                  </td>
+                )}
                 {!disableNubersOfEvents && <td>{caseItem.events_count}</td>}
                 <td>{userNames[caseItem.assigned] || "-"}</td>
                 <td>

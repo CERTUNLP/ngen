@@ -1,49 +1,25 @@
-import React, { useEffect, useState } from "react";
-import Toast from "react-bootstrap/Toast";
-
+import React from "react";
+import { toast } from "react-toastify";
 import store from "../../store";
-import { CLEAR_MESSAGE } from "../../store/actions";
 
 const Alert = ({ showAlert, resetShowAlert, component }) => {
-  const [show, setShow] = useState(false);
-  const [text, setText] = useState("");
-  const [type, setType] = useState("");
+  const textMessage = store.getState().message.text;
+  const typeAlert = store.getState().message.typeMessage;
+  const typeComponent = store.getState().message.typeComponent;
 
-  const textMessage = "changeme"; // store.getState().message.text;
-  const typeAlert = "changeme"; //store.getState().message.typeMessage;
-  const typeComponent = "changeme"; //store.getState().message.typeComponent;
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (showAlert === true && textMessage !== "" && typeComponent === component) {
-      setText(textMessage);
-      setType(typeAlert);
-      setShow(true);
-    } else if (showAlert === true && textMessage !== "" && typeComponent !== component) {
-      resetAlert();
+      if (typeAlert === "success") {
+        toast.success(textMessage);
+      } else {
+        toast.error(textMessage);
+      }
+      resetShowAlert();
+      store.dispatch({ type: "CLEAR_MESSAGE" });
     }
-  });
+  }, [showAlert, textMessage, typeAlert, typeComponent, component, resetShowAlert]);
 
-  const resetAlert = () => {
-    const { dispatch } = store;
-
-    dispatch({
-      type: CLEAR_MESSAGE
-    });
-    setShow(false);
-    resetShowAlert();
-  };
-
-  return (
-    <div id="toastAlert">
-      <Toast id={type === "success" ? "alertStyleGreen" : "alertStyleRed"} onClose={() => resetAlert()} show={show} autohide>
-        <i id="alertStyle__icon" className={type === "success" ? "feather icon-check-circle mx-1" : "feather icon-alert-triangle mx-1"} />
-        <span id="alertStyle__text">{text}</span>
-        <i id="alertStyle__close" className="material-icons" title="Cerrar" onClick={() => resetAlert()}>
-          close
-        </i>
-      </Toast>
-    </div>
-  );
+  return null; // No necesitas renderizar nada en este componente
 };
 
 export default Alert;
