@@ -91,7 +91,9 @@ const logout = (save_url = false) => {
     .then(() => {
       const { dispatch } = store;
       try {
-        localStorage.clear();
+        // localStorage.clear();
+        localStorage.removeItem("ngen-account");
+        localStorage.removeItem("ngen-message");
         if (save_url) {
           dispatch({
             type: SAVE_URL,

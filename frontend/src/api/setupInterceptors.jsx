@@ -36,6 +36,7 @@ const setup = (store) => {
     },
     (error) => {
       if (error.response === undefined) {
+        // setAlert("Falló la conexión al servidor backend", "error", "api"); NO FUNCIONA
         console.log("Falló la conexión al servidor");
         return Promise.reject(error);
       }

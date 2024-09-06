@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 services:
   ngen-postgres:
     image: postgres:latest
@@ -14,7 +14,8 @@ services:
   ngen-adminer:
     image: adminer
     restart: always
-    command: [ "php", "-d", "upload_max_filesize = 10G", "-d", "post_max_size = 10G", "-S", "[::]:8080", "-t", "/var/www/html" ]
+    command:
+      ["php", "-d", "upload_max_filesize = 10G", "-d", "post_max_size = 10G", "-S", "[::]:8080", "-t", "/var/www/html"]
     ports:
       - "8080:8080"
   ngen-django:
@@ -56,7 +57,7 @@ services:
       - "5672:5672"
       - "15672:15672"
   ngen-redis:
-    image: 'redis:alpine'
+    image: "redis:alpine"
     ports:
       - "6379:6379"
     volumes:
@@ -78,7 +79,7 @@ services:
       - "8025:8025" # web ui
   ngen-elasticsearch:
     image: elasticsearch:7.17.4
-    profiles: [ "elastic" ] # once you run with this profile you can't run without it, you should prune containers
+    profiles: ["elastic"] # once you run with this profile you can't run without it, you should prune containers
     environment:
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - http.host=0.0.0.0
@@ -90,15 +91,18 @@ services:
       - ./elasticsearch:/usr/share/elasticsearch/data #sudo  chown -R 1000:1000 elasticsearch
     ports:
       - "9200:9200"
-#    ngen-cortex:
-#        image: thehiveproject/cortex:3.1-withdeps
-#        environment:
-#            - es_hostname=ngen-elasticsearch
-#            - job_directory=/tmp/cortex-jobs
-#        volumes:
-#            - /var/run/docker.sock:/var/run/docker.sock
-#            - /tmp/cortex-jobs:/tmp/cortex-jobs # only works with this and will not work with local volume idk
-#        depends_on:
-#            - ngen-elasticsearch
-#        ports:
-#            - "9001:9001"
+  ngen-frontend:
+    image: certunlp/ngen-frontend:latest
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_APP_VERSION=v3.0.0
+      - GENERATE_SOURCEMAP=false
+      - PUBLIC_URL=http://localhost:3000/
+      - VITE_APP_BASE_NAME=
+      - VITE_APP_BASE_URL=/metrics
+      - VITE_APP_API_SERVER=http://localhost:8000/api/
+      - CHOKIDAR_USEPOLLING=true

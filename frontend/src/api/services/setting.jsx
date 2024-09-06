@@ -56,11 +56,21 @@ const patchSetting = (url, value) => {
       return Promise.reject(error);
     });
 };
+
 const settingPageSize = () => {
-  let messageError = `No se pudo recuperar la informacion de los estados`;
+  const cacheKey = `page_size`;
+  const cachedPageSize = localStorage.getItem(cacheKey);
+
+  if (cachedPageSize) {
+    return Promise.resolve(cachedPageSize);
+  }
+
+  let messageError = `No se pudo recuperar la información del tamaño de página`;
   return apiInstance
     .get(COMPONENT_URL.constance + PAGE_SIZE)
     .then((response) => {
+      // Almacenar en localStorage
+      localStorage.setItem(cacheKey, response.data.value);
       return response;
     })
     .catch((error) => {

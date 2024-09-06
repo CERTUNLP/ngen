@@ -10,34 +10,51 @@ import { PersistGate } from "redux-persist/integration/react"; // Persistencia d
 import "./index.scss"; // Estilos globales
 import App from "./App"; // Componente principal de la aplicación
 import reportWebVitals from "./reportWebVitals"; // Métricas de rendimiento
-// import { persister, store } from './store'; // Store y persister de Redux
 import store from "./store"; // Store de Redux
 import persist from "./store/persist"; // Persister de Redux
-import "./i18n";
-
 import setupInterceptors from "./api/setupInterceptors"; // Configuración de interceptores para API
+
+import { loadEnv } from "./api/services/loadEnv"; // Carga del entorno
+import initializeI18n from "./i18n"; // Cargar la configuración de i18n después de loadEnv
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Importar estilos
 
 // Configuración del nuevo método de renderizado de React 18
 const container = document.getElementById("root");
 const root = createRoot(container);
-root.render(
-  <StrictMode>
-    <Provider store={store}>
-      {" "}
-      {/* Redux Provider */}
-      <ConfigProvider>
-        {" "}
-        {/* Config Provider */}
-        <PersistGate loading={null} persistor={persist}>
-          {" "}
-          {/* Persistencia de Redux */}
-          <App />
-        </PersistGate>
-      </ConfigProvider>
-    </Provider>
-  </StrictMode>
-);
 
-setupInterceptors(store); // Configuración de interceptores para solicitudes API
+const initializeApp = async () => {
+  try {
+    // Cargar variables de entorno
+    await loadEnv();
 
-reportWebVitals(); // Iniciar el monitoreo de métricas de rendimiento
+    // Inicializar i18n
+    await initializeI18n();
+
+    // Renderizar la aplicación
+    root.render(
+      <StrictMode>
+        <Provider store={store}>
+          <ConfigProvider>
+            <PersistGate loading={null} persistor={persist}>
+              <App />
+              <ToastContainer />
+            </PersistGate>
+          </ConfigProvider>
+        </Provider>
+      </StrictMode>
+    );
+  } catch (error) {
+    console.error("Error inicializando la aplicación:", error);
+  }
+};
+
+// Iniciar la aplicación
+initializeApp();
+
+// Configurar interceptores de Axios
+setupInterceptors(store);
+
+// Iniciar el monitoreo de métricas de rendimiento
+reportWebVitals();
