@@ -261,7 +261,7 @@ CONSTANCE_CONFIG = {
     "TEAM_EMAIL": (os.environ.get("TEAM_EMAIL"), "CSIRT team email"),
     "TEAM_EMAIL_PRIORITY": (
         os.environ.get("TEAM_EMAIL_PRIORITY"),
-        "CSIRT team email",
+        "CSIRT team email default priority (Critical is the lowest and will only recieve critical emails, Very low is the highest and will recieve all emails)",
         "priority_field",
     ),
     "TEAM_ABUSE": (os.environ.get("TEAM_ABUSE"), "CSIRT abuse email"),
