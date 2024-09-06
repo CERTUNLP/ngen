@@ -25,7 +25,7 @@ const getAllSetting = (currentPage = 1, results = [], limit = 100) => {
 
 const getSetting = (currentPage) => {
   //el parametro es para completar la url con el numero de pagina
-  let messageError = `No se pudo recuperar la informacion de los estados`;
+  let messageError = `No se pudo recuperar la informacion de la configuracion`;
   return apiInstance
     .get(COMPONENT_URL.constance + PAGE + currentPage)
     .then((response) => {
@@ -38,21 +38,21 @@ const getSetting = (currentPage) => {
 };
 
 const patchSetting = (url, value) => {
-  let messageSuccess = `Los eventps han sido mergeados correctamente.`;
-  let messageError = `Los eventos no han sido mergeados. `;
+  let messageSuccess = `Configuracion guardada con exito.`;
+  let messageError = `No se ha podido guardar la configuracion. `;
 
   return apiInstance
     .patch(url, {
       value: value
     })
     .then((response) => {
-      setAlert(messageSuccess, "success");
+      setAlert(messageSuccess, "success", "setting");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, "error");
+      setAlert(messageError, "error", "setting");
       return Promise.reject(error);
     });
 };

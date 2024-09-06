@@ -60,8 +60,11 @@ const EditSetting = () => {
     let item = list[list.findIndex((item) => item.url === url)];
 
     patchSetting(url, item.value)
-      .then((response) => setIfModify(response), setCurrentPage(1), setUpdatePagination(true))
-      .catch((error) => console.log(error));
+      .then((response) => setIfModify(response))
+      .catch((error) => console.log(error))
+      .finally(() => {
+        setShowAlert(true);
+      });
   };
 
   const completeField = (event, url) => {
@@ -77,7 +80,7 @@ const EditSetting = () => {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="state" />
+      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="setting" />
       <Row>
         <Navigation actualPosition={t("config")} />
       </Row>
