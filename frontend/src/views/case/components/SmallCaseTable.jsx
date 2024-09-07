@@ -100,6 +100,9 @@ const SmallCaseTable = ({ readCase, disableLink, modalCase, modalListCase, modal
           </Row>
         </Card.Header>
         <Card.Body>
+          { (caseItem.length === 0) ? 
+            t("ngen.no_case") :
+          
           <TableCase
             cases={caseItem}
             disableCheckbox={true}
@@ -120,7 +123,7 @@ const SmallCaseTable = ({ readCase, disableLink, modalCase, modalListCase, modal
             disableColumOption={disableColumOption}
             disableDateModified={true}
             disableDate={true}
-          />
+          />}
         </Card.Body>
       </Card>
     </React.Fragment>

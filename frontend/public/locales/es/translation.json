@@ -431,5 +431,6 @@
   "w.verification.preview": "Vista previa de la verificación",
   "w.yes": "Sí",
   "when.share": "¿Cómo compartir?",
-  "when.use": "¿Cuándo usar?"
+  "when.use": "¿Cuándo usar?",
+  "ngen.no_case": "No asignado a un caso"
 }
