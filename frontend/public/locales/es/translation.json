@@ -432,5 +432,6 @@
   "w.yes": "Sí",
   "when.share": "¿Cómo compartir?",
   "when.use": "¿Cuándo usar?",
+  "ngen.not.created.in.system": "No creado en sistema",
   "ngen.no_case": "No asignado a un caso"
 }
