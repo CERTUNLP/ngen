@@ -434,5 +434,6 @@
   "when.use": "¿Cuándo usar?",
   "ngen.not.created.in.system": "No creado en sistema",
   "ngen.no_case": "No asignado a un caso",
-  "ngen.no_evidence": "No hay evidencias cargadas"
+  "ngen.no_evidence": "No hay evidencias cargadas",
+  "ngen.no_event_in_case": "No hay eventos asociados a este caso"
 }
