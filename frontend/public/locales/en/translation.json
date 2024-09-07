@@ -433,5 +433,6 @@
   "when.share": "How to share?",
   "when.use": "When to use?",
   "ngen.not.created.in.system": "Not created in system",
-  "ngen.no_case": "Not assigned to a case"
+  "ngen.no_case": "Not assigned to a case",
+  "ngen.no_evidence": "There are no evidences uploaded"
 }

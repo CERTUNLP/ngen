@@ -34,7 +34,7 @@ const EvidenceCard = (props) => {
       <Card.Body>
         <Form>
           {props.disableDragAndDrop ? (
-            ""
+            t("ngen.no_evidence")
           ) : (
             <Form.Group controlId="Form.Case.Evidences.Drag&Drop">
               <div className="dropzone" onDragOver={handleDragOver} onDrop={handleDrop}>
