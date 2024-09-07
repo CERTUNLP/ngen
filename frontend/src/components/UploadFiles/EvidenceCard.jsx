@@ -32,9 +32,12 @@ const EvidenceCard = (props) => {
         <Card.Title as="h5">{t("ngen.evidences")}</Card.Title>
       </Card.Header>
       <Card.Body>
+        {props.evidences.length === 0 & props.disableDragAndDrop? (t("ngen.no_evidence"))
+        : ("")
+        }
         <Form>
           {props.disableDragAndDrop ? (
-            t("ngen.no_evidence")
+            ""
           ) : (
             <Form.Group controlId="Form.Case.Evidences.Drag&Drop">
               <div className="dropzone" onDragOver={handleDragOver} onDrop={handleDrop}>
