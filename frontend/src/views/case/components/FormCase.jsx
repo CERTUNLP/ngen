@@ -303,6 +303,7 @@ const FormCase = (props) => {
   const editCase = () => {
     // setIfClick(true);
     const form = new FormData();
+    form.append("name", name);
     form.append("date", date);
     form.append("lifecycle", lifecycle);
     if (parent !== null) {
