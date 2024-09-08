@@ -30,7 +30,7 @@ const FormCase = (props) => {
   const [tlp, setTlp] = useState(props.caseItem.tlp);
   const [assigned, setAssigned] = useState(props.caseItem.assigned);
   const [state, setState] = useState(props.caseItem.state);
-  const [events, setEvents] = useState(props.caseItem.events.length > 0 ? props.caseItem.events : []);
+  const [events, setEvents] = props.caseItem.events === undefined ? useState([]) : useState(props.caseItem.events);
   const [comments, setComments] = useState([]);
   const [evidences, setEvidences] = useState([]);
 
