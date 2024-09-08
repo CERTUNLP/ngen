@@ -124,7 +124,7 @@ const ReadEvent = () => {
     <React.Fragment>
       {navigationRow !== "false" ? (
         <Row>
-          <Navigation actualPosition={t("ngen.event.detail")} path="/events" index={t("ngen.event_one")} />
+          <Navigation actualPosition={t("w.detail")} path="/events" index={t("ngen.event_other")} />
         </Row>
       ) : (
         ""
