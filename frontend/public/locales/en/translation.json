@@ -431,6 +431,9 @@
   "w.verification.preview": "Verification preview",
   "w.yes": "Yes",
   "when.share": "How to share?",
-  "when.use": "When to use?"
-  "ngen.not.created.in.system": "Not created in system"
+  "when.use": "When to use?",
+  "ngen.not.created.in.system": "Not created in system",
+  "ngen.no_case": "Not assigned to a case",
+  "ngen.no_evidence": "There are no evidences uploaded",
+  "ngen.no_event_in_case": "This case has no events"
 }

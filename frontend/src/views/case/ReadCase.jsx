@@ -187,16 +187,18 @@ const ReadCase = () => {
                       <td>
                         <Form.Control plaintext readOnly defaultValue={id} />
                       </td>
+                    </tr>
+                    <tr>
                       <td> {t("ngen.name_one")}</td>
                       <td>
                         <Form.Control plaintext readOnly defaultValue={caseItem.name ? caseItem.name : "-"} />
                       </td>
-                    </tr>
-                    <tr>
                       <td>{t("ngen.priority_one")}</td>
                       <td>
                         <Form.Control plaintext readOnly defaultValue={priority} />
                       </td>
+                    </tr>
+                    <tr>
                       <td>{t("ngen.tlp")}</td>
                       <td>
                         <Form.Control plaintext readOnly defaultValue={tlp} />

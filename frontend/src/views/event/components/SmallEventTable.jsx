@@ -74,6 +74,9 @@ const SmallEventTable = ({
           </Row>
         </Card.Header>
         <Card.Body>
+          {(list.length === 0) ? 
+            t("ngen.no_event_in_case") :
+          
           <TableEvents
             events={list}
             taxonomyNames={taxonomyNames}
@@ -92,6 +95,7 @@ const SmallEventTable = ({
             disableUuid={disableUuid}
             disableDateModified={true}
           />
+          }
         </Card.Body>
       </Card>
     </React.Fragment>

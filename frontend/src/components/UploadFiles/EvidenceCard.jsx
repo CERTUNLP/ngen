@@ -32,6 +32,9 @@ const EvidenceCard = (props) => {
         <Card.Title as="h5">{t("ngen.evidences")}</Card.Title>
       </Card.Header>
       <Card.Body>
+        {props.evidences.length === 0 & props.disableDragAndDrop? (t("ngen.no_evidence"))
+        : ("")
+        }
         <Form>
           {props.disableDragAndDrop ? (
             ""

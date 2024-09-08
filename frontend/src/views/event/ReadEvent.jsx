@@ -257,27 +257,31 @@ const ReadEvent = () => {
         <Card.Header>
           <Card.Title as="h5">{t("ngen.affectedResources")}</Card.Title>
         </Card.Header>
-        <Card.Body>
-          <Row>
-            <Col sm={12} lg={2} className={"align-self-center"}>
-              {t("ngen.domain")}
-            </Col>
-            <Col sm={12} lg={4} className={"align-self-center"}>
-              {" "}
-              <Form.Control plaintext readOnly defaultValue={body.domain} />
-            </Col>
-          </Row>
-          <p />
-          <Row>
-            <Col sm={12} lg={2} className={"align-self-center"}>
-              {t("ngen.cidr")}
-            </Col>
-            <Col sm={12} lg={4} className={"align-self-center"}>
-              {" "}
-              <Form.Control plaintext readOnly defaultValue={body.cidr} />
-            </Col>
-          </Row>
-        </Card.Body>
+        {body.domain !== null ? (
+          <Card.Body>
+            <Row>
+              <Col sm={12} lg={2} className={"align-self-center"}>
+                {t("ngen.domain")}
+              </Col>
+              <Col sm={12} lg={4} className={"align-self-center"}>
+                {" "}
+                <Form.Control plaintext readOnly defaultValue={body.domain} />
+              </Col>
+            </Row>
+          </Card.Body>
+        ) : (
+          <Card.Body>
+            <Row>
+              <Col sm={12} lg={2} className={"align-self-center"}>
+                {t("ngen.cidr")}
+              </Col>
+              <Col sm={12} lg={4} className={"align-self-center"}>
+                {" "}
+                <Form.Control plaintext readOnly defaultValue={body.cidr} />
+              </Col>
+            </Row>
+          </Card.Body>
+        )}
       </Card>
 
       <SmallCaseTable readCase={body.case} disableColumOption={true} />
