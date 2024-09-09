@@ -258,13 +258,19 @@ CONSTANCE_ADDITIONAL_FIELDS = {
     ],
 }
 CONSTANCE_CONFIG = {
-    "TEAM_EMAIL": (os.environ.get("TEAM_EMAIL"), "CSIRT team email"),
+    "TEAM_EMAIL": (
+        os.environ.get("TEAM_EMAIL"),
+        "CSIRT team email. This is an email to receive notifications and reports from ngen to the team",
+    ),
     "TEAM_EMAIL_PRIORITY": (
         os.environ.get("TEAM_EMAIL_PRIORITY"),
         "CSIRT team email default priority (Critical is the lowest and will only recieve critical emails, Very low is the highest and will recieve all emails)",
         "priority_field",
     ),
-    "TEAM_ABUSE": (os.environ.get("TEAM_ABUSE"), "CSIRT abuse email"),
+    "TEAM_ABUSE": (
+        os.environ.get("TEAM_ABUSE"),
+        "CSIRT abuse email. This is an email to receive abuse reports from external sources",
+    ),
     "TEAM_URL": (os.environ.get("TEAM_URL"), "CSIRT site url"),
     "TEAM_SITE": (os.environ.get("TEAM_SITE"), "CSIRT team site"),
     "TEAM_LOGO": (
@@ -273,7 +279,10 @@ CONSTANCE_CONFIG = {
         "image_field",
     ),
     "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name"),
-    "EMAIL_SENDER": (os.environ.get("EMAIL_SENDER"), "SMTP sender email address"),
+    "EMAIL_SENDER": (
+        os.environ.get("EMAIL_SENDER"),
+        "SMTP sender email address. This is the email that will be used to send emails from ngen",
+    ),
     "NGEN_LANG": (os.environ.get("NGEN_LANG"), "NGEN default language"),
     "NGEN_LANG_EXTERNAL": (
         os.environ.get("NGEN_LANG_EXTERNAL"),
