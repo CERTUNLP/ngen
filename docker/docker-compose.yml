@@ -61,6 +61,20 @@ services:
       - ngen-django
       - ngen-rabbitmq
       - ngen-redis
+  ngen-celery-flower:
+    image: ngen-django:latest
+    restart: on-failure
+    command: celery -A project flower
+    volumes:
+      - ../:/code
+    env_file:
+      - ngen.env
+    ports:
+      - "5555:5555"
+    depends_on:
+      - ngen-django
+      - ngen-rabbitmq
+      - ngen-redis
   ngen-rabbitmq:
     image: rabbitmq:3-management-alpine
     restart: on-failure

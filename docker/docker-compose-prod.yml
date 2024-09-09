@@ -51,6 +51,18 @@ services:
       - ngen-django
       - ngen-rabbitmq
       - ngen-redis
+  ngen-celery-flower:
+    image: certunlp/ngen-django:latest
+    restart: always
+    command: celery -A project flower
+    env_file:
+      - ngen.env
+    ports:
+      - "5555:5555"
+    depends_on:
+      - ngen-django
+      - ngen-rabbitmq
+      - ngen-redis
   ngen-rabbitmq:
     image: rabbitmq:3-management-alpine
     ports:

@@ -25,6 +25,7 @@ celery==5.3.1
     #   django-celery-beat
     #   django-celery-email
     #   django-celery-results
+    #   flower
 certifi==2024.7.4
     # via
     #   -r requirements.in
@@ -142,6 +143,10 @@ elasticsearch-dsl==7.4.1
     # via
     #   django-elasticsearch-dsl
     #   django-elasticsearch-dsl-drf
+flower==2.0.1
+    # via -r requirements.in
+humanize==4.10.0
+    # via flower
 idna==3.7
     # via
     #   -r requirements.in
@@ -169,6 +174,8 @@ pip-chill==1.0.1
     # via -r requirements.in
 pip-tools==7.3.0
     # via -r requirements.in
+prometheus-client==0.20.0
+    # via flower
 prompt-toolkit==3.0.39
     # via click-repl
 psycopg2-binary==2.9.9
@@ -190,7 +197,9 @@ python-dateutil==2.8.2
 python-magic==0.4.27
     # via cortex4py
 pytz==2023.3
-    # via django-timezone-field
+    # via
+    #   django-timezone-field
+    #   flower
 pyyaml==6.0.1
     # via drf-spectacular
 redis==4.4.4
@@ -217,7 +226,7 @@ six==1.16.0
     #   django-netfields
     #   elasticsearch-dsl
     #   python-dateutil
-sqlparse==0.5.0
+sqlparse==0.5.1
     # via
     #   -r requirements.in
     #   django
@@ -228,6 +237,8 @@ tinycss2==1.1.1
     #   bleach
 tld==0.12.6
     # via -r requirements.in
+tornado==6.4.1
+    # via flower
 typing==3.7.4.3
     # via cortex4py
 tzdata==2023.3
