@@ -31,6 +31,7 @@ const TableTemplete = ({
   const [dataTemplate, setDataTemplate] = useState({});
   const [showTemplate, setShowTemplate] = useState();
   const [showAlert, setShowAlert] = useState(false);
+  const [isCreateCasesDisabled, setIsCreateCasesDisabled] = useState(false);
   const { t } = useTranslation();
 
   if (loading) {
@@ -81,6 +82,11 @@ const TableTemplete = ({
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleClickCreate = (url) => {
+    setIsCreateCasesDisabled(true);
+    create(url);
   };
 
   const changeState = () => {
@@ -206,10 +212,13 @@ const TableTemplete = ({
                       <Button
                         className=""
                         variant="outline-primary"
-                        onClick={() => create(template.url)}
+                        onClick={() => handleClickCreate(template.url)}
                         style={{
-                          borderRadius: "50px"
+                          borderRadius: '50px',
+                          border: isCreateCasesDisabled ? '1px solid #555' : '',
+                          color: isCreateCasesDisabled ? '#555' : '',
                         }}
+                        disabled={isCreateCasesDisabled}
                       >
                         {template.matching_events_without_case_count}
                         <svg
