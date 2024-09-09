@@ -725,7 +725,7 @@ class CaseTemplate(
 
     def get_matching_events_without_case(self):
         return Event.objects.children_of(self).filter(
-            case__isnull=True, taxonomy=self.event_taxonomy, feed=self.event_feed
+            case__isnull=True, taxonomy=self.event_taxonomy, feed=self.event_feed, parent=None
         )
 
     def create_cases_for_matching_events(self):
