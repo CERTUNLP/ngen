@@ -212,3 +212,6 @@ msgstr "Recursos afectados"
 
 msgid "Event Date"
 msgstr "Fecha del evento"
+
+msgid "Task create cases for matching events launched"
+msgstr "Tarea de creación de casos para eventos coincidentes lanzada"

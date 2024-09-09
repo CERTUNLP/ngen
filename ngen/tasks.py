@@ -72,6 +72,12 @@ def case_renotification():
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
+def create_cases_for_matching_events(template_id):
+    template = ngen.models.CaseTemplate.objects.get(pk=template_id)
+    template.create_cases_for_matching_events()
+
+
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def enrich_artifact(artifact_id):
     api = cortex.api_user
     if not api:
@@ -93,8 +99,8 @@ def enrich_artifact(artifact_id):
             for job in jobs:
                 report = api.jobs.get_report(job.id)
                 save_if_fail = (
-                    report.status == "Failure"
-                    and config.ARTIFACT_SAVE_ENRICHMENT_FAILURE
+                        report.status == "Failure"
+                        and config.ARTIFACT_SAVE_ENRICHMENT_FAILURE
                 )
                 if report.status == "Success" or save_if_fail:
                     ngen.models.ArtifactEnrichment.objects.create(
@@ -106,8 +112,8 @@ def enrich_artifact(artifact_id):
                     if config.ARTIFACT_RECURSIVE_ENRICHMENT:
                         for job_artifact in api.jobs.get_artifacts(job.id):
                             if (
-                                job_artifact.dataType
-                                in config.ALLOWED_ARTIFACTS_TYPES.split(",")
+                                    job_artifact.dataType
+                                    in config.ALLOWED_ARTIFACTS_TYPES.split(",")
                             ):
                                 new_artifact, created = (
                                     ngen.models.Artifact.objects.get_or_create(

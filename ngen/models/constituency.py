@@ -122,7 +122,7 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationMode
             qs = self.__class__.objects.filter(**{fn: self.address}).exclude(pk=self.pk)
             if qs.exists():
                 raise ValidationError(
-                    {f"{fn}": [f"Already exists a network with this {fn}"]}
+                    {f"{fn}": [f"Already exists an object of {self._meta.model_name} with this {fn}"]}
                 )
         else:
             raise ValidationError(
