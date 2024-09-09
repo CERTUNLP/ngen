@@ -1,23 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import store from "../../store";
 
-const Alert = ({ showAlert, resetShowAlert, component }) => {
-  const textMessage = store.getState().message.text;
-  const typeAlert = store.getState().message.typeMessage;
-  const typeComponent = store.getState().message.typeComponent;
+const Alert = ({ component }) => {
+  const [textMessage, setTextMessage] = useState("");
+  const [typeAlert, setTypeAlert] = useState("");
+  const [typeComponent, setTypeComponent] = useState("");
 
-  React.useEffect(() => {
-    if (showAlert === true && textMessage !== "" && typeComponent === component) {
-      if (typeAlert === "success") {
-        toast.success(textMessage);
-      } else {
-        toast.error(textMessage);
+  useEffect(() => {
+    // Función para manejar actualizaciones del store
+    const handleStoreChange = () => {
+      const state = store.getState();
+      const message = state.message.text;
+      const alertType = state.message.typeMessage;
+      const componentType = state.message.typeComponent;
+
+      setTextMessage(message);
+      setTypeAlert(alertType);
+      setTypeComponent(componentType);
+
+      // Verifica si el mensaje es para este componente y muestra el toast
+      if (message !== "" && componentType === component) {
+        showToast(alertType, message);
       }
-      resetShowAlert();
+    };
+
+    // Función para mostrar el toast según el tipo de alerta
+    const showToast = (alertType, message) => {
+      if (alertType === "success") {
+        toast.success(message);
+      } else {
+        toast.error(message);
+      }
+      // Limpiar el mensaje en el store
       store.dispatch({ type: "CLEAR_MESSAGE" });
-    }
-  }, [showAlert, textMessage, typeAlert, typeComponent, component, resetShowAlert]);
+    };
+
+    // Mostrar el mensaje inicial si ya existe uno al montar el componente
+    handleStoreChange();
+
+    // Suscribirse al store para escuchar cambios
+    const unsubscribe = store.subscribe(handleStoreChange);
+
+    // Cleanup de la suscripción al desmontar el componente
+    return () => unsubscribe();
+  }, [component]);
 
   return null; // No necesitas renderizar nada en este componente
 };

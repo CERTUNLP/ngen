@@ -79,6 +79,8 @@ const putTemplate = (url, address_value, active, priority, event_taxonomy, event
   return apiInstance
     .put(url, {
       address_value: address_value,
+      cidr: "",
+      domain: "",
       active: active,
       priority: priority,
       event_taxonomy: event_taxonomy,
