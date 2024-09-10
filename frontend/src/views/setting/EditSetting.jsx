@@ -17,7 +17,7 @@ const EditSetting = () => {
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const textareaStyle = {
     resize: "none",
@@ -55,12 +55,24 @@ const EditSetting = () => {
     return url.replace(new RegExp(partToRemove + ".*?(/|$)"), "");
   }
 
+  function updateConfigs(item) {
+    if (item.key === "PAGE_SIZE") {
+      localStorage.setItem("page_size", item.value);
+    } else if (item.key === "NGEN_LANG") {
+      localStorage.setItem("ngen_lang", item.value);
+      i18n.changeLanguage(item.value);
+    }
+  }
+
   const PatchSetting = (url) => {
     // Aquí puedes implementar la lógica para enviar el patch request
     let item = list[list.findIndex((item) => item.url === url)];
 
     patchSetting(url, item.value)
-      .then((response) => setIfModify(response))
+      .then((response) => {
+        setIfModify(response);
+        updateConfigs(item);
+      })
       .catch((error) => console.log(error))
       .finally(() => {
         setShowAlert(true);
