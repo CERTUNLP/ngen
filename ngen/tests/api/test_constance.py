@@ -48,8 +48,8 @@ class TestConstance(APITestCaseWithLogin):
         self.assertEqual(response.data["key"], "TEAM_ABUSE")
         self.assertEqual(response.data["value"], "abuse@ngen.com")
         self.assertEqual(response.data["value_type"], "str")
-        self.assertContains(response.data["help_text"], "CSIRT abuse email")
         self.assertEqual(response.data["default"], "abuse@ngen.com")
+        self.assertTrue("CSIRT abuse email" in response.data["help_text"])
 
     @override_config(TEAM_EMAIL="team@ngen.com")
     def test_constance_post(self):
