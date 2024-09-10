@@ -1,5 +1,6 @@
 import re
 from typing import Union, List, Dict
+from django.conf import settings
 from ngen.models.email_message import EmailMessage as EmailMessageModel
 from ngen.tasks import async_send_email
 
@@ -8,6 +9,10 @@ class EmailHandler:
     """
     Email handler class to send emails
     """
+
+    def __init__(self):
+        self.email_sender = settings.CONSTANCE_CONFIG["EMAIL_SENDER"][0]
+        self.email_username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
 
     def is_valid_email(self, email: str):
         """
@@ -103,7 +108,9 @@ class EmailHandler:
 
         recipients = self.validate_and_format_recipients(recipients, in_reply_to)
 
-        message_id = EmailMessageModel.generate_message_id(domain=self.host)
+        message_id = EmailMessageModel.generate_message_id(
+            domain=self.email_sender.split("@")[1]
+        )
 
         if in_reply_to:
             subject = in_reply_to.subject
@@ -117,7 +124,7 @@ class EmailHandler:
                 in_reply_to.references + [in_reply_to.message_id] if in_reply_to else []
             ),
             message_id=message_id,
-            senders=[{"name": self.username, "email": self.from_email}],
+            senders=[{"name": self.email_username, "email": self.email_sender}],
             recipients=recipients,
             subject=subject,
             body=body,
