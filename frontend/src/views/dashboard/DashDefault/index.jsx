@@ -30,6 +30,10 @@ const DashDefault = () => {
   const [loadingFeeds, setLoadingFeeds] = useState(true);
   const [loadingEntities, setLoadingEntities] = useState(true);
   useEffect(() => {
+    setLoadingCases(true);
+    setLoadingEvents(true);
+    setLoadingFeeds(true);
+    setLoadingEntities(true);
     getMinifiedTaxonomy().then((response) => {
       let dicTaxonomy = {};
       response.forEach((taxonomy) => {
@@ -72,7 +76,7 @@ const DashDefault = () => {
       .then((response) => {
         setDashboardCases(response.data.cases);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => {
         setLoadingCases(false);
       });
@@ -81,7 +85,7 @@ const DashDefault = () => {
       .then((response) => {
         setDashboardNetworkEntities(response.data.network_entities);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => {
         setLoadingEntities(false);
       });
