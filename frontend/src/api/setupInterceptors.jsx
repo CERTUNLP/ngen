@@ -3,6 +3,7 @@ import apiInstance from "./api";
 import { refreshToken } from "./services/auth";
 import setAlert from "../utils/setAlert";
 import { LOGOUT } from "../store/actions";
+import i18next from "i18next";
 
 const setup = (store) => {
   let isRefreshing = false;
@@ -36,8 +37,8 @@ const setup = (store) => {
     },
     (error) => {
       if (error.response === undefined) {
-        // setAlert("Falló la conexión al servidor backend", "error", "api"); NO FUNCIONA
-        console.log("Falló la conexión al servidor");
+        setAlert(i18next.t("ngen.conection_failed"), "error");
+        console.log("Network connection failed");
         return Promise.reject(error);
       }
 
