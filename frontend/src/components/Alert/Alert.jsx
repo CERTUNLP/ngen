@@ -20,7 +20,8 @@ const Alert = ({ component }) => {
       setTypeComponent(componentType);
 
       // Verifica si el mensaje es para este componente y muestra el toast
-      if (message !== "" && componentType === component) {
+      // if (message !== "" && componentType === component) { // Original pero no resuelve muchas vistas
+      if (message !== "") {
         showToast(alertType, message);
       }
     };
