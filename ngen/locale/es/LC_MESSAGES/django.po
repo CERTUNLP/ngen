@@ -2,36 +2,41 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-30 10:19+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2024-09-10 12:15+0000\n"
+"PO-Revision-Date: 2024-09-10 10:30+0000\n"
+"Last-Translator: Mateo Durante <mdurante@cert.unlp.edu.ar>\n"
+"Language-Team: en/es <soporte@cert.unlp.edu.ar>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "English"
-msgstr "Inglés"
+msgid "Domain"
+msgstr "Dominio"
 
-msgid "Spanish"
-msgstr "Español"
+msgid "FQDN"
+msgstr "FQDN"
 
-msgid "Critical"
-msgstr "Crítico"
+msgid "Mail"
+msgstr "Correo"
 
-msgid "High"
-msgstr "Alto"
+msgid "File"
+msgstr "Archivo"
 
-msgid "Medium"
-msgstr "Medio"
+msgid "Other"
+msgstr "Otro"
 
-msgid "Low"
-msgstr "Bajo"
+msgid "User agent"
+msgstr "Agente de usuario"
 
-msgid "Very low"
-msgstr "Muy bajo"
+msgid "Autonomous system"
+msgstr "Sistema autónomo"
+
+msgid ""
+"Designates whether this relation was created automatically and may will be "
+"removed automatically when the related object is modified."
+msgstr ""
 
 msgid "Manual"
 msgstr "Manual"
@@ -45,38 +50,59 @@ msgstr "Apertura automática"
 msgid "Auto close"
 msgstr "Cierre automático"
 
-msgid "Domain"
-msgstr "Dominio"
-
-msgid "File"
-msgstr "Archivo"
-
-msgid "FQDN"
-msgstr "FQDN"
-
-msgid "Mail"
-msgstr "Correo"
-
-msgid "Other"
-msgstr "Otro"
-
-msgid "User agent"
-msgstr "Agente de usuario"
-
-msgid "Autonomous system"
-msgstr "Sistema autónomo"
+#, python-format
+msgid ""
+"It's not possible to change the state %s to %s. The new possible states are "
+"%s"
+msgstr ""
+"No es posible cambiar el estado %s a %s. Los nuevos estados posibles son %s."
 
 msgid "New case"
 msgstr "Nuevo caso"
 
-msgid "Case status updated"
-msgstr "Estado del caso actualizado"
-
 msgid "Case closed"
 msgstr "Caso cerrado"
 
+msgid "Case opened"
+msgstr "Caso abierto"
+
+msgid "Case status updated"
+msgstr "Estado del caso actualizado"
+
 msgid "New event on case"
 msgstr "Nuevo evento en caso"
+
+msgid "Date cannot be in the future"
+msgstr ""
+
+msgid "Parent can't be a descendant of the instance."
+msgstr "El padre no puede ser un descendiente de la instancia."
+
+msgid "The parent must not be the same instance."
+msgstr "El padre no debe ser la misma instancia."
+
+msgid "The parent is not mergeable or is blocked."
+msgstr "El padre no es fusionable o está bloqueado."
+
+msgid "The child is not mergeable or is blocked."
+msgstr "El hijo no es fusionable o está bloqueado."
+
+msgid "Parent of merged instances can't be modified"
+msgstr "Las instancias fusionadas no pueden ser modificadas."
+
+#, python-brace-format
+msgid ""
+"Merged instances can't be modified: {self}, {self.parent}, {self.children}"
+msgstr ""
+"Las instancias fusionadas no pueden ser modificadas: {self}, {self.parent}, "
+"{self.children}."
+
+#, python-brace-format
+msgid "{attr} of blocked instances can't be modified"
+msgstr "{attr} de las instancias bloqueadas no puede ser modificado"
+
+msgid "Address must be either a CIDR or a domain"
+msgstr "La dirección debe ser un CIDR o un dominio"
 
 msgid "Internal"
 msgstr "Interno"
@@ -117,42 +143,36 @@ msgstr "Vulnerabilidad"
 msgid "Incident"
 msgstr "Incidente"
 
-msgid "The parent must not be the same instance."
-msgstr "El padre no debe ser la misma instancia."
+msgid "Group must be the same as parent group and cannot be changed"
+msgstr ""
 
-msgid "The parent is not mergeable or is blocked."
-msgstr "El padre no es fusionable o está bloqueado."
+msgid "Parent must be on the same group"
+msgstr "El padre no debe estar en el mismo grupo"
 
-msgid "The child is not mergeable or is blocked."
-msgstr "El hijo no es fusionable o está bloqueado."
+msgid "Cannot change group"
+msgstr ""
 
-msgid "Parent of merged instances can't be modified"
-msgstr "Las instancias fusionadas no pueden ser modificadas."
+msgid "Cannot create an alias of an alias"
+msgstr ""
 
-msgid "Address must be either a CIDR or a domain."
-msgstr "La dirección debe ser un CIDR o un dominio."
+msgid "Cannot create an alias of itself"
+msgstr ""
 
-msgid "Merged instances can't be modified"
-msgstr "Las instancias fusionadas no pueden ser modificadas."
+msgid "Only internal taxonomies can be aliased"
+msgstr ""
 
-msgid "%s of blocked instances can't be modified"
-msgstr "%s de las instancias bloqueadas no pueden ser modificadas"
+msgid "Internal taxonomy with parent cannot have alias"
+msgstr ""
 
+msgid "Internal taxonomy alias cannot have parent"
+msgstr ""
+
+#, python-format
 msgid "%s of merged events can't be modified"
 msgstr "%s de los eventos fusionados no pueden ser modificados"
 
-msgid ""
-"It's not possible to change the state \"%s\" to \"%s\". The new possible "
-"states are %s"
-msgstr ""
-"No es posible cambiar el estado \"%s\" a \"%s\". Los nuevos estados "
-"posibles son %s."
-
 msgid "Renotification: New Case"
 msgstr "Renotificación: Nuevo Caso"
-
-msgid "Please do not hesitate to contact us if you need further assistance."
-msgstr "No dude en contactarnos si necesita más ayuda."
 
 msgid ""
 "Please remember to reply with the same subject and ID for better tracking of "
@@ -160,6 +180,9 @@ msgid ""
 msgstr ""
 "Recuerde responder con el mismo asunto e ID para un mejor seguimiento del "
 "caso."
+
+msgid "Please do not hesitate to contact us if you need further assistance."
+msgstr "No dude en contactarnos si necesita más ayuda."
 
 msgid "Sincerely"
 msgstr "Atentamente"
@@ -170,8 +193,20 @@ msgstr "Información de contacto"
 msgid "This report was generated with"
 msgstr "Este informe fue generado con"
 
+msgid "Priority"
+msgstr "Prioridad"
+
+#, python-format
 msgid "A new event has been added to the case %(id)s"
 msgstr "Se ha agregado un nuevo evento al caso %(id)s"
+
+#, python-format
+msgid ""
+"We want to inform you that the state of the case number <strong>%(id)s</"
+"strong> has changed to: \"<strong>%(state)s</strong>\""
+msgstr ""
+"Queremos informarle que el estado del caso número <strong>%(id)s</strong> ha "
+"cambiado a: \"<strong>%(state)s</strong>\""
 
 msgid "Case"
 msgstr "Caso"
@@ -181,6 +216,12 @@ msgstr "Evento"
 
 msgid "Taxonomy"
 msgstr "Taxonomía"
+
+msgid "Affected resources"
+msgstr "Recursos afectados"
+
+msgid "Event Date"
+msgstr "Fecha del evento"
 
 msgid "Problem"
 msgstr "Problema"
@@ -197,21 +238,166 @@ msgstr "Recomendaciones"
 msgid "For more information"
 msgstr "Para obtener más información"
 
-msgid "Priority"
-msgstr "Prioridad"
-
-msgid ""
-"We want to inform you that the state of the case number <strong>%(id)s</"
-"strong> has changed to: \"<strong>%(state)s</strong>\""
-msgstr ""
-"Queremos informarle que el estado del caso número <strong>%(id)s</strong> ha "
-"cambiado a: \"<strong>%(state)s</strong>\""
-
-msgid "Affected resources"
-msgstr "Recursos afectados"
-
-msgid "Event Date"
-msgstr "Fecha del evento"
-
 msgid "Task create cases for matching events launched"
 msgstr "Tarea de creación de casos para eventos coincidentes lanzada"
+
+msgid "English"
+msgstr ""
+
+msgid "Spanish"
+msgstr ""
+
+msgid "Critical"
+msgstr "Crítico"
+
+msgid "High"
+msgstr "Alto"
+
+msgid "Medium"
+msgstr "Medio"
+
+msgid "Low"
+msgstr "Bajo"
+
+msgid "Very low"
+msgstr "Muy bajo"
+
+msgid ""
+"CSIRT team email. This is an email to receive notifications and reports from "
+"ngen to the team"
+msgstr ""
+"Correo electrónico del equipo CSIRT. Este es un correo para recibir "
+"notificaciones e informes de ngen al equipo"
+
+msgid ""
+"CSIRT team email default priority (Critical is the lowest and will only "
+"recieve critical emails, Very low is the highest and will recieve all "
+"emails) priority_field"
+msgstr ""
+"Prioridad predeterminada del correo del equipo CSIRT (Crítico es la "
+"prioridad más baja y solo recibirá correos críticos, Muy baja es la "
+"prioridad más alta y recibirá todos los correos)"
+
+msgid ""
+"CSIRT abuse email. This is an email to receive abuse reports from external "
+"sources"
+msgstr ""
+"Correo electrónico de abuso del CSIRT. Este es un correo para recibir "
+"reportes de abuso de fuentes externas"
+
+msgid "CSIRT site url"
+msgstr "URL del sitio del CSIRT"
+
+msgid "CSIRT team site"
+msgstr "Sitio del equipo CSIRT"
+
+#, python-brace-format
+msgid ""
+"Team logo will be saved at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo.png and "
+"generated image of 200x50 pixels max for email logo at /api/media/"
+"{CONSTANCE_FILE_ROOT}/teamlogo_200_50.png"
+msgstr ""
+"El logo del equipo se guardará en /api/media/{CONSTANCE_FILE_ROOT}/teamlogo."
+"png y se generará una imagen de máximo 200x50 píxeles para el logo de correo "
+"electrónico en /api/media/{CONSTANCE_FILE_ROOT}/teamlogo_200_50.png"
+
+msgid ""
+"SMTP sender email address. This is the email that will be used to send "
+"emails from ngen"
+msgstr ""
+"Dirección de correo del remitente SMTP. Este es el correo que se usará para "
+"enviar correos desde ngen"
+
+msgid "NGEN default language"
+msgstr "Idioma predeterminado de NGEN"
+
+msgid "NGEN language for external reports"
+msgstr "Idioma de NGEN para informes externos"
+
+msgid ""
+"Case comma separated fields that could be modified if the instance is merged"
+msgstr ""
+"Campos de casos separados por comas que podrían modificarse si la instancia "
+"se fusiona"
+
+msgid ""
+"Event comma separated fields that could be modified if the instance is merged"
+msgstr ""
+"Campos de eventos separados por comas que podrían modificarse si la "
+"instancia está fusionada"
+
+msgid ""
+"Case comma separated fields that could be modified if the instance is blocked"
+msgstr ""
+"Campos de casos separados por comas que podrían modificarse si la instancia "
+"está bloqueada"
+
+msgid ""
+"Event comma separated fields that could be modified if the instance is "
+"blocked"
+msgstr ""
+"Campos de eventos separados por comas que podrían modificarse si la "
+"instancia está bloqueada"
+
+msgid "If True, ngen will raise an exception if a blocked field is modified"
+msgstr ""
+"Si es Verdadero, ngen generará una excepción si se modifica un campo "
+"bloqueado"
+
+msgid "Priority default attend time in minutes"
+msgstr "Tiempo de atención predeterminado de prioridad en minutos"
+
+msgid "Priority default solve time in minutes"
+msgstr "Tiempo de resolución predeterminado de prioridad en minutos"
+
+msgid "Case default lifecycle"
+msgstr "Ciclo de vida predeterminado del caso"
+
+msgid "Send report on new cases"
+msgstr "Enviar informe sobre nuevos casos"
+
+msgid "Default priority"
+msgstr "Prioridad predeterminada"
+
+msgid "Allowed artifact types"
+msgstr "Tipos de artefactos permitidos"
+
+msgid "Save enrichment even if it fails"
+msgstr "Guardar enriquecimiento incluso si falla"
+
+msgid "Enrich artifacts from artifacts enrichmets"
+msgstr "Enriquecer los artefactos a partir de sus enriquecimientos"
+
+msgid "Cortex host domain:port"
+msgstr "Dominio del host de Cortex:puerto"
+
+msgid "Cortex admin apikey"
+msgstr "Clave API de administrador de Cortex"
+
+msgid "Default page size"
+msgstr "Tamaño de página predeterminado"
+
+msgid "Max page size (use with caution)"
+msgstr "Tamaño máximo de página (usar con precaución)"
+
+msgid "Auto merge events with same domain/cidr and traxonomy"
+msgstr "Fusión automática de eventos con el mismo dominio/cidr y taxonomía"
+
+msgid "Add `same feed` to the auto merge events condition"
+msgstr "Agregar `mismo feed` a la condición de fusión automática de eventos"
+
+msgid ""
+"Add an optional time window to the auto merge events condition (0 disabled)"
+msgstr ""
+"Agregar una ventana de tiempo opcional a la condición de fusión automática "
+"de eventos (0 deshabilitado)"
+
+msgid ""
+"Allow auto creation of taxonomies and groups by the slug on event creation"
+msgstr ""
+"Permitir la creación automática de taxonomías y grupos por el slug al crear "
+"un evento"
+
+#~ msgid "No active account found with the given credentials"
+#~ msgstr ""
+#~ "No se encontró una cuenta activa con las credenciales proporcionadas"

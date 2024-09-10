@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Length
-from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy
 from django_lifecycle import (
     LifecycleModelMixin,
     hook,
@@ -119,7 +119,9 @@ class TreeModelMixin(AL_Node, ValidationModelMixin):
                 raise ValidationError(
                     {
                         "parent": [
-                            gettext("Parent can't be a descendant of the instance.")
+                            gettext_lazy(
+                                "Parent can't be a descendant of the instance."
+                            )
                         ]
                     }
                 )
@@ -160,15 +162,15 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
     def mergeable_with(self, child: "MergeModelMixin") -> bool:
         if self.uuid == child.uuid:
             raise ValidationError(
-                {"parent": gettext("The parent must not be the same instance.")}
+                {"parent": gettext_lazy("The parent must not be the same instance.")}
             )
         if not self.mergeable:
             raise ValidationError(
-                {"parent": gettext("The parent is not mergeable or is blocked.")}
+                {"parent": gettext_lazy("The parent is not mergeable or is blocked.")}
             )
         if child.blocked:
             raise ValidationError(
-                {"__all__": gettext("The child is not mergeable or is blocked.")}
+                {"__all__": gettext_lazy("The child is not mergeable or is blocked.")}
             )
         return True
 
@@ -191,7 +193,11 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
                 self.parent.merge(self)
         else:
             raise ValidationError(
-                {"__all__": gettext("Parent of merged instances can't be modified")}
+                {
+                    "__all__": gettext_lazy(
+                        "Parent of merged instances can't be modified"
+                    )
+                }
             )
 
     @hook(BEFORE_DELETE)
@@ -214,7 +220,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
                     else:
                         raise ValidationError(
                             {
-                                "__all__": gettext(
+                                "__all__": gettext_lazy(
                                     f"Merged instances can't be modified: {self}, {self.parent}, {self.children}"
                                 )
                             }
@@ -226,7 +232,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
                     if config.ALLOWED_FIELDS_BLOCKED_EXCEPTION:
                         exceptions[attr] = [
                             {
-                                "__all__": gettext(
+                                "__all__": gettext_lazy(
                                     f"{attr} of blocked instances can't be modified"
                                 )
                             }
@@ -411,7 +417,9 @@ class AddressModelMixin(ValidationModelMixin, models.Model):
     def clean_fields(self, exclude=None):
         # Reassign address_value to cidr/domain to validate it
         if not self.assign_address():
-            raise ValidationError(gettext("Address must be either a cidr or a domain."))
+            raise ValidationError(
+                gettext_lazy("Address must be either a CIDR or a domain")
+            )
 
         # Validate address_value - cidr/domain consistency
         self.validate_addresses()
