@@ -248,8 +248,8 @@ class Case(
             ):
                 self.communicate_update()
 
-    def merge(self, child: "Case"):
-        super().merge(child)
+    def merge(self, child: "Case", save_child: bool = True):
+        super().merge(child, save_child)
         for evidence in child.evidence.all():
             self.evidence.add(evidence)
         for event in child.events.all():
@@ -542,8 +542,8 @@ class Event(
         self.full_clean()
         super().save(*args, **kwargs)
 
-    def merge(self, child: "Event"):
-        super().merge(child)
+    def merge(self, child: "Event", save_child: bool = True):
+        super().merge(child, save_child)
         if child.case:
             child.case = None
         for todo in child.todos.filter(completed=True):
@@ -725,7 +725,10 @@ class CaseTemplate(
 
     def get_matching_events_without_case(self):
         return Event.objects.children_of(self).filter(
-            case__isnull=True, taxonomy=self.event_taxonomy, feed=self.event_feed, parent=None
+            case__isnull=True,
+            taxonomy=self.event_taxonomy,
+            feed=self.event_feed,
+            parent=None,
         )
 
     def create_cases_for_matching_events(self):

@@ -174,15 +174,17 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
             )
         return True
 
-    def reassign_children(self, child: "MergeModelMixin"):
-        for child_child in child.children.all():
-            child_child.parent = self
-            child_child.save()
+    def reassign_children(self, other: "MergeModelMixin"):
+        for child in other.children.all():
+            child.parent = self
+            child.save()
 
-    def merge(self, child: "MergeModelMixin"):
+    def merge(self, child: "MergeModelMixin", save_child: bool = True):
         self.reassign_children(child)
         child.parent = self
-        child.save()
+        if save_child:
+            # Save child only if it's not saved yet, used to avoid recursion on parent_changed
+            child.save()
 
     @hook(BEFORE_UPDATE, when="parent", has_changed=True)
     @hook(BEFORE_CREATE, when="parent", was=None)
@@ -193,7 +195,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
                 and self.parent.mergeable_with(self)
                 and not self._state.adding
             ):
-                self.reassign_children(self)
+                self.parent.merge(self, save_child=False)
         else:
             raise ValidationError(
                 {
