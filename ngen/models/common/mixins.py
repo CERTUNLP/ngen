@@ -174,10 +174,13 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
             )
         return True
 
-    def merge(self, child: "MergeModelMixin"):
+    def reassign_children(self, child: "MergeModelMixin"):
         for child_child in child.children.all():
             child_child.parent = self
             child_child.save()
+
+    def merge(self, child: "MergeModelMixin"):
+        self.reassign_children(child)
         child.parent = self
         child.save()
 
@@ -190,7 +193,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
                 and self.parent.mergeable_with(self)
                 and not self._state.adding
             ):
-                self.parent.merge(self)
+                self.reassign_children(self)
         else:
             raise ValidationError(
                 {
