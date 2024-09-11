@@ -74,7 +74,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/feeds/edit",
+        path: "/feeds/edit/:id",
         element: lazy(() => import("./views/feeds/EditFeed"))
       },
       {
@@ -89,7 +89,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/taxonomies/edit",
+        path: "/taxonomies/edit/:id",
         element: lazy(() => import("./views/taxonomy/EditTaxonomy"))
       },
       {
@@ -109,7 +109,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/contacts/edit",
+        path: "/contacts/edit/:id",
         element: lazy(() => import("./views/contact/EditContact"))
       },
       {
@@ -124,7 +124,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/entities/edit",
+        path: "/entities/edit/:id",
         element: lazy(() => import("./views/entity/EditEntity"))
       },
       {
@@ -139,7 +139,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/networks/edit",
+        path: "/networks/edit/:id",
         element: lazy(() => import("./views/network/EditNetwork"))
       },
       {
@@ -154,7 +154,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/priorities/edit",
+        path: "/priorities/edit/:id",
         element: lazy(() => import("./views/priority/EditPriority"))
       },
       {
@@ -169,7 +169,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/users/edit",
+        path: "/users/edit/:id",
         element: lazy(() => import("./views/user/EditUser"))
       },
       {
@@ -184,7 +184,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/states/edit",
+        path: "/states/edit/:id",
         element: lazy(() => import("./views/state/EditState"))
       },
       {
@@ -199,12 +199,12 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/events/edit",
+        path: "/events/edit/:id",
         element: lazy(() => import("./views/event/EditEvent"))
       },
       {
         exact: "true",
-        path: "/events/view",
+        path: "/events/view/:id",
         element: lazy(() => import("./views/event/ReadEvent"))
       },
       {
@@ -219,7 +219,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/playbooks/edit",
+        path: "/playbooks/edit/:id",
         element: lazy(() => import("./views/playbook/EditPlaybook"))
       },
       {
@@ -234,12 +234,12 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/cases/edit",
+        path: "/cases/edit/:id",
         element: lazy(() => import("./views/case/EditCase"))
       },
       {
         exact: "true",
-        path: "/cases/view",
+        path: "/cases/view/:id",
         element: lazy(() => import("./views/case/ReadCase"))
       },
       {
@@ -254,7 +254,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/templates/edit",
+        path: "/templates/edit/:id",
         element: lazy(() => import("./views/template/EditTemplate"))
       },
       {
@@ -264,7 +264,7 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/reports/edit",
+        path: "/reports/edit/:id",
         element: lazy(() => import("./views/report/EditReport"))
       },
       {

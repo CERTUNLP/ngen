@@ -115,6 +115,8 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
         </thead>
         <tbody>
           {list.map((entity, index) => {
+            const parts = entity.url.split("/");
+            let itemNumber = parts[parts.length - 2];
             return (
               <tr key={index}>
                 <td>{entity.name}</td>
@@ -124,7 +126,7 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                 <td>{entity.networks.length}</td>
                 <td>
                   <CrudButton type="read" onClick={() => showEntity(entity.url)} />
-                  <Link to="/entities/edit" state={entity}>
+                  <Link to={`/entities/edit/${itemNumber}`}>
                     <CrudButton type="edit" onClick={() => storageEntityUrl(entity.url)} />
                   </Link>
                   <CrudButton type="delete" onClick={() => Delete(entity.url, entity.name)} />
@@ -147,7 +149,7 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                       <span className="d-block m-t-5">{t("ngen.entity_detail")}</span>
                     </Col>
                     <Col sm={12} lg={3}>
-                      <Link to="/entities/edit" state={entity}>
+                      <Link to={`/entities/edit/${id}`}>
                         <CrudButton type="edit" />
                       </Link>
                       <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />

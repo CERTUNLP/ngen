@@ -112,7 +112,9 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
           </tr>
         </thead>
         <tbody>
-          {list.map((contact, index) => {
+          {list.map((contact) => {
+            const parts = contact.url.split("/");
+            let itemNumber = parts[parts.length - 2];
             return (
               <tr key={contact.url}>
                 <td>{contact.name}</td>
@@ -123,7 +125,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                 </td>
                 <td>
                   <CrudButton type="read" onClick={() => showContact(contact.url)} />
-                  <Link to="/contacts/edit" state={contact}>
+                  <Link to={`/contacts/edit/${itemNumber}`}>
                     <CrudButton type="edit" onClick={() => storageContactUrl(contact.url)} />
                   </Link>
                   <CrudButton type="delete" onClick={() => Delete(contact.url, contact.name)} />
@@ -146,7 +148,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                       <span className="d-block m-t-5">{t("ngen.contact.detail")}</span>
                     </Col>
                     <Col sm={2} lg={2}>
-                      <Link to="/contacts/edit" state={contact}>
+                      <Link to={`/contacts/edit/${id}`}>
                         <CrudButton type="edit" />
                       </Link>
                       <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Button, Card, Col, Form, Row, Table } from "react-bootstrap";
 import CallBackendByName from "../../components/CallBackendByName";
 import CallBackendByType from "../../components/CallBackendByType";
@@ -15,33 +15,39 @@ import SmallCaseTable from "../case/components/SmallCaseTable";
 import { getEvidence } from "../../api/services/evidences";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
 import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
-const ReadEvent = () => {
+const ReadEvent = (props) => {
   const location = useLocation();
   const [body, setBody] = useState({});
   const [eventItem, setEventItem] = useState(location?.state?.item || null);
   const [navigationRow] = useState(localStorage.getItem("navigation"));
   const [buttonReturn] = useState(localStorage.getItem("button return"));
-
   const [evidences, setEvidences] = useState([]);
+  const [id] = useState(useParams());
   const { t } = useTranslation();
-  console.log(buttonReturn);
-
   // const storageEventUrl = (url) => {
   //   localStorage.setItem('event', url);
   // };
 
   useEffect(() => {
-    if (!eventItem) {
-      const event = localStorage.getItem("event");
-      getEvent(event)
-        .then((responsive) => {
-          setBody(responsive.data);
-          setEventItem(responsive.data);
+    if (id.id) {
+      getEvent(COMPONENT_URL.event + id.id + "/")
+        .then((response) => {
+          setBody(response.data);
+          setEventItem(response.data);
+        })
+        .catch((error) => console.log(error));
+    } else {
+      const url = localStorage.getItem("event");
+      getEvent(url)
+        .then((response) => {
+          setBody(response.data);
+          setEventItem(response.data);
         })
         .catch((error) => console.log(error));
     }
-  }, [eventItem]);
+  }, [id]);
 
   useEffect(() => {
     const fetchAllEvidences = async () => {
@@ -294,8 +300,8 @@ const ReadEvent = () => {
           <Row>
             {body.artifacts !== undefined
               ? body.artifacts.map((url) => {
-                  return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
-                })
+                return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
+              })
               : ""}
           </Row>
         </Card.Body>

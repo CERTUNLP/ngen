@@ -82,16 +82,20 @@ const FormCreateNetwork = (props) => {
         }
       });
     }
+  }, [props.network_entity, entitiesOption]);
 
-    //selected contacts
-    let listDefaultContact = props.allContacts
-      .filter((elemento) => props.contacts.includes(elemento.value))
-      .map((elemento) => ({
-        value: elemento.value,
-        label: elemento.label
-      }));
-    setContactsValueLabel(listDefaultContact);
-  }, [props.contacts, props.allContacts, props.network_entity]);
+  useEffect(() => {
+    if (props.contacts && props.allContacts) {
+      //selected contacts
+      let listDefaultContact = props.allContacts
+        .filter((elemento) => props.contacts.includes(elemento.value))
+        .map((elemento) => ({
+          value: elemento.value,
+          label: elemento.label
+        }));
+      setContactsValueLabel(listDefaultContact);
+    }
+  }, [props.contacts, props.allContacts]);
 
   //Multiselect
   const selectContacts = (event) => {
@@ -111,7 +115,7 @@ const FormCreateNetwork = (props) => {
         .catch((error) => {
           console.log(error);
         })
-        .finally(() => {});
+        .finally(() => { });
     }
 
     if (event.target.value === "") {
@@ -221,7 +225,7 @@ const FormCreateNetwork = (props) => {
           <Col>
             <Form.Group>
               {
-                props.address_value !== "" && !showErrorMessage && validateSelect(props.type) && props.contacts.length > 0 ? (
+                props.address_value !== "" && !showErrorMessage && props.type !== undefined && props.contacts !== undefined ? (
                   <>
                     <Button variant="primary" onClick={props.ifConfirm}>
                       {t("button.save")}

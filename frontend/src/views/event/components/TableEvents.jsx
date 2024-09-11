@@ -182,6 +182,8 @@ const TableEvents = ({
           </thead>
           <tbody>
             {list.map((event, index) => {
+              const parts = event.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return event ? (
                 <tr key={index}>
                   {/* <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : ""}</td> */}
@@ -255,7 +257,7 @@ const TableEvents = ({
                       {disableColumView ? (
                         ""
                       ) : (
-                        <Link to="/events/view" state={event}>
+                        <Link to={`/events/view/${itemNumber}`}>
                           <CrudButton type="read" onClick={() => storageEventUrl(event.url)} />
                         </Link>
                       )}
@@ -266,7 +268,7 @@ const TableEvents = ({
                       ) : event.blocked || event.parent ? (
                         <CrudButton type="edit" disabled={true} />
                       ) : (
-                        <Link to="/events/edit" state={event}>
+                        <Link to={`/events/edit/${itemNumber}`}>
                           <CrudButton type="edit" />
                         </Link>
                       )}

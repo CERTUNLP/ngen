@@ -21,6 +21,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
   const [cidr, setCidr] = useState(null);
   const [domain, setDomain] = useState(null);
   const [active, setActive] = useState(null);
+  const [id, setId] = useState("");
 
   if (loading) {
     return (
@@ -32,6 +33,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
 
   //Read Network
   const showNetwork = (url) => {
+    setId(url.split("/")[url.split("/").length - 2]);
     setUrl(url);
     setNetwork("");
     getNetwork(url)
@@ -119,6 +121,8 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
         </thead>
         <tbody>
           {list.map((network, index) => {
+            const parts = network.url.split("/");
+            let itemNumber = parts[parts.length - 2];
             return (
               <tr key={index}>
                 <td>{network.address_value}</td>
@@ -134,7 +138,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
                 <td>{network.network_entity ? entityNames[network.network_entity] : "-"}</td>
                 <td>
                   <CrudButton type="read" onClick={() => showNetwork(network.url)} />
-                  <Link to="/networks/edit" state={network}>
+                  <Link to={`/networks/edit/${itemNumber}`}>
                     <CrudButton type="edit" />
                   </Link>
                   <CrudButton type="delete" onClick={() => Delete(network.url, network.cidr, network.domain)} />
@@ -144,7 +148,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
           })}
         </tbody>
       </Table>
-      <ModalDetailNetwork show={modalShow} network={network} onHide={() => setModalShow(false)} />
+      <ModalDetailNetwork show={modalShow} network={network} onHide={() => setModalShow(false)} id={id} />
       <ModalConfirm
         type="delete"
         component="Red"

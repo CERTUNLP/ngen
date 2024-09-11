@@ -306,6 +306,7 @@ const FormCase = (props) => {
     form.append("name", name);
     form.append("date", date);
     form.append("lifecycle", lifecycle);
+    form.append("name", name);
     if (parent !== null) {
       form.append("parent", parent);
     }

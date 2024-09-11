@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Navigation from "../../components/Navigation/Navigation";
 import SmallEventTable from "../event/components/SmallEventTable";
 import { getCase } from "../../api/services/cases";
@@ -9,14 +9,15 @@ import { getEvent } from "../../api/services/events";
 import { getEvidence } from "../../api/services/evidences";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
 import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const ReadCase = () => {
   const location = useLocation();
-  const [caseItem, setCaseItem] = useState(location?.state?.item || null);
+  const [caseItem, setCaseItem] = useState(null);
   const [navigationRow] = useState(localStorage.getItem("navigation"));
   const [buttonReturn] = useState(localStorage.getItem("button return"));
 
-  const [id, setId] = useState("");
+  const [id] = useState(useParams());
   const [date, setDate] = useState("");
   const [attend_date, setAttend_Date] = useState("");
   const [solve_date, setSolve_Date] = useState("");
@@ -37,6 +38,23 @@ const ReadCase = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
+    if (id.id) {
+      getCase(COMPONENT_URL.case + id.id + "/")
+        .then((response) => {
+          setCaseItem(response.data);
+        })
+        .catch((error) => console.log(error));
+    } else {
+      const url = localStorage.getItem("case");
+      getCase(url)
+        .then((response) => {
+          setCaseItem(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [id]);
+
+  useEffect(() => {
     if (caseItem !== null) {
       const eventPromises = caseItem.events.map((url) => getEvent(url));
 
@@ -51,14 +69,6 @@ const ReadCase = () => {
           const errorMessage = t("error.event");
           console.error(errorMessage, error);
         });
-    }
-    if (!caseItem) {
-      const caseUrl = localStorage.getItem("case");
-      getCase(caseUrl)
-        .then((response) => {
-          setCaseItem(response.data);
-        })
-        .catch((error) => console.log(error));
     }
 
     const getEvidenceFile = (url) => {
@@ -120,9 +130,6 @@ const ReadCase = () => {
         setAssigned(t("ngen.status.not_assigned"));
       }
       getName(caseItem.state, setState);
-
-      let idItem = caseItem.url.split("/")[caseItem.url.split("/").length - 2];
-      setId(idItem);
 
       let datetime = caseItem.created.split("T");
       setCreated(datetime[0] + " " + datetime[1].slice(0, 8));
