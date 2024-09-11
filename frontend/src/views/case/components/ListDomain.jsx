@@ -35,12 +35,12 @@ const ListDomain = ({ events }) => {
 
   return (
     <div>
-      <ul>
+      <ul style={{ padding: 0 }}>
         {eventDomains.map((domain, index) => (
-          <li key={index}>{domain}</li>
+          <li key={index} style={{ listStyleType: "none" }}>{domain}</li>
         ))}
       </ul>
-    </div>
+    </div >
   );
 };
 
