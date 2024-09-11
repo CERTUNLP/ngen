@@ -25,7 +25,7 @@ const Profile = () => {
   return (
     <div>
       <Row>
-        <Navigation actualPosition="" />
+        <Navigation actualPosition={t("menu.profile")} />
       </Row>
       <Row>
         <Col>

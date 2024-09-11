@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { ResponsivePieCanvas } from "@nivo/pie";
 import { Row, Spinner } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const FeedGraph = ({ list, loading }) => {
   const [feed, setFeed] = useState([]);
+  const { t } = useTranslation();
 
   const filtrarEventosNoCero = (datos) => {
     //opino que se debe mostrar aquellas fuentes que este asociados a uno amas eventos
@@ -25,6 +27,10 @@ const FeedGraph = ({ list, loading }) => {
     <Row className="justify-content-md-center">
       <Spinner animation="border" variant="primary" />
     </Row>
+  ) : data.length === 0 ? (
+    <div className="text-center">
+      <p>{t("ngen.dashboard.no_data_to_show")}</p>
+    </div>
   ) : (
     <div style={{ height: 600 }}>
       <ResponsivePieCanvas
@@ -116,23 +122,23 @@ const FeedGraph = ({ list, loading }) => {
             id: "lines"
           }
         ]}
-        // legends={[
-        //   {
-        //     anchor: 'right',
-        //     direction: 'column',
-        //     justify: false,
-        //     translateX: 140,
-        //     translateY: 0,
-        //     itemsSpacing: 2,
-        //     itemWidth: 60,
-        //     itemHeight: 14,
-        //     itemTextColor: '#999',
-        //     itemDirection: 'left-to-right',
-        //     itemOpacity: 1,
-        //     symbolSize: 14,
-        //     symbolShape: 'circle'
-        //   }
-        // ]}
+      // legends={[
+      //   {
+      //     anchor: 'right',
+      //     direction: 'column',
+      //     justify: false,
+      //     translateX: 140,
+      //     translateY: 0,
+      //     itemsSpacing: 2,
+      //     itemWidth: 60,
+      //     itemHeight: 14,
+      //     itemTextColor: '#999',
+      //     itemDirection: 'left-to-right',
+      //     itemOpacity: 1,
+      //     symbolSize: 14,
+      //     symbolShape: 'circle'
+      //   }
+      // ]}
       />
     </div>
   );

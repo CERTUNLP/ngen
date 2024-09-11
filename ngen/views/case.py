@@ -1,11 +1,13 @@
 import django_filters
 from django.db.models import Count, Subquery, OuterRef, Value
+from django.utils.translation import gettext_lazy
 from rest_framework import permissions, filters, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ngen import models, serializers
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
+from ngen.tasks import create_cases_for_matching_events
 from ngen.views.communication_channel import BaseCommunicationChannelsViewSet
 
 
@@ -148,12 +150,9 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         Process matching events without parent/case to this template `/template/<pk>/process-events/`.
         """
         template = self.get_object()
-        cases = template.create_cases_for_matching_events()
+        create_cases_for_matching_events.delay(template.pk)
         return Response(
-            serializers.CaseSerializer(
-                cases, many=True, context={"request": request}
-            ).data,
-            status=status.HTTP_201_CREATED,
+            {"message": gettext_lazy("Task create cases for matching events launched")}, status=status.HTTP_200_OK
         )
 
 

@@ -8,6 +8,7 @@ import { createCases, deleteTemplate, isActive } from "../../../api/services/tem
 import Alert from "../../../components/Alert/Alert";
 import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
+import setAlert from "utils/setAlert";
 
 const TableTemplete = ({
   list,
@@ -30,6 +31,7 @@ const TableTemplete = ({
   const [dataTemplate, setDataTemplate] = useState({});
   const [showTemplate, setShowTemplate] = useState();
   const [showAlert, setShowAlert] = useState(false);
+  const [isCreateCasesDisabled, setIsCreateCasesDisabled] = useState(false);
   const { t } = useTranslation();
 
   if (loading) {
@@ -74,12 +76,17 @@ const TableTemplete = ({
 
   const create = (url) => {
     createCases(url)
-      .then(() => {
-        window.location.href = "/templates";
+      .then((result) => {
+        setAlert(result.data.message, "success", "template");
       })
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleClickCreate = (url) => {
+    setIsCreateCasesDisabled(true);
+    create(url);
   };
 
   const changeState = () => {
@@ -102,7 +109,7 @@ const TableTemplete = ({
   const letterSize = { fontSize: "1.1em" };
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
+      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
 
       <ul className="list-group my-4">
         <Table responsive hover className="text-center">
@@ -205,10 +212,13 @@ const TableTemplete = ({
                       <Button
                         className=""
                         variant="outline-primary"
-                        onClick={() => create(template.url)}
+                        onClick={() => handleClickCreate(template.url)}
                         style={{
-                          borderRadius: "50px"
+                          borderRadius: '50px',
+                          border: isCreateCasesDisabled ? '1px solid #555' : '',
+                          color: isCreateCasesDisabled ? '#555' : '',
                         }}
+                        disabled={isCreateCasesDisabled}
                       >
                         {template.matching_events_without_case_count}
                         <svg

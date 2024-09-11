@@ -91,7 +91,7 @@ const FormTemplate = (props) => {
         .catch((error) => {
           console.log(error);
         })
-        .finally(() => {});
+        .finally(() => { });
     }
 
     if (event.target.value === "") {
@@ -168,7 +168,7 @@ const FormTemplate = (props) => {
               <Form.Group controlId="formGridAddress1">
                 <Form.Control
                   placeholder={t("ngen.enter.ipv4.ipv6.domain.email")}
-                  maxLength="150"
+                  maxLength="255"
                   value={props.body.address_value}
                   onChange={(e) => completeFieldStringIdentifier(e)}
                   isInvalid={showErrorMessage}
@@ -246,12 +246,12 @@ const FormTemplate = (props) => {
         </Card.Body>
       </Card>
       {props.body.event_taxonomy !== "-1" &&
-      props.body.event_feed !== "-1" &&
-      props.body.case_tlp !== "-1" &&
-      props.body.priority !== "-1" &&
-      props.body.case_state !== "-1" &&
-      props.body.address_value !== "" &&
-      !showErrorMessage ? (
+        props.body.event_feed !== "-1" &&
+        props.body.case_tlp !== "-1" &&
+        props.body.priority !== "-1" &&
+        props.body.case_state !== "-1" &&
+        props.body.address_value !== "" &&
+        !showErrorMessage ? (
         <Button variant="primary" onClick={props.createTemplate}>
           {t("button.save")}
         </Button>

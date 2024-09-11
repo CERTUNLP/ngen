@@ -16,7 +16,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from celery.schedules import crontab
-from django.utils.translation import gettext_lazy as _, gettext_lazy
+from django.utils.translation import gettext_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,7 +77,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
+    "ngen.middleware.LanguageMiddleware",
     "ngen.middleware.AuditlogMiddleware",
 ]
 
@@ -158,12 +158,15 @@ REST_FRAMEWORK = {
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = os.environ.get("NGEN_LANG", "en")
+
 LANGUAGES = (
-    ("en-us", _("English")),
-    ("es", _("Spanish")),
+    ("en", gettext_lazy("English")),
+    ("es", gettext_lazy("Spanish")),
 )
+
 LOCALE_PATHS = (os.path.join(BASE_DIR, "ngen/locale"),)
+
 TIME_ZONE = "UTC"
 
 USE_I18N = True
@@ -249,7 +252,7 @@ CONSTANCE_ADDITIONAL_FIELDS = {
             "choices": (
                 ("ip", "IP"),
                 ("domain", gettext_lazy("Domain")),
-                ("url", "Url"),
+                ("url", "URL"),
                 ("hash", "Hash"),
                 ("file", gettext_lazy("File")),
                 ("domain", gettext_lazy("Domain")),
@@ -258,115 +261,157 @@ CONSTANCE_ADDITIONAL_FIELDS = {
     ],
 }
 CONSTANCE_CONFIG = {
-    "TEAM_EMAIL": (os.environ.get("TEAM_EMAIL"), "CSIRT team email"),
+    "TEAM_EMAIL": (
+        os.environ.get("TEAM_EMAIL"),
+        gettext_lazy(
+            "CSIRT team email. This is an email to receive notifications and reports from ngen to the team"
+        ),
+    ),
     "TEAM_EMAIL_PRIORITY": (
         os.environ.get("TEAM_EMAIL_PRIORITY"),
-        "CSIRT team email default priority (Critical is the lowest and will only recieve critical emails, Very low is the highest and will recieve all emails)",
-        "priority_field",
+        gettext_lazy(
+            "CSIRT team email default priority (Critical is the lowest and will only recieve critical emails, Very low is the highest and will recieve all emails) priority_field"
+        ),
     ),
-    "TEAM_ABUSE": (os.environ.get("TEAM_ABUSE"), "CSIRT abuse email"),
-    "TEAM_URL": (os.environ.get("TEAM_URL"), "CSIRT site url"),
-    "TEAM_SITE": (os.environ.get("TEAM_SITE"), "CSIRT team site"),
+    "TEAM_ABUSE": (
+        os.environ.get("TEAM_ABUSE"),
+        gettext_lazy(
+            "CSIRT abuse email. This is an email to receive abuse reports from external sources"
+        ),
+    ),
+    "TEAM_URL": (os.environ.get("TEAM_URL"), gettext_lazy("CSIRT site url")),
+    "TEAM_SITE": (os.environ.get("TEAM_SITE"), gettext_lazy("CSIRT team site")),
     "TEAM_LOGO": (
         os.path.join(CONSTANCE_FILE_ROOT, "teamlogo.png"),
-        f"Team logo will be saved at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo.png and generated image of 200x50 pixels max for email logo at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo_200_50.png",
+        gettext_lazy(
+            "Team logo will be saved at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo.png and generated image of 200x50 pixels max for email logo at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo_200_50.png"
+        ),
         "image_field",
     ),
     "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name"),
-    "EMAIL_SENDER": (os.environ.get("EMAIL_SENDER"), "SMTP sender email address"),
-    "NGEN_LANG": (os.environ.get("NGEN_LANG"), "NGEN default language"),
+    "EMAIL_SENDER": (
+        os.environ.get("EMAIL_SENDER"),
+        gettext_lazy(
+            "SMTP sender email address. This is the email that will be used to send emails from ngen"
+        ),
+    ),
+    "NGEN_LANG": (os.environ.get("NGEN_LANG"), gettext_lazy("NGEN default language")),
     "NGEN_LANG_EXTERNAL": (
         os.environ.get("NGEN_LANG_EXTERNAL"),
-        "NGEN language for external reports",
+        gettext_lazy("NGEN language for external reports"),
     ),
     "ALLOWED_FIELDS_MERGED_CASE": (
         os.environ.get("ALLOWED_FIELDS_MERGED_CASE"),
-        "Case comma separated fields that could be modified if the instance is blocked",
+        gettext_lazy(
+            "Case comma separated fields that could be modified if the instance is merged"
+        ),
     ),
     "ALLOWED_FIELDS_MERGED_EVENT": (
         os.environ.get("ALLOWED_FIELDS_MERGED_EVENT"),
-        "Event comma separated fields that could be modified if the instance is blocked. ",
+        gettext_lazy(
+            "Event comma separated fields that could be modified if the instance is merged"
+        ),
     ),
     "ALLOWED_FIELDS_BLOCKED_CASE": (
         os.environ.get("ALLOWED_FIELDS_BLOCKED_CASE"),
-        "Case comma separated fields that could be modified if the instance is blocked",
+        gettext_lazy(
+            "Case comma separated fields that could be modified if the instance is blocked"
+        ),
     ),
     "ALLOWED_FIELDS_BLOCKED_EVENT": (
         os.environ.get("ALLOWED_FIELDS_BLOCKED_EVENT"),
-        "Event comma separated fields that could be modified if the instance is blocked. ",
+        gettext_lazy(
+            "Event comma separated fields that could be modified if the instance is blocked"
+        ),
     ),
     "ALLOWED_FIELDS_BLOCKED_EXCEPTION": (
         os.environ.get("ALLOWED_FIELDS_BLOCKED_EXCEPTION", "false").lower()
         in VALUES_TRUE,
-        "If True, ngen will raise an exception if a blocked field is modified",
+        gettext_lazy(
+            "If True, ngen will raise an exception if a blocked field is modified"
+        ),
         bool,
     ),
     "PRIORITY_ATTEND_TIME_DEFAULT": (
         int(os.environ.get("PRIORITY_ATTEND_TIME_DEFAULT", 10080)),
-        "Priority default attend time in minutes",
+        gettext_lazy("Priority default attend time in minutes"),
         int,
     ),
     "PRIORITY_SOLVE_TIME_DEFAULT": (
         int(os.environ.get("PRIORITY_SOLVE_TIME_DEFAULT", 10080)),
-        "Priority default solve time in minutes",
+        gettext_lazy("Priority default solve time in minutes"),
         int,
     ),
     "CASE_DEFAULT_LIFECYCLE": (
         os.environ.get("CASE_DEFAULT_LIFECYCLE", "manual"),
-        "Case default lifecycle",
+        gettext_lazy("Case default lifecycle"),
         "case_lifecycle",
     ),
     "CASE_REPORT_NEW_CASES": (
         os.environ.get("CASE_REPORT_NEW_CASES", "false").lower() in VALUES_TRUE,
-        "Send report on new cases.",
+        gettext_lazy("Send report on new cases"),
         bool,
     ),
     "PRIORITY_DEFAULT": (
         os.environ.get("PRIORITY_DEFAULT", "Medium"),
-        "Default priority",
+        gettext_lazy("Default priority"),
         "priority_field",
     ),
     "ALLOWED_ARTIFACTS_TYPES": (
         os.environ.get("ALLOWED_ARTIFACTS_TYPES"),
-        "Allowed artifact types",
+        gettext_lazy("Allowed artifact types"),
     ),
     "ARTIFACT_SAVE_ENRICHMENT_FAILURE": (
         os.environ.get("ARTIFACT_SAVE_ENRICHMENT_FAILURE", "false").lower()
         in VALUES_TRUE,
-        "Save enrichment even if it fails.",
+        gettext_lazy("Save enrichment even if it fails"),
         bool,
     ),
     "ARTIFACT_RECURSIVE_ENRICHMENT": (
         os.environ.get("ARTIFACT_RECURSIVE_ENRICHMENT", "false").lower() in VALUES_TRUE,
-        "Enrich artifacts from artifacts enrichmets",
+        gettext_lazy("Enrich artifacts from artifacts enrichmets"),
         bool,
     ),
-    "CORTEX_HOST": (os.environ.get("CORTEX_HOST"), "Cortex host domain:port"),
-    "CORTEX_APIKEY": (os.environ.get("CORTEX_APIKEY", ""), "Cortex admin apikey"),
-    "PAGE_SIZE": (int(os.environ.get("PAGE_SIZE", 10)), "Default page size", int),
+    "CORTEX_HOST": (
+        os.environ.get("CORTEX_HOST"),
+        gettext_lazy("Cortex host domain:port"),
+    ),
+    "CORTEX_APIKEY": (
+        os.environ.get("CORTEX_APIKEY", ""),
+        gettext_lazy("Cortex admin apikey"),
+    ),
+    "PAGE_SIZE": (
+        int(os.environ.get("PAGE_SIZE", 10)),
+        gettext_lazy("Default page size"),
+        int,
+    ),
     "PAGE_SIZE_MAX": (
         int(os.environ.get("PAGE_SIZE_MAX", 100)),
-        "Max page size (use with caution)",
+        gettext_lazy("Max page size (use with caution)"),
         int,
     ),
     "AUTO_MERGE_EVENTS": (
         os.environ.get("AUTO_MERGE_EVENTS", "true").lower() in VALUES_TRUE,
-        "Auto merge events with same domain/cidr and traxonomy",
+        gettext_lazy("Auto merge events with same domain/cidr and traxonomy"),
         bool,
     ),
     "AUTO_MERGE_BY_FEED": (
         os.environ.get("AUTO_MERGE_BY_FEED", "false").lower() in VALUES_TRUE,
-        "Add `same feed` to the auto merge events condition",
+        gettext_lazy("Add `same feed` to the auto merge events condition"),
         bool,
     ),
     "AUTO_MERGE_TIME_WINDOW_MINUTES": (
         int(os.environ.get("AUTO_MERGE_TIME_WINDOW_MINUTES", 0)),
-        "Add an optional time window to the auto merge events condition (0 disabled)",
+        gettext_lazy(
+            "Add an optional time window to the auto merge events condition (0 disabled)"
+        ),
         int,
     ),
     "TAXONOMY_ALLOW_AUTO_CREATE": (
         os.environ.get("TAXONOMY_ALLOW_AUTO_CREATE", "true").lower() in VALUES_TRUE,
-        "Allow auto creation of taxonomies and groups by the slug on event creation",
+        gettext_lazy(
+            "Allow auto creation of taxonomies and groups by the slug on event creation"
+        ),
         bool,
     ),
 }

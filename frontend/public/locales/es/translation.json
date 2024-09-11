@@ -129,8 +129,7 @@
   "ngen.create.event.success": "El evento fue creado exitosamente",
   "ngen.dashboard.entities_graphic": "Gráfico de entidades afectadas",
   "ngen.dashboard.feeds_graphic": "Gráfico de fuentes",
-  "ngen.dashboard.no_events_associated_with_entities": "No hay eventos asociados con una entidad",
-  "ngen.dashboard.no_events_associated_with_feeds": "No hay feeds asociados con un evento",
+  "ngen.dashboard.no_data_to_show": "No hay datos para mostrar",
   "ngen.date.created": "Fecha de creación",
   "ngen.date.modified": "Fecha de modificación",
   "ngen.default": "Predeterminado",
@@ -435,5 +434,6 @@
   "ngen.not.created.in.system": "No creado en sistema",
   "ngen.no_case": "No asignado a un caso",
   "ngen.no_evidence": "No hay evidencias cargadas",
-  "ngen.no_event_in_case": "No hay eventos asociados a este caso"
+  "ngen.no_event_in_case": "No hay eventos asociados a este caso",
+  "ngen.conection_failed": "Error de conexión con el servidor"
 }

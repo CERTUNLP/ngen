@@ -46,9 +46,11 @@ const login = (username, password) => {
       return response;
     })
     .catch((error) => {
-      console.log(error);
-      if (error.response.data.detail === "La combinación de credenciales no tiene una cuenta activa") {
+      // console.log(error);
+      if (error.response?.data?.detail && error.status === 401) {
         setAlert(i18next.t("ngen.auth.login.invalidCredentials"), "error");
+      } else if (error.message) {
+        setAlert(`${i18next.t("ngen.auth.login.error")}: ${error.message}`, "error");
       } else {
         setAlert(i18next.t("ngen.auth.login.error"), "error");
       }
@@ -85,34 +87,37 @@ const refreshToken = () => {
     });
 };
 
+const _doLogout = (save_url) => {
+  const { dispatch } = store;
+  // localStorage.clear();
+  localStorage.removeItem("ngen-account");
+  localStorage.removeItem("ngen-message");
+  if (save_url) {
+    dispatch({
+      type: SAVE_URL,
+      payload: {
+        url: save_url === true ? window.location.pathname : null
+      }
+    });
+  }
+  dispatch({
+    type: LOGOUT
+  });
+  document.title = "NGEN";
+}
+
 const logout = (save_url = false) => {
   return apiInstance
     .post(COMPONENT_URL.logout)
-    .then(() => {
-      const { dispatch } = store;
-      try {
-        // localStorage.clear();
-        localStorage.removeItem("ngen-account");
-        localStorage.removeItem("ngen-message");
-        if (save_url) {
-          dispatch({
-            type: SAVE_URL,
-            payload: {
-              url: save_url === true ? window.location.pathname : null
-            }
-          });
-        }
-        dispatch({
-          type: LOGOUT
-        });
-        document.title = "NGEN";
-      } catch (e) {
-        console.log(e);
-        console.log("Error en el dispatch logout");
-      }
-    })
     .catch((error) => {
       return Promise.reject(error);
+    })
+    .finally(() => {
+      try {
+        _doLogout(save_url);
+      } catch (e) {
+        console.log("Error en el dispatch logout: " + e);
+      }
     });
 };
 

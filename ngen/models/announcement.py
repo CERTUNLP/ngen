@@ -1,4 +1,5 @@
 import re
+import logging
 from collections import defaultdict
 
 from constance import config
@@ -16,6 +17,7 @@ from ngen.models.common.mixins import (
     ValidationModelMixin,
 )
 
+logger = logging.getLogger(__name__)
 
 class Communication:
     @staticmethod
@@ -38,7 +40,10 @@ class Communication:
             email.attach_alternative(content["html"], "text/html")
             email.extra_headers.update(extra_headers)
             for attachment in attachments:
-                email.attach(attachment["name"], attachment["file"].read())
+                try:
+                    email.attach(attachment["name"], attachment["file"].read())
+                except Exception as e:
+                    logger.error(f"Error attaching file: {e}")
             email.send()
 
     @staticmethod

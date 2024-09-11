@@ -129,8 +129,7 @@
   "ngen.create.event.success": "The event was successfully created",
   "ngen.dashboard.entities_graphic": "Affected entities graphic",
   "ngen.dashboard.feeds_graphic": "Feeds graphic",
-  "ngen.dashboard.no_events_associated_with_entities": "There are no events associated with an entity",
-  "ngen.dashboard.no_events_associated_with_feeds": "There are no feeds associated with an event",
+  "ngen.dashboard.no_data_to_show": "No data to show",
   "ngen.date.created": "Date created",
   "ngen.date.modified": "Date modified",
   "ngen.default": "Default",
@@ -435,5 +434,6 @@
   "ngen.not.created.in.system": "Not created in system",
   "ngen.no_case": "Not assigned to a case",
   "ngen.no_evidence": "There are no evidences uploaded",
-  "ngen.no_event_in_case": "This case has no events"
+  "ngen.no_event_in_case": "This case has no events",
+  "ngen.conection_failed": "Connection failed with the server"
 }
