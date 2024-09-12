@@ -132,12 +132,11 @@ const DashDefault = () => {
     const now = new Date();
     now.setDate(now.getDate() - 7);
 
-    // Get the year, month, day, hour, and minute
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based, so we add 1
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const year = now.getUTCFullYear();
+    const month = (now.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = now.getUTCDate().toString().padStart(2, "0");
+    const hours = now.getUTCHours().toString().padStart(2, "0");
+    const minutes = now.getUTCMinutes().toString().padStart(2, "0");
 
     // Format the date and time in the desired format
     return `${year}-${month}-${day}T${hours}:${minutes}`;
@@ -147,13 +146,11 @@ const DashDefault = () => {
     // Create a new Date instance to get the current date and time
     const now = new Date();
 
-    // Get the year, month, day, hour, minute, and second
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based, so we add 1
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
+    const year = now.getUTCFullYear();
+    const month = (now.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = now.getUTCDate().toString().padStart(2, "0");
+    const hours = now.getUTCHours().toString().padStart(2, "0");
+    const minutes = now.getUTCMinutes().toString().padStart(2, "0");
 
     // Format the date and time in the desired format
     const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
@@ -168,13 +165,11 @@ const DashDefault = () => {
     // Subtract 7 days from the current date
     now.setDate(now.getDate() - 7);
 
-    // Get the year, month, day, hour, minute, and second
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based, so we add 1
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
+    const year = now.getUTCFullYear();
+    const month = (now.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = now.getUTCDate().toString().padStart(2, "0");
+    const hours = now.getUTCHours().toString().padStart(2, "0");
+    const minutes = now.getUTCMinutes().toString().padStart(2, "0");
 
     // Format the date and time in the desired format
     const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
