@@ -55,7 +55,7 @@ const SmallEventTable = ({
         <Card.Header>
           <Row>
             <Col sm={12} lg={8}>
-              <Card.Title as="h5">{title || t("ngen.event_one")}</Card.Title>
+              <Card.Title as="h5">{title || t("ngen.event_other")}</Card.Title>
             </Col>
             {disableLink ? (
               ""

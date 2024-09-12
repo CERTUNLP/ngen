@@ -653,6 +653,7 @@ const FormCase = (props) => {
           modalEvent={modalEvent}
           disableUuid={false}
           disableColumOption={false}
+          disableLink={true}
         />
       )}
 
