@@ -9,6 +9,7 @@ import { getUser } from "../../api/services/users";
 import { getTLPSpecific } from "../../api/services/tlp";
 import { getFeed } from "../../api/services/feeds";
 import { getEvent } from "../../api/services/events";
+import SmallEventTable from "./components/SmallEventTable";
 import Navigation from "../../components/Navigation/Navigation";
 import { getArtefact } from "../../api/services/artifact";
 import SmallCaseTable from "../case/components/SmallCaseTable";
@@ -24,8 +25,9 @@ const ReadEvent = () => {
   const [buttonReturn] = useState(localStorage.getItem("button return"));
 
   const [evidences, setEvidences] = useState([]);
+  const [children, setChildren] = useState([]);
+  const [childrenEvidences, setChildrenEvidences] = useState([]);
   const { t } = useTranslation();
-  console.log(buttonReturn);
 
   // const storageEventUrl = (url) => {
   //   localStorage.setItem('event', url);
@@ -61,7 +63,47 @@ const ReadEvent = () => {
 
     // Llamar a la función para obtener los datos de las evidencias
     fetchAllEvidences();
+
+    const fetchAllChildren = async () => {
+      if (eventItem) {
+        try {
+          // Esperar a que todas las promesas de getEvent se resuelvan
+          const responses = await Promise.all(eventItem.children.map((url) => getEvent(url)));
+          // Extraer los datos de las respuestas
+          const data = responses.map((response) => response.data);
+          // Actualizar el estado con los datos de todos los eventos hijos
+          setChildren(data);
+        } catch (error) {
+          console.error("Error fetching children data:", error);
+        }
+      }
+    }
+
+    // Llamar a la función para obtener los datos de los eventos hijos
+    fetchAllChildren();
   }, [eventItem]);
+
+  useEffect(() => {
+    const fetchAllChildrenEvidences = async () => {
+      if (children.length > 0) {
+        try {
+          // Esperar a que todas las promesas de getEvidence se resuelvan para cada evento hijo, cada evidencia
+          const responses = await Promise.all(
+            children.map((child) => Promise.all(child.evidence.map((url) => getEvidence(url)))
+            ));
+          // Extraer los datos de las respuestas
+          const data = responses.map((response) => response[0]?.data);
+          // Actualizar el estado con los datos de todas las evidencias de los eventos hijos
+          setChildrenEvidences(data);
+        } catch (error) {
+          console.error("Error fetching children evidences data:", error);
+        }
+      }
+    };
+
+    // Llamar a la función para obtener los datos de las evidencias de los eventos hijos
+    fetchAllChildrenEvidences();
+  }, [children]);
 
   const callbackTaxonomy = (url, setPriority) => {
     getTaxonomy(url)
@@ -294,14 +336,20 @@ const ReadEvent = () => {
           <Row>
             {body.artifacts !== undefined
               ? body.artifacts.map((url) => {
-                  return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
-                })
+                return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
+              })
               : ""}
           </Row>
         </Card.Body>
       </Card>
 
       <EvidenceCard evidences={evidences} disableDelete={true} disableDragAndDrop={true} />
+
+      <EvidenceCard evidences={childrenEvidences} disableDelete={true} disableDragAndDrop={true} title={t("ngen.evidences.children")} />
+
+      {/* deshabilitamos la columna opciones para view y delete hasta que se corrija el uso de localstorage para la navegacion ya que no puede ir de un evento a otro sin usar href.location */}
+      <SmallEventTable list={children} disableLink={true} disableColumOption={true} disableUuid={false} disableColumnDelete={false} disableMerged={true} title={t("ngen.children")} />
+
       <Card>
         <Card.Header>
           <Card.Title as="h5">{t("ngen.event.additional")}</Card.Title>

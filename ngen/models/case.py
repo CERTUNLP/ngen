@@ -123,6 +123,10 @@ class Case(
         return str(self.pk)
 
     @property
+    def evidence_case(self):
+        return list(self.evidence.all())
+
+    @property
     def evidence_events(self):
         evidence = []
         for event in self.events.all():
@@ -131,7 +135,7 @@ class Case(
 
     @property
     def evidence_all(self):
-        return list(self.evidence.all()) + self.evidence_events
+        return self.evidence_case + self.evidence_events
 
     @property
     def blocked(self):

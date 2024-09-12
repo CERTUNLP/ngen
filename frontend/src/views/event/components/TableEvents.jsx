@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Form, Row, Spinner, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import CrudButton from "../../../components/Button/CrudButton";
@@ -47,6 +48,7 @@ const TableEvents = ({
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [list, setList] = useState([]);
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   if (selectedEvent === undefined) {
     selectedEvent = [];
@@ -115,8 +117,9 @@ const TableEvents = ({
     }
   };
 
-  const storageEventUrl = (url) => {
+  const navigateToEvent = (url) => {
     localStorage.setItem("event", url);
+    navigate("/events/view");
   };
 
   const letterSize = { fontSize: "1.1em" };
@@ -236,7 +239,7 @@ const TableEvents = ({
                         <Button
                           className="fa fa-eye mx-auto font-weight-light"
                           variant="outline-primary"
-                          onClick={() => storageEventUrl(event.parent)}
+                          onClick={() => navigateToEvent(event.parent)}
                         >
                           {" " + t("ngen.event.parent")}
                         </Button>
@@ -256,7 +259,7 @@ const TableEvents = ({
                         ""
                       ) : (
                         <Link to="/events/view" state={event}>
-                          <CrudButton type="read" onClick={() => storageEventUrl(event.url)} />
+                          <CrudButton type="read" onClick={() => navigateToEvent(event.url)} />
                         </Link>
                       )}
                       {disableColumOption ? (

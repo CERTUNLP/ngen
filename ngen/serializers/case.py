@@ -186,6 +186,7 @@ class CaseSerializer(
         many=True, read_only=True, view_name="case-detail"
     )
     evidence = serializers.SerializerMethodField(read_only=True)
+    evidence_events = serializers.SerializerMethodField(read_only=True)
     comments = serializers.SerializerMethodField()
     user_creator = serializers.HyperlinkedRelatedField(
         default=serializers.CreateOnlyDefault(serializers.CurrentUserDefault()),
@@ -208,6 +209,7 @@ class CaseSerializer(
             "events",
             "children",
             "evidence",
+            "evidence_events",
             "comments",
             "user_creator",
             "state",
@@ -242,7 +244,12 @@ class CaseSerializer(
 
     def get_evidence(self, obj):
         return GenericRelationField(read_only=True).generic_detail_links(
-            obj.evidence_all, self.context.get("request")
+            obj.evidence_case, self.context.get("request")
+        )
+
+    def get_evidence_events(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_links(
+            obj.evidence_events, self.context.get("request")
         )
 
     @staticmethod

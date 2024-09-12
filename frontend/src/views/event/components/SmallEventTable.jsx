@@ -8,12 +8,14 @@ import { useTranslation } from "react-i18next";
 
 const SmallEventTable = ({
   list,
+  title,
   disableLink,
   modalListEvent,
   modalEventDetail,
   deleteEventFromForm,
   disableColumOption,
   modalEvent,
+  disableMerged,
   disableUuid,
   disableColumnDelete
 }) => {
@@ -52,7 +54,7 @@ const SmallEventTable = ({
         <Card.Header>
           <Row>
             <Col sm={12} lg={8}>
-              <Card.Title as="h5">{t("ngen.event_one")}</Card.Title>
+              <Card.Title as="h5">{title || t("ngen.event_one")}</Card.Title>
             </Col>
             {disableLink ? (
               ""
@@ -96,6 +98,7 @@ const SmallEventTable = ({
               disableUuid={disableUuid}
               disableDateModified={true}
               disableColumnDelete={disableColumnDelete}
+              disableMerged={disableMerged}
             />
           }
         </Card.Body>

@@ -33,6 +33,7 @@ const ReadCase = () => {
   const [list, setList] = useState([]);
 
   const [evidences, setEvidences] = useState([]);
+  const [eventEvidences, setEventEvidences] = useState([]);
 
   const { t } = useTranslation();
 
@@ -109,8 +110,10 @@ const ReadCase = () => {
 
     if (caseItem) {
       if (caseItem.evidence.length > 0) {
-        // aca esta el error en los read
-        getEvidenceFile(caseItem.evidence).then((r) => console.log(r));
+        getEvidenceFile(caseItem.evidence);
+      }
+      if (caseItem.evidence_events.length > 0) {
+        getEvidenceFile(caseItem.evidence_events);
       }
       getName(caseItem.priority, setPriority);
       getName(caseItem.tlp, setTlp);
@@ -142,21 +145,40 @@ const ReadCase = () => {
   }, [caseItem]);
 
   useEffect(() => {
-    const fetchAllEvidences = async () => {
-      try {
-        // Esperar a que todas las promesas de getEvidence se resuelvan
-        const responses = await Promise.all(caseItem.evidence.map((url) => getEvidence(url)));
-        // Extraer los datos de las respuestas
-        const data = responses.map((response) => response.data);
-        // Actualizar el estado con los datos de todas las evidencias
-        setEvidences(data);
-      } catch (error) {
-        console.error("Error fetching evidence data:", error);
-      }
-    };
+    if (caseItem) {
+      const fetchAllEvidences = async () => {
+        try {
+          // Esperar a que todas las promesas de getEvidence se resuelvan
+          const responses = await Promise.all(caseItem.evidence.map((url) => getEvidence(url)));
+          // Extraer los datos de las respuestas
+          const data = responses.map((response) => response.data);
+          // Actualizar el estado con los datos de todas las evidencias
+          setEvidences(data);
+        } catch (error) {
+          console.error("Error fetching evidence data:", error);
+        }
+      };
 
-    // Llamar a la función para obtener los datos de las evidencias
-    fetchAllEvidences();
+      // Llamar a la función para obtener los datos de las evidencias
+      fetchAllEvidences();
+
+
+      const fetchAllEventEvidences = async () => {
+        try {
+          // Esperar a que todas las promesas de getEvidence se resuelvan
+          const responses = await Promise.all(caseItem.evidence_events.map((url) => getEvidence(url)));
+          // Extraer los datos de las respuestas
+          const data = responses.map((response) => response.data);
+          // Actualizar el estado con los datos de todas las evidencias
+          setEventEvidences(data);
+        } catch (error) {
+          console.error("Error fetching event evidence data:", error);
+        }
+      };
+
+      // Llamar a la función para obtener los datos de las evidencias
+      fetchAllEventEvidences();
+    }
   }, [caseItem]);
 
   return (
@@ -274,7 +296,9 @@ const ReadCase = () => {
               </Card.Body>
             </Card>
 
-            <EvidenceCard evidences={evidences} disableDelete={true} disableDragAndDrop={true} />
+            <EvidenceCard evidences={evidences} disableDelete={true} disableDragAndDrop={true} title={`${t("ngen.evidences.case")}`} />
+
+            <EvidenceCard evidences={eventEvidences} disableDelete={true} disableDragAndDrop={true} title={`${t("ngen.evidences.event")}`} />
 
             <SmallEventTable list={list} disableLink={true} disableColumOption={false} disableUuid={false} disableColumnDelete={true} />
 
