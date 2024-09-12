@@ -14,7 +14,8 @@ const SmallEventTable = ({
   deleteEventFromForm,
   disableColumOption,
   modalEvent,
-  disableUuid
+  disableUuid,
+  disableColumnDelete
 }) => {
   const [taxonomyNames, setTaxonomyNames] = useState({});
   const [feedNames, setFeedNames] = useState({});
@@ -74,27 +75,28 @@ const SmallEventTable = ({
           </Row>
         </Card.Header>
         <Card.Body>
-          {(list.length === 0) ? 
+          {(list.length === 0) ?
             t("ngen.no_event_in_case") :
-          
-          <TableEvents
-            events={list}
-            taxonomyNames={taxonomyNames}
-            feedNames={feedNames}
-            tlpNames={tlpNames}
-            disableDate={true}
-            disableCheckbox={true}
-            disableTemplate={true}
-            deleteColumForm={true}
-            disableColumnEdit={true}
-            disableCheckboxAll={true}
-            detailModal={false}
-            modalEventDetail={modalEventDetail}
-            deleteEventFromForm={deleteEventFromForm}
-            disableColumOption={disableColumOption}
-            disableUuid={disableUuid}
-            disableDateModified={true}
-          />
+
+            <TableEvents
+              events={list}
+              taxonomyNames={taxonomyNames}
+              feedNames={feedNames}
+              tlpNames={tlpNames}
+              disableDate={true}
+              disableCheckbox={true}
+              disableTemplate={true}
+              deleteColumForm={true}
+              disableColumnEdit={true}
+              disableCheckboxAll={true}
+              detailModal={false}
+              modalEventDetail={modalEventDetail}
+              deleteEventFromForm={deleteEventFromForm}
+              disableColumOption={disableColumOption}
+              disableUuid={disableUuid}
+              disableDateModified={true}
+              disableColumnDelete={disableColumnDelete}
+            />
           }
         </Card.Body>
       </Card>

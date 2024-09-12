@@ -276,7 +276,7 @@ const ReadCase = () => {
 
             <EvidenceCard evidences={evidences} disableDelete={true} disableDragAndDrop={true} />
 
-            <SmallEventTable list={list} disableLink={true} disableColumOption={true} disableUuid={false} />
+            <SmallEventTable list={list} disableLink={true} disableColumOption={false} disableUuid={false} disableColumnDelete={true} />
 
             <Card>
               <Card.Header>

@@ -66,7 +66,7 @@ const TableCase = ({
     localStorage.setItem("case", url);
     localStorage.setItem("navigation", navigationRow);
     localStorage.setItem("button return", navigationRow);
-    window.location.href = "/cases/view";
+
   };
 
   const handleOnClick = (url) => {
@@ -265,7 +265,7 @@ const TableCase = ({
                       }
                     />
                   ) : (
-                    <Link to="/cases/view">
+                    <Link to="/cases/view" state={caseItem.url}>
                       <CrudButton type="read" onClick={() => storageCaseUrl(caseItem.url)} />
                     </Link>
                   )}
