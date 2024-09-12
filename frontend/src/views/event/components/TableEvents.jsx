@@ -40,7 +40,8 @@ const TableEvents = ({
   disableUuid,
   disableMerged,
   disableDateModified,
-  disableOrdering
+  disableOrdering,
+  disableColumnCase
 }) => {
   const [deleteUrl, setDeleteUrl] = useState();
   const [remove, setRemove] = useState();
@@ -180,6 +181,7 @@ const TableEvents = ({
               {!disableMerged && <th style={letterSize}>{t("ngen.event.merged")}</th>}
               <th style={letterSize}>{t("ngen.taxonomy_one")}</th>
               <th style={letterSize}>{t("ngen.feed.information")}</th>
+              {!disableColumnCase && <th style={letterSize}>{t("ngen.case_one")}</th>}
               {!disableColumOption && <th style={letterSize}>{t("ngen.options")}</th>}
             </tr>
           </thead>
@@ -252,6 +254,25 @@ const TableEvents = ({
                   <td>{taxonomyNames[event.taxonomy]}</td>
 
                   <td>{feedNames[event.feed]}</td>
+
+                  {!disableColumnCase ? (
+                    event.case ? (
+                      <td>
+                        <Link to="/cases/view" state={event.case}>
+                          <Button
+                            className="fa fa-eye mx-auto font-weight-light"
+                            variant="outline-primary"
+                            onClick={() => console.log("")}
+                          >
+                            {" " + t("ngen.case_one")}
+                          </Button>
+                        </Link>
+                      </td>
+                    ) : (
+                      <td></td>
+                    ))
+                    : ""
+                  }
 
                   {!disableColumOption ? (
                     <td>

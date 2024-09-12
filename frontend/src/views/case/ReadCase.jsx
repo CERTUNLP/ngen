@@ -300,7 +300,7 @@ const ReadCase = () => {
 
             <EvidenceCard evidences={eventEvidences} disableDelete={true} disableDragAndDrop={true} title={`${t("ngen.evidences.event")}`} />
 
-            <SmallEventTable list={list} disableLink={true} disableColumOption={false} disableUuid={false} disableColumnDelete={true} />
+            <SmallEventTable list={list} disableLink={true} disableColumOption={false} disableUuid={false} disableColumnDelete={true} disableColumnCase={true} />
 
             <Card>
               <Card.Header>

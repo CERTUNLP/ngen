@@ -17,7 +17,8 @@ const SmallEventTable = ({
   modalEvent,
   disableMerged,
   disableUuid,
-  disableColumnDelete
+  disableColumnDelete,
+  disableColumnCase
 }) => {
   const [taxonomyNames, setTaxonomyNames] = useState({});
   const [feedNames, setFeedNames] = useState({});
@@ -99,6 +100,7 @@ const SmallEventTable = ({
               disableDateModified={true}
               disableColumnDelete={disableColumnDelete}
               disableMerged={disableMerged}
+              disableColumnCase={disableColumnCase}
             />
           }
         </Card.Body>

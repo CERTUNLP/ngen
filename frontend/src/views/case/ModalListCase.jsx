@@ -37,7 +37,7 @@ const ModalListCase = (props) => {
         setShowAlert(true); //este tiene que ser enviado por props
         setLoading(false);
       });
-  }, [props.wordToSearch, props.priorityFilter, props.currentPage, props.tlpFilter, props.stateFilter, order]);
+  }, [props.wordToSearch, props.priorityFilter, props.currentPage, props.tlpFilter, props.stateFilter, order, props.showModalListCase]);
 
   function updatePage(chosenPage) {
     props.setCurrentPage(chosenPage);

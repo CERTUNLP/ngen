@@ -292,7 +292,7 @@ const ListEvent = () => {
     setWordToSearchCase("");
   }
 
-  const handleClickRadio = (event, url, name, date, priority, tlp, state, user) => {
+  const handleClickRadio = (event, url, name, date, priority, tlp, state, user, events) => {
     const selectedId = event.target.id;
     if (selectedCases) {
       // Si es radio button, solo debe haber uno seleccionado
@@ -310,7 +310,8 @@ const ListEvent = () => {
       priority: priority,
       tlp: tlp,
       state: state,
-      user: user
+      user: user,
+      events: events
     });
   };
 
@@ -337,7 +338,7 @@ const ListEvent = () => {
     setUpdatePaginationCase(true);
   };
   const linkCaseToEvent = () => {
-    patchCase(caseToLink.value, selectedEvent).then((response) => {
+    patchCase(caseToLink.value, caseToLink.events.concat(selectedEvent)).then((response) => {
       setSelectedEvent([]);
       setSelectedCases("");
       setIfModify(response);
@@ -350,6 +351,7 @@ const ListEvent = () => {
       setWordToSearchCase("");
       setUpdatePaginationCase(true);
     });
+
   };
   return (
     <React.Fragment>
@@ -554,13 +556,22 @@ const ListEvent = () => {
             <Modal.Title>{t("ngen.add.eventcase")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <Row>
+              <Col sm={12} lg={12}>
+                <div class="alert alert-warning" role="alert">
+                  {t("ngen.event.assign_to_case_alert")}
+                </div>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
             <Button variant="primary" className="text-capitalize" size="sm" onClick={() => closeOptionsList()} aria-expanded={openCases}>
               {t("button.case_existing")}
             </Button>
             <Button variant="primary" className="text-capitalize" size="sm" onClick={() => closeOptionsCreate()} aria-expanded={openCases}>
               {t("button.case_new")}
             </Button>
-          </Modal.Body>
+          </Modal.Footer>
         </Modal>
         <ModalCreateCase
           showModalCase={showModalCase}

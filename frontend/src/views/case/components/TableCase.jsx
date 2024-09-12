@@ -206,7 +206,8 @@ const TableCase = ({
                               priorityNames[caseItem.priority],
                               tlpNames[caseItem.tlp].name,
                               stateNames[caseItem.state],
-                              userNames[caseItem.user_creator]
+                              userNames[caseItem.user_creator],
+                              caseItem.events
                             )
                           }
                           checked={selectedCases.includes(caseItem.url)}

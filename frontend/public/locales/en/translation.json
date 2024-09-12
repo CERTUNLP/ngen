@@ -186,6 +186,7 @@
   "ngen.event_one": "Event",
   "ngen.event_other": "Events",
   "ngen.event_panel": "Event panel",
+  "ngen.event.assign_to_case_alert": "Do you want to assign the event to a case? If some of the selected events are already assigned to a case, they will be unassigned.",
   "ngen.evidences": "Evidences",
   "ngen.evidences.children": "Children evidences",
   "ngen.evidences.case": "Case evidences",
