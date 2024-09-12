@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Row } from "react-bootstrap";
 import FormEvent from "./components/FormEvent";
 import Navigation from "../../components/Navigation/Navigation";
@@ -47,6 +48,7 @@ const CreateEvent = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -168,9 +170,9 @@ const CreateEvent = () => {
           localStorage.setItem("return", "List events");
           localStorage.setItem("button return", "");
           localStorage.setItem("navigation", "");
-          window.location.href = "/events/view";
+          navigate("/events/view");
         } else {
-          window.location.href = "/events";
+          navigate("/events");
         }
       })
       .catch((error) => {

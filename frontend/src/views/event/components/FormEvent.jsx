@@ -187,7 +187,7 @@ const FormEvent = (props) => {
         .catch((error) => {
           console.log(error);
         })
-        .finally(() => {});
+        .finally(() => { });
     }
 
     if (event.target.value === "") {
@@ -384,8 +384,10 @@ const FormEvent = (props) => {
                     max={getCurrentDateTime()}
                     value={date}
                     isInvalid={new Date(date) > new Date()}
-                    // onChange={(e) => completeField(e)}
-                    onChange={(e) => setDate(e.target.value)}
+                    onChange={(e) => {
+                      completeField(e);
+                      setDate(e.target.value);
+                    }}
                     name="date"
                   />
                   {new Date(date) > new Date() ? <div className="invalid-feedback">{t("date.invalid")}</div> : ""}
@@ -607,13 +609,12 @@ const FormEvent = (props) => {
         createArtifact={createArtifact}
       />
 
-      {!(new Date(props.body.date) > new Date()) &&
-      props.body.tlp !== "" &&
-      props.body.taxonomy !== "" &&
-      props.body.feed !== "" &&
-      props.body.priority !== "" &&
-      props.body.address_value !== "" &&
-      !showErrorMessage ? (
+      {props.body.tlp !== "" &&
+        props.body.taxonomy !== "" &&
+        props.body.feed !== "" &&
+        props.body.priority !== "" &&
+        props.body.address_value !== "" &&
+        !showErrorMessage ? (
         <Button variant="primary" onClick={props.createEvent}>
           {t("button.save")}
         </Button>

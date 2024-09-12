@@ -181,9 +181,7 @@ const EditEvent = () => {
       //formDataEvent.append('artifacts',body.artifacts);
 
       putEvent(body.url, formDataEvent)
-        .then(() => {
-          window.location.href = "/events";
-        })
+        .then(() => { })
         .catch((error) => {
           setShowAlert(true); //hace falta?
           console.log(error);
@@ -198,6 +196,7 @@ const EditEvent = () => {
       }
       //console.log(fecha.toISOString())//YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
 
+      console.log("body", body);
       formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
       //f.append("date", fecha.toISOString())
       formDataEvent.append("priority", body.priority);
@@ -230,11 +229,9 @@ const EditEvent = () => {
       //formDataEvent.append('artifacts',body.artifacts);
 
       patchEvent(body.url, formDataEvent)
-        .then(() => {
-          window.location.href = "/events";
-        })
+        .then(() => { })
         .catch((error) => {
-          setShowAlert(true); //hace falta?
+          // setShowAlert(true); //hace falta?
           console.log(error);
         });
     }

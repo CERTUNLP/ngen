@@ -31,7 +31,6 @@ const putEvent = (url, formData) => {
   //el parametro es para completar la url con el numero de pagina
   let messageSuccess = i18next.t("ngen.edit.event.success");
   let messageError = i18next.t("ngen.edit.event.error");
-
   return apiInstance
     .put(url, formData)
     .then((response) => {
@@ -60,6 +59,11 @@ const patchEvent = (url, formData) => {
       return response;
     })
     .catch((error) => {
+      if (error.response?.data) {
+        for (let key in error.response.data) {
+          messageError += `. ${key}: ${error.response.data[key]}`;
+        }
+      }
       setAlert(messageError, "error", "event");
       return Promise.reject(error);
     });
