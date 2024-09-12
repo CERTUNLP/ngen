@@ -383,14 +383,14 @@ const FormEvent = (props) => {
                     maxLength="150"
                     max={getCurrentDateTime()}
                     value={date}
-                    isInvalid={new Date(date) > new Date()}
+                    isInvalid={new Date(date) > new Date(getCurrentDateTime())}
                     onChange={(e) => {
                       completeField(e);
                       setDate(e.target.value);
                     }}
                     name="date"
                   />
-                  {new Date(date) > new Date() ? <div className="invalid-feedback">{t("date.invalid")}</div> : ""}
+                  {new Date(date) > new Date(getCurrentDateTime()) ? <div className="invalid-feedback">{t("date.invalid")}</div> : ""}
                 </Form.Group>
               </Col>
               <Col sm={12} lg={4}>
