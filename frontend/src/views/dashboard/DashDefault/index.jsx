@@ -170,6 +170,7 @@ const DashDefault = () => {
     const day = now.getUTCDate().toString().padStart(2, "0");
     const hours = now.getUTCHours().toString().padStart(2, "0");
     const minutes = now.getUTCMinutes().toString().padStart(2, "0");
+    const seconds = now.getUTCSeconds().toString().padStart(2, "0");
 
     // Format the date and time in the desired format
     const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
