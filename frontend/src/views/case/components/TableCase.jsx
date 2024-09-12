@@ -148,7 +148,7 @@ const TableCase = ({
               ))}
             {!disableDate && (
               <Ordering
-                field="created"
+                field="date"
                 label={t("ngen.case.management_start_date")}
                 order={order}
                 setOrder={setOrder}
