@@ -142,7 +142,7 @@ const TableCase = ({
               ) : (
                 <th>
                   <Form.Group>
-                    <Form.Check custom type="checkbox" disabled />
+                    <Form.Check type="checkbox" disabled />
                   </Form.Group>
                 </th>
               ))}
