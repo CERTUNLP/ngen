@@ -130,7 +130,7 @@ services:
     depends_on:
       - ngen-django
   ngen-frontend:
-    #    image: ngen-frontend:latest
+    image: ngen-frontend:latest
     build:
       context: ../frontend
       dockerfile: Dockerfile
@@ -147,5 +147,6 @@ services:
       - VITE_APP_BASE_URL=/metrics
       - VITE_APP_API_SERVER=http://localhost:8000/api/
       - CHOKIDAR_USEPOLLING=true
+      - VITE_APP_ENV=development
     command: >
       sh -c "npm run start"
