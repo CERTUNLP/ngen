@@ -6,9 +6,7 @@
       "created": "2023-06-22T18:05:39.868Z",
       "modified": "2023-06-22T18:05:39.868Z",
       "name": "Phishing playbook",
-      "taxonomy": [
-        90
-      ]
+      "taxonomy": [45]
     }
   },
   {
@@ -18,9 +16,7 @@
       "created": "2023-06-22T18:05:51.234Z",
       "modified": "2023-06-22T18:05:51.234Z",
       "name": "Copyright playbook",
-      "taxonomy": [
-        41
-      ]
+      "taxonomy": [43]
     }
   },
   {
