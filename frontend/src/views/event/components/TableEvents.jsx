@@ -123,6 +123,11 @@ const TableEvents = ({
     navigate("/events/view");
   };
 
+  const navigateToCase = (url) => {
+    localStorage.setItem("case", url);
+    navigate("/cases/view");
+  };
+
   const letterSize = { fontSize: "1.1em" };
   return (
     <React.Fragment>
@@ -262,7 +267,7 @@ const TableEvents = ({
                           <Button
                             className="fa fa-eye mx-auto font-weight-light"
                             variant="outline-primary"
-                            onClick={() => console.log("")}
+                            onClick={() => navigateToCase(event.case)}
                           >
                             {" " + t("ngen.case_one")}
                           </Button>
