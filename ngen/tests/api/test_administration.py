@@ -17,7 +17,12 @@ class TestAdministration(APITestCaseWithLogin):
     This will handle Administration testcases
     """
 
-    fixtures = ["priority.json", "tlp.json", "user.json", "feed.json"]
+    fixtures = [
+        "tests/priority.json",
+        "tests/tlp.json",
+        "tests/user.json",
+        "tests/feed.json",
+    ]
 
     # --------------------------------------------------------TLP----------------------------------------------------------
 

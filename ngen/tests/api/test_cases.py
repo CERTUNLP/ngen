@@ -21,14 +21,14 @@ class TestCase(APITestCaseWithLogin):
     """
 
     fixtures = [
-        "priority.json",
-        "tlp.json",
-        "user.json",
-        "state.json",
-        "feed.json",
-        "taxonomy.json",
-        "case_template.json",
-        "user.json",
+        "tests/priority.json",
+        "tests/tlp.json",
+        "tests/user.json",
+        "tests/state.json",
+        "tests/feed.json",
+        "tests/taxonomy.json",
+        "tests/case_template.json",
+        "tests/user.json",
     ]
 
     @classmethod

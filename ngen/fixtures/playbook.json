@@ -27,72 +27,96 @@
     "model": "ngen.task",
     "pk": 1,
     "fields": {
-      "created": "2023-06-22T18:06:30.072Z",
-      "modified": "2023-06-22T18:06:30.072Z",
+      "created": "2023-06-22T18:06:47.180Z",
+      "modified": "2023-06-22T18:06:47.180Z",
       "priority": 1,
-      "name": "Task 1",
-      "playbook": 2,
-      "description": "Task 1"
+      "name": "Identify phishing email",
+      "playbook": 1,
+      "description": "Analyze the suspicious email to verify phishing indicators, such as spoofed sender, malicious links, and content inconsistencies."
     }
   },
   {
     "model": "ngen.task",
     "pk": 2,
     "fields": {
-      "created": "2023-06-22T18:06:35.046Z",
-      "modified": "2023-06-22T18:06:35.046Z",
-      "priority": 1,
-      "name": "Task 2",
-      "playbook": 2,
-      "description": "Task 2"
+      "created": "2023-06-22T18:06:51.541Z",
+      "modified": "2023-06-22T18:06:51.541Z",
+      "priority": 2,
+      "name": "Isolate affected accounts",
+      "playbook": 1,
+      "description": "Temporarily disable the user’s account or restrict access to minimize potential impact while the investigation proceeds."
     }
   },
   {
     "model": "ngen.task",
     "pk": 3,
     "fields": {
-      "created": "2023-06-22T18:06:40.777Z",
-      "modified": "2023-06-22T18:06:40.777Z",
-      "priority": 2,
-      "name": "Task 3",
-      "playbook": 2,
-      "description": "Task 3"
+      "created": "2023-06-22T18:06:58.062Z",
+      "modified": "2023-06-22T18:06:58.062Z",
+      "priority": 3,
+      "name": "Conduct forensics on email",
+      "playbook": 1,
+      "description": "Perform a forensic analysis of the email, identifying payloads, attachments, or URLs that may be malicious."
     }
   },
   {
     "model": "ngen.task",
     "pk": 4,
     "fields": {
-      "created": "2023-06-22T18:06:47.180Z",
-      "modified": "2023-06-22T18:06:47.180Z",
-      "priority": 2,
-      "name": "Task 1",
+      "created": "2023-06-22T18:07:05.062Z",
+      "modified": "2023-06-22T18:07:05.062Z",
+      "priority": 4,
+      "name": "Notify affected users",
       "playbook": 1,
-      "description": "Task 1"
+      "description": "Notify all potentially affected users about the phishing attack, providing guidance on what actions to take (e.g., password change)."
     }
   },
   {
     "model": "ngen.task",
     "pk": 5,
     "fields": {
-      "created": "2023-06-22T18:06:51.541Z",
-      "modified": "2023-06-22T18:06:51.541Z",
-      "priority": 2,
-      "name": "Task 2",
-      "playbook": 1,
-      "description": "Task 2"
+      "created": "2023-06-22T18:07:10.062Z",
+      "modified": "2023-06-22T18:07:10.062Z",
+      "priority": 1,
+      "name": "Identify copyright infringement",
+      "playbook": 2,
+      "description": "Verify the validity of the copyright infringement claim by analyzing the reported content or material."
     }
   },
   {
     "model": "ngen.task",
     "pk": 6,
     "fields": {
-      "created": "2023-06-22T18:06:58.062Z",
-      "modified": "2023-06-22T18:06:58.062Z",
-      "priority": 5,
-      "name": "Task 3",
-      "playbook": 1,
-      "description": "Task 3"
+      "created": "2023-06-22T18:07:15.062Z",
+      "modified": "2023-06-22T18:07:15.062Z",
+      "priority": 2,
+      "name": "Notify the alleged infringer",
+      "playbook": 2,
+      "description": "Contact the user or entity accused of infringement to inform them of the complaint and request resolution."
+    }
+  },
+  {
+    "model": "ngen.task",
+    "pk": 7,
+    "fields": {
+      "created": "2023-06-22T18:07:20.062Z",
+      "modified": "2023-06-22T18:07:20.062Z",
+      "priority": 3,
+      "name": "Evaluate legal actions",
+      "playbook": 2,
+      "description": "Consult with the legal team to evaluate the potential legal implications and decide on further actions."
+    }
+  },
+  {
+    "model": "ngen.task",
+    "pk": 8,
+    "fields": {
+      "created": "2023-06-22T18:07:25.062Z",
+      "modified": "2023-06-22T18:07:25.062Z",
+      "priority": 4,
+      "name": "Remove infringing content",
+      "playbook": 2,
+      "description": "Remove or restrict access to the infringing content if the claim is verified and the issue remains unresolved."
     }
   }
 ]
