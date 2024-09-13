@@ -145,6 +145,8 @@ elasticsearch-dsl==7.4.1
     #   django-elasticsearch-dsl-drf
 flower==2.0.1
     # via -r requirements.in
+gunicorn==23.0.0
+    # via -r requirements.in
 humanize==4.10.0
     # via flower
 idna==3.7
@@ -166,6 +168,7 @@ packaging==23.1
     #   build
     #   django-lifecycle
     #   django-nine
+    #   gunicorn
 pillow==10.3.0
     # via
     #   -r requirements.in

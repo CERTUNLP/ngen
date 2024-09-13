@@ -142,3 +142,5 @@ dmypy.json
 /docker/redis
 /docker/elasticsearch
 /docker/postgres_data/
+/docker/ngen_media/
+/docker/ngen_static/
