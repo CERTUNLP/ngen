@@ -72,13 +72,13 @@ const CreateTaxonomyGroup = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="taxonomy" />
       <Row>
-        <Navigation actualPosition={t("w.add") + " " + t("ngen.taxonomy_one")} path="/taxonomyGroups" index={t("ngen.taxonomy_other")} />
+        <Navigation actualPosition={t("w.add") + " " + t("ngen.taxonomyGroup_one")} path="/taxonomyGroups" index={t("ngen.taxonomyGroup_other")} />
       </Row>
       <Row>
         <Col sm={12}>
           <Card>
             <Card.Header>
-              <Card.Title as="h5">{t("ngen.taxonomy_one")}</Card.Title>
+              <Card.Title as="h5">{t("ngen.taxonomyGroup_one")}</Card.Title>
             </Card.Header>
             <Card.Body>
               <Form>
