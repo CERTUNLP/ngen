@@ -32,6 +32,10 @@ const EditTaxonomyGroup = () => {
       });
   };
 
+  const handleClose = () => {
+    navigate("/taxonomyGroups");
+  }
+
   const resetShowAlert = () => {
     setShowAlert(false);
   };
@@ -98,7 +102,7 @@ const EditTaxonomyGroup = () => {
                       {t("button.save")}
                     </Button>
                   )}
-                  <Button variant="info" href="/taxonomyGroups">
+                  <Button variant="info" onClick={handleClose}>
                     {t("button.close")}
                   </Button>
                 </Form.Group>

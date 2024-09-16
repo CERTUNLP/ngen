@@ -10,14 +10,9 @@ import DropdownState from "../../components/Dropdown/DropdownState";
 
 const CreateTaxonomyGroup = () => {
   const navigate = useNavigate();
-  const [setType] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [parent, setParent] = useState("");
-  const [alias_of, setAlias_of] = useState("");
-  const [group, setGroup] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [active, setActive] = useState(true);
   const [needs_review, setNeeds_review] = useState(false);
 
   const { t } = useTranslation();
@@ -100,7 +95,7 @@ const CreateTaxonomyGroup = () => {
                   <Col sm={12} lg={2}>
                     <Form.Group>
                       <Form.Label>{t("ngen.taxonomy.needs_review")}</Form.Label>
-                      <DropdownState state={false} setActive={setNeeds_review} str_true="w.yes" str_false="w.no" />
+                      <DropdownState state={needs_review} setActive={setNeeds_review} str_true="w.yes" str_false="w.no" />
                     </Form.Group>
                   </Col>
                 </Row>
