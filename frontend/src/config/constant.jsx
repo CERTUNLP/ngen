@@ -39,6 +39,7 @@ export const COMPONENT_URL = {
   evidence: "evidence/",
   event: "event/",
   taxonomy: "taxonomy/",
+  taxonomyGroup: "taxonomygroup/",
   report: "report/",
   network: "network/",
   contact: "contact/",
