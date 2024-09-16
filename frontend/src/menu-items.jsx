@@ -129,6 +129,14 @@ const menuItems = {
               breadcrumbs: false
             },
             {
+              id: "taxonomyGroup",
+              title: "menu.taxonomygroups",
+              type: "item",
+              url: "/taxonomyGroups",
+              icon: "",
+              breadcrumbs: false
+            },
+            {
               id: "Estados",
               title: "menu.states",
               type: "item",

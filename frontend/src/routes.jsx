@@ -94,6 +94,21 @@ const routes = [
       },
       {
         exact: "true",
+        path: "/taxonomyGroups",
+        element: lazy(() => import("./views/taxonomyGroup/ListTaxonomyGroups"))
+      },
+      {
+        exact: "true",
+        path: "/taxonomyGroups/create",
+        element: lazy(() => import("./views/taxonomyGroup/CreateTaxonomyGroup"))
+      },
+      {
+        exact: "true",
+        path: "/taxonomyGroups/edit",
+        element: lazy(() => import("./views/taxonomyGroup/EditTaxonomyGroup"))
+      },
+      {
+        exact: "true",
         path: "/tlp",
         element: lazy(() => import("./views/tlp/ListTLP"))
       },
