@@ -5,6 +5,7 @@ import store from "./store";
 
 import routes, { renderRoutes } from "./routes";
 import { logout, refreshToken } from "./api/services/auth";
+import Alert from "./components/Alert/Alert";
 
 const App = () => {
   const onIdle = () => {
@@ -68,7 +69,12 @@ const App = () => {
     leaderElection: false
   });
 
-  return <BrowserRouter basename={import.meta.env.VITE_APP_BASE_NAME}>{renderRoutes(routes)}</BrowserRouter>;
+  return (
+    <>
+      <Alert component="all" />
+      <BrowserRouter basename={import.meta.env.VITE_APP_BASE_NAME}>{renderRoutes(routes)}</BrowserRouter>
+    </>
+  );
 };
 
 export default App;

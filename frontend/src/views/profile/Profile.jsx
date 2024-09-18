@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Form, Row, Table } from "react-bootstrap";
-import { getProfile } from "../../api/services/profile";
+import { Card, Col, Form, Row, Table, Modal, Button } from "react-bootstrap";
+import { getProfile, getApiKey } from "../../api/services/profile";
 import { getGroup } from "../../api/services/groups";
 import { getPermission } from "../../api/services/permissions";
 import Navigation from "../../components/Navigation/Navigation";
@@ -11,7 +11,19 @@ import { useTranslation } from "react-i18next";
 
 const Profile = () => {
   const [profile, setProfile] = useState([]);
+  const [apikey, setApikey] = useState("");
+  const [password, setPassword] = useState("");
+  const [show, setShow] = useState(false);
+
   const { t } = useTranslation();
+
+  const handleGetApiKey = () => {
+    getApiKey(profile.username, password).then((response) => {
+      setApikey(response.data.token);
+      setShow(false);
+    });
+  };
+
   useEffect(() => {
     getProfile()
       .then((response) => {
@@ -27,6 +39,27 @@ const Profile = () => {
       <Row>
         <Navigation actualPosition={t("menu.profile")} />
       </Row>
+      <Modal show={show} onHide={() => setShow(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t("ngen.password")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Label>{t("ngen.user.ask_password")}</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder={t("ngen.password")}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShow(false)}>
+            {t("w.close")}
+          </Button>
+          <Button variant="primary" onClick={handleGetApiKey}>
+            {t("ngen.accept")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Row>
         <Col>
           <Card>
@@ -112,6 +145,20 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
+                  <tr>
+                    <td>{t("ngen.apikey")}</td>
+                    <td>
+                      <Form.Control
+                        plaintext
+                        readOnly
+                        value={apikey}
+                        hidden={!apikey}
+                      />
+                      <button className="btn btn-primary" type="button" onClick={() => setShow(true)} hidden={apikey} >
+                        {t("w.show")}
+                      </button>
+                    </td>
+                  </tr>
                   {profile.date_joined ? (
                     <tr>
                       <td>{t("date.creation")}</td>

@@ -65,6 +65,7 @@ export const COMPONENT_URL = {
   dashboardNetworkEntities: "dashboard/network_entities",
   constance: "constance/",
   profile: "profile/",
+  apikey: "token/simple/",
   taxonomyMinifiedList: "minified/taxonomy/",
   taxonomyGroupMinifiedList: "minified/taxonomygroup/",
   priorityMinifiedList: "minified/priority/",
