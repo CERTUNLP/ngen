@@ -79,10 +79,22 @@ const setup = (store) => {
         });
       } else {
         console.log(error);
-        let msg = error.response?.data?.non_field_errors ? error.response.data.non_field_errors : "";
-        msg = msg ? msg : error.response?.data?.detail ? error.response.data.detail : "";
-        msg = msg ? msg : error.response?.data?.__all__ ? error.response.data.error : "";
-        setAlert("Error al realizar la petición: " + msg, "error");
+        // check if data is undefined, array or object
+        let data = error.response?.data;
+        if (data === undefined) {
+          setAlert("Error al realizar la petición", "error");
+        } else if (Array.isArray(data)) {
+          let msg = "";
+          data.map((d) => {
+            msg += d + " ";
+          });
+          setAlert("Error al realizar la petición: " + msg, "error");
+        } else {
+          let msg = error.response?.data?.non_field_errors ? error.response.data.non_field_errors : "";
+          msg = msg ? msg : error.response?.data?.detail ? error.response.data.detail : "";
+          msg = msg ? msg : error.response?.data?.__all__ ? error.response.data.error : "";
+          setAlert("Error al realizar la petición: " + msg, "error");
+        }
         return Promise.reject(error);
       }
     }
