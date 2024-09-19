@@ -18,40 +18,66 @@ class EmailMessageTest(TestCase):
         """
         EmailMessage model test setup
         """
+
         cls.root_email_message = EmailMessage.objects.create(
-            root_message_id="4e58452c-37af-4f8d-a4fd-36b4c3cb11fc",
-            message_id="4e58452c-37af-4f8d-a4fd-36b4c3cb11fc",
-            sender="sender",
-            recipient="recipient",
+            root_message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
+            parent_message_id=None,
+            message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
+            references=[],
+            subject="Test Subject",
+            senders=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+            recipients=[{"name": "Victim Name", "email": "victim@organization.com"}],
             date=timezone.now(),
             body="some body",
+            sent=True,
+            send_attempt_failed=False,
         )
         cls.email_message_2 = EmailMessage.objects.create(
-            root_message_id="4e58452c-37af-4f8d-a4fd-36b4c3cb11fc",
-            parent_message_id="4e58452c-37af-4f8d-a4fd-36b4c3cb11fc",
-            message_id="0d8fb56f-9151-4a86-b6b3-86e9a0d4c654",
-            sender="sender",
-            recipient="recipient",
-            date=timezone.now() + timezone.timedelta(hours=1),
+            root_message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
+            parent_message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
+            message_id="<172654293755.81.289851525536098366@cert.unlp.edu.ar>",
+            references=["<172654248025.81.10116784141945641235@cert.unlp.edu.ar>"],
+            subject="Re: Test Subject",
+            senders=[{"name": "Victim Name", "email": "victim@organization.com"}],
+            recipients=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+            date=timezone.now(),
             body="some body",
+            sent=True,
+            send_attempt_failed=False,
         )
         cls.email_message_3 = EmailMessage.objects.create(
-            root_message_id="4e58452c-37af-4f8d-a4fd-36b4c3cb11fc",
-            parent_message_id="0d8fb56f-9151-4a86-b6b3-86e9a0d4c654",
-            message_id="e509e60b-0a6e-448c-843f-dcf3feaa85f6",
-            sender="sender",
-            recipient="recipient",
-            date=timezone.now() + timezone.timedelta(hours=2),
+            root_message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
+            parent_message_id="<172654293755.81.289851525536098366@cert.unlp.edu.ar>",
+            message_id="<172654319092.81.12026843256902635978@cert.unlp.edu.ar>",
+            references=[
+                "<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
+                "<172654293755.81.289851525536098366@cert.unlp.edu.ar>",
+            ],
+            subject="Re: Test Subject",
+            senders=[{"name": "Victim Name", "email": "victim@organization.com"}],
+            recipients=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+            date=timezone.now(),
             body="some body",
+            sent=True,
+            send_attempt_failed=False,
         )
         cls.email_message_4 = EmailMessage.objects.create(
-            root_message_id="4e58452c-37af-4f8d-a4fd-36b4c3cb11fc",
-            parent_message_id="e509e60b-0a6e-448c-843f-dcf3feaa85f6",
-            message_id="c7693444-b42e-4032-8e82-5d11af7553b2",
-            sender="sender",
-            recipient="recipient",
-            date=timezone.now() + timezone.timedelta(hours=3),
+            root_message_id="<172654337907.81.3069486993773407245@cert.unlp.edu.ar>",
+            parent_message_id=None,
+            message_id="<172654337907.81.3069486993773407245@cert.unlp.edu.ar>",
+            references=[],
+            subject="Test Another Subject",
+            senders=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+            recipients=[
+                {
+                    "name": "Another Victim Name",
+                    "email": "another_victim@university.com",
+                }
+            ],
+            date=timezone.now(),
             body="some body",
+            sent=True,
+            send_attempt_failed=False,
         )
 
     def test_email_message_creation(self):
@@ -71,10 +97,9 @@ class EmailMessageTest(TestCase):
             self.root_email_message,
             self.email_message_2,
             self.email_message_3,
-            self.email_message_4,
         ]
         email_messages = EmailMessage.get_message_thread_by(
-            "4e58452c-37af-4f8d-a4fd-36b4c3cb11fc"
+            "<172654248025.81.10116784141945641235@cert.unlp.edu.ar>"
         )
 
         self.assertQuerysetEqual(email_messages, expected_messages)
