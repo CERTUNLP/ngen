@@ -71,7 +71,7 @@ class DashboardPresenter:
             self.cases = cases.filter(date__range=(self.date_from, self.date_to))
 
             if not self.get_current_user().is_superuser:
-                self.cases = self.cases.filter(assigned_to=self.current_user)
+                self.cases = self.cases.filter(assigned=self.current_user)
 
         return self.cases
 
