@@ -75,7 +75,7 @@ const Profile = () => {
             <Card.Body>
               <Table responsive>
                 <tbody>
-                  {profile.username ? (
+                  {profile.username !== undefined ? (
                     <tr>
                       <td>{t("ngen.user.username")}</td>
                       <td>
@@ -85,7 +85,7 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
-                  {profile.email ? (
+                  {profile.email !== undefined ? (
                     <tr>
                       <td>{t("w.email")}</td>
                       <td>
@@ -95,7 +95,7 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
-                  {profile.first_name ? (
+                  {profile.first_name !== undefined ? (
                     <tr>
                       <td>{t("ngen.name_one")}</td>
                       <td>
@@ -105,7 +105,7 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
-                  {profile.last_name ? (
+                  {profile.last_name !== undefined ? (
                     <tr>
                       <td>{t("ngen.last.name")}</td>
                       <td>
@@ -115,7 +115,7 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
-                  {profile.is_active ? (
+                  {profile.is_active !== undefined ? (
                     <tr>
                       <td>{t("w.active")}</td>
                       <td>
@@ -125,7 +125,7 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
-                  {profile.is_superuser ? (
+                  {profile.is_superuser !== undefined ? (
                     <tr>
                       <td> {t("ngen.user.is.superuser")}</td>
                       <td>
@@ -135,7 +135,7 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
-                  {profile.is_staff ? (
+                  {profile.is_staff !== undefined ? (
                     <tr>
                       <td> {t("ngen.user.is.staff")}</td>
                       <td>
@@ -159,7 +159,7 @@ const Profile = () => {
                       </button>
                     </td>
                   </tr>
-                  {profile.date_joined ? (
+                  {profile.date_joined !== undefined ? (
                     <tr>
                       <td>{t("date.creation")}</td>
                       <td>
@@ -173,7 +173,7 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
-                  {profile.last_login ? (
+                  {profile.last_login !== undefined ? (
                     <tr>
                       <td>{t("session.last")}</td>
                       <td>
@@ -187,7 +187,7 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
-                  {profile.priority ? (
+                  {profile.priority !== undefined ? (
                     <tr>
                       <td>{t("ngen.priority_one")}</td>
                       <td>
@@ -198,7 +198,7 @@ const Profile = () => {
                     <></>
                   )}
 
-                  {profile.groups && profile.groups.length > 0 ? (
+                  {profile.groups !== undefined && profile.groups.length >= 0 ? (
                     <tr>
                       <td>{t("w.groups")}</td>
                       <td>
@@ -210,7 +210,7 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
-                  {profile.user_permissions && profile.user_permissions.length > 0 ? (
+                  {profile.user_permissions !== undefined && profile.user_permissions.length >= 0 ? (
                     <tr>
                       <td>{t("w.permissions")}</td>
                       <td>

@@ -7,6 +7,10 @@ import ActiveButton from "../../../components/Button/ActiveButton";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import Alert from "../../../components/Alert/Alert";
 import Ordering from "../../../components/Ordering/Ordering";
+import FormGetName from "../../../components/Form/FormGetName";
+import { getGroup } from "../../../api/services/groups";
+import { getPermission } from "../../../api/services/permissions";
+import { getPriority } from "../../../api/services/priorities";
 import { useTranslation } from "react-i18next";
 
 function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }) {
@@ -164,71 +168,149 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                       </Card.Header>
                       <Card.Body>
                         <Table responsive>
-                          <tr>
-                            <td>{t("ngen.user.username")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={user.username} />
-                            </td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.name_one")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={user.first_name} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.last.name")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={user.last_name} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("w.active")}</td>
-                            <td>
-                              <Button
-                                className="btn-icon btn-rounded"
-                                variant={user.is_active ? "outline-success" : "outline-danger"}
-                                title={user.is_active ? "Activo" : "Inactivo"}
-                              >
-                                <i className={user.is_active ? "feather icon-check-circle" : "feather icon-alert-triangle"} />
-                              </Button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("session.last")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={user.last_login ? user.last_login.slice(0, 10) : ""} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("info.related")}</td>
-                            <td>
-                              <Button size="sm" variant="light" className="text-capitalize">
-                                Casos asignados <Badge variant="light" className="ml-1"></Badge>
-                              </Button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.date.created")}</td>
-                            <td>
-                              <Form.Control
-                                plaintext
-                                readOnly
-                                defaultValue={user.created ? user.created.slice(0, 10) + " " + user.created.slice(11, 19) : ""}
-                              />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.date.modified")}</td>
-                            <td>
-                              <Form.Control
-                                plaintext
-                                readOnly
-                                defaultValue={user.modified ? user.modified.slice(0, 10) + " " + user.modified.slice(11, 19) : ""}
-                              />
-                            </td>
-                          </tr>
+                          <tbody>
+                            {user.username !== undefined ? (
+                              <tr>
+                                <td>{t("ngen.user.username")}</td>
+                                <td>
+                                  <Form.Control plaintext readOnly defaultValue={user.username} />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            {user.email !== undefined ? (
+                              <tr>
+                                <td>{t("w.email")}</td>
+                                <td>
+                                  <Form.Control plaintext readOnly defaultValue={user.email} />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            {user.first_name !== undefined ? (
+                              <tr>
+                                <td>{t("ngen.name_one")}</td>
+                                <td>
+                                  <Form.Control plaintext readOnly defaultValue={user.first_name} />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            {user.last_name !== undefined ? (
+                              <tr>
+                                <td>{t("ngen.last.name")}</td>
+                                <td>
+                                  <Form.Control plaintext readOnly defaultValue={user.last_name} />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            {user.is_active !== undefined ? (
+                              <tr>
+                                <td>{t("w.active")}</td>
+                                <td>
+                                  <ActiveButton active={user.is_active} />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            {user.is_superuser !== undefined ? (
+                              <tr>
+                                <td> {t("ngen.user.is.superuser")}</td>
+                                <td>
+                                  <ActiveButton active={user.is_superuser} />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            {user.is_staff !== undefined ? (
+                              <tr>
+                                <td> {t("ngen.user.is.staff")}</td>
+                                <td>
+                                  <ActiveButton active={user.is_staff} />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            {user.date_joined !== undefined ? (
+                              <tr>
+                                <td>{t("date.creation")}</td>
+                                <td>
+                                  <Form.Control
+                                    plaintext
+                                    readOnly
+                                    defaultValue={user.date_joined.slice(0, 10) + " " + user.date_joined.slice(11, 19)}
+                                  />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            {user.last_login !== undefined ? (
+                              <tr>
+                                <td>{t("session.last")}</td>
+                                <td>
+                                  <Form.Control
+                                    plaintext
+                                    readOnly
+                                    defaultValue={user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19)}
+                                  />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            <tr>
+                              <td>{t("info.related")}</td>
+                              <td>
+                                <Button size="sm" variant="light" className="text-capitalize">
+                                  Casos asignados <Badge variant="light" className="ml-1"></Badge>
+                                </Button>
+                              </td>
+                            </tr>
+                            {user.priority !== undefined ? (
+                              <tr>
+                                <td>{t("ngen.priority_one")}</td>
+                                <td>
+                                  <FormGetName form={true} get={getPriority} url={user.priority} key={1} />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+
+                            {user.groups !== undefined && user.groups.length >= 0 ? (
+                              <tr>
+                                <td>{t("w.groups")}</td>
+                                <td>
+                                  {Object.values(user.groups).map((groupItem, index) => {
+                                    return <FormGetName form={true} get={getGroup} url={groupItem} key={index} />;
+                                  })}
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            {user.user_permissions !== undefined && user.user_permissions.length >= 0 ? (
+                              <tr>
+                                <td>{t("w.permissions")}</td>
+                                <td>
+                                  {Object.values(user.user_permissions).map((permissionItem, index) => {
+                                    return <FormGetName form={true} get={getPermission} url={permissionItem} key={index} />;
+                                  })}
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                          </tbody>
                         </Table>
                       </Card.Body>
                     </Card>
