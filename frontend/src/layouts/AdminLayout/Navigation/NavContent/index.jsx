@@ -1,13 +1,60 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { ListGroup } from "react-bootstrap";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 import NavGroup from "./NavGroup";
 import NavCard from "./NavCard";
+import routes from "../../../../routes";
 
 const NavContent = ({ navigation }) => {
-  const navItems = navigation.items.map((item) => {
+  const account = useSelector((state) => state.account);
+  const { isLoggedIn, user } = account;
+  const [userPermissions] = React.useState(user.permissions || []);
+  const [items, setItems] = React.useState([]);
+  const [itemsBottom, setItemsBottom] = React.useState([]);
+  
+  const filterMenuItems = (items) => {
+    console.log('filterMenuItems');
+    if (user.is_superuser) {
+      return items;
+    }
+    return items.reduce((acc, item) => {
+      // Si el item tiene una URL, lo añadimos a la nueva estructura
+      if (item.url) {
+        let add = true;
+        let r = routes.filter((route) => route.path === item.url);
+        if (r.length > 0) {
+          if (r[0].permissions?.length > 0) {
+            if (!r[0].permissions.every((perm) => userPermissions.includes(perm))) {
+              add = false;
+            }
+          }
+        }
+        if (add) {
+          acc.push({ ...item });
+        }
+      } else if (item.children) {
+        // Si el item tiene hijos, los filtramos también
+        const filteredChildren = filterMenuItems(item.children);
+        if (filteredChildren.length > 0) {
+          acc.push({
+            ...item,
+            children: filteredChildren // Solo añadimos hijos filtrados
+          });
+        }
+      }
+      return acc;
+    }, []);
+  };
+
+  useEffect(() => {
+    setItems(filterMenuItems(navigation.items));
+    setItemsBottom(filterMenuItems(navigation.itemsBottom));
+  }, [userPermissions]);
+
+  let navItems = items.map((item) => {
     switch (item.type) {
       case "group":
         return <NavGroup key={"nav-group-" + item.id} group={item} />;
@@ -16,7 +63,7 @@ const NavContent = ({ navigation }) => {
     }
   });
 
-  const navItemsBottom = navigation.itemsBottom.map((item) => {
+  const navItemsBottom = itemsBottom.map((item) => {
     switch (item.type) {
       case "group":
         return <NavGroup layout="vertical" key={"nav-group-" + item.id} group={item} />;
