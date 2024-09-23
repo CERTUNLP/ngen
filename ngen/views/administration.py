@@ -1,9 +1,10 @@
 import django_filters
 from django.db.models import Count
-from rest_framework import permissions, filters, viewsets
+from rest_framework import filters, viewsets, mixins
 
 from ngen import models, serializers
 from ngen.filters import FeedFilter, PriorityFilter, TlpFilter
+from ngen.permissions import CustomApiViewPermission, CustomModelPermissions
 
 
 class FeedViewSet(viewsets.ModelViewSet):
@@ -17,7 +18,7 @@ class FeedViewSet(viewsets.ModelViewSet):
     filterset_class = FeedFilter
     ordering_fields = ["id", "created", "modified", "name", "slug", "events_count"]
     serializer_class = serializers.FeedSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class PriorityViewSet(viewsets.ModelViewSet):
@@ -40,7 +41,7 @@ class PriorityViewSet(viewsets.ModelViewSet):
         "solve_time",
     ]
     serializer_class = serializers.PrioritySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class TlpViewSet(viewsets.ModelViewSet):
@@ -54,25 +55,28 @@ class TlpViewSet(viewsets.ModelViewSet):
     filterset_class = TlpFilter
     ordering_fields = ["id", "created", "modified", "name", "slug", "code"]
     serializer_class = serializers.TlpSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
-class FeedMinifiedViewSet(viewsets.ModelViewSet):
+class FeedMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = models.Feed.objects.all()
     serializer_class = serializers.FeedMinifiedSerializer
     pagination_class = None
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_feed"]
 
 
-class TlpMinifiedViewSet(viewsets.ModelViewSet):
+class TlpMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = models.Tlp.objects.all()
     serializer_class = serializers.TlpMinifiedSerializer
     pagination_class = None
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_tlp"]
 
 
-class PriorityMinifiedViewSet(viewsets.ModelViewSet):
+class PriorityMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = models.Priority.objects.all()
     serializer_class = serializers.PriorityMinifiedSerializer
     pagination_class = None
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_priority"]

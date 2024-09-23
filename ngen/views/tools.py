@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 
 from ngen import models, serializers
 from ngen.utils import get_settings
+from ngen.permissions import CustomModelPermissions
 
 
 class AboutView(TemplateView):
@@ -25,7 +26,7 @@ class AboutView(TemplateView):
 class DisabledView(APIView):
     """View for disabled endpoints"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
@@ -35,18 +36,18 @@ class DisabledView(APIView):
 class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ContentType.objects.all()
     serializer_class = serializers.ContentTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class AuditViewSet(viewsets.ModelViewSet):
     queryset = LogEntry.objects.all()
     serializer_class = serializers.AuditSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class ConstanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ConstanceSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
     lookup_field = "key"
     lookup_value_regex = "[A-Za-z_][A-Za-z0-9_]*"
 
@@ -128,7 +129,7 @@ class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
 
 class StringIdentifierViewSet(viewsets.ViewSet):
     serializer_class = serializers.StringIdentifierSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
     def create(self, request, *args, **kwargs):
         serializer = serializers.StringIdentifierSerializer(data=request.data)
@@ -146,7 +147,7 @@ class StringIdentifierViewSet(viewsets.ViewSet):
 
 class UserAuditsListView(viewsets.ModelViewSet):
     serializer_class = serializers.AuditSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
     def get_queryset(self):
         user_pk = self.kwargs.get("pk")

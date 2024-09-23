@@ -1,7 +1,3 @@
-"""
-Communication channel views
-"""
-
 import django_filters
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import resolve
@@ -16,6 +12,7 @@ from ngen.serializers.communication_channel import (
     CommunicationChannelReducedSerializer,
 )
 from ngen.serializers.communication_type import CommunicationTypeSerializer
+from ngen.permissions import CustomModelPermissions
 
 
 class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
@@ -26,6 +23,8 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     /api/case/1/communicationchannels/1
     /api/event/2/communicationchannels/3
     """
+
+    permission_classes = [CustomModelPermissions]
 
     def get_serializer_class(self):
         """
@@ -211,7 +210,7 @@ class CommunicationChannelViewSet(viewsets.ModelViewSet):
     search_fields = ["id", "name", "message_id"]
     ordering_fields = ["id", "created", "modified", "name", "message_id"]
     serializer_class = CommunicationChannelSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
     serializer_class_by_action = {
         "list": CommunicationChannelReducedSerializer,
@@ -238,4 +237,4 @@ class CommunicationTypeViewSet(viewsets.ModelViewSet):
     search_fields = ["type"]
     ordering_fields = ["id", "created", "modified", "type"]
     serializer_class = CommunicationTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]

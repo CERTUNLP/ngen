@@ -1,8 +1,9 @@
 import django_filters
-from rest_framework import permissions, filters, viewsets
+from rest_framework import filters, viewsets, mixins
 
 from ngen import models, serializers
 from ngen.filters import TaxonomyFilter, PlaybookFilter
+from ngen.permissions import CustomApiViewPermission, CustomModelPermissions
 
 
 class TaxonomyViewSet(viewsets.ModelViewSet):
@@ -35,7 +36,7 @@ class TaxonomyViewSet(viewsets.ModelViewSet):
         "active",
     ]
     serializer_class = serializers.TaxonomySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class TaxonomyGroupViewSet(viewsets.ModelViewSet):
@@ -55,7 +56,7 @@ class TaxonomyGroupViewSet(viewsets.ModelViewSet):
         "needs_review",
     ]
     serializer_class = serializers.TaxonomyGroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class PlaybookViewSet(viewsets.ModelViewSet):
@@ -69,7 +70,7 @@ class PlaybookViewSet(viewsets.ModelViewSet):
     filterset_class = PlaybookFilter
     ordering_fields = ["id", "created", "modified", "name", "taxonomy__name"]
     serializer_class = serializers.PlaybookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -82,7 +83,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     search_fields = ["name", "description"]
     ordering_fields = ["id", "created", "modified", "name", "playbook", "priority"]
     serializer_class = serializers.TaskSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class TodoTaskViewSet(viewsets.ModelViewSet):
@@ -103,7 +104,7 @@ class TodoTaskViewSet(viewsets.ModelViewSet):
         "reports",
     ]
     serializer_class = serializers.TodoTaskSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class ReportViewSet(viewsets.ModelViewSet):
@@ -128,18 +129,20 @@ class ReportViewSet(viewsets.ModelViewSet):
         "taxonomy__name",
     ]
     serializer_class = serializers.ReportSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
-class TaxonomyMinifiedViewSet(viewsets.ModelViewSet):
+class TaxonomyMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = models.Taxonomy.objects.all()
     serializer_class = serializers.TaxonomyMinifiedSerializer
     pagination_class = None
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_taxonomy"]
 
 
-class TaxonomyGroupMinifiedViewSet(viewsets.ModelViewSet):
+class TaxonomyGroupMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = models.TaxonomyGroup.objects.all()
     serializer_class = serializers.TaxonomyGroupMinifiedSerializer
     pagination_class = None
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_taxonomygroup"]
