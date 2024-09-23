@@ -442,7 +442,7 @@ const routes = [
     path: "/profile",
     layout: AdminLayout,
     guard: PermissionGuard,
-    permissions: ["view_profile"],
+    permissions: ["view_userprofile"],
     element: lazy(() => import("./views/profile/Profile"))
   },
   {

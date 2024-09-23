@@ -39,3 +39,39 @@ class CustomApiViewPermission(BasePermission):
                 return False
 
         return True
+
+
+class CustomMethodApiViewPermission(BasePermission):
+    """
+    Verify a list of custom permissions.
+
+    To use it, add a required_permissions attribute to the view class.
+
+    Permissions must be defined in the database and can be added through
+    ngen.models.common.permission.CustomPermissionSupport.
+
+    Returns True if method is not defined in required_permissions.
+
+    Example:
+    class MyView(APIView):
+        permission_classes = [CustomMethodApiViewPermission]
+        required_permissions = {
+            'GET': ['ngen.permission_name'],
+            'HEAD': ['ngen.permission_name'],
+            // 'OPTIONS': ['ngen.permission_name'], // If is not defined, it will return True
+            'POST': ['ngen.permission_name'],
+            'PUT': ['ngen.permission_name'],
+            'PATCH': ['ngen.permission_name'],
+            'DELETE': ['not_allowed'], // If permission is not defined, it will return False
+        }
+
+    """
+
+    def has_permission(self, request, view):
+        required_permissions = getattr(view, "required_permissions", {})
+        method = request.method
+        for perm in required_permissions.get(method, []):
+            if not request.user.has_perm(perm):
+                return False
+
+        return True

@@ -14,7 +14,12 @@ from ngen.serializers import (
     CustomTokenObtainPairSerializer,
     CookieTokenRefreshSerializer,
 )
-from ngen.permissions import CustomApiViewPermission, CustomModelPermissions, IsSelf
+from ngen.permissions import (
+    CustomApiViewPermission,
+    CustomMethodApiViewPermission,
+    CustomModelPermissions,
+    IsSelf,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -47,7 +52,19 @@ class UserProfileViewSet(
     viewsets.GenericViewSet,
 ):
     serializer_class = serializers.UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated, IsSelf]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsSelf,
+        CustomMethodApiViewPermission,
+    ]
+    required_permissions = {
+        "GET": ["ngen.view_userprofile"],
+        "HEAD": ["ngen.view_userprofile"],
+        "PATCH": ["ngen.change_userprofile"],
+        "PUT": ["not_allowed"],
+        "POST": ["not_allowed"],
+        "DELETE": ["not_allowed"],
+    }
     pagination_class = None
 
     def get_queryset(self):

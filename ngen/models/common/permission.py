@@ -41,4 +41,6 @@ class CustomPermissionSupport(models.Model):
             ("view_minified_state", "View Minified State"),
             ("view_minified_taxonomy", "View Minified Taxonomy"),
             ("view_minified_taxonomygroup", "View Minified TaxonomyGroup"),
+            ("view_userprofile", "View UserProfile"),
+            ("change_userprofile", "Change UserProfile"),
         )
