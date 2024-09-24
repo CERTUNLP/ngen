@@ -14,6 +14,12 @@ class EmailHandler:
         self.email_sender = settings.CONSTANCE_CONFIG["EMAIL_SENDER"][0]
         self.email_username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
 
+        if not self.email_sender:
+            raise ValueError("EMAIL_SENDER not configured")
+
+        if not self.email_username:
+            raise ValueError("EMAIL_USERNAME not configured")
+
     def is_valid_email(self, email: str):
         """
         Method to validate email format.
@@ -51,7 +57,8 @@ class EmailHandler:
             for item in recipients:
                 if set(item.keys()) != {"name", "email"}:
                     raise ValueError(
-                        f"Send email failed. Invalid recipient keys: '{item.keys()}'."
+                        "Send email failed. Invalid recipient keys. "
+                        "Recipients must have 'name' and 'email' keys."
                     )
                 if not isinstance(item["name"], str) or not isinstance(
                     item["email"], str
