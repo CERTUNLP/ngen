@@ -311,6 +311,11 @@ CONSTANCE_CONFIG = {
     "EMAIL_USERNAME": (os.environ.get("EMAIL_USERNAME"), "Email username"),
     "EMAIL_PASSWORD": (os.environ.get("EMAIL_PASSWORD"), "Email password"),
     "EMAIL_PORT": (os.environ.get("EMAIL_PORT"), "Email port"),
+    "EMAIL_USE_TLS": (
+        os.environ.get("EMAIL_USE_TLS", "false").lower() in VALUES_TRUE,
+        "Email use TLS",
+        bool,
+    ),
     "NGEN_LANG": (os.environ.get("NGEN_LANG"), "NGEN default language"),
     "NGEN_LANG_EXTERNAL": (
         os.environ.get("NGEN_LANG_EXTERNAL"),

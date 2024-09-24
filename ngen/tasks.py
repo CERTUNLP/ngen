@@ -233,18 +233,18 @@ def async_send_email(email_message_id: int):
         email_message = ngen.models.EmailMessage.objects.get(id=email_message_id)
     except ngen.models.EmailMessage.DoesNotExist:
         return False
-
-    host = settings.CONSTANCE_CONFIG["EMAIL_HOST"][0]
-    username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
-    password = settings.CONSTANCE_CONFIG["EMAIL_PASSWORD"][0]
-    port = settings.CONSTANCE_CONFIG["EMAIL_PORT"][0]
-
     try:
+        host = settings.CONSTANCE_CONFIG["EMAIL_HOST"][0]
+        username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
+        password = settings.CONSTANCE_CONFIG["EMAIL_PASSWORD"][0]
+        port = settings.CONSTANCE_CONFIG["EMAIL_PORT"][0]
+        use_tls = settings.CONSTANCE_CONFIG["EMAIL_USE_TLS"][0]
+
         email_connection = EmailBackend(
             host=host,
             username=username,
             password=password,
-            use_tls=True,
+            use_tls=use_tls,
             port=port or 587,
             fail_silently=False,
         )
