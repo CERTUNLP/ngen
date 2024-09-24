@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getStates } from "../../api/services/states";
 import { Card, Col, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
@@ -60,9 +59,7 @@ const ListState = () => {
               <Search type={t("ngen.state_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
             </Col>
             <Col sm={12} lg={3}>
-              <Link to="/states/create" state={states}>
-                <CrudButton type="create" name={t("ngen.state_one")} />
-              </Link>
+              <CrudButton type="create" name={t("ngen.state_one")} to="/states/create" state={states} checkPermRoute />
             </Col>
           </Row>
         </Card.Header>

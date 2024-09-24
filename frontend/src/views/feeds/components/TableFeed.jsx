@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { deleteFeed, getFeed, putActivationStatus } from "../../../api/services/feeds";
 import CrudButton from "../../../components/Button/CrudButton";
 import ActiveButton from "../../../components/Button/ActiveButton";
@@ -103,15 +102,13 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                 <tr key={index}>
                   <td>{feed.name}</td>
                   <td>
-                    <ActiveButton active={feed.active} onClick={() => showModalChangeState(feed.url, feed.name, feed.active)} />
+                    <ActiveButton active={feed.active} onClick={() => showModalChangeState(feed.url, feed.name, feed.active)} permissions="change_feed" />
                   </td>
                   <td>{feed.events_count}</td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalFeed(feed)} />
-                    <Link to="/feeds/edit" state={feed}>
-                      <CrudButton type="edit" />
-                    </Link>
-                    <CrudButton type="delete" onClick={() => handleShow(feed.name, feed.url)} />
+                    <CrudButton type="edit" to="/feeds/edit" state={feed} checkPermRoute />
+                    <CrudButton type="delete" onClick={() => handleShow(feed.name, feed.url)} permissions="delete_feed" />
                   </td>
                 </tr>
               );
@@ -149,9 +146,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                         </span>
                       </Col>
                       <Col sm={12} lg={2}>
-                        <Link to="/feeds/edit" state={feed}>
-                          <CrudButton type="edit" />
-                        </Link>
+                        <CrudButton type="edit" to="/feeds/edit" state={feed} checkPermRoute />
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                       </Col>
                     </Row>
@@ -174,7 +169,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                       <tr>
                         <td>{t("w.active")}</td>
                         <td>
-                          <ActiveButton active={feed.active} />
+                          <ActiveButton active={feed.active} permissions="change_feed" />
                         </td>
                       </tr>
                       {feed.description === undefined ? (

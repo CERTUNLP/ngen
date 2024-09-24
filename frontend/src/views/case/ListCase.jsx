@@ -7,7 +7,6 @@ import { getMinifiedPriority } from "../../api/services/priorities";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedState } from "../../api/services/states";
-import { Link } from "react-router-dom";
 import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
@@ -16,6 +15,7 @@ import Alert from "../../components/Alert/Alert";
 import ButtonFilter from "../../components/Button/ButtonFilter";
 import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import { useTranslation } from "react-i18next";
+import PermissionCheck from "../../components/Auth/PermissionCheck";
 
 const ListCase = () => {
   const [cases, setCases] = useState([]); //lista de casos
@@ -130,7 +130,7 @@ const ListCase = () => {
         }
         setDisabledPagination(false);
       })
-      .catch((error) => { })
+      .catch((error) => {})
       .finally(() => {
         setShowAlert(true);
         setLoading(false);
@@ -176,22 +176,23 @@ const ListCase = () => {
                   <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
                 </Col>
                 <Col>
-                  <Link to="/cases/create">
-                    <CrudButton type="create" name={t("ngen.case_one")} />
-                  </Link>
+                  <CrudButton type="create" name={t("ngen.case_one")} to="/cases/create" checkPermRoute />
 
-                  <Button
-                    disabled={selectedCases.length <= 1}
-                    size="lm"
-                    className="text-capitalize"
-                    variant="light"
-                    title="Merge"
-                    onClick={() => mergeConfirm()}
-                  >
-                    <i className="fa fa-code-branch text-danger" />
-                    Merge&nbsp;
-                    <Badge className="badge mr-1">{selectedCases.length}</Badge>
-                  </Button>
+                  <PermissionCheck permission="change_case">
+                    <Button
+                      disabled={selectedCases.length <= 1}
+                      size="lm"
+                      className="text-capitalize"
+                      variant="light"
+                      title="Merge"
+                      onClick={() => mergeConfirm()}
+                    >
+                      <i className="fa fa-code-branch text-danger" />
+                      Merge&nbsp;
+                      <Badge className="badge mr-1">{selectedCases.length}</Badge>
+                    </Button>
+                  </PermissionCheck>
+
                   <Button size="lm" variant="outline-dark" onClick={() => reloadPage()}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

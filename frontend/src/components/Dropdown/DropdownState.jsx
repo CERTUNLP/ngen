@@ -35,7 +35,6 @@ function DropdownState({ state, setActive, str_true = "w.active", str_false = "w
       </Dropdown.Toggle>
       <Dropdown.Menu>
         {Object.entries(options).map(([key, value]) => (
-          console.log(key, value, state, key === selected),
           <Dropdown.Item eventKey={key} key={key} active={key === selected}>
             {t(value)}
           </Dropdown.Item>

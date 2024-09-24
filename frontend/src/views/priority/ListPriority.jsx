@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Card, Col, Row } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
 import Navigation from "../../components/Navigation/Navigation";
@@ -65,9 +64,7 @@ const ListPriorities = () => {
               <Search type={t("search.by.name")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
             </Col>
             <Col sm={12} lg={3}>
-              <Link to="/priorities/create">
-                <CrudButton type="create" name={t("ngen.priority_one")} />
-              </Link>
+              <CrudButton type="create" name={t("ngen.priority_one")} to="/priorities/create" checkPermRoute />
             </Col>
           </Row>
         </Card.Header>

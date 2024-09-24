@@ -117,15 +117,13 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                   <td>{user.email}</td>
                   <td>{user.first_name}</td>
                   <td>
-                    <ActiveButton active={user.is_active} onClick={() => showModalChangeState(user.url, user.username, user.is_active)} />
+                    <ActiveButton active={user.is_active} onClick={() => showModalChangeState(user.url, user.username, user.is_active)} permissions="edit_user" />
                   </td>
                   <td>{user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}</td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalUser(user)} />
-                    <Link to="/users/edit" state={user}>
-                      <CrudButton type="edit" />
-                    </Link>
-                    <CrudButton type="delete" onClick={() => handleShow(user.username, user.url)} />
+                    <CrudButton type="edit" to="/users/edit" state={user} checkPermRoute />
+                    <CrudButton type="delete" onClick={() => handleShow(user.username, user.url)} permissions="delete_user" />
                   </td>
                 </tr>
               );

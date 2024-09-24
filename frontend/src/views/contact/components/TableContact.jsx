@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
 import { deleteContact, getContact } from "../../../api/services/contacts";
-import { Link } from "react-router-dom";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import PriorityButton from "../../../components/Button/PriorityButton";
 import Ordering from "../../../components/Ordering/Ordering";
@@ -123,10 +122,8 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                 </td>
                 <td>
                   <CrudButton type="read" onClick={() => showContact(contact.url)} />
-                  <Link to="/contacts/edit" state={contact}>
-                    <CrudButton type="edit" onClick={() => storageContactUrl(contact.url)} />
-                  </Link>
-                  <CrudButton type="delete" onClick={() => Delete(contact.url, contact.name)} />
+                  <CrudButton type="edit" onClick={() => storageContactUrl(contact.url)} to="/contacts/edit" state={contact} checkPermRoute />
+                  <CrudButton type="delete" onClick={() => Delete(contact.url, contact.name)} permissions="delete_contact" />
                 </td>
               </tr>
             );
@@ -146,9 +143,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                       <span className="d-block m-t-5">{t("ngen.contact.detail")}</span>
                     </Col>
                     <Col sm={2} lg={2}>
-                      <Link to="/contacts/edit" state={contact}>
-                        <CrudButton type="edit" />
-                      </Link>
+                      <CrudButton type="edit" to="/contacts/edit" state={contact} checkPermRoute />
                       <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                     </Col>
                   </Row>

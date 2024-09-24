@@ -16,7 +16,6 @@ const NavContent = ({ navigation }) => {
   const [itemsBottom, setItemsBottom] = React.useState([]);
   
   const filterMenuItems = (items) => {
-    console.log('filterMenuItems');
     if (user.is_superuser) {
       return items;
     }

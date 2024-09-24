@@ -115,9 +115,7 @@ const ListTaxonomies = () => {
                 </Col>
 
                 <Col sm={12} lg={3}>
-                  <Link to="/taxonomies/create">
-                    <CrudButton type="create" name={t("ngen.taxonomy_one")} />
-                  </Link>
+                  <CrudButton type="create" name={t("ngen.taxonomy_one")} to="/taxonomies/create" checkPermRoute />
                 </Col>
               </Row>
             </Card.Header>

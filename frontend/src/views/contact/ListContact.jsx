@@ -3,7 +3,6 @@ import { Card, Col, Row } from "react-bootstrap";
 import TableContact from "./components/TableContact";
 import CrudButton from "../../components/Button/CrudButton";
 import { getContacts } from "../../api/services/contacts";
-import { Link } from "react-router-dom";
 import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
@@ -87,9 +86,7 @@ const ListContact = () => {
                   />
                 </Col>
                 <Col sm={3} lg={3}>
-                  <Link to="/contacts/create">
-                    <CrudButton type="create" name={t("ngen.contact_one")} />
-                  </Link>
+                  <CrudButton type="create" name={t("ngen.contact_one")} to="/contacts/create" checkPermRoute />
                 </Col>
               </Row>
             </Card.Header>

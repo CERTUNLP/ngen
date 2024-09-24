@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { deletePriority } from "../../../api/services/priorities";
 import CrudButton from "../../../components/Button/CrudButton";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
@@ -94,10 +93,8 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
                       }}
                     />
 
-                    <Link to="/priorities/edit" state={priority}>
-                      <CrudButton type="edit" />
-                    </Link>
-                    <CrudButton type="delete" onClick={() => handleShow(priority.name, priority.url)} />
+                    <CrudButton type="edit" to="/priorities/edit" state={priority} checkPermRoute />
+                    <CrudButton type="delete" onClick={() => handleShow(priority.name, priority.url)} permissions="delete_priority" />
                   </td>
                 </tr>
               );
@@ -114,9 +111,7 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
                             <span className="d-block m-t-5">{t("ngen.priority.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <Link to="/priorities/edit" state={priority}>
-                              <CrudButton type="edit" />
-                            </Link>
+                            <CrudButton type="edit" to="/priorities/edit" state={priority} checkPermRoute />
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>

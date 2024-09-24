@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { getFeeds } from "../../api/services/feeds";
 import CrudButton from "../../components/Button/CrudButton";
 import Alert from "../../components/Alert/Alert";
@@ -72,9 +71,7 @@ const ListFeed = () => {
                   />
                 </Col>
                 <Col sm={12} lg={3}>
-                  <Link to="/feeds/create">
-                    <CrudButton type="create" name={t("ngen.feed")} />
-                  </Link>
+                  <CrudButton type="create" name={t("ngen.feed")} to="/feeds/create" checkPermRoute />
                 </Col>
               </Row>
             </Card.Header>

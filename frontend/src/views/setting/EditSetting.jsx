@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
+import { Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
 import Navigation from "../../components/Navigation/Navigation";
 import { getSetting, patchSetting } from "../../api/services/setting";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
+import PermissionCheck from "components/Auth/PermissionCheck";
 
 const EditSetting = () => {
   const [list, setList] = useState([]);
@@ -109,7 +111,9 @@ const EditSetting = () => {
                   <th>{t("ngen.description")}</th>
                   <th>{t("ngen.default")}</th>
                   <th>{t("ngen.value")}</th>
-                  <th>{t("w.modify")}</th>
+                  <PermissionCheck permissions="change_constance">
+                    <th>{t("w.modify")}</th>
+                  </PermissionCheck>
                   <th></th>
                 </tr>
               </thead>
@@ -141,11 +145,11 @@ const EditSetting = () => {
                           />
                         </Form.Group>
                       </td>
-                      <td>
-                        <Button variant="outline-warning" onClick={() => PatchSetting(setting.url)}>
-                          {t("button.save")}
-                        </Button>
-                      </td>
+                      <PermissionCheck permissions="change_constance">
+                        <td>
+                          <CrudButton type="save" variant="outline-warning" onClick={() => PatchSetting(setting.url)} text={t("button.save")} />
+                        </td>
+                      </PermissionCheck>
                     </tr>
                   ))
                 )}
