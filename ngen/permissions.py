@@ -58,11 +58,11 @@ class CustomMethodApiViewPermission(BasePermission):
         required_permissions = {
             'GET': ['ngen.permission_name'],
             'HEAD': ['ngen.permission_name'],
-            // 'OPTIONS': ['ngen.permission_name'], // If is not defined, it will return True
+            # 'OPTIONS': ['ngen.permission_name'], # If is not defined, it will return True
             'POST': ['ngen.permission_name'],
             'PUT': ['ngen.permission_name'],
             'PATCH': ['ngen.permission_name'],
-            'DELETE': ['not_allowed'], // If permission is not defined, it will return False
+            'DELETE': ['not_allowed'], # If permission is not defined, it will return False
         }
 
     """

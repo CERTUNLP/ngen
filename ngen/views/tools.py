@@ -8,7 +8,11 @@ from rest_framework.views import APIView
 
 from ngen import models, serializers
 from ngen.utils import get_settings
-from ngen.permissions import CustomModelPermissions
+from ngen.permissions import (
+    CustomApiViewPermission,
+    CustomMethodApiViewPermission,
+    CustomModelPermissions,
+)
 
 
 class AboutView(TemplateView):
@@ -47,7 +51,15 @@ class AuditViewSet(viewsets.ModelViewSet):
 
 class ConstanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ConstanceSerializer
-    permission_classes = [CustomModelPermissions]
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["ngen.view_constance"],
+        "HEAD": ["ngen.view_constance"],
+        "POST": ["ngen.add_constance"],
+        "PUT": ["ngen.change_constance"],
+        "PATCH": ["ngen.change_constance"],
+        "DELETE": ["delete_constance"],
+    }
     lookup_field = "key"
     lookup_value_regex = "[A-Za-z_][A-Za-z0-9_]*"
 
@@ -129,7 +141,12 @@ class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
 
 class StringIdentifierViewSet(viewsets.ViewSet):
     serializer_class = serializers.StringIdentifierSerializer
-    permission_classes = [CustomModelPermissions]
+    permission_classes = [CustomMethodApiViewPermission]
+    permission_required = {
+        "GET": ["ngen.view_stringidentifier"],
+        "HEAD": ["ngen.view_stringidentifier"],
+        "POST": ["ngen.use_stringidentifier"],
+    }
 
     def create(self, request, *args, **kwargs):
         serializer = serializers.StringIdentifierSerializer(data=request.data)
