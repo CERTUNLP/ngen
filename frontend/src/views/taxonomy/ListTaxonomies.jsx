@@ -253,7 +253,7 @@ const ListTaxonomies = () => {
                         setFilter={setReportsFilter}
                         currentFilter={reportsFilter}
                         setLoading={setLoading}
-                        placeholder={t("ngen.filter_by") + " " + t("w.active")}
+                        placeholder={t("ngen.filter_by") + " " + t("ngen.report_other")}
                       />
                     </Col>
                   </Row>
