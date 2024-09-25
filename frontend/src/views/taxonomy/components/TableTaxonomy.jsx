@@ -143,7 +143,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
             />
             <Ordering
               field="reports"
-              label={t("ngen.reports")}
+              label={t("ngen.report_other")}
               order={order}
               setOrder={setOrder}
               setLoading={setLoading}
@@ -279,10 +279,10 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                         </tr>
                       )}
                       <tr>
-                        <td>{t("ngen.reports")}</td>
+                        <td>{t("ngen.report_other")}</td>
                         <td>
                           <Button size="sm" variant="light" className="text-capitalize">
-                            {t("ngen.reports")}
+                            {t("ngen.report_other")}
                             <Badge variant="light" className="ml-1">
                               {taxonomy ? taxonomy.reports.length : ""}
                             </Badge>

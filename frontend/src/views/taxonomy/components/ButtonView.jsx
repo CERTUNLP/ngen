@@ -113,7 +113,7 @@ function ButtonView({ taxonomy }) {
                       <td>{t("info.related")}</td>
                       <td>
                         <Button size="sm" variant="light" className="text-capitalize">
-                          {t("ngen.reports")}
+                          {t("ngen.report_other")}
                           <Badge variant="light" className="ml-1">
                             {taxonomy.reports.length}
                           </Badge>
