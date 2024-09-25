@@ -22,6 +22,7 @@
   "crud.detail": "Detalle",
   "crud.download": "Descargar",
   "crud.edit": "Editar",
+  "crud.save": "Guardar",
   "crud.want_to_deactivate": "¿Está seguro de que desea desactivar los ítems seleccionados?",
   "crud.want_to_delete": "¿Está seguro de que desea borrar los ítems seleccionados?",
   "crud.want_to_merge": "¿Está seguro de que desea fusionar los ítems seleccionados?",

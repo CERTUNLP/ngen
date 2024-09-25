@@ -83,6 +83,10 @@ class TaxonomyFilter(BaseFilter):
         - playbooks (exact)
         - parent (exact, isnull),
         - children (exact, isnull)
+        - alias_of (exact, isnull)
+        - group (exact, isnull)
+        - needs_review (exact)
+        - reports (isnull)
     """
 
     class Meta:
@@ -96,6 +100,10 @@ class TaxonomyFilter(BaseFilter):
             "playbooks": ["exact"],
             "parent": ["exact", "isnull"],
             "children": ["exact", "isnull"],
+            "alias_of": ["exact", "isnull"],
+            "group": ["exact", "isnull"],
+            "needs_review": ["exact"],
+            "reports": ["isnull"],
         }
 
 

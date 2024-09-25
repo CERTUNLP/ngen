@@ -22,6 +22,7 @@
   "crud.detail": "Detail",
   "crud.download": "Download",
   "crud.edit": "Edit",
+  "crud.save": "Save",
   "crud.want_to_deactivate": "Do you want to deactivate the selected items?",
   "crud.want_to_delete": "Do you want to delete the selected items?",
   "crud.want_to_merge": "Do you want to merge the selected items?",
