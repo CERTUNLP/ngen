@@ -16,8 +16,9 @@ import SmallCaseTable from "../case/components/SmallCaseTable";
 import { getEvidence } from "../../api/services/evidences";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
 import { useTranslation } from "react-i18next";
+import PermissionCheck from "components/Auth/PermissionCheck";
 
-const ReadEvent = () => {
+const ReadEvent = ({ routeParams }) => {
   const location = useLocation();
   const [body, setBody] = useState({});
   const [eventItem, setEventItem] = useState(location?.state?.item || null);
@@ -36,6 +37,7 @@ const ReadEvent = () => {
   useEffect(() => {
     if (!eventItem) {
       const event = localStorage.getItem("event");
+      console.log("event", event);
       getEvent(event)
         .then((responsive) => {
           setBody(responsive.data);
@@ -198,21 +200,25 @@ const ReadEvent = () => {
             <Col sm={12} lg={4} className={"align-self-center"}>
               {body.tlp !== undefined ? <CallBackendByName url={body.tlp} callback={callbackTlp} /> : "-"}
             </Col>
-            <Col sm={12} lg={2} className={"align-self-center"}>
-              {t("ngen.feed.information")}
-            </Col>
-            <Col sm={12} lg={4} className={"align-self-center"}>
-              {body.feed !== undefined ? <CallBackendByName url={body.feed} callback={callbackFeed} /> : "-"}
-            </Col>
+            <PermissionCheck permissions={["view_feed"]}>
+              <Col sm={12} lg={2} className={"align-self-center"}>
+                {t("ngen.feed.information")}
+              </Col>
+              <Col sm={12} lg={4} className={"align-self-center"}>
+                {body.feed !== undefined ? <CallBackendByName url={body.feed} callback={callbackFeed} /> : "-"}
+              </Col>
+            </PermissionCheck>
           </Row>
           <p />
           <Row>
-            <Col sm={12} lg={2} className={"align-self-center"}>
-              {t("ngen.taxonomy_one")}
-            </Col>
-            <Col sm={12} lg={4} className={"align-self-center"}>
-              {body.taxonomy !== undefined ? <CallBackendByName url={body.taxonomy} callback={callbackTaxonomy} /> : "-"}
-            </Col>
+            <PermissionCheck permissions={["view_taxonomy"]}>
+              <Col sm={12} lg={2} className={"align-self-center"}>
+                {t("ngen.taxonomy_one")}
+              </Col>
+              <Col sm={12} lg={4} className={"align-self-center"}>
+                {body.taxonomy !== undefined ? <CallBackendByName url={body.taxonomy} callback={callbackTaxonomy} /> : "-"}
+              </Col>
+            </PermissionCheck>
             <Col sm={12} lg={2} className={"align-self-center"}>
               {t("ngen.event.initial_taxonomy_slug")}
             </Col>

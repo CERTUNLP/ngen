@@ -5,7 +5,7 @@ import Navigation from "../../components/Navigation/Navigation";
 import { getAllStates } from "../../api/services/states";
 import { useTranslation } from "react-i18next";
 
-const CreateCase = () => {
+const CreateCase = ({ routeParams }) => {
   const [allStates, setAllStates] = useState([]); //multiselect
   const [stateName, setStatesName] = useState([]);
 
@@ -62,6 +62,7 @@ const CreateCase = () => {
         stateName={stateName}
         setStatesName={setStatesName}
         buttonsModalColum={true}
+        asNetworkAdmin={routeParams.asNetworkAdmin}
       />
     </React.Fragment>
   );

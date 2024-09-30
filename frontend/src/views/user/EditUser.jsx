@@ -49,9 +49,9 @@ const EditUser = () => {
   };
 
   const editUser = (e) => {
-    putUser(user.url, user.username, user.first_name, user.last_name, user.email, user.priority)
+    putUser(user.url, user.username, user.first_name, user.last_name, user.email, user.priority, user.is_active, user.groups, user.user_permissions)
       .then(() => {
-        window.location.href = "/users";
+        // window.location.href = "/users";
       })
       .catch((error) => {
         setShowAlert(true);

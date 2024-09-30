@@ -1,4 +1,5 @@
 import { logout } from "./api/services/auth";
+import { userIsNetworkAdmin } from "utils/permissions";
 
 const menuItems = {
   items: [
@@ -16,7 +17,7 @@ const menuItems = {
           breadcrumbs: false
         },
         {
-          id: "Eventos",
+          id: "event",
           title: "menu.events",
           type: "item",
           url: "/events",
@@ -49,7 +50,7 @@ const menuItems = {
           breadcrumbs: false
         },
         {
-          id: "networks",
+          id: "network",
           title: "menu.networks",
           type: "item",
           url: "/networks",
@@ -57,10 +58,66 @@ const menuItems = {
           breadcrumbs: false
         },
         {
-          id: "contacts",
+          id: "contact",
           title: "menu.contacts",
           type: "item",
           url: "/contacts",
+          icon: "far fa-address-book",
+          breadcrumbs: false
+        }
+      ]
+    },
+    {
+      id: "networkadminprincipal",
+      title: "menu.networkadmin.main",
+      type: "group",
+      children: [
+        {
+          id: "networkadminevent",
+          title: "menu.networkadmin.events",
+          type: "item",
+          url: "/networkadmin/events",
+          classes: "",
+          icon: "feather icon-alert-circle",
+          breadcrumbs: false
+        },
+        {
+          id: "networkadmincase",
+          title: "menu.networkadmin.cases",
+          type: "item",
+          url: "/networkadmin/cases",
+          icon: "feather icon-search",
+          breadcrumbs: false
+        }
+      ]
+    },
+    {
+      id: "networkadminconstituency",
+      title: "menu.networkadmin.constituency",
+      type: "group",
+      icon: "fas fa-network-wired",
+      children: [
+        {
+          id: "networkadminentity",
+          title: "menu.networkadmin.entities",
+          type: "item",
+          url: "/networkadmin/entities",
+          icon: "fas fa-cubes",
+          breadcrumbs: false
+        },
+        {
+          id: "networkadminnetwork",
+          title: "menu.networkadmin.networks",
+          type: "item",
+          url: "/networkadmin/networks",
+          icon: "feather icon-share-2",
+          breadcrumbs: false
+        },
+        {
+          id: "networkadmincontact",
+          title: "menu.networkadmin.contacts",
+          type: "item",
+          url: "/networkadmin/contacts",
           icon: "far fa-address-book",
           breadcrumbs: false
         }
@@ -88,7 +145,7 @@ const menuItems = {
               breadcrumbs: false
             },
             {
-              id: "reporte",
+              id: "report",
               title: "menu.report",
               type: "item",
               url: "/reports",
@@ -96,7 +153,7 @@ const menuItems = {
               breadcrumbs: false
             },
             {
-              id: "feeds",
+              id: "feed",
               title: "menu.feeds",
               type: "item",
               url: "/feeds",
@@ -137,7 +194,7 @@ const menuItems = {
               breadcrumbs: false
             },
             {
-              id: "Estados",
+              id: "state",
               title: "menu.states",
               type: "item",
               url: "/states",
@@ -146,7 +203,7 @@ const menuItems = {
               breadcrumbs: false
             },
             {
-              id: "Plantilla",
+              id: "template",
               title: "menu.templates",
               type: "item",
               url: "/templates",
@@ -155,7 +212,7 @@ const menuItems = {
               breadcrumbs: false
             },
             {
-              id: "users",
+              id: "user",
               title: "menu.users",
               type: "item",
               url: "/users",
@@ -164,7 +221,7 @@ const menuItems = {
               breadcrumbs: false
             },
             {
-              id: "Configuración",
+              id: "configuration",
               title: "menu.config",
               type: "item",
               url: "/setting",

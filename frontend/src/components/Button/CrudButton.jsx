@@ -5,12 +5,16 @@ import { useTranslation } from "react-i18next";
 import PermissionCheck from "components/Auth/PermissionCheck";
 import { routePermissions } from "utils/permissions";
 
-// type: {create, read, update, delete}
-const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissions, checkPermRoute, text=""}) => {
+const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissions, checkPermRoute, text="", optionalPermissions}) => {
   const { t } = useTranslation();
 
   if (checkPermRoute) {
-    permissions = routePermissions(checkPermRoute);
+    // Find the permissions for the route
+    permissions = routePermissions(to);
+    // If the route not exist, component will not be rendered
+    if (permissions === false) {
+      return null;
+    }
   }
 
   const button = {
@@ -87,7 +91,7 @@ const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissi
   }
 
   return (
-    <PermissionCheck permissions={permissions}>
+    <PermissionCheck permissions={permissions} optionalPermissions={optionalPermissions}>
       {component}
     </PermissionCheck>
   );

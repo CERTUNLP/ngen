@@ -177,3 +177,19 @@ class UserMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = None
     permission_classes = [CustomApiViewPermission]
     required_permissions = ["ngen.view_minified_user"]
+
+
+class PermissionMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Permission.objects.all()
+    serializer_class = serializers.PermissionSerializer
+    pagination_class = None
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_permission"]
+
+
+class GroupMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Group.objects.all()
+    serializer_class = serializers.GroupMinifiedSerializer
+    pagination_class = None
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_group"]

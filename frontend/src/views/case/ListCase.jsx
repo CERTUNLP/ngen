@@ -17,7 +17,7 @@ import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import { useTranslation } from "react-i18next";
 import PermissionCheck from "../../components/Auth/PermissionCheck";
 
-const ListCase = () => {
+const ListCase = ({ routeParams }) => {
   const [cases, setCases] = useState([]); //lista de casos
   const [ifModify, setIfModify] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -120,7 +120,7 @@ const ListCase = () => {
         console.log(error);
       });
     //getCases(currentPage,priorityFilter+tlpFilter+stateFilter+wordToSearch, order)
-    getCases(currentPage, priorityFilter + tlpFilter + stateFilter + wordToSearch, order)
+    getCases(currentPage, priorityFilter + tlpFilter + stateFilter + wordToSearch, order, routeParams.asNetworkAdmin)
       .then((response) => {
         setCases(response.data.results);
         setCountItems(response.data.count);
@@ -176,9 +176,9 @@ const ListCase = () => {
                   <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
                 </Col>
                 <Col>
-                  <CrudButton type="create" name={t("ngen.case_one")} to="/cases/create" checkPermRoute />
+                  <CrudButton type="create" name={t("ngen.case_one")} to={routeParams.basePath + "/cases/create"} checkPermRoute />
 
-                  <PermissionCheck permission="change_case">
+                  <PermissionCheck optionalPermissions={["change_case", "change_case_network_admin"]}>
                     <Button
                       disabled={selectedCases.length <= 1}
                       size="lm"
@@ -271,6 +271,7 @@ const ListCase = () => {
                 buttonReturn={false}
                 disableNubersOfEvents={true}
                 disableDateModified={false}
+                basePath={routeParams.basePath}
               />
             </Card.Body>
             <Card.Footer>

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
 
-import { getMinifiedState } from "../../../../api/services/states";
-import { getMinifiedUser } from "../../../../api/services/users";
-import TableCase from "../../../case/components/TableCase";
+import { getMinifiedState } from "../../../api/services/states";
+import { getMinifiedUser } from "../../../api/services/users";
+import TableCase from "../../case/components/TableCase";
 import { useTranslation } from "react-i18next";
 
-const DashboardCases = ({ list, loading }) => {
+const DashboardCases = ({ list, loading, basePath }) => {
   const [userNames, setUserNames] = useState({});
   const [stateNames, setStateNames] = useState({});
 
@@ -59,6 +59,7 @@ const DashboardCases = ({ list, loading }) => {
           disableUuid={true}
           disableDateModified={true}
           disableEvents={true}
+          basePath={basePath}
         />
       </Card>
     </div>

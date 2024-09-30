@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Card, Col, Row } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
 import { getContact, putContact } from "../../api/services/contacts";
@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 const EditContact = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const fromState = location.state;
   const [contact, setContact] = useState(fromState);
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ const EditContact = () => {
   const [supportedContact, setSupportedContact] = useState("");
   const [supportedKey, setSupportedKey] = useState("");
   const [selectType, setSelectType] = useState("");
+  const [user, setUser] = useState("");
 
   //Alert
   const [showAlert, setShowAlert] = useState(false);
@@ -31,6 +33,7 @@ const EditContact = () => {
       setSupportedContact(contact.username);
       setSupportedKey(contact.public_key);
       setSelectType(contact.type);
+      setUser(contact.user);
     } else {
       const contactUrl = localStorage.getItem("contact");
       getContact(contactUrl)
@@ -42,10 +45,8 @@ const EditContact = () => {
   }, [contact]);
 
   const editContact = () => {
-    putContact(contact.url, supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority)
+    putContact(contact.url, supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority, user)
       .then((response) => {
-        localStorage.removeItem("contact");
-        window.location.href = "/contacts";
       })
       .catch(() => {
         setShowAlert(true);
@@ -56,7 +57,7 @@ const EditContact = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="contact" />
       <Row>
-        <Navigation actualPosition={t("ngen.edit.contact")} path="/contacts" index={t("ngen.contact_other")} />
+        <Navigation actualPosition={t("ngen.contact.edit")} path="/contacts" index={t("ngen.contact_other")} />
       </Row>
       <Row>
         <Col sm={12}>
@@ -75,6 +76,8 @@ const EditContact = () => {
                 setRole={setSelectRol}
                 priority={supportedPriority}
                 setPriority={setSupportedPriority}
+                user={user}
+                setUser={setUser}
                 type={selectType}
                 setType={setSelectType}
                 contact={supportedContact}
@@ -83,7 +86,8 @@ const EditContact = () => {
                 setKey={setSupportedKey}
                 ifConfirm={editContact}
                 ifCancel={() => {
-                  window.location.href = "/contacts";
+                  localStorage.removeItem("contact");
+                  navigate(-1);
                 }}
               />
             </Card.Body>

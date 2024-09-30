@@ -145,6 +145,16 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
+                  {profile.is_network_admin !== undefined ? (
+                    <tr>
+                      <td> {t("ngen.user.is.network_admin")}</td>
+                      <td>
+                        <ActiveButton active={profile.is_network_admin} />
+                      </td>
+                    </tr>
+                  ) : (
+                    <></>
+                  )}
                   <tr>
                     <td>{t("ngen.apikey")}</td>
                     <td>

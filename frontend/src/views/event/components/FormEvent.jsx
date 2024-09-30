@@ -578,6 +578,7 @@ const FormEvent = (props) => {
         setWordToSearch={setWordToSearch}
         updatePagination={updatePagination}
         setUpdatePagination={setUpdatePagination}
+        asNetworkAdmin={props.asNetworkAdmin}
       />
 
       <ModalReadCase

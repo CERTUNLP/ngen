@@ -9,11 +9,16 @@ import {
   validateUserMail,
   validateUserName
 } from "../../../utils/validators/user";
+import { getMinifiedPermissions } from "api/services/permissions";
+import { getMinifiedGroups } from "api/services/groups";
 import SelectComponent from "../../../components/Select/SelectComponent";
 import { useTranslation } from "react-i18next";
+import DualListBox from "react-dual-listbox";
 
 const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequired }) => {
   const [selectPriority, setSelectPriority] = useState();
+  const [optionGroups, setOptionGroups] = useState([]);
+  const [optionPermissions, setOptionPermissions] = useState([]);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -25,6 +30,16 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
       });
     }
   }, [priorities, body.priority]);
+
+  useEffect(() => {
+    getMinifiedPermissions().then((response) => {
+      setOptionPermissions(response.map((item) => ({ label: item.name, value: item.url })));
+    });
+
+    getMinifiedGroups().then((response) => {
+      setOptionGroups(response.map((item) => ({ label: item.name, value: item.url })));
+    });
+  }, []);
 
   if (loading) {
     return (
@@ -70,6 +85,7 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
     }
     setOption(event);
   };
+
   return (
     <Form>
       <Row>
@@ -181,6 +197,26 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
               <div className="invalid-feedback"> {t("ngen.password.validation")}</div>
             )}
           </Form.Group>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} lg={6}>
+          <Form.Label>{t("w.groups")}</Form.Label>
+          <DualListBox
+            canFilter
+            options={optionGroups}
+            selected={body.groups}
+            onChange={(newPermissions) => setBody({ ...body, groups: newPermissions })}
+          />
+        </Col>
+        <Col sm={12} lg={6}>
+          <Form.Label>{t("w.permissions")}</Form.Label>
+          <DualListBox
+            canFilter
+            options={optionPermissions}
+            selected={body.user_permissions}
+            onChange={(newPermissions) => setBody({ ...body, user_permissions: newPermissions })}
+          />
         </Col>
       </Row>
 

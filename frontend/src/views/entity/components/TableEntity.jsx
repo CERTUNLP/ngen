@@ -7,7 +7,7 @@ import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
 
-const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder }) => {
+const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder, basePath="" }) => {
   const [entity, setEntity] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -123,7 +123,7 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                 <td>{entity.networks.length}</td>
                 <td>
                   <CrudButton type="read" onClick={() => showEntity(entity.url)} />
-                  <CrudButton type="edit" state={entity} to="/entities/edit" onClick={() => storageEntityUrl(entity.url)} checkPermRoute />
+                  <CrudButton type="edit" state={entity} to={basePath + "/entities/edit"} onClick={() => storageEntityUrl(entity.url)} checkPermRoute />
                   <CrudButton type="delete" onClick={() => Delete(entity.url, entity.name)} permissions="delete_networkentity" />
                 </td>
               </tr>
@@ -144,7 +144,7 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                       <span className="d-block m-t-5">{t("ngen.entity_detail")}</span>
                     </Col>
                     <Col sm={12} lg={3}>
-                      <CrudButton type="edit" state={entity} to="/entities/edit" checkPermRoute />
+                      <CrudButton type="edit" state={entity} to={basePath + "/entities/edit"} checkPermRoute />
                       <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                     </Col>
                   </Row>

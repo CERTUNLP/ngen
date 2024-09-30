@@ -13,7 +13,7 @@ import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import FilterSelect from "../../components/Filter/FilterSelect";
 import { useTranslation } from "react-i18next";
 
-const ListNetwork = () => {
+const ListNetwork = ({ routeParams }) => {
   const { t } = useTranslation();
 
   const [network, setNetwork] = useState([]);
@@ -68,7 +68,7 @@ const ListNetwork = () => {
   }, []);
 
   useEffect(() => {
-    getNetworks(currentPage, entitiesFilter + typeFilter + wordToSearch, order)
+    getNetworks(currentPage, entitiesFilter + typeFilter + wordToSearch, order, routeParams.asNetworkAdmin)
       .then((response) => {
         setNetwork(response.data.results);
         // Paginación
@@ -153,6 +153,8 @@ const ListNetwork = () => {
                 setOrder={setOrder}
                 setLoading={setLoading}
                 entityNames={entityNames}
+                asNetworkAdmin={routeParams.asNetworkAdmin}
+                basePath={routeParams.basePath}
               />
             </Card.Body>
             <Card.Footer>

@@ -79,6 +79,32 @@ router.register(r"register", views.RegisterViewSet, basename="register")
 router.register(r"groups", views.GroupViewSet, basename="group")
 router.register(r"permission", views.PermissionViewSet, basename="permission")
 router.register(r"contenttype", views.ContentTypeViewSet, basename="contenttype")
+router.register(
+    r"networkadmin/event", views.NetworkAdminEventViewSet, basename="networkadminevent"
+)
+router.register(
+    r"networkadmin/case", views.NetworkAdminCaseViewSet, basename="networkadmincase"
+)
+router.register(
+    r"networkadmin/evidence",
+    views.NetworkAdminEvidenceViewSet,
+    basename="networkadminevidence",
+)
+router.register(
+    r"networkadmin/network",
+    views.NetworkAdminNetworkViewSet,
+    basename="networkadminnetwork",
+)
+router.register(
+    r"networkadmin/networkentity",
+    views.NetworkAdminNetworkEntityViewSet,
+    basename="networkadminnetworkentity",
+)
+router.register(
+    r"networkadmin/contact",
+    views.NetworkAdminContactViewSet,
+    basename="networkadmincontact",
+)
 # router.register(r"login", views.LoginViewSet, basename="login")
 router.register(
     r"minified/taxonomy", views.TaxonomyMinifiedViewSet, basename="minified-taxonomy"
@@ -103,6 +129,14 @@ router.register(
     r"minified/contact", views.ContactMinifiedViewSet, basename="minified-contact"
 )
 router.register(r"minified/user", views.UserMinifiedViewSet, basename="minified-user")
+router.register(
+    r"minified/permission",
+    views.PermissionMinifiedViewSet,
+    basename="minified-permission",
+)
+router.register(
+    r"minified/group", views.GroupMinifiedViewSet, basename="minified-group"
+)
 router.register(r"minified/case", views.CaseMinifiedViewSet, basename="minified-case")
 router.register(
     r"minified/artifact", views.ArtifactMinifiedViewSet, basename="minified-artifact"

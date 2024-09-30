@@ -3,12 +3,13 @@ import { COMPONENT_URL, PAGE } from "../../config/constant";
 import setAlert from "../../utils/setAlert";
 import i18next from "i18next";
 
-const getEvents = (currentPage, filters, order) => {
+const getEvents = (currentPage, filters, order, asNetworkAdmin) => {
   //el parametro es para completar la url con el numero de pagina
+  let component = asNetworkAdmin ? COMPONENT_URL.networkadminEvent : COMPONENT_URL.event;
   if (!filters.includes("parent__isnull")) {
     filters += "parent__isnull=true&";
   }
-  return apiInstance.get(COMPONENT_URL.event + PAGE + currentPage + "&ordering=" + order + "&" + filters);
+  return apiInstance.get(component + PAGE + currentPage + "&ordering=" + order + "&" + filters);
 };
 
 const postEvent = (formData) => {

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
-import { getMinifiedTaxonomy } from "../../../../api/services/taxonomies";
-import { getMinifiedFeed } from "../../../../api/services/feeds";
-import TableEvents from "../../../event/components/TableEvents";
+import { getMinifiedTaxonomy } from "../../../api/services/taxonomies";
+import { getMinifiedFeed } from "../../../api/services/feeds";
+import TableEvents from "../../event/components/TableEvents";
 import { useTranslation } from "react-i18next";
 
-const DashboardEvent = ({ list, loading }) => {
+const DashboardEvent = ({ list, loading, basePath }) => {
   const { t } = useTranslation();
 
   const [taxonomyNames, setTaxonomyNames] = useState({});
@@ -51,6 +51,7 @@ const DashboardEvent = ({ list, loading }) => {
           disableColumOption={false}
           disableColumView={false}
           loading={loading}
+          basePath={basePath}
         />
       </Card>
     </div>

@@ -17,14 +17,15 @@ const getMinifiedCase = () => {
     });
 };
 
-const getCases = (currentPage, filters, order) => {
+const getCases = (currentPage, filters, order, asNetworkAdmin) => {
   //+- id, date, attend_date, priority
   let messageError = i18next.t("ngen.case.error") + " .";
+  let component = asNetworkAdmin ? COMPONENT_URL.networkadminCase : COMPONENT_URL.case;
   if (!filters.includes("parent__isnull")) {
     filters += "parent__isnull=true&";
   }
   return apiInstance
-    .get(COMPONENT_URL.case + PAGE + currentPage + "&ordering=" + order + "&" + filters)
+    .get(component + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })

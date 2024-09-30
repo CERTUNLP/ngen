@@ -9,7 +9,7 @@ import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
-const ListEntity = () => {
+const ListEntity = ({ routeParams }) => {
   const [entities, setEntities] = useState([]);
   const [isModify, setIsModify] = useState(null);
 
@@ -33,7 +33,7 @@ const ListEntity = () => {
   }
 
   useEffect(() => {
-    getEntities(currentPage, wordToSearch, order)
+    getEntities(currentPage, wordToSearch, order, routeParams.asNetworkAdmin)
       .then((response) => {
         setEntities(response.data.results);
         // Pagination
@@ -85,6 +85,8 @@ const ListEntity = () => {
                 currentPage={currentPage}
                 order={order}
                 setOrder={setOrder}
+                asNetworkAdmin={routeParams.asNetworkAdmin}
+                basePath={routeParams.basePath}
               />
             </Card.Body>
             <Card.Footer>

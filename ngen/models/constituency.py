@@ -86,6 +86,12 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationMode
     class Meta:
         db_table = "network"
         ordering = ["-cidr"]
+        permissions = [
+            ("view_network_network_admin", "Can view network as network admin"),
+            ("add_network_network_admin", "Can add network as network admin"),
+            ("change_network_network_admin", "Can change network as network admin"),
+            ("delete_network_network_admin", "Can delete network as network admin"),
+        ]
 
     @classmethod
     def find_problems(cls):
@@ -122,7 +128,11 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationMode
             qs = self.__class__.objects.filter(**{fn: self.address}).exclude(pk=self.pk)
             if qs.exists():
                 raise ValidationError(
-                    {f"{fn}": [f"Already exists an object of {self._meta.model_name} with this {fn}"]}
+                    {
+                        f"{fn}": [
+                            f"Already exists an object of {self._meta.model_name} with this {fn}"
+                        ]
+                    }
                 )
         else:
             raise ValidationError(
@@ -170,6 +180,13 @@ class Contact(AuditModelMixin, PriorityModelMixin, ValidationModelMixin):
         ("noc", gettext_lazy("NOC")),
     )
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
+    user = models.ForeignKey(
+        "ngen.User",
+        models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="contacts",
+    )
 
     def __init__(self, *args, **kwargs):
         super(Contact, self).__init__(*args, **kwargs)
@@ -180,6 +197,12 @@ class Contact(AuditModelMixin, PriorityModelMixin, ValidationModelMixin):
     class Meta:
         db_table = "contact"
         ordering = ["username"]
+        permissions = [
+            ("view_contact_network_admin", "Can view contact as network admin"),
+            ("add_contact_network_admin", "Can add contact as network admin"),
+            ("change_contact_network_admin", "Can change contact as network admin"),
+            ("delete_contact_network_admin", "Can delete contact as network admin"),
+        ]
 
 
 class NetworkEntity(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
@@ -191,3 +214,21 @@ class NetworkEntity(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
 
     class Meta:
         db_table = "network_entity"
+        permissions = [
+            (
+                "view_networkentity_network_admin",
+                "Can view network entity as network admin",
+            ),
+            (
+                "add_networkentity_network_admin",
+                "Can add network entity as network admin",
+            ),
+            (
+                "change_networkentity_network_admin",
+                "Can change network entity as network admin",
+            ),
+            (
+                "delete_networkentity_network_admin",
+                "Can delete network entity as network admin",
+            ),
+        ]

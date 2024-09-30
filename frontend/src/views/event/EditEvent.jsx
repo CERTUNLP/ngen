@@ -14,7 +14,7 @@ import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedArtifact } from "../../api/services/artifact";
 import { useTranslation } from "react-i18next";
 
-const EditEvent = () => {
+const EditEvent = ({routeParams}) => {
   //const [date, setDate] = useState(caseItem.date  != null ? caseItem.date.substring(0,16) : '') //required
   const { t } = useTranslation();
   const location = useLocation();
@@ -263,6 +263,7 @@ const EditEvent = () => {
           priorityNames={priorityNames}
           setPriorityNames={setPriorityNames}
           userNames={userNames}
+          asNetworkAdmin={routeParams.asNetworkAdmin}
         />
       </div>
     )

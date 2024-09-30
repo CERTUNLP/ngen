@@ -1,7 +1,9 @@
 from rest_framework.response import Response
 
+from ngen.permissions import CustomApiViewPermission
 from ngen.serializers.dashboard import EventDashboardSerializer
 from ngen.views.dashboards.dashboard import DashboardView
+from ngen.views.dashboards.dashboard_presenter import NetworkAdminDashboardPresenter
 
 
 class DashboardEventsView(DashboardView):
@@ -28,3 +30,18 @@ class DashboardEventsView(DashboardView):
         ).data
 
         return Response(serialized_data, status=200)
+
+
+class NetworkAdminDashboardEventsView(DashboardEventsView):
+    """
+    APIView for the network admin dashboard events.
+    """
+
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_dashboard_network_admin"]
+
+    def _get_presenter(self, request):
+        """
+        Get the presenter.
+        """
+        return NetworkAdminDashboardPresenter(request)

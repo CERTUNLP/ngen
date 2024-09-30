@@ -13,7 +13,7 @@ import { getMinifiedArtifact } from "../../api/services/artifact";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
-const CreateEvent = () => {
+const CreateEvent = ({ routeParams }) => {
   const formEmpty = {
     children: [],
     todos: [],
@@ -204,6 +204,7 @@ const CreateEvent = () => {
           priorityNames={priorityNames}
           setPriorityNames={setPriorityNames}
           userNames={userNames}
+          asNetworkAdmin={routeParams.asNetworkAdmin}
         />
       </div>
     )

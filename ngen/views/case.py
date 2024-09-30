@@ -1,4 +1,5 @@
 import django_filters
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Subquery, OuterRef, Value
 from django.utils.translation import gettext_lazy
 from rest_framework import filters, viewsets, status, mixins
@@ -9,7 +10,11 @@ from ngen import models, serializers
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
 from ngen.tasks import create_cases_for_matching_events
 from ngen.views.communication_channel import BaseCommunicationChannelsViewSet
-from ngen.permissions import CustomApiViewPermission, CustomModelPermissions
+from ngen.permissions import (
+    CustomApiViewPermission,
+    CustomMethodApiViewPermission,
+    CustomModelPermissions,
+)
 
 
 class EvidenceViewSet(viewsets.ModelViewSet):
@@ -17,6 +22,34 @@ class EvidenceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.EvidenceSerializer
     permission_classes = [CustomModelPermissions]
     http_method_names = ["get", "post", "head", "options", "delete"]
+
+
+class NetworkAdminEvidenceViewSet(EvidenceViewSet):
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["ngen.view_evidence_network_admin"],
+        "HEAD": ["ngen.view_evidence_network_admin"],
+        "POST": ["ngen.add_evidence_network_admin"],
+        "DELETE": ["ngen.delete_evidence_network_admin"],
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        # Obtener el content type del modelo relacionado (Network en este caso)
+        event_ct = ContentType.objects.get(model="event")
+        case_ct = ContentType.objects.get(model="case")
+        print(event_ct, case_ct)
+        events = models.Event.objects.filter(network__contacts__user=user).values_list(
+            "id", flat=True
+        )
+        cases = models.Case.objects.filter(
+            events__network__contacts__user=user
+        ).values_list("id", flat=True)
+        return (
+            queryset.filter(content_type=event_ct, object_id__in=events)
+            | queryset.filter(content_type=case_ct, object_id__in=cases)
+        ).distinct()
 
 
 class EventViewSet(BaseCommunicationChannelsViewSet):
@@ -50,6 +83,24 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
     permission_classes = [CustomModelPermissions]
 
 
+class NetworkAdminEventViewSet(EventViewSet):
+    serializer_class = serializers.NetworkAdminEventSerializer
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["ngen.view_event_network_admin"],
+        "HEAD": ["ngen.view_event_network_admin"],
+        "POST": ["ngen.add_event_network_admin"],
+        "PUT": ["ngen.change_event_network_admin"],
+        "PATCH": ["ngen.change_event_network_admin"],
+        "DELETE": ["ngen.delete_event_network_admin"],
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        return queryset.filter(network__contacts__user=user).distinct()
+
+
 class CaseViewSet(BaseCommunicationChannelsViewSet):
     queryset = models.Case.objects.all()
     filter_backends = [
@@ -74,6 +125,24 @@ class CaseViewSet(BaseCommunicationChannelsViewSet):
     ]
     serializer_class = serializers.CaseSerializer
     permission_classes = [CustomModelPermissions]
+
+
+class NetworkAdminCaseViewSet(CaseViewSet):
+    serializer_class = serializers.NetworkAdminCaseSerializer
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["ngen.view_case_network_admin"],
+        "HEAD": ["ngen.view_case_network_admin"],
+        "POST": ["ngen.add_case_network_admin"],
+        "PUT": ["ngen.change_case_network_admin"],
+        "PATCH": ["ngen.change_case_network_admin"],
+        "DELETE": ["ngen.delete_case_network_admin"],
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        return queryset.filter(events__network__contacts__user=user).distinct()
 
 
 class CaseTemplateViewSet(viewsets.ModelViewSet):

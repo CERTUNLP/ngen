@@ -7,6 +7,7 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import NavGroup from "./NavGroup";
 import NavCard from "./NavCard";
 import routes from "../../../../routes";
+import { userIsNetworkAdmin } from "utils/permissions";
 
 const NavContent = ({ navigation }) => {
   const account = useSelector((state) => state.account);
@@ -16,20 +17,24 @@ const NavContent = ({ navigation }) => {
   const [itemsBottom, setItemsBottom] = React.useState([]);
   
   const filterMenuItems = (items) => {
-    if (user.is_superuser) {
-      return items;
-    }
+    const isNetworkAdmin = userIsNetworkAdmin();
+
     return items.reduce((acc, item) => {
       // Si el item tiene una URL, lo añadimos a la nueva estructura
       if (item.url) {
         let add = true;
-        let r = routes.filter((route) => route.path === item.url);
-        if (r.length > 0) {
-          if (r[0].permissions?.length > 0) {
-            if (!r[0].permissions.every((perm) => userPermissions.includes(perm))) {
-              add = false;
+        if (!user.is_superuser) {
+          let r = routes.filter((route) => route.path === item.url);
+          if (r.length > 0) {
+            if (r[0].permissions?.length > 0) {
+              if (!r[0].permissions.every((perm) => userPermissions.includes(perm))) {
+                add = false;
+              }
             }
           }
+        }
+        if (!isNetworkAdmin && item.id?.includes("networkadmin")) {
+          add = false;
         }
         if (add) {
           acc.push({ ...item });

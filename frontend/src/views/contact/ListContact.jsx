@@ -9,7 +9,7 @@ import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
-const ListContact = () => {
+const ListContact = ({ routeParams }) => {
   const { t } = useTranslation();
   const [contacts, setContacts] = useState([]);
   const [isModify, setIsModify] = useState(null);
@@ -36,7 +36,7 @@ const ListContact = () => {
   useEffect(() => {
     setCurrentPage(currentPage); //?
 
-    getContacts(currentPage, wordToSearch, order)
+    getContacts(currentPage, wordToSearch, order, routeParams.asNetworkAdmin)
       .then((response) => {
         setContacts(response.data.results);
         //Pagination
@@ -99,6 +99,7 @@ const ListContact = () => {
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
+                basePath={routeParams.basePath}
               />
             </Card.Body>
             <Card.Footer>

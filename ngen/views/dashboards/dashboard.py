@@ -1,8 +1,9 @@
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ngen.views.dashboards.dashboard_presenter import DashboardPresenter
+from ngen.views.dashboards.dashboard_presenter import (
+    DashboardPresenter,
+)
 from ngen.permissions import CustomApiViewPermission
 
 
@@ -17,12 +18,18 @@ class DashboardView(APIView):
     def __init__(self):
         self.dashboard_presenter = None
 
+    def _get_presenter(self, request):
+        """
+        Get the presenter.
+        """
+        return DashboardPresenter(request)
+
     def get(self, request):
         """
         Parent GET method to initialize presenter and validate dates.
         """
         try:
-            self.dashboard_presenter = DashboardPresenter(request)
+            self.dashboard_presenter = self._get_presenter(request)
         except ValueError as exc:
             return Response({"error": str(exc)}, status=400)
 

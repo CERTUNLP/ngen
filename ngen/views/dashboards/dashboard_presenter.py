@@ -70,8 +70,9 @@ class DashboardPresenter:
             cases = Case.objects.prefetch_related("events")
             self.cases = cases.filter(date__range=(self.date_from, self.date_to))
 
-            if not self.get_current_user().is_superuser:
-                self.cases = self.cases.filter(assigned=self.current_user)
+            # this must be in other endpoint
+            # if not self.get_current_user().is_superuser:
+            #     self.cases = self.cases.filter(assigned=self.current_user)
 
         return self.cases
 
@@ -166,3 +167,32 @@ class DashboardPresenter:
             raise ValueError(
                 f"Invalid '{param_name}' format. Use YYYY-MM-DDTHH:MM:SSZ"
             ) from exc
+
+
+class NetworkAdminDashboardPresenter(DashboardPresenter):
+    """
+    Presenter to organize Network Admin Dashboard logic.
+    """
+
+    def get_events(self):
+        return (
+            super().get_events().filter(network__contacts__user=self.get_current_user())
+        )
+
+    def get_cases(self):
+        return (
+            super()
+            .get_cases()
+            .filter(events__network__contacts__user=self.get_current_user())
+        )
+
+    def get_network_entities(self):
+        """
+        Get Network Entities with their networks prefetched.
+        """
+        if not self.network_entities:
+            self.network_entities = (
+                NetworkEntity.objects.prefetch_related("networks")
+                .filter(networks__contacts__user=self.get_current_user())
+                .distinct()
+            )

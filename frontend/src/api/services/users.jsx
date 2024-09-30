@@ -3,7 +3,6 @@ import { COMPONENT_URL, PAGE } from "../../config/constant";
 import setAlert from "../../utils/setAlert";
 
 const getMinifiedUser = () => {
-  //el parametro es para completar la url con el numero de pagina
   let messageError = `No se pudo recuperar la informacion de los usuarios`;
   return apiInstance
     .get(COMPONENT_URL.userMinifiedList)
@@ -15,6 +14,7 @@ const getMinifiedUser = () => {
       return Promise.reject(error);
     });
 };
+
 const getUsers = (currentPage, filters, order) => {
   //el parametro es para completar la url con el numero de pagina
   let messageError = `No se pudo recuperar la informacion de los usuarios`;
@@ -92,7 +92,7 @@ const postUser = (username, first_name, last_name, email, priority, is_active, p
     });
 };
 
-const putUser = (url, username, first_name, last_name, email, priority, is_active) => {
+const putUser = (url, username, first_name, last_name, email, priority, is_active, groups, user_permissions) => {
   let messageSuccess = `El usuario ${username} se pudo editar correctamente`;
   let messageError = `El usuario ${username} no se pudo editar`;
   return apiInstance
@@ -102,7 +102,9 @@ const putUser = (url, username, first_name, last_name, email, priority, is_activ
       last_name: last_name,
       email: email,
       priority: priority,
-      is_active: is_active
+      is_active: is_active,
+      groups: groups,
+      user_permissions: user_permissions
     })
     .then((response) => {
       setAlert(messageSuccess, "success");

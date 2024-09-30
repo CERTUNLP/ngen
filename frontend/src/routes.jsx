@@ -7,8 +7,9 @@ import AdminLayout from "./layouts/AdminLayout";
 import { BASE_URL } from "./config/constant";
 
 import GuestGuard from "./components/Auth/GuestGuard";
-// import AuthGuard from "./components/Auth/AuthGuard";
+import AuthGuard from "./components/Auth/AuthGuard";
 import PermissionGuard from "./components/Auth/PermissionGuard";
+import { currentUserHasPermissions } from "utils/permissions";
 
 export const renderRoutes = (routes = []) => (
   <Suspense fallback={<Loader />}>
@@ -18,6 +19,7 @@ export const renderRoutes = (routes = []) => (
         const Layout = route.layout || Fragment;
         const Element = route.element;
         const permissions = route.permissions || [];
+        const routeParams = route.routeParams || {};
 
         return (
           <Route
@@ -25,10 +27,10 @@ export const renderRoutes = (routes = []) => (
             path={route.path}
             element={
               Guard === Fragment ? (
-                <Layout>{route.routes ? renderRoutes(route.routes) : <Element />}</Layout>
+                <Layout>{route.routes ? renderRoutes(route.routes) : <Element routeParams={routeParams} />}</Layout>
               ) : (
                 <Guard permissions={permissions}>
-                  <Layout>{route.routes ? renderRoutes(route.routes) : <Element />}</Layout>
+                  <Layout>{route.routes ? renderRoutes(route.routes) : <Element routeParams={routeParams} />}</Layout>
                 </Guard>
               )
             }
@@ -60,6 +62,13 @@ const routes = [
     exact: "true",
     path: "/unauthorized",
     element: lazy(() => import("./views/auth/unauthorized/Unauthorized"))
+  },
+  {
+    exact: "true",
+    path: "/home",
+    layout: AdminLayout,
+    guard: AuthGuard,
+    element: lazy(() => import("./views/home/Home"))
   },
   {
     exact: "true",
@@ -444,6 +453,168 @@ const routes = [
     guard: PermissionGuard,
     permissions: ["view_userprofile"],
     element: lazy(() => import("./views/profile/Profile"))
+  },
+  // {
+  //   exact: "true",
+  //   path: "/networkadmin/metrics",
+  //   layout: AdminLayout,
+  //   guard: PermissionGuard,
+  //   permissions: ["view_dashboard_network_admin"],
+  //   element: lazy(() => import("./views/home/Home")),
+  //   routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  // },
+  {
+    exact: "true",
+    path: "/networkadmin/events",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_event_network_admin"],
+    element: lazy(() => import("./views/event/ListEvent")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/events/create",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["add_event_network_admin"],
+    element: lazy(() => import("./views/event/CreateEvent")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/events/edit",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["change_event_network_admin"],
+    element: lazy(() => import("./views/event/EditEvent")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/events/view",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_event_network_admin"],
+    element: lazy(() => import("./views/event/ReadEvent")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/cases",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_case_network_admin"],
+    element: lazy(() => import("./views/case/ListCase")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/cases/create",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["add_case_network_admin"],
+    element: lazy(() => import("./views/case/CreateCase")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/cases/edit",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["change_case_network_admin"],
+    element: lazy(() => import("./views/case/EditCase")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/cases/view",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_case_network_admin"],
+    element: lazy(() => import("./views/case/ReadCase")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/contacts",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_contact_network_admin"],
+    element: lazy(() => import("./views/contact/ListContact")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/contacts/create",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["add_contact_network_admin"],
+    element: lazy(() => import("./views/contact/CreateContact")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/contacts/edit",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["change_contact_network_admin"],
+    element: lazy(() => import("./views/contact/EditContact")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/entities",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_networkentity_network_admin"],
+    element: lazy(() => import("./views/entity/ListEntity")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/entities/create",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["add_networkentity_network_admin"],
+    element: lazy(() => import("./views/entity/CreateEntity")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/entities/edit",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["change_networkentity_network_admin"],
+    element: lazy(() => import("./views/entity/EditEntity")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/networks",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_network_network_admin"],
+    element: lazy(() => import("./views/network/ListNetwork")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/networks/create",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["add_network_network_admin"],
+    element: lazy(() => import("./views/network/CreateNetwork")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
+  },
+  {
+    exact: "true",
+    path: "/networkadmin/networks/edit",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["change_network_network_admin"],
+    element: lazy(() => import("./views/network/EditNetwork")),
+    routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
   },
   {
     path: "*",

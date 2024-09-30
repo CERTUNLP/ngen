@@ -7,7 +7,7 @@ import Navigation from "../../components/Navigation/Navigation";
 import { getState } from "../../api/services/states";
 import { useTranslation } from "react-i18next";
 
-const EditCase = () => {
+const EditCase = ({asNetworkAdmin}) => {
   const { t } = useTranslation();
   const location = useLocation();
   const fromState = location.state;
@@ -66,6 +66,7 @@ const EditCase = () => {
           buttonsModalColum={true}
           setUpdateCase={setUpdateCase}
           updateCase={updateCase}
+          asNetworkAdmin={true}
         />
       </React.Fragment>
     )

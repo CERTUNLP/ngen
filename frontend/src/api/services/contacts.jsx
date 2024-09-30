@@ -2,10 +2,11 @@ import apiInstance from "../api";
 import setAlert from "../../utils/setAlert";
 import { COMPONENT_URL, PAGE } from "../../config/constant";
 
-const getContacts = (currentPage, filters, order) => {
+const getContacts = (currentPage, filters, order, asNetworkAdmin) => {
   let messageError = `No se ha recuperado la informacion de contactos. `;
+  let component = asNetworkAdmin ? COMPONENT_URL.networkadminContact : COMPONENT_URL.contact;
   return apiInstance
-    .get(COMPONENT_URL.contact + PAGE + currentPage + "&ordering=" + order + "&" + filters)
+    .get(component + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })
@@ -48,17 +49,18 @@ const getAllContacts = (currentPage = 1, results = [], limit = 100) => {
     });
 };
 
-const postContact = (name, username, public_key, type, role, priority) => {
+const postContact = (name, username, public_key, type, role, priority, user) => {
   let messageSuccess = `El contacto ${name} se ha creado correctamente.`;
   let messageError = `El contacto ${name} no se ha creado. `;
   return apiInstance
     .post(COMPONENT_URL.contact, {
-      name: name, //*
-      username: username, //*
+      name: name,
+      username: username,
       public_key: public_key,
-      type: type, //*
-      role: role, //*
-      priority: priority //*
+      type: type,
+      role: role,
+      priority: priority,
+      user: user
     })
     .then((response) => {
       setAlert(messageSuccess, "success", "contact");
@@ -78,7 +80,7 @@ const postContact = (name, username, public_key, type, role, priority) => {
     });
 };
 
-const putContact = (url, name, username, public_key, type, role, priority) => {
+const putContact = (url, name, username, public_key, type, role, priority, user) => {
   let messageSuccess = `El contacto ${name} se ha editado correctamente.`;
   let messageError = `El contacto ${name} no se ha editado. `;
   return apiInstance
@@ -88,7 +90,8 @@ const putContact = (url, name, username, public_key, type, role, priority) => {
       public_key: public_key,
       type: type,
       role: role,
-      priority: priority
+      priority: priority,
+      user: user
     })
     .then((response) => {
       setAlert(messageSuccess, "success", "contact");
