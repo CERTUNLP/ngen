@@ -214,7 +214,7 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
           <DualListBox
             canFilter
             options={optionGroups}
-            selected={body.groups}
+            selected={body.groups || []}
             onChange={(newPermissions) => setBody({ ...body, groups: newPermissions })}
           />
         </Col>
@@ -223,7 +223,7 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
           <DualListBox
             canFilter
             options={optionPermissions}
-            selected={body.user_permissions}
+            selected={body.user_permissions || []}
             onChange={(newPermissions) => setBody({ ...body, user_permissions: newPermissions })}
           />
         </Col>
