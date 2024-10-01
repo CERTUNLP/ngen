@@ -9,6 +9,7 @@ import NavCard from "./NavCard";
 import routes from "../../../../routes";
 import { userIsNetworkAdmin } from "utils/permissions";
 
+
 const NavContent = ({ navigation }) => {
   const account = useSelector((state) => state.account);
   const { isLoggedIn, user } = account;
