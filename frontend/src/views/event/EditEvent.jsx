@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import FormEvent from "./components/FormEvent";
-import Navigation from "../../components/Navigation/Navigation";
 import { getEvent, patchEvent, putEvent } from "../../api/services/events";
 import { useLocation } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
@@ -240,10 +239,6 @@ const EditEvent = ({routeParams}) => {
   return (
     body && (
       <div>
-        <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="event" />
-        <Row>
-          <Navigation actualPosition={t("ngen.event.edit")} path="/events" index={t("ngen.event_one")} />
-        </Row>
         <FormEvent
           createEvent={editEvent}
           setBody={setBody}

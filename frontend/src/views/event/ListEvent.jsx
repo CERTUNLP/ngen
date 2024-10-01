@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Card, Col, Collapse, Form, Modal, Row } from "react-bootstrap";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
 import TableEvents from "./components/TableEvents";
@@ -357,10 +356,6 @@ const ListEvent = ({ routeParams }) => {
   };
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="event" />
-      <Row>
-        <Navigation actualPosition={t("ngen.event_other")} />
-      </Row>
       <Card>
         <Card.Header>
           <Row>

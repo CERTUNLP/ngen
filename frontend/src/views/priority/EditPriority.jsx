@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import FormPriority from "./components/FormPriority";
 
-import Navigation from "../../components/Navigation/Navigation";
 import { putPriority } from "../../api/services/priorities";
 import { useLocation } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
@@ -89,10 +88,6 @@ const EditPriority = () => {
   };
   return (
     <>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="priority" />
-      <Row>
-        <Navigation actualPosition={t("ngen.priority.edit")} path="/priorities" index={t("ngen.priority_other")} />
-      </Row>
       <Row>
         <Col>
           <Card>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
 import { getPriorities } from "../../api/services/priorities";
@@ -52,11 +51,6 @@ const ListPriorities = () => {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="priority" />
-      <Row>
-        <Navigation actualPosition={t("ngen.priority_other")} />
-      </Row>
-
       <Card>
         <Card.Header>
           <Row>

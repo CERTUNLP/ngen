@@ -7,7 +7,6 @@ import { getMinifiedPriority } from "../../api/services/priorities";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedState } from "../../api/services/states";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
@@ -164,9 +163,6 @@ const ListCase = ({ routeParams }) => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="case" />
       <Row>
-        <Navigation actualPosition={t("ngen.case_other")} />
-      </Row>
-      <Row>
         <Col>
           <Card>
             <Card.Header>
@@ -185,7 +181,6 @@ const ListCase = ({ routeParams }) => {
                       disabled={selectedCases.length <= 1}
                       size="lm"
                       className="text-capitalize"
-                      // variant="light"
                       variant={selectedCases.length > 0 ? "outline-dark" : "outline-secondary"}
                       title="Merge"
                       onClick={() => mergeConfirm()}

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import TableUsers from "./components/TableUsers";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
 import { getUsers } from "../../api/services/users";
@@ -59,10 +58,6 @@ function ListUser() {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
-      <Row>
-        <Navigation actualPosition={t("menu.users")} />
-      </Row>
       <Card>
         <Card.Header>
           <Row>

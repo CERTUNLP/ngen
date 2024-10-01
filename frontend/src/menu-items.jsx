@@ -23,7 +23,7 @@ const menuItems = {
           url: "/events",
           classes: "",
           icon: "feather icon-alert-circle",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
           id: "case",
@@ -31,7 +31,7 @@ const menuItems = {
           type: "item",
           url: "/cases",
           icon: "feather icon-search",
-          breadcrumbs: false
+          breadcrumbs: true
         }
       ]
     },
@@ -47,7 +47,7 @@ const menuItems = {
           type: "item",
           url: "/entities",
           icon: "fas fa-cubes",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
           id: "network",
@@ -55,7 +55,7 @@ const menuItems = {
           type: "item",
           url: "/networks",
           icon: "feather icon-share-2",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
           id: "contact",
@@ -63,7 +63,7 @@ const menuItems = {
           type: "item",
           url: "/contacts",
           icon: "far fa-address-book",
-          breadcrumbs: false
+          breadcrumbs: true
         }
       ]
     },
@@ -79,7 +79,7 @@ const menuItems = {
           url: "/networkadmin/events",
           classes: "",
           icon: "feather icon-alert-circle",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
           id: "networkadmincase",
@@ -87,7 +87,7 @@ const menuItems = {
           type: "item",
           url: "/networkadmin/cases",
           icon: "feather icon-search",
-          breadcrumbs: false
+          breadcrumbs: true
         }
       ]
     },
@@ -103,7 +103,7 @@ const menuItems = {
           type: "item",
           url: "/networkadmin/entities",
           icon: "fas fa-cubes",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
           id: "networkadminnetwork",
@@ -111,7 +111,7 @@ const menuItems = {
           type: "item",
           url: "/networkadmin/networks",
           icon: "feather icon-share-2",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
           id: "networkadmincontact",
@@ -119,7 +119,7 @@ const menuItems = {
           type: "item",
           url: "/networkadmin/contacts",
           icon: "far fa-address-book",
-          breadcrumbs: false
+          breadcrumbs: true
         }
       ]
     },
@@ -142,7 +142,7 @@ const menuItems = {
               type: "item",
               url: "/tlp",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "report",
@@ -150,7 +150,7 @@ const menuItems = {
               type: "item",
               url: "/reports",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "feed",
@@ -158,7 +158,7 @@ const menuItems = {
               type: "item",
               url: "/feeds",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "priority",
@@ -167,7 +167,7 @@ const menuItems = {
               url: "/priorities",
               classes: "",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "playbook",
@@ -175,7 +175,7 @@ const menuItems = {
               type: "item",
               url: "/playbooks",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "taxonomy",
@@ -183,7 +183,7 @@ const menuItems = {
               type: "item",
               url: "/taxonomies",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "taxonomyGroup",
@@ -191,7 +191,7 @@ const menuItems = {
               type: "item",
               url: "/taxonomyGroups",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "state",
@@ -200,7 +200,7 @@ const menuItems = {
               url: "/states",
               classes: "",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "template",
@@ -209,7 +209,7 @@ const menuItems = {
               url: "/templates",
               classes: "",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "user",
@@ -218,7 +218,7 @@ const menuItems = {
               url: "/users",
               classes: "",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "configuration",
@@ -227,7 +227,7 @@ const menuItems = {
               url: "/setting",
               classes: "",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             }
           ]
         }
@@ -247,7 +247,7 @@ const menuItems = {
           url: "/profile",
           classes: "",
           icon: "feather icon-user",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
           id: "logout",
@@ -257,7 +257,7 @@ const menuItems = {
           basic_link: true,
           classes: "logout-btn",
           icon: "fa fa-sign-out-alt",
-          breadcrumbs: false,
+          breadcrumbs: true,
           onClick: logout
         }
       ]

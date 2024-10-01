@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Collapse, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import TableTemplete from "./components/TableTemplete";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import { getTemplates } from "../../api/services/templates";
 import { getMinifiedFeed } from "../../api/services/feeds";
@@ -130,10 +129,6 @@ const ListTemplete = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
-      <Row>
-        <Navigation actualPosition={t("ngen.template")} />
-      </Row>
       <Row>
         <Col>
           <Card>

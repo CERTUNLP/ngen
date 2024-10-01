@@ -3,7 +3,6 @@ import { Card, Col, Row } from "react-bootstrap";
 import { getFeeds } from "../../api/services/feeds";
 import CrudButton from "../../components/Button/CrudButton";
 import Alert from "../../components/Alert/Alert";
-import Navigation from "../../components/Navigation/Navigation";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableFeed from "./components/TableFeed";
 import Search from "../../components/Search/Search";
@@ -53,10 +52,6 @@ const ListFeed = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="feed" />
-      <Row>
-        <Navigation actualPosition={t("ngen.feed.information")} />
-      </Row>
       <Row>
         <Col>
           <Card>

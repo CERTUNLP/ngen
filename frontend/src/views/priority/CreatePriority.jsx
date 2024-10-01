@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import FormPriority from "./components/FormPriority";
-import Navigation from "../../components/Navigation/Navigation";
 import { postPriority } from "../../api/services/priorities";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
@@ -61,10 +60,6 @@ const AddPriority = () => {
 
   return (
     <>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="priority" />
-      <Row>
-        <Navigation actualPosition={t("ngen.priority.add")} path="/priorities" index={t("ngen.priority_other")} />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>

@@ -10,7 +10,6 @@ import { getTLPSpecific } from "../../api/services/tlp";
 import { getFeed } from "../../api/services/feeds";
 import { getEvent } from "../../api/services/events";
 import SmallEventTable from "./components/SmallEventTable";
-import Navigation from "../../components/Navigation/Navigation";
 import { getArtefact } from "../../api/services/artifact";
 import SmallCaseTable from "../case/components/SmallCaseTable";
 import { getEvidence } from "../../api/services/evidences";
@@ -166,13 +165,6 @@ const ReadEvent = ({ routeParams }) => {
 
   return (
     <React.Fragment>
-      {navigationRow !== "false" ? (
-        <Row>
-          <Navigation actualPosition={t("ngen.event.detail")} path="/events" index={t("ngen.event_one")} />
-        </Row>
-      ) : (
-        ""
-      )}
       <Card>
         <Card.Header>
           <Card.Title as="h5">{t("menu.principal")}</Card.Title>

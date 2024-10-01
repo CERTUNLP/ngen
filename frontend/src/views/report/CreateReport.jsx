@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Spinner } from "react-bootstrap";
 import { postReport } from "../../api/services/reports";
 import FormReport from "./components/FormReport";
-import Navigation from "../../components/Navigation/Navigation";
 import Alert from "../../components/Alert/Alert";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import { useTranslation } from "react-i18next";
@@ -52,10 +51,6 @@ const CreateReport = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="report" />
-      <Row>
-        <Navigation actualPosition={t("ngen.report.create")} path="/reports" index={t("ngen.report")} />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>

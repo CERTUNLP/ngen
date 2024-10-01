@@ -3,7 +3,6 @@ import { Card, Col, Form, Row, Table, Modal, Button } from "react-bootstrap";
 import { getProfile, getApiKey } from "../../api/services/profile";
 import { getGroup } from "../../api/services/groups";
 import { getPermission } from "../../api/services/permissions";
-import Navigation from "../../components/Navigation/Navigation";
 import FormGetName from "../../components/Form/FormGetName";
 import { getPriority } from "../../api/services/priorities";
 import ActiveButton from "../../components/Button/ActiveButton";
@@ -38,9 +37,6 @@ const Profile = () => {
 
   return (
     <div>
-      <Row>
-        <Navigation actualPosition={t("menu.profile")} />
-      </Row>
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>{t("ngen.password")}</Modal.Title>

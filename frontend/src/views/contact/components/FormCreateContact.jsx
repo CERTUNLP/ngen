@@ -199,7 +199,6 @@ const FormCreateContact = (props) => {
                 options={userOptions}
                 value={selectUser}
                 placeholder={t("ngen.user")}
-                required={true}
               />
             </Col>
           </Col>

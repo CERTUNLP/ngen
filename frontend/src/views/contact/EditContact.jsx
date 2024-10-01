@@ -4,7 +4,6 @@ import { Card, Col, Row } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
 import { getContact, putContact } from "../../api/services/contacts";
 import FormCreateContact from "./components/FormCreateContact";
-import Navigation from "../../components/Navigation/Navigation";
 import { useTranslation } from "react-i18next";
 
 const EditContact = () => {
@@ -56,9 +55,6 @@ const EditContact = () => {
   return (
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="contact" />
-      <Row>
-        <Navigation actualPosition={t("ngen.contact.edit")} path="/contacts" index={t("ngen.contact_other")} />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>

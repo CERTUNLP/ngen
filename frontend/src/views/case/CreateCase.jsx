@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row } from "react-bootstrap";
 import FormCase from "./components/FormCase";
-import Navigation from "../../components/Navigation/Navigation";
 import { getAllStates } from "../../api/services/states";
 import { useTranslation } from "react-i18next";
 
@@ -50,9 +48,6 @@ const CreateCase = ({ routeParams }) => {
 
   return (
     <React.Fragment>
-      <Row>
-        <Navigation actualPosition={t("button.case_create")} path="/cases" index={t("ngen.case_other")} />
-      </Row>
       <FormCase
         caseItem={caseItem}
         allStates={allStates}

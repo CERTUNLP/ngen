@@ -5,7 +5,6 @@ import { useLocation } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
 import { getMinifiedPriority } from "../../api/services/priorities";
 import FormUser from "./components/FormUser";
-import Navigation from "../../components/Navigation/Navigation";
 import { useTranslation } from "react-i18next";
 
 const EditUser = () => {
@@ -71,8 +70,6 @@ const EditUser = () => {
   };
   return (
     <>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
-      <Navigation actualPosition={t("w.edit") + t("ngen.user")} path="/users" index={t("ngen.user_other")} />
       <Card>
         <Card.Header>
           <Card.Title as="h5">

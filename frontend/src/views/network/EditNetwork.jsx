@@ -4,7 +4,6 @@ import { Card, Col, Row } from "react-bootstrap";
 import { getAllContacts } from "../../api/services/contacts";
 import { putNetwork } from "../../api/services/networks";
 import FormCreateNetwork from "./components/FormCreateNetwork";
-import Navigation from "../../components/Navigation/Navigation";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
@@ -71,10 +70,6 @@ const EditNetwork = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="network" />
-      <Row>
-        <Navigation actualPosition={t("ngen.network.edit")} path="/networks" index={t("ngen.network_other")} />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>

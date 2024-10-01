@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import CrudButton from "../../components/Button/CrudButton";
 import Alert from "../../components/Alert/Alert";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import TableTaxonomyGroup from "./components/TableTaxonomyGroup";
 import { useTranslation } from "react-i18next";
@@ -53,11 +52,6 @@ const listTaxonomyGroups = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="taxonomy" />
-
-      <Row>
-        <Navigation actualPosition={t("ngen.taxonomyGroup_other")} />
-      </Row>
       <Row>
         <Col>
           <Card>

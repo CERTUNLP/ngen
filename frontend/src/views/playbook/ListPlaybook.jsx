@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
-import Navigation from "../../components/Navigation/Navigation";
 import TablePlaybook from "./components/TablePlaybook";
 import Search from "../../components/Search/Search";
 import { getPlaybooks } from "../../api/services/playbooks";
@@ -58,9 +57,6 @@ const ListPlaybook = () => {
 
   return (
     <React.Fragment>
-      <Row>
-        <Navigation actualPosition={"Playbook"} />
-      </Row>
       <Row>
         <Col>
           <Card>

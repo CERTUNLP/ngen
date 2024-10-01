@@ -4,7 +4,6 @@ import CrudButton from "../../components/Button/CrudButton";
 import { getNetworks } from "../../api/services/networks";
 import { getMinifiedEntity } from "../../api/services/entities";
 import TableNetwork from "./components/TableNetwork";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
@@ -89,10 +88,6 @@ const ListNetwork = ({ routeParams }) => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="network" />
-      <Row>
-        <Navigation actualPosition={t("ngen.network_other")} />
-      </Row>
       <Row>
         <Col>
           <Card>

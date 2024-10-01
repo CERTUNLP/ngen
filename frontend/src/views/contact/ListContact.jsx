@@ -3,7 +3,6 @@ import { Card, Col, Row } from "react-bootstrap";
 import TableContact from "./components/TableContact";
 import CrudButton from "../../components/Button/CrudButton";
 import { getContacts } from "../../api/services/contacts";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
@@ -69,9 +68,6 @@ const ListContact = ({ routeParams }) => {
   return (
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="contact" />
-      <Row>
-        <Navigation actualPosition={t("ngen.contact_other")} />
-      </Row>
       <Row>
         <Col>
           <Card>

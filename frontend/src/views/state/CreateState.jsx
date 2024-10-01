@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import FormState from "./components/FormState";
-import Navigation from "../../components/Navigation/Navigation";
 import Alert from "../../components/Alert/Alert";
 import { postState, putState } from "../../api/services/states";
 import ListEdge from "../edge/ListEdge";
@@ -64,8 +63,6 @@ const AddState = () => {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="state" />
-      <Navigation actualPosition={t("ngen.state.add")} path="/states" index={t("ngen.state_other")} />
       <FormState body={body} setBody={setBody} createState={!sectionAddEdge ? createState : editState} type={t("w.add")} />
       <ListEdge url={url} sectionAddEdge={sectionAddEdge} setShowAlert={setShowAlert} />
     </div>

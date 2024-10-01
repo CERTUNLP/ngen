@@ -3,7 +3,6 @@ import { Card, Col, Row, Collapse } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import Alert from "../../components/Alert/Alert";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
-import Navigation from "../../components/Navigation/Navigation";
 import { getMinifiedTaxonomy, getTaxonomies } from "../../api/services/taxonomies";
 import Search from "../../components/Search/Search";
 import TableTaxonomy from "./components/TableTaxonomy";
@@ -145,11 +144,6 @@ const ListTaxonomies = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="taxonomy" />
-
-      <Row>
-        <Navigation actualPosition={t("ngen.taxonomy_other")} />
-      </Row>
       <Row>
         <Col>
           <Card>

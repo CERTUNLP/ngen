@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getReports } from "../../api/services/reports";
 import { Card, Col, Row } from "react-bootstrap";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
 import TableReport from "./components/TableReport";
@@ -58,10 +57,6 @@ const ListReport = () => {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="report" />
-      <Row>
-        <Navigation actualPosition={t("ngen.report")} />
-      </Row>
       <Card>
         <Card.Header>
           <Row>

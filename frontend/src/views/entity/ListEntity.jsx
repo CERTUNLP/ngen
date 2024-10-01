@@ -3,7 +3,6 @@ import { Card, Col, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import TableEntity from "./components/TableEntity";
 import { getEntities } from "../../api/services/entities";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
@@ -54,10 +53,6 @@ const ListEntity = ({ routeParams }) => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="entity" />
-      <Row>
-        <Navigation actualPosition={t("ngen.entity_other")} />
-      </Row>
       <Row>
         <Col>
           <Card>

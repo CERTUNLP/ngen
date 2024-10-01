@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
-import Navigation from "../../components/Navigation/Navigation";
 import { getSetting, patchSetting } from "../../api/services/setting";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import { useTranslation } from "react-i18next";
@@ -94,10 +93,6 @@ const EditSetting = () => {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="setting" />
-      <Row>
-        <Navigation actualPosition={t("config")} />
-      </Row>
       <Card>
         <Card.Header>
           <Card.Title as="h5">{t("systemConfig")}</Card.Title>
