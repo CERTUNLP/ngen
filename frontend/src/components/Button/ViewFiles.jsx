@@ -94,7 +94,7 @@ const ViewFiles = (props) => {
                   {t("w.size")}: {props.file.size} Bytes
                 </p>
                 <p className="file-meta">
-                  {t("date.creation")}:{" "}
+                  {t("date.creation")}:&nbsp;
                   {props.file.created
                     ? props.file.created.slice(0, 10) + " " + props.file.created.slice(11, 19)
                     : t("ngen.not.created.in.system")}

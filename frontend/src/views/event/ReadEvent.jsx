@@ -312,7 +312,7 @@ const ReadEvent = ({ routeParams }) => {
                 {t("ngen.domain")}
               </Col>
               <Col sm={12} lg={4} className={"align-self-center"}>
-                {" "}
+                &nbsp;
                 <Form.Control plaintext readOnly defaultValue={body.domain} />
               </Col>
             </Row>
@@ -324,7 +324,7 @@ const ReadEvent = ({ routeParams }) => {
                 {t("ngen.cidr")}
               </Col>
               <Col sm={12} lg={4} className={"align-self-center"}>
-                {" "}
+                &nbsp;
                 <Form.Control plaintext readOnly defaultValue={body.cidr} />
               </Col>
             </Row>

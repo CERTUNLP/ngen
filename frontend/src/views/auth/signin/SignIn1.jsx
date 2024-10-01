@@ -71,7 +71,7 @@ const Signin1 = () => {
               <RestLogin />
 
               <p className="mb-0 text-muted">
-                {t("login.do_not_have_an_account")}{" "}
+                {t("login.do_not_have_an_account")}&nbsp;
                 <NavLink to="/auth/signup" className="f-w-400">
                   {t("button.signup")}
                 </NavLink>

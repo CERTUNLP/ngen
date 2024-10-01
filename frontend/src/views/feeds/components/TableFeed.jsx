@@ -193,7 +193,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                         <td>{t("ngen.related.info")}</td>
                         <td>
                           <Button size="sm" variant="light" className="text-capitalize">
-                            {t("ngen.incident_other")}{" "}
+                            {t("ngen.incident_other")}&nbsp;
                             <Badge variant="light" bg={feed.events_count > 0 ? "light" : "secondary"} className="ml-1">
                               {feed.events_count}
                             </Badge>

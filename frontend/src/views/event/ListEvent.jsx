@@ -388,11 +388,11 @@ const ListEvent = ({routeParams}) => {
                 >
                   <i className="fa fa-code-branch" />
                   {t("ngen.merge")}&nbsp;
-                  <Badge className="badge mr-1">{selectedEvent.length}</Badge>
+                  <Badge className="badge mr-1" bg={selectedEvent.length > 0 ? "light" : "secondary"}>{selectedEvent.length}</Badge>
                 </Button>
                 <Button disabled={selectedEvent.length > 0 ? false : true} size="lm" variant="outline-dark" onClick={() => modalCase()}>
-                  {t("ngen.case.addto")}
-                  <Badge className="badge mr-1">{selectedEvent.length}</Badge>
+                  {t("ngen.case.addto")}&nbsp;
+                  <Badge className="badge mr-1" bg={selectedEvent.length > 0 ? "light" : "secondary"}>{selectedEvent.length}</Badge>
                 </Button>
               </PermissionCheck>
               <Button size="lm" variant="outline-dark" onClick={() => reloadPage()}>
