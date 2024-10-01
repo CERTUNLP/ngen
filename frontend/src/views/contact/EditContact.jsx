@@ -56,7 +56,7 @@ const EditContact = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="contact" />
       <Row>
-        <Navigation actualPosition={t("ngen.edit.contact")} path="/contacts" index={t("ngen.contact_other")} />
+        <Navigation actualPosition={t("w.edit")} path="/contacts" index={t("ngen.contact_other")} />
       </Row>
       <Row>
         <Col sm={12}>

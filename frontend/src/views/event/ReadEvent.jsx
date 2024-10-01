@@ -166,7 +166,7 @@ const ReadEvent = () => {
     <React.Fragment>
       {navigationRow !== "false" ? (
         <Row>
-          <Navigation actualPosition={t("ngen.event.detail")} path="/events" index={t("ngen.event_one")} />
+          <Navigation actualPosition={t("w.detail")} path="/events" index={t("ngen.event_other")} />
         </Row>
       ) : (
         ""
@@ -303,7 +303,7 @@ const ReadEvent = () => {
           <Card.Body>
             <Row>
               <Col sm={12} lg={2} className={"align-self-center"}>
-                {t("ngen.domain")}
+                <b>{t("ngen.domain")}</b>
               </Col>
               <Col sm={12} lg={4} className={"align-self-center"}>
                 {" "}
@@ -315,7 +315,7 @@ const ReadEvent = () => {
           <Card.Body>
             <Row>
               <Col sm={12} lg={2} className={"align-self-center"}>
-                {t("ngen.cidr")}
+                <b>{t("ngen.cidr")}</b>
               </Col>
               <Col sm={12} lg={4} className={"align-self-center"}>
                 {" "}

@@ -205,8 +205,8 @@ const ModalCreateEvent = ({
             setPriorityNames={setPriorityNames}
             userNames={userNames}
             disableCardCase={true}
-            disableCardEvidence={true}
-            disableCardArtifacts={true}
+            disableCardEvidence={false}
+            disableCardArtifacts={false}
           />
         </div>
       </Modal.Body>
