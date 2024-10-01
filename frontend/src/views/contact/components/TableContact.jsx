@@ -202,9 +202,9 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                         <td>{t("info.related")}</td>
                         <td>
                           <Button size="sm" variant="light" className="text-capitalize">
-                            Redes
-                            <Badge variant="light" className="ml-2">
-                              4
+                            {t("ngen.network_other")}{" "}
+                            <Badge variant="light" className="ml-2" bg={contact?.networks?.length > 0 ? "primary" : "secondary"}>
+                              {contact?.networks?.length}
                             </Badge>
                           </Button>
                           <Button size="sm" variant="light" className="text-capitalize">

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Card, CloseButton, Col, Form, Modal, Row } from "react-bootstrap";
 import { getMinifiedEntity } from "../../../api/services/entities";
 import CrudButton from "../../../components/Button/CrudButton";
 import FormCreateContact from "../../contact/components/FormCreateContact";
 import { postContact } from "../../../api/services/contacts";
-import { validateSelect } from "../../../utils/validators/network";
+import { validateSelect, validateAddressValueOrNetworkOrDomain } from "../../../utils/validators/network";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import DropdownState from "../../../components/Dropdown/DropdownState";
@@ -19,6 +20,8 @@ const FormCreateNetwork = (props) => {
   // props: ifConfirm children setChildren cidr setCidr domain setDomain active setActive
   // type setType parent setParent network_entity setNetwork_entity contacts setContactss
   // {edit:false | true -> active, setActive} !!allContacts
+
+  const navigate = useNavigate();
 
   //Dropdown
   const [entitiesOption, setEntitiesOption] = useState([]);
@@ -170,10 +173,10 @@ const FormCreateNetwork = (props) => {
             </Form.Label>
             <Form.Group controlId="formGridAddress1">
               <Form.Control
-                placeholder={t("ngen.enter.ipv4.ipv6.domain.email")}
-                maxLength="150"
+                placeholder={t("ngen.enter.ipv4.ipv6.domain")}
+                maxLength="255"
                 onChange={(e) => completeFieldStringIdentifier(e)}
-                value={props.address_value}
+                value={props.address_value || props.cidr || props.domain}
                 isInvalid={showErrorMessage}
                 name="address_value"
               />
@@ -221,7 +224,10 @@ const FormCreateNetwork = (props) => {
           <Col>
             <Form.Group>
               {
-                props.address_value !== "" && !showErrorMessage && validateSelect(props.type) && props.contacts.length > 0 ? (
+                validateAddressValueOrNetworkOrDomain(props) &&
+                  !showErrorMessage &&
+                  validateSelect(props.type) &&
+                  props.contacts.length > 0 ? (
                   <>
                     <Button variant="primary" onClick={props.ifConfirm}>
                       {t("button.save")}
@@ -235,7 +241,7 @@ const FormCreateNetwork = (props) => {
                   </>
                 ) //disabled
               }
-              <Button variant="primary" href="/networks">
+              <Button variant="primary" onClick={() => navigate(-1)}>
                 {t("button.cancel")}
               </Button>
             </Form.Group>

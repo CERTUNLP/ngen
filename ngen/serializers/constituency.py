@@ -66,6 +66,7 @@ class NetworkEntitySerializerReduced(serializers.HyperlinkedModelSerializer):
 
 
 class ContactSerializer(AuditSerializerMixin):
+
     class Meta:
         model = models.Contact
         fields = [
@@ -80,6 +81,7 @@ class ContactSerializer(AuditSerializerMixin):
             "role",
             "priority",
             "user",
+            "networks",
         ]
 
 

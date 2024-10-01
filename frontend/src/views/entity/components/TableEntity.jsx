@@ -188,8 +188,8 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                         <td>
                           <Button size="sm" variant="light" className="text-capitalize">
                             {t("ngen.network_other")}{" "}
-                            <Badge variant="light" className="ml-1">
-                              {entity ? entity.networks.length : 0}
+                            <Badge variant="light" className="ml-1" bg={entity?.networks?.length > 0 ? "primary" : "secondary"}>
+                              {entity?.networks?.length}
                             </Badge>
                           </Button>
                         </td>

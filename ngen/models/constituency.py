@@ -67,7 +67,9 @@ class NetworkManager(AddressManager):
 
 
 class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationModelMixin):
-    contacts = models.ManyToManyField("ngen.Contact", blank=True)
+    contacts = models.ManyToManyField(
+        "ngen.Contact", blank=True, related_name="networks"
+    )
     active = models.BooleanField(default=True)
     TYPE = Choices(
         ("internal", gettext_lazy("Internal")), ("external", gettext_lazy("External"))

@@ -177,6 +177,15 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
               onChange={(e) => fieldPassword(e)}
             />
           </Form.Group>
+          <Form.Text className="text-muted">
+            {t("ngen.password.legend1")}
+            <br />
+            {t("ngen.password.legend2")}
+            <br />
+            {t("ngen.password.legend3")}
+            <br />
+            {t("ngen.password.legend4")}
+          </Form.Text>
         </Col>
 
         <Col sm={12} lg={6}>

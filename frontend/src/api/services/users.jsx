@@ -92,7 +92,7 @@ const postUser = (username, first_name, last_name, email, priority, is_active, p
     });
 };
 
-const putUser = (url, username, first_name, last_name, email, priority, is_active, groups, user_permissions) => {
+const putUser = (url, username, first_name, last_name, email, priority, is_active, groups, user_permissions, password) => {
   let messageSuccess = `El usuario ${username} se pudo editar correctamente`;
   let messageError = `El usuario ${username} no se pudo editar`;
   return apiInstance
@@ -104,7 +104,8 @@ const putUser = (url, username, first_name, last_name, email, priority, is_activ
       priority: priority,
       is_active: is_active,
       groups: groups,
-      user_permissions: user_permissions
+      user_permissions: user_permissions,
+      password: password
     })
     .then((response) => {
       setAlert(messageSuccess, "success");

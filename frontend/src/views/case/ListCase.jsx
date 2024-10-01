@@ -189,7 +189,7 @@ const ListCase = ({ routeParams }) => {
                     >
                       <i className="fa fa-code-branch text-danger" />
                       Merge&nbsp;
-                      <Badge className="badge mr-1">{selectedCases.length}</Badge>
+                      <Badge className="badge mr-1" bg={selectedCases.length > 0 ? "primary" : "secondary"}>{selectedCases.length}</Badge>
                     </Button>
                   </PermissionCheck>
 

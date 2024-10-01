@@ -22,7 +22,7 @@ const getApiKey = (username, password) => {
   return apiInstance
     .post(COMPONENT_URL.apikey, {
       username: username,
-      password: password,
+      password: password
     })
     .then((response) => {
       return response;
@@ -33,6 +33,25 @@ const getApiKey = (username, password) => {
       setAlert(messageError, "error", "report");
       return Promise.reject(error);
     });
-}
+};
 
-export { getProfile, getApiKey };
+const changePassword = (userId, oldPassword, newPassword1, newPassword2) => {
+  let messageError = `No se ha cambiado la contraseña del usuario. `;
+  return apiInstance
+    .patch(COMPONENT_URL.profile + userId + "/", {
+      old_password: oldPassword,
+      new_password1: newPassword1,
+      new_password2: newPassword2
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      let statusText = error.response.statusText;
+      messageError += statusText;
+      setAlert(messageError, "error", "report");
+      return Promise.reject(error);
+    });
+};
+
+export { getProfile, getApiKey, changePassword };

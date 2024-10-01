@@ -8,12 +8,14 @@ import FormGetName from "../../components/Form/FormGetName";
 import { getPriority } from "../../api/services/priorities";
 import ActiveButton from "../../components/Button/ActiveButton";
 import { useTranslation } from "react-i18next";
+import ModalChangePassword from "./components/ModalChangePassword";
 
 const Profile = () => {
   const [profile, setProfile] = useState([]);
   const [apikey, setApikey] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
 
   const { t } = useTranslation();
 
@@ -45,11 +47,7 @@ const Profile = () => {
         </Modal.Header>
         <Modal.Body>
           <Form.Label>{t("ngen.user.ask_password")}</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder={t("ngen.password")}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <Form.Control type="password" placeholder={t("ngen.password")} onChange={(e) => setPassword(e.target.value)} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShow(false)}>
@@ -60,6 +58,7 @@ const Profile = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <ModalChangePassword show={showPasswordChange} setShow={setShowPasswordChange} />
       <Row>
         <Col>
           <Card>
@@ -158,14 +157,18 @@ const Profile = () => {
                   <tr>
                     <td>{t("ngen.apikey")}</td>
                     <td>
-                      <Form.Control
-                        plaintext
-                        readOnly
-                        value={apikey}
-                        hidden={!apikey}
-                      />
-                      <button className="btn btn-primary" type="button" onClick={() => setShow(true)} hidden={apikey} >
+                      <Form.Control plaintext readOnly value={apikey} hidden={!apikey} />
+                      <button className="btn btn-primary" type="button" onClick={() => setShow(true)} hidden={apikey}>
                         {t("w.show")}
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>{t("ngen.password")}</td>
+                    <td>
+                      <Form.Control plaintext readOnly value={"********"} hidden={true} />
+                      <button className="btn btn-primary" type="button" onClick={() => setShowPasswordChange(true)} hidden={false}>
+                        {t("w.change")}
                       </button>
                     </td>
                   </tr>

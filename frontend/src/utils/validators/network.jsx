@@ -5,10 +5,12 @@ const validateSelect = (option) => {
 };
 
 const validateNetworkCIDR = (cidr) => {
+  console.log(cidr, validateCidr(cidr), validateSpace(cidr));
   return validateCidr(cidr) && validateSpace(cidr);
 };
 
 const validateNetworkDomain = (domain) => {
+  // console.log(validateURL(domain), validateSpaces(domain), validateLength(domain, 255), !isEmpty(domain))
   return validateURL(domain) && validateSpaces(domain) && validateLength(domain, 255) && !isEmpty(domain);
 };
 
@@ -16,4 +18,13 @@ const validateUnrequiredInput = (input) => {
   return !(isNull(input) || isBlank(input));
 };
 
-export { validateSelect, validateNetworkCIDR, validateNetworkDomain, validateUnrequiredInput };
+const validateAddressValue = (addressValue) => {
+  return validateNetworkCIDR(addressValue) || validateNetworkDomain(addressValue);
+};
+
+const validateAddressValueOrNetworkOrDomain = (obj) => {
+  console.log(obj, validateAddressValue(obj.address_value), validateNetworkCIDR(obj.cidr), validateNetworkDomain(obj.domain));
+  return validateAddressValue(obj.address_value) || validateNetworkCIDR(obj.cidr) || validateNetworkDomain(obj.domain);
+}
+
+export { validateSelect, validateNetworkCIDR, validateNetworkDomain, validateUnrequiredInput, validateAddressValue, validateAddressValueOrNetworkOrDomain };

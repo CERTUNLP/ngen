@@ -10,8 +10,7 @@ const currentUserHasPermissions = (requiredPermissions, optionalPermissions) => 
     rp = true;
   }
   
-  const state = store.getState();
-  const user = state.account?.user || {};
+  const user = getCurrentUser();
   const userPermissions = user.permissions || [];
 
   if (user.is_superuser) {
@@ -42,9 +41,12 @@ const currentUserHasPermissionsRoute = (route_path) => {
 };
 
 const userIsNetworkAdmin = () => {
-  const state = store.getState();
-  const user = state.account?.user || {};
-  return user.is_network_admin;
+  return getCurrentUser().is_network_admin;
 };
 
-export { currentUserHasPermissions, currentUserHasPermissionsRoute, routePermissions, userIsNetworkAdmin };
+const getCurrentUser = () => {
+  const state = store.getState();
+  return state.account?.user || {};
+};
+
+export { currentUserHasPermissions, currentUserHasPermissionsRoute, routePermissions, userIsNetworkAdmin, getCurrentUser };

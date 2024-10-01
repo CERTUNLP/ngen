@@ -35,7 +35,7 @@
     "i18next": "^23.12.2",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^2.5.2",
-    "ip-cidr": "^4.0.2",
+    "ip-address": "^9.0.5",
     "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
     "process": "^0.11.10",
