@@ -27,7 +27,7 @@ import { getMinifiedUser } from "../../api/services/users";
 import { useTranslation } from "react-i18next";
 import PermissionCheck from "components/Auth/PermissionCheck";
 
-const ListEvent = ({routeParams}) => {
+const ListEvent = ({ routeParams }) => {
   const { t } = useTranslation();
 
   const basePath = routeParams.basePath ? routeParams.basePath : "";
@@ -382,20 +382,29 @@ const ListEvent = ({routeParams}) => {
                   disabled={selectedEvent.length > 1 ? false : true}
                   size="lm"
                   className="text-capitalize"
-                  variant="outline-dark"
+                  variant={selectedEvent.length > 1 ? "outline-dark" : "outline-secondary"}
                   title="Mergear"
                   onClick={() => mergeConfirm()}
                 >
                   <i className="fa fa-code-branch" />
                   {t("ngen.merge")}&nbsp;
-                  <Badge className="badge mr-1" bg={selectedEvent.length > 0 ? "light" : "secondary"}>{selectedEvent.length}</Badge>
+                  <Badge className="badge mr-1" bg={selectedEvent.length > 1 ? "primary" : "secondary"}>
+                    {selectedEvent.length}
+                  </Badge>
                 </Button>
-                <Button disabled={selectedEvent.length > 0 ? false : true} size="lm" variant="outline-dark" onClick={() => modalCase()}>
+                <Button
+                  disabled={selectedEvent.length > 0 ? false : true}
+                  size="lm"
+                  variant={selectedEvent.length > 0 ? "outline-dark" : "outline-secondary"}
+                  onClick={() => modalCase()}
+                >
                   {t("ngen.case.addto")}&nbsp;
-                  <Badge className="badge mr-1" bg={selectedEvent.length > 0 ? "light" : "secondary"}>{selectedEvent.length}</Badge>
+                  <Badge className="badge mr-1" bg={selectedEvent.length > 0 ? "primary" : "secondary"}>
+                    {selectedEvent.length}
+                  </Badge>
                 </Button>
               </PermissionCheck>
-              <Button size="lm" variant="outline-dark" onClick={() => reloadPage()}>
+              <Button size="lm" variant="outline-primary" onClick={() => reloadPage()}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"

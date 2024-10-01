@@ -18,6 +18,8 @@ import { useTranslation } from "react-i18next";
 import PermissionCheck from "../../components/Auth/PermissionCheck";
 
 const ListCase = ({ routeParams }) => {
+  const basePath = routeParams.basePath ? routeParams.basePath : "";
+
   const [cases, setCases] = useState([]); //lista de casos
   const [ifModify, setIfModify] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -176,24 +178,25 @@ const ListCase = ({ routeParams }) => {
                   <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
                 </Col>
                 <Col>
-                  <CrudButton type="create" name={t("ngen.case_one")} to={routeParams.basePath + "/cases/create"} checkPermRoute />
+                  <CrudButton type="create" name={t("ngen.case_one")} to={basePath + "/cases/create"} checkPermRoute />
 
                   <PermissionCheck optionalPermissions={["change_case", "change_case_network_admin"]}>
                     <Button
                       disabled={selectedCases.length <= 1}
                       size="lm"
                       className="text-capitalize"
-                      variant="light"
+                      // variant="light"
+                      variant={selectedCases.length > 0 ? "outline-dark" : "outline-secondary"}
                       title="Merge"
                       onClick={() => mergeConfirm()}
                     >
-                      <i className="fa fa-code-branch text-danger" />
-                      Merge&nbsp;
+                      <i className="fa fa-code-branch" />
+                      { t("ngen.merge") }&nbsp;
                       <Badge className="badge mr-1" bg={selectedCases.length > 0 ? "primary" : "secondary"}>{selectedCases.length}</Badge>
                     </Button>
                   </PermissionCheck>
 
-                  <Button size="lm" variant="outline-dark" onClick={() => reloadPage()}>
+                  <Button size="lm" variant="outline-primary" onClick={() => reloadPage()}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -271,7 +274,7 @@ const ListCase = ({ routeParams }) => {
                 buttonReturn={false}
                 disableNubersOfEvents={true}
                 disableDateModified={false}
-                basePath={routeParams.basePath}
+                basePath={basePath}
               />
             </Card.Body>
             <Card.Footer>
