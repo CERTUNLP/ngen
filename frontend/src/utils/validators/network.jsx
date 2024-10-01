@@ -10,7 +10,6 @@ const validateNetworkCIDR = (cidr) => {
 };
 
 const validateNetworkDomain = (domain) => {
-  // console.log(validateURL(domain), validateSpaces(domain), validateLength(domain, 255), !isEmpty(domain))
   return validateURL(domain) && validateSpaces(domain) && validateLength(domain, 255) && !isEmpty(domain);
 };
 
@@ -23,7 +22,6 @@ const validateAddressValue = (addressValue) => {
 };
 
 const validateAddressValueOrNetworkOrDomain = (obj) => {
-  console.log(obj, validateAddressValue(obj.address_value), validateNetworkCIDR(obj.cidr), validateNetworkDomain(obj.domain));
   return validateAddressValue(obj.address_value) || validateNetworkCIDR(obj.cidr) || validateNetworkDomain(obj.domain);
 }
 
