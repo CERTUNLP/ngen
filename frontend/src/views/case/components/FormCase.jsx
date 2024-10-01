@@ -665,6 +665,7 @@ const FormCase = (props) => {
         setSelectedEvent={setSelectedEvent}
         setEvents={setEvents}
         setCurrentPage={setCurrentPage}
+        asNetworkAdmin={props.asNetworkAdmin}
       />
 
       <ModalListEvent
@@ -700,6 +701,7 @@ const FormCase = (props) => {
         feeds={feeds}
         tlpList={allTlp}
         updateList={updateList}
+        asNetworkAdmin={true}
       />
 
       <ModalReadEvent

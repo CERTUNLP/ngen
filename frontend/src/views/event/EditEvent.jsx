@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import FormEvent from "./components/FormEvent";
-import Navigation from "../../components/Navigation/Navigation";
 import { getEvent, patchEvent, putEvent } from "../../api/services/events";
 import { useLocation } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
@@ -14,7 +13,7 @@ import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedArtifact } from "../../api/services/artifact";
 import { useTranslation } from "react-i18next";
 
-const EditEvent = () => {
+const EditEvent = ({routeParams}) => {
   //const [date, setDate] = useState(caseItem.date  != null ? caseItem.date.substring(0,16) : '') //required
   const { t } = useTranslation();
   const location = useLocation();
@@ -240,10 +239,6 @@ const EditEvent = () => {
   return (
     body && (
       <div>
-        <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="event" />
-        <Row>
-          <Navigation actualPosition={t("ngen.event.edit")} path="/events" index={t("ngen.event_one")} />
-        </Row>
         <FormEvent
           createEvent={editEvent}
           setBody={setBody}
@@ -263,6 +258,7 @@ const EditEvent = () => {
           priorityNames={priorityNames}
           setPriorityNames={setPriorityNames}
           userNames={userNames}
+          asNetworkAdmin={routeParams.asNetworkAdmin}
         />
       </div>
     )

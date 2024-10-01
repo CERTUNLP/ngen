@@ -41,7 +41,7 @@ const SignUp1 = () => {
                   </div>
                   <button className="btn btn-primary mb-4">Sign up</button>
                   <p className="mb-2">
-                    Already have an account?{" "}
+                    Already have an account?&nbsp;
                     <NavLink to="/auth/signin-2" className="f-w-400">
                       Login
                     </NavLink>

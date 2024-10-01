@@ -1,10 +1,11 @@
 import { currentUserHasPermissions } from "utils/permissions";
 
-const PermissionCheck = ({ children, permissions }) => {
-  if (!permissions) {
+const PermissionCheck = ({ children, permissions, optionalPermissions }) => {
+  if (!permissions && !optionalPermissions) {
     return children;
   }
-  if (currentUserHasPermissions([permissions])) {
+
+  if (currentUserHasPermissions(permissions, optionalPermissions)) {
     return children;
   }
 

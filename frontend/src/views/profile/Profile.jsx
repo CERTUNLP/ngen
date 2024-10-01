@@ -3,17 +3,18 @@ import { Card, Col, Form, Row, Table, Modal, Button } from "react-bootstrap";
 import { getProfile, getApiKey } from "../../api/services/profile";
 import { getGroup } from "../../api/services/groups";
 import { getPermission } from "../../api/services/permissions";
-import Navigation from "../../components/Navigation/Navigation";
 import FormGetName from "../../components/Form/FormGetName";
 import { getPriority } from "../../api/services/priorities";
 import ActiveButton from "../../components/Button/ActiveButton";
 import { useTranslation } from "react-i18next";
+import ModalChangePassword from "./components/ModalChangePassword";
 
 const Profile = () => {
   const [profile, setProfile] = useState([]);
   const [apikey, setApikey] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
 
   const { t } = useTranslation();
 
@@ -36,20 +37,13 @@ const Profile = () => {
 
   return (
     <div>
-      <Row>
-        <Navigation actualPosition={t("menu.profile")} />
-      </Row>
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>{t("ngen.password")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Label>{t("ngen.user.ask_password")}</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder={t("ngen.password")}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <Form.Control type="password" placeholder={t("ngen.password")} onChange={(e) => setPassword(e.target.value)} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShow(false)}>
@@ -60,6 +54,7 @@ const Profile = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <ModalChangePassword show={showPasswordChange} setShow={setShowPasswordChange} />
       <Row>
         <Col>
           <Card>
@@ -145,17 +140,31 @@ const Profile = () => {
                   ) : (
                     <></>
                   )}
+                  {profile.is_network_admin !== undefined ? (
+                    <tr>
+                      <td> {t("ngen.user.is.network_admin")}</td>
+                      <td>
+                        <ActiveButton active={profile.is_network_admin} />
+                      </td>
+                    </tr>
+                  ) : (
+                    <></>
+                  )}
                   <tr>
                     <td>{t("ngen.apikey")}</td>
                     <td>
-                      <Form.Control
-                        plaintext
-                        readOnly
-                        value={apikey}
-                        hidden={!apikey}
-                      />
-                      <button className="btn btn-primary" type="button" onClick={() => setShow(true)} hidden={apikey} >
+                      <Form.Control plaintext readOnly value={apikey} hidden={!apikey} />
+                      <button className="btn btn-primary" type="button" onClick={() => setShow(true)} hidden={apikey}>
                         {t("w.show")}
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>{t("ngen.password")}</td>
+                    <td>
+                      <Form.Control plaintext readOnly value={"********"} hidden={true} />
+                      <button className="btn btn-primary" type="button" onClick={() => setShowPasswordChange(true)} hidden={false}>
+                        {t("w.change")}
                       </button>
                     </td>
                   </tr>

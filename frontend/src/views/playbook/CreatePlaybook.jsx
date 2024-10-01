@@ -4,7 +4,6 @@ import { postPlaybook, putPlaybook } from "../../api/services/playbooks";
 import FormCreatePlaybook from "../playbook/components/FormCreatePlaybook";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import ListTask from "../task/ListTask";
-import Navigation from "../../components/Navigation/Navigation";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
@@ -64,10 +63,6 @@ const CreatePlaybook = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="playbook" />
-      <Row>
-        <Navigation actualPosition={t("ngen.playbook.add")} path="/playbooks" index="Playbook" />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>

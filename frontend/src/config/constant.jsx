@@ -1,4 +1,4 @@
-export const BASE_URL = import.meta.env.VITE_APP_BASE_URL || "/metrics";
+export const BASE_URL = import.meta.env.VITE_APP_BASE_URL || "/home";
 export const BASENAME = import.meta.env.VITE_APP_BASENAME || "";
 export const BASE_TITLE = " | ngen ";
 export const PAGE = "?page=";
@@ -66,6 +66,11 @@ export const COMPONENT_URL = {
   constance: "constance/",
   profile: "profile/",
   apikey: "token/simple/",
+  networkadminEvent: "networkadmin/event/",
+  networkadminCase: "networkadmin/case/",
+  networkadminNetwork: "networkadmin/network/",
+  networkadminNetworkentity: "networkadmin/networkentity/",
+  networkadminContact: "networkadmin/contact/",
   taxonomyMinifiedList: "minified/taxonomy/",
   taxonomyGroupMinifiedList: "minified/taxonomygroup/",
   priorityMinifiedList: "minified/priority/",
@@ -75,6 +80,8 @@ export const COMPONENT_URL = {
   entityMinifiedList: "minified/entity",
   contactMinifiedList: "minified/contact/",
   userMinifiedList: "minified/user/",
+  permissionMinifiedList: "minified/permission/",
+  groupMinifiedList: "minified/group/",
   caseMinifiedList: "/minified/case/",
   artifactMinifiedList: "minified/artifact/",
   group: "groups/",

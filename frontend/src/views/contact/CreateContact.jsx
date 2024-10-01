@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { postContact } from "../../api/services/contacts";
 import FormCreateContact from "./components/FormCreateContact";
-import Navigation from "../../components/Navigation/Navigation";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
@@ -13,6 +12,7 @@ const CreateContact = () => {
   const [supportedContact, setSupportedContact] = useState("");
   const [supportedKey, setSupportedKey] = useState(null);
   const [selectType, setSelectType] = useState("");
+  const [user, setUser] = useState("");
   const { t } = useTranslation();
 
   //Alert
@@ -21,7 +21,7 @@ const CreateContact = () => {
   const createContact = () => {
     //refactorizar al FormCreateContact
 
-    postContact(supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority)
+    postContact(supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority, user)
       .then((response) => {
         window.location.href = "/contacts";
       })
@@ -33,9 +33,6 @@ const CreateContact = () => {
   return (
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="contact" />
-      <Row>
-        <Navigation actualPosition={t("ngen.contact.create")} path="/contacts" index={t("ngen.contact_other")} />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>
@@ -53,6 +50,8 @@ const CreateContact = () => {
                 setRole={setSelectRol}
                 priority={supportedPriority}
                 setPriority={setSupportedPriority}
+                user={user}
+                setUser={setUser}
                 type={selectType}
                 setType={setSelectType}
                 contact={supportedContact}

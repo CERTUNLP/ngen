@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
-import Navigation from "../../components/Navigation/Navigation";
 import SmallEventTable from "../event/components/SmallEventTable";
 import { getCase } from "../../api/services/cases";
 import apiInstance from "../../api/api";
@@ -184,13 +183,6 @@ const ReadCase = () => {
   return (
     caseItem && (
       <React.Fragment>
-        {navigationRow !== "false" ? (
-          <Row>
-            <Navigation actualPosition={t("w.detail")} path="/cases" index={t("ngen.case_other")} />
-          </Row>
-        ) : (
-          " "
-        )}
         <Row>
           <Col sm={12}>
             <Card>

@@ -41,8 +41,11 @@ class CustomPermissionSupport(models.Model):
             ("view_minified_state", "View Minified State"),
             ("view_minified_taxonomy", "View Minified Taxonomy"),
             ("view_minified_taxonomygroup", "View Minified TaxonomyGroup"),
+            ("view_minified_permission", "View Minified Permission"),
+            ("view_minified_group", "View Minified Group"),
             ("view_userprofile", "View UserProfile"),
             ("change_userprofile", "Change UserProfile"),
             ("view_stringidentifier", "View StringIdentifier"),
             ("use_stringidentifier", "Use StringIdentifier"),
+            ("view_dashboard_network_admin", "View Dashboard as network admin"),
         )

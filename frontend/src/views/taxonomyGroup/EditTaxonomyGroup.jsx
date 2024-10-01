@@ -3,7 +3,6 @@ import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import DropdownState from "../../components/Dropdown/DropdownState";
 import { useLocation, useNavigate } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
-import Navigation from "../../components/Navigation/Navigation";
 import { validateDescription, validateName, validateUnrequiredInput } from "../../utils/validators/taxonomy";
 import { useTranslation } from "react-i18next";
 import { putTaxonomyGroup } from "../../api/services/taxonomyGroups";
@@ -42,10 +41,6 @@ const EditTaxonomyGroup = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="taxonomyGroup" />
-      <Row>
-        <Navigation actualPosition={t("w.edit") + " " + t("ngen.taxonomy_one")} path="/taxonomyGroups" index="taxonomyGroup" />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>

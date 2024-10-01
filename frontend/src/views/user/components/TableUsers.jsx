@@ -104,7 +104,10 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                 letterSize={letterSize}
               />
               <th style={letterSize}>{t("ngen.name_one")}</th>
-              <th style={letterSize}>{t("ngen.state_one")}</th>
+              <th style={letterSize}>{t("w.active")}</th>
+              <th style={letterSize}>{t("ngen.user.is.superuser")}</th>
+              <th style={letterSize}>{t("ngen.user.is.staff")}</th>
+              <th style={letterSize}>{t("ngen.user.is.network_admin")}</th>
               <th style={letterSize}>{t("session.last")}</th>
               <th style={letterSize}>{t("ngen.options")}</th>
             </tr>
@@ -118,6 +121,15 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                   <td>{user.first_name}</td>
                   <td>
                     <ActiveButton active={user.is_active} onClick={() => showModalChangeState(user.url, user.username, user.is_active)} permissions="edit_user" />
+                  </td>
+                  <td>
+                    <ActiveButton active={user.is_superuser}/>
+                  </td>
+                  <td>
+                    <ActiveButton active={user.is_staff}/>
+                  </td>
+                  <td>
+                    <ActiveButton active={user.is_network_admin}/>
                   </td>
                   <td>{user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}</td>
                   <td>
@@ -232,6 +244,16 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                                 <td> {t("ngen.user.is.staff")}</td>
                                 <td>
                                   <ActiveButton active={user.is_staff} />
+                                </td>
+                              </tr>
+                            ) : (
+                              <></>
+                            )}
+                            {user.is_network_admin !== undefined ? (
+                              <tr>
+                                <td> {t("ngen.user.is.network_admin")}</td>
+                                <td>
+                                  <ActiveButton active={user.is_network_admin} />
                                 </td>
                               </tr>
                             ) : (

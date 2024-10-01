@@ -4,16 +4,32 @@ import FeedGraph from "./chart/FeedGraph";
 import EntityGraph from "./chart/EntityGraph";
 import DashboardEvent from "./chart/DashboardEvent";
 import DashboardCases from "./chart/DashboardCases";
-import { getDashboardCases, getDashboardEvent, getDashboardFeed, getDashboardNetworkEntities } from "../../../api/services/dashboards";
-import { getMinifiedTaxonomy } from "../../../api/services/taxonomies";
-import { getMinifiedFeed } from "../../../api/services/feeds";
+import {
+  getDashboardCases,
+  getDashboardEvent,
+  getDashboardFeed,
+  getDashboardNetworkEntities
+} from "../../api/services/dashboards";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import { getMinifiedFeed } from "../../api/services/feeds";
 import { useTranslation } from "react-i18next";
+import { currentUserHasPermissions } from "utils/permissions";
+import PermissionCheck from "components/Auth/PermissionCheck";
 
-const DashDefault = () => {
+const DashDefault = ({ routeParams }) => {
+  // TODO: Remove this when home page is implemented
+  if (!currentUserHasPermissions(["view_dashboard"])) {
+    return <React.Fragment></React.Fragment>;
+  }
+
   const [dashboardFeed, setDashboardFeed] = useState([]);
   const [dashboardEvent, setDashboardEvent] = useState([]);
   const [dashboardCases, setDashboardCases] = useState([]);
   const [dashboardNetworkEntities, setDashboardNetworkEntities] = useState([]);
+
+  // network admin
+  const [myDashboardEvent, setMyDashboardEvent] = useState([]);
+  const [myDashboardCases, setMyDashboardCases] = useState([]);
 
   const [starDate, setStarDate] = useState(getDateTimeSevenDaysAgo());
   const [endDate, setEndDate] = useState(getCurrentDateTime());
@@ -50,45 +66,48 @@ const DashDefault = () => {
       setFeedNames(dicFeed);
     });
 
-    getDashboardFeed(starDateFilter + endDateFilter)
-      .then((response) => {
-        setDashboardFeed(response.data.feeds_in_events);
-      })
-      .catch(() => {
-        // Show alert
-      })
-      .finally(() => {
-        setLoadingFeeds(false);
-      });
+    if (currentUserHasPermissions("view_dashboard")) {
+      getDashboardFeed(starDateFilter + endDateFilter)
+        .then((response) => {
+          setDashboardFeed(response.data.feeds_in_events);
+        })
+        .catch(() => {
+          // Show alert
+        })
+        .finally(() => {
+          setLoadingFeeds(false);
+        });
 
-    getDashboardEvent(starDateFilter + endDateFilter)
-      .then((response) => {
-        setDashboardEvent(response.data.events);
-      })
-      .catch(() => {
-        // Show alert
-      })
-      .finally(() => {
-        setLoadingEvents(false);
-      });
+      getDashboardEvent(starDateFilter + endDateFilter)
+        .then((response) => {
+          setDashboardEvent(response.data.events);
+        })
+        .catch(() => {
+          // Show alert
+        })
+        .finally(() => {
+          setLoadingEvents(false);
+        });
 
-    getDashboardCases(starDateFilter + endDateFilter)
-      .then((response) => {
-        setDashboardCases(response.data.cases);
-      })
-      .catch(() => { })
-      .finally(() => {
-        setLoadingCases(false);
-      });
+      getDashboardCases(starDateFilter + endDateFilter)
+        .then((response) => {
+          setDashboardCases(response.data.cases);
+        })
+        .catch(() => {})
+        .finally(() => {
+          setLoadingCases(false);
+        });
 
-    getDashboardNetworkEntities(starDateFilter + endDateFilter)
-      .then((response) => {
-        setDashboardNetworkEntities(response.data.network_entities);
-      })
-      .catch(() => { })
-      .finally(() => {
-        setLoadingEntities(false);
-      });
+      getDashboardNetworkEntities(starDateFilter + endDateFilter)
+        .then((response) => {
+          setDashboardNetworkEntities(response.data.network_entities);
+        })
+        .catch(() => {})
+        .finally(() => {
+          setLoadingEntities(false);
+        });
+    }
+
   }, [starDateFilter, endDateFilter]);
   const completeDateStar = (date) => {
     if (getCurrentDateTime() >= date && date <= endDate) {
@@ -215,34 +234,34 @@ const DashDefault = () => {
             {endDateNotification ? <div className="invalid-feedback"> {t("date.invalid")}</div> : ""}
           </Form.Group>
         </Col>
-      </Row>
-      <Row>
-        <Col md={6}>
-          <Card>
-            <Card.Header>
-              <Card.Title as="h5">{t("ngen.dashboard.feeds_graphic")}</Card.Title>
-            </Card.Header>
-            <Card.Body className="text-center">
-              <FeedGraph list={dashboardFeed} loading={loadingFeeds} />
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={6}>
-          <Card>
-            <Card.Header>
-              <Card.Title as="h5">{t("ngen.dashboard.entities_graphic")}</Card.Title>
-            </Card.Header>
-            <Card.Body className="text-center">
-              <EntityGraph list={dashboardNetworkEntities} loading={loadingEntities} />
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col>
-          <DashboardEvent list={dashboardEvent} feedNames={feedNames} taxonomyNames={taxonomyNames} loading={loadingEvents} />
-        </Col>
-        <Col>
-          <DashboardCases list={dashboardCases} loading={loadingCases} />
-        </Col>
+        <PermissionCheck permissions="view_dashboard">
+          <Col md={6}>
+            <Card>
+              <Card.Header>
+                <Card.Title as="h5">{t("ngen.dashboard.feeds_graphic")}</Card.Title>
+              </Card.Header>
+              <Card.Body className="text-center">
+                <FeedGraph list={dashboardFeed} loading={loadingFeeds} />
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={6}>
+            <Card>
+              <Card.Header>
+                <Card.Title as="h5">{t("ngen.dashboard.entities_graphic")}</Card.Title>
+              </Card.Header>
+              <Card.Body className="text-center">
+                <EntityGraph list={dashboardNetworkEntities} loading={loadingEntities} />
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col>
+            <DashboardEvent list={dashboardEvent} feedNames={feedNames} taxonomyNames={taxonomyNames} loading={loadingEvents} />
+          </Col>
+          <Col>
+            <DashboardCases list={dashboardCases} loading={loadingCases} />
+          </Col>
+        </PermissionCheck>
       </Row>
     </React.Fragment>
   );

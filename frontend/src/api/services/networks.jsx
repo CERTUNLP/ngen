@@ -2,10 +2,11 @@ import apiInstance from "../api";
 import setAlert from "../../utils/setAlert";
 import { COMPONENT_URL, PAGE } from "../../config/constant";
 
-const getNetworks = (currentPage, filters, order) => {
+const getNetworks = (currentPage, filters, order, asNetworkAdmin) => {
   let messageError = `No se ha recuperado la informacion de redes. `;
+  let component = asNetworkAdmin ? COMPONENT_URL.networkadminNetwork : COMPONENT_URL.network;
   return apiInstance
-    .get(COMPONENT_URL.network + PAGE + currentPage + "&ordering=" + order + "&" + filters)
+    .get(component + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })

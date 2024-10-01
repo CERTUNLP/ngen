@@ -40,7 +40,8 @@ const TableCase = ({
   disableColumOption,
   disableUuid,
   disableDateModified,
-  disableEvents
+  disableEvents,
+  basePath=""
 }) => {
   const [url, setUrl] = useState(null);
   const [modalDelete, setModalDelete] = useState(false);
@@ -264,10 +265,10 @@ const TableCase = ({
                       }
                     />
                   ) : (
-                    <CrudButton type="read" to="/cases/view" state={caseItem.url} onClick={() => storageCaseUrl(caseItem.url)} />
+                    <CrudButton type="read" to={basePath + "/cases/view"} state={caseItem.url} onClick={() => storageCaseUrl(caseItem.url)} />
                   )}
                   {!disableColumOption && editColum && (
-                    <CrudButton type="edit" to="/cases/edit" state={caseItem.url} disabled={caseItem.blocked} checkPermRoute />
+                    <CrudButton type="edit" to={basePath + "/cases/edit"} state={caseItem.url} disabled={caseItem.blocked} checkPermRoute />
                   )}
                   {!disableColumOption &&
                     deleteColum &&

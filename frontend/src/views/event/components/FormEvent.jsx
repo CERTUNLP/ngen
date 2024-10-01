@@ -488,7 +488,7 @@ const FormEvent = (props) => {
                     isInvalid={showErrorMessage}
                     name="address_value"
                   />
-                  {showErrorMessage ? <div className="invalid-feedback"> {t("error.ipv4.ipv6.domain")}</div> : ""}
+                  {showErrorMessage ? <div className="invalid-feedback"> {t("error.ipv4.ipv6.domain.email")}</div> : ""}
                 </Form.Group>
               </Col>
             </Row>
@@ -578,6 +578,7 @@ const FormEvent = (props) => {
         setWordToSearch={setWordToSearch}
         updatePagination={updatePagination}
         setUpdatePagination={setUpdatePagination}
+        asNetworkAdmin={props.asNetworkAdmin}
       />
 
       <ModalReadCase

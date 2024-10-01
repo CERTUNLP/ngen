@@ -113,6 +113,12 @@ class Case(
 
     class Meta:
         db_table = "case"
+        permissions = [
+            ("view_case_network_admin", "Can view case as network admin"),
+            ("add_case_network_admin", "Can add case as network admin"),
+            ("change_case_network_admin", "Can change case as network admin"),
+            ("delete_case_network_admin", "Can delete case as network admin"),
+        ]
 
     def __init__(self, *args, **kwargs):
         """Case should receive `events` list to communicate with events on new event"""
@@ -427,6 +433,12 @@ class Event(
     class Meta:
         db_table = "event"
         ordering = ["-id"]
+        permissions = [
+            ("view_event_network_admin", "Can view event as network admin"),
+            ("add_event_network_admin", "Can add event as network admin"),
+            ("change_event_network_admin", "Can change event as network admin"),
+            ("delete_event_network_admin", "Can delete event as network admin"),
+        ]
 
     def __str__(self):
         return "%s:%s" % (self.pk, self.address)
@@ -629,6 +641,12 @@ class Evidence(AuditModelMixin, ValidationModelMixin):
 
     class Meta:
         db_table = "evidence"
+        permissions = [
+            ("view_evidence_network_admin", "Can view evidence as network admin"),
+            ("add_evidence_network_admin", "Can add evidence as network admin"),
+            ("change_evidence_network_admin", "Can change evidence as network admin"),
+            ("delete_evidence_network_admin", "Can delete evidence as network admin"),
+        ]
 
     def get_related(self):
         return self.content_object

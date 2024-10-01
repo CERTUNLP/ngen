@@ -3,13 +3,12 @@ import { Card, Col, Row } from "react-bootstrap";
 import TableContact from "./components/TableContact";
 import CrudButton from "../../components/Button/CrudButton";
 import { getContacts } from "../../api/services/contacts";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
-const ListContact = () => {
+const ListContact = ({ routeParams }) => {
   const { t } = useTranslation();
   const [contacts, setContacts] = useState([]);
   const [isModify, setIsModify] = useState(null);
@@ -36,7 +35,7 @@ const ListContact = () => {
   useEffect(() => {
     setCurrentPage(currentPage); //?
 
-    getContacts(currentPage, wordToSearch, order)
+    getContacts(currentPage, wordToSearch, order, routeParams.asNetworkAdmin)
       .then((response) => {
         setContacts(response.data.results);
         //Pagination
@@ -70,9 +69,6 @@ const ListContact = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="contact" />
       <Row>
-        <Navigation actualPosition={t("ngen.contact_other")} />
-      </Row>
-      <Row>
         <Col>
           <Card>
             <Card.Header>
@@ -99,6 +95,7 @@ const ListContact = () => {
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
+                basePath={routeParams.basePath}
               />
             </Card.Body>
             <Card.Footer>

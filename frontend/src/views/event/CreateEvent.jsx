@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Row } from "react-bootstrap";
 import FormEvent from "./components/FormEvent";
-import Navigation from "../../components/Navigation/Navigation";
 import { postEvent } from "../../api/services/events";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
@@ -13,7 +12,7 @@ import { getMinifiedArtifact } from "../../api/services/artifact";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
-const CreateEvent = () => {
+const CreateEvent = ({ routeParams }) => {
   const formEmpty = {
     children: [],
     todos: [],
@@ -184,10 +183,6 @@ const CreateEvent = () => {
   return (
     body && (
       <div>
-        <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="event" />
-        <Row>
-          <Navigation actualPosition={t("ngen.event.add")} path="/events" index={t("ngen.event_one")} />
-        </Row>
         <FormEvent
           createEvent={createEvent}
           setBody={setBody}
@@ -204,6 +199,7 @@ const CreateEvent = () => {
           priorityNames={priorityNames}
           setPriorityNames={setPriorityNames}
           userNames={userNames}
+          asNetworkAdmin={routeParams.asNetworkAdmin}
         />
       </div>
     )

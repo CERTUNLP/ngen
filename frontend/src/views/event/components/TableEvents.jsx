@@ -41,7 +41,8 @@ const TableEvents = ({
   disableMerged,
   disableDateModified,
   disableOrdering,
-  disableColumnCase
+  disableColumnCase,
+  basePath = ""
 }) => {
   const [deleteUrl, setDeleteUrl] = useState();
   const [remove, setRemove] = useState();
@@ -75,7 +76,7 @@ const TableEvents = ({
   const handleDelete = () => {
     deleteEvent(deleteUrl)
       .then(() => {
-        window.location.href = "/events";
+        window.location.href = basePath + "/events";
       })
       .catch((error) => {
         console.log(error);
@@ -118,14 +119,14 @@ const TableEvents = ({
     }
   };
 
-  const navigateToEvent = (url) => {
+  const navigateToEvent = (url, basePath) => {
     localStorage.setItem("event", url);
-    navigate("/events/view");
+    navigate(basePath + "/events/view");
   };
 
-  const navigateToCase = (url) => {
+  const navigateToCase = (url, basePath) => {
     localStorage.setItem("case", url);
-    navigate("/cases/view");
+    navigate(basePath + "/cases/view");
   };
 
   const letterSize = { fontSize: "1.1em" };
@@ -242,11 +243,11 @@ const TableEvents = ({
                   )}
                   {!disableMerged && event.parent ? (
                     <td>
-                      <Link to="/events/view" state={event.parent}>
+                      <Link to={basePath + "/events/view"} state={event.parent}>
                         <Button
                           className="fa fa-eye mx-auto font-weight-light"
                           variant="outline-primary"
-                          onClick={() => navigateToEvent(event.parent)}
+                          onClick={() => navigateToEvent(event.parent, basePath)}
                         >
                           {" " + t("ngen.event.parent")}
                         </Button>
@@ -263,7 +264,13 @@ const TableEvents = ({
                   {!disableColumnCase ? (
                     event.case ? (
                       <td>
-                        <CrudButton type="read" to="/cases/view" state={event.case} onClick={() => navigateToCase(event.case)} text={t("ngen.case_one")} />
+                        <CrudButton
+                          type="read"
+                          to={basePath + "/cases/view"}
+                          state={event.case}
+                          onClick={() => navigateToCase(event.case, basePath)}
+                          text={t("ngen.case_one")}
+                        />
                       </td>
                     ) : (
                       <td></td>
@@ -277,14 +284,14 @@ const TableEvents = ({
                       {disableColumView ? (
                         ""
                       ) : (
-                        <CrudButton type="read" to="/events/view" state={event} onClick={() => navigateToEvent(event.url)} />
+                        <CrudButton type="read" to={basePath + "/events/view"} state={event} onClick={() => navigateToEvent(event.url, basePath)} />
                       )}
                       {disableColumOption ? (
                         ""
                       ) : disableColumnEdit ? (
                         ""
                       ) : (
-                        <CrudButton type="edit" to="/events/edit" state={event} disabled={event.blocked || event.parent} />
+                        <CrudButton type="edit" to={basePath + "/events/edit"} state={event} disabled={event.blocked || event.parent} checkPermRoute />
                       )}
                       {disableColumOption ? (
                         ""
@@ -295,7 +302,7 @@ const TableEvents = ({
                       ) : (
                         <CrudButton type="delete" onClick={() => modalDelete(event.name, event.url)} permissions="delete_event" />
                       )}
-                      {disableTemplate ? "" : <CrudButton type="plus" to="/templates/create" checkPermRoute disabled={event.case} />}
+                      {disableTemplate ? "" : <CrudButton type="plus" to={basePath + "/templates/create"} checkPermRoute disabled={event.case} />}
                     </td>
                   ) : (
                     ""

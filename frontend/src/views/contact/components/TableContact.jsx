@@ -6,8 +6,11 @@ import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import PriorityButton from "../../../components/Button/PriorityButton";
 import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
+import { getMinifiedArtifact } from "api/services/artifact";
+import { getMinifiedUser } from "api/services/users";
+import FormGetName from "components/Form/FormGetName";
 
-const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder }) => {
+const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder, basePath="" }) => {
   const [contact, setContact] = useState("");
 
   const [modalShow, setModalShow] = useState(false);
@@ -122,7 +125,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                 </td>
                 <td>
                   <CrudButton type="read" onClick={() => showContact(contact.url)} />
-                  <CrudButton type="edit" onClick={() => storageContactUrl(contact.url)} to="/contacts/edit" state={contact} checkPermRoute />
+                  <CrudButton type="edit" onClick={() => storageContactUrl(contact.url)} to={basePath + "/contacts/edit"} state={contact} checkPermRoute />
                   <CrudButton type="delete" onClick={() => Delete(contact.url, contact.name)} permissions="delete_contact" />
                 </td>
               </tr>
@@ -143,7 +146,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                       <span className="d-block m-t-5">{t("ngen.contact.detail")}</span>
                     </Col>
                     <Col sm={2} lg={2}>
-                      <CrudButton type="edit" to="/contacts/edit" state={contact} checkPermRoute />
+                      <CrudButton type="edit" to={basePath + "/contacts/edit"} state={contact} checkPermRoute />
                       <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                     </Col>
                   </Row>
@@ -175,6 +178,16 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                           <Form.Control plaintext readOnly defaultValue={contact.username} />
                         </td>
                       </tr>
+                      {contact.user ? (
+                        <tr>
+                          <td>{t("ngen.user")}</td>
+                          <td>
+                            <FormGetName form={true} get={getMinifiedUser} url={contact.user} key={1} field={"username"} getFromList />
+                          </td>
+                        </tr>
+                      ) : (
+                        <></>
+                      )}
                       {contact.public_key ? (
                         <tr>
                           <td>{t("ngen.public.key")}</td>
@@ -189,9 +202,9 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                         <td>{t("info.related")}</td>
                         <td>
                           <Button size="sm" variant="light" className="text-capitalize">
-                            Redes
-                            <Badge variant="light" className="ml-2">
-                              4
+                            {t("ngen.network_other")}&nbsp;
+                            <Badge variant="light" className="ml-2" bg={contact?.networks?.length > 0 ? "primary" : "secondary"}>
+                              {contact?.networks?.length}
                             </Badge>
                           </Button>
                           <Button size="sm" variant="light" className="text-capitalize">

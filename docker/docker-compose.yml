@@ -134,7 +134,6 @@ services:
       - GENERATE_SOURCEMAP=false
       - PUBLIC_URL=http://localhost:3000/
       - VITE_APP_BASE_NAME=
-      - VITE_APP_BASE_URL=/metrics
       - VITE_APP_API_SERVER=http://localhost:8000/api/
       - CHOKIDAR_USEPOLLING=true
       - VITE_APP_ENV=development

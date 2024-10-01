@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getStates } from "../../api/services/states";
 import { Card, Col, Row } from "react-bootstrap";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
 import TableStates from "./components/TableStates";
@@ -48,10 +47,6 @@ const ListState = () => {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="state" />
-      <Row>
-        <Navigation actualPosition={t("ngen.state_other")} />
-      </Row>
       <Card>
         <Card.Header>
           <Row>

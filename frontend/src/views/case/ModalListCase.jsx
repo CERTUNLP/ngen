@@ -21,7 +21,7 @@ const ModalListCase = (props) => {
   const [disabledPagination, setDisabledPagination] = useState(true);
 
   useEffect(() => {
-    getCases(props.currentPage, props.stateFilter + props.tlpFilter + props.priorityFilter + props.wordToSearch, order)
+    getCases(props.currentPage, props.stateFilter + props.tlpFilter + props.priorityFilter + props.wordToSearch, order, props.asNetworkAdmin)
       .then((response) => {
         setCases(response.data.results);
         setCountItems(response.data.count);
@@ -37,7 +37,7 @@ const ModalListCase = (props) => {
         setShowAlert(true); //este tiene que ser enviado por props
         setLoading(false);
       });
-  }, [props.wordToSearch, props.priorityFilter, props.currentPage, props.tlpFilter, props.stateFilter, order, props.showModalListCase]);
+  }, [props.wordToSearch, props.priorityFilter, props.currentPage, props.tlpFilter, props.stateFilter, order, props.showModalListCase, props.asNetworkAdmin]);
 
   function updatePage(chosenPage) {
     props.setCurrentPage(chosenPage);

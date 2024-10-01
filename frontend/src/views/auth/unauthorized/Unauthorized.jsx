@@ -19,7 +19,7 @@ const Unauthorized = () => {
             <h1 className="display-1">401</h1>
             <h2>Unauthorized</h2>
             <p>You do not have permission to view this resource.</p>
-            <Link to="/metrics">Go back to dashboard</Link>
+            <Link to="/home">Go back to dashboard</Link>
             <br />
             <br />
             <Button onClick={()=> {logout(); navigate('/login')}}>Logout</Button>

@@ -37,7 +37,7 @@ const SignUp1 = () => {
                   <RestRegister />
 
                   <p className="mb-2">
-                    {t("signup.already_have_an_account")}{" "}
+                    {t("signup.already_have_an_account")}&nbsp;
                     <NavLink to="/auth/signin" className="f-w-400">
                       {t("button.signin")}
                     </NavLink>

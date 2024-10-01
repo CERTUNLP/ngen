@@ -3,13 +3,12 @@ import { Card, Col, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import TableEntity from "./components/TableEntity";
 import { getEntities } from "../../api/services/entities";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
-const ListEntity = () => {
+const ListEntity = ({ routeParams }) => {
   const [entities, setEntities] = useState([]);
   const [isModify, setIsModify] = useState(null);
 
@@ -33,7 +32,7 @@ const ListEntity = () => {
   }
 
   useEffect(() => {
-    getEntities(currentPage, wordToSearch, order)
+    getEntities(currentPage, wordToSearch, order, routeParams.asNetworkAdmin)
       .then((response) => {
         setEntities(response.data.results);
         // Pagination
@@ -54,10 +53,6 @@ const ListEntity = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="entity" />
-      <Row>
-        <Navigation actualPosition={t("ngen.entity_other")} />
-      </Row>
       <Row>
         <Col>
           <Card>
@@ -85,6 +80,8 @@ const ListEntity = () => {
                 currentPage={currentPage}
                 order={order}
                 setOrder={setOrder}
+                asNetworkAdmin={routeParams.asNetworkAdmin}
+                basePath={routeParams.basePath}
               />
             </Card.Body>
             <Card.Footer>

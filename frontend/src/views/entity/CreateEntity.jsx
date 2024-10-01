@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { postEntity } from "../../api/services/entities";
 import FormEntity from "./components/FormEntity";
-import Navigation from "../../components/Navigation/Navigation";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
@@ -29,10 +28,6 @@ const CreateEntity = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="entity" />
-      <Row>
-        <Navigation actualPosition={t("ngen.entity_add")} path="/entities" index={t("ngen.entity_other")} />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>
