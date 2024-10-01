@@ -222,9 +222,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             Permission.objects.filter(group__in=self.user.groups.all())
             | self.user.user_permissions.all()
         )
-        perm_serializer = PermissionSerializer(
-            perms, many=True, context={"request": self.context.get("request")}
-        )
+        perms = {p.codename for p in perms.distinct()}
 
         data.update(
             {
@@ -239,7 +237,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                     "date_joined": self.user.date_joined,
                     "is_superuser": self.user.is_superuser,
                     "is_staff": self.user.is_staff,
-                    "permissions": perm_serializer.data,
+                    "permissions": perms,
                 }
             }
         )

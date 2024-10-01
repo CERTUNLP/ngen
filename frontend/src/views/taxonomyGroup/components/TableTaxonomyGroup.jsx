@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
-import { Link } from "react-router-dom";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import { deleteTaxonomyGroup, getTaxonomyGroup } from "../../../api/services/taxonomyGroups";
 import Ordering from "../../../components/Ordering/Ordering";
@@ -105,10 +104,8 @@ const TableTaxonomyGroup = ({ setIsModify, list, loading, order, setOrder, setLo
               <td>{taxonomyGroup.needs_review ? t("w.yes") : t("w.no")}</td>
               <td>
                 <CrudButton type="read" onClick={() => showTaxonomyGroup(taxonomyGroup.url)} />
-                <Link to="/taxonomyGroups/edit" state={taxonomyGroup}>
-                  <CrudButton type="edit" />
-                </Link>
-                <CrudButton type="delete" onClick={() => Delete(taxonomyGroup.url, taxonomyGroup.name)} />
+                <CrudButton type="edit" to="/taxonomyGroups/edit" state={taxonomyGroup} checkPermRoute />
+                <CrudButton type="delete" onClick={() => Delete(taxonomyGroup.url, taxonomyGroup.name)} permissions="delete_taxonomygroup" />
               </td>
             </tr>
           ))}
@@ -126,9 +123,7 @@ const TableTaxonomyGroup = ({ setIsModify, list, loading, order, setOrder, setLo
                       <span className="d-block m-t-5">{t("ngen.taxonomyGroup.detail")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <Link to="/taxonomyGroups/edit" state={taxonomyGroup}>
-                        <CrudButton type="edit" />
-                      </Link>
+                      <CrudButton type="edit" to="/taxonomyGroups/edit" state={taxonomyGroup} checkPermRoute />
                       <CloseButton aria-label={t("w.close")} onClick={handleClose} />
                     </Col>
                   </Row>

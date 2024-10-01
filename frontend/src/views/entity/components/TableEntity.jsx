@@ -3,7 +3,6 @@ import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table
 import ActiveButton from "../../../components/Button/ActiveButton";
 import CrudButton from "../../../components/Button/CrudButton";
 import { deleteEntity, getEntity, isActive } from "../../../api/services/entities";
-import { Link } from "react-router-dom";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
@@ -119,15 +118,13 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
               <tr key={index}>
                 <td>{entity.name}</td>
                 <td>
-                  <ActiveButton active={entity.active} onClick={() => pressActive(entity.url, entity.active, entity.name)} />
+                  <ActiveButton active={entity.active} onClick={() => pressActive(entity.url, entity.active, entity.name)} permissions="change_networkentity" />
                 </td>
                 <td>{entity.networks.length}</td>
                 <td>
                   <CrudButton type="read" onClick={() => showEntity(entity.url)} />
-                  <Link to="/entities/edit" state={entity}>
-                    <CrudButton type="edit" onClick={() => storageEntityUrl(entity.url)} />
-                  </Link>
-                  <CrudButton type="delete" onClick={() => Delete(entity.url, entity.name)} />
+                  <CrudButton type="edit" state={entity} to="/entities/edit" onClick={() => storageEntityUrl(entity.url)} checkPermRoute />
+                  <CrudButton type="delete" onClick={() => Delete(entity.url, entity.name)} permissions="delete_networkentity" />
                 </td>
               </tr>
             );
@@ -147,9 +144,7 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                       <span className="d-block m-t-5">{t("ngen.entity_detail")}</span>
                     </Col>
                     <Col sm={12} lg={3}>
-                      <Link to="/entities/edit" state={entity}>
-                        <CrudButton type="edit" />
-                      </Link>
+                      <CrudButton type="edit" state={entity} to="/entities/edit" checkPermRoute />
                       <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                     </Col>
                   </Row>

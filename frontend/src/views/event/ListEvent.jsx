@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Badge, Button, Card, Col, Collapse, Form, Modal, Row } from "react-bootstrap";
 import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
@@ -26,6 +25,7 @@ import { getMinifiedPriority } from "../../api/services/priorities";
 import ModalReadCase from "../case/ModalReadCase";
 import { getMinifiedUser } from "../../api/services/users";
 import { useTranslation } from "react-i18next";
+import PermissionCheck from "components/Auth/PermissionCheck";
 
 const ListEvent = () => {
   const { t } = useTranslation();
@@ -351,7 +351,6 @@ const ListEvent = () => {
       setWordToSearchCase("");
       setUpdatePaginationCase(true);
     });
-
   };
   return (
     <React.Fragment>
@@ -374,38 +373,38 @@ const ListEvent = () => {
               />
             </Col>
             <Col>
-              <Link to="/events/create">
-                <CrudButton type="create" name={t("ngen.event_one")} />
-              </Link>
-              <Button
-                disabled={selectedEvent.length > 1 ? false : true}
-                size="lm"
-                className="text-capitalize"
-                variant="outline-dark"
-                title="Mergear"
-                onClick={() => mergeConfirm()}
-              >
-                <i className="fa fa-code-branch" />
-                {t("ngen.merge")}&nbsp;
-                <Badge className="badge mr-1">{selectedEvent.length}</Badge>
-              </Button>
-              <Button disabled={selectedEvent.length > 0 ? false : true} size="lm" variant="outline-dark" onClick={() => modalCase()}>
-                {t("ngen.case.addto")}
-                <Badge className="badge mr-1">{selectedEvent.length}</Badge>
-              </Button>
-              <Button size="lm" variant="outline-dark" onClick={() => reloadPage()}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-arrow-clockwise"
-                  viewBox="0 0 16 16"
+              <CrudButton type="create" to="/events/create" name={t("ngen.event_one")} checkPermRoute />
+              <PermissionCheck permission="change_event">
+                <Button
+                  disabled={selectedEvent.length > 1 ? false : true}
+                  size="lm"
+                  className="text-capitalize"
+                  variant="outline-dark"
+                  title="Mergear"
+                  onClick={() => mergeConfirm()}
                 >
-                  <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
-                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
-                </svg>
-              </Button>
+                  <i className="fa fa-code-branch" />
+                  {t("ngen.merge")}&nbsp;
+                  <Badge className="badge mr-1">{selectedEvent.length}</Badge>
+                </Button>
+                <Button disabled={selectedEvent.length > 0 ? false : true} size="lm" variant="outline-dark" onClick={() => modalCase()}>
+                  {t("ngen.case.addto")}
+                  <Badge className="badge mr-1">{selectedEvent.length}</Badge>
+                </Button>
+                <Button size="lm" variant="outline-dark" onClick={() => reloadPage()}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-arrow-clockwise"
+                    viewBox="0 0 16 16"
+                  >
+                    <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+                  </svg>
+                </Button>
+              </PermissionCheck>
             </Col>
           </Row>
           <Collapse in={open}>

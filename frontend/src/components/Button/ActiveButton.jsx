@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { currentUserHasPermissions } from "utils/permissions";
 
-const ActiveButton = ({ active, onClick }) => {
+const ActiveButton = ({ active, onClick, permissions }) => {
   const { t } = useTranslation();
 
   const [stateBool, setStateBool] = useState(null);
@@ -11,15 +12,17 @@ const ActiveButton = ({ active, onClick }) => {
     setStateBool(active);
   }, [active]);
 
+  const hasPermission = currentUserHasPermissions(permissions);
+
   return (
     <React.Fragment>
       <Button
-        className="btn-icon btn-rounded"
+        className={"btn-icon btn-rounded" + (hasPermission ? "" : " disabled")}
         variant={stateBool ? "outline-success" : "outline-danger"}
         title={stateBool ? t("w.active") : t("w.inactive")}
-        onClick={onClick}
+        onClick={hasPermission ? onClick : null}
       >
-        <i className={stateBool ? "feather icon-check-circle" : "feather icon-alert-triangle"} />
+        <i className={stateBool ? "feather icon-check" : "feather icon-x"}></i>
       </Button>
     </React.Fragment>
   );

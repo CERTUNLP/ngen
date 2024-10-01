@@ -263,74 +263,39 @@ const TableEvents = ({
                   {!disableColumnCase ? (
                     event.case ? (
                       <td>
-                        <Link to="/cases/view" state={event.case}>
-                          <Button
-                            className="fa fa-eye mx-auto font-weight-light"
-                            variant="outline-primary"
-                            onClick={() => navigateToCase(event.case)}
-                          >
-                            {" " + t("ngen.case_one")}
-                          </Button>
-                        </Link>
+                        <CrudButton type="read" to="/cases/view" state={event.case} onClick={() => navigateToCase(event.case)} text={t("ngen.case_one")} />
                       </td>
                     ) : (
                       <td></td>
-                    ))
-                    : ""
-                  }
+                    )
+                  ) : (
+                    ""
+                  )}
 
                   {!disableColumOption ? (
                     <td>
                       {disableColumView ? (
                         ""
                       ) : (
-                        <Link to="/events/view" state={event}>
-                          <CrudButton type="read" onClick={() => navigateToEvent(event.url)} />
-                        </Link>
+                        <CrudButton type="read" to="/events/view" state={event} onClick={() => navigateToEvent(event.url)} />
                       )}
                       {disableColumOption ? (
                         ""
                       ) : disableColumnEdit ? (
                         ""
-                      ) : event.blocked || event.parent ? (
-                        <CrudButton type="edit" disabled={true} />
                       ) : (
-                        <Link to="/events/edit" state={event}>
-                          <CrudButton type="edit" />
-                        </Link>
+                        <CrudButton type="edit" to="/events/edit" state={event} disabled={event.blocked || event.parent} />
                       )}
                       {disableColumOption ? (
                         ""
                       ) : disableColumnDelete ? (
                         ""
                       ) : deleteColumForm ? (
-                        <CrudButton type="delete" onClick={() => deleteEventFromForm(event.url)} />
+                        <CrudButton type="delete" onClick={() => deleteEventFromForm(event.url)} permissions="delete_event" />
                       ) : (
-                        <CrudButton type="delete" onClick={() => modalDelete(event.name, event.url)} />
+                        <CrudButton type="delete" onClick={() => modalDelete(event.name, event.url)} permissions="delete_event" />
                       )}
-                      {disableTemplate ? (
-                        ""
-                      ) : event.case ? (
-                        <Button
-                          className="btn-icon btn-rounded"
-                          disabled
-                          variant="outline-primary"
-                          style={{
-                            border: "1px solid #555",
-                            borderRadius: "50px",
-                            color: "#555"
-                          }}
-                          onClick={() => console.log("")}
-                        >
-                          <i className="fa fa-plus" aria-hidden="true"></i>
-                        </Button>
-                      ) : (
-                        <Link to="/templates/create" state={event}>
-                          <Button className="btn-icon btn-rounded" variant="outline-primary" onClick={() => console.log("")}>
-                            <i className="fa fa-plus" aria-hidden="true"></i>
-                          </Button>
-                        </Link>
-                      )}
+                      {disableTemplate ? "" : <CrudButton type="plus" to="/templates/create" checkPermRoute disabled={event.case} />}
                     </td>
                   ) : (
                     ""

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Card, Col, Collapse, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import { getNetworks } from "../../api/services/networks";
@@ -111,9 +110,7 @@ const ListNetwork = () => {
                   />
                 </Col>
                 <Col sm={12} lg={3}>
-                  <Link to="/networks/create">
-                    <CrudButton type="create" name={t("ngen.network_one")} />
-                  </Link>
+                  <CrudButton type="create" name={t("ngen.network_one")} to="/networks/create" checkPermRoute />
                 </Col>
               </Row>
               <br />

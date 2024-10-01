@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Card, Col, Collapse, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import TableTemplete from "./components/TableTemplete";
@@ -147,9 +146,7 @@ const ListTemplete = () => {
                   <Search type={t("cidr.domain")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
                 </Col>
                 <Col sm={12} lg={3}>
-                  <Link to="/templates/create">
-                    <CrudButton type="create" name={t("ngen.template")} />
-                  </Link>
+                  <CrudButton type="create" name={t("ngen.template")} to="/templates/create" checkPermRoute />
                 </Col>
               </Row>
               <Collapse in={open}>

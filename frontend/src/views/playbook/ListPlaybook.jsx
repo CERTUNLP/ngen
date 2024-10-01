@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import CrudButton from "../../components/Button/CrudButton";
 import Navigation from "../../components/Navigation/Navigation";
 import TablePlaybook from "./components/TablePlaybook";
@@ -71,9 +70,7 @@ const ListPlaybook = () => {
                   <Search type="playbook" setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
                 </Col>
                 <Col sm={3} lg={3}>
-                  <Link to="/playbooks/create">
-                    <CrudButton type="create" name="Playbook" />
-                  </Link>
+                  <CrudButton type="create" name="Playbook" to="/playbooks/create" checkPermRoute />
                 </Col>
               </Row>
             </Card.Header>

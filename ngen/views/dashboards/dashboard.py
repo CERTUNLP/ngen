@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ngen.views.dashboards.dashboard_presenter import DashboardPresenter
+from ngen.permissions import CustomApiViewPermission
 
 
 class DashboardView(APIView):
@@ -10,7 +11,8 @@ class DashboardView(APIView):
     Parent APIView for the dashboard. Initializes the presenter and validates dates.
     """
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_dashboard"]
 
     def __init__(self):
         self.dashboard_presenter = None

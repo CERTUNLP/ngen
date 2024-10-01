@@ -73,9 +73,7 @@ const listTaxonomyGroups = () => {
                 </Col>
 
                 <Col sm={12} lg={3}>
-                  <Link to="/taxonomyGroups/create">
-                    <CrudButton type="create" name={t("ngen.taxonomyGroup_one")} />
-                  </Link>
+                  <CrudButton type="create" name={t("ngen.taxonomyGroup_one")} to="/taxonomyGroups/create" checkPermRoute />
                 </Col>
               </Row>
             </Card.Header>

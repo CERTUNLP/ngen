@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
-import { Link } from "react-router-dom";
-
 import Alert from "../../../components/Alert/Alert";
 import CallBackendByName from "../../../components/CallBackendByName";
 import { getTaxonomy } from "../../../api/services/taxonomies";
@@ -106,10 +104,8 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
 
                   <td>
                     <CrudButton type="read" onClick={() => showModalReport(report)} />
-                    <Link to="/reports/edit" state={report}>
-                      <CrudButton type="edit" />
-                    </Link>
-                    <CrudButton type="delete" onClick={() => modalDelete(report.url)} />
+                    <CrudButton type="edit" to="/reports/edit" state={report} checkPermRoute />
+                    <CrudButton type="delete" onClick={() => modalDelete(report.url)} permissions="delete_report" />
                   </td>
                 </tr>
               );
@@ -136,9 +132,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                         <span className="d-block m-t-5">{t("ngen.report.detail")}</span>
                       </Col>
                       <Col sm={12} lg={4}>
-                        <Link to="/reports/edit" state={report}>
-                          <CrudButton type="edit" />
-                        </Link>
+                        <CrudButton type="edit" to="/reports/edit" state={report} checkPermRoute />
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                       </Col>
                     </Row>

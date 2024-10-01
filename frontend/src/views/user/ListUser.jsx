@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import TableUsers from "./components/TableUsers";
 import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
@@ -76,9 +75,7 @@ function ListUser() {
               />
             </Col>
             <Col sm={12} lg={3}>
-              <Link to="/users/create">
-                <CrudButton type="create" name={t("ngen.user")} />
-              </Link>
+              <CrudButton type="create" name={t("ngen.user")} to="/users/create" checkPermRoute />
             </Col>
           </Row>
           <Row></Row>

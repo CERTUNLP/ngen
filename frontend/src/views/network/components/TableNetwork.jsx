@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
 import { deleteNetwork, getNetwork, isActive } from "../../../api/services/networks";
-import { Link } from "react-router-dom";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import ActiveButton from "../../../components/Button/ActiveButton";
 import ModalDetailNetwork from "./ModalDetailNetwork";
@@ -134,10 +133,8 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
                 <td>{network.network_entity ? entityNames[network.network_entity] : "-"}</td>
                 <td>
                   <CrudButton type="read" onClick={() => showNetwork(network.url)} />
-                  <Link to="/networks/edit" state={network}>
-                    <CrudButton type="edit" />
-                  </Link>
-                  <CrudButton type="delete" onClick={() => Delete(network.url, network.cidr, network.domain)} />
+                  <CrudButton type="edit" to="/networks/edit" state={network} checkPermRoute />
+                  <CrudButton type="delete" onClick={() => Delete(network.url, network.cidr, network.domain)} permissions="delete_networks" />
                 </td>
               </tr>
             );

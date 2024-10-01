@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Row, Spinner, Table } from "react-bootstrap";
+import { Form, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
 import { deleteCase } from "../../../api/services/cases";
-import { Link } from "react-router-dom";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import Ordering from "../../../components/Ordering/Ordering";
 import LetterFormat from "../../../components/LetterFormat";
@@ -66,7 +65,6 @@ const TableCase = ({
     localStorage.setItem("case", url);
     localStorage.setItem("navigation", navigationRow);
     localStorage.setItem("button return", navigationRow);
-
   };
 
   const handleOnClick = (url) => {
@@ -266,38 +264,17 @@ const TableCase = ({
                       }
                     />
                   ) : (
-                    <Link to="/cases/view" state={caseItem.url}>
-                      <CrudButton type="read" onClick={() => storageCaseUrl(caseItem.url)} />
-                    </Link>
+                    <CrudButton type="read" to="/cases/view" state={caseItem.url} onClick={() => storageCaseUrl(caseItem.url)} />
                   )}
-                  {!disableColumOption &&
-                    editColum &&
-                    (!caseItem.blocked ? (
-                      <Link to="/cases/edit" state={caseItem.url}>
-                        <CrudButton type="edit" />
-                      </Link>
-                    ) : (
-                      <Button
-                        id="button_hover"
-                        className="btn-icon btn-rounded"
-                        variant="outline-warning"
-                        title={t("ngen.case_one") + t("w.solved")}
-                        disabled
-                        style={{
-                          border: "1px solid #555",
-                          borderRadius: "50px",
-                          color: "#555"
-                        }}
-                      >
-                        <i className="fa fa-edit" style={{ color: "#555" }}></i>
-                      </Button>
-                    ))}
+                  {!disableColumOption && editColum && (
+                    <CrudButton type="edit" to="/cases/edit" state={caseItem.url} disabled={caseItem.blocked} checkPermRoute />
+                  )}
                   {!disableColumOption &&
                     deleteColum &&
                     (deleteColumForm ? (
-                      <CrudButton type="delete" onClick={() => deleteCaseFromForm(caseItem.url)} />
+                      <CrudButton type="delete" onClick={() => deleteCaseFromForm(caseItem.url)} permissions="delete_case" />
                     ) : (
-                      <CrudButton type="delete" onClick={() => Delete(caseItem.url)} />
+                      <CrudButton type="delete" onClick={() => Delete(caseItem.url)} permissions="delete_case" />
                     ))}
                 </td>
               </tr>

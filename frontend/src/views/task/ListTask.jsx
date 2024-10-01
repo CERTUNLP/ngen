@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, CloseButton, Col, Collapse, Modal, Row, Table } from "react-bootstrap";
+import { Card, CloseButton, Col, Collapse, Modal, Row, Table } from "react-bootstrap";
 import { getPlaybook } from "../../api/services/playbooks";
 import CrudButton from "../../components/Button/CrudButton";
 import FormCreateTask from "./components/FormCreateTask";
@@ -74,15 +74,7 @@ const ListTask = (props) => {
                   <span className="d-block m-t-5">{t("ngen.tasks.list")}</span>
                 </Col>
                 <Col sm={12} lg={3}>
-                  {props.sectionAddTask ? (
-                    <CrudButton type="create" name={t("ngen.task")} onClick={() => setModalCreate(true)} />
-                  ) : (
-                    <>
-                      <Button variant="outline-primary" disabled>
-                        {t("ngen.tasks.list")}
-                      </Button>
-                    </>
-                  )}
+                  <CrudButton type="create" name={t("ngen.task")} onClick={() => setModalCreate(true)} permissions="add_task" disabled={!props.sectionAddTask} />
                 </Col>
               </Row>
             </Card.Header>
