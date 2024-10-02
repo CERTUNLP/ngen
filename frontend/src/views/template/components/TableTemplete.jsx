@@ -201,7 +201,7 @@ const TableTemplete = ({
                           template.active
                         )
                       }
-                      permissions="change_template"
+                      permissions="change_casetemplate"
                     />
                   </td>
                   <td>{priorityNames[template.priority]}</td>
@@ -271,7 +271,7 @@ const TableTemplete = ({
                           template.url
                         )
                       }
-                      permissions="delete_template"
+                      permissions="delete_casetemplate"
                     />
                   </td>
                 </tr>

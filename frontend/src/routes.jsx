@@ -395,7 +395,7 @@ const routes = [
     path: "/templates",
     layout: AdminLayout,
     guard: PermissionGuard,
-    permissions: ["view_template"],
+    permissions: ["view_casetemplate"],
     element: lazy(() => import("./views/template/ListTemplate"))
   },
   {
@@ -403,7 +403,7 @@ const routes = [
     path: "/templates/create",
     layout: AdminLayout,
     guard: PermissionGuard,
-    permissions: ["add_template"],
+    permissions: ["add_casetemplate"],
     element: lazy(() => import("./views/template/CreateTemplate"))
   },
   {
@@ -411,7 +411,7 @@ const routes = [
     path: "/templates/edit",
     layout: AdminLayout,
     guard: PermissionGuard,
-    permissions: ["change_template"],
+    permissions: ["change_casetemplate"],
     element: lazy(() => import("./views/template/EditTemplate"))
   },
   {
