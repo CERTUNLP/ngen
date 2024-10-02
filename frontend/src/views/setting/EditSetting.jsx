@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
-import Alert from "../../components/Alert/Alert";
-import { getSetting, patchSetting } from "../../api/services/setting";
+import { getSetting, patchSetting, uploadTeamLogo } from "../../api/services/setting";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import { useTranslation } from "react-i18next";
 import CrudButton from "components/Button/CrudButton";
+import UploadButton from "components/Button/UploadButton";
 import PermissionCheck from "components/Auth/PermissionCheck";
 
 const EditSetting = () => {
@@ -80,6 +80,11 @@ const EditSetting = () => {
       });
   };
 
+  const uploadHandler = (event) => {
+    const file = event.target.files[0];
+    uploadTeamLogo(file)
+  };
+
   const completeField = (event, url) => {
     const newValue = event.target.value;
     const updatedList = list.map((item) => {
@@ -142,7 +147,11 @@ const EditSetting = () => {
                       </td>
                       <PermissionCheck permissions="change_constance">
                         <td>
-                          <CrudButton type="save" variant="outline-warning" onClick={() => PatchSetting(setting.url)} text={t("button.save")} />
+                          {setting.key !== "TEAM_LOGO" ? (
+                            <CrudButton type="save" variant="outline-warning" onClick={() => PatchSetting(setting.url)} text={t("button.save")} />
+                          ) : (
+                            <UploadButton variant="outline-warning" text={t("w.upload")} uploadHandler={uploadHandler} />
+                          )}
                         </td>
                       </PermissionCheck>
                     </tr>

@@ -1,3 +1,4 @@
+import os
 import constance
 from auditlog.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
@@ -5,6 +6,8 @@ from django.views.generic import TemplateView
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser
+from constance import config
 
 from ngen import models, serializers
 from ngen.utils import get_settings
@@ -13,6 +16,7 @@ from ngen.permissions import (
     CustomMethodApiViewPermission,
     CustomModelPermissions,
 )
+from project import settings
 
 
 class AboutView(TemplateView):
@@ -170,3 +174,23 @@ class UserAuditsListView(viewsets.ModelViewSet):
         user_pk = self.kwargs.get("pk")
         content_type = ContentType.objects.get_for_model(models.User)
         return LogEntry.objects.filter(content_type=content_type, object_id=user_pk)
+
+
+class TeamLogoFileUploadView(APIView):
+    parser_classes = (MultiPartParser,)
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.change_constance"]
+
+    def put(self, request, format=None):
+        file_obj = request.data["file"]
+
+        # destination = settings.LOGO_PATH
+        destination = os.path.join(settings.LOGO_PATH)
+
+        with open(destination, "wb+") as file:
+            for chunk in file_obj.chunks():
+                file.write(chunk)
+
+        config.TEAM_LOGO = destination
+
+        return Response(status=204)

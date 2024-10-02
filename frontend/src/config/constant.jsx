@@ -64,6 +64,7 @@ export const COMPONENT_URL = {
   dashboardCases: "dashboard/cases",
   dashboardNetworkEntities: "dashboard/network_entities",
   constance: "constance/",
+  constanceUploadTeamLogo: "constance/upload/team_logo",
   profile: "profile/",
   apikey: "token/simple/",
   networkadminEvent: "networkadmin/event/",

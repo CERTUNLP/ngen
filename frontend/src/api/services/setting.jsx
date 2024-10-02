@@ -79,4 +79,25 @@ const settingPageSize = () => {
     });
 };
 
-export { getAllSetting, patchSetting, getSetting, settingPageSize };
+const uploadTeamLogo = (file) => {
+  let messageSuccess = `Logo del equipo subido con exito.`;
+  let messageError = `No se ha podido subir el logo del equipo. `;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return apiInstance
+    .put(COMPONENT_URL.constanceUploadTeamLogo, formData)
+    .then((response) => {
+      setAlert(messageSuccess, "success", "team");
+      return response;
+    })
+    .catch((error) => {
+      let statusText = error.response.statusText;
+      messageError += statusText;
+      setAlert(messageError, "error", "team");
+      return Promise.reject(error);
+    });
+}
+
+export { getAllSetting, patchSetting, getSetting, settingPageSize, uploadTeamLogo };

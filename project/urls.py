@@ -221,6 +221,10 @@ urlpatterns = [
         views.dashboards.network_entities.DashboardNetworkEntitiesView.as_view(),
         name="dashboard-network-entities",
     ),
+    path(
+        "api/constance/upload/team_logo",
+        views.TeamLogoFileUploadView.as_view(),
+    ),
 ]
 
 if not settings.ELASTIC_ENABLED:

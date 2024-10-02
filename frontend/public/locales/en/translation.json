@@ -455,6 +455,7 @@
   "w.solved.no": "Not solved",
   "w.text.as.html": "The following text will be parsed as HTML code.",
   "w.update": "Update",
+  "w.upload": "Upload",
   "w.validate.character": "Enter only valid characters",
   "w.validate.numbers": "Please enter only numbers",
   "w.validateDesc": "Enter a description that contains up to 250 characters, and its not empty",
