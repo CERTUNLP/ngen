@@ -268,7 +268,7 @@ const TableCase = ({
                     <CrudButton type="read" to={basePath + "/cases/view"} state={caseItem.url} onClick={() => storageCaseUrl(caseItem.url)} />
                   )}
                   {!disableColumOption && editColum && (
-                    <CrudButton type="edit" to={basePath + "/cases/edit"} state={caseItem.url} disabled={caseItem.blocked} checkPermRoute />
+                    <CrudButton type="edit" to={basePath + "/cases/edit"} state={caseItem.url} checkPermRoute />
                   )}
                   {!disableColumOption &&
                     deleteColum &&
