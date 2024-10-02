@@ -57,12 +57,12 @@ class ConstanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ConstanceSerializer
     permission_classes = [CustomMethodApiViewPermission]
     required_permissions = {
-        "GET": ["ngen.view_constance"],
-        "HEAD": ["ngen.view_constance"],
-        "POST": ["ngen.add_constance"],
-        "PUT": ["ngen.change_constance"],
-        "PATCH": ["ngen.change_constance"],
-        "DELETE": ["delete_constance"],
+        "GET": ["constance.view_constance"],
+        "HEAD": ["constance.view_constance"],
+        "POST": ["constance.add_constance"],
+        "PUT": ["constance.change_constance"],
+        "PATCH": ["constance.change_constance"],
+        "DELETE": ["constance.delete_constance"],
     }
     lookup_field = "key"
     lookup_value_regex = "[A-Za-z_][A-Za-z0-9_]*"
@@ -125,7 +125,7 @@ class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
     lookup_field = "key"
     lookup_value_regex = "[A-Za-z_][A-Za-z0-9_]*"
-    valid_keys = ["NGEN_LANG", "NGEN_LANG_EXTERNAL"]
+    valid_keys = ["NGEN_LANG", "NGEN_LANG_EXTERNAL", "PAGE_SIZE"]
 
     def get_queryset(self):
         """GET - List all instances"""

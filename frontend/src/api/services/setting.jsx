@@ -67,7 +67,7 @@ const settingPageSize = () => {
 
   let messageError = `No se pudo recuperar la información del tamaño de página`;
   return apiInstance
-    .get(COMPONENT_URL.constance + PAGE_SIZE)
+    .get(COMPONENT_URL.configPublic + PAGE_SIZE)
     .then((response) => {
       // Almacenar en localStorage
       localStorage.setItem(cacheKey, response.data.value);

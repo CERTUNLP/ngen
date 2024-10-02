@@ -70,6 +70,7 @@ class CustomMethodApiViewPermission(BasePermission):
     def has_permission(self, request, view):
         required_permissions = getattr(view, "required_permissions", {})
         method = request.method
+
         for perm in required_permissions.get(method, []):
             if not request.user.has_perm(perm):
                 return False
