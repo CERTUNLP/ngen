@@ -29,8 +29,8 @@ const ViewFiles = (props) => {
   const [showAlert, setShowAlert] = useState(false);
 
   const openFile = () => {
-    if (props.file.url) {
-      window.open(props.file.file, props.index);
+    if (props.file?.url) {
+      window.open(props.file?.file, props.index);
     }
   };
 
@@ -61,9 +61,13 @@ const ViewFiles = (props) => {
     }
   };
 
-  const fileIcon = getFileIcon(props.file.mime, props.file.type);
+  const fileIcon = getFileIcon(props.file?.mime, props.file?.type);
 
   const { t } = useTranslation();
+
+  if (props.file === undefined) {
+    return <></>;
+  }
 
   return (
     <>
@@ -79,24 +83,24 @@ const ViewFiles = (props) => {
       <Card className="file-card">
         <Card.Body>
           <div className="file-info">
-            <div onClick={props.file.url ? openFile : null} className={`file-details ${props.file.url ? "" : "disabled"}`}>
+            <div onClick={props.file?.url ? openFile : null} className={`file-details ${props.file?.url ? "" : "disabled"}`}>
               <i className={`${fileIcon} file-icon`}></i>
               <div>
                 <p className="file-name">
-                  {props.file.original_filename
-                    ? props.file.original_filename.slice(0, 20) + "... "
-                    : "" || props.file.name
-                      ? props.file.name.slice(0, 20) + "... "
+                  {props.file?.original_filename
+                    ? props.file?.original_filename.slice(0, 20) + "... "
+                    : "" || props.file?.name
+                      ? props.file?.name.slice(0, 20) + "... "
                       : ""}
                 </p>
-                <p className="file-meta">Mime: {props.file.mime || props.file.type}</p>
+                <p className="file-meta">Mime: {props.file?.mime || props.file?.type}</p>
                 <p className="file-meta">
-                  {t("w.size")}: {props.file.size} Bytes
+                  {t("w.size")}: {props.file?.size} Bytes
                 </p>
                 <p className="file-meta">
                   {t("date.creation")}:&nbsp;
-                  {props.file.created
-                    ? props.file.created.slice(0, 10) + " " + props.file.created.slice(11, 19)
+                  {props.file?.created
+                    ? props.file?.created.slice(0, 10) + " " + props.file?.created.slice(11, 19)
                     : t("ngen.not.created.in.system")}
                 </p>
               </div>
@@ -109,7 +113,7 @@ const ViewFiles = (props) => {
                 className="btn-icon btn-rounded delete-button"
                 variant="outline-danger"
                 title={"Eliminar evidencia " + props.index}
-                onClick={() => deleteFile(props.file.original_filename || props.file.name)}
+                onClick={() => deleteFile(props.file?.original_filename || props.file?.name)}
               >
                 <i className="fas fa-trash-alt" />
               </Button>

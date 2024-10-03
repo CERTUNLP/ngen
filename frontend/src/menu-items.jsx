@@ -1,5 +1,5 @@
 import { logout } from "./api/services/auth";
-import { userIsNetworkAdmin } from "utils/permissions";
+// import { getCurrentUser } from "utils/permissions";
 
 const menuItems = {
   items: [

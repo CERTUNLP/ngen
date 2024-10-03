@@ -280,7 +280,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                                   <Form.Control
                                     plaintext
                                     readOnly
-                                    defaultValue={user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19)}
+                                    defaultValue={user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}
                                   />
                                 </td>
                               </tr>

@@ -92,8 +92,8 @@ const ReadEvent = ({ routeParams }) => {
           const responses = await Promise.all(
             children.map((child) => Promise.all(child.evidence.map((url) => getEvidence(url)))
             ));
-          // Extraer los datos de las respuestas
-          const data = responses.map((response) => response[0]?.data);
+          // Extraer los datos de las respuestas y filtrar los elementos vacíos
+          const data = responses.map((response) => response[0]?.data).filter((evidence) => evidence !== undefined);
           // Actualizar el estado con los datos de todas las evidencias de los eventos hijos
           setChildrenEvidences(data);
         } catch (error) {
