@@ -49,7 +49,7 @@ const getAllContacts = (currentPage = 1, results = [], limit = 100) => {
     });
 };
 
-const postContact = (name, username, public_key, type, role, priority, user) => {
+const postContact = (name, username, public_key, type, role, priority, user, networks) => {
   let messageSuccess = `El contacto ${name} se ha creado correctamente.`;
   let messageError = `El contacto ${name} no se ha creado. `;
   return apiInstance
@@ -60,7 +60,8 @@ const postContact = (name, username, public_key, type, role, priority, user) => 
       type: type,
       role: role,
       priority: priority,
-      user: user
+      user: user,
+      networks: networks
     })
     .then((response) => {
       setAlert(messageSuccess, "success", "contact");
@@ -85,6 +86,31 @@ const putContact = (url, name, username, public_key, type, role, priority, user)
   let messageError = `El contacto ${name} no se ha editado. `;
   return apiInstance
     .put(url, {
+      name: name,
+      username: username,
+      public_key: public_key,
+      type: type,
+      role: role,
+      priority: priority,
+      user: user
+    })
+    .then((response) => {
+      setAlert(messageSuccess, "success", "contact");
+      return response;
+    })
+    .catch((error) => {
+      let statusText = error.response.statusText;
+      messageError += statusText;
+      setAlert(messageError, "error", "contact");
+      return Promise.reject(error);
+    });
+};
+
+const patchContact = (url, name, username, public_key, type, role, priority, user) => {
+  let messageSuccess = `El contacto ${name} se ha editado correctamente.`;
+  let messageError = `El contacto ${name} no se ha editado. `;
+  return apiInstance
+    .patch(url, {
       name: name,
       username: username,
       public_key: public_key,
@@ -135,4 +161,4 @@ const getMinifiedContact = () => {
     });
 };
 
-export { getContacts, getAllContacts, getContact, postContact, putContact, deleteContact, getMinifiedContact };
+export { getContacts, getAllContacts, getContact, postContact, putContact, patchContact, deleteContact, getMinifiedContact };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card, Col, Row } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
-import { getContact, putContact } from "../../api/services/contacts";
+import { getContact, patchContact } from "../../api/services/contacts";
 import FormCreateContact from "./components/FormCreateContact";
 import { useTranslation } from "react-i18next";
 
@@ -18,6 +18,7 @@ const EditContact = () => {
   const [supportedPriority, setSupportedPriority] = useState("");
   const [supportedContact, setSupportedContact] = useState("");
   const [supportedKey, setSupportedKey] = useState("");
+  const [networks, setNetworks] = useState([]);
   const [selectType, setSelectType] = useState("");
   const [user, setUser] = useState("");
 
@@ -44,7 +45,7 @@ const EditContact = () => {
   }, [contact]);
 
   const editContact = () => {
-    putContact(contact.url, supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority, user)
+    patchContact(contact.url, supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority, user)
       .then((response) => {
       })
       .catch(() => {
