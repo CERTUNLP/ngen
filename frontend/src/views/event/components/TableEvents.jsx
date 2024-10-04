@@ -302,7 +302,7 @@ const TableEvents = ({
                       ) : (
                         <CrudButton type="delete" onClick={() => modalDelete(event.name, event.url)} permissions="delete_event" />
                       )}
-                      {disableTemplate ? "" : <CrudButton type="plus" to={basePath + "/templates/create"} checkPermRoute disabled={event.case} />}
+                      {disableTemplate ? "" : <CrudButton type="plus" to={basePath + "/templates/create"}state={event} checkPermRoute disabled={event.case} />}
                     </td>
                   ) : (
                     ""
