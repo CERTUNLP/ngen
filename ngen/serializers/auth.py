@@ -93,12 +93,24 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return rep
 
     def create(self, validated_data):
+        groups_data = validated_data.pop("groups", None)
+        permissions_data = validated_data.pop("user_permissions", None)
         password = validated_data.pop("password", None)
+
         instance = self.Meta.model(**validated_data)
+
         if password:
             password_validation(password)
             instance.set_password(password)
+
         instance.save()
+
+        if permissions_data is not None:
+            instance.user_permissions.set(permissions_data)
+
+        if groups_data is not None:
+            instance.groups.set(groups_data)
+
         return instance
 
     def update(self, instance, validated_data):

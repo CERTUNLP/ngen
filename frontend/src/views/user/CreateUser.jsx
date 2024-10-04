@@ -50,7 +50,17 @@ const AddUser = () => {
   };
 
   const createUser = (e) => {
-    postUser(body.username, body.first_name, body.last_name, body.email, body.priority, body.is_active, body.password)
+    postUser(
+      body.username,
+      body.first_name,
+      body.last_name,
+      body.email,
+      body.priority,
+      body.is_active,
+      body.password,
+      body.groups,
+      body.user_permissions
+    )
       .then(() => {
         window.location.href = "/users";
       })

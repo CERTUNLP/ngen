@@ -212,19 +212,21 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
         <Col sm={12} lg={6}>
           <Form.Label>{t("w.groups")}</Form.Label>
           <DualListBox
+            key={"groups"}
             canFilter
             options={optionGroups}
             selected={body.groups || []}
-            onChange={(newPermissions) => setBody({ ...body, groups: newPermissions })}
+            onChange={(newGroups) => setBody((prevBody) => ({ ...prevBody, groups: newGroups }))}
           />
         </Col>
         <Col sm={12} lg={6}>
           <Form.Label>{t("w.permissions")}</Form.Label>
           <DualListBox
+            key={"permissions"}
             canFilter
             options={optionPermissions}
             selected={body.user_permissions || []}
-            onChange={(newPermissions) => setBody({ ...body, user_permissions: newPermissions })}
+            onChange={(newPermissions) => setBody((prevBody) => ({ ...prevBody, user_permissions: newPermissions }))}
           />
         </Col>
       </Row>

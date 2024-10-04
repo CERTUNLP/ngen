@@ -45,8 +45,12 @@ const userIsNetworkAdmin = () => {
 };
 
 const getCurrentUser = () => {
-  const state = store.getState();
-  return state.account?.user || {};
+  return getCurrentAccount()?.user || {};
 };
 
-export { currentUserHasPermissions, currentUserHasPermissionsRoute, routePermissions, userIsNetworkAdmin, getCurrentUser };
+const getCurrentAccount = () => {
+  const state = store.getState();
+  return state.account || {};
+};
+
+export { currentUserHasPermissions, currentUserHasPermissionsRoute, routePermissions, userIsNetworkAdmin, getCurrentUser, getCurrentAccount };
