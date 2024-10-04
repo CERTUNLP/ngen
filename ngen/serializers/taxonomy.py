@@ -33,16 +33,24 @@ class TaxonomyGroupSerializer(AuditSerializerMixin):
 class ReportSerializer(AuditSerializerMixin):
     problem = CharField(style={"base_template": "textarea.html", "rows": 10})
     derived_problem = CharField(
-        style={"base_template": "textarea.html", "rows": 10}, allow_null=True
+        style={"base_template": "textarea.html", "rows": 10},
+        allow_null=True,
+        allow_blank=True,
     )
     verification = CharField(
-        style={"base_template": "textarea.html", "rows": 10}, allow_null=True
+        style={"base_template": "textarea.html", "rows": 10},
+        allow_null=True,
+        allow_blank=True,
     )
     recommendations = CharField(
-        style={"base_template": "textarea.html", "rows": 10}, allow_null=True
+        style={"base_template": "textarea.html", "rows": 10},
+        allow_null=True,
+        allow_blank=True,
     )
     more_information = CharField(
-        style={"base_template": "textarea.html", "rows": 10}, allow_null=True
+        style={"base_template": "textarea.html", "rows": 10},
+        allow_null=True,
+        allow_blank=True,
     )
 
     class Meta:
