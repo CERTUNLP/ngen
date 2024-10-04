@@ -183,6 +183,12 @@ class Case(
             attachments.append(
                 {"name": evidence.attachment_name, "file": evidence.file}
             )
+        if self._temp_events:
+            for event in self._temp_events:
+                for evidence in event.evidence.all():
+                    attachments.append(
+                        {"name": evidence.attachment_name, "file": evidence.file}
+                    )
         return attachments
 
     @property
