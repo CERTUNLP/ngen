@@ -36,7 +36,6 @@ const ReadEvent = ({ routeParams }) => {
   useEffect(() => {
     if (!eventItem) {
       const event = localStorage.getItem("event");
-      console.log("event", event);
       getEvent(event)
         .then((responsive) => {
           setBody(responsive.data);
