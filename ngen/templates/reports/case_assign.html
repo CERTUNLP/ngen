@@ -13,5 +13,8 @@
                 A new event has been added to the case {{ id }}
             {% endblocktranslate %}
         </p>
+        {% for event in events %}
+            {% include "reports/event_detail.html" with event=event %}
+        {% endfor %}
     {% endblock %}
 {% endlanguage %}
