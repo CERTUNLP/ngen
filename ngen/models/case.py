@@ -178,6 +178,7 @@ class Case(
 
     @property
     def email_attachments(self) -> list[dict]:
+        # DEPRECATED: Use get_attachments_for_events instead
         attachments = []
         for evidence in self.evidence_all:
             attachments.append(
@@ -189,6 +190,15 @@ class Case(
                     attachments.append(
                         {"name": evidence.attachment_name, "file": evidence.file}
                     )
+        return attachments
+
+    def get_attachments_for_events(self, events):
+        attachments = []
+        for event in events:
+            for evidence in event.evidence.all():
+                attachments.append(
+                    {"name": evidence.attachment_name, "file": evidence.file}
+                )
         return attachments
 
     @property
@@ -346,7 +356,7 @@ class Case(
                 self.subject(title),
                 self.render_template(template, extra_params=template_params),
                 recipients,
-                self.email_attachments,
+                self.get_attachments_for_events(events),
                 self.email_headers,
             )
         else:
@@ -543,6 +553,7 @@ class Event(
             for task in playbook.tasks.all():
                 self.tasks.add(task)
 
+    @hook(AFTER_CREATE)
     @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
     def case_assign_communication(self):
         if self.case.events.count() >= 1:
