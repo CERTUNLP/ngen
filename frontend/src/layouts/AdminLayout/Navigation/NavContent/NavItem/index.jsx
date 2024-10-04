@@ -18,9 +18,9 @@ const NavItem = ({ item }) => {
   const { dispatch } = configContext;
   const { t } = useTranslation();
 
-  let itemTitle = t(item.title);
+  let itemTitle = item.titleRaw || t(item.title);
   if (item.icon) {
-    itemTitle = <span className="pcoded-mtext">{t(item.title)}</span>;
+    itemTitle = <span className="pcoded-mtext">{itemTitle}</span>;
   }
 
   let itemTarget = "";

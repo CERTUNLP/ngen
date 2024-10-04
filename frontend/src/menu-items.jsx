@@ -1,5 +1,5 @@
 import { logout } from "./api/services/auth";
-// import { getCurrentUser } from "utils/permissions";
+import { getCurrentUser } from "utils/permissions";
 
 const menuItems = {
   items: [
@@ -242,6 +242,7 @@ const menuItems = {
       children: [
         {
           id: "profile",
+          titleRaw: getCurrentUser().first_name,
           title: "menu.profile",
           type: "item",
           url: "/profile",
