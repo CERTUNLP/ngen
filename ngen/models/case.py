@@ -179,27 +179,30 @@ class Case(
     @property
     def email_attachments(self) -> list[dict]:
         # DEPRECATED: Use get_attachments_for_events instead
-        attachments = []
+        attachments = {}
         for evidence in self.evidence_all:
-            attachments.append(
-                {"name": evidence.attachment_name, "file": evidence.file}
-            )
+            attachments[evidence.id] = {
+                "name": evidence.attachment_name,
+                "file": evidence.file,
+            }
         if self._temp_events:
             for event in self._temp_events:
                 for evidence in event.evidence.all():
-                    attachments.append(
-                        {"name": evidence.attachment_name, "file": evidence.file}
-                    )
-        return attachments
+                    attachments[evidence.id] = {
+                        "name": evidence.attachment_name,
+                        "file": evidence.file,
+                    }
+        return attachments.values()
 
     def get_attachments_for_events(self, events):
-        attachments = []
+        attachments = {}
         for event in events:
             for evidence in event.evidence.all():
-                attachments.append(
-                    {"name": evidence.attachment_name, "file": evidence.file}
-                )
-        return attachments
+                attachments[evidence.id] = {
+                    "name": evidence.attachment_name,
+                    "file": evidence.file,
+                }
+        return attachments.values()
 
     @property
     def assigned_email(self):
@@ -556,7 +559,10 @@ class Event(
     @hook(AFTER_CREATE)
     @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
     def case_assign_communication(self):
-        if self.case.events.count() >= 1:
+        # this will not be triggered if is event creation and case was created by
+        # a CaseTemplate, because the case is created after the event and
+        # self.case is None
+        if self.case and self.case.events.count() >= 1:
             self.case.communicate(
                 gettext_lazy("New event on case"),
                 "reports/case_assign.html",
