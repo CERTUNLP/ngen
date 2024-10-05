@@ -217,9 +217,6 @@ class CaseSerializer(
     state = SlugOrHyperlinkedRelatedField(
         slug_field="slug", queryset=models.State.objects.all(), view_name="state-detail"
     )
-    template_creator = serializers.HyperlinkedRelatedField(
-        read_only=True, view_name="casetemplate-detail"
-    )
 
     class Meta:
         model = models.Case
@@ -248,7 +245,7 @@ class CaseSerializer(
             "parent",
             "priority",
             "tlp",
-            "template_creator",
+            "casetemplate_creator",
             "assigned",
             "blocked",
             "merged",

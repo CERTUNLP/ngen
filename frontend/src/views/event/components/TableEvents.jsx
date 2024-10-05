@@ -238,7 +238,7 @@ const TableEvents = ({
                   <td>{event.address_value}</td>
                   {!disableTlp && (
                     <td>
-                      <LetterFormat useBadge={true} stringToDisplay={tlpNames[event.tlp].name} color={tlpNames[event.tlp].color} />
+                      <LetterFormat useBadge={true} stringToDisplay={tlpNames && event?.tlp ? tlpNames[event.tlp].name : ""} color={tlpNames && event?.tlp ? tlpNames[event.tlp].color : ""} />
                     </td>
                   )}
                   {!disableMerged && event.parent ? (
