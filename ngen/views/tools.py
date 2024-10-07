@@ -2,12 +2,14 @@ import os
 import constance
 from auditlog.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
 from django.views.generic import TemplateView
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from constance import config
+from celery.result import AsyncResult
 
 from ngen import models, serializers
 from ngen.utils import get_settings
@@ -17,6 +19,7 @@ from ngen.permissions import (
     CustomModelPermissions,
 )
 from project import settings
+from ngen.tasks import whois_lookup_task
 
 
 class AboutView(TemplateView):
@@ -194,3 +197,54 @@ class TeamLogoFileUploadView(APIView):
         config.TEAM_LOGO = destination
 
         return Response(status=204)
+
+
+class WhoisLookupView(APIView):
+    """
+    Inicia la tarea de búsqueda WHOIS y devuelve el ID de la tarea.
+    """
+
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, ip_or_domain):
+        task = whois_lookup_task.delay(ip_or_domain)
+        return Response(
+            {
+                "task_id": task.id,
+                "url": request.build_absolute_uri(
+                    reverse("task_status", args=[task.id])
+                ),
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
+
+
+class TaskStatusView(APIView):
+    """
+    Consulta el estado de la tarea dada su ID.
+    """
+
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, task_id):
+        task_result = AsyncResult(task_id)
+
+        if task_result.state == "PENDING":
+            return Response({"status": "Pending"}, status=status.HTTP_200_OK)
+        elif task_result.state != "FAILURE":
+            return Response(
+                {
+                    "status": task_result.state,
+                    "result": task_result.result,
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            # Error al ejecutar la tarea
+            return Response(
+                {
+                    "status": task_result.state,
+                    "error": str(task_result.result),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

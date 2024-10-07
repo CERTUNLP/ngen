@@ -225,6 +225,14 @@ urlpatterns = [
         "api/constance/upload/team_logo",
         views.TeamLogoFileUploadView.as_view(),
     ),
+    path(
+        "api/lookup/<str:ip_or_domain>/",
+        views.WhoisLookupView.as_view(),
+        name="whois_lookup",
+    ),
+    path(
+        "api/result/<str:task_id>/", views.TaskStatusView.as_view(), name="task_status"
+    ),
 ]
 
 if not settings.ELASTIC_ENABLED:
