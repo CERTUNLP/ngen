@@ -38,6 +38,11 @@ def encode_static(path, encoding="base64", file_type="image"):
         return ""
 
 
+@register.simple_tag
+def get_encoded_logo():
+    return encode_static(settings.LOGO_WIDE_PATH)
+
+
 def get_file_data(file_path):
     with open(file_path, "rb") as f:
         data = f.read()
