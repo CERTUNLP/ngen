@@ -17,7 +17,9 @@
             {{ event.date | date:"Y-m-d H:i:s" }} UTC</small>
         <br>
     {% endlanguage %}
-    {% for report in event.taxonomy.get_ancestors_reports %}
+
+    {% get_matching_report event.taxonomy lang|default:config.NGEN_LANG as reports %}
+    {% for report in reports %}
         {% if report.lang == lang|default:config.NGEN_LANG %}
             {% language lang %}
                 <table bgcolor="">
@@ -62,10 +64,6 @@
                     </tr>
                 </table>
             {% endlanguage %}
-
-            <!-- Lang found -->
-            {% with found=true %}
-            {% endwith %}
         {% endif %}
     {% endfor %}
 </div>
