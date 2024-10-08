@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Form, Row, Table, Modal, Button } from "react-bootstrap";
 import { getProfile, getApiKey } from "../../api/services/profile";
-import { getGroup } from "../../api/services/groups";
-import { getPermission } from "../../api/services/permissions";
+// import { getGroup } from "../../api/services/groups";
+// import { getPermission } from "../../api/services/permissions";
 import FormGetName from "../../components/Form/FormGetName";
-import { getPriority } from "../../api/services/priorities";
+// import { getPriority } from "../../api/services/priorities";
+import { getMinifiedPermissions } from "../../api/services/permissions";
+import { getMinifiedGroups } from "api/services/groups";
+import { getMinifiedPriority } from "api/services/priorities";
 import ActiveButton from "../../components/Button/ActiveButton";
 import { useTranslation } from "react-i18next";
 import ModalChangePassword from "./components/ModalChangePassword";
@@ -13,6 +16,9 @@ const Profile = () => {
   const [profile, setProfile] = useState([]);
   const [apikey, setApikey] = useState("");
   const [password, setPassword] = useState("");
+  const [groups, setGroups] = useState([]);
+  const [permissions, setPermissions] = useState([]);
+  const [priorities, setPriorities] = useState([]);
   const [show, setShow] = useState(false);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
 
@@ -29,6 +35,30 @@ const Profile = () => {
     getProfile()
       .then((response) => {
         setProfile(response.data[0]);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    getMinifiedGroups()
+      .then((response) => {
+        setGroups(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    getMinifiedPermissions()
+      .then((response) => {
+        setPermissions(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    getMinifiedPriority()
+      .then((response) => {
+        setPriorities(response);
       })
       .catch((error) => {
         console.log(error);
@@ -200,7 +230,11 @@ const Profile = () => {
                     <tr>
                       <td>{t("ngen.priority_one")}</td>
                       <td>
-                        <FormGetName form={true} get={getPriority} url={profile.priority} key={1} />
+                        <Form.Control
+                          plaintext
+                          readOnly
+                          defaultValue={priorities?.find((priority) => priority.url === profile.priority).name}
+                        />
                       </td>
                     </tr>
                   ) : (
@@ -212,7 +246,7 @@ const Profile = () => {
                       <td>{t("w.groups")}</td>
                       <td>
                         {Object.values(profile.groups).map((groupItem, index) => {
-                          return <FormGetName form={true} get={getGroup} url={groupItem} key={index} />;
+                          return <Form.Control plaintext readOnly defaultValue={groups?.find((item) => item.url === groupItem).name} key={index} />;
                         })}
                       </td>
                     </tr>
@@ -224,7 +258,7 @@ const Profile = () => {
                       <td>{t("w.permissions")}</td>
                       <td>
                         {Object.values(profile.user_permissions).map((permissionItem, index) => {
-                          return <FormGetName form={true} get={getPermission} url={permissionItem} key={index} />;
+                          return <Form.Control plaintext readOnly defaultValue={permissions?.find((item) => item.url === permissionItem).name} key={index} />;
                         })}
                       </td>
                     </tr>
