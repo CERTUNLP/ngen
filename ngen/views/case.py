@@ -213,7 +213,11 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         return queryset
 
     @action(
-        methods=["GET"], detail=True, url_path="create-cases", url_name="create_cases"
+        methods=["POST"],
+        detail=True,
+        url_path="create-cases",
+        url_name="create_cases",
+        permission_classes=[CustomModelPermissions],
     )
     def create_cases(self, request, pk=None):
         """
