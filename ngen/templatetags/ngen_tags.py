@@ -45,7 +45,11 @@ def get_encoded_logo():
 
 @register.simple_tag
 def get_matching_report(taxonomy, lang):
-    return [r for r in taxonomy.get_ancestors_reports() if r.lang == lang][:1]
+    rep = taxonomy.reports.filter(lang=lang)
+    if rep.exists():
+        return rep[:1]
+    else:
+        return [r for r in taxonomy.get_ancestors_reports() if r.lang == lang][:1]
 
 
 def get_file_data(file_path):

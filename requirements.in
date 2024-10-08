@@ -42,3 +42,4 @@ flower>=2.0.1
 gunicorn>=23.0.0
 python-whois>=0.9.4
 whoisit>=3.0.4
+publicsuffix2>=2.20191221
