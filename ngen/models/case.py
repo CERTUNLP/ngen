@@ -555,6 +555,10 @@ class Event(
         for playbook in self.taxonomy.playbooks.all():
             for task in playbook.tasks.all():
                 self.tasks.add(task)
+        # Update taxonomy of children
+        for child in self.children.all():
+            child.taxonomy = self.taxonomy
+            child.save()
 
     @hook(AFTER_CREATE)
     @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)

@@ -417,7 +417,6 @@ const FormEvent = (props) => {
                   placeholder={t("ngen.taxonomy.one.select")}
                   setOption={setSelectTaxonomy}
                   required={true}
-                  disabled={props.body.children.length > 0 && props.body.children.length > 0 ? true : false}
                 />
               </Col>
             </Row>
