@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 const Signin1 = () => {
   const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
+  const [signup, setSignup] = useState(false);
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -20,18 +21,19 @@ const Signin1 = () => {
 
   useEffect(() => {
     const external = localStorage.getItem("API_SERVER");
+    setSignup(localStorage.getItem("enable_signup") === "true");
 
     if (external) {
-      fetch(external, { mode: 'cors' }) // Usar 'cors' en lugar de 'no-cors'
-        .then(response => {
+      fetch(external, { mode: "cors" }) // Usar 'cors' en lugar de 'no-cors'
+        .then((response) => {
           if (response.ok) {
             console.log("Connection to backend successful");
           } else {
             setAlert("Network response was not ok", "error", "login");
-            throw new Error('Network response was not ok');
+            throw new Error("Network response was not ok");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error connecting to backend:", error);
           setAlert("Error connecting to backend: " + error.message, "error", "login");
         })
@@ -44,7 +46,6 @@ const Signin1 = () => {
       setShowAlert(true);
     }
   }, []); // El array vacío asegura que useEffect solo se ejecute una vez al montar el componente
-
 
   return (
     <React.Fragment>
@@ -61,7 +62,12 @@ const Signin1 = () => {
           <Card className="borderless text-center">
             <Card.Body>
               <div className="mb-4">
-                <img src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv.png"} alt="NGEN" className="logo" id="teamlogo_login" />
+                <img
+                  src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv.png"}
+                  alt="NGEN"
+                  className="logo"
+                  id="teamlogo_login"
+                />
               </div>
 
               <div className="mb-4">
@@ -70,14 +76,19 @@ const Signin1 = () => {
 
               <RestLogin />
 
-              <p className="mb-0 text-muted">
-                {t("login.do_not_have_an_account")}&nbsp;
-                <NavLink to="/auth/signup" className="f-w-400">
-                  {t("button.signup")}
-                </NavLink>
-              </p>
+              {signup && (
+                <>
+                  <hr />
+                  <p className="mb-0 text-muted">
+                    {t("login.do_not_have_an_account")}&nbsp;
+                    <NavLink to="/auth/signup" className="f-w-400">
+                      {t("button.signup")}
+                    </NavLink>
+                  </p>
+                  <br />
+                </>
+              )}
 
-              <br />
             </Card.Body>
           </Card>
         </div>
