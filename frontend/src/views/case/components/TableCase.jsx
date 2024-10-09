@@ -187,6 +187,11 @@ const TableCase = ({
         </thead>
         <tbody>
           {list.map((caseItem, index) => {
+            if (!caseItem) {
+              // fixes some rendering issues
+              return null;
+            }
+
             return (
               <tr key={index}>
                 {!disableCheckbox && (
