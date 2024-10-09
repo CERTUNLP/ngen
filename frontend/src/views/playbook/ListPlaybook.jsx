@@ -63,7 +63,7 @@ const ListPlaybook = () => {
             <Card.Header>
               <Row>
                 <Col>
-                  <Search type="playbook" setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+                  <Search type="playbook" setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
                 </Col>
                 <Col sm={3} lg={3}>
                   <CrudButton type="create" name="Playbook" to="/playbooks/create" checkPermRoute />

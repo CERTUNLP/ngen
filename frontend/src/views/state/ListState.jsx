@@ -51,7 +51,7 @@ const ListState = () => {
         <Card.Header>
           <Row>
             <Col sm={12} lg={9}>
-              <Search type={t("ngen.state_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+              <Search type={t("ngen.state_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
             </Col>
             <Col sm={12} lg={3}>
               <CrudButton type="create" name={t("ngen.state_one")} to="/states/create" state={states} checkPermRoute />

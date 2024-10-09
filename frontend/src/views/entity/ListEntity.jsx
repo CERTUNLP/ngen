@@ -64,6 +64,7 @@ const ListEntity = ({ routeParams }) => {
                     setWordToSearch={setWordToSearch}
                     wordToSearch={wordToSearch}
                     setLoading={setLoading}
+                    setCurrentPage={setCurrentPage}
                   />
                 </Col>
                 <Col sm={12} lg={3}>

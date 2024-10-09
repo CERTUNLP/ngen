@@ -171,7 +171,7 @@ const ListCase = ({ routeParams }) => {
                   <ButtonFilter open={open} setOpen={setOpen} />
                 </Col>
                 <Col sm={1} lg={6}>
-                  <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+                  <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
                 </Col>
                 <Col>
                   <CrudButton type="create" name={t("ngen.case_one")} to={basePath + "/cases/create"} checkPermRoute />

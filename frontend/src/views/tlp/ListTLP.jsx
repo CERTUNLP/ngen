@@ -56,6 +56,7 @@ const ListTLP = () => {
                       setWordToSearch={setWordToSearch}
                       wordToSearch={wordToSearch}
                       setLoading={setLoading}
+                      setCurrentPage={setCurrentPage}
                     />
                   </div>
                 </Col>

@@ -79,6 +79,7 @@ const ListContact = ({ routeParams }) => {
                     setWordToSearch={setWordToSearch}
                     wordToSearch={wordToSearch}
                     setLoading={setLoading}
+                    setCurrentPage={setCurrentPage}
                   />
                 </Col>
                 <Col sm={3} lg={3}>

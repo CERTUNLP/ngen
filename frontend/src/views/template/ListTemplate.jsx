@@ -138,7 +138,7 @@ const ListTemplete = () => {
                   <ButtonFilter open={open} setOpen={setOpen} />
                 </Col>
                 <Col sm={12} lg={8}>
-                  <Search type={t("cidr.domain")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+                  <Search type={t("cidr.domain")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
                 </Col>
                 <Col sm={12} lg={3}>
                   <CrudButton type="create" name={t("ngen.template")} to="/templates/create" checkPermRoute />

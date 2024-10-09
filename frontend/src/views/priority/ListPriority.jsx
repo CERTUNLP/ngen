@@ -55,7 +55,7 @@ const ListPriorities = () => {
         <Card.Header>
           <Row>
             <Col sm={12} lg={9}>
-              <Search type={t("search.by.name")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+              <Search type={t("search.by.name")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
             </Col>
             <Col sm={12} lg={3}>
               <CrudButton type="create" name={t("ngen.priority_one")} to="/priorities/create" checkPermRoute />
