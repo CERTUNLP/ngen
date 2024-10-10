@@ -134,7 +134,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
                 <td>
                   <CrudButton type="read" onClick={() => showNetwork(network.url)} />
                   <CrudButton type="edit" to={basePath + "/networks/edit"} state={network} checkPermRoute />
-                  <CrudButton type="delete" onClick={() => Delete(network.url, network.cidr, network.domain)} permissions="delete_networks" />
+                  <CrudButton type="delete" onClick={() => Delete(network.url, network.cidr, network.domain)} permissions="delete_network" />
                 </td>
               </tr>
             );
