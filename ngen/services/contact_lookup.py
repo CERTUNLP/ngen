@@ -19,6 +19,8 @@ class ContactLookupService:
     def whois_lookup(domain, str_type=None):
         """
         Perform WHOIS lookup for a domain.
+
+        https://www.rfc-editor.org/rfc/rfc2142#section-4
         """
         try:
             if not StringIdentifier.network_map[str_type] in [
@@ -28,9 +30,10 @@ class ContactLookupService:
                 return {"error": "Invalid domain or IP."}
 
             whois_data = whois.whois(domain)
+            emails = whois_data.get("emails", [])
             return {
                 "raw": whois_data,
-                "abuse_emails": whois_data.get("abuse_emails", []),
+                "abuse_emails": emails if type(emails) == list else [emails],
             }
 
         except Exception as e:
@@ -41,6 +44,8 @@ class ContactLookupService:
     def rdap_lookup(ip_or_domain, str_type=None, url=None):
         """
         Perform RDAP lookup for a domain or IP.
+
+        https://www.rfc-editor.org/rfc/rfc2142#section-4
         """
         try:
             if str_type == None:
@@ -84,9 +89,11 @@ class ContactLookupService:
             return {"error": str(e)}
 
     @staticmethod
-    def security_txt_lookup(domain, str_type=None, url=None):
+    def securitytxt_lookup(domain, str_type=None, url=None):
         """
         Perform security.txt lookup for a domain.
+
+        https://datatracker.ietf.org/doc/html/rfc9116#section-2.5.3
         """
         try:
             if (
@@ -143,7 +150,7 @@ class ContactLookupService:
         contact_info = {
             "whois": ContactLookupService.whois_lookup(domain_or_ip, str_type4),
             "rdap": ContactLookupService.rdap_lookup(domain_or_ip, str_type4),
-            "security_txt": ContactLookupService.security_txt_lookup(
+            "securitytxt": ContactLookupService.securitytxt_lookup(
                 domain_or_ip, str_type4, url=url
             ),
         }
@@ -156,7 +163,7 @@ class ContactLookupService:
                 set(
                     contact_info["whois"].get("abuse_emails", [])
                     + contact_info["rdap"].get("abuse_emails", [])
-                    + contact_info["security_txt"].get("abuse_emails", [])
+                    + contact_info["securitytxt"].get("abuse_emails", [])
                 )
             ),
         }
