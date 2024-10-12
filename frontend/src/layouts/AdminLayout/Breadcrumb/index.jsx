@@ -55,12 +55,22 @@ const Breadcrumb = () => {
 
   if (item && item.type === "item") {
     title = item.title ? t(item.title) : "";
+    let fullpath = location.pathname;
+    // check if last part of the path is a number
+    let lastPart = fullpath.split("/").pop();
+    let path_up = fullpath.split("/");
+    path_up.pop();
+    if (!isNaN(lastPart)) {
+      fullpath = fullpath.substring(0, fullpath.lastIndexOf("/"));
+      path_up.pop();
+    }
 
-    if (location.pathname.includes("/edit")) {
+
+    if (fullpath.includes("/edit")) {
       method = t("w.edit");
-    } else if (location.pathname.includes("/create")) {
+    } else if (fullpath.includes("/create")) {
       method = t("w.create");
-    } else if (location.pathname.includes("/view")) {
+    } else if (fullpath.includes("/view")) {
       method = t("w.detail");
     }
 
@@ -71,8 +81,6 @@ const Breadcrumb = () => {
         </ListGroup.Item>
       );
     } else {
-      let path_up = location.pathname.split("/");
-      path_up.pop();
 
       itemContent = (
         <ListGroup.Item as="li" bsPrefix=" " className="breadcrumb-item">
