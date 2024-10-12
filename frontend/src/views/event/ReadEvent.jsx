@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Button, Card, Col, Form, Row, Table } from "react-bootstrap";
 import CallBackendByName from "../../components/CallBackendByName";
 import CallBackendByType from "../../components/CallBackendByType";
@@ -9,23 +9,25 @@ import { getUser } from "../../api/services/users";
 import { getTLPSpecific } from "../../api/services/tlp";
 import { getFeed } from "../../api/services/feeds";
 import { getEvent } from "../../api/services/events";
-import Navigation from "../../components/Navigation/Navigation";
+import SmallEventTable from "./components/SmallEventTable";
 import { getArtefact } from "../../api/services/artifact";
 import SmallCaseTable from "../case/components/SmallCaseTable";
 import { getEvidence } from "../../api/services/evidences";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
 import { useTranslation } from "react-i18next";
+import PermissionCheck from "components/Auth/PermissionCheck";
 import { COMPONENT_URL } from "config/constant";
 
-const ReadEvent = (props) => {
-  const location = useLocation();
+const ReadEvent = ({ routeParams }) => {
   const [body, setBody] = useState({});
-  const [eventItem, setEventItem] = useState(location?.state?.item || null);
-  const [navigationRow] = useState(localStorage.getItem("navigation"));
+  const [eventItem, setEventItem] = useState(null);
   const [buttonReturn] = useState(localStorage.getItem("button return"));
   const [evidences, setEvidences] = useState([]);
   const [id] = useState(useParams());
+  const [children, setChildren] = useState([]);
+  const [childrenEvidences, setChildrenEvidences] = useState([]);
   const { t } = useTranslation();
+
   // const storageEventUrl = (url) => {
   //   localStorage.setItem('event', url);
   // };
@@ -67,7 +69,45 @@ const ReadEvent = (props) => {
 
     // Llamar a la función para obtener los datos de las evidencias
     fetchAllEvidences();
+
+    const fetchAllChildren = async () => {
+      if (eventItem) {
+        try {
+          // Esperar a que todas las promesas de getEvent se resuelvan
+          const responses = await Promise.all(eventItem.children.map((url) => getEvent(url)));
+          // Extraer los datos de las respuestas
+          const data = responses.map((response) => response.data);
+          // Actualizar el estado con los datos de todos los eventos hijos
+          setChildren(data);
+        } catch (error) {
+          console.error("Error fetching children data:", error);
+        }
+      }
+    };
+
+    // Llamar a la función para obtener los datos de los eventos hijos
+    fetchAllChildren();
   }, [eventItem]);
+
+  useEffect(() => {
+    const fetchAllChildrenEvidences = async () => {
+      if (children.length > 0) {
+        try {
+          // Esperar a que todas las promesas de getEvidence se resuelvan para cada evento hijo, cada evidencia
+          const responses = await Promise.all(children.map((child) => Promise.all(child.evidence.map((url) => getEvidence(url)))));
+          // Extraer los datos de las respuestas y filtrar los elementos vacíos
+          const data = responses.map((response) => response[0]?.data).filter((evidence) => evidence !== undefined);
+          // Actualizar el estado con los datos de todas las evidencias de los eventos hijos
+          setChildrenEvidences(data);
+        } catch (error) {
+          console.error("Error fetching children evidences data:", error);
+        }
+      }
+    };
+
+    // Llamar a la función para obtener los datos de las evidencias de los eventos hijos
+    fetchAllChildrenEvidences();
+  }, [children]);
 
   const callbackTaxonomy = (url, setPriority) => {
     getTaxonomy(url)
@@ -128,13 +168,6 @@ const ReadEvent = (props) => {
 
   return (
     <React.Fragment>
-      {navigationRow !== "false" ? (
-        <Row>
-          <Navigation actualPosition={t("ngen.event.detail")} path="/events" index={t("ngen.event_one")} />
-        </Row>
-      ) : (
-        ""
-      )}
       <Card>
         <Card.Header>
           <Card.Title as="h5">{t("menu.principal")}</Card.Title>
@@ -162,21 +195,25 @@ const ReadEvent = (props) => {
             <Col sm={12} lg={4} className={"align-self-center"}>
               {body.tlp !== undefined ? <CallBackendByName url={body.tlp} callback={callbackTlp} /> : "-"}
             </Col>
-            <Col sm={12} lg={2} className={"align-self-center"}>
-              {t("ngen.feed.information")}
-            </Col>
-            <Col sm={12} lg={4} className={"align-self-center"}>
-              {body.feed !== undefined ? <CallBackendByName url={body.feed} callback={callbackFeed} /> : "-"}
-            </Col>
+            <PermissionCheck permissions={["view_feed"]}>
+              <Col sm={12} lg={2} className={"align-self-center"}>
+                {t("ngen.feed.information")}
+              </Col>
+              <Col sm={12} lg={4} className={"align-self-center"}>
+                {body.feed !== undefined ? <CallBackendByName url={body.feed} callback={callbackFeed} /> : "-"}
+              </Col>
+            </PermissionCheck>
           </Row>
           <p />
           <Row>
-            <Col sm={12} lg={2} className={"align-self-center"}>
-              {t("ngen.taxonomy_one")}
-            </Col>
-            <Col sm={12} lg={4} className={"align-self-center"}>
-              {body.taxonomy !== undefined ? <CallBackendByName url={body.taxonomy} callback={callbackTaxonomy} /> : "-"}
-            </Col>
+            <PermissionCheck permissions={["view_taxonomy"]}>
+              <Col sm={12} lg={2} className={"align-self-center"}>
+                {t("ngen.taxonomy_one")}
+              </Col>
+              <Col sm={12} lg={4} className={"align-self-center"}>
+                {body.taxonomy !== undefined ? <CallBackendByName url={body.taxonomy} callback={callbackTaxonomy} /> : "-"}
+              </Col>
+            </PermissionCheck>
             <Col sm={12} lg={2} className={"align-self-center"}>
               {t("ngen.event.initial_taxonomy_slug")}
             </Col>
@@ -263,27 +300,31 @@ const ReadEvent = (props) => {
         <Card.Header>
           <Card.Title as="h5">{t("ngen.affectedResources")}</Card.Title>
         </Card.Header>
-        <Card.Body>
-          <Row>
-            <Col sm={12} lg={2} className={"align-self-center"}>
-              {t("ngen.domain")}
-            </Col>
-            <Col sm={12} lg={4} className={"align-self-center"}>
-              {" "}
-              <Form.Control plaintext readOnly defaultValue={body.domain} />
-            </Col>
-          </Row>
-          <p />
-          <Row>
-            <Col sm={12} lg={2} className={"align-self-center"}>
-              {t("ngen.cidr")}
-            </Col>
-            <Col sm={12} lg={4} className={"align-self-center"}>
-              {" "}
-              <Form.Control plaintext readOnly defaultValue={body.cidr} />
-            </Col>
-          </Row>
-        </Card.Body>
+        {body.domain !== null ? (
+          <Card.Body>
+            <Row>
+              <Col sm={12} lg={2} className={"align-self-center"}>
+                {t("ngen.domain")}
+              </Col>
+              <Col sm={12} lg={4} className={"align-self-center"}>
+                &nbsp;
+                <Form.Control plaintext readOnly defaultValue={body.domain} />
+              </Col>
+            </Row>
+          </Card.Body>
+        ) : (
+          <Card.Body>
+            <Row>
+              <Col sm={12} lg={2} className={"align-self-center"}>
+                {t("ngen.cidr")}
+              </Col>
+              <Col sm={12} lg={4} className={"align-self-center"}>
+                &nbsp;
+                <Form.Control plaintext readOnly defaultValue={body.cidr} />
+              </Col>
+            </Row>
+          </Card.Body>
+        )}
       </Card>
 
       <SmallCaseTable readCase={body.case} disableColumOption={true} />
@@ -296,14 +337,28 @@ const ReadEvent = (props) => {
           <Row>
             {body.artifacts !== undefined
               ? body.artifacts.map((url) => {
-                return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
-              })
+                  return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
+                })
               : ""}
           </Row>
         </Card.Body>
       </Card>
 
       <EvidenceCard evidences={evidences} disableDelete={true} disableDragAndDrop={true} />
+
+      <EvidenceCard evidences={childrenEvidences} disableDelete={true} disableDragAndDrop={true} title={t("ngen.evidences.children")} />
+
+      {/* deshabilitamos la columna opciones para view y delete hasta que se corrija el uso de localstorage para la navegacion ya que no puede ir de un evento a otro sin usar href.location */}
+      <SmallEventTable
+        list={children}
+        disableLink={true}
+        disableColumOption={true}
+        disableUuid={false}
+        disableColumnDelete={false}
+        disableMerged={true}
+        title={t("ngen.children")}
+      />
+
       <Card>
         <Card.Header>
           <Card.Title as="h5">{t("ngen.event.additional")}</Card.Title>

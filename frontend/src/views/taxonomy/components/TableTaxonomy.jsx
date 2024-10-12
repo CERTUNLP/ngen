@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
-import { Link } from "react-router-dom";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
-import ButtonState from "./ButtonState";
-import { deleteTaxonomy, getTaxonomy } from "../../../api/services/taxonomies";
+import { deleteTaxonomy, getTaxonomy, putActivationStatus } from "../../../api/services/taxonomies";
 import Ordering from "../../../components/Ordering/Ordering";
 import ActiveButton from "../../../components/Button/ActiveButton";
 import CallBackendByName from "../../../components/CallBackendByName";
@@ -17,6 +15,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
   const [name, setName] = useState(null);
   const [taxonomy, setTaxonomy] = useState();
   const [modalShow, setModalShow] = useState(false);
+  // const [active, setActive] = useState("");
   const { t } = useTranslation();
 
   if (loading) {
@@ -28,6 +27,20 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
   }
 
   const handleClose = () => setModalShow(false);
+
+  const switchState = (url, state, name) => {
+    putActivationStatus(url, !state, name)
+      .then((response) => {
+        setIsModify(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setModalState(false);
+        setModalShow(false);
+      });
+  };
 
   const Delete = (url, name) => {
     setUrl(url);
@@ -132,7 +145,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
             />
             <Ordering
               field="reports"
-              label={t("ngen.reports")}
+              label={t("ngen.report_other")}
               order={order}
               setOrder={setOrder}
               setLoading={setLoading}
@@ -164,14 +177,12 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                 <td>{taxonomy.needs_review ? t("w.yes") : t("w.no")}</td>
                 <td>{taxonomy.reports.length}</td>
                 <td>
-                  <ButtonState taxonomy={taxonomy} />
+                  <ActiveButton active={taxonomy.active} onClick={() => switchState(taxonomy.url, taxonomy.active, taxonomy.name)} permissions="change_taxonomy" />
                 </td>
                 <td>
                   <CrudButton type="read" onClick={() => showTaxonomy(taxonomy.url)} />
-                  <Link to={`/taxonomies/edit/${itemNumber}`}>
-                    <CrudButton type="edit" />
-                  </Link>
-                  <CrudButton type="delete" onClick={() => Delete(taxonomy.url, taxonomy.name)} />
+                  <CrudButton type="edit" to={`/taxonomies/edit/${itemNumber}`} checkPermRoute />
+                  <CrudButton type="delete" onClick={() => Delete(taxonomy.url, taxonomy.name)} permissions="delete_taxonomy" />
                 </td>
               </tr>
             );
@@ -190,9 +201,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                       <span className="d-block m-t-5">{t("ngen.taxonomy.detail")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <Link to={`/taxonomies/edit/${id}`}>
-                        <CrudButton type="edit" />
-                      </Link>
+                      <CrudButton type="edit" to={`/taxonomies/edit/${id}`} checkPermRoute />
                       <CloseButton aria-label={t("w.close")} onClick={handleClose} />
                     </Col>
                   </Row>
@@ -210,13 +219,13 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                       <tr>
                         <td>{t("ngen.name_one")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={taxonomy ? taxonomy.name : ""} />
+                          <Form.Control plaintext readOnly defaultValue={taxonomy ? taxonomy.name : ""}/>
                         </td>
                       </tr>
                       <tr>
                         <td>{t("w.active")}</td>
                         <td>
-                          <ActiveButton active={taxonomy ? taxonomy.active : ""} />
+                          <ActiveButton active={taxonomy ? taxonomy.active : ""} permissions="change_taxonomy"  />
                         </td>
                       </tr>
                       {taxonomy && taxonomy.parent && (
@@ -276,10 +285,10 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                         </tr>
                       )}
                       <tr>
-                        <td>{t("ngen.reports")}</td>
+                        <td>{t("ngen.report_other")}</td>
                         <td>
                           <Button size="sm" variant="light" className="text-capitalize">
-                            {t("ngen.reports")}
+                            {t("ngen.report_other")}
                             <Badge variant="light" className="ml-1">
                               {taxonomy ? taxonomy.reports.length : ""}
                             </Badge>

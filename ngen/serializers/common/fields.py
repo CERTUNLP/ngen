@@ -84,8 +84,6 @@ class TaxonomySlugOrHyperlinkedRelatedField(SlugOrHyperlinkedRelatedField):
         return p0.strip(), "-".join(parts).strip()
 
     def when_invalid_slug(self, queryset, data, slug):
-        print(config.TAXONOMY_ALLOW_AUTO_CREATE)
-        print(type(config.TAXONOMY_ALLOW_AUTO_CREATE))
         if not config.TAXONOMY_ALLOW_AUTO_CREATE:
             super().when_invalid_slug(queryset, data, slug)
         parsed_data = self._parse(data)

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, CloseButton, Col, Collapse, Modal, Row, Table, Spinner } from "react-bootstrap";
+import { Card, CloseButton, Col, Collapse, Modal, Row, Table } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import FormCreateEdge from "./components/FormCreateEdge";
@@ -163,15 +163,13 @@ const ListEdge = (props) => {
                   <span className="d-block m-t-5">{t("transitionList")}</span>
                 </Col>
                 <Col sm={12} lg={3}>
-                  {props.sectionAddEdge ? (
-                    <CrudButton type="create" name={t("transition")} onClick={() => setModalCreate(true)} />
-                  ) : (
-                    <>
-                      <Button variant="outline-primary" disabled>
-                        {t("transitionAdd")}
-                      </Button>
-                    </>
-                  )}
+                  <CrudButton
+                    type="create"
+                    name={t("transition")}
+                    onClick={() => setModalCreate(true)}
+                    permissions="add_edge"
+                    disabled={!props.sectionAddEdge}
+                  />
                 </Col>
               </Row>
             </Card.Header>

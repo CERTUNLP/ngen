@@ -25,14 +25,14 @@ from ngen.models import (
 
 class AnnouncementTestCase(TestCase):
     fixtures = [
-        "priority.json",
-        "tlp.json",
-        "user.json",
-        "state.json",
-        "edge.json",
-        "feed.json",
-        "taxonomy.json",
-        "case_template.json",
+        "tests/priority.json",
+        "tests/tlp.json",
+        "tests/user.json",
+        "tests/state.json",
+        "tests/edge.json",
+        "tests/feed.json",
+        "tests/taxonomy.json",
+        "tests/case_template.json",
     ]
 
     @classmethod

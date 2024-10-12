@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import TableUsers from "./components/TableUsers";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
 import { getUsers } from "../../api/services/users";
@@ -60,10 +58,6 @@ function ListUser() {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
-      <Row>
-        <Navigation actualPosition={t("menu.users")} />
-      </Row>
       <Card>
         <Card.Header>
           <Row>
@@ -73,12 +67,11 @@ function ListUser() {
                 setWordToSearch={setWordToSearch}
                 wordToSearch={wordToSearch}
                 setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
               />
             </Col>
             <Col sm={12} lg={3}>
-              <Link to="/users/create">
-                <CrudButton type="create" name={t("ngen.user")} />
-              </Link>
+              <CrudButton type="create" name={t("ngen.user")} to="/users/create" checkPermRoute />
             </Col>
           </Row>
           <Row></Row>

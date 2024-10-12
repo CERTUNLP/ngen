@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 const EvidenceCard = (props) => {
   const { t } = useTranslation();
 
-  useEffect(() => {}, [props.evidences]);
+  useEffect(() => { }, [props.evidences]);
 
   const handleDragOver = (event) => {
     event.preventDefault();
@@ -29,9 +29,12 @@ const EvidenceCard = (props) => {
   return (
     <Card>
       <Card.Header>
-        <Card.Title as="h5">{t("ngen.evidences")}</Card.Title>
+        <Card.Title as="h5">{props.title || t("ngen.evidences")}</Card.Title>
       </Card.Header>
       <Card.Body>
+        {props.evidences.length === 0 & props.disableDragAndDrop ? (t("ngen.no_evidence"))
+          : ("")
+        }
         <Form>
           {props.disableDragAndDrop ? (
             ""

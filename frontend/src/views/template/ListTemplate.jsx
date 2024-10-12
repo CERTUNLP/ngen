@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Card, Col, Collapse, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import TableTemplete from "./components/TableTemplete";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import { getTemplates } from "../../api/services/templates";
 import { getMinifiedFeed } from "../../api/services/feeds";
@@ -131,10 +129,6 @@ const ListTemplete = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
-      <Row>
-        <Navigation actualPosition={t("ngen.template")} />
-      </Row>
       <Row>
         <Col>
           <Card>
@@ -144,12 +138,10 @@ const ListTemplete = () => {
                   <ButtonFilter open={open} setOpen={setOpen} />
                 </Col>
                 <Col sm={12} lg={8}>
-                  <Search type={t("cidr.domain")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+                  <Search type={t("cidr.domain")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
                 </Col>
                 <Col sm={12} lg={3}>
-                  <Link to="/templates/create">
-                    <CrudButton type="create" name={t("ngen.template")} />
-                  </Link>
+                  <CrudButton type="create" name={t("ngen.template")} to="/templates/create" checkPermRoute />
                 </Col>
               </Row>
               <Collapse in={open}>

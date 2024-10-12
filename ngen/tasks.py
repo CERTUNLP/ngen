@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy
 
 import ngen.models
 from ngen import cortex
+from ngen.services.contact_lookup import ContactLookupService
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
@@ -72,6 +73,12 @@ def case_renotification():
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
+def create_cases_for_matching_events(template_id):
+    template = ngen.models.CaseTemplate.objects.get(pk=template_id)
+    template.create_cases_for_matching_events()
+
+
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def enrich_artifact(artifact_id):
     api = cortex.api_user
     if not api:
@@ -124,3 +131,15 @@ def enrich_artifact(artifact_id):
                                 if not created:
                                     new_artifact.enrich()
                     jobs.remove(job)
+
+
+@shared_task(bind=True)
+def whois_lookup_task(self, ip_or_domain):
+    """
+    Tarea de Celery para hacer una búsqueda WHOIS.
+    """
+    try:
+        whois_data = ContactLookupService.get_contact_info(ip_or_domain)
+        return whois_data
+    except Exception as e:
+        return {"error": str(e)}

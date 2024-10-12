@@ -30,7 +30,7 @@ const FormCase = (props) => {
   const [tlp, setTlp] = useState(props.caseItem.tlp);
   const [assigned, setAssigned] = useState(props.caseItem.assigned);
   const [state, setState] = useState(props.caseItem.state);
-  const [events, setEvents] = useState(props.caseItem.events.length > 0 ? props.caseItem.events : []);
+  const [events, setEvents] = props.caseItem.events === undefined ? useState([]) : useState(props.caseItem.events);
   const [comments, setComments] = useState([]);
   const [evidences, setEvidences] = useState([]);
 
@@ -264,11 +264,12 @@ const FormCase = (props) => {
 
   function getCurrentDateTimeCreated() {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
+    // Obtener la fecha y hora en UTC
+    const year = now.getUTCFullYear();
+    const month = (now.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = now.getUTCDate().toString().padStart(2, "0");
+    const hours = now.getUTCHours().toString().padStart(2, "0");
+    const minutes = now.getUTCMinutes().toString().padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
@@ -303,6 +304,7 @@ const FormCase = (props) => {
   const editCase = () => {
     // setIfClick(true);
     const form = new FormData();
+    form.append("name", name);
     form.append("date", date);
     form.append("lifecycle", lifecycle);
     form.append("name", name);
@@ -428,16 +430,6 @@ const FormCase = (props) => {
         // setIfClick(false)
       });
   };
-
-  function getCurrentDateTime() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
 
   const modalListEvent = () => {
     setUpdatePagination(true);
@@ -662,6 +654,7 @@ const FormCase = (props) => {
           modalEvent={modalEvent}
           disableUuid={false}
           disableColumOption={false}
+          disableLink={true}
         />
       )}
 
@@ -673,6 +666,7 @@ const FormCase = (props) => {
         setSelectedEvent={setSelectedEvent}
         setEvents={setEvents}
         setCurrentPage={setCurrentPage}
+        asNetworkAdmin={props.asNetworkAdmin}
       />
 
       <ModalListEvent
@@ -708,6 +702,7 @@ const FormCase = (props) => {
         feeds={feeds}
         tlpList={allTlp}
         updateList={updateList}
+        asNetworkAdmin={true}
       />
 
       <ModalReadEvent

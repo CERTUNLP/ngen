@@ -4,5 +4,5 @@
 python manage.py compilemessages -l es -i venv
 python manage.py migrate --noinput
 python manage.py collectstatic -c --noinput
-python manage.py loaddata --app ngen priority feed tlp user taxonomy state edge report network_entity network contact playbook
+python manage.py loaddatafirsttime priority feed tlp user taxonomy state edge report_en report_es network_entity network contact playbook group
 exec "$@"

@@ -1,33 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { useIdleTimer } from "react-idle-timer";
-import store from "./store";
 
 import routes, { renderRoutes } from "./routes";
 import { logout, refreshToken } from "./api/services/auth";
+import Alert from "./components/Alert/Alert";
+import { getCurrentAccount } from "utils/permissions";
 
 const App = () => {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const onIdle = () => {
-    if (store.getState().account.token) {
+    if (getCurrentAccount()?.token) {
       logout(true);
     }
   };
 
   const onAction = () => {
-    const state = store.getState();
-    const token = state.account.token;
-    const iat = state.account.iat;
-    const exp = state.account.exp;
+    const account = getCurrentAccount();
+    const token = account?.token;
+    const iat = account?.iat;
+    const exp = account?.exp;
     if (!token || !iat || !exp) {
       return;
     }
-    // check if token iat has more than X seconds, if so refresh token
     const currentTime = Date.now() / 1000;
     const secondsWindow = 60; // TODO: Change to backend configuration
+
     if (iat + secondsWindow < currentTime) {
-      refreshToken().catch(() => {
-        logout(true);
-      });
+      if (!isRefreshing) {
+        setIsRefreshing(true);
+        refreshToken()
+          .catch(() => {
+            logout(true);
+          })
+          .finally(() => {
+            setIsRefreshing(false);
+          });
+      }
     } else {
       if (exp < currentTime) {
         logout(true);
@@ -54,21 +64,18 @@ const App = () => {
       "visibilitychange",
       "focus"
     ],
-    immediateEvents: [],
-    debounce: 0,
-    throttle: 0,
     eventsThrottle: 1000,
-    element: document,
-    startOnMount: true,
-    startManually: false,
-    stopOnIdle: false,
     crossTab: true,
     name: "idle-timer",
-    syncTimers: 1000,
-    leaderElection: false
+    syncTimers: 1000
   });
 
-  return <BrowserRouter basename={import.meta.env.VITE_APP_BASE_NAME}>{renderRoutes(routes)}</BrowserRouter>;
+  return (
+    <>
+      <Alert component="all" />
+      <BrowserRouter basename={import.meta.env.VITE_APP_BASE_NAME}>{renderRoutes(routes)}</BrowserRouter>
+    </>
+  );
 };
 
 export default App;

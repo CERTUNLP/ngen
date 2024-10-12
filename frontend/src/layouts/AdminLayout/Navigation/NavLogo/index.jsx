@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { API_SERVER } from "../../../../config/constant";
+// import { API_SERVER } from "../../../../config/constant";
 
 import { ConfigContext } from "../../../../contexts/ConfigContext";
 import * as actionType from "../../../../store/actions";
@@ -25,7 +25,7 @@ const NavLogo = () => {
             width: "10px"
           }}
         >
-          <img src={API_SERVER + "static/img/ngenlogo_inv_light.png"} alt="NGEN" className="logo" id="teamlogo" />
+          <img src={window.localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv_light.png"} alt="NGEN" className="logo" id="teamlogo" />
         </Link>
         <Link to="#" className={toggleClass.join(" ")} id="mobile-collapse" onClick={() => dispatch({ type: actionType.COLLAPSE_MENU })}>
           <span />

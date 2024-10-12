@@ -3,7 +3,6 @@ import { Button, Card, Col, Form, Row, Spinner } from "react-bootstrap";
 import DropdownState from "../../components/Dropdown/DropdownState";
 import { useLocation, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
-import Navigation from "../../components/Navigation/Navigation";
 import { validateDescription, validateName, validateType, validateUnrequiredInput } from "../../utils/validators/taxonomy";
 import { getMinifiedTaxonomy, putTaxonomy, getTaxonomy } from "../../api/services/taxonomies";
 import SelectLabel from "../../components/Select/SelectLabel";
@@ -162,10 +161,6 @@ const EditTaxonomy = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="taxonomy" />
-      <Row>
-        <Navigation actualPosition={t("w.edit") + " " + t("ngen.taxonomy_one")} path="/taxonomies" index="Taxonomia" />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>

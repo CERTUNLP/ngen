@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Row, Spinner } from "react-bootstrap";
-import { useLocation, useParams } from "react-router-dom";
-import Alert from "../../components/Alert/Alert";
+import { Spinner } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 import FormTemplate from "./components/FormTemplate";
-import Navigation from "../../components/Navigation/Navigation";
 import { putTemplate, getTemplate } from "../../api/services/templates";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
@@ -136,10 +134,6 @@ const EditTemplate = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
-      <Row>
-        <Navigation actualPosition={t("ngen.template.edit")} path="/templates" index={t("ngen.template")} />
-      </Row>
       {loading ? (
         <Spinner animation="border" role="status" />
       ) : (

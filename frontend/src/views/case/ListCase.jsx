@@ -7,8 +7,6 @@ import { getMinifiedPriority } from "../../api/services/priorities";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedState } from "../../api/services/states";
-import { Link } from "react-router-dom";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
@@ -16,8 +14,11 @@ import Alert from "../../components/Alert/Alert";
 import ButtonFilter from "../../components/Button/ButtonFilter";
 import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import { useTranslation } from "react-i18next";
+import PermissionCheck from "../../components/Auth/PermissionCheck";
 
-const ListCase = () => {
+const ListCase = ({ routeParams }) => {
+  const basePath = routeParams.basePath ? routeParams.basePath : "";
+
   const [cases, setCases] = useState([]); //lista de casos
   const [ifModify, setIfModify] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ const ListCase = () => {
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   //filters
-  const [order, setOrder] = useState("-date");
+  const [order, setOrder] = useState("-modified");
   const [wordToSearch, setWordToSearch] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -120,7 +121,7 @@ const ListCase = () => {
         console.log(error);
       });
     //getCases(currentPage,priorityFilter+tlpFilter+stateFilter+wordToSearch, order)
-    getCases(currentPage, priorityFilter + tlpFilter + stateFilter + wordToSearch, order)
+    getCases(currentPage, priorityFilter + tlpFilter + stateFilter + wordToSearch, order, routeParams.asNetworkAdmin)
       .then((response) => {
         setCases(response.data.results);
         setCountItems(response.data.count);
@@ -162,9 +163,6 @@ const ListCase = () => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="case" />
       <Row>
-        <Navigation actualPosition={t("ngen.case_other")} />
-      </Row>
-      <Row>
         <Col>
           <Card>
             <Card.Header>
@@ -173,26 +171,27 @@ const ListCase = () => {
                   <ButtonFilter open={open} setOpen={setOpen} />
                 </Col>
                 <Col sm={1} lg={6}>
-                  <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+                  <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
                 </Col>
                 <Col>
-                  <Link to="/cases/create">
-                    <CrudButton type="create" name={t("ngen.case_one")} />
-                  </Link>
+                  <CrudButton type="create" name={t("ngen.case_one")} to={basePath + "/cases/create"} checkPermRoute />
 
-                  <Button
-                    disabled={selectedCases.length <= 1}
-                    size="lm"
-                    className="text-capitalize"
-                    variant="light"
-                    title="Merge"
-                    onClick={() => mergeConfirm()}
-                  >
-                    <i className="fa fa-code-branch text-danger" />
-                    Merge&nbsp;
-                    <Badge className="badge mr-1">{selectedCases.length}</Badge>
-                  </Button>
-                  <Button size="lm" variant="outline-dark" onClick={() => reloadPage()}>
+                  <PermissionCheck optionalPermissions={["change_case", "change_case_network_admin"]}>
+                    <Button
+                      disabled={selectedCases.length <= 1}
+                      size="lm"
+                      className="text-capitalize"
+                      variant={selectedCases.length > 0 ? "outline-dark" : "outline-secondary"}
+                      title="Merge"
+                      onClick={() => mergeConfirm()}
+                    >
+                      <i className="fa fa-code-branch" />
+                      { t("ngen.merge") }&nbsp;
+                      <Badge className="badge mr-1" bg={selectedCases.length > 0 ? "primary" : "secondary"}>{selectedCases.length}</Badge>
+                    </Button>
+                  </PermissionCheck>
+
+                  <Button size="lm" variant="outline-primary" onClick={() => reloadPage()}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -270,6 +269,7 @@ const ListCase = () => {
                 buttonReturn={false}
                 disableNubersOfEvents={true}
                 disableDateModified={false}
+                basePath={basePath}
               />
             </Card.Body>
             <Card.Footer>

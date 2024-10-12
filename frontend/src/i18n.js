@@ -11,26 +11,26 @@ const options = {
 };
 
 const fetchLanguageSetting = async () => {
+  // Verificar primero si el idioma está en localStorage
   const localStorageLang = localStorage.getItem("ngen_lang");
   if (localStorageLang) {
     return localStorageLang;
   }
 
+  // Si no está en localStorage, obtenerlo del backend
   try {
-    const response = apiInstance.get(COMPONENT_URL.configPublic);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
+    const response = await apiInstance.get(COMPONENT_URL.configPublic);
 
-    const data = await response.json();
-    const langSetting = data.results.find((item) => item.key === "NGEN_LANG");
+    const langSetting = response.data.results.find((item) => item.key === "NGEN_LANG");
     const lang = langSetting ? langSetting.value : "en";
 
+    // Guardar el idioma en localStorage
     localStorage.setItem("ngen_lang", lang);
     return lang;
   } catch (error) {
     console.error("Error fetching language setting:", error);
-    return "en"; // default to 'en' on error
+    // Devolver "en" como idioma predeterminado en caso de error
+    return "en";
   }
 };
 
@@ -44,7 +44,7 @@ const initializeI18n = async () => {
     .init({
       lng: lang,
       fallbackLng: "en",
-      debug: true,
+      debug: import.meta.env.VITE_APP_ENV === "development",
       detection: options,
       interpolation: {
         escapeValue: false // not needed for react as it escapes by default
@@ -52,6 +52,4 @@ const initializeI18n = async () => {
     });
 };
 
-initializeI18n();
-
-export default i18n;
+export default initializeI18n;

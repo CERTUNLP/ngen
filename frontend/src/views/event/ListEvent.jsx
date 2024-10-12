@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Badge, Button, Card, Col, Collapse, Form, Modal, Row } from "react-bootstrap";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
 import TableEvents from "./components/TableEvents";
@@ -26,9 +24,12 @@ import { getMinifiedPriority } from "../../api/services/priorities";
 import ModalReadCase from "../case/ModalReadCase";
 import { getMinifiedUser } from "../../api/services/users";
 import { useTranslation } from "react-i18next";
+import PermissionCheck from "components/Auth/PermissionCheck";
 
-const ListEvent = () => {
+const ListEvent = ({ routeParams }) => {
   const { t } = useTranslation();
+
+  const basePath = routeParams.basePath ? routeParams.basePath : "";
 
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -196,7 +197,8 @@ const ListEvent = () => {
     getEvents(
       currentPage,
       starDateFilter + endDateFilter + taxonomyFilter + tlpFilter + feedFilter + caseIsNull + parentIsNull + wordToSearch,
-      order
+      order,
+      routeParams.asNetworkAdmin
     )
       .then((response) => {
         setEvents(response.data.results);
@@ -292,7 +294,7 @@ const ListEvent = () => {
     setWordToSearchCase("");
   }
 
-  const handleClickRadio = (event, url, name, date, priority, tlp, state, user) => {
+  const handleClickRadio = (event, url, name, date, priority, tlp, state, user, events) => {
     const selectedId = event.target.id;
     if (selectedCases) {
       // Si es radio button, solo debe haber uno seleccionado
@@ -310,7 +312,8 @@ const ListEvent = () => {
       priority: priority,
       tlp: tlp,
       state: state,
-      user: user
+      user: user,
+      events: events
     });
   };
 
@@ -337,7 +340,7 @@ const ListEvent = () => {
     setUpdatePaginationCase(true);
   };
   const linkCaseToEvent = () => {
-    patchCase(caseToLink.value, selectedEvent).then((response) => {
+    patchCase(caseToLink.value, caseToLink.events.concat(selectedEvent)).then((response) => {
       setSelectedEvent([]);
       setSelectedCases("");
       setIfModify(response);
@@ -353,10 +356,6 @@ const ListEvent = () => {
   };
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="event" />
-      <Row>
-        <Navigation actualPosition={t("ngen.event_other")} />
-      </Row>
       <Card>
         <Card.Header>
           <Row>
@@ -369,29 +368,39 @@ const ListEvent = () => {
                 setWordToSearch={setWordToSearch}
                 wordToSearch={wordToSearch}
                 setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
               />
             </Col>
             <Col>
-              <Link to="/events/create">
-                <CrudButton type="create" name={t("ngen.event_one")} />
-              </Link>
-              <Button
-                disabled={selectedEvent.length > 1 ? false : true}
-                size="lm"
-                className="text-capitalize"
-                variant="outline-dark"
-                title="Mergear"
-                onClick={() => mergeConfirm()}
-              >
-                <i className="fa fa-code-branch" />
-                {t("ngen.merge")}&nbsp;
-                <Badge className="badge mr-1">{selectedEvent.length}</Badge>
-              </Button>
-              <Button disabled={selectedEvent.length > 0 ? false : true} size="lm" variant="outline-dark" onClick={() => modalCase()}>
-                {t("ngen.case.addto")}
-                <Badge className="badge mr-1">{selectedEvent.length}</Badge>
-              </Button>
-              <Button size="lm" variant="outline-dark" onClick={() => reloadPage()}>
+              <CrudButton type="create" to={basePath + "/events/create"} name={t("ngen.event_one")} checkPermRoute />
+              <PermissionCheck optionalPermissions={["change_event", "change_event_network_admin"]}>
+                <Button
+                  disabled={selectedEvent.length > 1 ? false : true}
+                  size="lm"
+                  className="text-capitalize"
+                  variant={selectedEvent.length > 1 ? "outline-dark" : "outline-secondary"}
+                  title="Mergear"
+                  onClick={() => mergeConfirm()}
+                >
+                  <i className="fa fa-code-branch" />
+                  {t("ngen.merge")}&nbsp;
+                  <Badge className="badge mr-1" bg={selectedEvent.length > 1 ? "primary" : "secondary"}>
+                    {selectedEvent.length}
+                  </Badge>
+                </Button>
+                <Button
+                  disabled={selectedEvent.length > 0 ? false : true}
+                  size="lm"
+                  variant={selectedEvent.length > 0 ? "outline-dark" : "outline-secondary"}
+                  onClick={() => modalCase()}
+                >
+                  {t("ngen.case.addto")}&nbsp;
+                  <Badge className="badge mr-1" bg={selectedEvent.length > 0 ? "primary" : "secondary"}>
+                    {selectedEvent.length}
+                  </Badge>
+                </Button>
+              </PermissionCheck>
+              <Button size="lm" variant="outline-primary" onClick={() => reloadPage()}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -516,6 +525,7 @@ const ListEvent = () => {
             disableMerged={false}
             disbleDateModified={false}
             disableDate={false}
+            basePath={routeParams.basePath}
           />
         </Card.Body>
         <Card.Footer>
@@ -554,13 +564,22 @@ const ListEvent = () => {
             <Modal.Title>{t("ngen.add.eventcase")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <Row>
+              <Col sm={12} lg={12}>
+                <div class="alert alert-warning" role="alert">
+                  {t("ngen.event.assign_to_case_alert")}
+                </div>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
             <Button variant="primary" className="text-capitalize" size="sm" onClick={() => closeOptionsList()} aria-expanded={openCases}>
               {t("button.case_existing")}
             </Button>
             <Button variant="primary" className="text-capitalize" size="sm" onClick={() => closeOptionsCreate()} aria-expanded={openCases}>
               {t("button.case_new")}
             </Button>
-          </Modal.Body>
+          </Modal.Footer>
         </Modal>
         <ModalCreateCase
           showModalCase={showModalCase}
@@ -608,6 +627,7 @@ const ListEvent = () => {
           caseToLink={caseToLink}
           modalCaseDetail={modalCaseDetail}
           linkCaseToEvent={linkCaseToEvent}
+          asNetworkAdmin={routeParams.asNetworkAdmin}
         />
         <ModalReadCase modalShowCase={modalShowCase} returnToListOfCases={returnToListOfCases} linkCaseToEvent={linkCaseToEvent} />
       </Card>

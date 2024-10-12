@@ -13,3 +13,7 @@ class User(AbstractUser, PriorityModelMixin, AuditModelMixin, ValidationModelMix
 
     class Meta:
         db_table = "user"
+
+    @property
+    def is_network_admin(self):
+        return self.contacts.exists()

@@ -3,7 +3,6 @@ import { Card, Col, Row } from "react-bootstrap";
 import { useLocation, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
 import { getFeed, putFeed } from "../../api/services/feeds";
-import Navigation from "../../components/Navigation/Navigation";
 import FormFeed from "./components/FormFeed";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "config/constant";
@@ -54,10 +53,6 @@ const EditFeed = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="feed" />
-      <Row>
-        <Navigation actualPosition={t("ngen.feed.information.edit")} path="/feeds" index={t("ngen.feed.information")} />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>

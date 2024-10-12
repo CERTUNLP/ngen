@@ -141,6 +141,27 @@ class EventSerializer(
         return attrs
 
 
+class NetworkAdminEventSerializer(EventSerializer):
+    children = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name="networkadminevent-detail"
+    )
+    evidence = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name="networkadminevidence-detail"
+    )
+
+    class Meta(EventSerializer.Meta):
+        fields = [
+            f
+            for f in EventSerializer.Meta.fields
+            if f not in ["history", "reporter", "comments", "todos", "tasks"]
+        ]
+        extra_kwargs = {
+            "url": {"view_name": "networkadminevent-detail"},
+            "network": {"view_name": "networkadminnetwork-detail"},
+            "case": {"view_name": "networkadmincase-detail"},
+        }
+
+
 class EventSerializerReduced(EvidenceSerializerMixin, AuditSerializerMixin):
 
     @staticmethod
@@ -186,6 +207,7 @@ class CaseSerializer(
         many=True, read_only=True, view_name="case-detail"
     )
     evidence = serializers.SerializerMethodField(read_only=True)
+    evidence_events = serializers.SerializerMethodField(read_only=True)
     comments = serializers.SerializerMethodField()
     user_creator = serializers.HyperlinkedRelatedField(
         default=serializers.CreateOnlyDefault(serializers.CurrentUserDefault()),
@@ -194,9 +216,6 @@ class CaseSerializer(
     )
     state = SlugOrHyperlinkedRelatedField(
         slug_field="slug", queryset=models.State.objects.all(), view_name="state-detail"
-    )
-    template_creator = serializers.HyperlinkedRelatedField(
-        read_only=True, view_name="casetemplate-detail"
     )
 
     class Meta:
@@ -208,6 +227,7 @@ class CaseSerializer(
             "events",
             "children",
             "evidence",
+            "evidence_events",
             "comments",
             "user_creator",
             "state",
@@ -225,7 +245,7 @@ class CaseSerializer(
             "parent",
             "priority",
             "tlp",
-            "template_creator",
+            "casetemplate_creator",
             "assigned",
             "blocked",
             "merged",
@@ -242,7 +262,12 @@ class CaseSerializer(
 
     def get_evidence(self, obj):
         return GenericRelationField(read_only=True).generic_detail_links(
-            obj.evidence_all, self.context.get("request")
+            obj.evidence_case, self.context.get("request")
+        )
+
+    def get_evidence_events(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_links(
+            obj.evidence_events, self.context.get("request")
         )
 
     @staticmethod
@@ -269,6 +294,27 @@ class CaseSerializer(
         validated_data["_temp_events"] = validated_data.pop("events", None)
         case = super().create(validated_data)
         return case
+
+
+class NetworkAdminCaseSerializer(CaseSerializer):
+    events = serializers.HyperlinkedRelatedField(
+        many=True,
+        queryset=models.Event.objects.all(),
+        view_name="networkadminevent-detail",
+    )
+    children = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name="networkadmincase-detail"
+    )
+
+    class Meta(CaseSerializer.Meta):
+        fields = [
+            f
+            for f in CaseSerializer.Meta.fields
+            if f not in ["history", "user_creator", "comments", "assigned"]
+        ]
+        extra_kwargs = {
+            "url": {"view_name": "networkadmincase-detail"},
+        }
 
 
 class CaseSerializerReduced(
@@ -321,6 +367,20 @@ class EvidenceSerializer(AuditSerializerMixin):
     class Meta:
         model = models.Evidence
         exclude = ["content_type", "object_id"]
+
+    def get_related(self, obj):
+        return GenericRelationField(read_only=True).generic_detail_link(
+            obj.content_object, self.context.get("request")
+        )
+
+
+class NetworkAdminEvidenceSerializer(EvidenceSerializer):
+    related = serializers.SerializerMethodField(read_only=True)
+
+    class Meta(EvidenceSerializer.Meta):
+        extra_kwargs = {
+            "url": {"view_name": "networkadminevidence-detail"},
+        }
 
     def get_related(self, obj):
         return GenericRelationField(read_only=True).generic_detail_link(

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
-import { Link } from "react-router-dom";
 import ActiveButton from "../../../components/Button/ActiveButton";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import { createCases, deleteTemplate, isActive } from "../../../api/services/templates";
 import Alert from "../../../components/Alert/Alert";
 import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
+import setAlert from "utils/setAlert";
 
 const TableTemplete = ({
   list,
@@ -31,6 +31,7 @@ const TableTemplete = ({
   const [dataTemplate, setDataTemplate] = useState({});
   const [showTemplate, setShowTemplate] = useState();
   const [showAlert, setShowAlert] = useState(false);
+  const [isCreateCasesDisabled, setIsCreateCasesDisabled] = useState(false);
   const { t } = useTranslation();
 
   if (loading) {
@@ -76,12 +77,17 @@ const TableTemplete = ({
 
   const create = (url) => {
     createCases(url)
-      .then(() => {
-        window.location.href = "/templates";
+      .then((result) => {
+        setAlert(result.data.message, "success", "template");
       })
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleClickCreate = (url) => {
+    setIsCreateCasesDisabled(true);
+    create(url);
   };
 
   const changeState = () => {
@@ -104,7 +110,7 @@ const TableTemplete = ({
   const letterSize = { fontSize: "1.1em" };
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
+      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
 
       <ul className="list-group my-4">
         <Table responsive hover className="text-center">
@@ -199,6 +205,7 @@ const TableTemplete = ({
                           template.active
                         )
                       }
+                      permissions="change_casetemplate"
                     />
                   </td>
                   <td>{priorityNames[template.priority]}</td>
@@ -209,10 +216,13 @@ const TableTemplete = ({
                       <Button
                         className=""
                         variant="outline-primary"
-                        onClick={() => create(template.url)}
+                        onClick={() => handleClickCreate(template.url)}
                         style={{
-                          borderRadius: "50px"
+                          borderRadius: '50px',
+                          border: isCreateCasesDisabled ? '1px solid #555' : '',
+                          color: isCreateCasesDisabled ? '#555' : '',
                         }}
+                        disabled={isCreateCasesDisabled}
                       >
                         {template.matching_events_without_case_count}
                         <svg
@@ -253,9 +263,7 @@ const TableTemplete = ({
                   </td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalTemplate(template)} />
-                    <Link to={`/templates/edit/${itemNumber}`}>
-                      <CrudButton type="edit" />
-                    </Link>
+                    <CrudButton type="edit" to={`/templates/edit/${itemNumber}`} checkPermRoute />
                     <CrudButton
                       type="delete"
                       onClick={() =>
@@ -267,6 +275,7 @@ const TableTemplete = ({
                           template.url
                         )
                       }
+                      permissions="delete_casetemplate"
                     />
                   </td>
                 </tr>
@@ -302,69 +311,63 @@ const TableTemplete = ({
                             <span className="d-block m-t-5">{t("ngen.template.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <Link to={`/templates/edit/${id}`}>
-                              <CrudButton type="edit" />
-                            </Link>
+                            <CrudButton type="edit" to={`/templates/edit/${id}`} checkPermRoute />
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>
                       </Card.Header>
                       <Card.Body>
                         <Table responsive>
-                          <tr>
-                            <td>{t("ngen.cidr")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={template.cidr} />
-                            </td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.domain")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={template.domain} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.lifecycle_one")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={template.case_lifecycle} />
-                            </td>
-                          </tr>
+                          <tbody>
+                            <tr>
+                              <td>{t("ngen.cidr")}</td>
+                              <td>
+                                <Form.Control plaintext readOnly defaultValue={template.cidr} />
+                              </td>
+                              <td></td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.domain")}</td>
+                              <td>
+                                <Form.Control plaintext readOnly defaultValue={template.domain} />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.lifecycle_one")}</td>
+                              <td>
+                                <Form.Control plaintext readOnly defaultValue={template.case_lifecycle} />
+                              </td>
+                            </tr>
 
-                          <tr>
-                            <td>{t("w.active")}</td>
-                            <td>
-                              <Button
-                                className="btn-icon btn-rounded"
-                                variant={template.active ? "outline-success" : "outline-danger"}
-                                title={template.active ? "Activo" : "Inactivo"}
-                              >
-                                <i className={template.active ? "feather icon-check-circle" : "feather icon-alert-triangle"} />
-                              </Button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.date.created")}</td>
-                            <td>
-                              <Form.Control
-                                plaintext
-                                readOnly
-                                defaultValue={template.created ? template.created.slice(0, 10) + " " + template.created.slice(11, 19) : ""}
-                              />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.date.modified")}</td>
-                            <td>
-                              <Form.Control
-                                plaintext
-                                readOnly
-                                defaultValue={
-                                  template.modified ? template.modified.slice(0, 10) + " " + template.modified.slice(11, 19) : ""
-                                }
-                              />
-                            </td>
-                          </tr>
+                            <tr>
+                              <td>{t("w.active")}</td>
+                              <td>
+                                <ActiveButton active={template.active} />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.date.created")}</td>
+                              <td>
+                                <Form.Control
+                                  plaintext
+                                  readOnly
+                                  defaultValue={template.created ? template.created.slice(0, 10) + " " + template.created.slice(11, 19) : ""}
+                                />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.date.modified")}</td>
+                              <td>
+                                <Form.Control
+                                  plaintext
+                                  readOnly
+                                  defaultValue={
+                                    template.modified ? template.modified.slice(0, 10) + " " + template.modified.slice(11, 19) : ""
+                                  }
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
                         </Table>
                       </Card.Body>
                     </Card>

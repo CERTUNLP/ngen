@@ -1,0 +1,41 @@
+# pull official base image
+FROM node:22-alpine AS build
+
+# set working directory
+WORKDIR /app
+
+# add `/app/node_modules/.bin` to $PATH
+ENV PATH=/app/node_modules/.bin:$PATH
+
+# install app dependencies
+COPY package.json ./
+
+RUN npm install
+
+# add app, PRODUCTION USES .env file!!
+COPY . ./
+
+# Always build the app for production during the image build process
+RUN npm run build
+
+
+# Etapa de producción
+FROM nginx:stable-alpine
+
+# Copiar la salida de la compilación al directorio de nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copiar archivo de configuración con placeholders
+COPY nginx/nginx.conf /etc/nginx/nginx.conf.template
+
+# Copiar el script de entrada
+COPY nginx/docker-entrypoint.sh /docker-entrypoint.sh
+
+# Dar permisos de ejecución al script de entrada
+RUN chmod +x /docker-entrypoint.sh
+
+# Exponer el puerto 3000
+EXPOSE 3000
+
+# Usar el script de entrada en lugar del CMD predeterminado de NGINX
+ENTRYPOINT ["/docker-entrypoint.sh"]

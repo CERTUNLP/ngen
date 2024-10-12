@@ -100,7 +100,7 @@ const ModalDetailNetwork = (props) => {
                       {props.network.contacts && props.network.contacts.length > 0 ? (
                         <tr>
                           <td>
-                            {t("ngen.related")} {t("ngen.contact_other")}{" "}
+                            {t("ngen.related")} {t("ngen.contact_other")}&nbsp;
                           </td>
                           <td>
                             {Object.values(props.network.contacts).map((contactItem, index) => {

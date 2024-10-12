@@ -7,15 +7,20 @@ const ListDomain = ({ events }) => {
   useEffect(() => {
     async function fetchAndSetEvents(events) {
       try {
-        const responses = await Promise.all(
-          events.map((event) =>
-            getEvent(event).then((response) => {
-              return response.data;
-            })
-          )
-        );
-        const ListDomain = responses.map((response) => response.address_value);
-        setEventDomains(ListDomain);
+        if (Array.isArray(events) && events.length > 0) {
+          const responses = await Promise.all(
+            events.map((event) =>
+              getEvent(event).then((response) => {
+                return response.data;
+              })
+            )
+          );
+
+          const ListDomain = responses.map((response) =>
+            response.address_value ? response.address_value : ""
+          );
+          setEventDomains(ListDomain);
+        }
       } catch (error) {
         console.error("Error fetching events:", error);
       }
@@ -24,12 +29,15 @@ const ListDomain = ({ events }) => {
     // Llamada a la función
     fetchAndSetEvents(events);
   }, [events]);
+
   return (
     <div>
-      {eventDomains.map((domain) => {
-        return <li>{domain}</li>;
-      })}
-    </div>
+      <ul style={{ padding: 0 }}>
+        {eventDomains.map((domain, index) => (
+          <li key={index} style={{ listStyleType: "none" }}>{domain}</li>
+        ))}
+      </ul>
+    </div >
   );
 };
 

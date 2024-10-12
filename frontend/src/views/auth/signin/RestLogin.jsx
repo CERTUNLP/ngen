@@ -80,7 +80,6 @@ const RestLogin = ({ className, ...rest }) => {
           </form>
         )}
       </Formik>
-      <hr />
     </React.Fragment>
   );
 };

@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 services:
   ngen-postgres:
     image: postgres:latest
@@ -14,7 +14,8 @@ services:
   ngen-adminer:
     image: adminer
     restart: on-failure
-    command: [ "php", "-d", "upload_max_filesize = 10G", "-d", "post_max_size = 10G", "-S", "[::]:8080", "-t", "/var/www/html" ]
+    command:
+      ["php", "-d", "upload_max_filesize = 10G", "-d", "post_max_size = 10G", "-S", "[::]:8080", "-t", "/var/www/html"]
     ports:
       - "8080:8080"
   ngen-django:
@@ -60,6 +61,20 @@ services:
       - ngen-django
       - ngen-rabbitmq
       - ngen-redis
+  ngen-celery-flower:
+    image: ngen-django:latest
+    restart: on-failure
+    command: celery -A project flower
+    volumes:
+      - ../:/code
+    env_file:
+      - ngen.env
+    ports:
+      - "5555:5555"
+    depends_on:
+      - ngen-django
+      - ngen-rabbitmq
+      - ngen-redis
   ngen-rabbitmq:
     image: rabbitmq:3-management-alpine
     restart: on-failure
@@ -67,7 +82,7 @@ services:
       - "5672:5672"
       - "15672:15672"
   ngen-redis:
-    image: 'redis:alpine'
+    image: "redis:alpine"
     restart: on-failure
     ports:
       - "6379:6379"
@@ -91,7 +106,7 @@ services:
       - "8025:8025" # web ui
   ngen-elasticsearch:
     image: elasticsearch:7.17.4
-    profiles: [ "elastic" ] # once you run with this profile you can't run without it, you should prune containers
+    profiles: ["elastic"] # once you run with this profile you can't run without it, you should prune containers
     restart: on-failure
     environment:
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
@@ -104,24 +119,14 @@ services:
       - ./elasticsearch:/var/lib/elasticsearch/data #sudo  chown -R 1000:1000 elasticsearch
     ports:
       - "9200:9200"
-  ngen-nginx:
-    image: nginx:alpine
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/ssl:/etc/nginx/ssl
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - ngen-django
   ngen-frontend:
-#    image: ngen-frontend:latest
+    image: ngen-frontend:latest
     build:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
-      - '../frontend/:/app'
-      - '/app/node_modules'
+      - "../frontend/:/app"
+      - "/app/node_modules"
     ports:
       - "3000:3000"
     environment:
@@ -129,24 +134,8 @@ services:
       - GENERATE_SOURCEMAP=false
       - PUBLIC_URL=http://localhost:3000/
       - VITE_APP_BASE_NAME=
-      - VITE_APP_BASE_URL=/metrics
       - VITE_APP_API_SERVER=http://localhost:8000/api/
       - CHOKIDAR_USEPOLLING=true
-      - VITE_APP_GOOGLE_MAPS_API_KEY=
-
-# networks:
-#     default:
-#         name: ngen
-#    ngen-cortex:
-#        image: thehiveproject/cortex:3.1-withdeps
-#        restart: on-failure
-#        environment:
-#            - es_hostname=ngen-elasticsearch
-#            - job_directory=/tmp/cortex-jobs
-#        volumes:
-#            - /var/run/docker.sock:/var/run/docker.sock
-#            - /tmp/cortex-jobs:/tmp/cortex-jobs # only works with this and will not work with local volume idk
-#        depends_on:
-#            - ngen-elasticsearch
-#        ports:
-#            - "9001:9001"
+      - VITE_APP_ENV=development
+    command: >
+      sh -c "npm run start"

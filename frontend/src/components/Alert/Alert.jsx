@@ -1,49 +1,53 @@
 import React, { useEffect, useState } from "react";
-import Toast from "react-bootstrap/Toast";
-
+import { toast } from "react-toastify";
 import store from "../../store";
-import { CLEAR_MESSAGE } from "../../store/actions";
 
-const Alert = ({ showAlert, resetShowAlert, component }) => {
-  const [show, setShow] = useState(false);
-  const [text, setText] = useState("");
-  const [type, setType] = useState("");
-
-  const textMessage = "changeme"; // store.getState().message.text;
-  const typeAlert = "changeme"; //store.getState().message.typeMessage;
-  const typeComponent = "changeme"; //store.getState().message.typeComponent;
+const Alert = ({ component }) => {
+  const [textMessage, setTextMessage] = useState("");
+  const [typeAlert, setTypeAlert] = useState("");
+  const [typeComponent, setTypeComponent] = useState("");
 
   useEffect(() => {
-    if (showAlert === true && textMessage !== "" && typeComponent === component) {
-      setText(textMessage);
-      setType(typeAlert);
-      setShow(true);
-    } else if (showAlert === true && textMessage !== "" && typeComponent !== component) {
-      resetAlert();
-    }
-  });
+    // Función para manejar actualizaciones del store
+    const handleStoreChange = () => {
+      const state = store.getState();
+      const message = state.message.text;
+      const alertType = state.message.typeMessage;
+      const componentType = state.message.typeComponent;
 
-  const resetAlert = () => {
-    const { dispatch } = store;
+      setTextMessage(message);
+      setTypeAlert(alertType);
+      setTypeComponent(componentType);
 
-    dispatch({
-      type: CLEAR_MESSAGE
-    });
-    setShow(false);
-    resetShowAlert();
-  };
+      // Verifica si el mensaje es para este componente y muestra el toast
+      // if (message !== "" && componentType === component) { // Original pero no resuelve muchas vistas
+      if (message !== "") {
+        showToast(alertType, message);
+      }
+    };
 
-  return (
-    <div id="toastAlert">
-      <Toast id={type === "success" ? "alertStyleGreen" : "alertStyleRed"} onClose={() => resetAlert()} show={show} autohide>
-        <i id="alertStyle__icon" className={type === "success" ? "feather icon-check-circle mx-1" : "feather icon-alert-triangle mx-1"} />
-        <span id="alertStyle__text">{text}</span>
-        <i id="alertStyle__close" className="material-icons" title="Cerrar" onClick={() => resetAlert()}>
-          close
-        </i>
-      </Toast>
-    </div>
-  );
+    // Función para mostrar el toast según el tipo de alerta
+    const showToast = (alertType, message) => {
+      if (alertType === "success") {
+        toast.success(message);
+      } else {
+        toast.error(message);
+      }
+      // Limpiar el mensaje en el store
+      store.dispatch({ type: "CLEAR_MESSAGE" });
+    };
+
+    // Mostrar el mensaje inicial si ya existe uno al montar el componente
+    handleStoreChange();
+
+    // Suscribirse al store para escuchar cambios
+    const unsubscribe = store.subscribe(handleStoreChange);
+
+    // Cleanup de la suscripción al desmontar el componente
+    return () => unsubscribe();
+  }, [component]);
+
+  return null; // No necesitas renderizar nada en este componente
 };
 
 export default Alert;

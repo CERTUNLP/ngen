@@ -1,13 +1,25 @@
+import os
 import constance
 from auditlog.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
 from django.views.generic import TemplateView
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser
+from constance import config
+from celery.result import AsyncResult
 
 from ngen import models, serializers
 from ngen.utils import get_settings
+from ngen.permissions import (
+    CustomApiViewPermission,
+    CustomMethodApiViewPermission,
+    CustomModelPermissions,
+)
+from project import settings
+from ngen.tasks import whois_lookup_task
 
 
 class AboutView(TemplateView):
@@ -25,7 +37,7 @@ class AboutView(TemplateView):
 class DisabledView(APIView):
     """View for disabled endpoints"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
@@ -35,18 +47,26 @@ class DisabledView(APIView):
 class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ContentType.objects.all()
     serializer_class = serializers.ContentTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class AuditViewSet(viewsets.ModelViewSet):
     queryset = LogEntry.objects.all()
     serializer_class = serializers.AuditSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class ConstanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ConstanceSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["constance.view_constance"],
+        "HEAD": ["constance.view_constance"],
+        "POST": ["constance.add_constance"],
+        "PUT": ["constance.change_constance"],
+        "PATCH": ["constance.change_constance"],
+        "DELETE": ["constance.delete_constance"],
+    }
     lookup_field = "key"
     lookup_value_regex = "[A-Za-z_][A-Za-z0-9_]*"
 
@@ -108,7 +128,7 @@ class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
     lookup_field = "key"
     lookup_value_regex = "[A-Za-z_][A-Za-z0-9_]*"
-    valid_keys = ["NGEN_LANG", "NGEN_LANG_EXTERNAL"]
+    valid_keys = ["NGEN_LANG", "NGEN_LANG_EXTERNAL", "PAGE_SIZE"]
 
     def get_queryset(self):
         """GET - List all instances"""
@@ -128,7 +148,12 @@ class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
 
 class StringIdentifierViewSet(viewsets.ViewSet):
     serializer_class = serializers.StringIdentifierSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomMethodApiViewPermission]
+    permission_required = {
+        "GET": ["ngen.view_stringidentifier"],
+        "HEAD": ["ngen.view_stringidentifier"],
+        "POST": ["ngen.use_stringidentifier"],
+    }
 
     def create(self, request, *args, **kwargs):
         serializer = serializers.StringIdentifierSerializer(data=request.data)
@@ -146,9 +171,80 @@ class StringIdentifierViewSet(viewsets.ViewSet):
 
 class UserAuditsListView(viewsets.ModelViewSet):
     serializer_class = serializers.AuditSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
     def get_queryset(self):
         user_pk = self.kwargs.get("pk")
         content_type = ContentType.objects.get_for_model(models.User)
         return LogEntry.objects.filter(content_type=content_type, object_id=user_pk)
+
+
+class TeamLogoFileUploadView(APIView):
+    parser_classes = (MultiPartParser,)
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.change_constance"]
+
+    def put(self, request, format=None):
+        file_obj = request.data["file"]
+
+        # destination = settings.LOGO_PATH
+        destination = os.path.join(settings.LOGO_PATH)
+
+        with open(destination, "wb+") as file:
+            for chunk in file_obj.chunks():
+                file.write(chunk)
+
+        config.TEAM_LOGO = destination
+
+        return Response(status=204)
+
+
+class WhoisLookupView(APIView):
+    """
+    Inicia la tarea de búsqueda WHOIS y devuelve el ID de la tarea.
+    """
+
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, ip_or_domain):
+        task = whois_lookup_task.delay(ip_or_domain)
+        return Response(
+            {
+                "task_id": task.id,
+                "url": request.build_absolute_uri(
+                    reverse("task_status", args=[task.id])
+                ),
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
+
+
+class TaskStatusView(APIView):
+    """
+    Consulta el estado de la tarea dada su ID.
+    """
+
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, task_id):
+        task_result = AsyncResult(task_id)
+
+        if task_result.state == "PENDING":
+            return Response({"status": "Pending"}, status=status.HTTP_200_OK)
+        elif task_result.state != "FAILURE":
+            return Response(
+                {
+                    "status": task_result.state,
+                    "result": task_result.result,
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            # Error al ejecutar la tarea
+            return Response(
+                {
+                    "status": task_result.state,
+                    "error": str(task_result.result),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

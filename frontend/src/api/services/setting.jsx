@@ -25,7 +25,7 @@ const getAllSetting = (currentPage = 1, results = [], limit = 100) => {
 
 const getSetting = (currentPage) => {
   //el parametro es para completar la url con el numero de pagina
-  let messageError = `No se pudo recuperar la informacion de los estados`;
+  let messageError = `No se pudo recuperar la informacion de la configuracion`;
   return apiInstance
     .get(COMPONENT_URL.constance + PAGE + currentPage)
     .then((response) => {
@@ -38,29 +38,39 @@ const getSetting = (currentPage) => {
 };
 
 const patchSetting = (url, value) => {
-  let messageSuccess = `Los eventps han sido mergeados correctamente.`;
-  let messageError = `Los eventos no han sido mergeados. `;
+  let messageSuccess = `Configuracion guardada con exito.`;
+  let messageError = `No se ha podido guardar la configuracion. `;
 
   return apiInstance
     .patch(url, {
       value: value
     })
     .then((response) => {
-      setAlert(messageSuccess, "success");
+      setAlert(messageSuccess, "success", "setting");
       return response;
     })
     .catch((error) => {
       let statusText = error.response.statusText;
       messageError += statusText;
-      setAlert(messageError, "error");
+      setAlert(messageError, "error", "setting");
       return Promise.reject(error);
     });
 };
+
 const settingPageSize = () => {
-  let messageError = `No se pudo recuperar la informacion de los estados`;
+  const cacheKey = `page_size`;
+  const cachedPageSize = localStorage.getItem(cacheKey);
+
+  if (cachedPageSize) {
+    return Promise.resolve(cachedPageSize);
+  }
+
+  let messageError = `No se pudo recuperar la información del tamaño de página`;
   return apiInstance
-    .get(COMPONENT_URL.constance + PAGE_SIZE)
+    .get(COMPONENT_URL.configPublic + PAGE_SIZE)
     .then((response) => {
+      // Almacenar en localStorage
+      localStorage.setItem(cacheKey, response.data.value);
       return response;
     })
     .catch((error) => {
@@ -69,4 +79,25 @@ const settingPageSize = () => {
     });
 };
 
-export { getAllSetting, patchSetting, getSetting, settingPageSize };
+const uploadTeamLogo = (file) => {
+  let messageSuccess = `Logo del equipo subido con exito.`;
+  let messageError = `No se ha podido subir el logo del equipo. `;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return apiInstance
+    .put(COMPONENT_URL.constanceUploadTeamLogo, formData)
+    .then((response) => {
+      setAlert(messageSuccess, "success", "team");
+      return response;
+    })
+    .catch((error) => {
+      let statusText = error.response.statusText;
+      messageError += statusText;
+      setAlert(messageError, "error", "team");
+      return Promise.reject(error);
+    });
+}
+
+export { getAllSetting, patchSetting, getSetting, settingPageSize, uploadTeamLogo };

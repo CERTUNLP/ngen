@@ -18,7 +18,7 @@ class TestConstance(APITestCaseWithLogin):
     This will handle constance testcases
     """
 
-    fixtures = ["priority.json", "user.json"]
+    fixtures = ["tests/priority.json", "tests/user.json"]
 
     @classmethod
     def setUpTestData(cls):
@@ -48,8 +48,8 @@ class TestConstance(APITestCaseWithLogin):
         self.assertEqual(response.data["key"], "TEAM_ABUSE")
         self.assertEqual(response.data["value"], "abuse@ngen.com")
         self.assertEqual(response.data["value_type"], "str")
-        self.assertEqual(response.data["help_text"], "CSIRT abuse email")
         self.assertEqual(response.data["default"], "abuse@ngen.com")
+        self.assertTrue("CSIRT abuse email" in response.data["help_text"])
 
     @override_config(TEAM_EMAIL="team@ngen.com")
     def test_constance_post(self):

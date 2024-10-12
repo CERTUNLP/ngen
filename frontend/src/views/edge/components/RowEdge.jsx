@@ -61,8 +61,8 @@ const RowEdge = (props) => {
 
         <td>
           <CrudButton type="read" onClick={() => setModalShow(true)} />
-          <CrudButton type="edit" onClick={() => setModalEdit(true)} />
-          <CrudButton type="delete" onClick={() => setModalDelete(true)} />
+          <CrudButton type="edit" onClick={() => setModalEdit(true)} permissions="change_edge" />
+          <CrudButton type="delete" onClick={() => setModalDelete(true)} permissions="delete_edge" />
         </td>
       </tr>
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import FormEvent from "./components/FormEvent";
-import Navigation from "../../components/Navigation/Navigation";
 import { getEvent, patchEvent, putEvent } from "../../api/services/events";
 import { useLocation, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
@@ -15,7 +14,7 @@ import { getMinifiedArtifact } from "../../api/services/artifact";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "config/constant";
 
-const EditEvent = () => {
+const EditEvent = ({routeParams}) => {
   //const [date, setDate] = useState(caseItem.date  != null ? caseItem.date.substring(0,16) : '') //required
   const { t } = useTranslation();
   const location = useLocation();
@@ -183,9 +182,7 @@ const EditEvent = () => {
       //formDataEvent.append('artifacts',body.artifacts);
 
       putEvent(body.url, formDataEvent)
-        .then(() => {
-          window.location.href = "/events";
-        })
+        .then(() => { })
         .catch((error) => {
           setShowAlert(true); //hace falta?
           console.log(error);
@@ -200,6 +197,7 @@ const EditEvent = () => {
       }
       //console.log(fecha.toISOString())//YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
 
+      console.log("body", body);
       formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
       //f.append("date", fecha.toISOString())
       formDataEvent.append("priority", body.priority);
@@ -232,11 +230,9 @@ const EditEvent = () => {
       //formDataEvent.append('artifacts',body.artifacts);
 
       patchEvent(body.url, formDataEvent)
-        .then(() => {
-          window.location.href = "/events";
-        })
+        .then(() => { })
         .catch((error) => {
-          setShowAlert(true); //hace falta?
+          // setShowAlert(true); //hace falta?
           console.log(error);
         });
     }
@@ -245,10 +241,6 @@ const EditEvent = () => {
   return (
     body && (
       <div>
-        <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="event" />
-        <Row>
-          <Navigation actualPosition={t("ngen.event.edit")} path="/events" index={t("ngen.event_one")} />
-        </Row>
         <FormEvent
           createEvent={editEvent}
           setBody={setBody}
@@ -268,6 +260,7 @@ const EditEvent = () => {
           priorityNames={priorityNames}
           setPriorityNames={setPriorityNames}
           userNames={userNames}
+          asNetworkAdmin={routeParams.asNetworkAdmin}
         />
       </div>
     )

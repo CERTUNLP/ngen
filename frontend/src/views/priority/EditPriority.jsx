@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import FormPriority from "./components/FormPriority";
-import Navigation from "../../components/Navigation/Navigation";
 import { putPriority, getPriority } from "../../api/services/priorities";
-import { useLocation, useParams } from "react-router-dom";
-import Alert from "../../components/Alert/Alert";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "config/constant";
 
@@ -24,7 +22,6 @@ const EditPriority = () => {
         .catch((error) => console.log(error));
     }
   }, [id]);
-  console.log(body);
 
   useEffect(() => {
     if (Object.keys(priority).length > 0) {
@@ -101,10 +98,6 @@ const EditPriority = () => {
   };
   return (
     <>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="priority" />
-      <Row>
-        <Navigation actualPosition={t("ngen.priority.edit")} path="/priorities" index={t("ngen.priority_other")} />
-      </Row>
       <Row>
         <Col>
           <Card>

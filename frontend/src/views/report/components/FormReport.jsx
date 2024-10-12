@@ -294,7 +294,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
 
       {body.problem !== "" && body.lang !== "" && body.taxonomy !== "-1" ? (
         <Button variant="primary" onClick={createOrEdit}>
-          {t("button.save")}{" "}
+          {t("button.save")}&nbsp;
         </Button>
       ) : (
         <>

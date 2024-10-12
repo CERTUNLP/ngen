@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Row, Spinner } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import FormTemplate from "./components/FormTemplate";
-import Navigation from "../../components/Navigation/Navigation";
 import { postTemplate } from "../../api/services/templates";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
@@ -138,10 +137,6 @@ const CreateTemplate = () => {
   };
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
-      <Row>
-        <Navigation actualPosition={t("ngen.template.add")} path="/templates" index={t("ngen.template_other")} />
-      </Row>
       {loading ? (
         <Spinner animation="border" />
       ) : (

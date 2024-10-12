@@ -3,6 +3,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { validateContact, validateName, validateSelect } from "../../../utils/validators/contact";
 import FormContactSelectUsername from "./FormContactSelectUSername";
 import { getMinifiedPriority } from "../../../api/services/priorities";
+import { getMinifiedUser } from "../../../api/services/users";
 import SelectLabel from "../../../components/Select/SelectLabel";
 import { useTranslation } from "react-i18next";
 
@@ -10,11 +11,13 @@ const FormCreateContact = (props) => {
   // props: name, setName, role, setRole, priority, setPriority, type, setType, contact, setContact, keypgp, setKey, ifConfirm, ifCancel
   const [validContact, setValidContact] = useState(false);
   const [prioritiesOption, setPrioritiesOption] = useState([]);
+  const [userOptions, setUserOptions] = useState([]);
   const { t } = useTranslation();
 
   const [selectPriority, setSelectPriority] = useState();
   const [selectRole, setSelectRole] = useState();
   const [selectType, setSelectType] = useState();
+  const [selectUser, setSelectUser] = useState();
 
   useEffect(() => {
     getMinifiedPriority()
@@ -23,6 +26,17 @@ const FormCreateContact = (props) => {
           return { value: priority.url, label: priority.name };
         });
         setPrioritiesOption(listPriority);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    getMinifiedUser()
+      .then((response) => {
+        let listUser = response.map((user) => {
+          return { value: user.url, label: user.username };
+        });
+        setUserOptions(listUser);
       })
       .catch((error) => {
         console.log(error);
@@ -48,6 +62,13 @@ const FormCreateContact = (props) => {
       typeOptions.forEach((item) => {
         if (item.value === props.type) {
           setSelectType({ label: item.label, value: item.value });
+        }
+      });
+    }
+    if (userOptions.length > 0) {
+      userOptions.forEach((item) => {
+        if (item.value === props.user) {
+          setSelectUser({ label: item.label, value: item.value });
         }
       });
     }
@@ -155,18 +176,33 @@ const FormCreateContact = (props) => {
             />
           </Col>
         </Row>
-        <Form.Group controlId="Form.Contact.Key">
-          <Form.Label>{t("ngen.public.key")}</Form.Label>
-          <Form.Control
-            type="string"
-            placeholder={t("ngen.key.placeholder")}
-            value={props.keypgp}
-            maxLength="100"
-            onChange={(e) => {
-              props.setKey(e.target.value);
-            }}
-          />
-        </Form.Group>
+        <Row>
+          <Form.Group controlId="Form.Contact.Key">
+            <Form.Label>{t("ngen.public.key")}</Form.Label>
+            <Form.Control
+              type="string"
+              placeholder={t("ngen.key.placeholder")}
+              value={props.keypgp}
+              maxLength="255"
+              onChange={(e) => {
+                props.setKey(e.target.value);
+              }}
+            />
+          </Form.Group>
+        </Row>
+        <Row>
+          <Col>
+            <Col sm={12} lg={4}>
+              <SelectLabel
+                set={props.setUser}
+                setSelect={setSelectUser}
+                options={userOptions}
+                value={selectUser}
+                placeholder={t("ngen.user")}
+              />
+            </Col>
+          </Col>
+        </Row>
         <Form.Group>
           {props.name !== "" &&
           validateName(props.name) &&

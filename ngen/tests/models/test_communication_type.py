@@ -28,16 +28,16 @@ class CommunicationTypeTest(TestCase):
     """
 
     fixtures = [
-        "priority.json",
-        "tlp.json",
-        "user.json",
-        "state.json",
-        "feed.json",
-        "taxonomy.json",
-        "case_template.json",
-        "contact.json",
-        "network_entity.json",
-        "feed.json",
+        "tests/priority.json",
+        "tests/tlp.json",
+        "tests/user.json",
+        "tests/state.json",
+        "tests/feed.json",
+        "tests/taxonomy.json",
+        "tests/case_template.json",
+        "tests/contact.json",
+        "tests/network_entity.json",
+        "tests/feed.json",
     ]
 
     @classmethod

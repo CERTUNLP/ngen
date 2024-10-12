@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Card, Col, Row } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
 import { getPriorities } from "../../api/services/priorities";
@@ -53,21 +51,14 @@ const ListPriorities = () => {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="priority" />
-      <Row>
-        <Navigation actualPosition={t("ngen.priority_other")} />
-      </Row>
-
       <Card>
         <Card.Header>
           <Row>
             <Col sm={12} lg={9}>
-              <Search type={t("search.by.name")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+              <Search type={t("search.by.name")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
             </Col>
             <Col sm={12} lg={3}>
-              <Link to="/priorities/create">
-                <CrudButton type="create" name={t("ngen.priority_one")} />
-              </Link>
+              <CrudButton type="create" name={t("ngen.priority_one")} to="/priorities/create" checkPermRoute />
             </Col>
           </Row>
         </Card.Header>

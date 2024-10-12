@@ -17,7 +17,12 @@ class NetworkFilterTest(BaseFilterTest):
     Network filter test class.
     """
 
-    fixtures = ["priority.json", "user.json", "network_entity.json", "contact.json"]
+    fixtures = [
+        "tests/priority.json",
+        "tests/user.json",
+        "tests/network_entity.json",
+        "tests/contact.json",
+    ]
 
     @classmethod
     def setUpTestData(cls):

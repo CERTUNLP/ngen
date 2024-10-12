@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
 import { deletePlaybook, getPlaybook } from "../../../api/services/playbooks";
-import { Link } from "react-router-dom";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import ModalDetailPlaybook from "./ModalDetailPlaybook";
 import Alert from "../../../components/Alert/Alert";
@@ -92,10 +91,8 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
                 </td>
                 <td>
                   <CrudButton type="read" onClick={() => showPlaybook(book.url)} />
-                  <Link to={`/playbooks/edit/${itemNumber}`}>
-                    <CrudButton type="edit" />
-                  </Link>
-                  <CrudButton type="delete" onClick={() => Delete(book.url, book.name)} />
+                  <CrudButton type="edit" to={`/playbooks/edit/${itemNumber}`} checkPermRoute />
+                  <CrudButton type="delete" onClick={() => Delete(book.url, book.name)} permissions="delete_playbook" />
                 </td>
               </tr>
             );

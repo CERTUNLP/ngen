@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { Row } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 import { getCase } from "../../api/services/cases";
 import FormCase from "./components/FormCase";
-import Navigation from "../../components/Navigation/Navigation";
 import { getState } from "../../api/services/states";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "config/constant";
 
-const EditCase = () => {
+const EditCase = ({asNetworkAdmin}) => {
   const { t } = useTranslation();
-  const location = useLocation();
-  const fromState = location.state;
-  const [url] = useState(fromState);
 
   const [caseItem, setCaseItem] = useState(null);
 
@@ -58,9 +53,6 @@ const EditCase = () => {
   return (
     caseItem && (
       <React.Fragment>
-        <Row>
-          <Navigation actualPosition={t("ngen.case_edit")} path="/cases" index={t("ngen.case_other")} />
-        </Row>
         <FormCase
           caseItem={caseItem}
           allStates={allStates}
@@ -70,6 +62,7 @@ const EditCase = () => {
           buttonsModalColum={true}
           setUpdateCase={setUpdateCase}
           updateCase={updateCase}
+          asNetworkAdmin={asNetworkAdmin}
         />
       </React.Fragment>
     )

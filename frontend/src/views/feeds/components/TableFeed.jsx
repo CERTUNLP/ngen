@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { deleteFeed, getFeed, putActivationStatus } from "../../../api/services/feeds";
 import CrudButton from "../../../components/Button/CrudButton";
 import ActiveButton from "../../../components/Button/ActiveButton";
@@ -108,15 +107,17 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                 <tr key={index}>
                   <td>{feed.name}</td>
                   <td>
-                    <ActiveButton active={feed.active} onClick={() => showModalChangeState(feed.url, feed.name, feed.active)} />
+                    <ActiveButton
+                      active={feed.active}
+                      onClick={() => showModalChangeState(feed.url, feed.name, feed.active)}
+                      permissions="change_feed"
+                    />
                   </td>
                   <td>{feed.events_count}</td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalFeed(feed)} />
-                    <Link to={`/feeds/edit/${itemNumber}`}>
-                      <CrudButton type="edit" />
-                    </Link>
-                    <CrudButton type="delete" onClick={() => handleShow(feed.name, feed.url)} />
+                    <CrudButton type="edit" to={`/feeds/edit/${itemNumber}`} checkPermRoute />
+                    <CrudButton type="delete" onClick={() => handleShow(feed.name, feed.url)} permissions="delete_feed" />
                   </td>
                 </tr>
               );
@@ -154,9 +155,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                         </span>
                       </Col>
                       <Col sm={12} lg={2}>
-                        <Link to={`/feeds/edit/${id}`}>
-                          <CrudButton type="edit" />
-                        </Link>
+                        <CrudButton type="edit" to={`/feeds/edit/${id}`} checkPermRoute />
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                       </Col>
                     </Row>
@@ -179,7 +178,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                       <tr>
                         <td>{t("w.active")}</td>
                         <td>
-                          <ActiveButton active={feed.active} />
+                          <ActiveButton active={feed.active} permissions="change_feed" />
                         </td>
                       </tr>
                       {feed.description === undefined ? (
@@ -203,9 +202,9 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                         <td>{t("ngen.related.info")}</td>
                         <td>
                           <Button size="sm" variant="light" className="text-capitalize">
-                            {t("ngen.incident_other")}
-                            <Badge variant="light" className="ml-1">
-                              24256
+                            {t("ngen.incident_other")}&nbsp;
+                            <Badge variant="light" bg={feed.events_count > 0 ? "light" : "secondary"} className="ml-1">
+                              {feed.events_count}
                             </Badge>
                           </Button>
                         </td>

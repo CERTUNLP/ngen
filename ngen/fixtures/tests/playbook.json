@@ -1,0 +1,98 @@
+[
+  {
+    "model": "ngen.playbook",
+    "pk": 1,
+    "fields": {
+      "created": "2023-06-22T18:05:39.868Z",
+      "modified": "2023-06-22T18:05:39.868Z",
+      "name": "Phishing playbook",
+      "taxonomy": [
+        90
+      ]
+    }
+  },
+  {
+    "model": "ngen.playbook",
+    "pk": 2,
+    "fields": {
+      "created": "2023-06-22T18:05:51.234Z",
+      "modified": "2023-06-22T18:05:51.234Z",
+      "name": "Copyright playbook",
+      "taxonomy": [
+        41
+      ]
+    }
+  },
+  {
+    "model": "ngen.task",
+    "pk": 1,
+    "fields": {
+      "created": "2023-06-22T18:06:30.072Z",
+      "modified": "2023-06-22T18:06:30.072Z",
+      "priority": 1,
+      "name": "Task 1",
+      "playbook": 2,
+      "description": "Task 1"
+    }
+  },
+  {
+    "model": "ngen.task",
+    "pk": 2,
+    "fields": {
+      "created": "2023-06-22T18:06:35.046Z",
+      "modified": "2023-06-22T18:06:35.046Z",
+      "priority": 1,
+      "name": "Task 2",
+      "playbook": 2,
+      "description": "Task 2"
+    }
+  },
+  {
+    "model": "ngen.task",
+    "pk": 3,
+    "fields": {
+      "created": "2023-06-22T18:06:40.777Z",
+      "modified": "2023-06-22T18:06:40.777Z",
+      "priority": 2,
+      "name": "Task 3",
+      "playbook": 2,
+      "description": "Task 3"
+    }
+  },
+  {
+    "model": "ngen.task",
+    "pk": 4,
+    "fields": {
+      "created": "2023-06-22T18:06:47.180Z",
+      "modified": "2023-06-22T18:06:47.180Z",
+      "priority": 2,
+      "name": "Task 1",
+      "playbook": 1,
+      "description": "Task 1"
+    }
+  },
+  {
+    "model": "ngen.task",
+    "pk": 5,
+    "fields": {
+      "created": "2023-06-22T18:06:51.541Z",
+      "modified": "2023-06-22T18:06:51.541Z",
+      "priority": 2,
+      "name": "Task 2",
+      "playbook": 1,
+      "description": "Task 2"
+    }
+  },
+  {
+    "model": "ngen.task",
+    "pk": 6,
+    "fields": {
+      "created": "2023-06-22T18:06:58.062Z",
+      "modified": "2023-06-22T18:06:58.062Z",
+      "priority": 5,
+      "name": "Task 3",
+      "playbook": 1,
+      "description": "Task 3"
+    }
+  }
+]
