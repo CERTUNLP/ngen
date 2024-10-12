@@ -22,6 +22,7 @@ const ListTemplete = () => {
   const [countItems, setCountItems] = useState(0);
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
+  const [isModify, setIsModify] = useState(null);
   const { t } = useTranslation();
 
   const [showAlert, setShowAlert] = useState(false);
@@ -121,7 +122,7 @@ const ListTemplete = () => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, taxonomyFilter, feedFilter, wordToSearch, order]);
+  }, [currentPage, taxonomyFilter, feedFilter, wordToSearch, order, isModify]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -186,6 +187,7 @@ const ListTemplete = () => {
                 tlpNames={tlpNames}
                 priorityNames={priorityNames}
                 stateNames={stateNames}
+                setIsModify={setIsModify}
               />
             </Card.Body>
             <Card.Footer>

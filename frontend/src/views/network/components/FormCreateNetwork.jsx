@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, CloseButton, Col, Form, Modal, Row } from "react-bootstrap";
 import { getMinifiedEntity } from "../../../api/services/entities";
-import CrudButton from "../../../components/Button/CrudButton";
+import CrudButton from "components/Button/CrudButton";
 import FormCreateContact from "../../contact/components/FormCreateContact";
 import { postContact } from "../../../api/services/contacts";
 import { validateSelect, validateAddressValueOrNetworkOrDomain } from "../../../utils/validators/network";
@@ -245,9 +245,7 @@ const FormCreateNetwork = (props) => {
                   </>
                 ) //disabled
               }
-              <Button variant="primary" onClick={() => navigate(-1)}>
-                {t("button.cancel")}
-              </Button>
+              <CrudButton type="cancel" />
             </Form.Group>
           </Col>
         </Row>

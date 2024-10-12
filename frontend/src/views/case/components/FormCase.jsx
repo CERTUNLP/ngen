@@ -16,6 +16,7 @@ import { getEvent } from "../../../api/services/events";
 import EvidenceCard from "../../../components/UploadFiles/EvidenceCard";
 import { getEvidence } from "../../../api/services/evidences";
 import ModalCreateEvent from "../../event/ModalCreateEvent";
+import CrudButton from "components/Button/CrudButton";
 
 const FormCase = (props) => {
   // props: edit, caseitem, allStates
@@ -732,9 +733,7 @@ const FormCase = (props) => {
         </>
       )}
       {props.buttonsModalColum ? (
-        <Button variant="primary" href="/cases">
-          {t("button.cancel")}
-        </Button>
+        <CrudButton type="cancel" />
       ) : (
         <Button variant="primary" onClick={() => props.setShowModalCase(false)}>
           {t("button.cancel")}

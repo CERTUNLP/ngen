@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import Alert from "../../components/Alert/Alert";
 import { validateDescription, validateName, validateUnrequiredInput } from "../../utils/validators/taxonomy";
 import { useTranslation } from "react-i18next";
 import { postTaxonomyGroup } from "../../api/services/taxonomyGroups";
 import DropdownState from "../../components/Dropdown/DropdownState";
+import CrudButton from "components/Button/CrudButton";
 
 const CreateTaxonomyGroup = () => {
   const navigate = useNavigate();
@@ -119,9 +119,7 @@ const CreateTaxonomyGroup = () => {
                       {t("button.save")}
                     </Button>
                   )}
-                  <Button variant="info" href="/taxonomyGroups">
-                    {t("button.cancel")}
-                  </Button>
+                  <CrudButton type="cancel" />
                 </Form.Group>
               </Form>
             </Card.Body>

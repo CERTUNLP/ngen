@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row, Spinner } from "react-bootstrap";
 import DropdownState from "../../components/Dropdown/DropdownState";
 import { useLocation, useParams } from "react-router-dom";
-import Alert from "../../components/Alert/Alert";
 import { validateDescription, validateName, validateType, validateUnrequiredInput } from "../../utils/validators/taxonomy";
 import { getMinifiedTaxonomy, putTaxonomy, getTaxonomy } from "../../api/services/taxonomies";
 import SelectLabel from "../../components/Select/SelectLabel";
 import { useTranslation } from "react-i18next";
 import { getMinifiedTaxonomyGroups } from "../../api/services/taxonomyGroups";
 import { COMPONENT_URL } from "config/constant";
+import CrudButton from "components/Button/CrudButton";
 
 const EditTaxonomy = () => {
   const location = useLocation();
@@ -268,9 +268,7 @@ const EditTaxonomy = () => {
                       {t("button.save")}
                     </Button>
                   )}
-                  <Button variant="info" href="/taxonomies">
-                    {t("button.close")}
-                  </Button>
+                  <CrudButton type="cancel" />
                 </Form.Group>
               </Form>
             </Card.Body>

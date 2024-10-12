@@ -20,7 +20,8 @@ const TableTemplete = ({
   feedNames,
   tlpNames,
   priorityNames,
-  stateNames
+  stateNames,
+  setIsModify
 }) => {
   const [deleteName, setDeleteName] = useState();
   const [deleteUrl, setDeleteUrl] = useState();
@@ -92,8 +93,8 @@ const TableTemplete = ({
 
   const changeState = () => {
     isActive(dataTemplate.url, +!dataTemplate.state)
-      .then(() => {
-        window.location.href = "/templates";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         setShowAlert(true);

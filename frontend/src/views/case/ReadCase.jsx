@@ -439,9 +439,7 @@ const ReadCase = ({ routeParams }) => {
             )}
 
             {buttonReturn !== "false" ? (
-              <Button variant="primary" href="/cases">
-                {t("button.return")}
-              </Button>
+              <CrudButton type="cancel" />
             ) : (
               ""
             )}

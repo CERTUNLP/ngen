@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { validateName } from "../../../utils/validators/entity";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
 
 const FormEntity = (props) => {
   // props: name, setName, ifConfirm, {edit:false | true -> active, setActive}
@@ -73,9 +74,7 @@ const FormEntity = (props) => {
           </>
         )}
 
-        <Button variant="primary" href="/entities">
-          {t("button.cancel")}
-        </Button>
+        <CrudButton type="cancel" />
       </Form>
     </React.Fragment>
   );

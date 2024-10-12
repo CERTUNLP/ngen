@@ -14,6 +14,7 @@ import { getMinifiedGroups } from "api/services/groups";
 import SelectComponent from "../../../components/Select/SelectComponent";
 import { useTranslation } from "react-i18next";
 import DualListBox from "react-dual-listbox";
+import CrudButton from "components/Button/CrudButton";
 
 const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequired }) => {
   const [selectPriority, setSelectPriority] = useState();
@@ -247,9 +248,7 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
           </Button>
         </>
       )}
-      <Button variant="primary" href="/users">
-        {t("button.cancel")}
-      </Button>
+      <CrudButton type="cancel" />
     </Form>
   );
 };

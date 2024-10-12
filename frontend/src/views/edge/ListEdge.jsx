@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, CloseButton, Col, Collapse, Modal, Row, Table } from "react-bootstrap";
+import { Card, CloseButton, Col, Collapse, Modal, Row, Table, Spinner } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import FormCreateEdge from "./components/FormCreateEdge";
@@ -81,7 +81,7 @@ const ListEdge = (props) => {
   if (props.loading) {
     return (
       <Row className="justify-content-md-center">
-        <Spinner animation="border" variant="primary" size="sm" />
+        <Spinner animation="border" variant="primary" />
       </Row>
     );
   }

@@ -1,12 +1,13 @@
 import React from "react";
 import { Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import PermissionCheck from "components/Auth/PermissionCheck";
 import { routePermissions } from "utils/permissions";
 
 const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissions, checkPermRoute, text = "", optionalPermissions }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   if (checkPermRoute) {
     // Find the permissions for the route
@@ -66,7 +67,15 @@ const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissi
       title: t("crud.save"),
       icon: "fa fa-save",
       text: text ? text : ""
-    }
+    },
+    cancel: {
+      class: text ? "text-capitalize" : "text-capitalize",
+      variant: "primary",
+      title: t("button.cancel"),
+      icon: "",
+      onClick: () => navigate(-1),
+      text: text ? text : t("button.cancel")
+    },
   };
 
   let component = (
@@ -75,9 +84,9 @@ const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissi
       variant={!disabled ? button[type].variant : ""}
       title={button[type].title}
       disabled={disabled}
-      onClick={onClick}
+      onClick={button[type].onClick ? button[type].onClick : onClick}
     >
-      <i className={button[type].icon} />
+      { button[type].icon ? <i className={button[type].icon} /> : "" }
       {" " + button[type].text}
     </Button>
   );

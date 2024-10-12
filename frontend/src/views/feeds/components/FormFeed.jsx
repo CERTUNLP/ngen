@@ -3,6 +3,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { validateDescription, validateName, validateUnrequiredInput } from "../../../utils/validators/feed";
 import DropdownState from "../../../components/Dropdown/DropdownState";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
 
 const FormFeed = (props) => {
   const { t } = useTranslation();
@@ -61,9 +62,7 @@ const FormFeed = (props) => {
               {t("button.save")}
             </Button>
           )}
-          <Button variant="info" href="/feeds">
-            {t("button.cancel")}
-          </Button>
+          <CrudButton type="cancel" />
         </Form.Group>
       </Row>
     </Form>
