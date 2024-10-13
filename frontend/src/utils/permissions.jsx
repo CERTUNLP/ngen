@@ -51,6 +51,14 @@ const userIsNetworkAdmin = () => {
   return getCurrentUser().is_network_admin;
 };
 
+const userIsStaff = () => {
+  return getCurrentUser().is_staff;
+}
+
+const userIsSuperuser = () => {
+  return getCurrentUser().is_superuser;
+}
+
 const getCurrentUser = () => {
   return getCurrentAccount()?.user || {};
 };
@@ -66,5 +74,7 @@ export {
   routePermissions,
   userIsNetworkAdmin,
   getCurrentUser,
-  getCurrentAccount
+  getCurrentAccount,
+  userIsStaff,
+  userIsSuperuser
 };

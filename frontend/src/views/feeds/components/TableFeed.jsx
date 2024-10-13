@@ -8,7 +8,7 @@ import Alert from "../../../components/Alert/Alert";
 import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
 
-const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage }) => {
+const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage, setIsModify }) => {
   const [remove, setRemove] = useState(false);
   const [deleteName, setDeleteName] = useState("");
   const [id, setId] = useState("");
@@ -35,8 +35,8 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
   };
   const changeState = () => {
     putActivationStatus(dataState.url, !dataState.state)
-      .then(() => {
-        window.location.href = "/feeds";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         console.log(error);

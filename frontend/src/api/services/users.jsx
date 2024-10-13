@@ -150,6 +150,50 @@ const isActive = (url, active) => {
     });
 };
 
+const isSuperuser = (url, superuser) => {
+  let messageSuccess = !superuser ? `El usuario ha sido desactivado` : `El usuario ha sido activado`;
+  let messageError = `El usuario no se pudo modificar`;
+  return apiInstance
+    .patch(url, {
+      is_superuser: superuser
+    })
+    .then((response) => {
+      setAlert(messageSuccess, "success");
+      return response;
+    })
+    .catch((error) => {
+      if (error.message === "Cannot read properties of undefined (reading 'code')") {
+        //el backend o servidor no funciona
+        messageError = !superuser ? `El usuario no pudo ser desactivado no pudo ser` : `El usuario no pudo ser activado no pudo ser`;
+        setAlert(messageError, "error");
+      }
+      setAlert(messageError, "error");
+      return Promise.reject(error);
+    });
+}
+
+const isStaff = (url, staff) => {
+  let messageSuccess = !staff ? `El usuario ha sido desactivado` : `El usuario ha sido activado`;
+  let messageError = `El usuario no se pudo modificar`;
+  return apiInstance
+    .patch(url, {
+      is_staff: staff
+    })
+    .then((response) => {
+      setAlert(messageSuccess, "success");
+      return response;
+    })
+    .catch((error) => {
+      if (error.message === "Cannot read properties of undefined (reading 'code')") {
+        //el backend o servidor no funciona
+        messageError = !staff ? `El usuario no pudo ser desactivado no pudo ser` : `El usuario no pudo ser activado no pudo ser`;
+        setAlert(messageError, "error");
+      }
+      setAlert(messageError, "error");
+      return Promise.reject(error);
+    });
+}
+
 const deleteUser = (url) => {
   let messageSuccess = `El usuario se ha eliminado correctamente.`;
   let messageError = `EL usuario no se ha eliminado`;
@@ -184,4 +228,4 @@ const deleteUser = (url) => {
         'Case.user_creator', 'Case.assigned', 'Event.reporter'.\", {<Case: 1>, <Event: 1:unlp.com>})"
     ]
 */
-export { getUsers, getUser, getAllUsers, postUser, putUser, deleteUser, isActive, getMinifiedUser };
+export { getUsers, getUser, getAllUsers, postUser, putUser, deleteUser, isActive, getMinifiedUser, isSuperuser, isStaff };

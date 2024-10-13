@@ -8,7 +8,7 @@ import Alert from "../../../components/Alert/Alert";
 import CallBackendByName from "../../../components/CallBackendByName";
 import { useTranslation } from "react-i18next";
 
-const TableStates = ({ states, callback, loading, currentPage }) => {
+const TableStates = ({ states, callback, loading, currentPage, setIsModify }) => {
   const [deleteName, setDeleteName] = useState();
   const [deleteUrl, setDeleteUrl] = useState();
   const [id, setId] = useState("");
@@ -35,8 +35,8 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
   };
   const handleDelete = () => {
     deleteState(deleteUrl, deleteName)
-      .then(() => {
-        window.location.href = "/states";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         setShowAlert(true);
@@ -59,8 +59,8 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
   };
   const changeState = () => {
     isActive(dataState.url, +!dataState.state)
-      .then(() => {
-        window.location.href = "/states";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         setShowAlert(true);
