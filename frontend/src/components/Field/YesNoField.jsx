@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 const YesNoField = ({ value }) => {
