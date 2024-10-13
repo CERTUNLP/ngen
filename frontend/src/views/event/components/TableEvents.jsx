@@ -8,6 +8,7 @@ import { deleteEvent } from "../../../api/services/events";
 import Ordering from "../../../components/Ordering/Ordering";
 import LetterFormat from "../../../components/LetterFormat";
 import { useTranslation } from "react-i18next";
+import UuidField from "components/Field/UuidField";
 
 const TableEvents = ({
   events,
@@ -49,6 +50,7 @@ const TableEvents = ({
   //checkbox
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [list, setList] = useState([]);
+  const [showFullUuid, setShowFullUuid] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -81,6 +83,10 @@ const TableEvents = ({
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleToggleUuidDisplay = () => {
+    setShowFullUuid(!showFullUuid);
   };
 
   const handleSelectAll = (e) => {
@@ -129,7 +135,7 @@ const TableEvents = ({
     navigate(basePath + "/cases/view/" + id);
   };
 
-  const letterSize = { fontSize: "1.1em" };
+  const letterSize = {};
   return (
     <React.Fragment>
       <ul className="list-group my-4">
@@ -181,7 +187,14 @@ const TableEvents = ({
               ) : (
                 ""
               )}
-              {!disableUuid && <th style={letterSize}>{t("ngen.uuid")}</th>}
+              {!disableUuid && (
+                <th style={{ textAlign: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ marginRight: "8px" }}>{t("ngen.uuid")}</span>
+                    <Form.Check type="checkbox" checked={showFullUuid} onChange={handleToggleUuidDisplay} />
+                  </div>
+                </th>
+              )}
               <th style={letterSize}>{t("ngen.identifier")}</th>
               {!disableTlp && <th style={letterSize}>{t("ngen.tlp")}</th>}
               {!disableMerged && <th style={letterSize}>{t("ngen.event.merged")}</th>}
@@ -236,7 +249,11 @@ const TableEvents = ({
                   )}
                   {!disableDateModified ? <td>{event.modified.slice(0, 10) + " " + event.modified.slice(11, 19)}</td> : ""}
                   {!disableDate ? <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : ""}</td> : ""}
-                  {!disableUuid && <td>{event.uuid}</td>}
+                  {!disableUuid && (
+                    <td>
+                      <UuidField value={event.uuid} fulltext={showFullUuid} />
+                    </td>
+                  )}
                   <td>{event.address_value}</td>
                   {!disableTlp && (
                     <td>
