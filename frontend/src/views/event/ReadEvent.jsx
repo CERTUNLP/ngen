@@ -304,7 +304,7 @@ const ReadEvent = ({ routeParams }) => {
           <Card.Body>
             <Row>
               <Col sm={12} lg={2} className={"align-self-center"}>
-                {t("ngen.domain")}
+                <b>{t("ngen.domain")}</b>
               </Col>
               <Col sm={12} lg={4} className={"align-self-center"}>
                 &nbsp;
@@ -316,7 +316,7 @@ const ReadEvent = ({ routeParams }) => {
           <Card.Body>
             <Row>
               <Col sm={12} lg={2} className={"align-self-center"}>
-                {t("ngen.cidr")}
+                <b>{t("ngen.cidr")}</b>
               </Col>
               <Col sm={12} lg={4} className={"align-self-center"}>
                 &nbsp;

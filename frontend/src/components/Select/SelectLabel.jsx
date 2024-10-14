@@ -1,8 +1,10 @@
 import React from "react";
 import { Form } from "react-bootstrap";
 import Select from "react-select";
+import { useTranslation } from "react-i18next";
 
 const SelectLabel = ({ set, setSelect, options, value, placeholder, required, disabled, legend }) => {
+  const { t } = useTranslation();
   const handleChange = (e) => {
     if (e) {
       set(e.value);
@@ -21,7 +23,7 @@ const SelectLabel = ({ set, setSelect, options, value, placeholder, required, di
         options={options}
         value={value}
         isClearable
-        placeholder={`Select ${placeholder}`}
+        placeholder={`${t("w.select")} ${placeholder}`}
         onChange={handleChange}
         {...(disabled ? { isDisabled: true } : {})}
       />
