@@ -96,19 +96,27 @@ const TableTaxonomyGroup = ({ setIsModify, list, loading, order, setOrder, setLo
           </tr>
         </thead>
         <tbody>
-          {list.map((taxonomyGroup, index) => (
-            <tr key={index}>
-              <td>{taxonomyGroup.created.slice(0, 10) + " " + taxonomyGroup.created.slice(11, 19)}</td>
-              <td>{taxonomyGroup.name}</td>
-              <td>{taxonomyGroup.description}</td>
-              <td>{taxonomyGroup.needs_review ? t("w.yes") : t("w.no")}</td>
-              <td>
-                <CrudButton type="read" onClick={() => showTaxonomyGroup(taxonomyGroup.url)} />
-                <CrudButton type="edit" to="/taxonomyGroups/edit" state={taxonomyGroup} checkPermRoute />
-                <CrudButton type="delete" onClick={() => Delete(taxonomyGroup.url, taxonomyGroup.name)} permissions="delete_taxonomygroup" />
-              </td>
-            </tr>
-          ))}
+          {list.map((taxonomyGroup, index) => {
+            const parts = taxonomyGroup.url.split("/");
+            let itemNumber = parts[parts.length - 2];
+            return (
+              <tr key={index}>
+                <td>{taxonomyGroup.created.slice(0, 10) + " " + taxonomyGroup.created.slice(11, 19)}</td>
+                <td>{taxonomyGroup.name}</td>
+                <td>{taxonomyGroup.description}</td>
+                <td>{taxonomyGroup.needs_review ? t("w.yes") : t("w.no")}</td>
+                <td>
+                  <CrudButton type="read" onClick={() => showTaxonomyGroup(taxonomyGroup.url)} />
+                  <CrudButton type="edit" to={`/taxonomyGroups/edit/${itemNumber}`} checkPermRoute />
+                  <CrudButton
+                    type="delete"
+                    onClick={() => Delete(taxonomyGroup.url, taxonomyGroup.name)}
+                    permissions="delete_taxonomygroup"
+                  />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
       <Modal size="lg" show={modalShow} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>
@@ -175,7 +183,9 @@ const TableTaxonomyGroup = ({ setIsModify, list, loading, order, setOrder, setLo
                           <Form.Control
                             plaintext
                             readOnly
-                            defaultValue={taxonomyGroup ? taxonomyGroup.created.slice(0, 10) + " " + taxonomyGroup.created.slice(11, 19) : ""}
+                            defaultValue={
+                              taxonomyGroup ? taxonomyGroup.created.slice(0, 10) + " " + taxonomyGroup.created.slice(11, 19) : ""
+                            }
                           />
                         </td>
                       </tr>
@@ -185,7 +195,9 @@ const TableTaxonomyGroup = ({ setIsModify, list, loading, order, setOrder, setLo
                           <Form.Control
                             plaintext
                             readOnly
-                            defaultValue={taxonomyGroup ? taxonomyGroup.modified.slice(0, 10) + " " + taxonomyGroup.modified.slice(11, 19) : ""}
+                            defaultValue={
+                              taxonomyGroup ? taxonomyGroup.modified.slice(0, 10) + " " + taxonomyGroup.modified.slice(11, 19) : ""
+                            }
                           />
                         </td>
                       </tr>

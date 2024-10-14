@@ -144,7 +144,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/taxonomyGroups/edit",
+    path: "/taxonomyGroups/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_taxonomygroup"],

@@ -1,42 +1,40 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import DropdownState from "../../components/Dropdown/DropdownState";
-import { useLocation, useNavigate } from "react-router-dom";
-import Alert from "../../components/Alert/Alert";
+import { useNavigate, useParams } from "react-router-dom";
 import { validateDescription, validateName, validateUnrequiredInput } from "../../utils/validators/taxonomy";
 import { useTranslation } from "react-i18next";
-import { putTaxonomyGroup } from "../../api/services/taxonomyGroups";
+import { putTaxonomyGroup, getTaxonomyGroup } from "../../api/services/taxonomyGroups";
+import { COMPONENT_URL } from "config/constant";
+import CrudButton from "components/Button/CrudButton";
 
 const EditTaxonomyGroup = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const fromState = location.state;
-  const [taxonomyGroup] = useState(fromState);
+  const [id] = useState(useParams());
   const { t } = useTranslation();
 
-  const [name, setName] = useState(taxonomyGroup.name);
-  const [description, setDescription] = useState(taxonomyGroup.description);
-  const [needs_review, setNeeds_review] = useState(+taxonomyGroup.needs_review);
+  const [url, setUrl] = useState();
+  const [name, setName] = useState();
+  const [description, setDescription] = useState();
+  const [needs_review, setNeeds_review] = useState();
 
-  const [showAlert, setShowAlert] = useState(false);
+  useEffect(() => {
+    if (id.id) {
+      getTaxonomyGroup(COMPONENT_URL.taxonomyGroup + id.id + "/")
+        .then((response) => {
+          setUrl(response.data.url);
+          setName(response.data.name);
+          setDescription(response.data.description);
+          setNeeds_review(response.data.needs_review);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [id]);
 
   const editTaxonomyGroup = () => {
-    putTaxonomyGroup(taxonomyGroup.url, name, description, needs_review)
-      .then(() => {
-        navigate("/taxonomyGroups");
-      })
-      .catch((error) => {
-        console.log(error);
-        setShowAlert(true);
-      });
-  };
-
-  const handleClose = () => {
-    navigate("/taxonomyGroups");
-  }
-
-  const resetShowAlert = () => {
-    setShowAlert(false);
+    putTaxonomyGroup(url, name, description, needs_review).then(() => {
+      navigate("/taxonomyGroups");
+    });
   };
 
   return (
@@ -58,7 +56,7 @@ const EditTaxonomyGroup = () => {
                       </Form.Label>
                       <Form.Control
                         type="text"
-                        defaultValue={taxonomyGroup.name}
+                        defaultValue={name}
                         onChange={(e) => setName(e.target.value)}
                         isInvalid={!validateName(name)}
                       />
@@ -68,7 +66,7 @@ const EditTaxonomyGroup = () => {
                   <Col sm={12} lg={2}>
                     <Form.Group>
                       <Form.Label>{t("ngen.taxonomyGroup.needs_review")}</Form.Label>
-                      <DropdownState state={taxonomyGroup.needs_review} setActive={setNeeds_review} str_true="w.yes" str_false="w.no" />
+                      <DropdownState state={needs_review} setActive={setNeeds_review} str_true="w.yes" str_false="w.no" />
                     </Form.Group>
                   </Col>
                 </Row>
@@ -79,7 +77,7 @@ const EditTaxonomyGroup = () => {
                       <Form.Control
                         as="textarea"
                         rows={3}
-                        defaultValue={taxonomyGroup.description}
+                        defaultValue={description}
                         onChange={(e) => setDescription(e.target.value)}
                         isInvalid={validateUnrequiredInput(description) ? !validateDescription(description) : false}
                       />
@@ -97,9 +95,7 @@ const EditTaxonomyGroup = () => {
                       {t("button.save")}
                     </Button>
                   )}
-                  <Button variant="info" onClick={handleClose}>
-                    {t("button.close")}
-                  </Button>
+                  <CrudButton type="cancel" />
                 </Form.Group>
               </Form>
             </Card.Body>

@@ -13,7 +13,7 @@ function DropdownState({ state, setActive, str_true = "w.active", str_false = "w
   const [selected, setSelected] = useState(state);
 
   useEffect(() => {
-    setSelected(selected);
+    setSelected(state);
   }, [state]);
 
   const setValue = (key) => {
