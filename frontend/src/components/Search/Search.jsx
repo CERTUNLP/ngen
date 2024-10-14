@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const Search = ({ type, setWordToSearch, wordToSearch, setLoading }) => {
+const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPage }) => {
   const [search, setSearch] = useState("");
   const { t } = useTranslation();
 
@@ -12,6 +12,9 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading }) => {
   const action = () => {
     setWordToSearch("search=" + search + "&");
     if (wordToSearch !== "search=" + search + "&") {
+      if (setCurrentPage) {
+        setCurrentPage(1);
+      }
       setLoading(true);
     }
   };

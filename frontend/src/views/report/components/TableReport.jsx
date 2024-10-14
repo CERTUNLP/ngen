@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
-import { Link } from "react-router-dom";
-
 import Alert from "../../../components/Alert/Alert";
 import CallBackendByName from "../../../components/CallBackendByName";
 import { getTaxonomy } from "../../../api/services/taxonomies";
@@ -13,6 +11,7 @@ import { useTranslation } from "react-i18next";
 
 const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading }) => {
   const [report, setReport] = useState({});
+  const [id, setId] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const { t } = useTranslation();
@@ -42,8 +41,9 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
     setRemove(true);
   };
 
-  const showModalReport = (user) => {
-    setReport(user);
+  const showModalReport = (report) => {
+    setId(report.url.split("/")[report.url.split("/").length - 2]);
+    setReport(report);
     setModalShow(true);
   };
 
@@ -96,6 +96,8 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
           </thead>
           <tbody>
             {list.map((report, index) => {
+              const parts = report.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return (
                 <tr key={index}>
                   <td>{taxonomyNames[report.taxonomy]}</td>
@@ -106,10 +108,8 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
 
                   <td>
                     <CrudButton type="read" onClick={() => showModalReport(report)} />
-                    <Link to="/reports/edit" state={report}>
-                      <CrudButton type="edit" />
-                    </Link>
-                    <CrudButton type="delete" onClick={() => modalDelete(report.url)} />
+                    <CrudButton type="edit" to={`/reports/edit/${itemNumber}`} checkPermRoute />
+                    <CrudButton type="delete" onClick={() => modalDelete(report.url)} permissions="delete_report" />
                   </td>
                 </tr>
               );
@@ -136,9 +136,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                         <span className="d-block m-t-5">{t("ngen.report.detail")}</span>
                       </Col>
                       <Col sm={12} lg={4}>
-                        <Link to="/reports/edit" state={report}>
-                          <CrudButton type="edit" />
-                        </Link>
+                        <CrudButton type="edit" to={`/reports/edit/${id}`} checkPermRoute />
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                       </Col>
                     </Row>
@@ -146,28 +144,9 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                   <Card.Body>
                     <Table responsive>
                       <tr>
-                        <td>{t("w.problem")}</td>
+                        <td>{t("ngen.taxonomy_one")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={report.problem} />
-                        </td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td>{t("w.problem.derived")}</td>
-                        <td>
-                          <Form.Control plaintext readOnly defaultValue={report.derived_problem} />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>{t("w.verification")}</td>
-                        <td>
-                          <Form.Control plaintext readOnly defaultValue={report.verification} />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>{t("w.recommendation")}</td>
-                        <td>
-                          <Form.Control plaintext readOnly defaultValue={report.recommendations} />
+                          <CallBackendByName url={report.taxonomy} callback={callbackTaxonomy} useBadge={false} />
                         </td>
                       </tr>
                       <tr>
@@ -177,15 +156,34 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                         </td>
                       </tr>
                       <tr>
-                        <td>{t("w.info")}</td>
+                        <td>{t("w.problem")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={report.more_information} />
+                          <Form.Control plaintext readOnly defaultValue={report.problem} as="textarea" />
+                        </td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>{t("w.problem.derived")}</td>
+                        <td>
+                          <Form.Control plaintext readOnly defaultValue={report.derived_problem} as="textarea" />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t("ngen.taxonomy_one")}</td>
+                        <td>{t("w.verification")}</td>
                         <td>
-                          <CallBackendByName url={report.taxonomy} callback={callbackTaxonomy} useBadge={false} />
+                          <Form.Control plaintext readOnly defaultValue={report.verification} as="textarea" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>{t("w.recommendation")}</td>
+                        <td>
+                          <Form.Control plaintext readOnly defaultValue={report.recommendations} as="textarea" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>{t("w.info")}</td>
+                        <td>
+                          <Form.Control plaintext readOnly defaultValue={report.more_information} as="textarea" />
                         </td>
                       </tr>
                       <tr>

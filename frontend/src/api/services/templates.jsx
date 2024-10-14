@@ -18,7 +18,7 @@ const getTemplates = (currentPage, filters, order) => {
 const createCases = (url) => {
   let messageError = `No se pudo recuperar la  plantilla`;
   return apiInstance
-    .get(url + "create-cases/")
+    .post(url + "create-cases/")
     .then((response) => {
       return response;
     })

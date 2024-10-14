@@ -1,8 +1,9 @@
 import django_filters
-from rest_framework import permissions, viewsets, filters
+from rest_framework import viewsets, filters, mixins
 
 from ngen import models, serializers
 from ngen.filters import StateFilter
+from ngen.permissions import CustomApiViewPermission, CustomModelPermissions
 
 
 class StateViewSet(viewsets.ModelViewSet):
@@ -25,17 +26,18 @@ class StateViewSet(viewsets.ModelViewSet):
         "active",
     ]
     serializer_class = serializers.StateSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class EdgeViewSet(viewsets.ModelViewSet):
     queryset = models.Edge.objects.all()
     serializer_class = serializers.EdgeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
-class StateMinifiedViewSet(viewsets.ModelViewSet):
+class StateMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = models.State.objects.all()
     serializer_class = serializers.StateMinifiedSerializer
     pagination_class = None
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_state"]

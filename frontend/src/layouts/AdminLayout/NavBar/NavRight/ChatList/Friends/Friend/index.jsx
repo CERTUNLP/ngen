@@ -31,7 +31,7 @@ const Friend = ({ data, activeId, clicked }) => {
         onKeyDown={clicked}
       >
         <Link to="#" className="media-left">
-          {" "}
+          &nbsp;
           <img className="media-object img-radius" src={data.photo} alt={data.name} />
           {newFriend}
         </Link>

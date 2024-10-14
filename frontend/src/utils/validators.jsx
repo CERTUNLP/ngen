@@ -1,3 +1,7 @@
+// import IPCIDR from 'ip-cidr';
+// import isCidr from 'is-cidr';
+import { Address4, Address6 } from "ip-address";
+
 const validateEmail = (email) => {
   return /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
     email
@@ -22,6 +26,9 @@ const validateSpaces = (text) => {
   return !/ /.test(text);
 };
 const validateSpace = (text) => {
+  if (text === undefined) {
+    return true;
+  }
   return text.trim() !== "";
 };
 
@@ -30,7 +37,7 @@ const validateLength = (text, maxLength) => {
 };
 
 const isEmpty = (text) => {
-  return text.trim().length === 0;
+  return text?.trim().length === 0;
 };
 
 const isBlank = (text) => {
@@ -57,7 +64,7 @@ const validateNumbers = (text) => {
 
 const validateURL = (str) => {
   var pattern = /\bhttps?:\/\/[^\s/$.?#].[^\s]*\b/i;
-  return !!pattern.test(str);
+  return str === "*" || !!pattern.test(str);
 };
 const validateHours = (hours) => {
   return /^(0?[0-9]|1[0-9]|2[0-3])$/.test(hours);
@@ -74,16 +81,24 @@ const validateNumber = (number) => {
 };
 
 const validateCidr = (address) => {
-  var ipCidr = require("ip-cidr");
-  var cidr = null;
+  let addr;
 
   try {
-    cidr = new ipCidr(address);
-    if (cidr != null) {
-      const start = cidr.start();
-      return cidr.address.addressMinusSuffix === start;
+    addr = new Address4(address);
+  } catch { }
+  try {
+    addr = new Address6(address);
+  } catch { }
+  
+  try {
+    if (!addr) {
+      return false;
     }
-  } catch (error) {
+    // Obtener la dirección de red (primer dirección del rango CIDR)
+    const startAddress = addr.startAddress().correctForm();
+  
+    return addr.addressMinusSuffix === startAddress;
+  } catch {
     return false;
   }
 };

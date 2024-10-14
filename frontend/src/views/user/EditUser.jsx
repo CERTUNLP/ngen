@@ -1,37 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
 import { getUser, putUser } from "../../api/services/users";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
 import { getMinifiedPriority } from "../../api/services/priorities";
 import FormUser from "./components/FormUser";
-import Navigation from "../../components/Navigation/Navigation";
 import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const EditUser = () => {
   const location = useLocation();
   const fromState = location.state;
-  const [user, setUser] = useState(fromState);
+  const [user, setUser] = useState({});
   // const [body, setBody] = useState({})
   const [loading, setLoading] = useState(true);
   const [priorities, setPriorities] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
+  const [id, setId] = useState(useParams());
   const { t } = useTranslation();
 
   useEffect(() => {
-    getUser(user.url).then((response) => {
-      setUser(response.data);
-    });
+    getMinifiedPriority()
+      .then((response) => {
+        let listPriority = [];
+        response.map((priority) => {
+          listPriority.push({ value: priority.url, label: priority.name });
+        });
+        setPriorities(listPriority);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
-    const fetchPosts = async () => {
-      setLoading(true);
-      getMinifiedPriority()
+  useEffect(() => {
+    if (id) {
+      getUser(COMPONENT_URL.user + id.id + "/")
         .then((response) => {
-          let listPriority = [];
-          response.map((priority) => {
-            return listPriority.push({ value: priority.url, label: priority.name });
-          });
-          setPriorities(listPriority);
+          setUser(response.data);
         })
         .catch((error) => {
           console.log(error);
@@ -39,19 +45,28 @@ const EditUser = () => {
         .finally(() => {
           setLoading(false);
         });
-    };
-
-    fetchPosts();
-  }, [user.url]);
+    }
+  }, [id]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
   };
 
   const editUser = (e) => {
-    putUser(user.url, user.username, user.first_name, user.last_name, user.email, user.priority)
+    putUser(
+      user.url,
+      user.username,
+      user.first_name,
+      user.last_name,
+      user.email,
+      user.priority,
+      user.is_active,
+      user.groups,
+      user.user_permissions,
+      user.password
+    )
       .then(() => {
-        window.location.href = "/users";
+        // window.location.href = "/users";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -60,8 +75,6 @@ const EditUser = () => {
   };
   return (
     <>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
-      <Navigation actualPosition={t("w.edit") + t("ngen.user")} path="/users" index={t("ngen.user_other")} />
       <Card>
         <Card.Header>
           <Card.Title as="h5">

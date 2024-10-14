@@ -1,4 +1,5 @@
 import { logout } from "./api/services/auth";
+import { getCurrentUser } from "utils/permissions";
 
 const menuItems = {
   items: [
@@ -16,13 +17,13 @@ const menuItems = {
           breadcrumbs: false
         },
         {
-          id: "Eventos",
+          id: "event",
           title: "menu.events",
           type: "item",
           url: "/events",
           classes: "",
           icon: "feather icon-alert-circle",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
           id: "case",
@@ -30,7 +31,7 @@ const menuItems = {
           type: "item",
           url: "/cases",
           icon: "feather icon-search",
-          breadcrumbs: false
+          breadcrumbs: true
         }
       ]
     },
@@ -46,23 +47,79 @@ const menuItems = {
           type: "item",
           url: "/entities",
           icon: "fas fa-cubes",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
-          id: "networks",
+          id: "network",
           title: "menu.networks",
           type: "item",
           url: "/networks",
           icon: "feather icon-share-2",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
-          id: "contacts",
+          id: "contact",
           title: "menu.contacts",
           type: "item",
           url: "/contacts",
           icon: "far fa-address-book",
-          breadcrumbs: false
+          breadcrumbs: true
+        }
+      ]
+    },
+    {
+      id: "networkadminprincipal",
+      title: "menu.networkadmin.main",
+      type: "group",
+      children: [
+        {
+          id: "networkadminevent",
+          title: "menu.networkadmin.events",
+          type: "item",
+          url: "/networkadmin/events",
+          classes: "",
+          icon: "feather icon-alert-circle",
+          breadcrumbs: true
+        },
+        {
+          id: "networkadmincase",
+          title: "menu.networkadmin.cases",
+          type: "item",
+          url: "/networkadmin/cases",
+          icon: "feather icon-search",
+          breadcrumbs: true
+        }
+      ]
+    },
+    {
+      id: "networkadminconstituency",
+      title: "menu.networkadmin.constituency",
+      type: "group",
+      icon: "fas fa-network-wired",
+      children: [
+        {
+          id: "networkadminentity",
+          title: "menu.networkadmin.entities",
+          type: "item",
+          url: "/networkadmin/entities",
+          icon: "fas fa-cubes",
+          breadcrumbs: true
+        },
+        {
+          id: "networkadminnetwork",
+          title: "menu.networkadmin.networks",
+          type: "item",
+          url: "/networkadmin/networks",
+          icon: "feather icon-share-2",
+          breadcrumbs: true
+        },
+        {
+          id: "networkadmincontact",
+          title: "menu.networkadmin.contacts",
+          type: "item",
+          url: "/networkadmin/contacts",
+          icon: "far fa-address-book",
+          breadcrumbs: true
         }
       ]
     },
@@ -85,23 +142,23 @@ const menuItems = {
               type: "item",
               url: "/tlp",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
-              id: "reporte",
+              id: "report",
               title: "menu.report",
               type: "item",
               url: "/reports",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
-              id: "feeds",
+              id: "feed",
               title: "menu.feeds",
               type: "item",
               url: "/feeds",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "priority",
@@ -110,7 +167,7 @@ const menuItems = {
               url: "/priorities",
               classes: "",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "playbook",
@@ -118,7 +175,7 @@ const menuItems = {
               type: "item",
               url: "/playbooks",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
               id: "taxonomy",
@@ -126,43 +183,51 @@ const menuItems = {
               type: "item",
               url: "/taxonomies",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
-              id: "Estados",
+              id: "taxonomyGroup",
+              title: "menu.taxonomygroups",
+              type: "item",
+              url: "/taxonomyGroups",
+              icon: "",
+              breadcrumbs: true
+            },
+            {
+              id: "state",
               title: "menu.states",
               type: "item",
               url: "/states",
               classes: "",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
-              id: "Plantilla",
+              id: "template",
               title: "menu.templates",
               type: "item",
               url: "/templates",
               classes: "",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
-              id: "users",
+              id: "user",
               title: "menu.users",
               type: "item",
               url: "/users",
               classes: "",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             },
             {
-              id: "Configuración",
+              id: "configuration",
               title: "menu.config",
               type: "item",
               url: "/setting",
               classes: "",
               icon: "",
-              breadcrumbs: false
+              breadcrumbs: true
             }
           ]
         }
@@ -177,12 +242,13 @@ const menuItems = {
       children: [
         {
           id: "profile",
+          titleRaw: getCurrentUser().first_name,
           title: "menu.profile",
           type: "item",
           url: "/profile",
           classes: "",
           icon: "feather icon-user",
-          breadcrumbs: false
+          breadcrumbs: true
         },
         {
           id: "logout",
@@ -192,7 +258,7 @@ const menuItems = {
           basic_link: true,
           classes: "logout-btn",
           icon: "fa fa-sign-out-alt",
-          breadcrumbs: false,
+          breadcrumbs: true,
           onClick: logout
         }
       ]

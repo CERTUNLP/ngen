@@ -19,7 +19,8 @@ const ModalCreateEvent = ({
   setCurrentPage,
   selectedEvent,
   setSelectedEvent,
-  setEvents
+  setEvents,
+  asNetworkAdmin
 }) => {
   const formEmpty = {
     children: [],
@@ -205,8 +206,9 @@ const ModalCreateEvent = ({
             setPriorityNames={setPriorityNames}
             userNames={userNames}
             disableCardCase={true}
-            disableCardEvidence={false}
-            disableCardArtifacts={false}
+            disableCardEvidence={true}
+            disableCardArtifacts={true}
+            asNetworkAdmin={asNetworkAdmin}
           />
         </div>
       </Modal.Body>

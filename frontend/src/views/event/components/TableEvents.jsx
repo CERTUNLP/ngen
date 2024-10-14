@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Form, Row, Spinner, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import CrudButton from "../../../components/Button/CrudButton";
@@ -7,6 +8,7 @@ import { deleteEvent } from "../../../api/services/events";
 import Ordering from "../../../components/Ordering/Ordering";
 import LetterFormat from "../../../components/LetterFormat";
 import { useTranslation } from "react-i18next";
+import UuidField from "components/Field/UuidField";
 
 const TableEvents = ({
   events,
@@ -39,14 +41,18 @@ const TableEvents = ({
   disableUuid,
   disableMerged,
   disableDateModified,
-  disableOrdering
+  disableOrdering,
+  disableColumnCase,
+  basePath = ""
 }) => {
   const [deleteUrl, setDeleteUrl] = useState();
   const [remove, setRemove] = useState();
   //checkbox
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [list, setList] = useState([]);
+  const [showFullUuid, setShowFullUuid] = useState(false);
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   if (selectedEvent === undefined) {
     selectedEvent = [];
@@ -72,11 +78,15 @@ const TableEvents = ({
   const handleDelete = () => {
     deleteEvent(deleteUrl)
       .then(() => {
-        window.location.href = "/events";
+        window.location.href = basePath + "/events";
       })
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleToggleUuidDisplay = () => {
+    setShowFullUuid(!showFullUuid);
   };
 
   const handleSelectAll = (e) => {
@@ -115,11 +125,17 @@ const TableEvents = ({
     }
   };
 
-  const storageEventUrl = (url) => {
-    localStorage.setItem("event", url);
+  const navigateToEvent = (url, basePath) => {
+    const id = url.split("/").slice(-2)[0];
+    navigate(basePath + "/events/view/" + id);
   };
 
-  const letterSize = { fontSize: "1.1em" };
+  const navigateToCase = (url, basePath) => {
+    const id = url.split("/").slice(-2)[0];
+    navigate(basePath + "/cases/view/" + id);
+  };
+
+  const letterSize = {};
   return (
     <React.Fragment>
       <ul className="list-group my-4">
@@ -171,17 +187,27 @@ const TableEvents = ({
               ) : (
                 ""
               )}
-              {!disableUuid && <th style={letterSize}>{t("ngen.uuid")}</th>}
+              {!disableUuid && (
+                <th style={{ textAlign: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ marginRight: "8px" }}>{t("ngen.uuid")}</span>
+                    <Form.Check type="checkbox" checked={showFullUuid} onChange={handleToggleUuidDisplay} />
+                  </div>
+                </th>
+              )}
               <th style={letterSize}>{t("ngen.identifier")}</th>
               {!disableTlp && <th style={letterSize}>{t("ngen.tlp")}</th>}
               {!disableMerged && <th style={letterSize}>{t("ngen.event.merged")}</th>}
               <th style={letterSize}>{t("ngen.taxonomy_one")}</th>
               <th style={letterSize}>{t("ngen.feed.information")}</th>
+              {!disableColumnCase && <th style={letterSize}>{t("ngen.case_one")}</th>}
               {!disableColumOption && <th style={letterSize}>{t("ngen.options")}</th>}
             </tr>
           </thead>
           <tbody>
             {list.map((event, index) => {
+              const parts = event.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return event ? (
                 <tr key={index}>
                   {/* <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : ""}</td> */}
@@ -223,20 +249,28 @@ const TableEvents = ({
                   )}
                   {!disableDateModified ? <td>{event.modified.slice(0, 10) + " " + event.modified.slice(11, 19)}</td> : ""}
                   {!disableDate ? <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : ""}</td> : ""}
-                  {!disableUuid && <td>{event.uuid}</td>}
+                  {!disableUuid && (
+                    <td>
+                      <UuidField value={event.uuid} fulltext={showFullUuid} />
+                    </td>
+                  )}
                   <td>{event.address_value}</td>
                   {!disableTlp && (
                     <td>
-                      <LetterFormat useBadge={true} stringToDisplay={tlpNames[event.tlp].name} color={tlpNames[event.tlp].color} />
+                      <LetterFormat
+                        useBadge={true}
+                        stringToDisplay={tlpNames && event?.tlp ? tlpNames[event.tlp].name : ""}
+                        color={tlpNames && event?.tlp ? tlpNames[event.tlp].color : ""}
+                      />
                     </td>
                   )}
                   {!disableMerged && event.parent ? (
                     <td>
-                      <Link to="/events/view" state={event.parent}>
+                      <Link to={basePath + "/events/view"} state={event.parent}>
                         <Button
                           className="fa fa-eye mx-auto font-weight-light"
                           variant="outline-primary"
-                          onClick={() => storageEventUrl(event.parent)}
+                          onClick={() => navigateToEvent(event.parent, basePath)}
                         >
                           {" " + t("ngen.event.parent")}
                         </Button>
@@ -250,57 +284,60 @@ const TableEvents = ({
 
                   <td>{feedNames[event.feed]}</td>
 
+                  {!disableColumnCase ? (
+                    event.case ? (
+                      <td>
+                        <CrudButton
+                          type="read"
+                          to={`${basePath}/cases/view/${event.case.split("/").slice(-2)[0]}`}
+                          text={t("ngen.case_one")}
+                        />
+                      </td>
+                    ) : (
+                      <td></td>
+                    )
+                  ) : (
+                    ""
+                  )}
+
                   {!disableColumOption ? (
                     <td>
                       {disableColumView ? (
                         ""
                       ) : (
-                        <Link to="/events/view" state={event}>
-                          <CrudButton type="read" onClick={() => storageEventUrl(event.url)} />
-                        </Link>
+                        <CrudButton
+                          type="read"
+                          to={`${basePath}/events/view/${itemNumber}`}
+                          state={event}
+                          onClick={() => navigateToEvent(event.url, basePath)}
+                        />
                       )}
                       {disableColumOption ? (
                         ""
                       ) : disableColumnEdit ? (
                         ""
-                      ) : event.blocked || event.parent ? (
-                        <CrudButton type="edit" disabled={true} />
                       ) : (
-                        <Link to="/events/edit" state={event}>
-                          <CrudButton type="edit" />
-                        </Link>
+                        <CrudButton
+                          type="edit"
+                          to={`${basePath}/events/edit/${itemNumber}`}
+                          state={event}
+                          disabled={event.blocked || event.parent}
+                          checkPermRoute
+                        />
                       )}
                       {disableColumOption ? (
                         ""
                       ) : disableColumnDelete ? (
                         ""
                       ) : deleteColumForm ? (
-                        <CrudButton type="delete" onClick={() => deleteEventFromForm(event.url)} />
+                        <CrudButton type="delete" onClick={() => deleteEventFromForm(event.url)} permissions="delete_event" />
                       ) : (
-                        <CrudButton type="delete" onClick={() => modalDelete(event.name, event.url)} />
+                        <CrudButton type="delete" onClick={() => modalDelete(event.name, event.url)} permissions="delete_event" />
                       )}
                       {disableTemplate ? (
                         ""
-                      ) : event.case ? (
-                        <Button
-                          className="btn-icon btn-rounded"
-                          disabled
-                          variant="outline-primary"
-                          style={{
-                            border: "1px solid #555",
-                            borderRadius: "50px",
-                            color: "#555"
-                          }}
-                          onClick={() => console.log("")}
-                        >
-                          <i className="fa fa-plus" aria-hidden="true"></i>
-                        </Button>
                       ) : (
-                        <Link to="/templates/create" state={event}>
-                          <Button className="btn-icon btn-rounded" variant="outline-primary" onClick={() => console.log("")}>
-                            <i className="fa fa-plus" aria-hidden="true"></i>
-                          </Button>
-                        </Link>
+                        <CrudButton type="plus" to={basePath + "/templates/create"} state={event} checkPermRoute disabled={event.case} />
                       )}
                     </td>
                   ) : (

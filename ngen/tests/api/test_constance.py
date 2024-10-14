@@ -18,7 +18,7 @@ class TestConstance(APITestCaseWithLogin):
     This will handle constance testcases
     """
 
-    fixtures = ["priority.json", "user.json"]
+    fixtures = ["tests/priority.json", "tests/user.json"]
 
     @classmethod
     def setUpTestData(cls):

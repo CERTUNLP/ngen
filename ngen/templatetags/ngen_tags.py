@@ -38,6 +38,20 @@ def encode_static(path, encoding="base64", file_type="image"):
         return ""
 
 
+@register.simple_tag
+def get_encoded_logo():
+    return encode_static(settings.LOGO_WIDE_PATH)
+
+
+@register.simple_tag
+def get_matching_report(taxonomy, lang):
+    rep = taxonomy.reports.filter(lang=lang)
+    if rep.exists():
+        return rep[:1]
+    else:
+        return [r for r in taxonomy.get_ancestors_reports() if r.lang == lang][:1]
+
+
 def get_file_data(file_path):
     with open(file_path, "rb") as f:
         data = f.read()

@@ -27,11 +27,11 @@ const ModalReadCase = ({ modalShowCase, tableDetail, returnToListOfCases, linkCa
       ) : (
         <Modal.Footer>
           <Button variant="outline-primary" onClick={linkCaseToEvent}>
-            {" "}
+            &nbsp;
             {t("button.link")}
           </Button>
           <Button variant="outline-secondary" onClick={returnToListOfCases}>
-            {" "}
+            &nbsp;
             {t("button.return")}
           </Button>
         </Modal.Footer>

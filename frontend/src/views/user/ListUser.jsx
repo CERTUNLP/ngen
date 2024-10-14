@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import TableUsers from "./components/TableUsers";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
 import { getUsers } from "../../api/services/users";
@@ -19,6 +17,7 @@ function ListUser() {
   const [currentPage, setCurrentPage] = useState(1);
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
+  const [isModify, setIsModify] = useState(null);
 
   const [countItems, setCountItems] = useState(0);
 
@@ -52,7 +51,7 @@ function ListUser() {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, wordToSearch, order]);
+  }, [currentPage, wordToSearch, order, isModify]);
 
   if (error) {
     return <p>{t("user.error.fetch")}</p>;
@@ -60,10 +59,6 @@ function ListUser() {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
-      <Row>
-        <Navigation actualPosition={t("menu.users")} />
-      </Row>
       <Card>
         <Card.Header>
           <Row>
@@ -73,18 +68,25 @@ function ListUser() {
                 setWordToSearch={setWordToSearch}
                 wordToSearch={wordToSearch}
                 setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
               />
             </Col>
             <Col sm={12} lg={3}>
-              <Link to="/users/create">
-                <CrudButton type="create" name={t("ngen.user")} />
-              </Link>
+              <CrudButton type="create" name={t("ngen.user")} to="/users/create" checkPermRoute />
             </Col>
           </Row>
           <Row></Row>
         </Card.Header>
         <Card.Body>
-          <TableUsers users={users} loading={loading} order={order} setOrder={setOrder} setLoading={setLoading} currentPage={currentPage} />
+          <TableUsers
+            users={users}
+            loading={loading}
+            order={order}
+            setOrder={setOrder}
+            setLoading={setLoading}
+            currentPage={currentPage}
+            setIsModify={setIsModify}
+          />
         </Card.Body>
         <Card.Footer>
           <Row className="justify-content-md-center">

@@ -1,7 +1,8 @@
 import django_filters
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Subquery, OuterRef, Value
 from django.utils.translation import gettext_lazy
-from rest_framework import permissions, filters, viewsets, status
+from rest_framework import filters, viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -9,13 +10,46 @@ from ngen import models, serializers
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
 from ngen.tasks import create_cases_for_matching_events
 from ngen.views.communication_channel import BaseCommunicationChannelsViewSet
+from ngen.permissions import (
+    CustomApiViewPermission,
+    CustomMethodApiViewPermission,
+    CustomModelPermissions,
+)
 
 
 class EvidenceViewSet(viewsets.ModelViewSet):
     queryset = models.Evidence.objects.all()
     serializer_class = serializers.EvidenceSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
     http_method_names = ["get", "post", "head", "options", "delete"]
+
+
+class NetworkAdminEvidenceViewSet(EvidenceViewSet):
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["ngen.view_evidence_network_admin"],
+        "HEAD": ["ngen.view_evidence_network_admin"],
+        "POST": ["ngen.add_evidence_network_admin"],
+        "DELETE": ["ngen.delete_evidence_network_admin"],
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        # Obtener el content type del modelo relacionado (Network en este caso)
+        event_ct = ContentType.objects.get(model="event")
+        case_ct = ContentType.objects.get(model="case")
+        print(event_ct, case_ct)
+        events = models.Event.objects.filter(network__contacts__user=user).values_list(
+            "id", flat=True
+        )
+        cases = models.Case.objects.filter(
+            events__network__contacts__user=user
+        ).values_list("id", flat=True)
+        return (
+            queryset.filter(content_type=event_ct, object_id__in=events)
+            | queryset.filter(content_type=case_ct, object_id__in=cases)
+        ).distinct()
 
 
 class EventViewSet(BaseCommunicationChannelsViewSet):
@@ -46,7 +80,25 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         "modified",
     ]
     serializer_class = serializers.EventSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
+
+
+class NetworkAdminEventViewSet(EventViewSet):
+    serializer_class = serializers.NetworkAdminEventSerializer
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["ngen.view_event_network_admin"],
+        "HEAD": ["ngen.view_event_network_admin"],
+        "POST": ["ngen.add_event_network_admin"],
+        "PUT": ["ngen.change_event_network_admin"],
+        "PATCH": ["ngen.change_event_network_admin"],
+        "DELETE": ["ngen.delete_event_network_admin"],
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        return queryset.filter(network__contacts__user=user).distinct()
 
 
 class CaseViewSet(BaseCommunicationChannelsViewSet):
@@ -72,7 +124,25 @@ class CaseViewSet(BaseCommunicationChannelsViewSet):
         "assigned",
     ]
     serializer_class = serializers.CaseSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
+
+
+class NetworkAdminCaseViewSet(CaseViewSet):
+    serializer_class = serializers.NetworkAdminCaseSerializer
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["ngen.view_case_network_admin"],
+        "HEAD": ["ngen.view_case_network_admin"],
+        "POST": ["ngen.add_case_network_admin"],
+        "PUT": ["ngen.change_case_network_admin"],
+        "PATCH": ["ngen.change_case_network_admin"],
+        "DELETE": ["ngen.delete_case_network_admin"],
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        return queryset.filter(events__network__contacts__user=user).distinct()
 
 
 class CaseTemplateViewSet(viewsets.ModelViewSet):
@@ -111,7 +181,7 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         "active",
     ]
     serializer_class = serializers.CaseTemplateSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -143,7 +213,11 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         return queryset
 
     @action(
-        methods=["GET"], detail=True, url_path="create-cases", url_name="create_cases"
+        methods=["POST"],
+        detail=True,
+        url_path="create-cases",
+        url_name="create_cases",
+        permission_classes=[CustomModelPermissions],
     )
     def create_cases(self, request, pk=None):
         """
@@ -152,12 +226,14 @@ class CaseTemplateViewSet(viewsets.ModelViewSet):
         template = self.get_object()
         create_cases_for_matching_events.delay(template.pk)
         return Response(
-            {"message": gettext_lazy("Task create cases for matching events launched")}, status=status.HTTP_200_OK
+            {"message": gettext_lazy("Task create cases for matching events launched")},
+            status=status.HTTP_200_OK,
         )
 
 
-class CaseMinifiedViewSet(viewsets.ModelViewSet):
+class CaseMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = models.Case.objects.all()
     serializer_class = serializers.CaseMinifiedSerializer
     pagination_class = None
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_case"]

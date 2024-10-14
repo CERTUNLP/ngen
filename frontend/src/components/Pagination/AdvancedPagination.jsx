@@ -49,17 +49,10 @@ const AdvancedPagination = ({
 
       if (parentCurrentPage === -1) {
         let list = [];
-        let index;
-        if (lastPage >= 4) {
-          index = lastPage - currentPage >= 4 ? currentPage : lastPage - 3;
-        } else {
-          index = initPage;
-        }
-        //let index = initPage ;
+        let index = currentPage - 2 > 0 ? currentPage - 2 : 1;
 
         // Array of pages only display 3 numbers
-        while (index <= lastPage && index <= currentPage + 3) {
-          //while (index <= lastPage && index <= (initPage + 3)  ) {
+        while (index <= lastPage && index <= currentPage + 2) {
           list.push(index);
           ++index;
         }
@@ -109,15 +102,23 @@ const AdvancedPagination = ({
   return (
     <Pagination>
       {currentPage === 1 ? (
-        <Pagination.First disabled />
-      ) : (
-        <Pagination.First disabled={disabledPagination} onClick={() => updateCurrentPage(1)} />
-      )}
-
-      {currentPage === 1 ? (
         <Pagination.Prev disabled />
       ) : (
         <Pagination.Prev disabled={disabledPagination} onClick={() => arrayPagesPrev()} />
+      )}
+      {currentPage >= 4 && (
+        <Pagination.Item disabled={disabledPagination} onClick={() => updateCurrentPage(1)}>
+          1
+        </Pagination.Item>
+      )}
+      {currentPage >= 5 && (
+        currentPage === 5 ? (
+          <Pagination.Item disabled={disabledPagination} onClick={() => updateCurrentPage(2)}>
+            2
+          </Pagination.Item>
+        ) : (
+            <Pagination.Ellipsis disabled={disabledPagination} />
+          )
       )}
       {arrayPages.map((page) =>
         page === currentPage ? (
@@ -130,15 +131,24 @@ const AdvancedPagination = ({
           </Pagination.Item>
         )
       )}
+      {currentPage <= lastPage - 4 && (
+        currentPage === lastPage - 4 ? (
+          <Pagination.Item disabled={disabledPagination} onClick={() => updateCurrentPage(lastPage - 1)}>
+            {lastPage - 1}
+          </Pagination.Item>
+        ) : (
+            <Pagination.Ellipsis disabled={disabledPagination} />
+          )
+      )}
+      {currentPage <= lastPage - 3 && (
+        <Pagination.Item disabled={disabledPagination} onClick={() => updateCurrentPage(lastPage)}>
+          {lastPage}
+        </Pagination.Item>
+      )}
       {currentPage === lastPage ? (
         <Pagination.Next disabled />
       ) : (
         <Pagination.Next disabled={disabledPagination} onClick={() => arrayPagesNext()} />
-      )}
-      {currentPage === lastPage ? (
-        <Pagination.Last disabled />
-      ) : (
-        <Pagination.Last disabled={disabledPagination} onClick={() => updateCurrentPage(lastPage)} />
       )}
     </Pagination>
   );

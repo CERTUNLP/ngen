@@ -29,7 +29,7 @@ const Breadcrumb = () => {
         if (collapse.type && collapse.type === "collapse") {
           getCollapse(collapse, index);
         } else if (collapse.type && collapse.type === "item") {
-          if (location.pathname === collapse.url) {
+          if (location.pathname.startsWith(collapse.url)) {
             setMain(item);
             setItem(collapse);
           }
@@ -42,6 +42,8 @@ const Breadcrumb = () => {
   let mainContent, itemContent;
   let breadcrumbContent = "";
   let title = "";
+  let method = "";
+  let methodContent = "";
 
   if (main && main.type === "collapse") {
     mainContent = (
@@ -53,11 +55,44 @@ const Breadcrumb = () => {
 
   if (item && item.type === "item") {
     title = item.title ? t(item.title) : "";
-    itemContent = (
-      <ListGroup.Item as="li" bsPrefix=" " className="breadcrumb-item">
-        <Link to="#">{title}</Link>
-      </ListGroup.Item>
-    );
+    let fullpath = location.pathname;
+    // check if last part of the path is a number
+    let lastPart = fullpath.split("/").pop();
+    let path_up = fullpath.split("/");
+    path_up.pop();
+    if (!isNaN(lastPart)) {
+      fullpath = fullpath.substring(0, fullpath.lastIndexOf("/"));
+      path_up.pop();
+    }
+
+
+    if (fullpath.includes("/edit")) {
+      method = t("w.edit");
+    } else if (fullpath.includes("/create")) {
+      method = t("w.create");
+    } else if (fullpath.includes("/view")) {
+      method = t("w.detail");
+    }
+
+    if (method === "") {
+      itemContent = (
+        <ListGroup.Item as="li" bsPrefix=" " className="breadcrumb-item">
+          <Link to="#">{title}</Link>
+        </ListGroup.Item>
+      );
+    } else {
+
+      itemContent = (
+        <ListGroup.Item as="li" bsPrefix=" " className="breadcrumb-item">
+          <Link to={path_up.join("/")}>{title}</Link>
+        </ListGroup.Item>
+      );
+      methodContent = (
+        <ListGroup.Item as="li" bsPrefix=" " className="breadcrumb-item">
+          <Link to="#">{method}</Link>
+        </ListGroup.Item>
+      );
+    }
 
     if (item.breadcrumbs !== false) {
       breadcrumbContent = (
@@ -66,7 +101,7 @@ const Breadcrumb = () => {
             <div className="row align-items-center">
               <div className="col-md-12">
                 <div className="page-header-title">
-                  <h5 className="m-b-10">{title}</h5>
+                  {/* <h5 className="m-b-10">{title}</h5> */}
                 </div>
                 <ListGroup as="ul" bsPrefix=" " className="breadcrumb">
                   <ListGroup.Item as="li" bsPrefix=" " className="breadcrumb-item">
@@ -76,6 +111,7 @@ const Breadcrumb = () => {
                   </ListGroup.Item>
                   {mainContent}
                   {itemContent}
+                  {methodContent}
                 </ListGroup>
               </div>
             </div>

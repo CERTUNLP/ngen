@@ -3,12 +3,13 @@ import { COMPONENT_URL, PAGE } from "../../config/constant";
 import setAlert from "../../utils/setAlert";
 import i18next from "i18next";
 
-const getEvents = (currentPage, filters, order) => {
+const getEvents = (currentPage, filters, order, asNetworkAdmin) => {
   //el parametro es para completar la url con el numero de pagina
+  let component = asNetworkAdmin ? COMPONENT_URL.networkadminEvent : COMPONENT_URL.event;
   if (!filters.includes("parent__isnull")) {
     filters += "parent__isnull=true&";
   }
-  return apiInstance.get(COMPONENT_URL.event + PAGE + currentPage + "&ordering=" + order + "&" + filters);
+  return apiInstance.get(component + PAGE + currentPage + "&ordering=" + order + "&" + filters);
 };
 
 const postEvent = (formData) => {
@@ -27,11 +28,11 @@ const postEvent = (formData) => {
       return Promise.reject(error);
     });
 };
+
 const putEvent = (url, formData) => {
   //el parametro es para completar la url con el numero de pagina
   let messageSuccess = i18next.t("ngen.edit.event.success");
   let messageError = i18next.t("ngen.edit.event.error");
-
   return apiInstance
     .put(url, formData)
     .then((response) => {
@@ -60,6 +61,13 @@ const patchEvent = (url, formData) => {
       return response;
     })
     .catch((error) => {
+      console.log("error", error);
+      if (error.response?.data) {
+        for (let key in error.response.data) {
+          let keystr = key === "__all__" || key === "detail" ? "" : `${key}: `;
+          messageError += `. ${keystr}${error.response.data[key]}`;
+        }
+      }
       setAlert(messageError, "error", "event");
       return Promise.reject(error);
     });
@@ -84,24 +92,11 @@ const deleteEvent = (url) => {
       return Promise.reject(error);
     });
 };
+
 const mergeEvent = (urlParent, urlChildren) => {
-  let messageSuccess = i18next.t("ngen.merge.event.success");
-  let messageError = i18next.t("ngen.merge.event.error");
-  return apiInstance
-    .patch(urlChildren, {
-      parent: urlParent
-    })
-    .then((response) => {
-      setAlert(messageSuccess, "success", "event");
-      return response;
-    })
-    .catch((error) => {
-      let statusText = error.response.statusText;
-      messageError += " " + statusText;
-      setAlert(messageError, "error", "event");
-      return Promise.reject(error);
-    });
+  return patchEvent(urlChildren, { parent: urlParent });
 };
+
 const getAllEvents = (currentPage = 1, results = [], limit = 100) => {
   return apiInstance
     .get(COMPONENT_URL.event, { params: { page: currentPage } }) //, page_size: limit
@@ -120,6 +115,7 @@ const getAllEvents = (currentPage = 1, results = [], limit = 100) => {
       return Promise.reject(error);
     });
 };
+
 const getListEvents = (list) => {
   const listEvents = [];
   list.forEach(function (url) {

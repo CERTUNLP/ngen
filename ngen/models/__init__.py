@@ -14,6 +14,7 @@ from .email_message import *  # noqa: F401
 from .message import *  # noqa: F401
 from .state import *  # noqa: F401
 from .taxonomy import *  # noqa: F401
+from .common.permission import *  # noqa: F401
 
 for model in apps.all_models["ngen"].values():
     if issubclass(model, AuditModelMixin):

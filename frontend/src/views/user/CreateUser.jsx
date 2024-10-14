@@ -4,7 +4,6 @@ import { postUser } from "../../api/services/users";
 import { getMinifiedPriority } from "../../api/services/priorities";
 import Alert from "../../components/Alert/Alert";
 import FormUser from "./components/FormUser";
-import Navigation from "../../components/Navigation/Navigation";
 import { useTranslation } from "react-i18next";
 
 const AddUser = () => {
@@ -51,7 +50,17 @@ const AddUser = () => {
   };
 
   const createUser = (e) => {
-    postUser(body.username, body.first_name, body.last_name, body.email, body.priority, body.is_active, body.password)
+    postUser(
+      body.username,
+      body.first_name,
+      body.last_name,
+      body.email,
+      body.priority,
+      body.is_active,
+      body.password,
+      body.groups,
+      body.user_permissions
+    )
       .then(() => {
         window.location.href = "/users";
       })
@@ -62,8 +71,6 @@ const AddUser = () => {
   };
   return (
     <>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
-      <Navigation actualPosition={t("w.add") + t("ngen.user")} path="/users" index={t("ngen.user_other")} />
       <Card>
         <Card.Header>
           <Card.Title as="h5">

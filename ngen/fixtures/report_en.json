@@ -1,0 +1,662 @@
+[
+  {
+    "model": "ngen.report",
+    "pk": 1,
+    "fields": {
+      "created": "2024-09-12T09:00:00Z",
+      "modified": "2024-09-12T09:00:00Z",
+      "lang": "en",
+      "taxonomy": 1,
+      "problem": "Abusive content has been detected originating from the host {{event.address}}, which may involve offensive or harmful material being distributed or hosted.",
+      "derived_problem": "Such incidents often lead to the dissemination of harmful content that can breach terms of service agreements, causing reputational damage and potential legal issues.<br>Consequences include:\n<ul>\n<li>Legal and compliance risks</li>\n<li>Damage to reputation and trust</li>\n<li>Potential for user or service suspension</li>\n</ul>",
+      "verification": "Verification can be performed by reviewing the content hosted or distributed by the affected host and examining logs for instances of abusive material. Tools like content analysis software or log analyzers may be used.",
+      "recommendations": "We recommend removing the abusive content immediately and conducting a thorough review of all content and user interactions associated with the affected host.\nConsider implementing content moderation tools to prevent future incidents.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 2,
+    "fields": {
+      "created": "2024-09-12T09:05:00Z",
+      "modified": "2024-09-12T09:05:00Z",
+      "lang": "en",
+      "taxonomy": 2,
+      "problem": "Malicious code has been detected on the host {{event.address}}, indicating potential malware infection that may disrupt system operations or steal data.",
+      "derived_problem": "Malicious code incidents can lead to significant disruptions in operations, data breaches, or further system compromise.<br>Consequences include:\n<ul>\n<li>System instability or failure</li>\n<li>Data loss or theft</li>\n<li>Spread of malware to other systems</li>\n</ul>",
+      "verification": "Verification can be conducted by performing a full malware scan on the affected host using antivirus or antimalware tools. Analyzing system logs and traffic patterns can also help identify the scope of the infection.",
+      "recommendations": "Immediately isolate the infected host to prevent further spread of the malicious code. Conduct a full malware removal process and review system security policies to prevent future incidents.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 3,
+    "fields": {
+      "created": "2024-09-12T09:10:00Z",
+      "modified": "2024-09-12T09:10:00Z",
+      "lang": "en",
+      "taxonomy": 3,
+      "problem": "Information gathering activities have been detected from the host {{event.address}}, involving techniques such as scanning or probing for vulnerabilities.",
+      "derived_problem": "Information gathering is often a precursor to more serious attacks and can indicate that attackers are preparing for a targeted exploit.<br>Consequences include:\n<ul>\n<li>Increased risk of successful attacks</li>\n<li>Potential exposure of sensitive data</li>\n<li>Identification of network weaknesses</li>\n</ul>",
+      "verification": "Verification involves analyzing network traffic and system logs for signs of scanning or probing activities. Tools like intrusion detection systems (IDS) or network analyzers can be used to detect these activities.",
+      "recommendations": "Monitor network traffic for abnormal patterns and ensure that all systems are patched and protected against known vulnerabilities. Implement network segmentation and access controls to mitigate risks.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 4,
+    "fields": {
+      "created": "2024-09-12T09:15:00Z",
+      "modified": "2024-09-12T09:15:00Z",
+      "lang": "en",
+      "taxonomy": 4,
+      "problem": "Intrusion attempts have been detected from the host {{event.address}}, indicating efforts to bypass security controls and gain unauthorized access.",
+      "derived_problem": "Unsuccessful intrusion attempts can indicate an ongoing attack or probing for weaknesses in the system.<br>Consequences include:\n<ul>\n<li>Potential compromise of sensitive systems</li>\n<li>Increased likelihood of successful future attacks</li>\n<li>Need for improved security measures</li>\n</ul>",
+      "verification": "Verification involves reviewing logs for signs of failed login attempts or suspicious activity. Intrusion detection systems (IDS) can help identify patterns indicative of intrusion attempts.",
+      "recommendations": "Enhance security controls such as firewall rules and access controls. Regularly update and patch systems to address potential vulnerabilities that could be exploited in future attacks.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 5,
+    "fields": {
+      "created": "2024-09-12T09:20:00Z",
+      "modified": "2024-09-12T09:20:00Z",
+      "lang": "en",
+      "taxonomy": 5,
+      "problem": "Intrusions have been confirmed on the host {{event.address}}, where unauthorized access to sensitive systems or data has been achieved.",
+      "derived_problem": "Confirmed intrusions represent a serious security breach and can lead to data theft, system compromise, or further malicious activity.<br>Consequences include:\n<ul>\n<li>Loss or theft of sensitive data</li>\n<li>Compromise of system integrity</li>\n<li>Potential for further exploitation</li>\n</ul>",
+      "verification": "Verification involves conducting a thorough forensic analysis of the affected systems to determine the extent of the breach and any data or systems impacted.",
+      "recommendations": "Isolate the affected systems and perform a full security review. Strengthen security measures and implement incident response procedures to address and mitigate the impact of the breach.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 6,
+    "fields": {
+      "created": "2024-09-12T09:25:00Z",
+      "modified": "2024-09-12T09:25:00Z",
+      "lang": "en",
+      "taxonomy": 6,
+      "problem": "Availability issues have been detected involving the host {{event.address}}, such as service disruptions or resource unavailability.",
+      "derived_problem": "Availability incidents can significantly impact business operations and user access to services.<br>Consequences include:\n<ul>\n<li>Downtime of critical services</li>\n<li>Loss of productivity and revenue</li>\n<li>Increased pressure on support teams</li>\n</ul>",
+      "verification": "Verification involves monitoring system uptime and performance metrics. Analyzing logs for service disruptions or errors can help identify the cause of the availability issues.",
+      "recommendations": "Implement redundancy and failover solutions to improve service availability. Regularly review and update incident response plans to address availability issues efficiently.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 7,
+    "fields": {
+      "created": "2024-09-12T09:30:00Z",
+      "modified": "2024-09-12T09:30:00Z",
+      "lang": "en",
+      "taxonomy": 7,
+      "problem": "Information content security issues have been detected on the host {{event.address}}, involving unauthorized access or exposure of sensitive information.",
+      "derived_problem": "Information content security breaches can lead to severe consequences, including loss of confidential data and regulatory penalties.<br>Consequences include:\n<ul>\n<li>Data breaches affecting user privacy</li>\n<li>Legal and compliance ramifications</li>\n<li>Potential damage to organizational reputation</li>\n</ul>",
+      "verification": "Verification involves examining access logs and audit trails to determine the extent of the unauthorized access. Data protection and encryption measures should be reviewed and strengthened.",
+      "recommendations": "Enhance data protection strategies and ensure compliance with data privacy regulations. Conduct a security review to address vulnerabilities and prevent future breaches.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 8,
+    "fields": {
+      "created": "2024-09-12T09:35:00Z",
+      "modified": "2024-09-12T09:35:00Z",
+      "lang": "en",
+      "taxonomy": 8,
+      "problem": "Fraudulent activities have been detected originating from the host {{event.address}}, indicating attempts at financial deception such as phishing or identity theft.",
+      "derived_problem": "Fraud incidents can lead to financial losses and damage to organizational reputation.<br>Consequences include:\n<ul>\n<li>Financial losses due to fraudulent transactions</li>\n<li>Reputational damage and loss of customer trust</li>\n<li>Potential legal and regulatory consequences</li>\n</ul>",
+      "verification": "Verification involves analyzing transaction logs and user activity for signs of fraud. Reviewing communication channels and user reports can help identify fraudulent schemes.",
+      "recommendations": "Implement fraud detection and prevention systems. Educate users about fraud risks and ensure that financial transactions are monitored and verified.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 9,
+    "fields": {
+      "created": "2024-09-12T09:40:00Z",
+      "modified": "2024-09-12T09:40:00Z",
+      "lang": "en",
+      "taxonomy": 9,
+      "problem": "Vulnerabilities have been identified on the host {{event.address}}, indicating known weaknesses or flaws in software, hardware, or configurations that could be exploited.",
+      "derived_problem": "These vulnerabilities pose a significant risk as they can be exploited to compromise system integrity, confidentiality, or availability. Immediate attention is required to address these weaknesses.<br>Consequences include:\n<ul>\n<li>Potential for unauthorized access or data breaches</li>\n<li>Increased risk of system compromise or failure</li>\n<li>Exposure to further attacks or exploits</li>\n</ul>",
+      "verification": "Verification involves conducting vulnerability scans using tools such as Nessus or OpenVAS to identify and assess the weaknesses. Reviewing system configurations and patch levels is also crucial.",
+      "recommendations": "Apply relevant patches and updates to address the identified vulnerabilities. Implement best practices for system hardening and regularly perform vulnerability assessments to ensure ongoing security.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 10,
+    "fields": {
+      "created": "2024-09-12T09:10:00Z",
+      "modified": "2024-09-12T09:10:00Z",
+      "lang": "en",
+      "taxonomy": 12,
+      "problem": "We would like to inform you that we have been informed that the host {{event.address}} is possibly sending SPAM.",
+      "derived_problem": "If this issue is not addressed, the host could be added in blacklists, thus emails from this host will be filtered.",
+      "verification": "It is likely that the SPAM emails are being sent by a compromised email account.<br>Analyzing the email header, the authenticated user being used to send the emails can be identified (See attached file).",
+      "recommendations": "It is recommended to change the credentials of the affected users and instruct them about phishing emails, an attack that has probably been used to steal credentials.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 11,
+    "fields": {
+      "created": "2024-09-12T09:15:00Z",
+      "modified": "2024-09-12T09:15:00Z",
+      "lang": "en",
+      "taxonomy": 13,
+      "problem": "Harmful speech has been identified on the host {{event.address}}, indicating the presence of content inciting violence or discrimination.",
+      "derived_problem": "Harmful speech can cause significant harm to individuals or groups and may lead to legal or reputational issues.<br>Consequences include:\n<ul>\n<li>Potential legal ramifications or policy violations</li>\n<li>Damage to reputation or relationships</li>\n<li>Incitement of violence or hatred</li>\n</ul>",
+      "verification": "Verify harmful speech by reviewing logs or content from the affected host. Use content moderation tools to detect and filter harmful content.",
+      "recommendations": "Implement content moderation policies and tools to prevent harmful speech. Educate users on acceptable use policies and enforce compliance.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 12,
+    "fields": {
+      "created": "2024-09-12T09:20:00Z",
+      "modified": "2024-09-12T09:20:00Z",
+      "lang": "en",
+      "taxonomy": 14,
+      "problem": "Content involving child exploitation or sexual violence has been detected on the host {{event.address}}, indicating a severe breach of content policy.",
+      "derived_problem": "Such content is highly illegal and harmful. Immediate actions are required to remove and report the content.<br>Consequences include:\n<ul>\n<li>Legal actions and investigations</li>\n<li>Severe reputational damage</li>\n<li>Psychological harm to victims</li>\n</ul>",
+      "verification": "Verify the content by analyzing logs and reviewing reported material. Utilize specialized tools and authorities for in-depth analysis.",
+      "recommendations": "Immediately remove the content and report the incident to relevant authorities. Enhance content monitoring and implement strict content policies.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 13,
+    "fields": {
+      "created": "2024-09-12T09:25:00Z",
+      "modified": "2024-09-12T09:25:00Z",
+      "lang": "en",
+      "taxonomy": 15,
+      "problem": "We are contacting you to inform you that the website located at {{event.network}} has suffered a defacement attack, which consists of the modification of the portal's own content by third parties.",
+      "derived_problem": "The modification of existing information on the server indicates that the attackers have obtained privileges on the server. As a result of this situation, the compromised server could be exposed to other risks, such as:\n<ul>\n<li>Hosting or distribution of malware.</li>\n<li>Use of the server as a launching point for more sophisticated attacks.</li>\n<li>Reputational damage</li>\n<li>Gaining increased privileges over the server</li>\n<li>Other unforeseen vulnerabilities</li>\n</ul>",
+      "verification": "The defacement's attack can be observed in the URL<div>\nhttp://{{event.domain}}/\n</div><div>\n{{event.address}}\n</div>",
+      "recommendations": "It is recommended that the affected content be restored from backup copies and that a forensic examination of the server be carried out in order to determine the origin of the problem and the scope of the attack. On the other hand, it is recommended to perform a pentest on the affected site, which will allow the early identification of other problems that could lead to situations similar to the present one.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 14,
+    "fields": {
+      "created": "2024-09-12T09:30:00Z",
+      "modified": "2024-09-12T09:30:00Z",
+      "lang": "en",
+      "taxonomy": 16,
+      "problem": "A host has been infected with a virus, as indicated by malicious software that attaches itself to other programs or files and spreads.",
+      "derived_problem": "Virus infections can cause extensive damage to systems and data integrity, leading to operational disruptions.<br>Consequences include:\n<ul>\n<li>Potential data loss or corruption</li>\n<li>System performance degradation</li>\n<li>Further spread of the virus across the network</li>\n</ul>",
+      "verification": "Verify the infection by scanning the host with antivirus software and analyzing system behavior for unusual activity. Review system logs for signs of virus activity.",
+      "recommendations": "Quarantine and remove the infected files using antivirus tools. Update antivirus definitions and perform regular system scans to detect and prevent future infections.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 15,
+    "fields": {
+      "created": "2024-09-12T09:35:00Z",
+      "modified": "2024-09-12T09:35:00Z",
+      "lang": "en",
+      "taxonomy": 17,
+      "problem": "A host has been compromised by a worm, indicated by a standalone malicious program that replicates and spreads across systems.",
+      "derived_problem": "Worm infections can rapidly propagate and exploit network vulnerabilities, leading to widespread damage.<br>Consequences include:\n<ul>\n<li>Network congestion and performance issues</li>\n<li>Potential data breaches and system compromise</li>\n<li>Increased risk of further infections</li>\n</ul>",
+      "verification": "Verify the worm infection by analyzing network traffic and system behavior. Use network monitoring tools to detect unusual activity and replication patterns.",
+      "recommendations": "Isolate the infected host and remove the worm using antivirus or specialized removal tools. Update network defenses and apply security patches to prevent future infections.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 16,
+    "fields": {
+      "created": "2024-09-12T09:40:00Z",
+      "modified": "2024-09-12T09:40:00Z",
+      "lang": "en",
+      "taxonomy": 18,
+      "problem": "A host has been compromised by a Trojan, as indicated by malware disguised as legitimate software giving unauthorized access to the system.",
+      "derived_problem": "Trojan infections can lead to unauthorized access and control over systems, causing significant security breaches.<br>Consequences include:\n<ul>\n<li>Potential data theft or loss</li>\n<li>System compromise and unauthorized access</li>\n<li>Further malware infections or exploits</li>\n</ul>",
+      "verification": "Verify the Trojan infection by analyzing system behavior and checking for unauthorized software. Use malware removal tools to detect and eliminate the Trojan.",
+      "recommendations": "Remove the Trojan using specialized malware removal tools. Enhance system security by updating software and applying security patches.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 17,
+    "fields": {
+      "created": "2024-09-12T09:45:00Z",
+      "modified": "2024-09-12T09:45:00Z",
+      "lang": "en",
+      "taxonomy": 19,
+      "problem": "A host has been infected with spyware, indicated by software designed to gather information without the user's consent.",
+      "derived_problem": "Spyware infections can compromise user privacy and security by collecting sensitive information without consent.<br>Consequences include:\n<ul>\n<li>Privacy breaches and data theft</li>\n<li>Potential financial loss due to identity theft</li>\n<li>System performance degradation</li>\n</ul>",
+      "verification": "Verify the spyware infection by analyzing system behavior and checking for unauthorized data collection. Use anti-spyware tools to detect and remove the software.",
+      "recommendations": "Remove the spyware using anti-spyware tools and secure the system by updating software and applying security patches.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 18,
+    "fields": {
+      "created": "2024-09-12T09:50:00Z",
+      "modified": "2024-09-12T09:50:00Z",
+      "lang": "en",
+      "taxonomy": 20,
+      "problem": "A host has been affected by a dialler, indicated by malware that automatically dials premium-rate phone numbers.",
+      "derived_problem": "Dialler infections can lead to significant financial losses due to charges for premium-rate calls.<br>Consequences include:\n<ul>\n<li>Unexpected financial charges</li>\n<li>Potential system performance issues</li>\n<li>Increased risk of further infections</li>\n</ul>",
+      "verification": "Verify the dialler infection by analyzing system activity and call logs. Use malware removal tools to detect and eliminate the dialler.",
+      "recommendations": "Remove the dialler using specialized malware removal tools and secure the system to prevent further infections. Review and monitor phone billing statements for unusual charges.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 19,
+    "fields": {
+      "created": "2024-09-12T09:55:00Z",
+      "modified": "2024-09-12T09:55:00Z",
+      "lang": "en",
+      "taxonomy": 21,
+      "problem": "A host has been compromised by a rootkit, as indicated by malware designed to gain unauthorized access while hiding its presence.",
+      "derived_problem": "Rootkit infections are particularly dangerous as they can provide persistent unauthorized access while avoiding detection.<br>Consequences include:\n<ul>\n<li>Persistent unauthorized access and control</li>\n<li>System performance degradation</li>\n<li>Difficulty in detecting and removing the rootkit</li>\n</ul>",
+      "verification": "Verify the rootkit infection by using specialized detection tools and analyzing system behavior. Look for hidden files and processes.",
+      "recommendations": "Remove the rootkit using specialized removal tools and perform a full system cleanup. Enhance system security and monitoring to detect and prevent future infections.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 20,
+    "fields": {
+      "created": "2024-09-12T10:00:00Z",
+      "modified": "2024-09-12T10:00:00Z",
+      "lang": "en",
+      "taxonomy": 22,
+      "problem": "We are contacting you because we have been informed that the host {{event.address}} is infected with malware.",
+      "derived_problem": "In an infected host, there are various consequences, among which we can list:\n<ul>\n<li>Excessive bandwidth consumption by the host.</li>\n<li>Commitment of other teams.</li>\n<li>Compromise of organizational and user data.</li>\n<li>Execute commands from a botnet.</li>\n</ul>",
+      "verification": "For verification, you can:\n<ul>\n<li>Scan the host with an antivirus.</li>\n<li>Review system behavior for signs of compromise.</li>\n</ul>",
+      "recommendations": "It is recommended:\n<ul>\n<li>Disconnect the host from the network.<li/>\n<li>Remove the malware</li>\n<li>Strengthen network defenses and monitor unusual activity.</li>\n</ul>",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 21,
+    "fields": {
+      "created": "2024-09-12T10:05:00Z",
+      "modified": "2024-09-12T10:05:00Z",
+      "lang": "en",
+      "taxonomy": 23,
+      "problem": "We would like to inform you that we have detected that the host {{event.address}} is currently infected with malware and part of a BotNet (network of compromised hosts controlled by an attacker).",
+      "derived_problem": "Botnet infections can be used for malicious activities such as DDoS attacks, leading to significant disruption.<br>Consequences include:\n<ul>\n<li>Disruption of services and network performance</li>\n<li>Potential for large-scale attacks or data theft</li>\n<li>Risk of compromise of user information</li>\n<li>etc</li>\n</ul>",
+      "verification": "The verification can be achieved analyzing the existing network traffic of the infected host or network, using tools such as tcpdump or wireshark,  identifying communication with known command-and-control servers.",
+      "recommendations": "It is recommended to iIsolate the infected host and remove it from the botnet. Strengthen network defenses and monitor for unusual activity.",
+      "more_information": "<div>\n<ul>\n<li><a href=\"http://www.linuxjournal.com/magazine/detecting-botnets\">http://www.linuxjournal.com/magazine/detecting-botnets</a></li>\n</ul>\n</div>"
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 22,
+    "fields": {
+      "created": "2024-09-12T10:10:00Z",
+      "modified": "2024-09-12T10:10:00Z",
+      "lang": "en",
+      "taxonomy": 24,
+      "problem": "We are contacting you because we have detected that the host/server {{event.address}} is mining cryptocurrencies. While this may be due to a process you have run, it is very likely that someone has managed to access it and schedule it to run.",
+      "derived_problem": "Mining malware can significantly degrade system performance and incur costs by using system resources for unauthorised cryptocurrency mining. Consequences include:\n<ul>\n<li>Decrease in system performance and reliability</li>\n<li>Potential financial costs due to increased resource usage</li>\n<li>Risk of future infections</li>\n</ul>",
+      "verification": "It is recommended to review the processes running on the host to identify any suspicious or unauthorised activity related to cryptocurrency mining.",
+      "recommendations": "It is recommended to immediately stop any unauthorised mining process, perform a security scan for possible infections, update all systems with the latest security patches, and review access logs to identify the source of the intrusion.",
+      "more_information": "<a href=\"https://attack.mitre.org/techniques/T1496/\">https://attack.mitre.org/techniques/T1496/</a>"
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 23,
+    "fields": {
+      "created": "2024-09-12T10:15:00Z",
+      "modified": "2024-09-12T10:15:00Z",
+      "lang": "en",
+      "taxonomy": 25,
+      "problem": "We are contacting you because we have detected that the host/server {{event.address}} is hosting a cryptocurrency service. Although this may be due to a process that you have executed, it is very likely that someone has managed to access it and schedule the execution of said task.",
+      "derived_problem": "Mining pool servers can coordinate mining activities of compromised hosts, leading to extensive use of system resources and potential exposure to additional security risks.<br>Consequences include:\n<ul>\n<li>Increased resource usage and operational costs</li>\n<li>Potential risk of exposing further vulnerabilities</li>\n<li>Increased risk of further infections</li>\n</ul>",
+      "verification": "Check host activity by analyzing network traffic and looking for mining pool software. Use anti-malware tools to detect and remove server software.",
+      "recommendations": "Remove the host software and secure the system to prevent future infections. Regularly monitor network traffic for unusual activity.",
+      "more_information": "<a href=\"https://attack.mitre.org/techniques/T1496/\">https://attack.mitre.org/techniques/T1496/</a>"
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 24,
+    "fields": {
+      "created": "2024-09-12T10:20:00Z",
+      "modified": "2024-09-12T10:20:00Z",
+      "lang": "en",
+      "taxonomy": 26,
+      "problem": "Scanning activity detected, indicating systematic probing of network or system to identify vulnerabilities or gather information.",
+      "derived_problem": "Scanning can be used to identify weaknesses that may be exploited in future attacks.<br>Consequences include:\n<ul>\n<li>Increased risk of successful attacks due to identified vulnerabilities</li>\n<li>Potential for further malicious activities based on gathered information</li>\n<li>System or network performance degradation due to excessive probing</li>\n</ul>",
+      "verification": "Verify scanning activity by analyzing network traffic for patterns consistent with scanning tools. Check for unusual access requests or system logs indicating scanning behavior.",
+      "recommendations": "Implement network intrusion detection systems (NIDS) to monitor and alert on scanning activity. Strengthen network defenses by closing unnecessary ports and applying security patches.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 25,
+    "fields": {
+      "created": "2024-09-12T10:25:00Z",
+      "modified": "2024-09-12T10:25:00Z",
+      "lang": "en",
+      "taxonomy": 27,
+      "problem": "Sniffing activity detected, indicating interception and analysis of network traffic to capture sensitive data or monitor network activity.",
+      "derived_problem": "Sniffing can lead to data breaches by capturing sensitive information such as login credentials and personal data.<br>Consequences include:\n<ul>\n<li>Compromised sensitive data and privacy violations</li>\n<li>Potential for identity theft or financial loss</li>\n<li>Increased risk of further attacks leveraging captured data</li>\n</ul>",
+      "verification": "Verify sniffing activity by analyzing network traffic for signs of packet capture or unauthorized data interception. Check for known sniffing tools in use on the network.",
+      "recommendations": "Encrypt sensitive data in transit using protocols like HTTPS or VPNs. Regularly monitor network traffic for unusual patterns and use network segmentation to limit exposure.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 26,
+    "fields": {
+      "created": "2024-09-12T10:30:00Z",
+      "modified": "2024-09-12T10:30:00Z",
+      "lang": "en",
+      "taxonomy": 28,
+      "problem": "Social engineering attack detected, indicating manipulation of individuals to divulge confidential information or perform compromising actions.",
+      "derived_problem": "Social engineering attacks exploit human psychology to bypass technical security controls.<br>Consequences include:\n<ul>\n<li>Unauthorized access to sensitive information or systems</li>\n<li>Potential for identity theft or financial loss</li>\n<li>Systemic security breaches due to compromised credentials</li>\n</ul>",
+      "verification": "Verify social engineering attempts by interviewing affected individuals and analyzing communication logs. Look for patterns of manipulation or deceptive tactics used in the attack.",
+      "recommendations": "Educate employees on recognizing and responding to social engineering attempts. Implement multi-factor authentication to reduce the risk of unauthorized access from compromised credentials.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 27,
+    "fields": {
+      "created": "2024-09-12T10:35:00Z",
+      "modified": "2024-09-12T10:35:00Z",
+      "lang": "en",
+      "taxonomy": 29,
+      "problem": "Exploitation of known vulnerabilities detected, indicating attempts to exploit weaknesses in systems or software for unauthorized access or control.",
+      "derived_problem": "Exploiting known vulnerabilities can lead to unauthorized access, data breaches, or complete system compromise.<br>Consequences include:\n<ul>\n<li>Loss of data integrity and confidentiality</li>\n<li>Potential system control or manipulation by attackers</li>\n<li>Increased risk of further exploits if vulnerabilities remain unpatched</li>\n</ul>",
+      "verification": "Verify exploitation attempts by checking system logs for signs of exploitation and analyzing patches applied to software. Use vulnerability scanners to identify and confirm unpatched vulnerabilities.",
+      "recommendations": "Regularly apply security patches and updates to software and systems. Implement vulnerability management programs and conduct regular security assessments to identify and address weaknesses.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 28,
+    "fields": {
+      "created": "2024-09-12T10:40:00Z",
+      "modified": "2024-09-12T10:40:00Z",
+      "lang": "en",
+      "taxonomy": 30,
+      "problem": "Repeated login attempts detected, indicating a potential brute-force attack targeting user credentials.",
+      "derived_problem": "Repeated login attempts can indicate a brute-force attack designed to guess or crack user passwords.<br>Consequences include:\n<ul>\n<li>Potential unauthorized access to user accounts</li>\n<li>Increased risk of credential theft or system compromise</li>\n<li>System performance issues due to excessive login attempts</li>\n</ul>",
+      "verification": "Verify login attempts by analyzing authentication logs for patterns of repeated failed attempts. Check for any unusual IP addresses or login sources.",
+      "recommendations": "Implement account lockout mechanisms after a certain number of failed login attempts. Use strong password policies and multi-factor authentication to enhance security.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 29,
+    "fields": {
+      "created": "2024-09-12T10:45:00Z",
+      "modified": "2024-09-12T10:45:00Z",
+      "lang": "en",
+      "taxonomy": 31,
+      "problem": "A new attack signature has been detected, indicating a new pattern or technique used in attacks that is not yet recognized by existing defenses.",
+      "derived_problem": "New attack signatures can indicate emerging threats that current defenses may not be equipped to handle.<br>Consequences include:\n<ul>\n<li>Increased risk of successful attacks exploiting new techniques</li>\n<li>Potential for data breaches or system compromises</li>\n<li>Difficulty in detecting and defending against new threats</li>\n</ul>",
+      "verification": "Verify the new attack signature by analyzing security logs and network traffic for the presence of the new pattern. Update security tools and signatures to detect and respond to the new threat.",
+      "recommendations": "Enhance threat intelligence capabilities to stay informed about new attack techniques. Regularly update security tools and configurations to detect and mitigate emerging threats.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 30,
+    "fields": {
+      "created": "2024-09-12T10:50:00Z",
+      "modified": "2024-09-12T10:50:00Z",
+      "lang": "en",
+      "taxonomy": 32,
+      "problem": "Privileged account compromise detected, indicating unauthorized access to or misuse of accounts with elevated permissions or administrative privileges.",
+      "derived_problem": "Compromise of privileged accounts can lead to extensive damage due to the elevated access rights associated with these accounts.<br>Consequences include:\n<ul>\n<li>Unauthorized access to sensitive systems and data</li>\n<li>Potential system-wide control or manipulation</li>\n<li>Increased risk of further attacks leveraging compromised privileges</li>\n</ul>",
+      "verification": "Verify the compromise of privileged accounts by reviewing account activity logs and checking for unauthorized changes or access. Monitor for any abnormal use of administrative privileges.",
+      "recommendations": "Implement strict access controls and regularly review privileged account usage. Use multi-factor authentication for accounts with elevated privileges and conduct periodic security audits.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 31,
+    "fields": {
+      "created": "2024-09-12T10:55:00Z",
+      "modified": "2024-09-12T10:55:00Z",
+      "lang": "en",
+      "taxonomy": 33,
+      "problem": "Unprivileged account compromise detected, indicating unauthorized access to accounts with limited permissions that may still lead to significant impacts or further attacks.",
+      "derived_problem": "Compromise of unprivileged accounts can still lead to significant impacts, such as accessing sensitive information or facilitating further attacks.<br>Consequences include:\n<ul>\n<li>Potential access to sensitive information or systems</li>\n<li>Increased risk of further compromises or lateral movement</li>\n<li>Potential operational disruption</li>\n</ul>",
+      "verification": "Verify the compromise of unprivileged accounts by analyzing account activity and access logs. Look for unusual patterns or unauthorized access attempts.",
+      "recommendations": "Implement strong password policies and account monitoring to detect suspicious activity. Use network segmentation and least privilege principles to limit the impact of compromised accounts.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 32,
+    "fields": {
+      "created": "2024-09-12T11:00:00Z",
+      "modified": "2024-09-12T11:00:00Z",
+      "lang": "en",
+      "taxonomy": 34,
+      "problem": "Application compromise detected, indicating a breach in the security of an application that may lead to unauthorized access or data loss.",
+      "derived_problem": "Compromise of an application can result in unauthorized access to sensitive data or control over application functions.<br>Consequences include:\n<ul>\n<li>Data breaches and loss of confidentiality</li>\n<li>Potential disruption of application services</li>\n<li>Increased risk of further attacks leveraging application vulnerabilities</li>\n</ul>",
+      "verification": "Verify application compromise by analyzing application logs for unusual activities and checking for unauthorized changes. Conduct a thorough security assessment of the application.",
+      "recommendations": "Apply security patches and updates to the application. Implement application security best practices, such as input validation and regular security testing, to protect against vulnerabilities.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 33,
+    "fields": {
+      "created": "2024-09-12T11:05:00Z",
+      "modified": "2024-09-12T11:05:00Z",
+      "lang": "en",
+      "taxonomy": 35,
+      "problem": "Bot activity detected, indicating the use of automated software or scripts to perform repetitive tasks, often maliciously.",
+      "derived_problem": "Bot activity can automate attacks, conduct fraud, or disrupt services, posing significant security and operational risks.<br>Consequences include:\n<ul>\n<li>Automated attacks leading to system compromise or data breaches</li>\n<li>Service disruptions due to high volumes of automated requests</li>\n<li>Potential financial losses from fraudulent activities</li>\n</ul>",
+      "verification": "Verify bot activity by analyzing traffic patterns and identifying automated behavior. Check for known bot signatures and use CAPTCHAs or behavioral analysis to detect bots.",
+      "recommendations": "Implement anti-bot measures such as CAPTCHAs and rate limiting. Regularly monitor traffic for signs of automated activity and use web application firewalls to filter out malicious bots.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 34,
+    "fields": {
+      "created": "2024-09-12T11:10:00Z",
+      "modified": "2024-09-12T11:10:00Z",
+      "lang": "en",
+      "taxonomy": 36,
+      "problem": "Denial of Service (DoS) attack detected, indicating an attempt to overwhelm a system's resources to render it unavailable to users.",
+      "derived_problem": "DoS attacks can disrupt service availability and impact system performance, leading to operational challenges.<br>Consequences include:\n<ul>\n<li>Service downtime and unavailability</li>\n<li>Increased operational costs due to resource strain</li>\n<li>Potential reputational damage</li>\n</ul>",
+      "verification": "Verify DoS attacks by monitoring system performance metrics and analyzing traffic patterns. Look for signs of resource exhaustion or unusual traffic spikes.",
+      "recommendations": "Implement network and application-level rate limiting and filtering to mitigate DoS attacks. Use distributed denial of service (DDoS) protection services to enhance resilience against large-scale attacks.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 35,
+    "fields": {
+      "created": "2024-09-12T11:15:00Z",
+      "modified": "2024-09-12T11:15:00Z",
+      "lang": "en",
+      "taxonomy": 37,
+      "problem": "Distributed Denial of Service (DDoS) attack detected, indicating the use of multiple systems to flood a target with traffic, disrupting its services.",
+      "derived_problem": "DDoS attacks can overwhelm systems with traffic from multiple sources, leading to widespread service disruption and increased resource usage.<br>Consequences include:\n<ul>\n<li>Severe service disruption and downtime</li>\n<li>Increased operational costs due to mitigation efforts</li>\n<li>Potential damage to brand reputation</li>\n</ul>",
+      "verification": "Verify DDoS attacks by analyzing traffic sources and patterns for signs of coordinated flooding. Check for abnormal traffic volumes and distributed attack vectors.",
+      "recommendations": "Use DDoS mitigation services and techniques such as traffic filtering and rate limiting. Implement load balancing and redundancy to maintain service availability during attacks.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 36,
+    "fields": {
+      "created": "2024-09-12T11:20:00Z",
+      "modified": "2024-09-12T11:20:00Z",
+      "lang": "en",
+      "taxonomy": 38,
+      "problem": "Sabotage detected, indicating intentional disruption or destruction of systems or data, typically performed by insiders or external attackers.",
+      "derived_problem": "Sabotage can cause significant damage to systems or data, leading to operational and financial impacts.<br>Consequences include:\n<ul>\n<li>Loss or corruption of critical data</li>\n<li>Service interruptions and system outages</li>\n<li>Potential insider threats and security breaches</li>\n</ul>",
+      "verification": "Verify sabotage by examining system logs for signs of intentional destruction or disruption. Check for unauthorized changes or damage to data and systems.",
+      "recommendations": "Implement access controls and monitoring to detect and prevent sabotage. Conduct regular security audits and create incident response plans to address potential sabotage threats.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 37,
+    "fields": {
+      "created": "2024-09-12T11:25:00Z",
+      "modified": "2024-09-12T11:25:00Z",
+      "lang": "en",
+      "taxonomy": 39,
+      "problem": "Outage (no malice) detected, indicating system outages caused by accidental events or failures without malicious intent, such as hardware malfunctions.",
+      "derived_problem": "Outages caused by accidental events can disrupt services and affect operational efficiency.<br>Consequences include:\n<ul>\n<li>Service downtime and user inconvenience</li>\n<li>Potential data loss or system instability</li>\n<li>Increased operational costs for recovery and repair</li>\n</ul>",
+      "verification": "Verify outages by reviewing system logs and incident reports to determine the cause. Check for hardware failures or accidental misconfigurations.",
+      "recommendations": "Implement robust backup and recovery solutions to minimize downtime. Conduct regular system maintenance and implement redundant systems to reduce the impact of accidental outages.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 38,
+    "fields": {
+      "created": "2024-09-12T11:30:00Z",
+      "modified": "2024-09-12T11:30:00Z",
+      "lang": "en",
+      "taxonomy": 40,
+      "problem": "Unauthorized access to information detected, indicating access to information without proper authorization, which can lead to data breaches and privacy violations.",
+      "derived_problem": "Unauthorized access to information can lead to significant data breaches and loss of confidentiality.<br>Consequences include:\n<ul>\n<li>Compromised sensitive or personal data</li>\n<li>Potential legal and regulatory repercussions</li>\n<li>Loss of trust and reputational damage</li>\n</ul>",
+      "verification": "Verify unauthorized access by reviewing access logs and conducting audits of information access controls. Look for any abnormal access patterns or unauthorized data retrieval.",
+      "recommendations": "Implement strict access controls and encryption for sensitive data. Regularly review and update access permissions and conduct audits to ensure compliance with security policies.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 39,
+    "fields": {
+      "created": "2024-09-12T11:35:00Z",
+      "modified": "2024-09-12T11:35:00Z",
+      "lang": "en",
+      "taxonomy": 41,
+      "problem": "Unauthorized modification of information detected, indicating changes to information without proper authorization, leading to data corruption or loss of integrity.",
+      "derived_problem": "Unauthorized modification of information can result in data corruption, loss of integrity, and operational issues.<br>Consequences include:\n<ul>\n<li>Compromised data accuracy and reliability</li>\n<li>Potential operational disruptions</li>\n<li>Loss of trust in data integrity</li>\n</ul>",
+      "verification": "Verify unauthorized modifications by checking data integrity and reviewing logs for unauthorized changes. Assess the impact on data accuracy and system functionality.",
+      "recommendations": "Implement data integrity checks and version control systems. Apply strict access controls and conduct regular audits to detect and prevent unauthorized modifications.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 40,
+    "fields": {
+      "created": "2024-09-12T11:40:00Z",
+      "modified": "2024-09-12T11:40:00Z",
+      "lang": "en",
+      "taxonomy": 42,
+      "problem": "Unauthorized use of resources detected, indicating use of resources without proper authorization, which may lead to financial loss or service disruption.",
+      "derived_problem": "Unauthorized use of resources can result in financial and operational impacts.<br>Consequences include:\n<ul>\n<li>Increased operational costs</li>\n<li>Potential service disruptions</li>\n<li>Legal and financial repercussions</li>\n</ul>",
+      "verification": "Verify unauthorized use of resources by monitoring resource usage and reviewing access logs. Look for patterns of resource abuse or unauthorized access.",
+      "recommendations": "Implement access controls and monitoring systems to detect unauthorized resource use. Regularly review resource access permissions and audit usage to ensure compliance with policies.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 41,
+    "fields": {
+      "created": "2024-09-12T11:45:00Z",
+      "modified": "2024-09-12T11:45:00Z",
+      "lang": "en",
+      "taxonomy": 43,
+      "problem": "We have been notified that the host {{event.address}} is distributing copyrighted material. This is probably because a P2P network is being misused.",
+      "derived_problem": "Copyright violations can lead to legal action and financial penalties against the host.<br>Consequences include:\n<ul>\n<li>Legal actions and financial sanctions</li>\n<li>Damage to reputation</li>\n<li>Potential loss of access to copyrighted content</li>\n</ul>",
+      "verification": "Verify copyright violations by reviewing content distribution and access logs. Check for unauthorized use or distribution of copyrighted materials.",
+      "recommendations": "If possible filter this type of traffic. If this is not possible, convey the concern to users so that they are aware of these notifications.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 42,
+    "fields": {
+      "created": "2024-09-12T11:50:00Z",
+      "modified": "2024-09-12T11:50:00Z",
+      "lang": "en",
+      "taxonomy": 44,
+      "problem": "Masquerade detected, indicating impersonation of legitimate entities or individuals to deceive users or systems.",
+      "derived_problem": "Masquerade attacks can undermine trust and security by impersonating trusted entities.<br>Consequences include:\n<ul>\n<li>Phishing and social engineering attacks</li>\n<li>Loss of trust in legitimate entities</li>\n<li>Potential for unauthorized access or data breaches</li>\n</ul>",
+      "verification": "Verify masquerade attacks by analyzing authentication logs and user behavior for signs of impersonation. Look for anomalies in login patterns and communication.",
+      "recommendations": "Implement multi-factor authentication (MFA) and user verification processes to detect and prevent impersonation. Educate users on recognizing and reporting suspicious activities.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 43,
+    "fields": {
+      "created": "2024-09-12T11:55:00Z",
+      "modified": "2024-09-12T11:55:00Z",
+      "lang": "en",
+      "taxonomy": 45,
+      "problem": "Phishing detected, indicating deceptive attempts to obtain sensitive information from individuals by masquerading as a trustworthy entity.",
+      "derived_problem": "Phishing attacks can lead to data breaches and financial losses by tricking users into revealing sensitive information.<br>Consequences include:\n<ul>\n<li>Loss of sensitive personal or financial information</li>\n<li>Potential financial losses due to fraud</li>\n<li>Damage to personal or organizational reputation</li>\n</ul>",
+      "verification": "Verify phishing attempts by analyzing email headers, URLs, and content for signs of deception. Check for reports of suspicious emails and use anti-phishing tools.",
+      "recommendations": "Educate users on recognizing phishing attempts and implementing strong email filtering systems. Regularly update security policies and conduct phishing awareness training.",
+      "more_information": ""
+    }
+  },
+  {
+    "model": "ngen.report",
+    "pk": 44,
+    "fields": {
+      "created": "2024-09-12T12:00:00Z",
+      "modified": "2024-09-12T12:00:00Z",
+      "lang": "en",
+      "taxonomy": 46,
+      "problem": "Open For Abuse detected, indicating a vulnerability that allows unauthorized individuals or systems to exploit the system or application due to insufficient controls or safeguards.",
+      "derived_problem": "An 'Open For Abuse' vulnerability can lead to various forms of exploitation, resulting in significant security risks and operational impacts.<br>Consequences include:\n<ul>\n<li>Unauthorized access to system resources</li>\n<li>Potential data breaches or leaks</li>\n<li>Increased risk of further attacks exploiting the vulnerability</li>\n</ul>",
+      "verification": "Verify the 'Open For Abuse' vulnerability by conducting a thorough security assessment to identify weak controls or insufficient safeguards. Review access controls and system configurations for potential exploitation points.",
+      "recommendations": "Implement robust security controls and safeguards to address the vulnerability. Regularly review and update security measures and perform security assessments to identify and mitigate similar vulnerabilities.",
+      "more_information": ""
+    }
+  }
+]

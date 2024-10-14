@@ -8,13 +8,17 @@ import { useTranslation } from "react-i18next";
 
 const SmallEventTable = ({
   list,
+  title,
   disableLink,
   modalListEvent,
   modalEventDetail,
   deleteEventFromForm,
   disableColumOption,
   modalEvent,
-  disableUuid
+  disableMerged,
+  disableUuid,
+  disableColumnDelete,
+  disableColumnCase
 }) => {
   const [taxonomyNames, setTaxonomyNames] = useState({});
   const [feedNames, setFeedNames] = useState({});
@@ -51,7 +55,7 @@ const SmallEventTable = ({
         <Card.Header>
           <Row>
             <Col sm={12} lg={8}>
-              <Card.Title as="h5">{t("ngen.event_one")}</Card.Title>
+              <Card.Title as="h5">{title || t("ngen.event_other")}</Card.Title>
             </Col>
             {disableLink ? (
               ""
@@ -74,27 +78,30 @@ const SmallEventTable = ({
           </Row>
         </Card.Header>
         <Card.Body>
-          {(list.length === 0) ? 
+          {(list.length === 0) ?
             t("ngen.no_event_in_case") :
-          
-          <TableEvents
-            events={list}
-            taxonomyNames={taxonomyNames}
-            feedNames={feedNames}
-            tlpNames={tlpNames}
-            disableDate={true}
-            disableCheckbox={true}
-            disableTemplate={true}
-            deleteColumForm={true}
-            disableColumnEdit={true}
-            disableCheckboxAll={true}
-            detailModal={false}
-            modalEventDetail={modalEventDetail}
-            deleteEventFromForm={deleteEventFromForm}
-            disableColumOption={disableColumOption}
-            disableUuid={disableUuid}
-            disableDateModified={true}
-          />
+
+            <TableEvents
+              events={list}
+              taxonomyNames={taxonomyNames}
+              feedNames={feedNames}
+              tlpNames={tlpNames}
+              disableDate={true}
+              disableCheckbox={true}
+              disableTemplate={true}
+              deleteColumForm={true}
+              disableColumnEdit={true}
+              disableCheckboxAll={true}
+              detailModal={false}
+              modalEventDetail={modalEventDetail}
+              deleteEventFromForm={deleteEventFromForm}
+              disableColumOption={disableColumOption}
+              disableUuid={disableUuid}
+              disableDateModified={true}
+              disableColumnDelete={disableColumnDelete}
+              disableMerged={disableMerged}
+              disableColumnCase={disableColumnCase}
+            />
           }
         </Card.Body>
       </Card>

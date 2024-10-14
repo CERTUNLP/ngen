@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
-import Alert from "../../components/Alert/Alert";
-import Navigation from "../../components/Navigation/Navigation";
-import { getSetting, patchSetting } from "../../api/services/setting";
+import { Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
+import { getSetting, patchSetting, uploadTeamLogo } from "../../api/services/setting";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
+import UploadButton from "components/Button/UploadButton";
+import PermissionCheck from "components/Auth/PermissionCheck";
 
 const EditSetting = () => {
   const [list, setList] = useState([]);
@@ -79,6 +80,11 @@ const EditSetting = () => {
       });
   };
 
+  const uploadHandler = (event) => {
+    const file = event.target.files[0];
+    uploadTeamLogo(file)
+  };
+
   const completeField = (event, url) => {
     const newValue = event.target.value;
     const updatedList = list.map((item) => {
@@ -92,10 +98,6 @@ const EditSetting = () => {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="setting" />
-      <Row>
-        <Navigation actualPosition={t("config")} />
-      </Row>
       <Card>
         <Card.Header>
           <Card.Title as="h5">{t("systemConfig")}</Card.Title>
@@ -109,7 +111,9 @@ const EditSetting = () => {
                   <th>{t("ngen.description")}</th>
                   <th>{t("ngen.default")}</th>
                   <th>{t("ngen.value")}</th>
-                  <th>{t("w.modify")}</th>
+                  <PermissionCheck permissions="change_constance">
+                    <th>{t("w.modify")}</th>
+                  </PermissionCheck>
                   <th></th>
                 </tr>
               </thead>
@@ -141,11 +145,15 @@ const EditSetting = () => {
                           />
                         </Form.Group>
                       </td>
-                      <td>
-                        <Button variant="outline-warning" onClick={() => PatchSetting(setting.url)}>
-                          {t("button.save")}
-                        </Button>
-                      </td>
+                      <PermissionCheck permissions="change_constance">
+                        <td>
+                          {setting.key !== "TEAM_LOGO" ? (
+                            <CrudButton type="save" variant="outline-warning" onClick={() => PatchSetting(setting.url)} text={t("button.save")} />
+                          ) : (
+                            <UploadButton variant="outline-warning" text={t("w.upload")} uploadHandler={uploadHandler} />
+                          )}
+                        </td>
+                      </PermissionCheck>
                     </tr>
                   ))
                 )}

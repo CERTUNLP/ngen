@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
-import { Link } from "react-router-dom";
 import ActiveButton from "../../../components/Button/ActiveButton";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import { createCases, deleteTemplate, isActive } from "../../../api/services/templates";
@@ -21,10 +20,12 @@ const TableTemplete = ({
   feedNames,
   tlpNames,
   priorityNames,
-  stateNames
+  stateNames,
+  setIsModify
 }) => {
   const [deleteName, setDeleteName] = useState();
   const [deleteUrl, setDeleteUrl] = useState();
+  const [id, setId] = useState("");
   const [remove, setRemove] = useState();
   const [template, setTemplate] = useState({});
   const [modalShow, setModalShow] = useState(false);
@@ -64,6 +65,7 @@ const TableTemplete = ({
   };
 
   const showModalTemplate = (template) => {
+    setId(template.url.split("/")[template.url.split("/").length - 2]);
     setTemplate(template);
     setModalShow(true);
   };
@@ -91,8 +93,8 @@ const TableTemplete = ({
 
   const changeState = () => {
     isActive(dataTemplate.url, +!dataTemplate.state)
-      .then(() => {
-        window.location.href = "/templates";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         setShowAlert(true);
@@ -184,6 +186,8 @@ const TableTemplete = ({
           </thead>
           <tbody>
             {list.map((template, index) => {
+              const parts = template.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return (
                 <tr key={index}>
                   <td>{template.cidr || template.domain}</td>
@@ -202,6 +206,7 @@ const TableTemplete = ({
                           template.active
                         )
                       }
+                      permissions="change_casetemplate"
                     />
                   </td>
                   <td>{priorityNames[template.priority]}</td>
@@ -259,9 +264,7 @@ const TableTemplete = ({
                   </td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalTemplate(template)} />
-                    <Link to="/templates/edit" state={template}>
-                      <CrudButton type="edit" />
-                    </Link>
+                    <CrudButton type="edit" to={`/templates/edit/${itemNumber}`} checkPermRoute />
                     <CrudButton
                       type="delete"
                       onClick={() =>
@@ -273,6 +276,7 @@ const TableTemplete = ({
                           template.url
                         )
                       }
+                      permissions="delete_casetemplate"
                     />
                   </td>
                 </tr>
@@ -308,69 +312,63 @@ const TableTemplete = ({
                             <span className="d-block m-t-5">{t("ngen.template.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <Link to="/templates/edit" state={template}>
-                              <CrudButton type="edit" />
-                            </Link>
+                            <CrudButton type="edit" to={`/templates/edit/${id}`} checkPermRoute />
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>
                       </Card.Header>
                       <Card.Body>
                         <Table responsive>
-                          <tr>
-                            <td>{t("ngen.cidr")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={template.cidr} />
-                            </td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.domain")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={template.domain} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.lifecycle_one")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={template.case_lifecycle} />
-                            </td>
-                          </tr>
+                          <tbody>
+                            <tr>
+                              <td>{t("ngen.cidr")}</td>
+                              <td>
+                                <Form.Control plaintext readOnly defaultValue={template.cidr} />
+                              </td>
+                              <td></td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.domain")}</td>
+                              <td>
+                                <Form.Control plaintext readOnly defaultValue={template.domain} />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.lifecycle_one")}</td>
+                              <td>
+                                <Form.Control plaintext readOnly defaultValue={template.case_lifecycle} />
+                              </td>
+                            </tr>
 
-                          <tr>
-                            <td>{t("w.active")}</td>
-                            <td>
-                              <Button
-                                className="btn-icon btn-rounded"
-                                variant={template.active ? "outline-success" : "outline-danger"}
-                                title={template.active ? "Activo" : "Inactivo"}
-                              >
-                                <i className={template.active ? "feather icon-check-circle" : "feather icon-alert-triangle"} />
-                              </Button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.date.created")}</td>
-                            <td>
-                              <Form.Control
-                                plaintext
-                                readOnly
-                                defaultValue={template.created ? template.created.slice(0, 10) + " " + template.created.slice(11, 19) : ""}
-                              />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.date.modified")}</td>
-                            <td>
-                              <Form.Control
-                                plaintext
-                                readOnly
-                                defaultValue={
-                                  template.modified ? template.modified.slice(0, 10) + " " + template.modified.slice(11, 19) : ""
-                                }
-                              />
-                            </td>
-                          </tr>
+                            <tr>
+                              <td>{t("w.active")}</td>
+                              <td>
+                                <ActiveButton active={template.active} />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.date.created")}</td>
+                              <td>
+                                <Form.Control
+                                  plaintext
+                                  readOnly
+                                  defaultValue={template.created ? template.created.slice(0, 10) + " " + template.created.slice(11, 19) : ""}
+                                />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.date.modified")}</td>
+                              <td>
+                                <Form.Control
+                                  plaintext
+                                  readOnly
+                                  defaultValue={
+                                    template.modified ? template.modified.slice(0, 10) + " " + template.modified.slice(11, 19) : ""
+                                  }
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
                         </Table>
                       </Card.Body>
                     </Card>

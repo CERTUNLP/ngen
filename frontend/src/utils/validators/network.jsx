@@ -16,4 +16,12 @@ const validateUnrequiredInput = (input) => {
   return !(isNull(input) || isBlank(input));
 };
 
-export { validateSelect, validateNetworkCIDR, validateNetworkDomain, validateUnrequiredInput };
+const validateAddressValue = (addressValue) => {
+  return validateNetworkCIDR(addressValue) || validateNetworkDomain(addressValue);
+};
+
+const validateAddressValueOrNetworkOrDomain = (obj) => {
+  return validateAddressValue(obj.address_value) || validateNetworkCIDR(obj.cidr) || validateNetworkDomain(obj.domain);
+}
+
+export { validateSelect, validateNetworkCIDR, validateNetworkDomain, validateUnrequiredInput, validateAddressValue, validateAddressValueOrNetworkOrDomain };

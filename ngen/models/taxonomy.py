@@ -68,8 +68,9 @@ class Taxonomy(AuditModelMixin, TreeModelMixin, SlugModelMixin, ValidationModelM
             return super().slugify()
         return f"{self.group.slug}-{super().slugify()}"
 
-    def get_ancestors_reports(self):
-        return self.get_ancestors_related(lambda obj: obj.reports.all())
+    def get_ancestors_reports(self, flat=True):
+        reports = self.get_ancestors_related(lambda obj: obj.reports.all())
+        return [report for report_list in reports for report in report_list]
 
     class Meta:
         db_table = "taxonomy"

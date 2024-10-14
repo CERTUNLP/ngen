@@ -10,7 +10,8 @@ const GuestGuard = ({ children }) => {
   if (isLoggedIn) {
     const last_url_parsed = last_url ? last_url.replace("/", "") : "";
     const base_url = COMPONENT_URL.loginFrontend.replace("/", "");
-    return <Navigate to={last_url_parsed && last_url_parsed !== base_url ? last_url : BASE_URL} />;
+    const go_to = last_url_parsed && last_url_parsed !== base_url ? last_url : BASE_URL;
+    return <Navigate to={go_to} />;
   }
 
   return <React.Fragment>{children}</React.Fragment>;

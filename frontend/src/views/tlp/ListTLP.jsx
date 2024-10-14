@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
-import Navigation from "../../components/Navigation/Navigation";
 import { getTLP } from "../../api/services/tlp";
 import Search from "../../components/Search/Search";
 import Ordering from "../../components/Ordering/Ordering";
@@ -45,10 +44,6 @@ const ListTLP = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
-      <Row>
-        <Navigation actualPosition="TLP" />
-      </Row>
       <Row>
         <Col>
           <Card>

@@ -119,18 +119,8 @@ services:
       - ./elasticsearch:/var/lib/elasticsearch/data #sudo  chown -R 1000:1000 elasticsearch
     ports:
       - "9200:9200"
-  ngen-nginx:
-    image: nginx:alpine
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/ssl:/etc/nginx/ssl
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - ngen-django
   ngen-frontend:
-    #    image: ngen-frontend:latest
+    image: ngen-frontend:latest
     build:
       context: ../frontend
       dockerfile: Dockerfile
@@ -144,8 +134,8 @@ services:
       - GENERATE_SOURCEMAP=false
       - PUBLIC_URL=http://localhost:3000/
       - VITE_APP_BASE_NAME=
-      - VITE_APP_BASE_URL=/metrics
       - VITE_APP_API_SERVER=http://localhost:8000/api/
       - CHOKIDAR_USEPOLLING=true
+      - VITE_APP_ENV=development
     command: >
       sh -c "npm run start"

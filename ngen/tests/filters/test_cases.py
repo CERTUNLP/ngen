@@ -28,13 +28,13 @@ class CaseFilterTest(BaseFilterTest):
     """
 
     fixtures = [
-        "priority.json",
-        "feed.json",
-        "tlp.json",
-        "user.json",
-        "taxonomy.json",
-        "state.json",
-        "case_template.json",
+        "tests/priority.json",
+        "tests/feed.json",
+        "tests/tlp.json",
+        "tests/user.json",
+        "tests/taxonomy.json",
+        "tests/state.json",
+        "tests/case_template.json",
     ]
 
     @classmethod

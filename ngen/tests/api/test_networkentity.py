@@ -19,17 +19,17 @@ class TestNetworkEntity(APITestCaseWithLogin):
     """
 
     fixtures = [
-        "priority.json",
-        "feed.json",
-        "tlp.json",
-        "user.json",
-        "taxonomy.json",
-        "state.json",
-        "edge.json",
-        "report.json",
-        "network_entity.json",
-        "network.json",
-        "contact.json",
+        "tests/priority.json",
+        "tests/feed.json",
+        "tests/tlp.json",
+        "tests/user.json",
+        "tests/taxonomy.json",
+        "tests/state.json",
+        "tests/edge.json",
+        "tests/report.json",
+        "tests/network_entity.json",
+        "tests/network.json",
+        "tests/contact.json",
     ]
 
     def setUp(self):

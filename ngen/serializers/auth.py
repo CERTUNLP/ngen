@@ -54,7 +54,27 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = "__all__"
+        fields = [
+            "url",
+            "history",
+            "last_login",
+            "is_superuser",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "password",
+            "is_staff",
+            "is_network_admin",
+            "is_active",
+            "date_joined",
+            "created",
+            "modified",
+            "api_key",
+            "priority",
+            "groups",
+            "user_permissions",
+        ]
 
     def get_history(self, obj):
         return reverse(
@@ -73,15 +93,30 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return rep
 
     def create(self, validated_data):
+        groups_data = validated_data.pop("groups", None)
+        permissions_data = validated_data.pop("user_permissions", None)
         password = validated_data.pop("password", None)
+
         instance = self.Meta.model(**validated_data)
+
         if password:
             password_validation(password)
             instance.set_password(password)
+
         instance.save()
+
+        if permissions_data is not None:
+            instance.user_permissions.set(permissions_data)
+
+        if groups_data is not None:
+            instance.groups.set(groups_data)
+
         return instance
 
     def update(self, instance, validated_data):
+        groups_data = validated_data.pop("groups", None)
+        permissions_data = validated_data.pop("user_permissions", None)
+
         password = validated_data.pop("password", None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -89,6 +124,14 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         if password:
             password_validation(password)
             instance.set_password(password)
+
+        # Update permissions
+        if permissions_data is not None:
+            instance.user_permissions.set(permissions_data)
+
+        # Update groups
+        if groups_data is not None:
+            instance.groups.set(groups_data)
 
         instance.save()
         return instance
@@ -115,6 +158,7 @@ class UserProfileSerializer(AuditSerializerMixin):
             "last_name",
             "is_active",
             "is_staff",
+            "is_network_admin",
             "is_superuser",
             "date_joined",
             "last_login",
@@ -131,6 +175,7 @@ class UserProfileSerializer(AuditSerializerMixin):
             "email",
             "is_active",
             "is_staff",
+            "is_network_admin",
             "is_superuser",
             "date_joined",
             "last_login",
@@ -185,6 +230,13 @@ class GroupSerializer(AuditSerializerMixin):
         fields = "__all__"
 
 
+class GroupMinifiedSerializer(AuditSerializerMixin):
+    class Meta:
+        model = Group
+        fields = ["url", "name"]
+        read_only_fields = ["url"]
+
+
 class PermissionSerializer(AuditSerializerMixin):
     content_type = serializers.HyperlinkedRelatedField(
         queryset=ContentType.objects.all().prefetch_related("permission_set"),
@@ -222,9 +274,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             Permission.objects.filter(group__in=self.user.groups.all())
             | self.user.user_permissions.all()
         )
-        perm_serializer = PermissionSerializer(
-            perms, many=True, context={"request": self.context.get("request")}
-        )
+        perms = {p.codename for p in perms.distinct()}
 
         data.update(
             {
@@ -239,7 +289,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                     "date_joined": self.user.date_joined,
                     "is_superuser": self.user.is_superuser,
                     "is_staff": self.user.is_staff,
-                    "permissions": perm_serializer.data,
+                    "permissions": perms,
+                    "is_network_admin": self.user.is_network_admin,
                 }
             }
         )

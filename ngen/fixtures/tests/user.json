@@ -1,0 +1,21 @@
+[
+  {
+    "model": "ngen.user",
+    "fields": {
+      "password": "pbkdf2_sha256$320000$jwYSUXXesWlbUIbEeHjfJz$w/YI5P3qCdsDvaQygUl150I+MW5x2j3SHMgGuUHK0Lw=",
+      "last_login": "2022-09-01T18:48:19.091Z",
+      "is_superuser": true,
+      "username": "ngen",
+      "first_name": "ngen",
+      "last_name": "ngen",
+      "email": "ngen@ngen.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2022-04-02T22:52:32.851Z",
+      "priority": 5,
+      "api_key": null,
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

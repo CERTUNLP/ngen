@@ -39,7 +39,7 @@ const ModalDetailPlaybook = (props) => {
                       <span className="d-block m-t-5">{t("ngen.playbook.detail")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <Link to="/playbooks/edit" state={props.playbook}>
+                      <Link to={`/playbooks/edit/${props.id}`}>
                         <CrudButton type="edit" />
                       </Link>
                       <CloseButton aria-label={t("button.close")} onClick={props.onHide} />

@@ -44,7 +44,7 @@ const initializeI18n = async () => {
     .init({
       lng: lang,
       fallbackLng: "en",
-      debug: true,
+      debug: import.meta.env.VITE_APP_ENV === "development",
       detection: options,
       interpolation: {
         escapeValue: false // not needed for react as it escapes by default

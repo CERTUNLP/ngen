@@ -6,5 +6,6 @@ docker/elasticsearch/
 docker/redis/
 docker/
 docker/*
+!docker/entrypoint.sh
 frontend/node_modules/
 frontend/dist/

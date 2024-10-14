@@ -3,6 +3,7 @@ import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { postStringIdentifier } from "../../../api/services/stringIdentifier";
 import SelectComponent from "../../../components/Select/SelectComponent";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
 
 const FormTemplate = (props) => {
   const lifeCicle = useMemo(
@@ -261,9 +262,7 @@ const FormTemplate = (props) => {
         </Button>
       )}
 
-      <Button variant="primary" href="/templates">
-        {t("button.cancel")}
-      </Button>
+      <CrudButton type="cancel" />
     </React.Fragment>
   );
 };

@@ -13,12 +13,12 @@ class CaseTest(TestCase):
     """
 
     fixtures = [
-        "priority.json",
-        "tlp.json",
-        "user.json",
-        "state.json",
-        "feed.json",
-        "taxonomy.json",
+        "tests/priority.json",
+        "tests/tlp.json",
+        "tests/user.json",
+        "tests/state.json",
+        "tests/feed.json",
+        "tests/taxonomy.json",
     ]
 
     @classmethod

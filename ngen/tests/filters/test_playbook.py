@@ -17,7 +17,7 @@ class PlaybookFilterTest(BaseFilterTest):
     Playbook filter test class.
     """
 
-    fixtures = ["priority.json", "user.json", "taxonomy.json"]
+    fixtures = ["tests/priority.json", "tests/user.json", "tests/taxonomy.json"]
 
     @classmethod
     def setUpTestData(cls):

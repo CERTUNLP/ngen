@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Card, Col, Row } from "react-bootstrap";
 import { getEntity, putEntity } from "../../api/services/entities";
 import FormEntity from "./components/FormEntity";
-import Navigation from "../../components/Navigation/Navigation";
 import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const EditEntity = () => {
   const location = useLocation();
@@ -14,21 +14,25 @@ const EditEntity = () => {
   const [name, setName] = useState("");
   const [active, setActive] = useState("");
   const { t } = useTranslation();
+  const [id] = useState(useParams());
 
   //Alert
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-    if (entity) {
-      setName(entity.name);
-      setActive(entity.active);
-    } else {
-      const entityUrl = localStorage.getItem("entity");
-      getEntity(entityUrl)
+    if (id.id) {
+      getEntity(COMPONENT_URL.entity + id.id + "/")
         .then((response) => {
           setEntity(response.data);
         })
         .catch((error) => console.log(error));
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (entity) {
+      setName(entity.name);
+      setActive(entity.active);
     }
   }, [entity]);
 
@@ -46,10 +50,6 @@ const EditEntity = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="entity" />
-      <Row>
-        <Navigation actualPosition={t("ngen.entity_edit")} path="/entities" index={t("ngen.entity_other")} />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>

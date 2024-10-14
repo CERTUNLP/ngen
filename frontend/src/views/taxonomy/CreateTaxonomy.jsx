@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
-import Alert from "../../components/Alert/Alert";
-import Navigation from "../../components/Navigation/Navigation";
 import { validateDescription, validateName, validateType, validateUnrequiredInput } from "../../utils/validators/taxonomy";
 import { getMinifiedTaxonomy, postTaxonomy } from "../../api/services/taxonomies";
 import SelectLabel from "../../components/Select/SelectLabel";
 import { useTranslation } from "react-i18next";
 import { getMinifiedTaxonomyGroups } from "../../api/services/taxonomyGroups";
 import DropdownState from "../../components/Dropdown/DropdownState";
+import CrudButton from "components/Button/CrudButton";
 
 const CreateTaxonomy = () => {
   const [type, setType] = useState("");
@@ -103,10 +102,6 @@ const CreateTaxonomy = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="taxonomy" />
-      <Row>
-        <Navigation actualPosition={t("w.add") + " " + t("ngen.taxonomy_one")} path="/taxonomies" index={t("ngen.taxonomy_other")} />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>
@@ -210,9 +205,7 @@ const CreateTaxonomy = () => {
                       {t("button.save")}
                     </Button>
                   )}
-                  <Button variant="info" href="/taxonomies">
-                    {t("button.cancel")}
-                  </Button>
+                  <CrudButton type="cancel" />
                 </Form.Group>
               </Form>
             </Card.Body>

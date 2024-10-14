@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
-import CrudButton from "../../../components/Button/CrudButton";
+import CrudButton from "components/Button/CrudButton";
 import SelectComponent from "../../../components/Select/SelectComponent";
 import { postArtifact } from "../../../api/services/artifact";
 import { postStringIdentifier } from "../../../api/services/stringIdentifier";
@@ -187,7 +187,7 @@ const FormEvent = (props) => {
         .catch((error) => {
           console.log(error);
         })
-        .finally(() => {});
+        .finally(() => { });
     }
 
     if (event.target.value === "") {
@@ -319,11 +319,11 @@ const FormEvent = (props) => {
 
   function getCurrentDateTime() {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const year = now.getUTCFullYear();
+    const month = (now.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = now.getUTCDate().toString().padStart(2, "0");
+    const hours = now.getUTCHours().toString().padStart(2, "0");
+    const minutes = now.getUTCMinutes().toString().padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
@@ -383,12 +383,14 @@ const FormEvent = (props) => {
                     maxLength="150"
                     max={getCurrentDateTime()}
                     value={date}
-                    isInvalid={new Date(date) > new Date()}
-                    // onChange={(e) => completeField(e)}
-                    onChange={(e) => setDate(e.target.value)}
+                    isInvalid={new Date(date) > new Date(getCurrentDateTime())}
+                    onChange={(e) => {
+                      completeField(e);
+                      setDate(e.target.value);
+                    }}
                     name="date"
                   />
-                  {new Date(date) > new Date() ? <div className="invalid-feedback">{t("date.invalid")}</div> : ""}
+                  {new Date(date) > new Date(getCurrentDateTime()) ? <div className="invalid-feedback">{t("date.invalid")}</div> : ""}
                 </Form.Group>
               </Col>
               <Col sm={12} lg={4}>
@@ -415,7 +417,6 @@ const FormEvent = (props) => {
                   placeholder={t("ngen.taxonomy.one.select")}
                   setOption={setSelectTaxonomy}
                   required={true}
-                  disabled={props.body.children.length > 0 && props.body.children.length > 0 ? true : false}
                 />
               </Col>
             </Row>
@@ -486,7 +487,7 @@ const FormEvent = (props) => {
                     isInvalid={showErrorMessage}
                     name="address_value"
                   />
-                  {showErrorMessage ? <div className="invalid-feedback"> {t("error.ipv4.ipv6.domain")}</div> : ""}
+                  {showErrorMessage ? <div className="invalid-feedback"> {t("error.ipv4.ipv6.domain.email")}</div> : ""}
                 </Form.Group>
               </Col>
             </Row>
@@ -576,6 +577,7 @@ const FormEvent = (props) => {
         setWordToSearch={setWordToSearch}
         updatePagination={updatePagination}
         setUpdatePagination={setUpdatePagination}
+        asNetworkAdmin={props.asNetworkAdmin}
       />
 
       <ModalReadCase
@@ -607,13 +609,12 @@ const FormEvent = (props) => {
         createArtifact={createArtifact}
       />
 
-      {!(new Date(props.body.date) > new Date()) &&
-      props.body.tlp !== "" &&
-      props.body.taxonomy !== "" &&
-      props.body.feed !== "" &&
-      props.body.priority !== "" &&
-      props.body.address_value !== "" &&
-      !showErrorMessage ? (
+      {props.body.tlp !== "" &&
+        props.body.taxonomy !== "" &&
+        props.body.feed !== "" &&
+        props.body.priority !== "" &&
+        props.body.address_value !== "" &&
+        !showErrorMessage ? (
         <Button variant="primary" onClick={props.createEvent}>
           {t("button.save")}
         </Button>
@@ -622,9 +623,7 @@ const FormEvent = (props) => {
           {t("button.save")}
         </Button>
       )}
-      <Button variant="primary" href="/events">
-        {t("button.cancel")}
-      </Button>
+      <CrudButton type="cancel" />
     </div>
   );
 };

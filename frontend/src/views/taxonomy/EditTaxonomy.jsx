@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Row, Spinner } from "react-bootstrap";
 import DropdownState from "../../components/Dropdown/DropdownState";
-import { useLocation } from "react-router-dom";
-import Alert from "../../components/Alert/Alert";
-import Navigation from "../../components/Navigation/Navigation";
+import { useLocation, useParams } from "react-router-dom";
 import { validateDescription, validateName, validateType, validateUnrequiredInput } from "../../utils/validators/taxonomy";
-import { getMinifiedTaxonomy, putTaxonomy } from "../../api/services/taxonomies";
+import { getMinifiedTaxonomy, putTaxonomy, getTaxonomy } from "../../api/services/taxonomies";
 import SelectLabel from "../../components/Select/SelectLabel";
 import { useTranslation } from "react-i18next";
 import { getMinifiedTaxonomyGroups } from "../../api/services/taxonomyGroups";
+import { COMPONENT_URL } from "config/constant";
+import CrudButton from "components/Button/CrudButton";
 
 const EditTaxonomy = () => {
   const location = useLocation();
   const fromState = location.state;
-  const [taxonomy] = useState(fromState);
+  const [taxonomy, seTaxonomy] = useState({});
   const { t } = useTranslation();
 
   const [type, setType] = useState(taxonomy.type);
@@ -37,6 +37,47 @@ const EditTaxonomy = () => {
   const [selectAlias_of, setSelectAlias_of] = useState();
   const [selectedType, setSelectedType] = useState();
   const [isGroupDisabled, setIsGroupDisabled] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [id] = useState(useParams());
+
+  let typeOption = [
+    // Como se usa en un useEffect, esta variable debe estar antes de que se ejecute el useEffect si no tiene un problema de ejecucion
+    {
+      value: "vulnerability",
+      label: t("ngen.vulnerability")
+    },
+    {
+      value: "incident",
+      label: t("ngen.incident")
+    },
+    {
+      value: "other",
+      label: t("ngen.other")
+    }
+  ];
+
+  useEffect(() => {
+    if (id.id) {
+      getTaxonomy(COMPONENT_URL.taxonomy + id.id + "/")
+        .then((response) => {
+          seTaxonomy(response.data);
+
+          setType(response.data.type);
+          setName(response.data.name);
+          setDescription(response.data.description);
+          setParent(response.data.parent);
+          setGroup(response.data.group);
+          setAlias_of(response.data.alias_of);
+          setActive(+response.data.active);
+          setNeeds_review(+response.data.needs_review);
+        })
+        .catch((error) => console.log(error))
+        .finally(() => {
+          setShowAlert(true);
+          setLoading(false);
+        });
+    }
+  }, [id]);
 
   useEffect(() => {
     getMinifiedTaxonomy().then((response) => {
@@ -55,24 +96,6 @@ const EditTaxonomy = () => {
       });
       setGroups(listTaxonomyGroups);
     });
-    //
-    // {
-    //     (parent != undefined) ?
-    //         getTaxonomy(parent)
-    //             .then((response) => {
-    //                 setSelectParent(response.data.name)
-    //             })
-    //         : setSelectParent("Sin padre")
-    // }
-
-    // {
-    //     (alias_of != undefined) ?
-    //         getTaxonomy(alias_of)
-    //             .then((response) => {
-    //                 setSelectAlias_of(response.data.name)
-    //             })
-    //         : setSelectAlias_of("Sin alias")
-    // }
   }, []);
 
   useEffect(() => {
@@ -102,6 +125,14 @@ const EditTaxonomy = () => {
     }
   }, [taxonomies, parent, group, alias_of, groups, type]);
 
+  if (loading) {
+    return (
+      <Row className="justify-content-md-center">
+        <Spinner animation="border" variant="primary" />
+      </Row>
+    );
+  }
+
   const handleParentChange = (value) => {
     setParent(value);
     setGroup(null);
@@ -128,27 +159,8 @@ const EditTaxonomy = () => {
     setShowAlert(false);
   };
 
-  let typeOption = [
-    {
-      value: "vulnerability",
-      label: t("ngen.vulnerability")
-    },
-    {
-      value: "incident",
-      label: t("ngen.incident")
-    },
-    {
-      value: "other",
-      label: t("ngen.other")
-    }
-  ];
-
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="taxonomy" />
-      <Row>
-        <Navigation actualPosition={t("w.edit") + " " + t("ngen.taxonomy_one")} path="/taxonomies" index="Taxonomia" />
-      </Row>
       <Row>
         <Col sm={12}>
           <Card>
@@ -256,9 +268,7 @@ const EditTaxonomy = () => {
                       {t("button.save")}
                     </Button>
                   )}
-                  <Button variant="info" href="/taxonomies">
-                    {t("button.close")}
-                  </Button>
+                  <CrudButton type="cancel" />
                 </Form.Group>
               </Form>
             </Card.Body>

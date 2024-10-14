@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Card, Col, Collapse, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import { getNetworks } from "../../api/services/networks";
 import { getMinifiedEntity } from "../../api/services/entities";
 import TableNetwork from "./components/TableNetwork";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
-import Alert from "../../components/Alert/Alert";
 import ButtonFilter from "../../components/Button/ButtonFilter";
 import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import FilterSelect from "../../components/Filter/FilterSelect";
 import { useTranslation } from "react-i18next";
 
-const ListNetwork = () => {
+const ListNetwork = ({ routeParams }) => {
   const { t } = useTranslation();
 
   const [network, setNetwork] = useState([]);
@@ -69,7 +66,7 @@ const ListNetwork = () => {
   }, []);
 
   useEffect(() => {
-    getNetworks(currentPage, entitiesFilter + typeFilter + wordToSearch, order)
+    getNetworks(currentPage, entitiesFilter + typeFilter + wordToSearch, order, routeParams.asNetworkAdmin)
       .then((response) => {
         setNetwork(response.data.results);
         // Paginación
@@ -90,10 +87,6 @@ const ListNetwork = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="network" />
-      <Row>
-        <Navigation actualPosition={t("ngen.network_other")} />
-      </Row>
       <Row>
         <Col>
           <Card>
@@ -108,12 +101,11 @@ const ListNetwork = () => {
                     setWordToSearch={setWordToSearch}
                     wordToSearch={wordToSearch}
                     setLoading={setLoading}
+                    setCurrentPage={setCurrentPage}
                   />
                 </Col>
                 <Col sm={12} lg={3}>
-                  <Link to="/networks/create">
-                    <CrudButton type="create" name={t("ngen.network_one")} />
-                  </Link>
+                  <CrudButton type="create" name={t("ngen.network_one")} to="/networks/create" checkPermRoute />
                 </Col>
               </Row>
               <br />
@@ -156,6 +148,8 @@ const ListNetwork = () => {
                 setOrder={setOrder}
                 setLoading={setLoading}
                 entityNames={entityNames}
+                asNetworkAdmin={routeParams.asNetworkAdmin}
+                basePath={routeParams.basePath}
               />
             </Card.Body>
             <Card.Footer>

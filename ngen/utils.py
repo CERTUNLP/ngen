@@ -25,6 +25,8 @@ def get_settings():
             "value_type": type(default).__name__,
         }
         setting_list.append(data)
+
+    setting_list = sorted(setting_list, key=lambda x: x["key"])
     return setting_list
 
 

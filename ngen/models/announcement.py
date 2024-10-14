@@ -19,6 +19,7 @@ from ngen.models.common.mixins import (
 
 logger = logging.getLogger(__name__)
 
+
 class Communication:
     @staticmethod
     def send_mail(
@@ -65,6 +66,7 @@ class Communication:
         return content
 
     def communicate(self, title: str, template: str, **kwargs):
+        # DEPRECATED: Use send_mail instead
         return self.send_mail(
             self.subject(title),
             self.render_template(template, extra_params=self.template_params),

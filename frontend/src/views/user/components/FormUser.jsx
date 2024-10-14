@@ -9,11 +9,17 @@ import {
   validateUserMail,
   validateUserName
 } from "../../../utils/validators/user";
+import { getMinifiedPermissions } from "api/services/permissions";
+import { getMinifiedGroups } from "api/services/groups";
 import SelectComponent from "../../../components/Select/SelectComponent";
 import { useTranslation } from "react-i18next";
+import DualListBox from "react-dual-listbox";
+import CrudButton from "components/Button/CrudButton";
 
 const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequired }) => {
   const [selectPriority, setSelectPriority] = useState();
+  const [optionGroups, setOptionGroups] = useState([]);
+  const [optionPermissions, setOptionPermissions] = useState([]);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -25,6 +31,16 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
       });
     }
   }, [priorities, body.priority]);
+
+  useEffect(() => {
+    getMinifiedPermissions().then((response) => {
+      setOptionPermissions(response.map((item) => ({ label: item.name, value: item.url })));
+    });
+
+    getMinifiedGroups().then((response) => {
+      setOptionGroups(response.map((item) => ({ label: item.name, value: item.url })));
+    });
+  }, []);
 
   if (loading) {
     return (
@@ -70,6 +86,7 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
     }
     setOption(event);
   };
+
   return (
     <Form>
       <Row>
@@ -161,6 +178,15 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
               onChange={(e) => fieldPassword(e)}
             />
           </Form.Group>
+          <Form.Text className="text-muted">
+            {t("ngen.password.legend1")}
+            <br />
+            {t("ngen.password.legend2")}
+            <br />
+            {t("ngen.password.legend3")}
+            <br />
+            {t("ngen.password.legend4")}
+          </Form.Text>
         </Col>
 
         <Col sm={12} lg={6}>
@@ -183,6 +209,28 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
           </Form.Group>
         </Col>
       </Row>
+      <Row>
+        <Col sm={12} lg={6}>
+          <Form.Label>{t("w.groups")}</Form.Label>
+          <DualListBox
+            key={"groups"}
+            canFilter
+            options={optionGroups}
+            selected={body.groups || []}
+            onChange={(newGroups) => setBody((prevBody) => ({ ...prevBody, groups: newGroups }))}
+          />
+        </Col>
+        <Col sm={12} lg={6}>
+          <Form.Label>{t("w.permissions")}</Form.Label>
+          <DualListBox
+            key={"permissions"}
+            canFilter
+            options={optionPermissions}
+            selected={body.user_permissions || []}
+            onChange={(newPermissions) => setBody((prevBody) => ({ ...prevBody, user_permissions: newPermissions }))}
+          />
+        </Col>
+      </Row>
 
       {(body.password === "" || (body.password !== "" && validatePassword(body.password, body.passwordConfirmation))) &&
       body.username !== "" &&
@@ -200,9 +248,7 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
           </Button>
         </>
       )}
-      <Button variant="primary" href="/users">
-        {t("button.cancel")}
-      </Button>
+      <CrudButton type="cancel" />
     </Form>
   );
 };

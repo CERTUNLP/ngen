@@ -4,7 +4,6 @@ from django.urls import reverse
 from rest_framework import permissions, filters, status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
@@ -15,12 +14,12 @@ from ngen.serializers import (
     CustomTokenObtainPairSerializer,
     CookieTokenRefreshSerializer,
 )
-
-
-class IsSelf(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        # Permite el acceso solo si el usuario autenticado es el mismo que el objeto
-        return obj == request.user
+from ngen.permissions import (
+    CustomApiViewPermission,
+    CustomMethodApiViewPermission,
+    CustomModelPermissions,
+    IsSelf,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -43,17 +42,29 @@ class UserViewSet(viewsets.ModelViewSet):
         "last_name",
     ]
     serializer_class = serializers.UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class UserProfileViewSet(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     mixins.ListModelMixin,
-    GenericViewSet,
+    viewsets.GenericViewSet,
 ):
     serializer_class = serializers.UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated, IsSelf]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsSelf,
+        CustomMethodApiViewPermission,
+    ]
+    required_permissions = {
+        "GET": ["ngen.view_userprofile"],
+        "HEAD": ["ngen.view_userprofile"],
+        "PATCH": ["ngen.change_userprofile"],
+        "PUT": ["not_allowed"],
+        "POST": ["not_allowed"],
+        "DELETE": ["not_allowed"],
+    }
     pagination_class = None
 
     def get_queryset(self):
@@ -64,13 +75,13 @@ class UserProfileViewSet(
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = serializers.GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class PermissionViewSet(viewsets.ModelViewSet):
     queryset = Permission.objects.all()
     serializer_class = serializers.PermissionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
 class RegisterViewSet(viewsets.ModelViewSet):
@@ -160,8 +171,25 @@ class CookieTokenLogoutView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserMinifiedViewSet(viewsets.ModelViewSet):
+class UserMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserMinifiedSerializer
     pagination_class = None
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_user"]
+
+
+class PermissionMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Permission.objects.all()
+    serializer_class = serializers.PermissionSerializer
+    pagination_class = None
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_permission"]
+
+
+class GroupMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Group.objects.all()
+    serializer_class = serializers.GroupMinifiedSerializer
+    pagination_class = None
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_group"]

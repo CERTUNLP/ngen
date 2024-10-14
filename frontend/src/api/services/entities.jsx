@@ -17,10 +17,11 @@ const getMinifiedEntity = () => {
     });
 };
 
-const getEntities = (currentPage, filters, order) => {
+const getEntities = (currentPage, filters, order, asNetworkAdmin) => {
   let messageError = `No ha recuperado la informacion de entidades. `;
+  let component = asNetworkAdmin ? COMPONENT_URL.networkadminNetworkentity : COMPONENT_URL.entity;
   return apiInstance
-    .get(COMPONENT_URL.entity + PAGE + currentPage + "&ordering=" + order + "&" + filters)
+    .get(component + PAGE + currentPage + "&ordering=" + order + "&" + filters)
     .then((response) => {
       return response;
     })

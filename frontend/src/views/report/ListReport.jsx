@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getReports } from "../../api/services/reports";
 import { Card, Col, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import Navigation from "../../components/Navigation/Navigation";
 import Search from "../../components/Search/Search";
 import CrudButton from "../../components/Button/CrudButton";
 import TableReport from "./components/TableReport";
@@ -59,20 +57,14 @@ const ListReport = () => {
 
   return (
     <div>
-      <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="report" />
-      <Row>
-        <Navigation actualPosition={t("ngen.report")} />
-      </Row>
       <Card>
         <Card.Header>
           <Row>
             <Col sm={12} lg={9}>
-              <Search type=".." setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} />
+              <Search type=".." setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
             </Col>
             <Col sm={12} lg={3}>
-              <Link to="/reports/create">
-                <CrudButton type="create" name={t("ngen.report")} />
-              </Link>
+              <CrudButton type="create" name={t("ngen.report")} to="/reports/create" checkPermRoute />
             </Col>
           </Row>
         </Card.Header>

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Row, Spinner, Table } from "react-bootstrap";
+import { Form, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
 import { deleteCase } from "../../../api/services/cases";
-import { Link } from "react-router-dom";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import Ordering from "../../../components/Ordering/Ordering";
 import LetterFormat from "../../../components/LetterFormat";
@@ -41,7 +40,8 @@ const TableCase = ({
   disableColumOption,
   disableUuid,
   disableDateModified,
-  disableEvents
+  disableEvents,
+  basePath=""
 }) => {
   const [url, setUrl] = useState(null);
   const [modalDelete, setModalDelete] = useState(false);
@@ -66,7 +66,6 @@ const TableCase = ({
     localStorage.setItem("case", url);
     localStorage.setItem("navigation", navigationRow);
     localStorage.setItem("button return", navigationRow);
-    window.location.href = "/cases/view";
   };
 
   const handleOnClick = (url) => {
@@ -142,13 +141,13 @@ const TableCase = ({
               ) : (
                 <th>
                   <Form.Group>
-                    <Form.Check custom type="checkbox" disabled />
+                    <Form.Check type="checkbox" disabled />
                   </Form.Group>
                 </th>
               ))}
             {!disableDate && (
               <Ordering
-                field="created"
+                field="date"
                 label={t("ngen.case.management_start_date")}
                 order={order}
                 setOrder={setOrder}
@@ -188,6 +187,14 @@ const TableCase = ({
         </thead>
         <tbody>
           {list.map((caseItem, index) => {
+            if (!caseItem) {
+              // fixes some rendering issues
+              return null;
+            }
+
+            const parts = caseItem.url.split("/");
+            let itemNumber = parts[parts.length - 2];
+
             return (
               <tr key={index}>
                 {!disableCheckbox && (
@@ -206,7 +213,8 @@ const TableCase = ({
                               priorityNames[caseItem.priority],
                               tlpNames[caseItem.tlp].name,
                               stateNames[caseItem.state],
-                              userNames[caseItem.user_creator]
+                              userNames[caseItem.user_creator],
+                              caseItem.events
                             )
                           }
                           checked={selectedCases.includes(caseItem.url)}
@@ -265,38 +273,17 @@ const TableCase = ({
                       }
                     />
                   ) : (
-                    <Link to="/cases/view">
-                      <CrudButton type="read" onClick={() => storageCaseUrl(caseItem.url)} />
-                    </Link>
+                    <CrudButton type="read" to={`${basePath}/cases/view/${itemNumber}`} />
                   )}
-                  {!disableColumOption &&
-                    editColum &&
-                    (!caseItem.blocked ? (
-                      <Link to="/cases/edit" state={caseItem.url}>
-                        <CrudButton type="edit" />
-                      </Link>
-                    ) : (
-                      <Button
-                        id="button_hover"
-                        className="btn-icon btn-rounded"
-                        variant="outline-warning"
-                        title={t("ngen.case_one") + t("w.solved")}
-                        disabled
-                        style={{
-                          border: "1px solid #555",
-                          borderRadius: "50px",
-                          color: "#555"
-                        }}
-                      >
-                        <i className="fa fa-edit" style={{ color: "#555" }}></i>
-                      </Button>
-                    ))}
+                  {!disableColumOption && editColum && (
+                    <CrudButton type="edit" to={`${basePath}/cases/edit/${itemNumber}`} checkPermRoute />
+                  )}
                   {!disableColumOption &&
                     deleteColum &&
                     (deleteColumForm ? (
-                      <CrudButton type="delete" onClick={() => deleteCaseFromForm(caseItem.url)} />
+                      <CrudButton type="delete" onClick={() => deleteCaseFromForm(caseItem.url)} permissions="delete_case" />
                     ) : (
-                      <CrudButton type="delete" onClick={() => Delete(caseItem.url)} />
+                      <CrudButton type="delete" onClick={() => Delete(caseItem.url)} permissions="delete_case" />
                     ))}
                 </td>
               </tr>

@@ -3,7 +3,6 @@ import { COMPONENT_URL, PAGE } from "../../config/constant";
 import setAlert from "../../utils/setAlert";
 
 const getMinifiedUser = () => {
-  //el parametro es para completar la url con el numero de pagina
   let messageError = `No se pudo recuperar la informacion de los usuarios`;
   return apiInstance
     .get(COMPONENT_URL.userMinifiedList)
@@ -15,6 +14,7 @@ const getMinifiedUser = () => {
       return Promise.reject(error);
     });
 };
+
 const getUsers = (currentPage, filters, order) => {
   //el parametro es para completar la url con el numero de pagina
   let messageError = `No se pudo recuperar la informacion de los usuarios`;
@@ -58,7 +58,7 @@ const getAllUsers = (currentPage = 1, results = [], limit = 100) => {
     });
 };
 
-const postUser = (username, first_name, last_name, email, priority, is_active, password) => {
+const postUser = (username, first_name, last_name, email, priority, is_active, password, groups, user_permissions) => {
   let messageSuccess = `El usuario ${username} se pudo crear correctamente`;
   let messageError = `El usuario ${username} no se pudo crear`;
 
@@ -70,7 +70,9 @@ const postUser = (username, first_name, last_name, email, priority, is_active, p
       email: email,
       priority: priority,
       is_active: is_active,
-      password: password
+      password: password,
+      groups: groups,
+      user_permissions: user_permissions
     })
     .then((response) => {
       setAlert(messageSuccess, "success");
@@ -92,7 +94,7 @@ const postUser = (username, first_name, last_name, email, priority, is_active, p
     });
 };
 
-const putUser = (url, username, first_name, last_name, email, priority, is_active) => {
+const putUser = (url, username, first_name, last_name, email, priority, is_active, groups, user_permissions, password) => {
   let messageSuccess = `El usuario ${username} se pudo editar correctamente`;
   let messageError = `El usuario ${username} no se pudo editar`;
   return apiInstance
@@ -102,7 +104,10 @@ const putUser = (url, username, first_name, last_name, email, priority, is_activ
       last_name: last_name,
       email: email,
       priority: priority,
-      is_active: is_active
+      is_active: is_active,
+      groups: groups,
+      user_permissions: user_permissions,
+      password: password
     })
     .then((response) => {
       setAlert(messageSuccess, "success");
@@ -145,6 +150,50 @@ const isActive = (url, active) => {
     });
 };
 
+const isSuperuser = (url, superuser) => {
+  let messageSuccess = !superuser ? `El usuario ha sido desactivado` : `El usuario ha sido activado`;
+  let messageError = `El usuario no se pudo modificar`;
+  return apiInstance
+    .patch(url, {
+      is_superuser: superuser
+    })
+    .then((response) => {
+      setAlert(messageSuccess, "success");
+      return response;
+    })
+    .catch((error) => {
+      if (error.message === "Cannot read properties of undefined (reading 'code')") {
+        //el backend o servidor no funciona
+        messageError = !superuser ? `El usuario no pudo ser desactivado no pudo ser` : `El usuario no pudo ser activado no pudo ser`;
+        setAlert(messageError, "error");
+      }
+      setAlert(messageError, "error");
+      return Promise.reject(error);
+    });
+}
+
+const isStaff = (url, staff) => {
+  let messageSuccess = !staff ? `El usuario ha sido desactivado` : `El usuario ha sido activado`;
+  let messageError = `El usuario no se pudo modificar`;
+  return apiInstance
+    .patch(url, {
+      is_staff: staff
+    })
+    .then((response) => {
+      setAlert(messageSuccess, "success");
+      return response;
+    })
+    .catch((error) => {
+      if (error.message === "Cannot read properties of undefined (reading 'code')") {
+        //el backend o servidor no funciona
+        messageError = !staff ? `El usuario no pudo ser desactivado no pudo ser` : `El usuario no pudo ser activado no pudo ser`;
+        setAlert(messageError, "error");
+      }
+      setAlert(messageError, "error");
+      return Promise.reject(error);
+    });
+}
+
 const deleteUser = (url) => {
   let messageSuccess = `El usuario se ha eliminado correctamente.`;
   let messageError = `EL usuario no se ha eliminado`;
@@ -179,4 +228,4 @@ const deleteUser = (url) => {
         'Case.user_creator', 'Case.assigned', 'Event.reporter'.\", {<Case: 1>, <Event: 1:unlp.com>})"
     ]
 */
-export { getUsers, getUser, getAllUsers, postUser, putUser, deleteUser, isActive, getMinifiedUser };
+export { getUsers, getUser, getAllUsers, postUser, putUser, deleteUser, isActive, getMinifiedUser, isSuperuser, isStaff };

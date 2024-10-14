@@ -1,9 +1,14 @@
 import django_filters
 from django.db.models import Count
-from rest_framework import permissions, filters, viewsets
+from rest_framework import filters, viewsets, mixins
 
 from ngen import models, serializers
 from ngen.filters import NetworkFilter, ContactFilter, NetworkEntityFilter
+from ngen.permissions import (
+    CustomApiViewPermission,
+    CustomMethodApiViewPermission,
+    CustomModelPermissions,
+)
 
 
 class NetworkViewSet(viewsets.ModelViewSet):
@@ -27,7 +32,25 @@ class NetworkViewSet(viewsets.ModelViewSet):
         "network_entity",
         "network_entity__name",
     ]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
+
+
+class NetworkAdminNetworkViewSet(NetworkViewSet):
+    serializer_class = serializers.NetworkAdminNetworkSerializer
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["ngen.view_network_network_admin"],
+        "HEAD": ["ngen.view_network_network_admin"],
+        "POST": ["ngen.add_network_network_admin"],
+        "PUT": ["ngen.change_network_network_admin"],
+        "PATCH": ["ngen.change_network_network_admin"],
+        "DELETE": ["ngen.delete_network_network_admin"],
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        return queryset.filter(contacts__user=user).distinct()
 
 
 class NetworkEntityViewSet(viewsets.ModelViewSet):
@@ -43,7 +66,25 @@ class NetworkEntityViewSet(viewsets.ModelViewSet):
     search_fields = ["name", "slug"]
     filterset_class = NetworkEntityFilter
     ordering_fields = ["id", "created", "modified", "name", "slug", "networks_count"]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
+
+
+class NetworkAdminNetworkEntityViewSet(NetworkEntityViewSet):
+    serializer_class = serializers.NetworkAdminNetworkEntitySerializer
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["ngen.view_networkentity_network_admin"],
+        "HEAD": ["ngen.view_networkentity_network_admin"],
+        "POST": ["ngen.add_networkentity_network_admin"],
+        "PUT": ["ngen.change_networkentity_network_admin"],
+        "PATCH": ["ngen.change_networkentity_network_admin"],
+        "DELETE": ["ngen.delete_networkentity_network_admin"],
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        return queryset.filter(networks__contacts__user=user).distinct()
 
 
 class ContactViewSet(viewsets.ModelViewSet):
@@ -65,18 +106,38 @@ class ContactViewSet(viewsets.ModelViewSet):
         "role",
         "priority",
     ]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
 
-class EntityMinifiedViewSet(viewsets.ModelViewSet):
+class NetworkAdminContactViewSet(ContactViewSet):
+    serializer_class = serializers.NetworkAdminContactSerializer
+    permission_classes = [CustomMethodApiViewPermission]
+    required_permissions = {
+        "GET": ["ngen.view_contact_network_admin"],
+        "HEAD": ["ngen.view_contact_network_admin"],
+        "POST": ["ngen.add_contact_network_admin"],
+        "PUT": ["ngen.change_contact_network_admin"],
+        "PATCH": ["ngen.change_contact_network_admin"],
+        "DELETE": ["ngen.delete_contact_network_admin"],
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        return queryset.filter(user=user)
+
+
+class EntityMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = models.NetworkEntity.objects.all()
     serializer_class = serializers.EntityMinifiedSerializer
     pagination_class = None
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_entity"]
 
 
-class ContactMinifiedViewSet(viewsets.ModelViewSet):
+class ContactMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = models.Contact.objects.all()
     serializer_class = serializers.ContactMinifiedSerializer
     pagination_class = None
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_contact"]

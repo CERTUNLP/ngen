@@ -16,6 +16,7 @@ import { getEvent } from "../../../api/services/events";
 import EvidenceCard from "../../../components/UploadFiles/EvidenceCard";
 import { getEvidence } from "../../../api/services/evidences";
 import ModalCreateEvent from "../../event/ModalCreateEvent";
+import CrudButton from "components/Button/CrudButton";
 
 const FormCase = (props) => {
   // props: edit, caseitem, allStates
@@ -264,11 +265,12 @@ const FormCase = (props) => {
 
   function getCurrentDateTimeCreated() {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
+    // Obtener la fecha y hora en UTC
+    const year = now.getUTCFullYear();
+    const month = (now.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = now.getUTCDate().toString().padStart(2, "0");
+    const hours = now.getUTCHours().toString().padStart(2, "0");
+    const minutes = now.getUTCMinutes().toString().padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
@@ -306,6 +308,7 @@ const FormCase = (props) => {
     form.append("name", name);
     form.append("date", date);
     form.append("lifecycle", lifecycle);
+    form.append("name", name);
     if (parent !== null) {
       form.append("parent", parent);
     }
@@ -428,16 +431,6 @@ const FormCase = (props) => {
         // setIfClick(false)
       });
   };
-
-  function getCurrentDateTime() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
 
   const modalListEvent = () => {
     setUpdatePagination(true);
@@ -662,6 +655,7 @@ const FormCase = (props) => {
           modalEvent={modalEvent}
           disableUuid={false}
           disableColumOption={false}
+          disableLink={true}
         />
       )}
 
@@ -673,6 +667,7 @@ const FormCase = (props) => {
         setSelectedEvent={setSelectedEvent}
         setEvents={setEvents}
         setCurrentPage={setCurrentPage}
+        asNetworkAdmin={props.asNetworkAdmin}
       />
 
       <ModalListEvent
@@ -708,6 +703,7 @@ const FormCase = (props) => {
         feeds={feeds}
         tlpList={allTlp}
         updateList={updateList}
+        asNetworkAdmin={true}
       />
 
       <ModalReadEvent
@@ -737,9 +733,7 @@ const FormCase = (props) => {
         </>
       )}
       {props.buttonsModalColum ? (
-        <Button variant="primary" href="/cases">
-          {t("button.cancel")}
-        </Button>
+        <CrudButton type="cancel" />
       ) : (
         <Button variant="primary" onClick={() => props.setShowModalCase(false)}>
           {t("button.cancel")}

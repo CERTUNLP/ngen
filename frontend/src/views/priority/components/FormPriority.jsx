@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { validateFieldText, validateHours, validateMinutes, validateNumber } from "../../../utils/validators";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
 
 const FormPriority = ({ body, setBody, createPriority }) => {
   const completeField = (event) => {
@@ -140,7 +141,7 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           <Form.Label>{t("time.to.attend")}</Form.Label>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t("date.days")}{" "}
+              {t("date.days")}&nbsp;
               <Form.Control
                 placeholder={t("placeholder.date")}
                 maxLength="150"
@@ -153,7 +154,7 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           </Col>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t("date.hours")}{" "}
+              {t("date.hours")}&nbsp;
               <Form.Control
                 placeholder={t("placeholder.hours")}
                 maxLength="2"
@@ -166,7 +167,7 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           </Col>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t("date.minutes")}{" "}
+              {t("date.minutes")}&nbsp;
               <Form.Control
                 placeholder={t("placeholder.minutes")}
                 maxLength="2"
@@ -182,7 +183,7 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           <Form.Label>{t("time.to.solve")} </Form.Label>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t("date.days")}{" "}
+              {t("date.days")}&nbsp;
               <Form.Control
                 placeholder={t("placeholder.date")}
                 maxLength="150"
@@ -195,7 +196,7 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           </Col>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t("date.hours")}{" "}
+              {t("date.hours")}&nbsp;
               <Form.Control
                 placeholder={t("placeholder.hours")}
                 value={body.solve_time_hours}
@@ -207,7 +208,7 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           </Col>
           <Col>
             <Form.Group controlId="formGridAddress1">
-              {t("date.minutes")}{" "}
+              {t("date.minutes")}&nbsp;
               <Form.Control
                 placeholder={t("placeholder.minutes")}
                 maxLength="2"
@@ -233,9 +234,7 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           </>
         )}
 
-        <Button variant="primary" href="/priorities">
-          {t("button.cancel")}
-        </Button>
+        <CrudButton type="cancel" />
       </Form>
     </Card.Body>
   );

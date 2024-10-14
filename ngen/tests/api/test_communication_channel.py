@@ -29,15 +29,15 @@ class TestCommunicationChannel(APITestCase):
     """
 
     fixtures = [
-        "contact.json",
-        "priority.json",
-        "tlp.json",
-        "user.json",
-        "state.json",
-        "feed.json",
-        "taxonomy.json",
-        "user.json",
-        "network_entity.json",
+        "tests/contact.json",
+        "tests/priority.json",
+        "tests/tlp.json",
+        "tests/user.json",
+        "tests/state.json",
+        "tests/feed.json",
+        "tests/taxonomy.json",
+        "tests/user.json",
+        "tests/network_entity.json",
     ]
 
     @classmethod

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Card, Form, Button, Row, Col, Spinner } from "react-bootstrap";
 import { validateDescription, validateName, validateUnrequiredInput } from "../../../utils/validators/state";
 import SelectComponent from "../../../components/Select/SelectComponent";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
 
-const FormState = ({ body, setBody, createState, type }) => {
+const FormState = ({ body, setBody, createState, type, loading }) => {
   const [selectAttended, setSelecAttended] = useState();
   const [selectSolved, setSelectSolved] = useState();
   const { t } = useTranslation();
@@ -31,7 +32,15 @@ const FormState = ({ body, setBody, createState, type }) => {
         }
       });
     }
-  }, []);
+  }, [body.solved, body.attended]);
+
+  if (loading) {
+    return (
+      <Row className="justify-content-md-center">
+        <Spinner animation="border" variant="primary" />
+      </Row>
+    );
+  }
 
   const completeField = (event) => {
     setBody({
@@ -133,9 +142,7 @@ const FormState = ({ body, setBody, createState, type }) => {
               </Button>
             )}
 
-            <Button variant="primary" href="/states">
-              {t("button.cancel")}
-            </Button>
+            <CrudButton type="cancel" />
           </Form>
         </Card.Body>
       </Card>

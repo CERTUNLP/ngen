@@ -15,7 +15,8 @@ const ModalCreateCase = ({
   selectedEvent,
   setSelectedEvent,
   refresh,
-  setRefresh
+  setRefresh,
+  asNetworkAdmin
 }) => {
   const { t } = useTranslation();
   return (
@@ -45,6 +46,7 @@ const ModalCreateCase = ({
             setSelectedEvent={setSelectedEvent}
             refresh={refresh}
             setRefresh={setRefresh}
+            asNetworkAdmin={asNetworkAdmin}
           />
         </div>
       </Modal.Body>

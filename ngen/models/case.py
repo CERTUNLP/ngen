@@ -113,6 +113,12 @@ class Case(
 
     class Meta:
         db_table = "case"
+        permissions = [
+            ("view_case_network_admin", "Can view case as network admin"),
+            ("add_case_network_admin", "Can add case as network admin"),
+            ("change_case_network_admin", "Can change case as network admin"),
+            ("delete_case_network_admin", "Can delete case as network admin"),
+        ]
 
     def __init__(self, *args, **kwargs):
         """Case should receive `events` list to communicate with events on new event"""
@@ -123,6 +129,10 @@ class Case(
         return str(self.pk)
 
     @property
+    def evidence_case(self):
+        return list(self.evidence.all())
+
+    @property
     def evidence_events(self):
         evidence = []
         for event in self.events.all():
@@ -131,7 +141,7 @@ class Case(
 
     @property
     def evidence_all(self):
-        return list(self.evidence.all()) + self.evidence_events
+        return self.evidence_case + self.evidence_events
 
     @property
     def blocked(self):
@@ -168,12 +178,31 @@ class Case(
 
     @property
     def email_attachments(self) -> list[dict]:
-        attachments = []
+        # DEPRECATED: Use get_attachments_for_events instead
+        attachments = {}
         for evidence in self.evidence_all:
-            attachments.append(
-                {"name": evidence.attachment_name, "file": evidence.file}
-            )
-        return attachments
+            attachments[evidence.id] = {
+                "name": evidence.attachment_name,
+                "file": evidence.file,
+            }
+        if self._temp_events:
+            for event in self._temp_events:
+                for evidence in event.evidence.all():
+                    attachments[evidence.id] = {
+                        "name": evidence.attachment_name,
+                        "file": evidence.file,
+                    }
+        return attachments.values()
+
+    def get_attachments_for_events(self, events):
+        attachments = {}
+        for event in events:
+            for evidence in event.evidence.all():
+                attachments[evidence.id] = {
+                    "name": evidence.attachment_name,
+                    "file": evidence.file,
+                }
+        return attachments.values()
 
     @property
     def assigned_email(self):
@@ -248,8 +277,8 @@ class Case(
             ):
                 self.communicate_update()
 
-    def merge(self, child: "Case"):
-        super().merge(child)
+    def merge(self, child: "Case", save_child: bool = True):
+        super().merge(child, save_child)
         for evidence in child.evidence.all():
             self.evidence.add(evidence)
         for event in child.events.all():
@@ -330,7 +359,7 @@ class Case(
                 self.subject(title),
                 self.render_template(template, extra_params=template_params),
                 recipients,
-                self.email_attachments,
+                self.get_attachments_for_events(events),
                 self.email_headers,
             )
         else:
@@ -423,6 +452,12 @@ class Event(
     class Meta:
         db_table = "event"
         ordering = ["-id"]
+        permissions = [
+            ("view_event_network_admin", "Can view event as network admin"),
+            ("add_event_network_admin", "Can add event as network admin"),
+            ("change_event_network_admin", "Can change event as network admin"),
+            ("delete_event_network_admin", "Can delete event as network admin"),
+        ]
 
     def __str__(self):
         return "%s:%s" % (self.pk, self.address)
@@ -520,10 +555,18 @@ class Event(
         for playbook in self.taxonomy.playbooks.all():
             for task in playbook.tasks.all():
                 self.tasks.add(task)
+        # Update taxonomy of children
+        for child in self.children.all():
+            child.taxonomy = self.taxonomy
+            child.save()
 
+    @hook(AFTER_CREATE)
     @hook(AFTER_UPDATE, when="case", has_changed=True, is_not=None)
     def case_assign_communication(self):
-        if self.case.events.count() >= 1:
+        # this will not be triggered if is event creation and case was created by
+        # a CaseTemplate, because the case is created after the event and
+        # self.case is None
+        if self.case and self.case.events.count() >= 1:
             self.case.communicate(
                 gettext_lazy("New event on case"),
                 "reports/case_assign.html",
@@ -542,8 +585,8 @@ class Event(
         self.full_clean()
         super().save(*args, **kwargs)
 
-    def merge(self, child: "Event"):
-        super().merge(child)
+    def merge(self, child: "Event", save_child: bool = True):
+        super().merge(child, save_child)
         if child.case:
             child.case = None
         for todo in child.todos.filter(completed=True):
@@ -625,6 +668,12 @@ class Evidence(AuditModelMixin, ValidationModelMixin):
 
     class Meta:
         db_table = "evidence"
+        permissions = [
+            ("view_evidence_network_admin", "Can view evidence as network admin"),
+            ("add_evidence_network_admin", "Can add evidence as network admin"),
+            ("change_evidence_network_admin", "Can change evidence as network admin"),
+            ("delete_evidence_network_admin", "Can delete evidence as network admin"),
+        ]
 
     def get_related(self):
         return self.content_object
@@ -725,7 +774,10 @@ class CaseTemplate(
 
     def get_matching_events_without_case(self):
         return Event.objects.children_of(self).filter(
-            case__isnull=True, taxonomy=self.event_taxonomy, feed=self.event_feed, parent=None
+            case__isnull=True,
+            taxonomy=self.event_taxonomy,
+            feed=self.event_feed,
+            parent=None,
         )
 
     def create_cases_for_matching_events(self):

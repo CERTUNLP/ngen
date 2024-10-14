@@ -4,8 +4,10 @@
         <h5>{% translate 'Event' %}: {{ event.uuid }}</h5>
         <small class="lead">
             <strong>{% translate 'Taxonomy' %}:</strong>
-            {% if event.taxonomy.parent %} {{ event.taxonomy.parent }} ({{ event.taxonomy.parent.type }})
-                -> {% endif %}{{ event.taxonomy }} ({{ event.taxonomy.type }})
+            {% for tax in event.taxonomy.get_ancestors %}
+                {{ tax }} -> 
+            {% endfor %}
+            {{ event.taxonomy }} ({{ event.taxonomy.type }})
         </small>
         <br>
         <small class="lead"><strong>{% translate 'Affected resources' %}:</strong>
@@ -15,7 +17,9 @@
             {{ event.date | date:"Y-m-d H:i:s" }} UTC</small>
         <br>
     {% endlanguage %}
-    {% for report in event.taxonomy.reports.all %}
+
+    {% get_matching_report event.taxonomy lang|default:config.NGEN_LANG as reports %}
+    {% for report in reports %}
         {% if report.lang == lang|default:config.NGEN_LANG %}
             {% language lang %}
                 <table bgcolor="">

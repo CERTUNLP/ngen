@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
-import { Link } from "react-router-dom";
 import ActiveButton from "../../../components/Button/ActiveButton";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import { deleteState, getState, isActive } from "../../../api/services/states";
@@ -9,9 +8,10 @@ import Alert from "../../../components/Alert/Alert";
 import CallBackendByName from "../../../components/CallBackendByName";
 import { useTranslation } from "react-i18next";
 
-const TableStates = ({ states, callback, loading, currentPage }) => {
+const TableStates = ({ states, callback, loading, currentPage, setIsModify }) => {
   const [deleteName, setDeleteName] = useState();
   const [deleteUrl, setDeleteUrl] = useState();
+  const [id, setId] = useState("");
   const [remove, setRemove] = useState();
   const [dataState, setDataState] = useState({});
   const [showState, setShowState] = useState();
@@ -35,8 +35,8 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
   };
   const handleDelete = () => {
     deleteState(deleteUrl, deleteName)
-      .then(() => {
-        window.location.href = "/states";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         setShowAlert(true);
@@ -59,8 +59,8 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
   };
   const changeState = () => {
     isActive(dataState.url, +!dataState.state)
-      .then(() => {
-        window.location.href = "/states";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         setShowAlert(true);
@@ -71,6 +71,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
       });
   };
   const showModalState = (state) => {
+    setId(state.url.split("/")[state.url.split("/").length - 2]);
     setState(state);
     setModalShow(true);
   };
@@ -95,11 +96,17 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
           </thead>
           <tbody>
             {states.map((state, index) => {
+              const parts = state.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return (
                 <tr key={index}>
                   <td>{state.name}</td>
                   <td>
-                    <ActiveButton active={state.active} onClick={() => modalChangeState(state.url, state.name, state.active)} />
+                    <ActiveButton
+                      active={state.active}
+                      onClick={() => modalChangeState(state.url, state.name, state.active)}
+                      permissions="change_state"
+                    />
                   </td>
                   <td>{state.attended ? t("ngen.true") : t("ngen.false")}</td>
 
@@ -107,10 +114,8 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
 
                   <td>
                     <CrudButton type="read" onClick={() => showModalState(state)} />
-                    <Link to="/states/edit" state={state}>
-                      <CrudButton type="edit" />
-                    </Link>
-                    <CrudButton type="delete" onClick={() => modalDelete(state.name, state.url)} />
+                    <CrudButton type="edit" to={`/states/edit/${itemNumber}`} checkPermRoute />
+                    <CrudButton type="delete" onClick={() => modalDelete(state.name, state.url)} permissions="delete_state" />
                   </td>
                 </tr>
               );
@@ -145,83 +150,77 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                             <span className="d-block m-t-5">{t("ngen.state.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <Link to="/states/edit" state={state}>
-                              <CrudButton type="edit" />
-                            </Link>
+                            <CrudButton type="edit" to={`/states/edit/${id}`} checkPermRoute />
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>
                       </Card.Header>
                       <Card.Body>
                         <Table responsive>
-                          <tr>
-                            <td>{t("ngen.name_one")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={state.name} />
-                            </td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <td>{t("w.attended")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={state.attended} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("w.solved")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={state.solved} />
-                            </td>
-                          </tr>
+                          <tbody>
+                            <tr>
+                              <td>{t("ngen.name_one")}</td>
+                              <td>
+                                <Form.Control plaintext readOnly defaultValue={state.name} />
+                              </td>
+                              <td></td>
+                            </tr>
+                            <tr>
+                              <td>{t("w.attended")}</td>
+                              <td>
+                                <Form.Control plaintext readOnly defaultValue={state.attended} />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("w.solved")}</td>
+                              <td>
+                                <Form.Control plaintext readOnly defaultValue={state.solved} />
+                              </td>
+                            </tr>
 
-                          <tr>
-                            <td>activo</td>
-                            <td>
-                              <Button
-                                className="btn-icon btn-rounded"
-                                variant={state.active ? "outline-success" : "outline-danger"}
-                                title={state.active ? "Activo" : "Inactivo"}
-                              >
-                                <i className={state.active ? "feather icon-check-circle" : "feather icon-alert-triangle"} />
-                              </Button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.description")}</td>
-                            <td>
-                              <Form.Control plaintext readOnly defaultValue={state.description} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.children")}</td>
-                            <td>
-                              {state.children
-                                ? state.children.map((url) => {
-                                    return <CallBackendByName url={url} callback={callbackState} useBadge={false} />;
-                                  })
-                                : "No tiene hijos"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.date.created")}</td>
-                            <td>
-                              <Form.Control
-                                plaintext
-                                readOnly
-                                defaultValue={state.created ? state.created.slice(0, 10) + " " + state.created.slice(11, 19) : ""}
-                              />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{t("ngen.date.modified")}</td>
-                            <td>
-                              <Form.Control
-                                plaintext
-                                readOnly
-                                defaultValue={state.modified ? state.modified.slice(0, 10) + " " + state.modified.slice(11, 19) : ""}
-                              />
-                            </td>
-                          </tr>
+                            <tr>
+                              <td>{t("w.active")}</td>
+                              <td>
+                                <ActiveButton active={state.active} />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.description")}</td>
+                              <td>
+                                <Form.Control plaintext readOnly defaultValue={state.description} />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.children")}</td>
+                              <td>
+                                {state.children
+                                  ? state.children.map((url) => {
+                                      return <CallBackendByName url={url} callback={callbackState} useBadge={false} />;
+                                    })
+                                  : "No tiene hijos"}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.date.created")}</td>
+                              <td>
+                                <Form.Control
+                                  plaintext
+                                  readOnly
+                                  defaultValue={state.created ? state.created.slice(0, 10) + " " + state.created.slice(11, 19) : ""}
+                                />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{t("ngen.date.modified")}</td>
+                              <td>
+                                <Form.Control
+                                  plaintext
+                                  readOnly
+                                  defaultValue={state.modified ? state.modified.slice(0, 10) + " " + state.modified.slice(11, 19) : ""}
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
                         </Table>
                       </Card.Body>
                     </Card>

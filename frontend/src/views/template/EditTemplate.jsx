@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Row, Spinner } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
-import Alert from "../../components/Alert/Alert";
+import { Spinner } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 import FormTemplate from "./components/FormTemplate";
-import Navigation from "../../components/Navigation/Navigation";
-import { putTemplate } from "../../api/services/templates";
+import { putTemplate, getTemplate } from "../../api/services/templates";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import { getMinifiedFeed } from "../../api/services/feeds";
 import { getMinifiedPriority } from "../../api/services/priorities";
 import { getMinifiedState } from "../../api/services/states";
 import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const EditTemplate = () => {
-  const location = useLocation();
-  const fromState = location.state;
-  const [template] = useState(fromState);
-  const [body, setBody] = useState(template);
+  const [body, setBody] = useState({});
   const [TLP, setTLP] = useState([]);
   const [feeds, setFeeds] = useState([]);
   const [taxonomy, setTaxonomy] = useState([]);
@@ -24,7 +20,18 @@ const EditTemplate = () => {
   const [states, setStates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
+  const [id] = useState(useParams());
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (id.id) {
+      getTemplate(COMPONENT_URL.template + id.id + "/")
+        .then((response) => {
+          setBody(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [id]);
 
   useEffect(() => {
     setLoading(true);
@@ -94,7 +101,7 @@ const EditTemplate = () => {
         });
         setStates(listStates);
       })
-      .catch((error) => {})
+      .catch((error) => { })
       .finally(() => {
         setLoading(false);
       });
@@ -127,10 +134,6 @@ const EditTemplate = () => {
 
   return (
     <React.Fragment>
-      <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
-      <Row>
-        <Navigation actualPosition={t("ngen.template.edit")} path="/templates" index={t("ngen.template")} />
-      </Row>
       {loading ? (
         <Spinner animation="border" role="status" />
       ) : (
