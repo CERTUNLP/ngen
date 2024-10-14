@@ -23,7 +23,7 @@ const SelectLabel = ({ set, setSelect, options, value, placeholder, required, di
         options={options}
         value={value}
         isClearable
-        placeholder={t("w.select") + " " + `${placeholder}`}
+        placeholder={`${t("w.select")} ${placeholder}`}
         onChange={handleChange}
         {...(disabled ? { isDisabled: true } : {})}
       />
