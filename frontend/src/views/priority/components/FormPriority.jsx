@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { validateFieldText, validateHours, validateMinutes, validateNumber } from "../../../utils/validators";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
 
 const FormPriority = ({ body, setBody, createPriority }) => {
   const completeField = (event) => {
@@ -233,9 +234,7 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           </>
         )}
 
-        <Button variant="primary" href="/priorities">
-          {t("button.cancel")}
-        </Button>
+        <CrudButton type="cancel" />
       </Form>
     </Card.Body>
   );

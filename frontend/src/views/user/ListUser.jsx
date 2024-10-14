@@ -17,6 +17,7 @@ function ListUser() {
   const [currentPage, setCurrentPage] = useState(1);
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
+  const [isModify, setIsModify] = useState(null);
 
   const [countItems, setCountItems] = useState(0);
 
@@ -50,7 +51,7 @@ function ListUser() {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, wordToSearch, order]);
+  }, [currentPage, wordToSearch, order, isModify]);
 
   if (error) {
     return <p>{t("user.error.fetch")}</p>;
@@ -77,7 +78,15 @@ function ListUser() {
           <Row></Row>
         </Card.Header>
         <Card.Body>
-          <TableUsers users={users} loading={loading} order={order} setOrder={setOrder} setLoading={setLoading} currentPage={currentPage} />
+          <TableUsers
+            users={users}
+            loading={loading}
+            order={order}
+            setOrder={setOrder}
+            setLoading={setLoading}
+            currentPage={currentPage}
+            setIsModify={setIsModify}
+          />
         </Card.Body>
         <Card.Footer>
           <Row className="justify-content-md-center">

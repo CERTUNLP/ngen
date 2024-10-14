@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading, taxonomyGroups, minifiedTaxonomies }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [url, setUrl] = useState(null);
+  const [id, setId] = useState("");
   const [name, setName] = useState(null);
   const [taxonomy, setTaxonomy] = useState();
   const [modalShow, setModalShow] = useState(false);
@@ -51,6 +52,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
     getTaxonomy(url)
       .then((response) => {
         setTaxonomy(response.data);
+        setId(response.data.url.split("/")[response.data.url.split("/").length - 2]);
         setModalShow(true);
       })
       .catch((error) => {
@@ -161,26 +163,30 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
           </tr>
         </thead>
         <tbody>
-          {list.map((taxonomy, index) => (
-            <tr key={index}>
-              <td>{taxonomy.created.slice(0, 10) + " " + taxonomy.created.slice(11, 19)}</td>
-              <td>{taxonomy.name}</td>
-              <td>{taxonomy.type}</td>
-              <td>{minifiedTaxonomies[taxonomy.parent]}</td>
-              <td>{taxonomyGroups[taxonomy.group]}</td>
-              <td>{minifiedTaxonomies[taxonomy.alias_of]}</td>
-              <td>{taxonomy.needs_review ? t("w.yes") : t("w.no")}</td>
-              <td>{taxonomy.reports.length}</td>
-              <td>
-                <ActiveButton active={taxonomy.active} onClick={() => switchState(taxonomy.url, taxonomy.active, taxonomy.name)} permissions="change_taxonomy" />
-              </td>
-              <td>
-                <CrudButton type="read" onClick={() => showTaxonomy(taxonomy.url)} />
-                <CrudButton type="edit" to="/taxonomies/edit" state={taxonomy} checkPermRoute />
-                <CrudButton type="delete" onClick={() => Delete(taxonomy.url, taxonomy.name)} permissions="delete_taxonomy" />
-              </td>
-            </tr>
-          ))}
+          {list.map((taxonomy, index) => {
+            const parts = taxonomy.url.split("/");
+            let itemNumber = parts[parts.length - 2];
+            return (
+              <tr key={index}>
+                <td>{taxonomy.created.slice(0, 10) + " " + taxonomy.created.slice(11, 19)}</td>
+                <td>{taxonomy.name}</td>
+                <td>{taxonomy.type}</td>
+                <td>{minifiedTaxonomies[taxonomy.parent]}</td>
+                <td>{taxonomyGroups[taxonomy.group]}</td>
+                <td>{minifiedTaxonomies[taxonomy.alias_of]}</td>
+                <td>{taxonomy.needs_review ? t("w.yes") : t("w.no")}</td>
+                <td>{taxonomy.reports.length}</td>
+                <td>
+                  <ActiveButton active={taxonomy.active} onClick={() => switchState(taxonomy.url, taxonomy.active, taxonomy.name)} permissions="change_taxonomy" />
+                </td>
+                <td>
+                  <CrudButton type="read" onClick={() => showTaxonomy(taxonomy.url)} />
+                  <CrudButton type="edit" to={`/taxonomies/edit/${itemNumber}`} checkPermRoute />
+                  <CrudButton type="delete" onClick={() => Delete(taxonomy.url, taxonomy.name)} permissions="delete_taxonomy" />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
       <Modal size="lg" show={modalShow} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>
@@ -195,7 +201,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                       <span className="d-block m-t-5">{t("ngen.taxonomy.detail")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
-                      <CrudButton type="edit" to="/taxonomies/edit" state={taxonomy} checkPermRoute />
+                      <CrudButton type="edit" to={`/taxonomies/edit/${id}`} checkPermRoute />
                       <CloseButton aria-label={t("w.close")} onClick={handleClose} />
                     </Col>
                   </Row>

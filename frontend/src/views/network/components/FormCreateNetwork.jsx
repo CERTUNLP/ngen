@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, CloseButton, Col, Form, Modal, Row } from "react-bootstrap";
 import { getMinifiedEntity } from "../../../api/services/entities";
-import CrudButton from "../../../components/Button/CrudButton";
+import CrudButton from "components/Button/CrudButton";
 import FormCreateContact from "../../contact/components/FormCreateContact";
 import { postContact } from "../../../api/services/contacts";
 import { validateSelect, validateAddressValueOrNetworkOrDomain } from "../../../utils/validators/network";
@@ -85,16 +85,20 @@ const FormCreateNetwork = (props) => {
         }
       });
     }
+  }, [props.network_entity, entitiesOption]);
 
-    //selected contacts
-    let listDefaultContact = props.allContacts
-      .filter((elemento) => props.contacts.includes(elemento.value))
-      .map((elemento) => ({
-        value: elemento.value,
-        label: elemento.label
-      }));
-    setContactsValueLabel(listDefaultContact);
-  }, [props.contacts, props.allContacts, props.network_entity]);
+  useEffect(() => {
+    if (props.contacts && props.allContacts) {
+      //selected contacts
+      let listDefaultContact = props.allContacts
+        .filter((elemento) => props.contacts.includes(elemento.value))
+        .map((elemento) => ({
+          value: elemento.value,
+          label: elemento.label
+        }));
+      setContactsValueLabel(listDefaultContact);
+    }
+  }, [props.contacts, props.allContacts]);
 
   //Multiselect
   const selectContacts = (event) => {
@@ -225,9 +229,9 @@ const FormCreateNetwork = (props) => {
             <Form.Group>
               {
                 validateAddressValueOrNetworkOrDomain(props) &&
-                  !showErrorMessage &&
-                  validateSelect(props.type) &&
-                  props.contacts.length > 0 ? (
+                !showErrorMessage &&
+                validateSelect(props.type) &&
+                props.contacts.length > 0 ? (
                   <>
                     <Button variant="primary" onClick={props.ifConfirm}>
                       {t("button.save")}
@@ -241,9 +245,7 @@ const FormCreateNetwork = (props) => {
                   </>
                 ) //disabled
               }
-              <Button variant="primary" onClick={() => navigate(-1)}>
-                {t("button.cancel")}
-              </Button>
+              <CrudButton type="cancel" />
             </Form.Group>
           </Col>
         </Row>

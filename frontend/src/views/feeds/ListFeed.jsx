@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { getFeeds } from "../../api/services/feeds";
 import CrudButton from "../../components/Button/CrudButton";
-import Alert from "../../components/Alert/Alert";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableFeed from "./components/TableFeed";
 import Search from "../../components/Search/Search";
@@ -14,6 +13,7 @@ const ListFeed = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [countItems, setCountItems] = useState(0);
+  const [isModify, setIsModify] = useState(null);
 
   const [order, setOrder] = useState("name");
   const [wordToSearch, setWordToSearch] = useState("");
@@ -48,7 +48,7 @@ const ListFeed = () => {
         setLoading(false);
         setShowAlert(true);
       });
-  }, [currentPage, wordToSearch, order]);
+  }, [currentPage, wordToSearch, order, isModify]);
 
   return (
     <React.Fragment>
@@ -78,6 +78,7 @@ const ListFeed = () => {
               setOrder={setOrder}
               setLoading={setLoading}
               currentPage={currentPage}
+              setIsModify={setIsModify}
             />
             <Card.Footer>
               <Row className="justify-content-md-center">

@@ -1,15 +1,25 @@
 import { isEmpty, validateAlphanumeric, validateEmail, validateLength, validateNumbers, validateSpace, validateURL } from "../validators";
 
 const validateName = (name) => {
-  return validateLength(name, 255) && !isEmpty(name);
+  //return (validateAlphanumeric(name) && validateLength(name, 100) && validateSpace(name))// tengo que ver la funcion de este metodo validateSpace(name)
+  if (name) {
+    return validateAlphanumeric(name) && validateLength(name, 100);
+  }
+  return null;
 };
 
 const validateSelect = (option) => {
-  return !isEmpty(option);
+  if (option) {
+    return !isEmpty(option);
+  }
+  return null;
 };
 
 const validateContact = (contact) => {
-  return validateSpace(contact); // no entinedo porque un selec
+  if (contact) {
+    return validateSpace(contact); // no entinedo porque un selec
+  }
+  return null;
 };
 
 const validateContactMail = (contactMail) => {

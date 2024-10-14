@@ -6,6 +6,7 @@ import { getMinifiedPriority } from "../../../api/services/priorities";
 import { getMinifiedUser } from "../../../api/services/users";
 import SelectLabel from "../../../components/Select/SelectLabel";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
 
 const FormCreateContact = (props) => {
   // props: name, setName, role, setRole, priority, setPriority, type, setType, contact, setContact, keypgp, setKey, ifConfirm, ifCancel
@@ -223,9 +224,7 @@ const FormCreateContact = (props) => {
               </Button>
             </>
           )}
-          <Button variant="primary" onClick={props.ifCancel}>
-            {t("button.cancel")}
-          </Button>
+          <CrudButton type="cancel" />
         </Form.Group>
       </Form>
     </React.Fragment>

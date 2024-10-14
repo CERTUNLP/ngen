@@ -96,7 +96,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/feeds/edit",
+    path: "/feeds/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_feed"],
@@ -120,7 +120,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/taxonomies/edit",
+    path: "/taxonomies/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_taxonomy"],
@@ -144,7 +144,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/taxonomyGroups/edit",
+    path: "/taxonomyGroups/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_taxonomygroup"],
@@ -176,7 +176,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/contacts/edit",
+    path: "/contacts/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_contact"],
@@ -200,7 +200,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/entities/edit",
+    path: "/entities/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_networkentity"],
@@ -224,7 +224,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/networks/edit",
+    path: "/networks/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_network"],
@@ -248,7 +248,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/priorities/edit",
+    path: "/priorities/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_priority"],
@@ -272,7 +272,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/users/edit",
+    path: "/users/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_user"],
@@ -296,7 +296,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/states/edit",
+    path: "/states/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_state"],
@@ -320,7 +320,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/events/edit",
+    path: "/events/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_event"],
@@ -328,7 +328,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/events/view",
+    path: "/events/view/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["view_event"],
@@ -352,7 +352,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/playbooks/edit",
+    path: "/playbooks/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_playbook"],
@@ -376,7 +376,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/cases/edit",
+    path: "/cases/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_case"],
@@ -384,7 +384,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/cases/view",
+    path: "/cases/view/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["view_case"],
@@ -408,7 +408,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/templates/edit",
+    path: "/templates/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_casetemplate"],
@@ -424,19 +424,19 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/reports/edit",
-    layout: AdminLayout,
-    guard: PermissionGuard,
-    permissions: ["change_report"],
-    element: lazy(() => import("./views/report/EditReport"))
-  },
-  {
-    exact: "true",
     path: "/reports/create",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["add_report"],
     element: lazy(() => import("./views/report/CreateReport"))
+  },
+  {
+    exact: "true",
+    path: "/reports/edit/:id",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["change_report"],
+    element: lazy(() => import("./views/report/EditReport"))
   },
   {
     exact: "true",
@@ -483,7 +483,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/networkadmin/events/edit",
+    path: "/networkadmin/events/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_event_network_admin"],
@@ -492,7 +492,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/networkadmin/events/view",
+    path: "/networkadmin/events/view/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["view_event_network_admin"],
@@ -519,7 +519,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/networkadmin/cases/edit",
+    path: "/networkadmin/cases/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_case_network_admin"],
@@ -528,7 +528,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/networkadmin/cases/view",
+    path: "/networkadmin/cases/view/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["view_case_network_admin"],
@@ -555,7 +555,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/networkadmin/contacts/edit",
+    path: "/networkadmin/contacts/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_contact_network_admin"],
@@ -582,7 +582,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/networkadmin/entities/edit",
+    path: "/networkadmin/entities/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_networkentity_network_admin"],
@@ -609,7 +609,7 @@ const routes = [
   },
   {
     exact: "true",
-    path: "/networkadmin/networks/edit",
+    path: "/networkadmin/networks/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
     permissions: ["change_network_network_admin"],

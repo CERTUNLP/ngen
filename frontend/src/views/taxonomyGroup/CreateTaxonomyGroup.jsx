@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import Alert from "../../components/Alert/Alert";
 import { validateDescription, validateName, validateUnrequiredInput } from "../../utils/validators/taxonomy";
 import { useTranslation } from "react-i18next";
 import { postTaxonomyGroup } from "../../api/services/taxonomyGroups";
 import DropdownState from "../../components/Dropdown/DropdownState";
+import CrudButton from "components/Button/CrudButton";
 
 const CreateTaxonomyGroup = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [showAlert, setShowAlert] = useState(false);
   const [needs_review, setNeeds_review] = useState(false);
 
   const { t } = useTranslation();
 
   useEffect(() => {
-
     const handleResize = (e) => {
       e.preventDefault(); // Detiene el comportamiento predeterminado del evento de redimensionamiento
       // Tu lógica de manejo de redimensionamiento aquí (si es necesario)
@@ -39,28 +37,8 @@ const CreateTaxonomyGroup = () => {
       })
       .catch((error) => {
         console.log(error);
-        setShowAlert(true);
       });
   };
-
-  const resetShowAlert = () => {
-    setShowAlert(false);
-  };
-
-  let typeOption = [
-    {
-      value: "vulnerability",
-      label: t("ngen.vulnerability")
-    },
-    {
-      value: "incident",
-      label: t("ngen.incident")
-    },
-    {
-      value: "other",
-      label: t("ngen.other")
-    }
-  ];
 
   return (
     <React.Fragment>
@@ -119,9 +97,7 @@ const CreateTaxonomyGroup = () => {
                       {t("button.save")}
                     </Button>
                   )}
-                  <Button variant="info" href="/taxonomyGroups">
-                    {t("button.cancel")}
-                  </Button>
+                  <CrudButton type="cancel" />
                 </Form.Group>
               </Form>
             </Card.Body>

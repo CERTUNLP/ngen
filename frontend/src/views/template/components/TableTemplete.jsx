@@ -20,10 +20,12 @@ const TableTemplete = ({
   feedNames,
   tlpNames,
   priorityNames,
-  stateNames
+  stateNames,
+  setIsModify
 }) => {
   const [deleteName, setDeleteName] = useState();
   const [deleteUrl, setDeleteUrl] = useState();
+  const [id, setId] = useState("");
   const [remove, setRemove] = useState();
   const [template, setTemplate] = useState({});
   const [modalShow, setModalShow] = useState(false);
@@ -63,6 +65,7 @@ const TableTemplete = ({
   };
 
   const showModalTemplate = (template) => {
+    setId(template.url.split("/")[template.url.split("/").length - 2]);
     setTemplate(template);
     setModalShow(true);
   };
@@ -90,8 +93,8 @@ const TableTemplete = ({
 
   const changeState = () => {
     isActive(dataTemplate.url, +!dataTemplate.state)
-      .then(() => {
-        window.location.href = "/templates";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         setShowAlert(true);
@@ -183,6 +186,8 @@ const TableTemplete = ({
           </thead>
           <tbody>
             {list.map((template, index) => {
+              const parts = template.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return (
                 <tr key={index}>
                   <td>{template.cidr || template.domain}</td>
@@ -259,7 +264,7 @@ const TableTemplete = ({
                   </td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalTemplate(template)} />
-                    <CrudButton type="edit" to="/templates/edit" state={template} checkPermRoute />
+                    <CrudButton type="edit" to={`/templates/edit/${itemNumber}`} checkPermRoute />
                     <CrudButton
                       type="delete"
                       onClick={() =>
@@ -307,7 +312,7 @@ const TableTemplete = ({
                             <span className="d-block m-t-5">{t("ngen.template.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <CrudButton type="edit" to="/templates/edit" state={template} checkPermRoute />
+                            <CrudButton type="edit" to={`/templates/edit/${id}`} checkPermRoute />
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import SelectComponent from "../../../components/Select/SelectComponent";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
 
 const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
   const [selectTaxonomy, setSelectTaxonomy] = useState();
@@ -303,9 +304,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
           </Button>
         </>
       )}
-      <Button variant="primary" href="/reports">
-        {t("button.cancel")}
-      </Button>
+      <CrudButton type="cancel" />
     </Form>
   );
 };

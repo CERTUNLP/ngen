@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import FormEvent from "./components/FormEvent";
 import { getEvent, patchEvent, putEvent } from "../../api/services/events";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
@@ -12,6 +12,7 @@ import { deleteEvidence } from "../../api/services/evidences";
 import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedArtifact } from "../../api/services/artifact";
 import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const EditEvent = ({routeParams}) => {
   //const [date, setDate] = useState(caseItem.date  != null ? caseItem.date.substring(0,16) : '') //required
@@ -34,18 +35,19 @@ const EditEvent = ({routeParams}) => {
   const [priorityNames, setPriorityNames] = useState({});
   const [userNames, setUserNames] = useState({});
   const [updateEvidence, setUpdateEvidence] = useState([]);
+  const [id] = useState(useParams());
 
   useEffect(() => {
-    getEvent(body.url)
-      .then((response) => {
-        response.data.case = response.data.case ? response.data.case : "";
-        response.data.date = response.data.date.substring(0, 16);
-        setBody(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [updateEvidence]);
+    if (id.id) {
+      getEvent(COMPONENT_URL.event + id.id + "/")
+        .then((response) => {
+          response.data.case = response.data.case ? response.data.case : "";
+          response.data.date = response.data.date.substring(0, 16);
+          setBody(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [id]);
 
   useEffect(() => {
     getMinifiedTlp()

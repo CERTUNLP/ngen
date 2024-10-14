@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SmallEventTable from "../event/components/SmallEventTable";
 import { getCase } from "../../api/services/cases";
 import apiInstance from "../../api/api";
@@ -8,16 +8,15 @@ import { getEvent } from "../../api/services/events";
 import { getEvidence } from "../../api/services/evidences";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
 import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 import CrudButton from "components/Button/CrudButton";
 
 const ReadCase = ({ routeParams }) => {
   const basePath = routeParams.basePath || "";
-  const location = useLocation();
-  const [caseItem, setCaseItem] = useState(location?.state?.item || null);
-  const [navigationRow] = useState(localStorage.getItem("navigation"));
+  const [caseItem, setCaseItem] = useState(null);
   const [buttonReturn] = useState(localStorage.getItem("button return"));
 
-  const [id, setId] = useState("");
+  const [id] = useState(useParams());
   const [date, setDate] = useState("");
   const [attend_date, setAttend_Date] = useState("");
   const [solve_date, setSolve_Date] = useState("");
@@ -40,9 +39,26 @@ const ReadCase = ({ routeParams }) => {
   const { t } = useTranslation();
 
   const navigateToCase = (url, basePath) => {
-    localStorage.setItem("case", url);
-    navigate(basePath + "/cases/view");
+    const id = url.split("/")[url.split("/").length - 2];
+    navigate(basePath + "/cases/view" + id);
   };
+
+  useEffect(() => {
+    if (id.id) {
+      getCase(COMPONENT_URL.case + id.id + "/")
+        .then((response) => {
+          setCaseItem(response.data);
+        })
+        .catch((error) => console.log(error));
+    } else {
+      const url = localStorage.getItem("case");
+      getCase(url)
+        .then((response) => {
+          setCaseItem(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [id]);
 
   useEffect(() => {
     if (caseItem !== null) {
@@ -59,14 +75,6 @@ const ReadCase = ({ routeParams }) => {
           const errorMessage = t("error.event");
           console.error(errorMessage, error);
         });
-    }
-    if (!caseItem) {
-      const caseUrl = localStorage.getItem("case");
-      getCase(caseUrl)
-        .then((response) => {
-          setCaseItem(response.data);
-        })
-        .catch((error) => console.log(error));
     }
 
     const getEvidenceFile = (url) => {
@@ -148,9 +156,6 @@ const ReadCase = ({ routeParams }) => {
       }
       getName(caseItem.state, setState);
 
-      let idItem = caseItem.url.split("/")[caseItem.url.split("/").length - 2];
-      setId(idItem);
-
       let datetime = caseItem.created.split("T");
       setCreated(datetime[0] + " " + datetime[1].slice(0, 8));
       datetime = caseItem.modified.split("T");
@@ -223,7 +228,7 @@ const ReadCase = ({ routeParams }) => {
                       </td>
                       <td>{t("ngen.system.id")}</td>
                       <td>
-                        <Form.Control plaintext readOnly defaultValue={id} />
+                        <Form.Control plaintext readOnly defaultValue={id.id} />
                       </td>
                     </tr>
                     <tr>
@@ -434,9 +439,7 @@ const ReadCase = ({ routeParams }) => {
             )}
 
             {buttonReturn !== "false" ? (
-              <Button variant="primary" href="/cases">
-                {t("button.return")}
-              </Button>
+              <CrudButton type="cancel" />
             ) : (
               ""
             )}

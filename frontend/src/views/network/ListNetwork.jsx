@@ -6,7 +6,6 @@ import { getMinifiedEntity } from "../../api/services/entities";
 import TableNetwork from "./components/TableNetwork";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
-import Alert from "../../components/Alert/Alert";
 import ButtonFilter from "../../components/Button/ButtonFilter";
 import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import FilterSelect from "../../components/Filter/FilterSelect";

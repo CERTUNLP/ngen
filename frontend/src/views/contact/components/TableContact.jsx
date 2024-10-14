@@ -6,11 +6,10 @@ import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import PriorityButton from "../../../components/Button/PriorityButton";
 import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
-import { getMinifiedArtifact } from "api/services/artifact";
 import { getMinifiedUser } from "api/services/users";
 import FormGetName from "components/Form/FormGetName";
 
-const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder, basePath="" }) => {
+const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder, basePath = "" }) => {
   const [contact, setContact] = useState("");
 
   const [modalShow, setModalShow] = useState(false);
@@ -114,7 +113,9 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
           </tr>
         </thead>
         <tbody>
-          {list.map((contact, index) => {
+          {list.map((contact) => {
+            const parts = contact.url.split("/");
+            let itemNumber = parts[parts.length - 2];
             return (
               <tr key={contact.url}>
                 <td>{contact.name}</td>
@@ -125,7 +126,13 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                 </td>
                 <td>
                   <CrudButton type="read" onClick={() => showContact(contact.url)} />
-                  <CrudButton type="edit" onClick={() => storageContactUrl(contact.url)} to={basePath + "/contacts/edit"} state={contact} checkPermRoute />
+                  <CrudButton
+                    type="edit"
+                    onClick={() => storageContactUrl(contact.url)}
+                    to={`${basePath}/contacts/edit/${itemNumber}`}
+                    state={contact}
+                    checkPermRoute
+                  />
                   <CrudButton type="delete" onClick={() => Delete(contact.url, contact.name)} permissions="delete_contact" />
                 </td>
               </tr>
@@ -146,7 +153,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                       <span className="d-block m-t-5">{t("ngen.contact.detail")}</span>
                     </Col>
                     <Col sm={2} lg={2}>
-                      <CrudButton type="edit" to={basePath + "/contacts/edit"} state={contact} checkPermRoute />
+                      <CrudButton type="edit" to={`${basePath}/contacts/edit/${id}`} checkPermRoute />
                       <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                     </Col>
                   </Row>

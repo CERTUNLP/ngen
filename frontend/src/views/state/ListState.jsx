@@ -15,6 +15,7 @@ const ListState = () => {
   const [countItems, setCountItems] = useState(0);
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
+  const [isModify, setIsModify] = useState(null);
   const { t } = useTranslation();
 
   const [wordToSearch, setWordToSearch] = useState("");
@@ -43,7 +44,7 @@ const ListState = () => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, wordToSearch, order]);
+  }, [currentPage, wordToSearch, order, isModify]);
 
   return (
     <div>
@@ -51,7 +52,13 @@ const ListState = () => {
         <Card.Header>
           <Row>
             <Col sm={12} lg={9}>
-              <Search type={t("ngen.state_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
+              <Search
+                type={t("ngen.state_one")}
+                setWordToSearch={setWordToSearch}
+                wordToSearch={wordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+              />
             </Col>
             <Col sm={12} lg={3}>
               <CrudButton type="create" name={t("ngen.state_one")} to="/states/create" state={states} checkPermRoute />
@@ -59,7 +66,7 @@ const ListState = () => {
           </Row>
         </Card.Header>
         <Card.Body>
-          <TableStates states={states} loading={loading} currentPage={currentPage} />
+          <TableStates states={states} loading={loading} currentPage={currentPage} setIsModify={setIsModify} />
         </Card.Body>
         <Card.Footer>
           <Row className="justify-content-md-center">

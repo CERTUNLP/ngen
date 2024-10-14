@@ -8,9 +8,10 @@ import Alert from "../../../components/Alert/Alert";
 import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
 
-const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage }) => {
+const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage, setIsModify }) => {
   const [remove, setRemove] = useState(false);
   const [deleteName, setDeleteName] = useState("");
+  const [id, setId] = useState("");
   const [deleteUrl, setDeleteUrl] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [feed, setFeed] = useState({});
@@ -28,13 +29,14 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
   }
 
   const showModalChangeState = (url, name, active) => {
+    setId(url.split("/")[url.split("/").length - 2]);
     setDataState({ url: url, name: name, state: active });
     setShowState(true);
   };
   const changeState = () => {
     putActivationStatus(dataState.url, !dataState.state)
-      .then(() => {
-        window.location.href = "/feeds";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         console.log(error);
@@ -66,6 +68,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
 
   const showModalFeed = (feed) => {
     getFeed(feed.url).then((response) => {
+      setId(response.data.url.split("/")[response.data.url.split("/").length - 2]);
       setFeed(response.data);
     });
     setModalShow(true);
@@ -98,16 +101,22 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
           </thead>
           <tbody>
             {feeds.map((feed, index) => {
+              const parts = feed.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return (
                 <tr key={index}>
                   <td>{feed.name}</td>
                   <td>
-                    <ActiveButton active={feed.active} onClick={() => showModalChangeState(feed.url, feed.name, feed.active)} permissions="change_feed" />
+                    <ActiveButton
+                      active={feed.active}
+                      onClick={() => showModalChangeState(feed.url, feed.name, feed.active)}
+                      permissions="change_feed"
+                    />
                   </td>
                   <td>{feed.events_count}</td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalFeed(feed)} />
-                    <CrudButton type="edit" to="/feeds/edit" state={feed} checkPermRoute />
+                    <CrudButton type="edit" to={`/feeds/edit/${itemNumber}`} checkPermRoute />
                     <CrudButton type="delete" onClick={() => handleShow(feed.name, feed.url)} permissions="delete_feed" />
                   </td>
                 </tr>
@@ -146,7 +155,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage })
                         </span>
                       </Col>
                       <Col sm={12} lg={2}>
-                        <CrudButton type="edit" to="/feeds/edit" state={feed} checkPermRoute />
+                        <CrudButton type="edit" to={`/feeds/edit/${id}`} checkPermRoute />
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                       </Col>
                     </Row>

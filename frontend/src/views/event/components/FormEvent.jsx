@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
-import CrudButton from "../../../components/Button/CrudButton";
+import CrudButton from "components/Button/CrudButton";
 import SelectComponent from "../../../components/Select/SelectComponent";
 import { postArtifact } from "../../../api/services/artifact";
 import { postStringIdentifier } from "../../../api/services/stringIdentifier";
@@ -623,9 +623,7 @@ const FormEvent = (props) => {
           {t("button.save")}
         </Button>
       )}
-      <Button variant="primary" href="/events">
-        {t("button.cancel")}
-      </Button>
+      <CrudButton type="cancel" />
     </div>
   );
 };

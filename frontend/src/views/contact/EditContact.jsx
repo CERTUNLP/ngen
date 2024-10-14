@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card, Col, Row } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
 import { getContact, patchContact } from "../../api/services/contacts";
 import FormCreateContact from "./components/FormCreateContact";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { COMPONENT_URL } from "config/constant";
 
 const EditContact = () => {
-  const location = useLocation();
+  const [contact, setContact] = useState({});
   const navigate = useNavigate();
-  const fromState = location.state;
-  const [contact, setContact] = useState(fromState);
   const { t } = useTranslation();
 
   const [supportedName, setSupportedName] = useState("");
@@ -20,10 +20,21 @@ const EditContact = () => {
   const [supportedKey, setSupportedKey] = useState("");
   const [networks, setNetworks] = useState([]);
   const [selectType, setSelectType] = useState("");
+  const [id] = useState(useParams());
   const [user, setUser] = useState("");
 
   //Alert
   const [showAlert, setShowAlert] = useState(false);
+
+  useEffect(() => {
+    if (id.id) {
+      getContact(COMPONENT_URL.contact + id.id + "/")
+        .then((response) => {
+          setContact(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [id]);
 
   useEffect(() => {
     if (contact) {
@@ -46,8 +57,7 @@ const EditContact = () => {
 
   const editContact = () => {
     patchContact(contact.url, supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority, user)
-      .then((response) => {
-      })
+      .then((response) => {})
       .catch(() => {
         setShowAlert(true);
       });

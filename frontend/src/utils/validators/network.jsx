@@ -5,7 +5,6 @@ const validateSelect = (option) => {
 };
 
 const validateNetworkCIDR = (cidr) => {
-  console.log(cidr, validateCidr(cidr), validateSpace(cidr));
   return validateCidr(cidr) && validateSpace(cidr);
 };
 

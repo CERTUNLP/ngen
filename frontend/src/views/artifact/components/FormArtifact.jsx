@@ -61,9 +61,7 @@ const FormArtifact = (props) => {
               </Button>
             </>
           )}
-          <Button variant="primary" onClick={props.ifCancel}>
-            {t("button.cancel")}
-          </Button>
+          <CrudButton type="cancel" />
         </Form>
       </Card.Body>
     </div>

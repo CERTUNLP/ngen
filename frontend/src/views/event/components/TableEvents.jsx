@@ -8,6 +8,7 @@ import { deleteEvent } from "../../../api/services/events";
 import Ordering from "../../../components/Ordering/Ordering";
 import LetterFormat from "../../../components/LetterFormat";
 import { useTranslation } from "react-i18next";
+import UuidField from "components/Field/UuidField";
 
 const TableEvents = ({
   events,
@@ -49,6 +50,7 @@ const TableEvents = ({
   //checkbox
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [list, setList] = useState([]);
+  const [showFullUuid, setShowFullUuid] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -81,6 +83,10 @@ const TableEvents = ({
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleToggleUuidDisplay = () => {
+    setShowFullUuid(!showFullUuid);
   };
 
   const handleSelectAll = (e) => {
@@ -120,16 +126,16 @@ const TableEvents = ({
   };
 
   const navigateToEvent = (url, basePath) => {
-    localStorage.setItem("event", url);
-    navigate(basePath + "/events/view");
+    const id = url.split("/").slice(-2)[0];
+    navigate(basePath + "/events/view/" + id);
   };
 
   const navigateToCase = (url, basePath) => {
-    localStorage.setItem("case", url);
-    navigate(basePath + "/cases/view");
+    const id = url.split("/").slice(-2)[0];
+    navigate(basePath + "/cases/view/" + id);
   };
 
-  const letterSize = { fontSize: "1.1em" };
+  const letterSize = {};
   return (
     <React.Fragment>
       <ul className="list-group my-4">
@@ -181,7 +187,14 @@ const TableEvents = ({
               ) : (
                 ""
               )}
-              {!disableUuid && <th style={letterSize}>{t("ngen.uuid")}</th>}
+              {!disableUuid && (
+                <th style={{ textAlign: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ marginRight: "8px" }}>{t("ngen.uuid")}</span>
+                    <Form.Check type="checkbox" checked={showFullUuid} onChange={handleToggleUuidDisplay} />
+                  </div>
+                </th>
+              )}
               <th style={letterSize}>{t("ngen.identifier")}</th>
               {!disableTlp && <th style={letterSize}>{t("ngen.tlp")}</th>}
               {!disableMerged && <th style={letterSize}>{t("ngen.event.merged")}</th>}
@@ -193,6 +206,8 @@ const TableEvents = ({
           </thead>
           <tbody>
             {list.map((event, index) => {
+              const parts = event.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return event ? (
                 <tr key={index}>
                   {/* <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : ""}</td> */}
@@ -234,11 +249,19 @@ const TableEvents = ({
                   )}
                   {!disableDateModified ? <td>{event.modified.slice(0, 10) + " " + event.modified.slice(11, 19)}</td> : ""}
                   {!disableDate ? <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : ""}</td> : ""}
-                  {!disableUuid && <td>{event.uuid}</td>}
+                  {!disableUuid && (
+                    <td>
+                      <UuidField value={event.uuid} fulltext={showFullUuid} />
+                    </td>
+                  )}
                   <td>{event.address_value}</td>
                   {!disableTlp && (
                     <td>
-                      <LetterFormat useBadge={true} stringToDisplay={tlpNames && event?.tlp ? tlpNames[event.tlp].name : ""} color={tlpNames && event?.tlp ? tlpNames[event.tlp].color : ""} />
+                      <LetterFormat
+                        useBadge={true}
+                        stringToDisplay={tlpNames && event?.tlp ? tlpNames[event.tlp].name : ""}
+                        color={tlpNames && event?.tlp ? tlpNames[event.tlp].color : ""}
+                      />
                     </td>
                   )}
                   {!disableMerged && event.parent ? (
@@ -266,9 +289,7 @@ const TableEvents = ({
                       <td>
                         <CrudButton
                           type="read"
-                          to={basePath + "/cases/view"}
-                          state={event.case}
-                          onClick={() => navigateToCase(event.case, basePath)}
+                          to={`${basePath}/cases/view/${event.case.split("/").slice(-2)[0]}`}
                           text={t("ngen.case_one")}
                         />
                       </td>
@@ -284,14 +305,25 @@ const TableEvents = ({
                       {disableColumView ? (
                         ""
                       ) : (
-                        <CrudButton type="read" to={basePath + "/events/view"} state={event} onClick={() => navigateToEvent(event.url, basePath)} />
+                        <CrudButton
+                          type="read"
+                          to={`${basePath}/events/view/${itemNumber}`}
+                          state={event}
+                          onClick={() => navigateToEvent(event.url, basePath)}
+                        />
                       )}
                       {disableColumOption ? (
                         ""
                       ) : disableColumnEdit ? (
                         ""
                       ) : (
-                        <CrudButton type="edit" to={basePath + "/events/edit"} state={event} disabled={event.blocked || event.parent} checkPermRoute />
+                        <CrudButton
+                          type="edit"
+                          to={`${basePath}/events/edit/${itemNumber}`}
+                          state={event}
+                          disabled={event.blocked || event.parent}
+                          checkPermRoute
+                        />
                       )}
                       {disableColumOption ? (
                         ""
@@ -302,7 +334,11 @@ const TableEvents = ({
                       ) : (
                         <CrudButton type="delete" onClick={() => modalDelete(event.name, event.url)} permissions="delete_event" />
                       )}
-                      {disableTemplate ? "" : <CrudButton type="plus" to={basePath + "/templates/create"}state={event} checkPermRoute disabled={event.case} />}
+                      {disableTemplate ? (
+                        ""
+                      ) : (
+                        <CrudButton type="plus" to={basePath + "/templates/create"} state={event} checkPermRoute disabled={event.case} />
+                      )}
                     </td>
                   ) : (
                     ""

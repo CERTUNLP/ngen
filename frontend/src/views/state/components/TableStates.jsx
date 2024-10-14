@@ -8,9 +8,10 @@ import Alert from "../../../components/Alert/Alert";
 import CallBackendByName from "../../../components/CallBackendByName";
 import { useTranslation } from "react-i18next";
 
-const TableStates = ({ states, callback, loading, currentPage }) => {
+const TableStates = ({ states, callback, loading, currentPage, setIsModify }) => {
   const [deleteName, setDeleteName] = useState();
   const [deleteUrl, setDeleteUrl] = useState();
+  const [id, setId] = useState("");
   const [remove, setRemove] = useState();
   const [dataState, setDataState] = useState({});
   const [showState, setShowState] = useState();
@@ -34,8 +35,8 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
   };
   const handleDelete = () => {
     deleteState(deleteUrl, deleteName)
-      .then(() => {
-        window.location.href = "/states";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         setShowAlert(true);
@@ -58,8 +59,8 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
   };
   const changeState = () => {
     isActive(dataState.url, +!dataState.state)
-      .then(() => {
-        window.location.href = "/states";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         setShowAlert(true);
@@ -70,6 +71,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
       });
   };
   const showModalState = (state) => {
+    setId(state.url.split("/")[state.url.split("/").length - 2]);
     setState(state);
     setModalShow(true);
   };
@@ -94,11 +96,17 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
           </thead>
           <tbody>
             {states.map((state, index) => {
+              const parts = state.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return (
                 <tr key={index}>
                   <td>{state.name}</td>
                   <td>
-                    <ActiveButton active={state.active} onClick={() => modalChangeState(state.url, state.name, state.active)} permissions="change_state" />
+                    <ActiveButton
+                      active={state.active}
+                      onClick={() => modalChangeState(state.url, state.name, state.active)}
+                      permissions="change_state"
+                    />
                   </td>
                   <td>{state.attended ? t("ngen.true") : t("ngen.false")}</td>
 
@@ -106,7 +114,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
 
                   <td>
                     <CrudButton type="read" onClick={() => showModalState(state)} />
-                    <CrudButton type="edit" to="/states/edit" state={state} checkPermRoute />
+                    <CrudButton type="edit" to={`/states/edit/${itemNumber}`} checkPermRoute />
                     <CrudButton type="delete" onClick={() => modalDelete(state.name, state.url)} permissions="delete_state" />
                   </td>
                 </tr>
@@ -142,7 +150,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                             <span className="d-block m-t-5">{t("ngen.state.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <CrudButton type="edit" to="/states/edit" state={state} checkPermRoute />
+                            <CrudButton type="edit" to={`/states/edit/${id}`} checkPermRoute />
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>
@@ -171,7 +179,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                             </tr>
 
                             <tr>
-                            <td>{t("w.active")}</td>
+                              <td>{t("w.active")}</td>
                               <td>
                                 <ActiveButton active={state.active} />
                               </td>

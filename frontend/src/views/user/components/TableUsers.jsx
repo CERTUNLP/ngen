@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
-import { deleteUser, isActive } from "../../../api/services/users";
+import { deleteUser, isActive, isSuperuser, isStaff } from "../../../api/services/users";
 import CrudButton from "../../../components/Button/CrudButton";
 import ActiveButton from "../../../components/Button/ActiveButton";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
@@ -12,15 +12,22 @@ import { getGroup } from "../../../api/services/groups";
 import { getPermission } from "../../../api/services/permissions";
 import { getPriority } from "../../../api/services/priorities";
 import { useTranslation } from "react-i18next";
+import YesNoField from "components/Field/YesNoField";
+import { userIsSuperuser, userIsStaff } from "utils/permissions";
 
-function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }) {
+function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, setIsModify }) {
   const [remove, setRemove] = useState(false);
   const [deleteUsername, setDeleteUsername] = useState("");
+  const [id, setId] = useState("");
   const [deleteUrl, setDeleteUrl] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [user, setUser] = useState({});
   const [showState, setShowState] = useState(false);
+  const [showIsSuperuser, setShowIsSuperuser] = useState(false);
+  const [showIsStaff, setShowIsStaff] = useState(false);
   const [dataState, setDataState] = useState({});
+  const [dataIsSuperuser, setDataIsSuperuser] = useState({});
+  const [dataIsStaff, setDataIsStaff] = useState({});
   const [showAlert, setShowAlert] = useState(false);
   const { t } = useTranslation();
 
@@ -34,8 +41,8 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
 
   const handleDelete = () => {
     deleteUser(deleteUrl)
-      .then(() => {
-        window.location.href = "/users";
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         setShowAlert(true);
@@ -53,18 +60,20 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
   };
 
   const showModalUser = (user) => {
+    setId(user.url.split("/")[user.url.split("/").length - 2]);
     setUser(user);
     setModalShow(true);
   };
 
-  const showModalChangeState = (url, username, active) => {
-    setDataState({ url: url, username: username, state: active });
+  // State
+  const showModalChangeState = (url, username, value) => {
+    setDataState({ url: url, username: username, value: value });
     setShowState(true);
   };
   const changeState = () => {
-    isActive(dataState.url, !dataState.state)
-      .then(() => {
-        window.location.href = "/users";
+    isActive(dataState.url, !dataState.value)
+      .then((response) => {
+        setIsModify(response);
       })
       .catch((error) => {
         console.log(error);
@@ -74,6 +83,45 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
         setShowState(false);
       });
   };
+
+  // IsSuperuser
+  const showModalChangeIsSuperuser = (url, username, value) => {
+    setDataIsSuperuser({ url: url, username: username, value: value });
+    setShowIsSuperuser(true);
+  };
+  const changeIsSuperuser = () => {
+    isSuperuser(dataIsSuperuser.url, !dataIsSuperuser.value)
+      .then((response) => {
+        setIsModify(response);
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowAlert(true);
+      })
+      .finally(() => {
+        setShowIsSuperuser(false);
+      });
+  };
+
+  // IsStaff
+  const showModalChangeIsStaff = (url, username, value) => {
+    setDataIsStaff({ url: url, username: username, value: value });
+    setShowIsStaff(true);
+  };
+  const changeIsStaff = () => {
+    isStaff(dataIsStaff.url, !dataIsStaff.value)
+      .then((response) => {
+        setIsModify(response);
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowAlert(true);
+      })
+      .finally(() => {
+        setShowIsStaff(false);
+      });
+  };
+
   const resetShowAlert = () => {
     setShowAlert(false);
   };
@@ -114,27 +162,41 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
           </thead>
           <tbody>
             {users.map((user, index) => {
+              const parts = user.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return (
                 <tr key={index}>
                   <td>{user.username}</td>
                   <td>{user.email}</td>
                   <td>{user.first_name}</td>
                   <td>
-                    <ActiveButton active={user.is_active} onClick={() => showModalChangeState(user.url, user.username, user.is_active)} permissions="edit_user" />
+                    <ActiveButton
+                      active={user.is_active}
+                      onClick={() => showModalChangeState(user.url, user.username, user.is_active)}
+                      permissions="edit_user"
+                    />
                   </td>
                   <td>
-                    <ActiveButton active={user.is_superuser}/>
+                    <ActiveButton
+                      active={user.is_superuser}
+                      onClick={() => showModalChangeIsSuperuser(user.url, user.username, user.is_superuser)}
+                      disabled={!userIsSuperuser()}
+                    />
                   </td>
                   <td>
-                    <ActiveButton active={user.is_staff}/>
+                    <ActiveButton
+                      active={user.is_staff}
+                      onClick={() => showModalChangeIsStaff(user.url, user.username, user.is_staff)}
+                      disabled={!userIsStaff() && !userIsSuperuser()}
+                    />
                   </td>
                   <td>
-                    <ActiveButton active={user.is_network_admin}/>
+                    <YesNoField value={user.is_network_admin} />
                   </td>
                   <td>{user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}</td>
                   <td>
                     <CrudButton type="read" onClick={() => showModalUser(user)} />
-                    <CrudButton type="edit" to="/users/edit" state={user} checkPermRoute />
+                    <CrudButton type="edit" to={`/users/edit/${itemNumber}`} checkPermRoute />
                     <CrudButton type="delete" onClick={() => handleShow(user.username, user.url)} permissions="delete_user" />
                   </td>
                 </tr>
@@ -152,10 +214,28 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
               type="editState"
               component={t("ngen.user")}
               name={dataState.username}
-              state={dataState.state}
+              state={dataState.value}
               showModal={showState}
               onHide={() => setShowState(false)}
               ifConfirm={() => changeState()}
+            />
+            <ModalConfirm
+              type="editState"
+              component={t("ngen.user")}
+              name={dataIsSuperuser.username}
+              state={dataIsSuperuser.value}
+              showModal={showIsSuperuser}
+              onHide={() => setShowIsSuperuser(false)}
+              ifConfirm={() => changeIsSuperuser()}
+            />
+            <ModalConfirm
+              type="editState"
+              component={t("ngen.user")}
+              name={dataIsStaff.username}
+              state={dataIsStaff.value}
+              showModal={showIsStaff}
+              onHide={() => setShowIsStaff(false)}
+              ifConfirm={() => changeIsStaff()}
             />
             <Modal size="lg" show={modalShow} onHide={() => setModalShow(false)} aria-labelledby="contained-modal-title-vcenter" centered>
               <Modal.Body>
@@ -169,7 +249,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                             <span className="d-block m-t-5">{t("ngen.user.detail")}</span>
                           </Col>
                           <Col sm={12} lg={4}>
-                            <Link to="/users/edit" state={user}>
+                            <Link to={{ pathname: `/users/edit/${id}` }}>
                               <CrudButton type="edit" />
                             </Link>
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
@@ -253,7 +333,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                               <tr>
                                 <td> {t("ngen.user.is.network_admin")}</td>
                                 <td>
-                                  <ActiveButton active={user.is_network_admin} />
+                                  <YesNoField value={user.is_network_admin} />
                                 </td>
                               </tr>
                             ) : (
@@ -280,7 +360,11 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage }
                                   <Form.Control
                                     plaintext
                                     readOnly
-                                    defaultValue={user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}
+                                    defaultValue={
+                                      user.last_login
+                                        ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19)
+                                        : "No inicio sesion"
+                                    }
                                   />
                                 </td>
                               </tr>

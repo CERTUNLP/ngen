@@ -192,6 +192,9 @@ const TableCase = ({
               return null;
             }
 
+            const parts = caseItem.url.split("/");
+            let itemNumber = parts[parts.length - 2];
+
             return (
               <tr key={index}>
                 {!disableCheckbox && (
@@ -270,10 +273,10 @@ const TableCase = ({
                       }
                     />
                   ) : (
-                    <CrudButton type="read" to={basePath + "/cases/view"} state={caseItem.url} onClick={() => storageCaseUrl(caseItem.url)} />
+                    <CrudButton type="read" to={`${basePath}/cases/view/${itemNumber}`} />
                   )}
                   {!disableColumOption && editColum && (
-                    <CrudButton type="edit" to={basePath + "/cases/edit"} state={caseItem.url} checkPermRoute />
+                    <CrudButton type="edit" to={`${basePath}/cases/edit/${itemNumber}`} checkPermRoute />
                   )}
                   {!disableColumOption &&
                     deleteColum &&

@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 
 const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading }) => {
   const [report, setReport] = useState({});
+  const [id, setId] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const { t } = useTranslation();
@@ -40,8 +41,9 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
     setRemove(true);
   };
 
-  const showModalReport = (user) => {
-    setReport(user);
+  const showModalReport = (report) => {
+    setId(report.url.split("/")[report.url.split("/").length - 2]);
+    setReport(report);
     setModalShow(true);
   };
 
@@ -94,6 +96,8 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
           </thead>
           <tbody>
             {list.map((report, index) => {
+              const parts = report.url.split("/");
+              let itemNumber = parts[parts.length - 2];
               return (
                 <tr key={index}>
                   <td>{taxonomyNames[report.taxonomy]}</td>
@@ -104,7 +108,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
 
                   <td>
                     <CrudButton type="read" onClick={() => showModalReport(report)} />
-                    <CrudButton type="edit" to="/reports/edit" state={report} checkPermRoute />
+                    <CrudButton type="edit" to={`/reports/edit/${itemNumber}`} checkPermRoute />
                     <CrudButton type="delete" onClick={() => modalDelete(report.url)} permissions="delete_report" />
                   </td>
                 </tr>
@@ -132,7 +136,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                         <span className="d-block m-t-5">{t("ngen.report.detail")}</span>
                       </Col>
                       <Col sm={12} lg={4}>
-                        <CrudButton type="edit" to="/reports/edit" state={report} checkPermRoute />
+                        <CrudButton type="edit" to={`/reports/edit/${id}`} checkPermRoute />
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                       </Col>
                     </Row>

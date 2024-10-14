@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Button, Card, Col, Form, Row, Table } from "react-bootstrap";
 import CallBackendByName from "../../components/CallBackendByName";
 import CallBackendByType from "../../components/CallBackendByType";
@@ -16,15 +16,14 @@ import { getEvidence } from "../../api/services/evidences";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
 import { useTranslation } from "react-i18next";
 import PermissionCheck from "components/Auth/PermissionCheck";
+import { COMPONENT_URL } from "config/constant";
 
 const ReadEvent = ({ routeParams }) => {
-  const location = useLocation();
   const [body, setBody] = useState({});
-  const [eventItem, setEventItem] = useState(location?.state?.item || null);
-  const [navigationRow] = useState(localStorage.getItem("navigation"));
+  const [eventItem, setEventItem] = useState(null);
   const [buttonReturn] = useState(localStorage.getItem("button return"));
-
   const [evidences, setEvidences] = useState([]);
+  const [id] = useState(useParams());
   const [children, setChildren] = useState([]);
   const [childrenEvidences, setChildrenEvidences] = useState([]);
   const { t } = useTranslation();
@@ -34,16 +33,23 @@ const ReadEvent = ({ routeParams }) => {
   // };
 
   useEffect(() => {
-    if (!eventItem) {
-      const event = localStorage.getItem("event");
-      getEvent(event)
-        .then((responsive) => {
-          setBody(responsive.data);
-          setEventItem(responsive.data);
+    if (id.id) {
+      getEvent(COMPONENT_URL.event + id.id + "/")
+        .then((response) => {
+          setBody(response.data);
+          setEventItem(response.data);
+        })
+        .catch((error) => console.log(error));
+    } else {
+      const url = localStorage.getItem("event");
+      getEvent(url)
+        .then((response) => {
+          setBody(response.data);
+          setEventItem(response.data);
         })
         .catch((error) => console.log(error));
     }
-  }, [eventItem]);
+  }, [id]);
 
   useEffect(() => {
     const fetchAllEvidences = async () => {
@@ -77,7 +83,7 @@ const ReadEvent = ({ routeParams }) => {
           console.error("Error fetching children data:", error);
         }
       }
-    }
+    };
 
     // Llamar a la función para obtener los datos de los eventos hijos
     fetchAllChildren();
@@ -88,9 +94,7 @@ const ReadEvent = ({ routeParams }) => {
       if (children.length > 0) {
         try {
           // Esperar a que todas las promesas de getEvidence se resuelvan para cada evento hijo, cada evidencia
-          const responses = await Promise.all(
-            children.map((child) => Promise.all(child.evidence.map((url) => getEvidence(url)))
-            ));
+          const responses = await Promise.all(children.map((child) => Promise.all(child.evidence.map((url) => getEvidence(url)))));
           // Extraer los datos de las respuestas y filtrar los elementos vacíos
           const data = responses.map((response) => response[0]?.data).filter((evidence) => evidence !== undefined);
           // Actualizar el estado con los datos de todas las evidencias de los eventos hijos
@@ -333,8 +337,8 @@ const ReadEvent = ({ routeParams }) => {
           <Row>
             {body.artifacts !== undefined
               ? body.artifacts.map((url) => {
-                return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
-              })
+                  return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
+                })
               : ""}
           </Row>
         </Card.Body>
@@ -345,7 +349,15 @@ const ReadEvent = ({ routeParams }) => {
       <EvidenceCard evidences={childrenEvidences} disableDelete={true} disableDragAndDrop={true} title={t("ngen.evidences.children")} />
 
       {/* deshabilitamos la columna opciones para view y delete hasta que se corrija el uso de localstorage para la navegacion ya que no puede ir de un evento a otro sin usar href.location */}
-      <SmallEventTable list={children} disableLink={true} disableColumOption={true} disableUuid={false} disableColumnDelete={false} disableMerged={true} title={t("ngen.children")} />
+      <SmallEventTable
+        list={children}
+        disableLink={true}
+        disableColumOption={true}
+        disableUuid={false}
+        disableColumnDelete={false}
+        disableMerged={true}
+        title={t("ngen.children")}
+      />
 
       <Card>
         <Card.Header>

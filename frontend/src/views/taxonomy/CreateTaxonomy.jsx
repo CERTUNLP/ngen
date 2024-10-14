@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
-import Alert from "../../components/Alert/Alert";
 import { validateDescription, validateName, validateType, validateUnrequiredInput } from "../../utils/validators/taxonomy";
 import { getMinifiedTaxonomy, postTaxonomy } from "../../api/services/taxonomies";
 import SelectLabel from "../../components/Select/SelectLabel";
 import { useTranslation } from "react-i18next";
 import { getMinifiedTaxonomyGroups } from "../../api/services/taxonomyGroups";
 import DropdownState from "../../components/Dropdown/DropdownState";
+import CrudButton from "components/Button/CrudButton";
 
 const CreateTaxonomy = () => {
   const [type, setType] = useState("");
@@ -205,9 +205,7 @@ const CreateTaxonomy = () => {
                       {t("button.save")}
                     </Button>
                   )}
-                  <Button variant="info" href="/taxonomies">
-                    {t("button.cancel")}
-                  </Button>
+                  <CrudButton type="cancel" />
                 </Form.Group>
               </Form>
             </Card.Body>

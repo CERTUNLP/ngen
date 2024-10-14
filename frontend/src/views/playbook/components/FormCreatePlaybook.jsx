@@ -15,13 +15,15 @@ const FormCreatePlaybook = (props) => {
 
   useEffect(() => {
     //selected taxonomies: value-label
-    let listDefaultTaxonomies = props.allTaxonomies
-      .filter((elemento) => props.taxonomy.includes(elemento.value))
-      .map((elemento) => ({
-        value: elemento.value,
-        label: elemento.label
-      }));
-    setTaxonomiesDefaultValue(listDefaultTaxonomies);
+    if (props.taxonomy) {
+      let listDefaultTaxonomies = props.allTaxonomies
+        .filter((elemento) => props.taxonomy.includes(elemento.value))
+        .map((elemento) => ({
+          value: elemento.value,
+          label: elemento.label
+        }));
+      setTaxonomiesDefaultValue(listDefaultTaxonomies);
+    }
   }, [props.allTaxonomies, props.taxonomy]);
 
   //Multiselect

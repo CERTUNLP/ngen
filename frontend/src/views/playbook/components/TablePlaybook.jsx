@@ -14,6 +14,7 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
   const [modalShow, setModalShow] = useState(false);
 
   const [url, setUrl] = useState(null);
+  const [id, setId] = useState("");
   const [name, setName] = useState(null);
   const { t } = useTranslation();
 
@@ -35,6 +36,7 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
     getPlaybook(url)
       .then((response) => {
         setPlaybook(response.data);
+        setId(response.data.url.split("/")[response.data.url.split("/").length - 2]);
         setModalShow(true);
       })
       .catch((error) => {
@@ -77,6 +79,8 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
         </thead>
         <tbody>
           {list.map((book, index) => {
+            const parts = book.url.split("/");
+            let itemNumber = parts[parts.length - 2];
             return (
               <tr key={index}>
                 <td>{book.name}</td>
@@ -87,7 +91,7 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
                 </td>
                 <td>
                   <CrudButton type="read" onClick={() => showPlaybook(book.url)} />
-                  <CrudButton type="edit" to="/playbooks/edit" state={book} checkPermRoute />
+                  <CrudButton type="edit" to={`/playbooks/edit/${itemNumber}`} checkPermRoute />
                   <CrudButton type="delete" onClick={() => Delete(book.url, book.name)} permissions="delete_playbook" />
                 </td>
               </tr>
@@ -95,7 +99,7 @@ const TablePlaybook = ({ setIsModify, list, loading, taxonomyNames }) => {
           })}
         </tbody>
       </Table>
-      <ModalDetailPlaybook show={modalShow} playbook={playbook} onHide={() => setModalShow(false)} />
+      <ModalDetailPlaybook show={modalShow} playbook={playbook} onHide={() => setModalShow(false)} id={id} />
       <ModalConfirm
         type="delete"
         component="Playbook"

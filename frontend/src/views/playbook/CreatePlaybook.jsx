@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import { postPlaybook, putPlaybook } from "../../api/services/playbooks";
 import FormCreatePlaybook from "../playbook/components/FormCreatePlaybook";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import ListTask from "../task/ListTask";
-import Alert from "../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
+import CrudButton from "components/Button/CrudButton";
 
 const CreatePlaybook = () => {
   const [url, setUrl] = useState("");
@@ -84,10 +84,8 @@ const CreatePlaybook = () => {
           </Card>
 
           <ListTask urlPlaybook={url} sectionAddTask={sectionAddTask} setShowAlert={setShowAlert} />
-
-          <Button variant="primary" href="/playbooks">
-            {t("button.return")}
-          </Button>
+          
+          <CrudButton type="cancel" />
         </Col>
       </Row>
     </React.Fragment>

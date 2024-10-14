@@ -26,6 +26,9 @@ const validateSpaces = (text) => {
   return !/ /.test(text);
 };
 const validateSpace = (text) => {
+  if (text === undefined) {
+    return true;
+  }
   return text.trim() !== "";
 };
 
