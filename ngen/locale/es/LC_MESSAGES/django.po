@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-10 12:15+0000\n"
+"POT-Creation-Date: 2024-10-15 10:02+0000\n"
 "PO-Revision-Date: 2024-09-10 10:30+0000\n"
 "Last-Translator: Mateo Durante <mdurante@cert.unlp.edu.ar>\n"
 "Language-Team: en/es <soporte@cert.unlp.edu.ar>\n"
@@ -11,6 +11,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Summary"
+msgstr ""
 
 msgid "Domain"
 msgstr "Dominio"
@@ -238,6 +241,29 @@ msgstr "Recomendaciones"
 msgid "For more information"
 msgstr "Para obtener más información"
 
+msgid "Solved cases"
+msgstr "Casos resueltos"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "State"
+msgstr "Estado"
+
+msgid "Unsolved cases"
+msgstr "Casos no resueltos"
+
+#, python-format
+msgid "Hello %(contact_name)s"
+msgstr "Hola %(contact_name)s"
+
+#, python-format
+msgid "Here is a summary of your cases of the last %(days)s days."
+msgstr "Aquí tiene un resumen de sus casos de los últimos %(days)s días."
+
+msgid "Congratulation! You have <strong>0</strong> unsolved cases"
+msgstr "¡Felicidades! Tiene <strong>0</strong> casos no resueltos"
+
 msgid "Task create cases for matching events launched"
 msgstr "Tarea de creación de casos para eventos coincidentes lanzada"
 
@@ -392,11 +418,28 @@ msgstr ""
 "Agregar una ventana de tiempo opcional a la condición de fusión automática "
 "de eventos (0 deshabilitado)"
 
+msgid "Default TLP for summary"
+msgstr ""
+
+msgid "Default days for summary"
+msgstr ""
+
 msgid ""
 "Allow auto creation of taxonomies and groups by the slug on event creation"
 msgstr ""
 "Permitir la creación automática de taxonomías y grupos por el slug al crear "
 "un evento"
+
+#, fuzzy
+#~| msgid "Event Date"
+#~ msgid "Case Date"
+#~ msgstr "Fecha del evento"
+
+#~ msgid "You have 0 unsolved cases in the last days"
+#~ msgstr "No tiene casos no resueltos en los últimos días"
+
+#~ msgid "Hello ${name}"
+#~ msgstr "Hola ${name}"
 
 #~ msgid "No active account found with the given credentials"
 #~ msgstr ""
