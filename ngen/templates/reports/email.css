@@ -273,7 +273,8 @@ ul.sidebar li a h1, ul.sidebar li a h2, ul.sidebar li a h3, ul.sidebar li a h4, 
 
 /* This should also be a block element, so that it will fill 100% of the .container */
 .content {
-    padding: 8px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     max-width: 600px;
     margin: 0 auto;
     display: block;
@@ -324,16 +325,25 @@ ul.sidebar li a h1, ul.sidebar li a h2, ul.sidebar li a h3, ul.sidebar li a h4, 
 
 .right-header {
     display: flex;
-    width: 200px;
+    justify-content: flex-end;
+    align-items: center;
+    width: 380px;
     text-align: center;
 }
 
 .right-header h6 {
     /*background-color: #333; !* Color de fondo gris oscuro *!*/
-    padding: 2px 3px;
+    padding: 3px 10px;
     border-radius: 4px;
     margin: 1px;
-    background-color: black !important;
+    background-color: #000 !important;
+    height: 30px;
+    align-content: center;
+    /* white-space: nowrap;        */
+    /* overflow: hidden;           */
+    /* text-overflow: ellipsis;    */
+    max-width: 40%;           
+    /* min-width: 50%;             */
 }
 
 /* ------------------------------------------- 
@@ -369,4 +379,49 @@ ul.sidebar li a h1, ul.sidebar li a h2, ul.sidebar li a h3, ul.sidebar li a h4, 
     line-height: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+/* ------------------------------------- 
+        Sumary Table
+------------------------------------- */
+
+.tcenter {
+    text-align: center;
+}
+
+.tsummary {
+    width: 100%; 
+    border-collapse: collapse;
+    border-radius: 4px;
+}
+
+.tsummary thead th {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.tsummary tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
+
+.tsummary tr {
+  background-color: #f9f9f9;
+}
+
+.tsummary td {
+    padding: 5px;
+    border: 1px solid #ddd;
+}
+
+/* Estilo para la primera fila (<th>) en el encabezado de la tabla "tunsolved" */
+.tunsolved thead th {
+    background-color: #285ba7;
+    color: white;
+}
+
+/* Estilo para la primera fila (<th>) en el encabezado de la tabla "tsolved" */
+.tsolved thead th {
+    background-color: #259152;
+    color: white;
 }

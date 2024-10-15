@@ -1,0 +1,36 @@
+{% extends 'reports/content_base.html' %}
+{% load i18n ngen_tags %}
+
+{% language lang %}
+    {% block content_header %}
+        {% summary_days as days %}
+        <div class="content">
+            <h4>
+                {% blocktranslate trimmed with contact_name=contact.name %}
+                    Hello {{ contact_name }}
+                {% endblocktranslate %},
+            </h4>
+            <p>
+                {% blocktranslate trimmed %}
+                    Here is a summary of your cases of the last {{ days }} days.
+                {% endblocktranslate %}
+            </p>
+        </div>
+    {% endblock %}
+
+    {% block content_body %}
+        <div class="content">
+            {% if open_cases|length == 0 %}
+                <div style="margin-top: 5px; margin-bottom: 5px; padding: 15px; background-color: #f9f9f9; border-radius: 5px; border-left: 4px solid #2ecc71;">
+                    <h5 style="margin: 0; color: #27ae60;">{% translate 'Congratulation! You have <strong>0</strong> unsolved cases' %}</h5>
+                </div>
+            {% endif %}
+        </div>
+        <div class="content">
+            {% include "reports/summary_case_detail_open.html" with cases=open_cases %}
+        </div>
+        <div class="content">
+            {% include "reports/summary_case_detail_closed.html" with cases=closed_cases %}
+        </div>
+    {% endblock %}
+{% endlanguage %}

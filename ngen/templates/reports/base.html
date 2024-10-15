@@ -10,7 +10,12 @@
 </head>
 <body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
 {% block header %}
-    {% include 'reports/base_header.html' with tlp=case.tlp priority=case.priority %}
+    {# if case exists use it, otherwise use tlp and priority #}
+    {% if case %}
+        {% include 'reports/base_header.html' with tlp=case.tlp priority=case.priority %}
+    {% else %}
+        {% include 'reports/base_header.html' with tlp=tlp priority=priority %}
+    {% endif %}
 {% endblock %}
 {% block content %}
 {% endblock %}

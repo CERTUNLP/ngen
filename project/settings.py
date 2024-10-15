@@ -201,6 +201,7 @@ EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_PORT = os.environ.get("EMAIL_PORT")
 EMAIL_SENDER = os.environ.get("EMAIL_SENDER")
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
     "attend_cases": {
         "task": "ngen.tasks.attend_cases",
@@ -405,6 +406,15 @@ CONSTANCE_CONFIG = {
         gettext_lazy(
             "Add an optional time window to the auto merge events condition (0 disabled)"
         ),
+        int,
+    ),
+    "SUMMARY_TLP": (
+        os.environ.get("SUMMARY_TLP", "red"),
+        gettext_lazy("Default TLP for summary"),
+    ),
+    "SUMMARY_DAYS": (
+        int(os.environ.get("SUMMARY_DAYS", 7)),
+        gettext_lazy("Default days for summary"),
         int,
     ),
     "TAXONOMY_ALLOW_AUTO_CREATE": (

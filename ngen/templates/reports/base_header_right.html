@@ -2,14 +2,14 @@
 {% language lang %}
     <td align="right">
         <div class="right-header">
-            {% if tlp %}
-                <h6 style="color: {{ tlp.color }}; width: 50%">
-                    TLP{% if not html %}:{% endif %} <br> {{ tlp | upper }}
+            {% if priority %}
+                <h6 style="color: {{ priority.color }};">
+                    {% translate 'Priority' %}{% if not html %}:{% endif %} {% translate priority.name %}
                 </h6>
             {% endif %}
-            {% if priority %}
-                <h6 style="color: {{ priority.color }}; width: 50%">
-                    {% translate 'Priority' %}{% if not html %}:{% endif %} <br> {% translate priority.name %}
+            {% if tlp %}
+                <h6 style="color: {{ tlp.color }};">
+                    TLP:{{ tlp | upper }}
                 </h6>
             {% endif %}
         </div>

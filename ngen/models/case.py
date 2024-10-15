@@ -330,7 +330,7 @@ class Case(
     def subject(self, title: str = None) -> str:
         return "[%s][TLP:%s][ID:%s] %s" % (
             config.TEAM_NAME,
-            gettext_lazy(self.tlp.name),
+            self.tlp.name.upper(),
             self.uuid,
             title,
         )
