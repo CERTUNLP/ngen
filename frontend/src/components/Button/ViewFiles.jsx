@@ -28,12 +28,6 @@ const ViewFiles = (props) => {
   const [name, setName] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
-  const openFile = () => {
-    if (props.file?.url) {
-      window.open(props.file?.file, props.index);
-    }
-  };
-
   const deleteFile = (name) => {
     setModalDelete(true);
     setName(name);
@@ -83,7 +77,12 @@ const ViewFiles = (props) => {
       <Card className="file-card">
         <Card.Body>
           <div className="file-info">
-            <div onClick={props.file?.url ? openFile : null} className={`file-details ${props.file?.url ? "" : "disabled"}`}>
+            <a
+              href={props.file?.file || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`file-details ${props.file?.url ? "" : "disabled"}`}
+            >
               <i className={`${fileIcon} file-icon`}></i>
               <div>
                 <p className="file-name">
@@ -104,7 +103,7 @@ const ViewFiles = (props) => {
                     : t("ngen.not.created.in.system")}
                 </p>
               </div>
-            </div>
+            </a>
             {props.disableDelete ? (
               ""
             ) : (
