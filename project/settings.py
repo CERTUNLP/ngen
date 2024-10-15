@@ -505,8 +505,12 @@ if ELASTIC_ENABLED:
     INSTALLED_APPS += ["django_elasticsearch_dsl", "django_elasticsearch_dsl_drf"]
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=15),
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=os.environ.get("JWT_ACCESS_TOKEN_LIFETIME", 5)
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        minutes=os.environ.get("JWT_REFRESH_TOKEN_LIFETIME", 60)
+    ),
     "ROTATE_REFRESH_TOKENS": True,
     # Blacklist refresh tokens could be a logging problem on refresh token rotation if they are parallel requests
     "BLACKLIST_AFTER_ROTATION": False,
