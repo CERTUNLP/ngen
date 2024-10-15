@@ -414,7 +414,9 @@ CONSTANCE_CONFIG = {
     ),
     "SUMMARY_DAYS": (
         int(os.environ.get("SUMMARY_DAYS", 7)),
-        gettext_lazy("Default days for summary"),
+        gettext_lazy(
+            "Default days for summary. This must be equal to the periodic task schedule created"
+        ),
         int,
     ),
     "TAXONOMY_ALLOW_AUTO_CREATE": (

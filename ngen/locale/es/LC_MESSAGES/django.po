@@ -421,8 +421,8 @@ msgstr ""
 msgid "Default TLP for summary"
 msgstr ""
 
-msgid "Default days for summary"
-msgstr ""
+msgid "Default days for summary. This must be equal to the periodic task schedule created"
+msgstr "Días predeterminados para el resumen. Esto debe ser igual al horario de la tarea periódica creada"
 
 msgid ""
 "Allow auto creation of taxonomies and groups by the slug on event creation"
