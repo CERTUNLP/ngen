@@ -119,7 +119,11 @@ class Communication:
                     "tlp": tlp,
                 },
             ),
-            {"to": [contact.username], "from": config.EMAIL_SENDER},
+            {
+                "to": [contact.username],
+                "from": config.EMAIL_SENDER,
+                "bcc": [config.TEAM_EMAIL],
+            },
         )
 
 
