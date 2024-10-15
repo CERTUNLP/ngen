@@ -202,7 +202,7 @@ const EditEvent = ({routeParams}) => {
       //f.append("date", fecha.toISOString())
       formDataEvent.append("priority", body.priority);
       formDataEvent.append("tlp", body.tlp);
-      //formDataEvent.append("taxonomy", body.taxonomy)
+      formDataEvent.append("taxonomy", body.taxonomy)
       if (body.artifacts.length > 0) {
         body.artifacts.forEach((item) => {
           formDataEvent.append("artifacts", item);
