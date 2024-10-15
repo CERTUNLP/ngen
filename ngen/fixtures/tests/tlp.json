@@ -5,14 +5,14 @@
     "fields": {
       "created": "2019-09-04T13:06:05Z",
       "modified": "2019-09-04T13:06:05Z",
-      "slug": "white",
+      "slug": "clear",
       "color": "#FFFFFF",
-      "when": "Sources may use TLP:WHITE when information carries minimal or no foreseeable risk of misuse, in accordance with applicable rules and procedures for public release.\t",
-      "why": "Subject to standard copyright rules, TLP:WHITE information may be distributed without restriction.\n",
-      "information": "TLP:WHITE",
+      "when": "Sources may use TLP:CLEAR when information carries minimal or no foreseeable risk of misuse, in accordance with applicable rules and procedures for public release.\t",
+      "why": "Subject to standard copyright rules, TLP:CLEAR information may be distributed without restriction.\n",
+      "information": "TLP:CLEAR",
       "description": "Disclosure is not limited.",
       "encrypt": false,
-      "name": "White",
+      "name": "Clear",
       "code": 0
     }
   },
@@ -44,7 +44,7 @@
       "when": "Sources may use TLP:AMBER when information requires support to be effectively acted upon, yet carries risks to privacy, reputation, or operations if shared outside of the organizations involved. \t",
       "why": "Recipients may only share TLP:AMBER information with members of their own organization, and with clients or customers who need to know the information to protect themselves or prevent further harm. Sources are at liberty to specify additional intended limits of the sharing: these must be adhered to.\n",
       "information": "TLP:AMBER",
-      "description": "Limited disclosure, restricted to participants organizations.",
+      "description": "Limited disclosure, restricted to participants organizations and its clients.",
       "encrypt": false,
       "name": "Amber",
       "code": 2
@@ -53,6 +53,23 @@
   {
     "model": "ngen.tlp",
     "pk": 4,
+    "fields": {
+      "created": "2024-09-04T13:06:05Z",
+      "modified": "2024-09-04T13:06:05Z",
+      "slug": "amber_strict",
+      "color": "#ffc000",
+      "when": "Sources may use TLP:AMBER+STRICT when information requires support to be effectively acted upon, yet carries risks to privacy, reputation, or operations inside the organizations involved. \t",
+      "why": "Recipients may only share TLP:AMBER+STRICT information with members of their own organization only, who need to know the information to protect themselves or prevent further harm. Sources are at liberty to specify additional intended limits of the sharing: these must be adhered to.\n",
+      "information": "TLP:AMBER+STRICT",
+      "description": "Limited disclosure, restricted to participants organizations only.",
+      "encrypt": false,
+      "name": "Amber+Strict",
+      "code": 3
+    }
+  },
+  {
+    "model": "ngen.tlp",
+    "pk": 5,
     "fields": {
       "created": "2019-09-04T13:06:05Z",
       "modified": "2019-09-04T13:06:05Z",
@@ -64,7 +81,7 @@
       "description": "Not for disclosure, restricted to participants only.",
       "encrypt": true,
       "name": "Red",
-      "code": 3
+      "code": 4
     }
   }
 ]
