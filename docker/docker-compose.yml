@@ -40,7 +40,7 @@ services:
   ngen-celery-worker:
     image: ngen-django:latest
     restart: on-failure
-    command: celery -A project worker -l debug
+    command: celery -A project worker -E -l debug
     volumes:
       - ../:/code
     env_file:
