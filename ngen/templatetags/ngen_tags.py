@@ -4,6 +4,7 @@ from django import template
 from django.template import Template, Context
 
 from project import settings
+from constance import config
 
 register = template.Library()
 
@@ -17,6 +18,10 @@ def render_report_content(html, event):
 def mail_logo():
     return encode_static(settings.LOGO_WIDE_PATH)
 
+
+@register.simple_tag
+def summary_days():
+    return config.SUMMARY_DAYS
 
 @register.simple_tag
 def encode_static(path, encoding="base64", file_type="image"):

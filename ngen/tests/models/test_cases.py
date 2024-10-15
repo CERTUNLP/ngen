@@ -37,7 +37,7 @@ class CaseTest(TestCase):
             priority=Priority.objects.get(slug="critical"),
             event_taxonomy=Taxonomy.objects.get(slug="blacklist"),
             event_feed=Feed.objects.get(slug="csirtamericas"),
-            case_tlp=Tlp.objects.get(slug="white"),
+            case_tlp=Tlp.objects.get(slug="clear"),
             case_state=State.objects.get(slug="staging"),
         )
         cls.template2 = CaseTemplate.objects.create(
@@ -103,6 +103,6 @@ class CaseTest(TestCase):
                 priority=Priority.objects.get(slug="critical"),
                 event_taxonomy=Taxonomy.objects.get(slug="blacklist"),
                 event_feed=Feed.objects.get(slug="csirtamericas"),
-                case_tlp=Tlp.objects.get(slug="white"),
+                case_tlp=Tlp.objects.get(slug="clear"),
                 case_state=State.objects.get(slug="staging"),
             )

@@ -34,7 +34,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
         cls.feed_1 = Feed.objects.get(slug="csirtamericas")
         cls.feed_2 = Feed.objects.get(slug="bro")
         cls.feed_3 = Feed.objects.get(slug="censys")
-        cls.tlp_1 = Tlp.objects.get(slug="white")
+        cls.tlp_1 = Tlp.objects.get(slug="clear")
         cls.tlp_2 = Tlp.objects.get(slug="green")
         cls.tlp_3 = Tlp.objects.get(slug="amber")
         cls.priority_1 = Priority.objects.get(slug="critical")

@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy
 
 import ngen.models
 from ngen import cortex
+from ngen.models.announcement import Communication
 from ngen.services.contact_lookup import ContactLookupService
 
 
@@ -70,6 +71,48 @@ def case_renotification():
         case.communicate(
             gettext_lazy("Renotification: New Case"), "reports/case_report.html"
         )
+
+
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
+def contact_summary(contacts=None, tlp=None):
+    """
+    Send summary of open cases to all network admins
+    """
+    if contacts is None:
+        contacts = ngen.models.Contact.objects.filter(type="email")
+
+    tlp = tlp.lower() if tlp else config.SUMMARY_TLP.lower()
+    tlp_obj = ngen.models.Tlp.objects.get(slug=tlp) if tlp and tlp != "none" else None
+
+    for contact in contacts:
+        # Get all open cases for the contact
+        open_cases = ngen.models.Case.objects.filter(
+            state__attended=True, events__network__contacts=contact
+        ).prefetch_related("events")
+        list_open_cases = [
+            {"case": case, "events": case.events.filter(network__contacts=contact)}
+            for case in open_cases
+        ]
+
+        # Get all closed cases for the contact of last week
+        closed_cases = ngen.models.Case.objects.filter(
+            state__solved=True,
+            events__network__contacts=contact,
+            solve_date__gte=timezone.now()
+            - timezone.timedelta(days=config.SUMMARY_DAYS),
+        ).prefetch_related("events")
+        list_closed_cases = [
+            {"case": case, "events": case.events.filter(network__contacts=contact)}
+            for case in closed_cases
+        ]
+
+        if open_cases or closed_cases:
+            Communication.communicate_contact_summary(
+                contact,
+                list_open_cases,
+                list_closed_cases,
+                tlp_obj,
+            )
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)

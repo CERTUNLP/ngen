@@ -7,6 +7,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
+from django.utils.translation import gettext_lazy
 from django_bleach.models import BleachField
 from model_utils import Choices
 
@@ -26,8 +27,8 @@ class Communication:
         subject,
         content: dict,
         recipients: dict[str, list],
-        attachments: list[dict] = None,
-        extra_headers: dict = None,
+        attachments: list[dict] = [],
+        extra_headers: dict = {},
     ):
         if recipients["to"]:
             email = EmailMultiAlternatives(
@@ -35,8 +36,8 @@ class Communication:
                 content["text"],
                 recipients["from"],
                 recipients["to"],
-                bcc=recipients["bcc"],
-                cc=recipients["cc"],
+                bcc=recipients.get("bcc", []),
+                cc=recipients.get("cc", []),
             )
             email.attach_alternative(content["html"], "text/html")
             email.extra_headers.update(extra_headers)
@@ -95,6 +96,31 @@ class Communication:
     @property
     def email_attachments(self) -> list[dict]:
         raise NotImplementedError
+
+    @staticmethod
+    def communicate_contact_summary(contact, open_cases, closed_cases, tlp):
+        """
+        Weekly cases summary communication
+        """
+        subject = "[%s][TLP:%s] %s" % (
+            config.TEAM_NAME,
+            tlp.name.upper(),
+            gettext_lazy("Summary"),
+        )
+        template = "reports/summary_contact.html"
+        Communication.send_mail(
+            subject,
+            Communication.render_template(
+                template,
+                extra_params={
+                    "contact": contact,
+                    "open_cases": open_cases,
+                    "closed_cases": closed_cases,
+                    "tlp": tlp,
+                },
+            ),
+            {"to": [contact.username], "from": config.EMAIL_SENDER},
+        )
 
 
 class Announcement(

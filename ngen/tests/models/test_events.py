@@ -36,12 +36,12 @@ class EventTest(TestCase):
         )
         cls.feed = Feed.objects.create(slug="shodan", name="Shodan")
         cls.tlp = Tlp.objects.create(
-            slug="white",
+            slug="clear",
             when="Given some circumstance",
             why="Some reason",
             information="Some information",
             description="Some description",
-            name="White",
+            name="Clear",
             code=0,
         )
         cls.priority = Priority.objects.create(name="Medium", severity=3)
