@@ -1,6 +1,7 @@
 import re
 from typing import Union, List, Dict
 from django.conf import settings
+from django.db import transaction
 from ngen.models.email_message import EmailMessage as EmailMessageModel
 from ngen.tasks import async_send_email
 
@@ -84,6 +85,7 @@ class EmailHandler:
         recipients: Union[List[str], List[Dict[str, str]]],
         subject: str,
         body: str,
+        html_template=None,
         in_reply_to: EmailMessageModel = None,
     ):
         """
@@ -137,6 +139,8 @@ class EmailHandler:
             body=body,
         )
 
-        async_send_email.delay(email_message.id)
+        transaction.on_commit(
+            lambda: async_send_email.delay(email_message.id, html_template)
+        )
 
         return email_message
