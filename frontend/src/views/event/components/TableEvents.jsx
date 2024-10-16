@@ -43,7 +43,8 @@ const TableEvents = ({
   disableDateModified,
   disableOrdering,
   disableColumnCase,
-  basePath = ""
+  basePath = "",
+  setRefresh
 }) => {
   const [deleteUrl, setDeleteUrl] = useState();
   const [remove, setRemove] = useState();
@@ -77,8 +78,9 @@ const TableEvents = ({
 
   const handleDelete = () => {
     deleteEvent(deleteUrl)
-      .then(() => {
-        window.location.href = basePath + "/events";
+      .then((response) => {
+        setRefresh(response);
+        setRemove(false);
       })
       .catch((error) => {
         console.log(error);

@@ -526,6 +526,7 @@ const ListEvent = ({ routeParams }) => {
             disbleDateModified={false}
             disableDate={false}
             basePath={routeParams.basePath}
+            setRefresh={setRefresh}
           />
         </Card.Body>
         <Card.Footer>
