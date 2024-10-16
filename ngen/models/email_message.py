@@ -4,7 +4,6 @@ EmailMessage model
 
 from email.utils import make_msgid
 from django.db import models
-from django.db.models import Q
 from ngen.models.common.mixins import AuditModelMixin
 
 
@@ -40,4 +39,4 @@ class EmailMessage(AuditModelMixin):
         """
         Get all messages of a given root message id
         """
-        return cls.objects.filter(root_message_id=root_message_id).order_by("date")
+        return cls.objects.filter(root_message_id=root_message_id).order_by("created")

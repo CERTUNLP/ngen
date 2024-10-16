@@ -311,7 +311,7 @@ class Case(
         return contacts
 
     def communicate_new(self):
-        self.communicate(gettext_lazy("New case"), "reports/case_report.html")
+        self.communicate_v2(gettext_lazy("New case"), "reports/case_report.html")
 
     def communicate_close(self):
         self.communicate(gettext_lazy("Case closed"), "reports/case_report.html")
@@ -325,7 +325,7 @@ class Case(
         self.communicate(gettext_lazy(title), "reports/case_report.html")
 
     def communicate_new_open(self):
-        self.communicate(gettext_lazy("Case opened"), "reports/case_report.html")
+        self.communicate_v2(gettext_lazy("Case opened"), "reports/case_report.html")
 
     def communicate_update(self):
         self.communicate(
@@ -383,6 +383,39 @@ class Case(
             )
         # Increment notification_count
         # TODO: make communication a class with objects that can be audited
+        self.notification_count += 1
+
+    def communicate_v2(self, title: str, template: str):
+        """
+        Communicate V2
+
+        :param title: title of the email
+        :param template: template to be rendered
+        """
+        if self._temp_events:
+            self.events.add(*self._temp_events)
+        for event in self.events.all():
+            if not event.communication_channels.filter(
+                communication_types__type=ngen.models.CommunicationType.TYPE_CHOICES.affected
+            ).exists():
+                ngen.models.CommunicationChannel.create_channel_with_affected(
+                    channelable=event,
+                    additional_contacts=[self.assigned_email, self.team_email],
+                )
+
+            template_params = self.template_params
+            template_params.update({"events": [event]})
+
+            event_channels = event.communication_channels.all()
+
+            for channel in event_channels:
+                channel.communicate(
+                    title=self.subject(title),
+                    template=self.render_template(
+                        template, extra_params=template_params
+                    ),
+                )
+
         self.notification_count += 1
 
     def get_internal_contacts(self):

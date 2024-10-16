@@ -1,9 +1,10 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 from model_utils import Choices
 
+from ngen.mailer.email_handler import EmailHandler
 from ngen.models import ChannelableMixin, AuditModelMixin
 
 
@@ -82,9 +83,47 @@ class CommunicationChannel(AuditModelMixin):
         CommunicationType, through="CommunicationChannelTypeRelation"
     )
 
-    additional_contacts = models.ManyToManyField(
-        "ngen.Contact", through="CommunicationChannelContactRelation"
-    )
+    additional_contacts = models.JSONField(default=list)
+
+    @classmethod
+    def create_custom_channel(
+        cls,
+        channelable=None,
+        channel_name: str = None,
+        channel_type: list = None,
+        additional_contacts=None,
+    ):
+        """
+        Method to create a communication channel of any type
+        """
+        if not channel_type:
+            raise ValueError("At least one channel type is required")
+
+        communication_channel = cls.objects.create(
+            name=channel_name,
+            channelable=channelable,
+            additional_contacts=additional_contacts,
+        )
+        communication_types = [
+            CommunicationType.objects.get_or_create(type=type)[0] for type in channel_type
+        ]
+        communication_channel.communication_types.add(*communication_types)
+
+        return communication_channel
+
+    @classmethod
+    def create_channel_with_affected(
+        cls, channelable=None, channel_name=None, additional_contacts=None
+    ):
+        """
+        Method to create a communication channel with affected contacts
+        """
+        return cls.create_custom_channel(
+            channelable=channelable,
+            channel_name=channel_name or "Affected Communication Channel",
+            channel_type=[CommunicationType.TYPE_CHOICES.affected],
+            additional_contacts=additional_contacts,
+        )
 
     def fetch_contacts(self):
         """
@@ -96,6 +135,46 @@ class CommunicationChannel(AuditModelMixin):
             contacts_by_type[communication_type.type] = contacts_dict
 
         return contacts_by_type
+
+    def get_messages(self):
+        """
+        Get all messages sent in the channel
+        """
+        if not self.message_id:
+            return None
+
+        return models.EmailMessage.get_message_thread_by(self.message_id)
+
+    def get_last_message(self):
+        """
+        Get the last message sent in the channel
+        """
+        return self.get_messages().last()
+
+    @transaction.atomic
+    def communicate(self, title, body=None, template=None):
+        """
+        Method to send an email in a communication channel
+        """
+        if not body and not template:
+            raise ValueError("Body or template is required")
+
+        # Block the channel to prevent concurrent writes leaving inconsistent states
+        channel = CommunicationChannel.objects.select_for_update().get(id=self.id)
+
+        email_handler = EmailHandler()
+
+        sent_email = email_handler.send_email(
+            recipients=self.fetch_contacts(),
+            subject=title,
+            body=body or template["text"],
+            html_template=template["html"],
+            in_reply_to=self.get_last_message() if channel.message_id else None,
+        )
+
+        if not channel.message_id:
+            channel.message_id = sent_email.message_id
+            channel.save()
 
 
 class CommunicationChannelTypeRelation(AuditModelMixin):
@@ -122,29 +201,3 @@ class CommunicationChannelTypeRelation(AuditModelMixin):
         """
 
         unique_together = ["communication_channel", "communication_type"]
-
-
-class CommunicationChannelContactRelation(AuditModelMixin):
-    """
-    CommunicationChannelContactRelation model, represents the many-to-many relationship
-    between a Communication Channel and a Contact
-    """
-
-    communication_channel = models.ForeignKey(
-        CommunicationChannel,
-        on_delete=models.CASCADE,
-        related_name="communication_channel_contact_relations",
-    )
-
-    contact = models.ForeignKey(
-        "ngen.Contact",
-        on_delete=models.CASCADE,
-        related_name="communication_channel_contact_relations",
-    )
-
-    class Meta:
-        """
-        Unique tuples for communication channel and contact
-        """
-
-        unique_together = ["communication_channel", "contact"]

@@ -5,7 +5,7 @@ from constance import config
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends.smtp import EmailBackend
 from django.conf import settings
 
@@ -220,7 +220,7 @@ def retest_event_kintun(event):
 
 
 @shared_task
-def async_send_email(email_message_id: int):
+def async_send_email(email_message_id: int, html_template=None):
     """
     Task to send an email asynchronously.
 
@@ -257,13 +257,16 @@ def async_send_email(email_message_id: int):
             headers["References"] = " ".join(email_message.references)
             headers["In-Reply-To"] = email_message.parent_message_id
 
-        email = EmailMessage(
+        email = EmailMultiAlternatives(
             subject=email_message.subject,
             body=email_message.body,
             from_email=email_message.senders[0]["email"],
             to=[recipient["email"] for recipient in email_message.recipients],
             connection=email_connection,
         )
+
+        if html_template:
+            email.attach_alternative(html_template, "text/html")
 
         email.extra_headers = headers
 
