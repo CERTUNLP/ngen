@@ -246,7 +246,7 @@ const Profile = () => {
                       <td>{t("w.groups")}</td>
                       <td>
                         {Object.values(profile.groups).map((groupItem, index) => {
-                          return <Form.Control plaintext readOnly defaultValue={groups?.find((item) => item.url === groupItem).name} key={index} />;
+                          return <Form.Control plaintext readOnly defaultValue={groups?.find((item) => item.url === groupItem)?.name} key={index} />;
                         })}
                       </td>
                     </tr>
@@ -258,7 +258,7 @@ const Profile = () => {
                       <td>{t("w.permissions")}</td>
                       <td>
                         {Object.values(profile.user_permissions).map((permissionItem, index) => {
-                          return <Form.Control plaintext readOnly defaultValue={permissions?.find((item) => item.url === permissionItem).name} key={index} />;
+                          return <Form.Control plaintext readOnly defaultValue={permissions?.find((item) => item.url === permissionItem)?.name} key={index} />;
                         })}
                       </td>
                     </tr>
