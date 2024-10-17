@@ -233,7 +233,7 @@ const Profile = () => {
                         <Form.Control
                           plaintext
                           readOnly
-                          defaultValue={priorities?.find((priority) => priority.url === profile.priority).name}
+                          defaultValue={priorities?.find((priority) => priority.url === profile.priority)?.name}
                         />
                       </td>
                     </tr>
