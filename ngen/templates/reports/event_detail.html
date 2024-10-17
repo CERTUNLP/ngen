@@ -17,6 +17,11 @@
         <small class="lead"><strong>{% translate 'Event Date' %}:</strong>
             {{ event.date | date:"Y-m-d H:i:s" }} UTC</small>
         <br>
+        {% if event.notes %}
+            <small class="lead"><strong>{% translate 'Notes' %}:</strong>
+                <div style="word-wrap: break-word;">{{ event.notes }}</div></small>
+            <br>
+        {% endif %}
     {% endlanguage %}
 
     {% get_matching_report event.taxonomy lang|default:config.NGEN_LANG as reports %}

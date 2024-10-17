@@ -226,6 +226,9 @@ msgstr "Recursos afectados"
 msgid "Event Date"
 msgstr "Fecha del evento"
 
+msgid "Notes"
+msgstr "Notas"
+
 msgid "Problem"
 msgstr "Problema"
 
