@@ -261,8 +261,8 @@ const TableEvents = ({
                     <td>
                       <LetterFormat
                         useBadge={true}
-                        stringToDisplay={tlpNames && event?.tlp ? tlpNames[event.tlp].name : ""}
-                        color={tlpNames && event?.tlp ? tlpNames[event.tlp].color : ""}
+                        stringToDisplay={tlpNames && event?.tlp ? tlpNames[event.tlp]?.name : ""}
+                        color={tlpNames && event?.tlp ? tlpNames[event.tlp]?.color : ""}
                       />
                     </td>
                   )}
