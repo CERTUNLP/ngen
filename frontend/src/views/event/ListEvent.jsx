@@ -9,7 +9,6 @@ import FilterSelect from "../../components/Filter/FilterSelect";
 import FilterSelectWithDefault from "../../components/Filter/FilterSelectWithDefault";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
-import Alert from "../../components/Alert/Alert";
 import ButtonFilter from "../../components/Button/ButtonFilter";
 import { patchCase } from "../../api/services/cases";
 //filters
@@ -258,6 +257,7 @@ const ListEvent = ({ routeParams }) => {
       // este if esta porque si no hay cambios en el WordToSearch
       //haciendo que no se vuelva a ejecutar el useEffect y qeu al setearce setloading en true quede en un bucle infinito
       setFilterDate(true);
+      setCurrentPage(1);
       setLoading(true);
     }
   };
@@ -269,6 +269,7 @@ const ListEvent = ({ routeParams }) => {
       // este if esta porque si no hay cambios en el WordToSearch
       //haciendo que no se vuelva a ejecutar el useEffect y qeu al setearce setloading en true quede en un bucle infinito
       setFilterDate(true);
+      setCurrentPage(1);
       setLoading(true);
     }
   };
@@ -488,6 +489,7 @@ const ListEvent = ({ routeParams }) => {
                     currentFilter={caseIsNull}
                     setLoading={setLoading}
                     placeholder={t("ngen.filter_by") + " " + t("ngen.case_one")}
+                    setCurrentPage={setCurrentPage}
                   />
                 </Col>
                 <Col sm={4} lg={4}>
@@ -500,6 +502,7 @@ const ListEvent = ({ routeParams }) => {
                     value={valueParentIsNull}
                     setLoading={setLoading}
                     placeholder={t("ngen.filter_by") + " " + t("ngen.event.parent")}
+                    setCurrentPage={setCurrentPage}
                   />
                 </Col>
               </Row>
