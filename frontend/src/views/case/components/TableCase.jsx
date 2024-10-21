@@ -7,6 +7,7 @@ import Ordering from "../../../components/Ordering/Ordering";
 import LetterFormat from "../../../components/LetterFormat";
 import ListDomain from "./ListDomain";
 import { useTranslation } from "react-i18next";
+import UuidField from "components/Field/UuidField";
 
 const TableCase = ({
   setIfModify,
@@ -41,7 +42,7 @@ const TableCase = ({
   disableUuid,
   disableDateModified,
   disableEvents,
-  basePath=""
+  basePath = ""
 }) => {
   const [url, setUrl] = useState(null);
   const [modalDelete, setModalDelete] = useState(false);
@@ -49,7 +50,7 @@ const TableCase = ({
 
   //checkbox
   const [isCheckAll, setIsCheckAll] = useState(false);
-
+  const [showFullUuid, setShowFullUuid] = useState(false);
   const [list, setList] = useState([]);
 
   const { t } = useTranslation();
@@ -103,6 +104,10 @@ const TableCase = ({
   };
 
   //Checkbox
+  const handleToggleUuidDisplay = () => {
+    setShowFullUuid(!showFullUuid);
+  };
+
   const handleSelectAll = () => {
     setIsCheckAll(!isCheckAll);
     setSelectedCases(list.filter((item) => !item.blocked).map((li) => li.url));
@@ -165,7 +170,14 @@ const TableCase = ({
                 letterSize={letterSize}
               />
             )}
-            {!disableUuid && <th style={letterSize}> {t("ngen.uuid")} </th>}
+            {!disableUuid && (
+              <th style={{ textAlign: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ marginRight: "8px" }}>{t("ngen.uuid")}</span>
+                  <Form.Check type="checkbox" checked={showFullUuid} onChange={handleToggleUuidDisplay} />
+                </div>
+              </th>
+            )}
             {!disableName && <th style={letterSize}> {t("ngen.name_one")} </th>}
             {!disablePriority && (
               <Ordering
@@ -237,7 +249,11 @@ const TableCase = ({
 
                 {!disableDateModified && <td>{caseItem ? caseItem.modified.slice(0, 10) + " " + caseItem.modified.slice(11, 19) : ""}</td>}
 
-                {!disableUuid && <td>{caseItem.uuid}</td>}
+                {!disableUuid && (
+                  <td>
+                    <UuidField value={caseItem.uuid} fulltext={showFullUuid} />
+                  </td>
+                )}
 
                 {!disableName && <td>{caseItem.name || "-"}</td>}
 
