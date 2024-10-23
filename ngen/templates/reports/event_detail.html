@@ -19,7 +19,7 @@
         <br>
         {% if event.notes %}
             <small class="lead"><strong>{% translate 'Notes' %}:</strong>
-                <div style="word-wrap: break-word;">{{ event.notes | safe }}</div>
+                <div style="word-wrap: break-word;">{{ event.notes | render_report_content:event }}</div>
             <br>
         {% endif %}
     {% endlanguage %}
