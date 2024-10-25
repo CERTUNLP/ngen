@@ -1,6 +1,6 @@
 <br><br>
 <div align="center">
-	<img src="https://github.com/AgusEchaniz/Docs/blob/63037f4808477c88f0848bda1115dc056b9337c3/images/image9.png" alt="Logo" width="300" align="center" />
+	<img src="./images/image9.png" alt="Logo" width="300" align="center" />
 </div>
 <br><br>
 
@@ -195,9 +195,9 @@ La ventana de resolución, solve window, está dada por la fecha de atención de
 <div align="center">
 	<img src="./images/image2.png" alt="A tiempo"  align="center" />
 	<br>
-	<img src="https://github.com/AgusEchaniz/Docs/blob/63037f4808477c88f0848bda1115dc056b9337c3/images/image1.png" alt="Adelantados" align="center" />
+	<img src="./images/image1.png" alt="Adelantados" align="center" />
 	<br>
-	<img src="https://github.com/AgusEchaniz/Docs/blob/63037f4808477c88f0848bda1115dc056b9337c3/images/image6.png" alt="Retrasados" align="center" />
+	<img src="./images/image6.png" alt="Retrasados" align="center" />
 </div>
 
 El sistema permite calcular el tiempo que transcurre desde que se debería haber empezado a atender el caso y realmente se empieza a atender. Esta ventana de tiempo sin atender, unattend window, se calcula de la siguiente forma: a la suma de la fecha en que se creó el caso con la fecha de atención se le resta la ventana de atención (unattend window: (case:created \+ attend\_date) \- attend window). 
@@ -205,7 +205,7 @@ El sistema permite calcular el tiempo que transcurre desde que se debería haber
 El sistema permite calcular el tiempo que transcurre desde que se debería haber resuelto el caso y realmente se resuelve. Esta ventana de tiempo sin resolver, unsolve window, se calcula de la siguiente forma: a la suma de la fecha en que se atendió el caso con la fecha de resolución se le resta la ventana de resolución (unsolve window: (case:attend\_date \+ solve\_date) \- solve window).    
 
 <div align="center">
-	<img src="https://github.com/AgusEchaniz/Docs/blob/63037f4808477c88f0848bda1115dc056b9337c3/images/image8.png" alt="Retraso"  align="center" />
+	<img src="./images/image8.png" alt="Retraso"  align="center" />
 </div>
 
 ## 2. **Constituencias**  
@@ -225,13 +225,13 @@ Una red representa un rango de direcciones IPs o un dominio que le pertenece a u
   * IPV4 \= 0.0.0.0/0
   * IPV6 \= 0::0/0
     <div align= "center">
-		<img src="https://github.com/AgusEchaniz/Docs/blob/63037f4808477c88f0848bda1115dc056b9337c3/images/image5.png" alt="Figura 2 - Árbol IPv4" width="200" />
+		<img src="./images/image5.png" alt="Figura 2 - Árbol IPv4" width="200" />
       		<br><em>Árbol IPv4</em>
     </div>
 
 * Dominio: 
 	<div align="center">
- 		<img src="https://github.com/AgusEchaniz/Docs/blob/63037f4808477c88f0848bda1115dc056b9337c3/images/image4.png" alt="Figura 1 - Árbol de dominios" width="300" />
+ 		<img src="./images/image4.png" alt="Figura 1 - Árbol de dominios" width="300" />
       		<br><em>Árbol de dominios</em>
 	</div>
 
@@ -261,7 +261,7 @@ Si la taxonomía a la cual pertenece el incidente no cuenta con reporte propio e
 
 Supongamos la siguiente taxonomía:
 	<div align= "center">
-			<img src="https://github.com/AgusEchaniz/Docs/blob/63037f4808477c88f0848bda1115dc056b9337c3/images/image3.png" alt="Ejemplo de Taxonomía" />
+			<img src="./images/image3.png" alt="Ejemplo de Taxonomía" />
 	</div>
 	  
 Si se requiere reportar un incidente del tipo DoS Chargen pero este no cuenta con un reporte propio el sistema buscará automáticamente a su padre dentro de la estructura de árbol (DoS) y se comprobará si tiene un reporte relacionado, en caso de que lo tuviera enviará ese reporte al contacto indicando la taxonomía original del incidente (DoS Chargen). En el caso de que DoS no tuviera reporte asignado seguirá buscando en el árbol hasta encontrar un padre que lo tenga, en el ejemplo buscaría en Availability.   
@@ -322,7 +322,7 @@ Por ejemplo, se puede definir una plantilla que a partir de un evento de tipo Vu
 
 En esta sección se pueden crear, modificar y borrar los usuarios de la plataforma NGEN. 
 	<div align= "center">
-		<img src="https://github.com/AgusEchaniz/Docs/blob/63037f4808477c88f0848bda1115dc056b9337c3/images/image7.png" alt="Usuarios" />
+		<img src="./images/image7.png" alt="Usuarios" />
 	</div>
 
 Los usuarios pueden estar activos o no en el sistema, también se pueden definir los permisos, que serán descritos a continuación: 
@@ -357,6 +357,6 @@ Permite visualizar la información del usuario logueado, así como cambiar su co
 
 <br>
 <div align="center">
-	<img src="https://github.com/AgusEchaniz/Docs/blob/63037f4808477c88f0848bda1115dc056b9337c3/images/image9.png" alt="Logo" width="300" align="center" />
+	<img src="./images/image9.png" alt="Logo" width="300" align="center" />
 </div>
 <br><br>
