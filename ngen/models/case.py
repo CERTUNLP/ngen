@@ -566,7 +566,7 @@ class Event(
         # this will not be triggered if is event creation and case was created by
         # a CaseTemplate, because the case is created after the event and
         # self.case is None
-        if self.case and self.case.events.count() >= 1:
+        if self.case and self.case.state.attended and self.case.events.count() >= 1:
             self.case.communicate(
                 gettext_lazy("New event on case"),
                 "reports/case_assign.html",
