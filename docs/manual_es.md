@@ -192,10 +192,8 @@ Por su parte, la fecha de inicio de gestión es asignada manualmente por un oper
 La ventana de atención, attend window, está dada por la fecha de creación del caso (case:created) sumada al tiempo de atención establecido para la prioridad que tiene el caso (priority:attend\_time).   
 La ventana de resolución, solve window, está dada por la fecha de atención del caso (case:attend\_date) sumada al tiempo de resolución asignado a la prioridad que tiene el caso (priority:solve\_time.).  
 
-![](./images/image2.png)
-
 <div align="center">
-	
+	<img src="./images/image2.png" alt="A tiempo"  align="center" />
 	<br>
 	<img src="https://github.com/AgusEchaniz/Docs/blob/63037f4808477c88f0848bda1115dc056b9337c3/images/image1.png" alt="Adelantados" align="center" />
 	<br>
