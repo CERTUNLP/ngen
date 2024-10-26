@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
-import CrudButton from "../../../components/Button/CrudButton";
-import ActiveButton from "../../../components/Button/ActiveButton";
-import ModalConfirm from "../../../components/Modal/ModalConfirm";
-import { deleteState, getState, isActive } from "../../../api/services/states";
-import Alert from "../../../components/Alert/Alert";
-import CallBackendByName from "../../../components/CallBackendByName";
+import CrudButton from "components/Button/CrudButton";
+import ActiveButton from "components/Button/ActiveButton";
+import ModalConfirm from "components/Modal/ModalConfirm";
+import { deleteState, getState, isActive } from "api/services/states";
+import Alert from "components/Alert/Alert";
+import CallBackendByName from "components/CallBackendByName";
+import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 const TableStates = ({ states, callback, loading, currentPage, setIsModify }) => {
@@ -203,21 +204,13 @@ const TableStates = ({ states, callback, loading, currentPage, setIsModify }) =>
                             <tr>
                               <td>{t("ngen.date.created")}</td>
                               <td>
-                                <Form.Control
-                                  plaintext
-                                  readOnly
-                                  defaultValue={state.created ? state.created.slice(0, 10) + " " + state.created.slice(11, 19) : ""}
-                                />
+                                <DateShowField value={state?.created} asFormControl />
                               </td>
                             </tr>
                             <tr>
                               <td>{t("ngen.date.modified")}</td>
                               <td>
-                                <Form.Control
-                                  plaintext
-                                  readOnly
-                                  defaultValue={state.modified ? state.modified.slice(0, 10) + " " + state.modified.slice(11, 19) : ""}
-                                />
+                                <DateShowField value={state?.modified} asFormControl />
                               </td>
                             </tr>
                           </tbody>

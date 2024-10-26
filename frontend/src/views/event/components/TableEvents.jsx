@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Row, Spinner, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import CrudButton from "../../../components/Button/CrudButton";
-import ModalConfirm from "../../../components/Modal/ModalConfirm";
-import { deleteEvent } from "../../../api/services/events";
-import Ordering from "../../../components/Ordering/Ordering";
-import LetterFormat from "../../../components/LetterFormat";
+import CrudButton from "components/Button/CrudButton";
+import ModalConfirm from "components/Modal/ModalConfirm";
+import { deleteEvent } from "api/services/events";
+import Ordering from "components/Ordering/Ordering";
+import LetterFormat from "components/LetterFormat";
+import DateShowField from "components/Field/DateShowField";
+import TagContainer from "components/Badges/TagContainer";
 import { useTranslation } from "react-i18next";
 import UuidField from "components/Field/UuidField";
 
@@ -43,6 +45,7 @@ const TableEvents = ({
   disableDateModified,
   disableOrdering,
   disableColumnCase,
+  disableColumnTag,
   basePath = "",
   setRefresh
 }) => {
@@ -203,6 +206,7 @@ const TableEvents = ({
               <th style={letterSize}>{t("ngen.taxonomy_one")}</th>
               <th style={letterSize}>{t("ngen.feed.information")}</th>
               {!disableColumnCase && <th style={letterSize}>{t("ngen.case_one")}</th>}
+              {!disableColumnTag && <th style={letterSize}>{t("ngen.tag_other")}</th>}
               {!disableColumOption && <th style={letterSize}>{t("ngen.options")}</th>}
             </tr>
           </thead>
@@ -249,8 +253,8 @@ const TableEvents = ({
                       )}
                     </th>
                   )}
-                  {!disableDateModified ? <td>{event.modified.slice(0, 10) + " " + event.modified.slice(11, 19)}</td> : ""}
-                  {!disableDate ? <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : ""}</td> : ""}
+                  {!disableDateModified ? <td><DateShowField value={event?.modified} /></td> : ""}
+                  {!disableDate ? <td><DateShowField value={event?.date} /></td> : ""}
                   {!disableUuid && (
                     <td>
                       <UuidField value={event.uuid} fulltext={showFullUuid} />
@@ -290,14 +294,22 @@ const TableEvents = ({
                     event.case ? (
                       <td>
                         <CrudButton
-                          type="read"
+                          type="goto"
                           to={`${basePath}/cases/view/${event.case.split("/").slice(-2)[0]}`}
                           text={t("ngen.case_one")}
                         />
                       </td>
                     ) : (
-                      <td></td>
+                      <td>-</td>
                     )
+                  ) : (
+                    ""
+                  )}
+
+                  {!disableColumnTag ? (
+                    <td>
+                      <TagContainer tags={event.tags} />
+                    </td>
                   ) : (
                     ""
                   )}

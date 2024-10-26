@@ -30,7 +30,7 @@ const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissi
       class: text ? "text-capitalize" : "btn-icon btn-rounded",
       variant: "outline-primary",
       title: t("crud.detail"),
-      icon: "fa fa-eye mx-auto",
+      icon: "fas fa-search-plus",
       text: text ? text : ""
     },
     edit: {
@@ -75,6 +75,13 @@ const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissi
       icon: "",
       onClick: () => navigate(-1),
       text: text ? text : t("button.cancel")
+    },
+    goto: {
+      class: "btn-icon",
+      variant: "outline-primary border-transparent",
+      title: `${t("crud.goto")} ${t("crud.detail")} - ${text}`,
+      icon: " 	fas fa-arrow-right",
+      text: "",
     },
   };
 

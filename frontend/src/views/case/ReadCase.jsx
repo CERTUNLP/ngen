@@ -6,10 +6,13 @@ import { getCase } from "../../api/services/cases";
 import apiInstance from "../../api/api";
 import { getEvent } from "../../api/services/events";
 import { getEvidence } from "../../api/services/evidences";
+import { getMinifiedTag } from "../../api/services/tags";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "config/constant";
 import CrudButton from "components/Button/CrudButton";
+import LetterFormat from "components/LetterFormat";
+import DateShowField from "components/Field/DateShowField";
 
 const ReadCase = ({ routeParams }) => {
   const basePath = routeParams.basePath || "";
@@ -18,10 +21,6 @@ const ReadCase = ({ routeParams }) => {
 
   const [id] = useState(useParams());
   const [date, setDate] = useState("");
-  const [attend_date, setAttend_Date] = useState("");
-  const [solve_date, setSolve_Date] = useState("");
-  const [created, setCreated] = useState("");
-  const [modified, setModified] = useState("");
 
   const [assigned, setAssigned] = useState("");
   const [creatorUser, setCreatorUser] = useState("");
@@ -32,6 +31,7 @@ const ReadCase = ({ routeParams }) => {
   const [modalShowEvent, setModalShowEvent] = useState(false);
 
   const [list, setList] = useState([]);
+  const [listTag, setListTag] = useState([]);
 
   const [evidences, setEvidences] = useState([]);
   const [eventEvidences, setEventEvidences] = useState([]);
@@ -129,12 +129,6 @@ const ReadCase = ({ routeParams }) => {
         });
     };
 
-    const formatDate = (dateTime, set) => {
-      //2023-09-11T17:14:20.292538Z
-      let date = dateTime.split("T");
-      set(date[0] + " " + date[1].slice(0, 8));
-    };
-
     if (caseItem) {
       if (caseItem.evidence.length > 0) {
         getEvidenceFile(caseItem.evidence);
@@ -155,21 +149,6 @@ const ReadCase = ({ routeParams }) => {
         setCreatorUser("-");
       }
       getName(caseItem.state, setState);
-
-      let datetime = caseItem.created.split("T");
-      setCreated(datetime[0] + " " + datetime[1].slice(0, 8));
-      datetime = caseItem.modified.split("T");
-      setModified(datetime[0] + " " + datetime[1].slice(0, 8));
-
-      if (caseItem.date) {
-        formatDate(caseItem.date, setDate);
-      }
-      if (caseItem.attend_date) {
-        formatDate(caseItem.attend_date, setAttend_Date);
-      }
-      if (caseItem.solve_date) {
-        formatDate(caseItem.solve_date, setSolve_Date);
-      }
     }
   }, [caseItem]);
 
@@ -207,6 +186,18 @@ const ReadCase = ({ routeParams }) => {
       // Llamar a la función para obtener los datos de las evidencias
       fetchAllEventEvidences();
     }
+
+
+    getMinifiedTag()
+      .then((response) => {
+        var list = response.map((tag) => {
+          return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
+        });
+        setListTag(list);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [caseItem]);
 
   return (
@@ -344,12 +335,12 @@ const ReadCase = ({ routeParams }) => {
                     <tr>
                       <td>{t("ngen.case.management_start_date")}</td>
                       <td>
-                        <Form.Control plaintext readOnly defaultValue={date} />
+                        <DateShowField value={caseItem?.date} asFormControl />
                       </td>
                       <td>{t("w.attended")}</td>
                       {caseItem.attend_date ? (
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={attend_date} />
+                          <DateShowField value={caseItem?.attend_date} asFormControl />
                         </td>
                       ) : (
                         <td>
@@ -360,7 +351,7 @@ const ReadCase = ({ routeParams }) => {
                       <td>{t("w.solved")}</td>
                       {caseItem.solve_date ? (
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={solve_date} />
+                          <DateShowField value={caseItem?.solve_date} asFormControl />
                         </td>
                       ) : (
                         <td>
@@ -371,17 +362,33 @@ const ReadCase = ({ routeParams }) => {
                     <tr>
                       <td>{t("ngen.date.created")}</td>
                       <td>
-                        <Form.Control plaintext readOnly defaultValue={created} />
+                        <DateShowField value={caseItem?.created} asFormControl />
                       </td>
                       <td>{t("ngen.date.modified")}</td>
                       <td>
-                        <Form.Control plaintext readOnly defaultValue={modified} />
+                        <DateShowField value={caseItem?.modified} asFormControl />
                       </td>
                       <td></td>
                       <td></td>
                     </tr>
                   </tbody>
                 </Table>
+              </Card.Body>
+            </Card>
+
+            <Card>
+              <Card.Header>
+                <Card.Title as="h5">{t("ngen.tag_other")}</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <Row>
+                  {caseItem.tags !== undefined
+                    ? caseItem.tags.map((name) => {
+                      const tagItem = listTag.find((tag) => tag.name === name);
+                        return <LetterFormat key={tagItem.name} stringToDisplay={tagItem.name} />;
+                      })
+                    : ""}
+                </Row>
               </Card.Body>
             </Card>
 

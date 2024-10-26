@@ -11,12 +11,14 @@ import { getFeed } from "../../api/services/feeds";
 import { getEvent } from "../../api/services/events";
 import SmallEventTable from "./components/SmallEventTable";
 import { getArtefact } from "../../api/services/artifact";
+import { getMinifiedTag } from "../../api/services/tags";
 import SmallCaseTable from "../case/components/SmallCaseTable";
 import { getEvidence } from "../../api/services/evidences";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
 import { useTranslation } from "react-i18next";
 import PermissionCheck from "components/Auth/PermissionCheck";
 import { COMPONENT_URL } from "config/constant";
+import LetterFormat from "components/LetterFormat";
 
 const ReadEvent = ({ routeParams }) => {
   const [body, setBody] = useState({});
@@ -26,6 +28,7 @@ const ReadEvent = ({ routeParams }) => {
   const [id] = useState(useParams());
   const [children, setChildren] = useState([]);
   const [childrenEvidences, setChildrenEvidences] = useState([]);
+  const [listTag, setListTag] = useState([]);
   const { t } = useTranslation();
 
   // const storageEventUrl = (url) => {
@@ -87,6 +90,18 @@ const ReadEvent = ({ routeParams }) => {
 
     // Llamar a la función para obtener los datos de los eventos hijos
     fetchAllChildren();
+
+
+    getMinifiedTag()
+      .then((response) => {
+        var list = response.map((tag) => {
+          return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
+        });
+        setListTag(list);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [eventItem]);
 
   useEffect(() => {
@@ -328,6 +343,22 @@ const ReadEvent = ({ routeParams }) => {
       </Card>
 
       <SmallCaseTable readCase={body.case} disableColumOption={true} />
+
+      <Card>
+        <Card.Header>
+          <Card.Title as="h5">{t("ngen.tag_other")}</Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <Row>
+            {body.tags !== undefined
+              ? body.tags.map((name) => {
+                const tagItem = listTag.find((tag) => tag.name === name);
+                  return <LetterFormat key={tagItem.name} stringToDisplay={tagItem.name} />;
+                })
+              : ""}
+          </Row>
+        </Card.Body>
+      </Card>
 
       <Card>
         <Card.Header>

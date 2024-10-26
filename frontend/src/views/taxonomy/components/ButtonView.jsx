@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import ActiveButton from "../../../components/Button/ActiveButton";
-import CrudButton from "../../../components/Button/CrudButton";
-import { getTaxonomy } from "../../../api/services/taxonomies";
+import ActiveButton from "components/Button/ActiveButton";
+import CrudButton from "components/Button/CrudButton";
+import { getTaxonomy } from "api/services/taxonomies";
+import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 function ButtonView({ taxonomy }) {
@@ -123,13 +124,13 @@ function ButtonView({ taxonomy }) {
                     <tr>
                       <td>{t("ngen.date.created")}</td>
                       <td>
-                        <Form.Control plaintext readOnly defaultValue={created} />
+                        <DateShowField value={created} asFormControl />
                       </td>
                     </tr>
                     <tr>
                       <td>{t("ngen.date.modified")}</td>
                       <td>
-                        <Form.Control plaintext readOnly defaultValue={modified} />
+                        <DateShowField value={modified} asFormControl />
                       </td>
                     </tr>
                   </Table>

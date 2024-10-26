@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
-import { getMinifiedPriority } from "../../../api/services/priorities";
-import { getMinifiedTlp } from "../../../api/services/tlp";
-import { getMinifiedUser } from "../../../api/services/users";
-import Alert from "../../../components/Alert/Alert";
-import { postCase, putCase } from "../../../api/services/cases";
-import SelectLabel from "../../../components/Select/SelectLabel";
-import SmallEventTable from "../../event/components/SmallEventTable";
+import { getMinifiedPriority } from "api/services/priorities";
+import { getMinifiedTlp } from "api/services/tlp";
+import { getMinifiedUser } from "api/services/users";
+import Alert from "components/Alert/Alert";
+import { postCase, putCase } from "api/services/cases";
+import SelectLabel from "components/Select/SelectLabel";
+import SmallEventTable from "views/event/components/SmallEventTable";
 import { useTranslation } from "react-i18next";
-import ModalListEvent from "../../event/ModalListEvent";
-import { getMinifiedFeed } from "../../../api/services/feeds";
-import { getMinifiedTaxonomy } from "../../../api/services/taxonomies";
-import ModalReadEvent from "../../event/ModalReadEvent";
-import { getEvent } from "../../../api/services/events";
-import EvidenceCard from "../../../components/UploadFiles/EvidenceCard";
-import { getEvidence } from "../../../api/services/evidences";
-import ModalCreateEvent from "../../event/ModalCreateEvent";
+import ModalListEvent from "views/event/ModalListEvent";
+import { getMinifiedFeed } from "api/services/feeds";
+import { getMinifiedTaxonomy } from "api/services/taxonomies";
+import ModalReadEvent from "views/event/ModalReadEvent";
+import CreateTagModal from "views/tag/components/CreateTagModal";
+import SelectTag from "components/Select/SelectTag";
+import { getEvent } from "api/services/events";
+import EvidenceCard from "components/UploadFiles/EvidenceCard";
+import { getEvidence } from "api/services/evidences";
+import ModalCreateEvent from "views/event/ModalCreateEvent";
 import CrudButton from "components/Button/CrudButton";
 
 const FormCase = (props) => {
@@ -34,6 +36,12 @@ const FormCase = (props) => {
   const [events, setEvents] = props.caseItem.events === undefined ? useState([]) : useState(props.caseItem.events);
   const [comments, setComments] = useState([]);
   const [evidences, setEvidences] = useState([]);
+  const [tags, setTags] = useState(props.caseItem.tags === undefined ? [] : props.caseItem.tags);
+
+  const [tagsValueLabel, setTagsValueLabel] = useState([]);
+  const [modalCreateTag, setModalCreateTag] = useState(false);
+  const [colorTag, setColorTag] = useState("#00ffff");
+  const [valueTag, setValueTag] = useState("");
 
   //select
   const [allPriorities, setAllPriorities] = useState([]);
@@ -186,6 +194,20 @@ const FormCase = (props) => {
   }, [allPriorities, allTlp, allUsers, props.allStates]);
 
   useEffect(() => {
+    let listDefaultTag = props.listTag
+      .filter((elemento) => props.caseItem.tags.includes(elemento.name))
+      .map((elemento) => ({
+        name: elemento.name,
+        slug: elemento.slug,
+        color: elemento.color,
+        value: elemento.name,
+        label: elemento.name
+      }));
+    
+    setTagsValueLabel(listDefaultTag);
+  }, [props.caseItem.tags, props.listTag]);
+
+  useEffect(() => {
     getMinifiedTaxonomy()
       .then((response) => {
         let dicTaxonomy = {};
@@ -263,6 +285,27 @@ const FormCase = (props) => {
       });
   }, [props.allStates]);
 
+  const selectTag = (items) => {
+    setTags(items);
+    setTagsValueLabel(items);
+  };
+
+  const createTag = () => {
+    postTag(colorTag, value)
+      .then((response) => {
+        props.setContactsCreated(response); //
+        setModalCreateTag(false); //
+        setColorTag("-1");
+        setValue("");
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setModalCreateTag(false);
+      });
+  };
+
   function getCurrentDateTimeCreated() {
     const now = new Date();
     // Obtener la fecha y hora en UTC
@@ -335,10 +378,14 @@ const FormCase = (props) => {
       setComments((e) => [...e, comm]);
       form.append("comments", comm);
     }
+    if (tags.length > 0) {
+      tags.forEach((tag) => {
+        form.append("tags", tag.name);
+      });
+    }
 
     putCase(url, form)
       .then((response) => {
-        window.location.href = "/cases";
       })
       .catch((error) => {
         setShowAlert(true);
@@ -384,6 +431,11 @@ const FormCase = (props) => {
       array.push(comm);
       setComments((e) => [...e, comm]);
       form.append("comments", array);
+    }
+    if (tags.length > 0) {
+      tags.forEach((tag) => {
+        form.append("tags", tag.name);
+      });
     }
 
     postCase(form)
@@ -644,6 +696,31 @@ const FormCase = (props) => {
           </Row>
         </Card.Body>
       </Card>
+
+      <Card>
+        <Card.Header>
+          <Card.Title as="h5">{t("ngen.tag_other")}</Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <Form>
+            <Form.Group controlId="formGridAddress1">
+              <Row>
+                <Col sm={12} lg={9}>
+                  <SelectTag
+                    value={tagsValueLabel}
+                    onChange={selectTag}
+                    options={props.listTag}
+                  />
+                </Col>
+                <Col sm={12} lg={3}>
+                  <CrudButton type="create" name={t("ngen.tag_one")} onClick={() => setModalCreateTag(true)} />
+                </Col>
+              </Row>
+            </Form.Group>
+          </Form>
+        </Card.Body>
+      </Card>
+
       {props.disableTableEvent ? (
         ""
       ) : (
@@ -704,6 +781,16 @@ const FormCase = (props) => {
         tlpList={allTlp}
         updateList={updateList}
         asNetworkAdmin={true}
+      />
+
+      <CreateTagModal
+        show={modalCreateTag}
+        onHide={() => setModalCreateTag(false)}
+        value={valueTag}
+        setValue={setValueTag}
+        colorTag={colorTag}
+        setColorTag={setColorTag}
+        createTag={createTag}
       />
 
       <ModalReadEvent

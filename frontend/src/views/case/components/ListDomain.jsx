@@ -30,6 +30,10 @@ const ListDomain = ({ events }) => {
     fetchAndSetEvents(events);
   }, [events]);
 
+  if (eventDomains.length === 0) {
+    return <div>-</div>;
+  }
+
   return (
     <div>
       <ul style={{ padding: 0 }}>

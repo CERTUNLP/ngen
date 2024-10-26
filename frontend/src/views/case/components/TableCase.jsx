@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Form, Row, Spinner, Table } from "react-bootstrap";
-import CrudButton from "../../../components/Button/CrudButton";
-import { deleteCase } from "../../../api/services/cases";
-import ModalConfirm from "../../../components/Modal/ModalConfirm";
-import Ordering from "../../../components/Ordering/Ordering";
-import LetterFormat from "../../../components/LetterFormat";
+import CrudButton from "components/Button/CrudButton";
+import { deleteCase } from "api/services/cases";
+import ModalConfirm from "components/Modal/ModalConfirm";
+import Ordering from "components/Ordering/Ordering";
+import LetterFormat from "components/LetterFormat";
+import DateShowField from "components/Field/DateShowField";
+import TagContainer from "components/Badges/TagContainer";
 import ListDomain from "./ListDomain";
 import { useTranslation } from "react-i18next";
 import UuidField from "components/Field/UuidField";
@@ -36,6 +38,7 @@ const TableCase = ({
   disablePriority,
   disableTlp,
   disableNubersOfEvents,
+  disableColumnTag,
   deleteColumForm,
   deleteCaseFromForm,
   disableColumOption,
@@ -132,7 +135,7 @@ const TableCase = ({
             {!disableCheckbox &&
               (selectCase ? (
                 <th></th>
-              ) : list.length > 0 ? (
+              ) : (
                 <th>
                   <Form.Group>
                     <Form.Check
@@ -140,13 +143,8 @@ const TableCase = ({
                       id={"selectAll"}
                       onChange={handleSelectAll}
                       checked={selectedCases.length !== 0 ? selectedCases.length === list.length : false}
+                      disabled={list.length === 0}
                     />
-                  </Form.Group>
-                </th>
-              ) : (
-                <th>
-                  <Form.Group>
-                    <Form.Check type="checkbox" disabled />
                   </Form.Group>
                 </th>
               ))}
@@ -194,6 +192,7 @@ const TableCase = ({
             {!disableEvents && <th style={letterSize}> {t("ngen.event_other")} </th>}
             {!disableNubersOfEvents && <th style={letterSize}> {t("ngen.event.quantity")} </th>}
             <th style={letterSize}> {t("ngen.status.assigned")} </th>
+            {!disableColumnTag && <th style={letterSize}>{t("ngen.tag_other")}</th>}
             {!disableColumOption && <th style={letterSize}> {t("ngen.action_one")} </th>}
           </tr>
         </thead>
@@ -245,9 +244,17 @@ const TableCase = ({
                     )}
                   </td>
                 )}
-                {!disableDate && <td>{caseItem ? caseItem.date.slice(0, 10) + " " + caseItem.date.slice(11, 19) : ""}</td>}
+                {!disableDate && (
+                  <td>
+                    <DateShowField value={caseItem?.date} />
+                  </td>
+                )}
 
-                {!disableDateModified && <td>{caseItem ? caseItem.modified.slice(0, 10) + " " + caseItem.modified.slice(11, 19) : ""}</td>}
+                {!disableDateModified && (
+                  <td>
+                    <DateShowField value={caseItem?.modified} />
+                  </td>
+                )}
 
                 {!disableUuid && (
                   <td>
@@ -260,7 +267,7 @@ const TableCase = ({
                 {!disablePriority && <td>{priorityNames[caseItem.priority]}</td>}
                 {!disableTlp && (
                   <td>
-                    <LetterFormat useBadge={true} stringToDisplay={tlpNames[caseItem.tlp].name} color={tlpNames[caseItem.tlp].color} />
+                    <LetterFormat useBadge={true} stringToDisplay={tlpNames[caseItem.tlp]?.name} color={tlpNames[caseItem.tlp]?.color} />
                   </td>
                 )}
                 <td>{stateNames[caseItem.state] || "-"}</td>
@@ -271,6 +278,15 @@ const TableCase = ({
                 )}
                 {!disableNubersOfEvents && <td>{caseItem.events_count}</td>}
                 <td>{userNames[caseItem.assigned] || "-"}</td>
+
+                {!disableColumnTag ? (
+                  <td>
+                    <TagContainer tags={caseItem.tags} />
+                  </td>
+                ) : (
+                  ""
+                )}
+
                 <td>
                   {!disableColumOption && detailModal ? (
                     <CrudButton

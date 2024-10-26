@@ -37,6 +37,7 @@
 
 #teamlogo_login {
   max-width: 200px;
+  margin-top: 20px;
 }
 
 #teamlogo {
@@ -70,4 +71,14 @@
 
 .btn {
 	margin: 1px;
+}
+
+.border-transparent {
+  border: 1px solid transparent;
+}
+
+.table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

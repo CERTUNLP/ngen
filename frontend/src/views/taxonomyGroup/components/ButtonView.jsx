@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import ActiveButton from "../../../components/Button/ActiveButton";
-import CrudButton from "../../../components/Button/CrudButton";
+import ActiveButton from "components/Button/ActiveButton";
+import CrudButton from "components/Button/CrudButton";
+import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 function ButtonView({ taxonomyGroup }) {
@@ -15,10 +16,8 @@ function ButtonView({ taxonomyGroup }) {
   const { t } = useTranslation();
 
   useEffect(() => {
-    let datetime = taxonomyGroup.created.split("T");
-    setCreated(datetime[0] + " " + datetime[1].slice(0, 8));
-    datetime = taxonomyGroup.modified.split("T");
-    setModified(datetime[0] + " " + datetime[1].slice(0, 8));
+    setCreated(taxonomyGroup.created);
+    setModified(taxonomyGroup.modified);
   }, [taxonomyGroup]);
 
 
@@ -85,13 +84,13 @@ function ButtonView({ taxonomyGroup }) {
                     <tr>
                       <td>{t("ngen.date.created")}</td>
                       <td>
-                        <Form.Control plaintext readOnly defaultValue={created} />
+                        <DateShowField value={created} asFormControl />
                       </td>
                     </tr>
                     <tr>
                       <td>{t("ngen.date.modified")}</td>
                       <td>
-                        <Form.Control plaintext readOnly defaultValue={modified} />
+                        <DateShowField value={modified} asFormControl />
                       </td>
                     </tr>
                   </Table>
