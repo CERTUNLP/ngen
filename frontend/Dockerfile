@@ -1,5 +1,5 @@
 # pull official base image
-FROM node:22-alpine as ngen-frontend
+FROM node:18-alpine as ngen-frontend
 
 # set working directory
 WORKDIR /app
@@ -10,6 +10,10 @@ ENV PATH=/app/node_modules/.bin:$PATH
 # install app dependencies
 COPY package.json ./
 RUN npm install --verbose
+# # RUN npm install --global yarn --verbose
+# # upgrade yarn
+# RUN npm install --global yarn --force -g corepack
+# RUN yarn install
 RUN mkdir node_modules/.cache && chmod -R 777 node_modules/.cache
 
 # add app
