@@ -94,6 +94,9 @@ export default defineConfig(({ mode }) => {
       react(), // Soporte para React
       jsconfigPaths() // Resolver paths según jsconfig.json o tsconfig.json
     ],
+    test: {
+      environment: 'jsdom'
+    },
     // Configuración de dependencias optimizadas
     optimizeDeps: {
       exclude: [] // Excluir paquetes específicos del pre-bundling

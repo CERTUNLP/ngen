@@ -175,7 +175,7 @@ const TableStates = ({ states, callback, loading, currentPage }) => {
                           </tr>
 
                           <tr>
-                            <td>activo</td>
+                            <td>{t('w.active')}</td>
                             <td>
                               <Button
                                 className="btn-icon btn-rounded"
