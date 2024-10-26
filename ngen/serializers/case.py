@@ -15,10 +15,12 @@ from ngen.serializers.common.mixins import (
     MergeSerializerMixin,
     EvidenceSerializerMixin,
     ArtifactSerializerMixin,
+    TagSerializerMixin,
 )
 
 
 class EventSerializer(
+    TagSerializerMixin,
     MergeSerializerMixin,
     EvidenceSerializerMixin,
     ArtifactSerializerMixin,
@@ -92,6 +94,7 @@ class EventSerializer(
             "merged",
             "network",
             "initial_taxonomy_slug",
+            "tags",
         )
 
     def get_comments(self, obj):
@@ -162,7 +165,9 @@ class NetworkAdminEventSerializer(EventSerializer):
         }
 
 
-class EventSerializerReduced(EvidenceSerializerMixin, AuditSerializerMixin):
+class EventSerializerReduced(
+    TagSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin
+):
 
     @staticmethod
     def allowed_fields():
@@ -191,10 +196,12 @@ class EventSerializerReduced(EvidenceSerializerMixin, AuditSerializerMixin):
             "case",
             "network",
             "initial_taxonomy_slug",
+            "tags",
         ]
 
 
 class CaseSerializer(
+    TagSerializerMixin,
     MergeSerializerMixin,
     EvidenceSerializerMixin,
     ArtifactSerializerMixin,
@@ -249,6 +256,7 @@ class CaseSerializer(
             "assigned",
             "blocked",
             "merged",
+            "tags",
         )
         read_only_fields = [
             "attend_date",
@@ -318,7 +326,10 @@ class NetworkAdminCaseSerializer(CaseSerializer):
 
 
 class CaseSerializerReduced(
-    MergeSerializerMixin, EvidenceSerializerMixin, AuditSerializerMixin
+    TagSerializerMixin,
+    MergeSerializerMixin,
+    EvidenceSerializerMixin,
+    AuditSerializerMixin,
 ):
 
     @staticmethod
@@ -340,6 +351,7 @@ class CaseSerializerReduced(
             "lifecycle",
             "state",
             "assigned",
+            "tags",
         ]
 
 

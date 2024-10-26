@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "comment",
     "drf_spectacular",
     "generic_relations",
+    "taggit",
     # django_elasticsearch_dsl added later
 ]
 
@@ -445,7 +446,19 @@ if not os.path.exists(LOGO_WIDE_PATH) and os.path.exists(origin_path):
 
 AUTH_USER_MODEL = "ngen.User"
 
-BLEACH_ALLOWED_TAGS = ["p", "b", "i", "u", "strong", "a", "ul", "li", "div", "br"]
+BLEACH_ALLOWED_TAGS = [
+    "p",
+    "b",
+    "i",
+    "u",
+    "strong",
+    "a",
+    "ul",
+    "li",
+    "div",
+    "br",
+    "pre",
+]
 BLEACH_ALLOWED_ATTRIBUTES = ["href", "title", "style"]
 # Which CSS properties are allowed in 'style' attributes (assuming style is an allowed attribute)
 BLEACH_ALLOWED_STYLES = [

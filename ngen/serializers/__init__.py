@@ -9,5 +9,6 @@ from .constituency import *  # noqa: F401
 from .dashboard import *  # noqa: F401
 from .dashboard import *  # noqa: F401
 from .state import *  # noqa: F401
+from .tag import *  # noqa: F401
 from .taxonomy import *  # noqa: F401
 from .tools import *  # noqa: F401

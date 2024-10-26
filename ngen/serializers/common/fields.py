@@ -1,5 +1,8 @@
+import six
+import json
 from constance import config
 from rest_framework import serializers
+from taggit.serializers import TagListSerializerField
 
 from ngen.models import TaxonomyGroup
 from ngen.utils import slugify_underscore
@@ -125,3 +128,34 @@ class ConstanceValueField(serializers.Field):
 
     def to_internal_value(self, data):
         return data
+
+
+class NewTagListSerializerField(TagListSerializerField):
+    def to_internal_value(self, value):
+        if isinstance(value, list) and len(value) == 1:
+            if value[0].startswith("[") and value[0].endswith("]"):
+                # If it's a string that looks like a list, parse it
+                try:
+                    value = json.loads(value[0])
+                except json.JSONDecodeError:
+                    self.fail("not_a_list", input_type=type(value).__name__)
+            else:
+                # If it's a string, split it by commas
+                value = value[0]
+
+        if isinstance(value, six.string_types):
+            value = value.split(",")
+
+        if not isinstance(value, list):
+            self.fail("not_a_list", input_type=type(value).__name__)
+
+        for s in value:
+            if not isinstance(s, six.string_types):
+                self.fail("not_a_str")
+
+            self.child.run_validation(s)
+
+        return value
+
+    def to_representation(self, value):
+        return super().to_representation(value)

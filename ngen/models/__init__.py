@@ -1,6 +1,7 @@
 from auditlog.registry import auditlog
 from django.apps import apps
 
+from .tag import *  # noqa: F401
 from .administration import *  # noqa: F401
 from .announcement import *  # noqa: F401
 from .artifact import *  # noqa: F401
