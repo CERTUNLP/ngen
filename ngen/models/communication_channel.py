@@ -1,3 +1,4 @@
+from typing import Optional
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
@@ -6,6 +7,7 @@ from model_utils import Choices
 
 from ngen.mailer.email_handler import EmailHandler
 from ngen.models import ChannelableMixin, AuditModelMixin
+from ngen.models.email_message import EmailMessage
 
 
 class CommunicationType(AuditModelMixin):
@@ -105,7 +107,8 @@ class CommunicationChannel(AuditModelMixin):
             additional_contacts=additional_contacts,
         )
         communication_types = [
-            CommunicationType.objects.get_or_create(type=type)[0] for type in channel_type
+            CommunicationType.objects.get_or_create(type=type)[0]
+            for type in channel_type
         ]
         communication_channel.communication_types.add(*communication_types)
 
@@ -143,18 +146,24 @@ class CommunicationChannel(AuditModelMixin):
         if not self.message_id:
             return None
 
-        return models.EmailMessage.get_message_thread_by(self.message_id)
+        return EmailMessage.get_message_thread_by(self.message_id)
 
     def get_last_message(self):
         """
         Get the last message sent in the channel
         """
-        return self.get_messages().last()
+        messages = self.get_messages()
+        return messages.last() if messages else None
 
     @transaction.atomic
-    def communicate(self, title, body=None, template=None):
+    def communicate(
+        self, title: str, body: Optional[str] = None, template: Optional[str] = None
+    ):
         """
-        Method to send an email in a communication channel
+        Method to send an email in a communication channel.
+        If the channel has no message_id, the message id of the sent email
+        will be set in the channel. If the channel has a message_id, the sent email
+        will be a reply to the last message sent in the channel.
         """
         if not body and not template:
             raise ValueError("Body or template is required")
@@ -167,8 +176,8 @@ class CommunicationChannel(AuditModelMixin):
         sent_email = email_handler.send_email(
             recipients=self.fetch_contacts(),
             subject=title,
-            body=body or template["text"],
-            html_template=template["html"],
+            body=body,
+            template=template,
             in_reply_to=self.get_last_message() if channel.message_id else None,
         )
 

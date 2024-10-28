@@ -388,13 +388,18 @@ class Case(
     def communicate_v2(self, title: str, template: str):
         """
         Communicate V2
+        Send email to the communication channels of all the events
+        associated with the case.
 
         :param title: title of the email
-        :param template: template to be rendered
+        :param template: path of template to be rendered
         """
         if self._temp_events:
             self.events.add(*self._temp_events)
+
+        # Communicates on the channels of each event of the case
         for event in self.events.all():
+            # If there is no channel with affected, create one (includes assigned and team)
             if not event.communication_channels.filter(
                 communication_types__type=ngen.models.CommunicationType.TYPE_CHOICES.affected
             ).exists():
@@ -403,18 +408,11 @@ class Case(
                     additional_contacts=[self.assigned_email, self.team_email],
                 )
 
-            template_params = self.template_params
-            template_params.update({"events": [event]})
-
             event_channels = event.communication_channels.all()
 
+            # Communicates on each each channel of the event
             for channel in event_channels:
-                channel.communicate(
-                    title=self.subject(title),
-                    template=self.render_template(
-                        template, extra_params=template_params
-                    ),
-                )
+                channel.communicate(title=self.subject(title), template=template)
 
         self.notification_count += 1
 
@@ -530,6 +528,15 @@ class Event(
     @property
     def enrichable(self):
         return self.mergeable
+
+    @property
+    def template_params(self) -> dict:
+        return {
+            "case": self.case,
+            "events": [self],
+            "tlp": self.case.tlp,
+            "priority": self.case.priority,
+        }
 
     def update_taxonomy(self):
         if self.taxonomy:

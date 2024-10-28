@@ -220,7 +220,7 @@ def retest_event_kintun(event):
 
 
 @shared_task
-def async_send_email(email_message_id: int, html_template=None):
+def async_send_email(email_message_id: int):
     """
     Task to send an email asynchronously.
 
@@ -249,6 +249,21 @@ def async_send_email(email_message_id: int, html_template=None):
             fail_silently=False,
         )
 
+        rendered_template = {}
+
+        if email_message.template:
+            message_channel = ngen.models.CommunicationChannel.objects.filter(
+                message_id=email_message.root_message_id
+            ).first()
+
+            template_params = (
+                message_channel.channelable.template_params if message_channel else {}
+            )
+
+            rendered_template = Communication.render_template(
+                email_message.template, extra_params=template_params
+            )
+
         headers = {
             "Message-ID": email_message.message_id,
         }
@@ -259,14 +274,16 @@ def async_send_email(email_message_id: int, html_template=None):
 
         email = EmailMultiAlternatives(
             subject=email_message.subject,
-            body=email_message.body,
+            body=email_message.body or rendered_template.get("text"),
             from_email=email_message.senders[0]["email"],
             to=[recipient["email"] for recipient in email_message.recipients],
             connection=email_connection,
         )
 
-        if html_template:
-            email.attach_alternative(html_template, "text/html")
+        if email_message.template:
+            email.attach_alternative(rendered_template.get("html"), "text/html")
+            if not email_message.body:
+                email.body = rendered_template.get("text")
 
         email.extra_headers = headers
 
@@ -274,12 +291,12 @@ def async_send_email(email_message_id: int, html_template=None):
 
         email_message.sent = True
         email_message.date = timezone.now()
-        email_message.save()
         return True
     except Exception:
         email_message.send_attempt_failed = True
-        email_message.save()
         return False
+    finally:
+        email_message.save()
 
 
 @shared_task
