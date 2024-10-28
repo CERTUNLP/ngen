@@ -33,7 +33,7 @@ from django.apps import apps
 
 import ngen
 from ngen.models.announcement import Communication
-from ngen.utils import get_mime_type
+from ngen.utils import clean_list, get_mime_type
 from . import Priority
 from .common.mixins import (
     MergeModelMixin,
@@ -405,7 +405,9 @@ class Case(
             ).exists():
                 ngen.models.CommunicationChannel.create_channel_with_affected(
                     channelable=event,
-                    additional_contacts=[self.assigned_email, self.team_email],
+                    additional_contacts=clean_list(
+                        [self.assigned_email, self.team_email]
+                    ),
                 )
 
             event_channels = event.communication_channels.all()
@@ -676,16 +678,23 @@ class Event(
         return contacts
 
     def get_affected_contacts(self):
+        contacts = []
+        priority = (
+            self.case.priority.severity
+            if self.case.priority
+            else self.priority.severity
+        )
         affected_networks = ngen.models.Network.objects.parent_of(self)
 
         network_contacts = []
         for network in affected_networks:
             network_cidr_or_domain = network.cidr if network.cidr else network.domain
-            contacts = network.contacts.all()
+            contacts = list(network.email_contacts(priority))
+            if not contacts:
+                contacts = network.ancestors_email_contacts(priority)
             network_contacts.append({network_cidr_or_domain: contacts})
 
-        self.affected_contacts = network_contacts
-        return self
+        return network_contacts
 
     def get_reporter_contacts(self):
         return self

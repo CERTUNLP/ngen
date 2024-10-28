@@ -43,3 +43,10 @@ def get_mime_type(file):
     mime_type = magic.from_buffer(file.read(2048), mime=True)
     file.seek(initial_pos)
     return mime_type
+
+
+def clean_list(input_list):
+    """
+    Remove None values empty strings from a list
+    """
+    return list(filter(None, input_list))
