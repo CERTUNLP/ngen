@@ -139,6 +139,26 @@ class CommunicationChannel(AuditModelMixin):
 
         return contacts_by_type
 
+    def fetch_contact_emails(self):
+        """
+        Method to fetch emails of every contact, formatted for sending emails
+        """
+        contacts = self.fetch_contacts()
+        flattened_contacts = [
+            {"name": contact.name, "email": contact.username}
+            for _, domain_list in contacts.items()
+            for domain in domain_list
+            for queryset in domain.values()
+            for contact in queryset
+            if contact.type == "email"
+        ]
+        additional_contacts = [
+            {"name": email.split("@")[0], "email": email}
+            for email in list(self.additional_contacts)
+        ]
+
+        return flattened_contacts + additional_contacts
+
     def get_messages(self):
         """
         Get all messages sent in the channel
@@ -157,7 +177,10 @@ class CommunicationChannel(AuditModelMixin):
 
     @transaction.atomic
     def communicate(
-        self, title: str, body: Optional[str] = None, template: Optional[str] = None
+        self,
+        title: Optional[str] = None,
+        body: Optional[str] = None,
+        template: Optional[str] = None,
     ):
         """
         Method to send an email in a communication channel.
@@ -174,8 +197,8 @@ class CommunicationChannel(AuditModelMixin):
         email_handler = EmailHandler()
 
         sent_email = email_handler.send_email(
-            recipients=self.fetch_contacts(),
-            subject=title,
+            recipients=self.fetch_contact_emails(),
+            subject=title or "-",
             body=body,
             template=template,
             in_reply_to=self.get_last_message() if channel.message_id else None,
