@@ -88,8 +88,9 @@ class EmailClient:
                 senders=message.sent_from,
                 recipients=message.sent_to,
                 date=message.parsed_date,
-                subject=message.subject,
+                subject=message.subject.strip().replace("\r", "").replace("\n", ""),
                 body=message.body["plain"][0],
+                sent=True,
             )
             for uid, message in emails
         ]

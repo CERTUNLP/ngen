@@ -1,5 +1,5 @@
 import re
-from typing import Union, List, Dict
+from typing import Optional, Union, List, Dict
 from django.conf import settings
 from django.db import transaction
 from ngen.models.email_message import EmailMessage as EmailMessageModel
@@ -40,7 +40,7 @@ class EmailHandler:
         if not isinstance(recipients, list):
             raise ValueError("Send email failed. Recipients parameter is not a list.")
 
-        formatted_recipients = in_reply_to.senders if in_reply_to else []
+        formatted_recipients = []
 
         if all(isinstance(item, str) for item in recipients):
             for email in recipients:
@@ -84,8 +84,8 @@ class EmailHandler:
         self,
         recipients: Union[List[str], List[Dict[str, str]]],
         subject: str,
-        body: str,
-        html_template=None,
+        body: Optional[str],
+        template=Optional[str],
         in_reply_to: EmailMessageModel = None,
     ):
         """
@@ -99,6 +99,7 @@ class EmailHandler:
 
         :param str subject: email subject
         :param str body: email body
+        :param str template: path of the email template
         :param EmailMessage in_reply_to: email to reply (optional)
         :return EmailMessage: Email message that was sent
         """
@@ -109,8 +110,8 @@ class EmailHandler:
         if not subject:
             raise ValueError("Send email failed. Subject not provided")
 
-        if not body:
-            raise ValueError("Send email failed. Body not provided")
+        if not body and not template:
+            raise ValueError("Send email failed. Neither Body nor Template provided.")
 
         if in_reply_to and not isinstance(in_reply_to, EmailMessageModel):
             raise ValueError("Send email failed. in_reply_to must be an EmailMessage")
@@ -137,10 +138,10 @@ class EmailHandler:
             recipients=recipients,
             subject=subject,
             body=body,
+            template=template,
         )
 
-        transaction.on_commit(
-            lambda: async_send_email.delay(email_message.id, html_template)
-        )
+        # Send email asynchronously after the email message is saved
+        transaction.on_commit(lambda: async_send_email.delay(email_message.id))
 
         return email_message
