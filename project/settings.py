@@ -381,6 +381,14 @@ CONSTANCE_CONFIG = {
         os.environ.get("CORTEX_APIKEY", ""),
         gettext_lazy("Cortex admin apikey"),
     ),
+    "KINTUN_HOST": (
+        os.environ.get("KINTUN_HOST"),
+        gettext_lazy("Kintun host domain:port"),
+    ),
+    "KINTUN_APIKEY": (
+        os.environ.get("KINTUN_APIKEY", ""),
+        gettext_lazy("Kintun admin apikey"),
+    ),
     "PAGE_SIZE": (
         int(os.environ.get("PAGE_SIZE", 10)),
         gettext_lazy("Default page size"),
