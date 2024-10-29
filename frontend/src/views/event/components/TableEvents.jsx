@@ -140,6 +140,10 @@ const TableEvents = ({
     navigate(basePath + "/cases/view/" + id);
   };
 
+  // Función para determinar el color de fondo según el tag del evento
+  const getRowClass = (event) =>
+    event?.tags?.includes("falso positivo") ? "row-false-positive" : "row-default";  
+
   const letterSize = {};
   return (
     <React.Fragment>
@@ -215,10 +219,10 @@ const TableEvents = ({
               const parts = event.url.split("/");
               let itemNumber = parts[parts.length - 2];
               return event ? (
-                <tr key={index}>
+                <tr key={index} className={getRowClass(event)}>
                   {/* <td>{event.date ? event.date.slice(0, 10) + " " + event.date.slice(11, 19) : ""}</td> */}
                   {!disableCheckbox && (
-                    <th>
+                    <td>
                       {formCaseCheckbok ? (
                         <Form.Group>
                           <Form.Check
@@ -251,7 +255,7 @@ const TableEvents = ({
                           />
                         </Form.Group>
                       )}
-                    </th>
+                    </td>
                   )}
                   {!disableDateModified ? <td><DateShowField value={event?.modified} /></td> : ""}
                   {!disableDate ? <td><DateShowField value={event?.date} /></td> : ""}

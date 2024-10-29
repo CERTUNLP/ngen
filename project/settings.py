@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "rest_framework.authtoken",
+    "taggit",
     "ngen.apps.NgenConfig",
     "django.contrib.postgres",
     "netfields",
@@ -64,7 +65,6 @@ INSTALLED_APPS = [
     "comment",
     "drf_spectacular",
     "generic_relations",
-    "taggit",
     # django_elasticsearch_dsl added later
 ]
 

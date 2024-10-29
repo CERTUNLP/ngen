@@ -433,17 +433,5 @@ msgstr ""
 "Permitir la creación automática de taxonomías y grupos por el slug al crear "
 "un evento"
 
-#, fuzzy
-#~| msgid "Event Date"
-#~ msgid "Case Date"
-#~ msgstr "Fecha del evento"
-
-#~ msgid "You have 0 unsolved cases in the last days"
-#~ msgstr "No tiene casos no resueltos en los últimos días"
-
-#~ msgid "Hello ${name}"
-#~ msgstr "Hola ${name}"
-
-#~ msgid "No active account found with the given credentials"
-#~ msgstr ""
-#~ "No se encontró una cuenta activa con las credenciales proporcionadas"
+msgid "Color must be a valid hexadecimal code (e.g. #007bff)"
+msgstr "El color debe ser un código hexadecimal válido (por ejemplo, #007bff)"
