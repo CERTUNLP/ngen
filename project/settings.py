@@ -488,8 +488,12 @@ if DEBUG:
         "SHOW_TOOLBAR_CALLBACK": show_toolbar,
     }
 
+frontend_urls = os.environ.get("DJANGO_CORS_ALLOWED_ORIGINS", "")
+if frontend_urls:
+    CORS_ALLOWED_ORIGINS = frontend_urls.split(",")
+else:
+    CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = os.environ.get("DJANGO_CORS_ALLOWED_ORIGINS", "").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
 
 COMMENT_ALLOW_SUBSCRIPTION = True
