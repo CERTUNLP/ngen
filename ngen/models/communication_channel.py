@@ -175,12 +175,12 @@ class CommunicationChannel(AuditModelMixin):
         messages = self.get_messages()
         return messages.last() if messages else None
 
-    @transaction.atomic
     def communicate(
         self,
-        title: Optional[str] = None,
+        subject: Optional[str] = None,
         body: Optional[str] = None,
         template: Optional[str] = None,
+        template_params: Optional[dict] = None,
     ):
         """
         Method to send an email in a communication channel.
@@ -191,22 +191,24 @@ class CommunicationChannel(AuditModelMixin):
         if not body and not template:
             raise ValueError("Body or template is required")
 
-        # Block the channel to prevent concurrent writes leaving inconsistent states
-        channel = CommunicationChannel.objects.select_for_update().get(id=self.id)
+        channel = CommunicationChannel.objects.get(id=self.id)
 
         email_handler = EmailHandler()
 
         sent_email = email_handler.send_email(
             recipients=self.fetch_contact_emails(),
-            subject=title or "-",
+            subject=subject or "-",
             body=body,
             template=template,
+            template_params=template_params,
             in_reply_to=self.get_last_message() if channel.message_id else None,
         )
 
         if not channel.message_id:
             channel.message_id = sent_email.message_id
             channel.save()
+
+        return sent_email
 
 
 class CommunicationChannelTypeRelation(AuditModelMixin):

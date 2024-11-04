@@ -1,3 +1,9 @@
+# pylint: disable=broad-exception-caught
+
+"""
+Communication channel views
+"""
+
 import django_filters
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import resolve
@@ -13,6 +19,7 @@ from ngen.serializers.communication_channel import (
 )
 from ngen.serializers.communication_type import CommunicationTypeSerializer
 from ngen.permissions import CustomModelPermissions
+from ngen.serializers.email_message import EmailMessageSerializer
 
 
 class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
@@ -71,7 +78,7 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["get"],
-        url_path="communicationchannels/(?P<communication_channel_id>[^/.]+)",  # <int:communication_channel_id> !!!!!!!!!!
+        url_path="communicationchannels/(?P<communication_channel_id>[^/.]+)",
     )
     def communication_channels_detail(
         self, request, pk=None, communication_channel_id=None
@@ -221,6 +228,73 @@ class CommunicationChannelViewSet(viewsets.ModelViewSet):
         Use reduced serializer for list action, complete serializer for other actions
         """
         return self.serializer_class_by_action.get(self.action, self.serializer_class)
+
+    @action(detail=True, methods=["post"], url_path="communicate")
+    def communicate(self, request, pk=None):
+        """
+        Endpoint to send an email in a communication channel.
+        """
+
+        try:
+            validation = self.validate_params(request)
+            if not validation["success"]:
+                return Response(
+                    {"error": ", ".join(validation["errors"])},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            params = self.build_params(request)
+            channel = self.get_object()
+            sent_email = channel.communicate(**params)
+            data = EmailMessageSerializer(sent_email, context={"request": request}).data
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def validate_params(self, request):
+        """
+        Validates the parameters for the communicate action
+        """
+        result = {"success": True, "errors": []}
+        subject = request.data.get("subject")
+        body = request.data.get("body")
+        template = request.data.get("template")
+
+        if not body:
+            result["success"] = False
+            result["errors"].append("Body is required")
+        elif not isinstance(body, str):
+            result["success"] = False
+            result["errors"].append("Body must be a string")
+
+        if subject and not isinstance(subject, str):
+            result["success"] = False
+            result["errors"].append("Subject must be a string")
+
+        if template and not isinstance(template, str):
+            result["success"] = False
+            result["errors"].append("Template must be a string")
+
+        return result
+
+    def build_params(self, request):
+        """
+        Builds the parameters for the communicate endpoint
+        """
+        subject = request.data.get("subject")
+        body = request.data.get("body")
+        template = request.data.get("template")
+        template_params = request.data.get("template_params")
+
+        return {
+            "subject": subject,
+            "body": body,
+            "template": template,
+            "template_params": template_params,
+        }
 
 
 class CommunicationTypeViewSet(viewsets.ModelViewSet):

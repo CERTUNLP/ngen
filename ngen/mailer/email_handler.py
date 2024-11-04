@@ -86,6 +86,7 @@ class EmailHandler:
         subject: str,
         body: Optional[str],
         template=Optional[str],
+        template_params: Optional[dict] = None,
         in_reply_to: EmailMessageModel = None,
     ):
         """
@@ -100,6 +101,9 @@ class EmailHandler:
         :param str subject: email subject
         :param str body: email body
         :param str template: path of the email template
+        :param dict template_params: template parameters.
+         Will be used if template is provided and the message is not associated
+         with a channelable (through a Communication Channel).
         :param EmailMessage in_reply_to: email to reply (optional)
         :return EmailMessage: Email message that was sent
         """
@@ -127,6 +131,7 @@ class EmailHandler:
             if not subject.startswith("Re: "):
                 subject = f"Re: {subject}"
 
+        # Email is sent asynchronously in post_save signal
         email_message = EmailMessageModel.objects.create(
             root_message_id=in_reply_to.root_message_id if in_reply_to else message_id,
             parent_message_id=in_reply_to.message_id if in_reply_to else None,
@@ -139,9 +144,7 @@ class EmailHandler:
             subject=subject,
             body=body,
             template=template,
+            template_params=template_params,
         )
-
-        # Send email asynchronously after the email message is saved
-        transaction.on_commit(lambda: async_send_email.delay(email_message.id))
 
         return email_message

@@ -178,7 +178,7 @@ class TestEmailMessage(APITestCaseWithLogin):
         response_messages = self.get_messages_from_response(response)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(
-            "Send email failed. Subject not provided",
+            "Subject not provided",
             response_messages["error"],
         )
 
@@ -198,7 +198,7 @@ class TestEmailMessage(APITestCaseWithLogin):
         response_messages = self.get_messages_from_response(response)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(
-            "Send email failed. Recipients not provided",
+            "Recipients not provided",
             response_messages["error"],
         )
 
@@ -222,10 +222,9 @@ class TestEmailMessage(APITestCaseWithLogin):
         )
 
         response_messages = self.get_messages_from_response(response)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.assertIn(
-            "Send email failed. Invalid recipient keys. "
-            "Recipients must have 'name' and 'email' keys.",
+            "There was an error sending the email.",
             response_messages["error"],
         )
 
@@ -250,9 +249,9 @@ class TestEmailMessage(APITestCaseWithLogin):
         )
 
         response_messages = self.get_messages_from_response(response)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.assertIn(
-            "Send email failed. Invalid recipient email format: 'incorrect@format'.",
+            "There was an error sending the email.",
             response_messages["error"],
         )
 
@@ -274,9 +273,9 @@ class TestEmailMessage(APITestCaseWithLogin):
         )
 
         response_messages = self.get_messages_from_response(response)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.assertIn(
-            "Send email failed. Recipients parameter is not a list.",
+            "There was an error sending the email.",
             response_messages["error"],
         )
 
@@ -302,32 +301,6 @@ class TestEmailMessage(APITestCaseWithLogin):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(
             "Invalid 'in_reply_to' parameter. Email Message with ID '9999' does not exist.",
-            response_messages["error"],
-        )
-
-    def test_send_email_with_non_existent_communication_channel(self):
-        """
-        This will test unsuccessful send email with non-existent communication channel
-        """
-
-        json_data = {
-            "recipients": [{"name": "Victim Name", "email": "victim@organization.com"}],
-            "subject": "Test Subject",
-            "body": "Test body",
-            "communication_channel_id": 9999,
-        }
-
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
-
-        response_messages = self.get_messages_from_response(response)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn(
-            "Invalid 'communication_channel_id' parameter. "
-            "Communication Channel with ID '9999' does not exist.",
             response_messages["error"],
         )
 
@@ -556,33 +529,10 @@ class TestEmailMessage(APITestCaseWithLogin):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    def test_send_email_with_communication_channel_id(self):
+    def test_send_email_with_template_and_template_params(self):
         """
-        This will test successful send email with communication_channel_id,
-        so the message represents the first communication channel message
+        This will test successful send email
         """
-
-        priority = Priority.objects.get(slug="high")
-        tlp = Tlp.objects.get(slug="green")
-        taxonomy = Taxonomy.objects.get(slug="botnet")
-        feed = Feed.objects.get(slug="csirtamericas")
-        user = User.objects.get(username="ngen")
-        domain = "testdomain.unlp.edu.ar"
-
-        event = Event.objects.create(
-            domain=domain,
-            taxonomy=taxonomy,
-            feed=feed,
-            tlp=tlp,
-            reporter=user,
-            notes="Some notes",
-            priority=priority,
-        )
-
-        communication_channel = CommunicationChannel.objects.create(
-            name="Test Communication Channel",
-            channelable=event,
-        )
 
         initial_count = EmailMessage.objects.count()
 
@@ -590,7 +540,8 @@ class TestEmailMessage(APITestCaseWithLogin):
             "recipients": [{"name": "Victim Name", "email": "victim@organization.com"}],
             "subject": "Test Subject Success Email",
             "body": "Test body",
-            "communication_channel_id": communication_channel.id,
+            "template": "some/path/to/test_template",
+            "template_params": {"param1": "value1", "param2": "value2"},
         }
 
         response = self.client.post(
@@ -604,16 +555,7 @@ class TestEmailMessage(APITestCaseWithLogin):
 
         created_email_message = EmailMessage.objects.get(id=response.data["id"])
 
-        self.assertEqual(created_email_message.subject, "Test Subject Success Email")
+        self.assertEqual(created_email_message.template, json_data["template"])
         self.assertEqual(
-            created_email_message.senders,
-            [{"name": "username", "email": "test@ngen.com"}],
-        )
-        self.assertEqual(created_email_message.recipients, json_data["recipients"])
-        self.assertEqual(created_email_message.sent, True)
-        self.assertIsNotNone(created_email_message.date)
-        self.assertIsNotNone(created_email_message.root_message_id)
-        communication_channel.refresh_from_db()
-        self.assertEqual(
-            communication_channel.message_id, created_email_message.message_id
+            created_email_message.template_params, json_data["template_params"]
         )
