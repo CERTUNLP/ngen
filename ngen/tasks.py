@@ -257,7 +257,9 @@ def async_send_email(email_message_id: int):
             ).first()
 
             template_params = (
-                message_channel.channelable.template_params if message_channel else {}
+                message_channel.channelable.template_params
+                if message_channel
+                else email_message.template_params
             )
 
             rendered_template = Communication.render_template(

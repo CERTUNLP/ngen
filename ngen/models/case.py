@@ -414,7 +414,7 @@ class Case(
 
             # Communicates on each each channel of the event
             for channel in event_channels:
-                channel.communicate(title=self.subject(title), template=template)
+                channel.communicate(subject=self.subject(title), template=template)
 
         self.notification_count += 1
 
@@ -681,7 +681,7 @@ class Event(
         contacts = []
         priority = (
             self.case.priority.severity
-            if self.case.priority
+            if self.case and self.case.priority
             else self.priority.severity
         )
         affected_networks = ngen.models.Network.objects.parent_of(self)

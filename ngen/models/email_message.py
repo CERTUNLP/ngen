@@ -22,6 +22,7 @@ class EmailMessage(AuditModelMixin):
     date = models.DateTimeField(null=True)
     body = models.TextField(null=True)
     template = models.CharField(max_length=255, null=True)
+    template_params = models.JSONField(null=True)
     sent = models.BooleanField(default=False)
     send_attempt_failed = models.BooleanField(default=False)
 

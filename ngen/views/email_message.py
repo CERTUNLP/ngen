@@ -26,70 +26,92 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         """
         Endpoint to send an email.
         """
-
         try:
-            self.validate_in_reply_to_param(request)
-            self.validate_communication_channel_param(request)
+            validation = self.validate_params(request)
+            if not validation["success"]:
+                return Response(
+                    {"error": ", ".join(validation["errors"])},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            params = self.build_params(request)
             email_handler = EmailHandler()
-            sent_email = email_handler.send_email(
-                recipients=request.data.get("recipients"),
-                subject=request.data.get("subject"),
-                body=request.data.get("body"),
-                in_reply_to=(
-                    models.EmailMessage.objects.get(id=request.data.get("in_reply_to"))
-                    if request.data.get("in_reply_to")
-                    else None
-                ),
-            )
-            self.handle_communication_channel_param(request, sent_email)
+            sent_email = email_handler.send_email(**params)
 
             data = serializers.EmailMessageSerializer(
                 sent_email, context={"request": request}
             ).data
             return Response(data, status=status.HTTP_200_OK)
-        except ValueError as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError:
+            return Response(
+                {"error": "There was an error sending the email."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
-    def validate_in_reply_to_param(self, request):
+    def validate_params(self, request):
         """
-        Validates the in_reply_to parameter, if provided.
+        Validates send email parameters.
+        """
+        result = {"success": True, "errors": []}
+        in_reply_to = request.data.get("in_reply_to")
+        recipients = request.data.get("recipients")
+        subject = request.data.get("subject")
+        body = request.data.get("body")
+        template = request.data.get("template")
+
+        if in_reply_to:
+            existing_message = models.EmailMessage.objects.filter(
+                id=in_reply_to
+            ).first()
+            if not existing_message:
+                result["success"] = False
+                result["errors"].append(
+                    "Invalid 'in_reply_to' parameter. "
+                    f"Email Message with ID '{in_reply_to}' does not exist."
+                )
+            else:
+                existing_channel = models.CommunicationChannel.objects.filter(
+                    message_id=existing_message.root_message_id
+                ).first()
+                if existing_channel:
+                    result["success"] = False
+                    result["errors"].append(
+                        "Invalid 'in_reply_to' parameter. "
+                        f"Email Message with ID '{in_reply_to}' belongs to Communication Channel "
+                        f"with ID '{existing_channel.id}'. Please use the Communication Channel"
+                    )
+
+        if not recipients:
+            result["success"] = False
+            result["errors"].append("Recipients not provided")
+
+        if not subject and not in_reply_to:
+            result["success"] = False
+            result["errors"].append("Subject not provided")
+
+        if not body and not template:
+            result["success"] = False
+            result["errors"].append("Neither Body nor Template provided")
+
+        return result
+
+    def build_params(self, request):
+        """
+        Builds the parameters for the send email endpoint
         """
         in_reply_to = request.data.get("in_reply_to")
-        if in_reply_to and not models.EmailMessage.objects.filter(id=in_reply_to):
-            raise ValueError(
-                "Invalid 'in_reply_to' parameter. "
-                f"Email Message with ID '{in_reply_to}' does not exist."
-                ""
-            )
+        subject = request.data.get("subject")
+        body = request.data.get("body")
+        template = request.data.get("template")
+        template_params = request.data.get("template_params")
 
-    def validate_communication_channel_param(self, request):
-        """
-        Validates the communication_channel_id parameter, if provided.
-        """
-        if request.data.get("in_reply_to"):
-            return
-
-        communication_channel_id = request.data.get("communication_channel_id")
-        if communication_channel_id and not models.CommunicationChannel.objects.filter(
-            id=communication_channel_id
-        ):
-            raise ValueError(
-                "Invalid 'communication_channel_id' parameter. "
-                f"Communication Channel with ID '{communication_channel_id}' does not exist."
-            )
-
-    def handle_communication_channel_param(self, request, sent_email):
-        """
-        If communication_channel_id parameter is provided and the email is not a reply,
-        associates the sent email with the provided communication channel.
-        """
-        if request.data.get("in_reply_to"):
-            return
-
-        communication_channel_id = request.data.get("communication_channel_id")
-        if communication_channel_id:
-            communication_channel = models.CommunicationChannel.objects.get(
-                id=communication_channel_id
-            )
-            communication_channel.message_id = sent_email.message_id
-            communication_channel.save()
+        return {
+            "in_reply_to": (
+                models.EmailMessage.objects.get(id=in_reply_to) if in_reply_to else None
+            ),
+            "recipients": request.data.get("recipients"),
+            "subject": subject,
+            "body": body,
+            "template": template,
+            "template_params": template_params,
+        }
