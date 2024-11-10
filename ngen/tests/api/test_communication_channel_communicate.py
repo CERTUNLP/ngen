@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch
 from django.utils import timezone
 from django.conf import settings
@@ -53,11 +54,14 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
     ]
 
     @classmethod
+    @use_test_email_env()
     def setUpTestData(cls):
         super().setUpTestData()
         basename = "communicationchannel"
         cls.url_detail = lambda pk: reverse(f"{basename}-detail", kwargs={"pk": pk})
         cls.url_communicate = lambda pk: cls.url_detail(pk) + "communicate/"
+        cls.app_email_sender = settings.CONSTANCE_CONFIG["EMAIL_SENDER"][0]
+        cls.app_email_username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
         cls.event = Event.objects.create(
             domain="info.unlp.edu.ar",
             taxonomy=Taxonomy.objects.get(slug="botnet"),
@@ -80,7 +84,9 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
         This will test successful POST to communicate endpoint
         """
         initial_count = EmailMessage.objects.count()
-        expected_senders = [{"name": "username", "email": "test@ngen.com"}]
+        expected_senders = [
+            {"name": self.app_email_username, "email": self.app_email_sender}
+        ]
         expected_recipients = [
             {"name": self.contact.name, "email": self.contact.username},
             {"name": "another_contact", "email": "another_contact@example.com"},
@@ -124,8 +130,8 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
             message_id=root_message_id,
             references=[],
             subject="Test Subject",
-            senders=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
-            recipients=[{"name": "Victim Name", "email": "victim@organization.com"}],
+            senders=[{"name": self.app_email_username, "email": self.app_email_sender}],
+            recipients=[{"name": self.contact.name, "email": self.contact.username}],
             date=timezone.now(),
             body="Test body",
             sent=True,
@@ -137,8 +143,10 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
             message_id="<172654293755.81.289851525536098366@cert.unlp.edu.ar>",
             references=[root_message_id],
             subject="Re: Test Subject",
-            senders=[{"name": "Victim Name", "email": "victim@organization.com"}],
-            recipients=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+            senders=[{"name": self.contact.name, "email": self.contact.username}],
+            recipients=[
+                {"name": self.app_email_username, "email": self.app_email_sender}
+            ],
             date=timezone.now(),
             body="Test body",
             sent=True,
@@ -149,7 +157,9 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
         self.communication_channel.save()
 
         initial_count = EmailMessage.objects.count()
-        expected_senders = [{"name": "username", "email": "test@ngen.com"}]
+        expected_senders = [
+            {"name": self.app_email_username, "email": self.app_email_sender}
+        ]
         expected_recipients = [
             {"name": self.contact.name, "email": self.contact.username},
             {"name": "another_contact", "email": "another_contact@example.com"},
@@ -176,6 +186,53 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
             self.communication_channel.get_last_message(), created_email_message
         )
         self.assertNotEqual(
+            self.communication_channel.message_id, created_email_message.message_id
+        )
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_communicate_with_bcc_recipients(self):
+        """
+        This will test successful POST to communicate endpoint with bcc recipients
+        """
+        initial_count = EmailMessage.objects.count()
+        expected_senders = [
+            {"name": self.app_email_username, "email": self.app_email_sender}
+        ]
+        expected_recipients = [
+            {"name": self.contact.name, "email": self.contact.username},
+            {"name": "another_contact", "email": "another_contact@example.com"},
+        ]
+        expected_bcc_recipients = [{"name": "Bcc Contact", "email": "bcc@contact.com"}]
+        params = {
+            "bcc_recipients": expected_bcc_recipients,
+            "subject": "Test Subject",
+            "body": "Test Body",
+        }
+
+        response = self.client.post(
+            self.url_communicate(self.communication_channel.id),
+            data=json.dumps(params),
+            content_type="application/json",
+        )
+
+        self.communication_channel.refresh_from_db()
+        created_email_message = EmailMessage.objects.get(id=response.data["id"])
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
+        self.assertEqual(created_email_message.senders, expected_senders)
+        self.assertEqual(created_email_message.recipients, expected_recipients)
+        self.assertEqual(created_email_message.bcc_recipients, expected_bcc_recipients)
+        self.assertEqual(created_email_message.subject, params["subject"])
+        self.assertEqual(created_email_message.body, params["body"])
+        self.assertEqual(created_email_message.sent, True)
+        self.assertIsNotNone(created_email_message.date)
+        self.assertEqual(self.communication_channel.get_messages().count(), 1)
+        self.assertEqual(
+            self.communication_channel.get_last_message(), created_email_message
+        )
+        self.assertEqual(
             self.communication_channel.message_id, created_email_message.message_id
         )
 

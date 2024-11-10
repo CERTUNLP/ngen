@@ -85,7 +85,7 @@ class CommunicationChannel(AuditModelMixin):
         CommunicationType, through="CommunicationChannelTypeRelation"
     )
 
-    additional_contacts = models.JSONField(default=list)
+    additional_contacts = models.JSONField(default=list, null=True, blank=True)
 
     @classmethod
     def create_custom_channel(
@@ -155,7 +155,7 @@ class CommunicationChannel(AuditModelMixin):
         additional_contacts = [
             {"name": email.split("@")[0], "email": email}
             for email in list(self.additional_contacts)
-        ]
+        ] if self.additional_contacts else []
 
         return flattened_contacts + additional_contacts
 
@@ -181,6 +181,7 @@ class CommunicationChannel(AuditModelMixin):
         body: Optional[str] = None,
         template: Optional[str] = None,
         template_params: Optional[dict] = None,
+        bcc_recipients: Optional[list] = None,
     ):
         """
         Method to send an email in a communication channel.
@@ -197,6 +198,7 @@ class CommunicationChannel(AuditModelMixin):
 
         sent_email = email_handler.send_email(
             recipients=self.fetch_contact_emails(),
+            bcc_recipients=bcc_recipients,
             subject=subject or "-",
             body=body,
             template=template,

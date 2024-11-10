@@ -55,6 +55,7 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         result = {"success": True, "errors": []}
         in_reply_to = request.data.get("in_reply_to")
         recipients = request.data.get("recipients")
+        bcc_recipients = request.data.get("bcc_recipients")
         subject = request.data.get("subject")
         body = request.data.get("body")
         template = request.data.get("template")
@@ -81,7 +82,7 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
                         f"with ID '{existing_channel.id}'. Please use the Communication Channel"
                     )
 
-        if not recipients:
+        if not recipients and not bcc_recipients and not in_reply_to:
             result["success"] = False
             result["errors"].append("Recipients not provided")
 
@@ -99,17 +100,23 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         """
         Builds the parameters for the send email endpoint
         """
-        in_reply_to = request.data.get("in_reply_to")
+        in_reply_to_id = request.data.get("in_reply_to")
+        in_reply_to = (
+            models.EmailMessage.objects.get(id=in_reply_to_id)
+            if in_reply_to_id
+            else None
+        )
         subject = request.data.get("subject")
+        recipients = request.data.get("recipients")
+        bcc_recipients = request.data.get("bcc_recipients")
         body = request.data.get("body")
         template = request.data.get("template")
         template_params = request.data.get("template_params")
 
         return {
-            "in_reply_to": (
-                models.EmailMessage.objects.get(id=in_reply_to) if in_reply_to else None
-            ),
-            "recipients": request.data.get("recipients"),
+            "in_reply_to": in_reply_to,
+            "recipients": recipients,
+            "bcc_recipients": bcc_recipients,
             "subject": subject,
             "body": body,
             "template": template,

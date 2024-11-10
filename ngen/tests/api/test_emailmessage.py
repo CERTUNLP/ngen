@@ -6,16 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
 
-from ngen.models import (
-    EmailMessage,
-    Event,
-    CommunicationChannel,
-    Priority,
-    Tlp,
-    Taxonomy,
-    Feed,
-    User,
-)
+from ngen.models import EmailMessage
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
 
 
@@ -60,13 +51,18 @@ class TestEmailMessage(APITestCaseWithLogin):
     fixtures = ["priority.json", "user.json", "taxonomy.json", "feed.json", "tlp.json"]
 
     @classmethod
+    @use_test_email_env()
     def setUpTestData(cls):
         super().setUpTestData()
         basename = "emailmessage"
         cls.url_list = reverse(f"{basename}-list")
         cls.url_detail = lambda pk: reverse(f"{basename}-detail", kwargs={"pk": pk})
         cls.url_send_email = cls.url_list + "send_email/"
+        cls.app_email_sender = settings.CONSTANCE_CONFIG["EMAIL_SENDER"][0]
+        cls.app_email_username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_email_message_get_list(self):
         """
         This will test successful Email Message GET list
@@ -78,7 +74,9 @@ class TestEmailMessage(APITestCaseWithLogin):
                 message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
                 references=[],
                 subject="Test Subject",
-                senders=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+                senders=[
+                    {"name": self.app_email_username, "email": self.app_email_sender}
+                ],
                 recipients=[
                     {"name": "Victim Name", "email": "victim@organization.com"}
                 ],
@@ -94,7 +92,9 @@ class TestEmailMessage(APITestCaseWithLogin):
                 references=["<172654248025.81.10116784141945641235@cert.unlp.edu.ar>"],
                 subject="Re: Test Subject",
                 senders=[{"name": "Victim Name", "email": "victim@organization.com"}],
-                recipients=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+                recipients=[
+                    {"name": self.app_email_username, "email": self.app_email_sender}
+                ],
                 date=timezone.now(),
                 body="Test body",
                 sent=True,
@@ -114,6 +114,8 @@ class TestEmailMessage(APITestCaseWithLogin):
             email_messages[1].message_id,
         )
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_email_message_get_detail(self):
         """
         This will test successful Email Message GET detail
@@ -125,7 +127,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
             references=[],
             subject="Test Subject",
-            senders=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+            senders=[{"name": self.app_email_username, "email": self.app_email_sender}],
             recipients=[{"name": "Victim Name", "email": "victim@organization.com"}],
             date=timezone.now(),
             body="Test body",
@@ -137,6 +139,8 @@ class TestEmailMessage(APITestCaseWithLogin):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["message_id"], email_message.message_id)
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_email_message_patch(self):
         """
         This will test successful Communication Channel PUT
@@ -148,7 +152,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
             references=[],
             subject="Test Subject",
-            senders=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+            senders=[{"name": self.app_email_username, "email": self.app_email_sender}],
             recipients=[{"name": "Victim Name", "email": "victim@organization.com"}],
             date=timezone.now(),
             body="Test body",
@@ -163,6 +167,8 @@ class TestEmailMessage(APITestCaseWithLogin):
         email_message.refresh_from_db()
         self.assertEqual(email_message.body, "New body")
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_send_email_without_subject(self):
         """
         This will test unsuccessful send email without subject
@@ -182,6 +188,8 @@ class TestEmailMessage(APITestCaseWithLogin):
             response_messages["error"],
         )
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_send_email_without_recipients(self):
         """
         This will test unsuccessful send email without subject
@@ -202,6 +210,8 @@ class TestEmailMessage(APITestCaseWithLogin):
             response_messages["error"],
         )
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_send_email_with_invalid_recipient_key(self):
         """
         This will test unsuccessful send email with invalid recipients
@@ -228,6 +238,8 @@ class TestEmailMessage(APITestCaseWithLogin):
             response_messages["error"],
         )
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_send_email_with_invalid_recipient_email(self):
         """
         This will test unsuccessful send email with invalid recipient email format
@@ -255,6 +267,8 @@ class TestEmailMessage(APITestCaseWithLogin):
             response_messages["error"],
         )
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_send_email_with_invalid_recipient_format(self):
         """
         This will test unsuccessful send email with invalid recipients format
@@ -279,6 +293,8 @@ class TestEmailMessage(APITestCaseWithLogin):
             response_messages["error"],
         )
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_send_email_with_non_existent_in_reply_to_email_message(self):
         """
         This will test unsuccessful send email with non-existent in_reply_to email message
@@ -386,7 +402,7 @@ class TestEmailMessage(APITestCaseWithLogin):
         self.assertEqual(created_email_message.subject, "Test Subject Success Email")
         self.assertEqual(
             created_email_message.senders,
-            [{"name": "username", "email": "test@ngen.com"}],
+            [{"name": self.app_email_username, "email": self.app_email_sender}],
         )
         self.assertEqual(created_email_message.recipients, json_data["recipients"])
         self.assertEqual(created_email_message.body, json_data["body"])
@@ -407,7 +423,9 @@ class TestEmailMessage(APITestCaseWithLogin):
             references=[],
             subject="Test Subject",
             senders=[{"name": "Victim Name", "email": "victim@organization.com"}],
-            recipients=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+            recipients=[
+                {"name": self.app_email_username, "email": self.app_email_sender}
+            ],
             date=timezone.now(),
             body="Test body",
             sent=True,
@@ -417,7 +435,6 @@ class TestEmailMessage(APITestCaseWithLogin):
         initial_count = EmailMessage.objects.count()
 
         json_data = {
-            "recipients": [{"name": "Victim Name", "email": "victim@organization.com"}],
             "subject": "Test Subject Success Email",
             "body": "Test body",
             "in_reply_to": email_message.id,
@@ -437,7 +454,7 @@ class TestEmailMessage(APITestCaseWithLogin):
         self.assertEqual(created_email_message.subject, f"Re: {email_message.subject}")
         self.assertEqual(
             created_email_message.senders,
-            [{"name": "username", "email": "test@ngen.com"}],
+            [{"name": self.app_email_username, "email": self.app_email_sender}],
         )
         self.assertEqual(created_email_message.recipients, email_message.senders)
         self.assertEqual(created_email_message.sent, True)
@@ -464,7 +481,9 @@ class TestEmailMessage(APITestCaseWithLogin):
                 message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
                 references=[],
                 subject="Test Subject",
-                senders=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+                senders=[
+                    {"name": self.app_email_username, "email": self.app_email_sender}
+                ],
                 recipients=[
                     {"name": "Victim Name", "email": "victim@organization.com"}
                 ],
@@ -480,7 +499,9 @@ class TestEmailMessage(APITestCaseWithLogin):
                 references=["<172654248025.81.10116784141945641235@cert.unlp.edu.ar>"],
                 subject="Re: Test Subject",
                 senders=[{"name": "Victim Name", "email": "victim@organization.com"}],
-                recipients=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
+                recipients=[
+                    {"name": self.app_email_username, "email": self.app_email_sender}
+                ],
                 date=timezone.now(),
                 body="Test body",
                 sent=True,
@@ -511,7 +532,7 @@ class TestEmailMessage(APITestCaseWithLogin):
         self.assertEqual(created_email_message.subject, email_messages[1].subject)
         self.assertEqual(
             created_email_message.senders,
-            [{"name": "username", "email": "test@ngen.com"}],
+            [{"name": self.app_email_username, "email": self.app_email_sender}],
         )
         self.assertEqual(created_email_message.recipients, email_messages[1].senders)
         self.assertEqual(created_email_message.sent, True)
@@ -559,3 +580,185 @@ class TestEmailMessage(APITestCaseWithLogin):
         self.assertEqual(
             created_email_message.template_params, json_data["template_params"]
         )
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_send_email_with_many_recipients(self):
+        """
+        This will test successful send email with many recipients
+        """
+
+        initial_count = EmailMessage.objects.count()
+
+        json_data = {
+            "recipients": [
+                {"name": "Victim Name", "email": "victim@organization.com"},
+                {"name": "Victim Name 2", "email": "victim2@organization2.com"},
+            ],
+            "subject": "Test Subject Success Email",
+            "body": "Test body",
+        }
+
+        response = self.client.post(
+            self.url_send_email,
+            data=json.dumps(json_data),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
+
+        created_email_message = EmailMessage.objects.get(id=response.data["id"])
+
+        self.assertEqual(created_email_message.subject, "Test Subject Success Email")
+        self.assertEqual(
+            created_email_message.senders,
+            [{"name": self.app_email_username, "email": self.app_email_sender}],
+        )
+        self.assertEqual(created_email_message.recipients, json_data["recipients"])
+        self.assertEqual(created_email_message.body, json_data["body"])
+        self.assertEqual(created_email_message.sent, True)
+        self.assertIsNotNone(created_email_message.date)
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_send_email_with_many_recipients_as_list(self):
+        """
+        This will test successful send email with many recipients as list
+        """
+
+        initial_count = EmailMessage.objects.count()
+
+        json_data = {
+            "recipients": ["victim@organization.com", "victim2@organization2.com"],
+            "subject": "Test Subject Success Email",
+            "body": "Test body",
+        }
+
+        expected_recipients = [
+            {"name": "victim", "email": "victim@organization.com"},
+            {"name": "victim2", "email": "victim2@organization2.com"},
+        ]
+
+        response = self.client.post(
+            self.url_send_email,
+            data=json.dumps(json_data),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
+
+        created_email_message = EmailMessage.objects.get(id=response.data["id"])
+
+        self.assertEqual(created_email_message.subject, "Test Subject Success Email")
+        self.assertEqual(
+            created_email_message.senders,
+            [{"name": self.app_email_username, "email": self.app_email_sender}],
+        )
+        self.assertEqual(created_email_message.recipients, expected_recipients)
+        self.assertEqual(created_email_message.body, json_data["body"])
+        self.assertEqual(created_email_message.sent, True)
+        self.assertIsNotNone(created_email_message.date)
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_send_email_with_in_reply_to_and_different_recipient(self):
+        """
+        This will test successful send email with in_reply_to
+        and different recipient
+        """
+
+        email_message = EmailMessage.objects.create(
+            root_message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
+            parent_message_id=None,
+            message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
+            references=[],
+            subject="Test Subject",
+            senders=[{"name": "Victim Name", "email": "victim@organization.com"}],
+            recipients=[
+                {"name": self.app_email_username, "email": self.app_email_sender}
+            ],
+            date=timezone.now(),
+            body="Test body",
+            sent=True,
+            send_attempt_failed=False,
+        )
+
+        initial_count = EmailMessage.objects.count()
+
+        json_data = {
+            "recipients": [
+                {"name": "Another Recipient", "email": "another_recipient@org.com"},
+            ],
+            "subject": "Test Subject Success Email",
+            "body": "Test body",
+            "in_reply_to": email_message.id,
+        }
+
+        expected_recipients = [
+            {"name": "Victim Name", "email": "victim@organization.com"},
+            {"name": "Another Recipient", "email": "another_recipient@org.com"},
+        ]
+
+        response = self.client.post(
+            self.url_send_email,
+            data=json.dumps(json_data),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
+
+        created_email_message = EmailMessage.objects.get(id=response.data["id"])
+
+        self.assertEqual(created_email_message.subject, f"Re: {email_message.subject}")
+        self.assertEqual(
+            created_email_message.senders,
+            [{"name": self.app_email_username, "email": self.app_email_sender}],
+        )
+        self.assertEqual(created_email_message.recipients, expected_recipients)
+        self.assertEqual(created_email_message.sent, True)
+        self.assertIsNotNone(created_email_message.date)
+        self.assertEqual(
+            created_email_message.root_message_id, email_message.message_id
+        )
+        self.assertEqual(
+            created_email_message.parent_message_id, email_message.message_id
+        )
+        self.assertEqual(created_email_message.references, [email_message.message_id])
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_send_email_with_bcc_recipients(self):
+        """
+        This will test successful send email with bcc recipients
+        """
+        bcc_recipients = [{"name": "Bcc Contact", "email": "bcc@contact.com"}]
+
+        json_data = {
+            "bcc_recipients": bcc_recipients,
+            "subject": "Test Subject Success Email",
+            "body": "Test body",
+        }
+
+        initial_count = EmailMessage.objects.count()
+
+        response = self.client.post(
+            self.url_send_email,
+            data=json.dumps(json_data),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
+
+        created_email_message = EmailMessage.objects.get(id=response.data["id"])
+        self.assertEqual(
+            created_email_message.senders,
+            [{"name": self.app_email_username, "email": self.app_email_sender}],
+        )
+        self.assertEqual(created_email_message.recipients, [])
+        self.assertEqual(created_email_message.bcc_recipients, bcc_recipients)
+        self.assertEqual(created_email_message.sent, True)
+        self.assertIsNotNone(created_email_message.date)

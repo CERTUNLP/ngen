@@ -248,9 +248,9 @@ class CommunicationChannelViewSet(viewsets.ModelViewSet):
             sent_email = channel.communicate(**params)
             data = EmailMessageSerializer(sent_email, context={"request": request}).data
             return Response(data, status=status.HTTP_200_OK)
-        except Exception as e:
+        except Exception:
             return Response(
-                {"error": str(e)},
+                {"error": "There was an error communicating in the channel."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
@@ -284,12 +284,14 @@ class CommunicationChannelViewSet(viewsets.ModelViewSet):
         """
         Builds the parameters for the communicate endpoint
         """
+        bcc_recipients = request.data.get("bcc_recipients")
         subject = request.data.get("subject")
         body = request.data.get("body")
         template = request.data.get("template")
         template_params = request.data.get("template_params")
 
         return {
+            "bcc_recipients": bcc_recipients,
             "subject": subject,
             "body": body,
             "template": template,
