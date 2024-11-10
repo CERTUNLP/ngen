@@ -399,22 +399,23 @@ class Case(
 
         # Communicates on the channels of each event of the case
         for event in self.events.all():
-            # If there is no channel with affected, create one (includes assigned and team)
+            # If there is no channel with affected contacts, create one
             if not event.communication_channels.filter(
                 communication_types__type=ngen.models.CommunicationType.TYPE_CHOICES.affected
             ).exists():
                 ngen.models.CommunicationChannel.create_channel_with_affected(
-                    channelable=event,
-                    additional_contacts=clean_list(
-                        [self.assigned_email, self.team_email]
-                    ),
+                    channelable=event
                 )
 
             event_channels = event.communication_channels.all()
 
             # Communicates on each each channel of the event
             for channel in event_channels:
-                channel.communicate(subject=self.subject(title), template=template)
+                channel.communicate(
+                    subject=self.subject(title),
+                    template=template,
+                    bcc_recipients=[self.assigned_email, self.team_email],
+                )
 
         self.notification_count += 1
 

@@ -18,6 +18,7 @@ class EmailMessage(AuditModelMixin):
     references = models.JSONField(default=list)
     senders = models.JSONField(default=list)
     recipients = models.JSONField(default=list)
+    bcc_recipients = models.JSONField(default=list)
     subject = models.CharField(max_length=255)
     date = models.DateTimeField(null=True)
     body = models.TextField(null=True)

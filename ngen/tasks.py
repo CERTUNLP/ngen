@@ -219,8 +219,8 @@ def retest_event_kintun(event):
         return {"error": str(e)}
 
 
-@shared_task
-def async_send_email(email_message_id: int):
+@shared_task(bind=True, max_retries=5)
+def async_send_email(self, email_message_id: int):
     """
     Task to send an email asynchronously.
 
@@ -231,8 +231,12 @@ def async_send_email(email_message_id: int):
 
     try:
         email_message = ngen.models.EmailMessage.objects.get(id=email_message_id)
-    except ngen.models.EmailMessage.DoesNotExist:
-        return False
+    except ngen.models.EmailMessage.DoesNotExist as e:
+        if self.request.retries == self.max_retries:
+            return False
+
+        exponential_backoff = (self.request.retries + 1) ** 2
+        self.retry(exc=e, countdown=exponential_backoff)
     try:
         host = settings.CONSTANCE_CONFIG["EMAIL_HOST"][0]
         username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
@@ -279,6 +283,7 @@ def async_send_email(email_message_id: int):
             body=email_message.body or rendered_template.get("text"),
             from_email=email_message.senders[0]["email"],
             to=[recipient["email"] for recipient in email_message.recipients],
+            bcc=[recipient["email"] for recipient in email_message.bcc_recipients],
             connection=email_connection,
         )
 
