@@ -698,7 +698,7 @@ class Event(
         return network_contacts
 
     def get_reporter_contacts(self):
-        return self
+        return [self.reporter]
 
     def mark_as_solved(self, user=None, contact=None, contact_info=None):
         mark, _ = ngen.models.SolvedMark.objects.get_or_create(

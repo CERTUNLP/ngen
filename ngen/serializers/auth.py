@@ -251,7 +251,7 @@ class PermissionSerializer(AuditSerializerMixin):
 class UserMinifiedSerializer(AuditSerializerMixin):
     class Meta:
         model = User
-        fields = ["url", "username"]
+        fields = ["url", "username", "email"]
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

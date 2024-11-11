@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 from ngen import models
-from ngen.serializers.case import EventSerializerReduced
+from ngen.serializers.auth import UserMinifiedSerializer
 from ngen.serializers.common.fields import GenericRelationField
 from ngen.serializers.communication_type import CommunicationTypeSerializer
 from ngen.serializers.constituency import ContactSerializer
@@ -29,14 +29,19 @@ class CommunicationChannelContactsSerializer(serializers.Serializer):
     NetworkContactsSerializer class
     """
 
-    reporter = EventSerializerReduced(required=False, many=True)
-
     def to_representation(self, instance):
         representation = super().to_representation(instance)
 
         if "affected" in instance:
             representation["affected"] = NetworksWithContactsSerializer(
                 instance["affected"],
+                context=self.context,
+                many=True,
+            ).data
+
+        if "reporter" in instance:
+            representation["reporter"] = UserMinifiedSerializer(
+                instance["reporter"],
                 context=self.context,
                 many=True,
             ).data
@@ -55,7 +60,7 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
     )
     channel_types = serializers.SerializerMethodField(read_only=True)
     additional_contacts = serializers.ListField(
-        child=serializers.IntegerField(), write_only=True, required=False
+        child=serializers.EmailField(), required=False
     )
 
     class Meta:
@@ -89,7 +94,6 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
         Overwrite validate to verify IDs collections
         """
         self.validate_ids(attrs, "communication_types", models.CommunicationType)
-        self.validate_ids(attrs, "additional_contacts", models.Contact)
 
         return attrs
 
