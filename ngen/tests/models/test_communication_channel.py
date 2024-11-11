@@ -7,9 +7,6 @@ from django.test import TestCase
 from ngen.models import (
     Tlp,
     Priority,
-    CaseTemplate,
-    State,
-    Case,
     CommunicationChannel,
     CommunicationType,
     CommunicationChannelTypeRelation,
@@ -32,13 +29,10 @@ class CommunicationChannelTest(TestCase):
         "tests/priority.json",
         "tests/tlp.json",
         "tests/user.json",
-        "tests/state.json",
         "tests/feed.json",
         "tests/taxonomy.json",
-        "tests/case_template.json",
         "tests/contact.json",
         "tests/network_entity.json",
-        "tests/feed.json",
     ]
 
     @classmethod
@@ -49,19 +43,11 @@ class CommunicationChannelTest(TestCase):
 
         cls.priority = Priority.objects.get(slug="high")
         cls.tlp = Tlp.objects.get(slug="green")
-        cls.state = State.objects.get(slug="open")
-        cls.case_template = CaseTemplate.objects.get(pk=1)
+        cls.feed = Feed.objects.get(slug="csirtamericas")
         cls.taxonomy = Taxonomy.objects.get(slug="botnet")
         cls.feed = Feed.objects.get(slug="csirtamericas")
         cls.user = User.objects.get(username="ngen")
         cls.contact = Contact.objects.get(pk=1)
-        cls.contact_2 = Contact.objects.create(
-            priority=cls.priority,
-            name="Contacto Adicional",
-            username="additional@contact.com",
-            type="email",
-            role="administrative",
-        )
         cls.entity = NetworkEntity.objects.get(pk=1)
         cls.domain = "testdomain.unlp.edu.ar"
 
@@ -80,22 +66,12 @@ class CommunicationChannelTest(TestCase):
             priority=cls.priority,
         )
 
-        cls.case = Case.objects.create(
-            priority=cls.priority,
-            tlp=cls.tlp,
-            casetemplate_creator=cls.case_template,
-            state=cls.state,
-            name="Test Case",
-        )
-
-        cls.case.events.set([cls.event])
-
         cls.communication_channel = CommunicationChannel.objects.create(
             name="Test Communication Channel",
             message_id="f4b3b8b7-347e-4f6b-8b9e-689f33f4b56c",
-            channelable=cls.case,
+            channelable=cls.event,
+            additional_contacts=["some@contact.com"],
         )
-        cls.communication_channel.additional_contacts.set([cls.contact_2])
 
         cls.affected_type = CommunicationType.objects.create(type="affected")
         cls.reporter_type = CommunicationType.objects.create(type="reporter")
@@ -126,29 +102,28 @@ class CommunicationChannelTest(TestCase):
         """
         This will test Communication Channel channelable attribute
         """
-        self.assertEqual(self.communication_channel.channelable, self.case)
+        self.assertEqual(self.communication_channel.channelable, self.event)
 
     def test_channelable_communication_channels(self):
         """
         This will test channelable communication_channels relation
         """
-        self.assertEqual(self.case.communication_channels.count(), 1)
+        self.assertEqual(self.event.communication_channels.count(), 1)
         self.assertEqual(
-            self.case.communication_channels.first(), self.communication_channel
+            self.event.communication_channels.first(), self.communication_channel
         )
 
     def test_additional_contacts(self):
         """
         This will test Communication Channel additional_contacts relation
         """
-        self.assertEqual(self.communication_channel.additional_contacts.count(), 1)
         self.assertEqual(
-            self.communication_channel.additional_contacts.first(), self.contact_2
+            self.communication_channel.additional_contacts, ["some@contact.com"]
         )
 
     def test_communication_types(self):
         """
-        This will test Communication Channel communication_types method
+        This will test Communication Channel communication_types relation
         """
         self.assertEqual(self.communication_channel.communication_types.count(), 0)
 
@@ -183,24 +158,12 @@ class CommunicationChannelTest(TestCase):
         )
 
         fetch_contacts_result = self.communication_channel.fetch_contacts()
-
         self.assertTrue("affected" in fetch_contacts_result)
         self.assertEqual(len(fetch_contacts_result["affected"]), 1)
 
-        affected_event = fetch_contacts_result["affected"][0]
-
-        self.assertEqual(affected_event, self.event)
-        self.assertTrue(hasattr(affected_event, "affected_contacts"))
-
-        affected_contacts = affected_event.affected_contacts
-
-        self.assertEqual(len(affected_contacts), 1)
-
-        first_affected_contact = affected_contacts[0]
-
-        self.assertTrue(self.domain in first_affected_contact)
-        self.assertEqual(len(first_affected_contact[self.domain]), 1)
-        self.assertEqual(first_affected_contact[self.domain][0], self.contact)
+        affected_domain = fetch_contacts_result["affected"][0]
+        self.assertEqual(list(affected_domain.keys())[0], self.domain)
+        self.assertEqual(affected_domain[self.domain], [self.contact])
 
     def test_fetch_contacts_with_reporter_type(self):
         """
@@ -215,11 +178,102 @@ class CommunicationChannelTest(TestCase):
         )
 
         fetch_contacts_result = self.communication_channel.fetch_contacts()
-
         self.assertTrue("reporter" in fetch_contacts_result)
+
+        reporter = fetch_contacts_result["reporter"][0]
         self.assertEqual(len(fetch_contacts_result["reporter"]), 1)
+        self.assertEqual(reporter, self.user)
 
-        affected_event = fetch_contacts_result["reporter"][0]
+    def test_fetch_contacts_with_intern_type(self):
+        """
+        This will test Communication Channel fetch_contacts method
+        when the channel is associated with an intern type
+        """
+        self.assertEqual(self.communication_channel.fetch_contacts(), {})
 
-        self.assertEqual(affected_event, self.event)
-        self.assertFalse(hasattr(affected_event, "affected_contacts"))
+        CommunicationChannelTypeRelation.objects.create(
+            communication_channel=self.communication_channel,
+            communication_type=self.intern_type,
+        )
+
+        fetch_contacts_result = self.communication_channel.fetch_contacts()
+        self.assertTrue("intern" in fetch_contacts_result)
+
+        intern_contacts = fetch_contacts_result["intern"]
+        # Additional contacts are used as internal contacts
+        self.assertEqual(intern_contacts, [])
+
+    def test_fetch_contact_emails_with_affected_type(self):
+        """
+        This will test Communication Channel fetch_contact_emails method
+        when the channel is associated with an affected type
+        """
+        self.assertEqual(self.communication_channel.fetch_contacts(), {})
+
+        CommunicationChannelTypeRelation.objects.create(
+            communication_channel=self.communication_channel,
+            communication_type=self.affected_type,
+        )
+
+        fetch_contact_emails_result = self.communication_channel.fetch_contact_emails()
+        affected_contact = {"name": self.contact.name, "email": self.contact.username}
+        additional_contact = {"name": "some", "email": "some@contact.com"}
+
+        expected_result = [affected_contact, additional_contact]
+
+        self.assertEqual(fetch_contact_emails_result, expected_result)
+
+    def test_fetch_contact_emails_with_reporter_type(self):
+        """
+        This will test Communication Channel fetch_contact_emails method
+        when the channel is associated with a reporter type
+        """
+        self.assertEqual(self.communication_channel.fetch_contacts(), {})
+
+        CommunicationChannelTypeRelation.objects.create(
+            communication_channel=self.communication_channel,
+            communication_type=self.reporter_type,
+        )
+
+        fetch_contact_emails_result = self.communication_channel.fetch_contact_emails()
+
+        reporter = {
+            "name": f"{self.user.first_name} {self.user.last_name}",
+            "email": self.user.email,
+        }
+        additional_contact = {"name": "some", "email": "some@contact.com"}
+
+        expected_result = [reporter, additional_contact]
+
+        self.assertEqual(fetch_contact_emails_result, expected_result)
+
+    def test_fetch_contact_emails_with_intern_type(self):
+        """
+        This will test Communication Channel fetch_contact_emails method
+        when the channel is associated with an intern type
+        """
+        self.assertEqual(self.communication_channel.fetch_contacts(), {})
+
+        CommunicationChannelTypeRelation.objects.create(
+            communication_channel=self.communication_channel,
+            communication_type=self.intern_type,
+        )
+
+        fetch_contact_emails_result = self.communication_channel.fetch_contact_emails()
+
+        expected_result = [{"name": "some", "email": "some@contact.com"}]
+
+        self.assertEqual(fetch_contact_emails_result, expected_result)
+
+    def test_create_channel_with_affected(self):
+        """
+        This will test Communication Channel create_channel_with_affected method
+        """
+        channel = CommunicationChannel.create_channel_with_affected(
+            channelable=self.event
+        )
+
+        self.assertEqual(channel.name, "Affected Communication Channel")
+        self.assertEqual(channel.channelable, self.event)
+        self.assertEqual(channel.communication_types.count(), 1)
+        self.assertTrue(channel.communication_types.contains(self.affected_type))

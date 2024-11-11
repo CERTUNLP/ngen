@@ -2,7 +2,7 @@ from typing import Optional
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
-from django.db import models, transaction
+from django.db import models
 from model_utils import Choices
 
 from ngen.mailer.email_handler import EmailHandler
@@ -62,11 +62,13 @@ class CommunicationType(AuditModelMixin):
         """
         return channelable_mixin.get_reporter_contacts()
 
-    def get_internal_contacts(self, channelable_mixin: ChannelableMixin):
+    def get_internal_contacts(self, _channelable_mixin: ChannelableMixin):
         """
-        Method to get internal contacts
+        Method to get internal contacts.
+        Internal contacts can be set in the field 'additional_contacts'
+        of the Communication Channel.
         """
-        return channelable_mixin.get_internal_contacts()
+        return []
 
 
 class CommunicationChannel(AuditModelMixin):
@@ -144,20 +146,39 @@ class CommunicationChannel(AuditModelMixin):
         Method to fetch emails of every contact, formatted for sending emails
         """
         contacts = self.fetch_contacts()
-        flattened_contacts = [
-            {"name": contact.name, "email": contact.username}
-            for _, domain_list in contacts.items()
-            for domain in domain_list
-            for queryset in domain.values()
-            for contact in queryset
-            if contact.type == "email"
-        ]
-        additional_contacts = [
-            {"name": email.split("@")[0], "email": email}
-            for email in list(self.additional_contacts)
-        ] if self.additional_contacts else []
 
-        return flattened_contacts + additional_contacts
+        reporter_contacts = []
+        affected_contacts = []
+
+        if "reporter" in contacts:
+            # Reporter contacts are User models
+            reporter_contacts = [
+                {"name": f"{c.first_name} {c.last_name}", "email": c.email}
+                for c in contacts["reporter"]
+            ]
+
+        if "affected" in contacts:
+            # Affected contacts are Contact models
+            affected_contacts = [
+                {"name": contact.name, "email": contact.username}
+                for domain in contacts["affected"]
+                for contact_queryset in domain.values()
+                for contact in contact_queryset
+                if contact.type == "email"
+            ]
+
+        # Additional contacts are email strings
+        # Can be used as internal contacts
+        additional_contacts = (
+            [
+                {"name": email.split("@")[0], "email": email}
+                for email in list(self.additional_contacts)
+            ]
+            if self.additional_contacts
+            else []
+        )
+
+        return affected_contacts + reporter_contacts + additional_contacts
 
     def get_messages(self):
         """

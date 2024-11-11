@@ -688,7 +688,7 @@ class Event(
         return network_contacts
 
     def get_reporter_contacts(self):
-        return self
+        return [self.reporter]
 
 
 class Evidence(AuditModelMixin, ValidationModelMixin):
