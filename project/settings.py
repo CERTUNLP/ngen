@@ -316,7 +316,7 @@ CONSTANCE_CONFIG = {
         "Email use TLS",
         bool,
     ),
-    "NGEN_LANG": (os.environ.get("NGEN_LANG"), "NGEN default language"),
+    "NGEN_LANG": (os.environ.get("NGEN_LANG"), gettext_lazy("NGEN default language")),
     "NGEN_LANG_EXTERNAL": (
         os.environ.get("NGEN_LANG_EXTERNAL"),
         gettext_lazy("NGEN language for external reports"),

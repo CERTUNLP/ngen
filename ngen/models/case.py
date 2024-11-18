@@ -184,21 +184,12 @@ class Case(
 
     @property
     def email_attachments(self) -> list[dict]:
-        # DEPRECATED: Use get_attachments_for_events instead
-        attachments = {}
+        attachments = []
         for evidence in self.evidence_all:
-            attachments[evidence.id] = {
-                "name": evidence.attachment_name,
-                "file": evidence.file,
-            }
-        if self._temp_events:
-            for event in self._temp_events:
-                for evidence in event.evidence.all():
-                    attachments[evidence.id] = {
-                        "name": evidence.attachment_name,
-                        "file": evidence.file,
-                    }
-        return attachments.values()
+            attachments.append(
+                {"name": evidence.attachment_name, "file": evidence.file}
+            )
+        return attachments
 
     def get_attachments_for_events(self, events):
         attachments = {}

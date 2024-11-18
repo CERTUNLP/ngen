@@ -48,7 +48,13 @@ class TestEmailMessage(APITestCaseWithLogin):
     This will handle Email Message API tests
     """
 
-    fixtures = ["priority.json", "user.json", "taxonomy.json", "feed.json", "tlp.json"]
+    fixtures = [
+        "tests/priority.json",
+        "tests/user.json",
+        "tests/taxonomy.json",
+        "tests/feed.json",
+        "tests/tlp.json",
+    ]
 
     @classmethod
     @use_test_email_env()
