@@ -62,13 +62,11 @@ class CommunicationType(AuditModelMixin):
         """
         return channelable_mixin.get_reporter_contacts()
 
-    def get_internal_contacts(self, _channelable_mixin: ChannelableMixin):
+    def get_internal_contacts(self, channelable_mixin: ChannelableMixin):
         """
         Method to get internal contacts.
-        Internal contacts can be set in the field 'additional_contacts'
-        of the Communication Channel.
         """
-        return []
+        return channelable_mixin.get_internal_contacts()
 
 
 class CommunicationChannel(AuditModelMixin):
@@ -117,6 +115,37 @@ class CommunicationChannel(AuditModelMixin):
         return communication_channel
 
     @classmethod
+    def get_or_create_custom_channel(
+        cls,
+        channelable=None,
+        channel_name: str = None,
+        channel_type: list = None,
+        additional_contacts=None,
+    ):
+        """
+        Method to get or create a communication channel of any type
+        """
+        if not channelable:
+            raise ValueError("Channelable is required")
+
+        if not channel_type:
+            raise ValueError("At least one channel type is required")
+
+        existing_channel = channelable.communication_channels.filter(
+            communication_types__type__in=channel_type
+        ).first()
+
+        if existing_channel:
+            return existing_channel
+
+        return cls.create_custom_channel(
+            channelable=channelable,
+            channel_name=channel_name,
+            channel_type=channel_type,
+            additional_contacts=additional_contacts,
+        )
+
+    @classmethod
     def create_channel_with_affected(
         cls, channelable=None, channel_name=None, additional_contacts=None
     ):
@@ -127,6 +156,76 @@ class CommunicationChannel(AuditModelMixin):
             channelable=channelable,
             channel_name=channel_name or "Affected Communication Channel",
             channel_type=[CommunicationType.TYPE_CHOICES.affected],
+            additional_contacts=additional_contacts,
+        )
+
+    @classmethod
+    def create_channel_with_intern(
+        cls, channelable=None, channel_name=None, additional_contacts=None
+    ):
+        """
+        Method to create a communication channel with intern contacts
+        """
+        return cls.create_custom_channel(
+            channelable=channelable,
+            channel_name=channel_name or "Intern Communication Channel",
+            channel_type=[CommunicationType.TYPE_CHOICES.intern],
+            additional_contacts=additional_contacts,
+        )
+
+    @classmethod
+    def create_channel_with_reporter(
+        cls, channelable=None, channel_name=None, additional_contacts=None
+    ):
+        """
+        Method to create a communication channel with reporter contacts
+        """
+        return cls.create_custom_channel(
+            channelable=channelable,
+            channel_name=channel_name or "Reporter Communication Channel",
+            channel_type=[CommunicationType.TYPE_CHOICES.reporter],
+            additional_contacts=additional_contacts,
+        )
+
+    @classmethod
+    def get_or_create_channel_with_affected(
+        cls, channelable=None, channel_name=None, additional_contacts=None
+    ):
+        """
+        Method to get or create a communication channel with affected contacts
+        """
+        return cls.get_or_create_custom_channel(
+            channelable=channelable,
+            channel_name=channel_name or "Affected Communication Channel",
+            channel_type=[CommunicationType.TYPE_CHOICES.affected],
+            additional_contacts=additional_contacts,
+        )
+
+    @classmethod
+    def get_or_create_channel_with_intern(
+        cls, channelable=None, channel_name=None, additional_contacts=None
+    ):
+        """
+        Method to get or create a communication channel with intern contacts
+        """
+        return cls.get_or_create_custom_channel(
+            channelable=channelable,
+            channel_name=channel_name or "Intern Communication Channel",
+            channel_type=[CommunicationType.TYPE_CHOICES.intern],
+            additional_contacts=additional_contacts,
+        )
+
+    @classmethod
+    def get_or_create_channel_with_reporter(
+        cls, channelable=None, channel_name=None, additional_contacts=None
+    ):
+        """
+        Method to get or create a communication channel with reporter contacts
+        """
+        return cls.get_or_create_custom_channel(
+            channelable=channelable,
+            channel_name=channel_name or "Reporter Communication Channel",
+            channel_type=[CommunicationType.TYPE_CHOICES.reporter],
             additional_contacts=additional_contacts,
         )
 
@@ -147,8 +246,9 @@ class CommunicationChannel(AuditModelMixin):
         """
         contacts = self.fetch_contacts()
 
-        reporter_contacts = []
         affected_contacts = []
+        reporter_contacts = []
+        intern_contacts = []
 
         if "reporter" in contacts:
             # Reporter contacts are User models
@@ -167,8 +267,14 @@ class CommunicationChannel(AuditModelMixin):
                 if contact.type == "email"
             ]
 
+        if "intern" in contacts:
+            # Intern contacts are string emails
+            intern_contacts = [
+                {"name": email.split("@")[0], "email": email}
+                for email in contacts["intern"]
+            ]
+
         # Additional contacts are email strings
-        # Can be used as internal contacts
         additional_contacts = (
             [
                 {"name": email.split("@")[0], "email": email}
@@ -178,7 +284,12 @@ class CommunicationChannel(AuditModelMixin):
             else []
         )
 
-        return affected_contacts + reporter_contacts + additional_contacts
+        return (
+            affected_contacts
+            + reporter_contacts
+            + intern_contacts
+            + additional_contacts
+        )
 
     def get_messages(self):
         """
@@ -213,8 +324,6 @@ class CommunicationChannel(AuditModelMixin):
         if not body and not template:
             raise ValueError("Body or template is required")
 
-        channel = CommunicationChannel.objects.get(id=self.id)
-
         email_handler = EmailHandler()
 
         sent_email = email_handler.send_email(
@@ -224,12 +333,12 @@ class CommunicationChannel(AuditModelMixin):
             body=body,
             template=template,
             template_params=template_params,
-            in_reply_to=self.get_last_message() if channel.message_id else None,
+            in_reply_to=self.get_last_message() if self.message_id else None,
         )
 
-        if not channel.message_id:
-            channel.message_id = sent_email.message_id
-            channel.save()
+        if not self.message_id:
+            self.message_id = sent_email.message_id
+            self.save()
 
         return sent_email
 

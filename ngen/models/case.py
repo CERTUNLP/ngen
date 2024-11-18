@@ -314,7 +314,7 @@ class Case(
         self.communicate_v2(gettext_lazy("New case"), "reports/case_report.html")
 
     def communicate_close(self):
-        self.communicate(gettext_lazy("Case closed"), "reports/case_report.html")
+        self.communicate_v2(gettext_lazy("Case closed"), "reports/case_report.html")
 
     def communicate_open(self):
         title = (
@@ -322,13 +322,13 @@ class Case(
             if self.history.filter(changes__contains='solve_date":').exists()
             else "Case opened"
         )
-        self.communicate(gettext_lazy(title), "reports/case_report.html")
+        self.communicate_v2(gettext_lazy(title), "reports/case_report.html")
 
     def communicate_new_open(self):
         self.communicate_v2(gettext_lazy("Case opened"), "reports/case_report.html")
 
     def communicate_update(self):
-        self.communicate(
+        self.communicate_v2(
             gettext_lazy("Case status updated"),
             "reports/case_change_state.html",
         )
@@ -391,21 +391,22 @@ class Case(
         Send email to the communication channels of all the events
         associated with the case.
 
+        Send email to the intern communication channel of the case.
+
         :param title: title of the email
         :param template: path of template to be rendered
         """
         if self._temp_events:
             self.events.add(*self._temp_events)
 
+        case_events = self.events.all()
+
         # Communicates on the channels of each event of the case
-        for event in self.events.all():
+        for event in case_events:
             # If there is no channel with affected contacts, create one
-            if not event.communication_channels.filter(
-                communication_types__type=ngen.models.CommunicationType.TYPE_CHOICES.affected
-            ).exists():
-                ngen.models.CommunicationChannel.create_channel_with_affected(
-                    channelable=event
-                )
+            ngen.models.CommunicationChannel.get_or_create_channel_with_affected(
+                channelable=event
+            )
 
             event_channels = event.communication_channels.all()
 
@@ -414,13 +415,22 @@ class Case(
                 channel.communicate(
                     subject=self.subject(title),
                     template=template,
-                    bcc_recipients=[self.assigned_email, self.team_email],
                 )
+
+        intern_channel = (
+            ngen.models.CommunicationChannel.get_or_create_channel_with_intern(
+                channelable=self
+            )
+        )
+        intern_channel.communicate(
+            subject=self.subject(title),
+            template=template,
+        )
 
         self.notification_count += 1
 
     def get_internal_contacts(self):
-        return ["Internal Contact 1", "Internal Contact 2", "Internal Contact 3"]
+        return clean_list([self.assigned_email, self.team_email])
 
     def get_affected_contacts(self):
         contacts_from_all_events = []
@@ -540,6 +550,20 @@ class Event(
             "tlp": self.case.tlp,
             "priority": self.case.priority,
         }
+
+    @property
+    def evidence_all(self):
+        case_evidence = self.case.evidence.all() if self.case else []
+        return list(self.evidence.all()) + list(case_evidence)
+
+    @property
+    def email_attachments(self) -> list[dict]:
+        attachments = []
+        for evidence in self.evidence_all:
+            attachments.append(
+                {"name": evidence.attachment_name, "file": evidence.file}
+            )
+        return attachments
 
     def update_taxonomy(self):
         if self.taxonomy:
@@ -699,6 +723,9 @@ class Event(
 
     def get_reporter_contacts(self):
         return [self.reporter]
+
+    def get_internal_contacts(self):
+        return self.case.get_internal_contacts() if self.case else []
 
     def mark_as_solved(self, user=None, contact=None, contact_info=None):
         mark, _ = ngen.models.SolvedMark.objects.get_or_create(

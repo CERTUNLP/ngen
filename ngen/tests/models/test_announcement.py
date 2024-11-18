@@ -1,7 +1,9 @@
 from constance.test import override_config
-from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+from unittest.mock import patch
+from django.conf import settings
+from django.test import override_settings
 
 from ngen.models import (
     Evidence,
@@ -23,6 +25,23 @@ from ngen.models import (
 )
 
 
+def use_test_email_env():
+    """
+    Change constance config to use test email environment
+    """
+    return patch.dict(
+        settings.CONSTANCE_CONFIG,
+        {
+            "EMAIL_HOST": ("ngen-mail", ""),
+            "EMAIL_SENDER": ("test@ngen.com", ""),
+            "EMAIL_USERNAME": ("username", ""),
+            "EMAIL_PASSWORD": ("password", ""),
+            "EMAIL_PORT": ("1025", ""),
+            "EMAIL_USE_TLS": (False, ""),
+        },
+    )
+
+
 class AnnouncementTestCase(TestCase):
     fixtures = [
         "tests/priority.json",
@@ -33,6 +52,8 @@ class AnnouncementTestCase(TestCase):
         "tests/feed.json",
         "tests/taxonomy.json",
         "tests/case_template.json",
+        "tests/contact.json",
+        "tests/network_entity.json",
     ]
 
     @classmethod
@@ -59,10 +80,25 @@ class AnnouncementTestCase(TestCase):
             priority=cls.priority,
         )
 
+        cls.domain = "unlp.edu.ar"
+        cls.subdomain = "info.unlp.edu.ar"
+        cls.contact = Contact.objects.get(pk=1)
+        cls.network_entity = NetworkEntity.objects.get(pk=1)
+
+        cls.network = Network.objects.create(
+            domain=cls.domain,
+            active=True,
+            type="external",
+            network_entity=cls.network_entity,
+        )
+        cls.network.contacts.set([cls.contact])
+
     # ------------------------------CASE-TESTS------------------------------------------
 
     # ---------------------------------INITIAL------------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_initial(self):
         """
         Creating case: INITIAL. Mail: NO
@@ -73,10 +109,17 @@ class AnnouncementTestCase(TestCase):
             casetemplate_creator=self.case_template,
             state=State.objects.get(name="Initial"),
         )
-        self.assertEqual(len(mail.outbox), 0)  # No email for Initial.
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------STAGING------------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_staging(self):
         """
         Creating case: STAGING. Mail: NO
@@ -88,10 +131,16 @@ class AnnouncementTestCase(TestCase):
             state=State.objects.get(name="Staging"),
         )
 
-        self.assertEqual(len(mail.outbox), 0)  # No email for Staging.
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------OPEN---------------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_open(self):
         """
         Creating case: OPEN. Mail: YES
@@ -103,10 +152,18 @@ class AnnouncementTestCase(TestCase):
             state=State.objects.get(name="Open"),
         )
 
-        self.assertEqual(len(mail.outbox), 1)  # Test if the email is being sent.
-        self.assertIn("Case opened", mail.outbox[0].subject)
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+        self.assertIn("Case opened", intern_channel.get_last_message().subject)
 
     # ---------------------------------CLOSED-------------------------------------------
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_closed(self):
         """
         Creating case: CLOSED. Mail: NO
@@ -117,10 +174,17 @@ class AnnouncementTestCase(TestCase):
             casetemplate_creator=self.case_template,
             state=State.objects.get(name="Closed"),
         )
-        self.assertEqual(len(mail.outbox), 0)  # No email for Closed.
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------INITIAL-INITIAL----------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_initial_initial(self):
         """
         Creating a case: INITIAL > INITIAL. Mail: NO
@@ -133,12 +197,17 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Initial")
         self.case.save()
-        self.assertEqual(
-            len(mail.outbox), 0
-        )  # No email for Initial> Initial. FAIL: New Case.
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------INITIAL-STAGING----------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_initial_staging(self):
         """
         Creating a case: INITIAL > STAGING. Mail: NO
@@ -151,10 +220,17 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Staging")
         self.case.save()
-        self.assertEqual(len(mail.outbox), 0)
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------INITIAL-OPEN-------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_initial_open(self):
         """
         Creating a case: INITIAL > OPEN. Mail: YES
@@ -167,10 +243,19 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Open")
         self.case.save()
-        self.assertEqual(len(mail.outbox), 1)  # Case Opened.
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+        self.assertIn("Case opened", intern_channel.get_last_message().subject)
 
     # ---------------------------------INITIAL-CLOSED-----------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_initial_closed(self):
         """
         Creating a case: INITIAL > CLOSED. Mail: NO
@@ -183,10 +268,17 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Closed")
         self.case.state.save()
-        self.assertEqual(len(mail.outbox), 0)
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------STAGING-INITIAL----------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_staging_initial(self):
         """
         Creating a case: STAGING > INITIAL. Mail: NO
@@ -199,12 +291,17 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Initial")
         self.case.state.save()
-        self.assertEqual(
-            len(mail.outbox), 0
-        )  # FAIL: 2 emails: New Case + Case status Updated.
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------STAGING-STAGING----------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_staging_staging(self):
         """
         Creating a case: STAGING > STAGING. Mail: NO
@@ -217,10 +314,17 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Staging")
         self.case.save()
-        self.assertEqual(len(mail.outbox), 0)  # FAIL:  New Case
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------STAGING-OPEN-------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_staging_open(self):
         """
         Creating a case: STAGING > OPEN. Mail: YES
@@ -233,10 +337,19 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Open")
         self.case.save()
-        self.assertEqual(len(mail.outbox), 1)  # FAIL: New Case + Case opened
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+        self.assertIn("Case opened", intern_channel.get_last_message().subject)
 
     # ---------------------------------STAGING-CLOSED-----------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_staging_closed(self):
         """
         Creating a case: STAGING > CLOSED. Mail: NO
@@ -249,10 +362,17 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Closed")
         self.case.save()
-        self.assertEqual(len(mail.outbox), 0)  # FAIL: New Case + Case Closed
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------OPEN-INITIAL-------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_open_initial(self):
         """
         Creating a case: open > initial. Mail: NO
@@ -265,10 +385,20 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Initial")
         self.case.state.save()
-        self.assertEqual(len(mail.outbox), 1)  # Just the mail from Open case.
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        # Just the mail from Open case
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+        self.assertIn("Case opened", intern_channel.get_last_message().subject)
 
     # ---------------------------------OPEN-STAGING-------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_open_staging(self):
         """
         Creating a case: open > staging. Not possible
@@ -281,10 +411,20 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Staging")
         self.case.state.save()
-        self.assertEqual(len(mail.outbox), 1)  # Just the mail from Open case.
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        # Just the mail from Open case
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+        self.assertIn("Case opened", intern_channel.get_last_message().subject)
 
     # ---------------------------------OPEN-OPEN----------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_open_open(self):
         """
         Creating a case: open > open. Mail: NO
@@ -297,12 +437,20 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Open")
         self.case.save()
-        self.assertEqual(
-            len(mail.outbox), 1
-        )  # 1 email will be the creation open email.
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        # Just the mail from Open case created
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+        self.assertIn("Case opened", intern_channel.get_last_message().subject)
 
     # ---------------------------------OPEN-CLOSED--------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_open_closed(self):
         """
         Creating a case: open > closed. Mail: Case closed
@@ -315,11 +463,19 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Closed")
         self.case.save()
-        self.assertIn("Case closed", mail.outbox[1].subject)
-        self.assertEqual(len(mail.outbox), 2)  #
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 2)
+        self.assertIn("Re: ", intern_channel.get_last_message().subject)
 
     # ---------------------------------CLOSED-INITIAL-----------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_closed_initial(self):
         """
         Creating a case: closed > Initial. Mail: NO
@@ -332,13 +488,20 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Initial")
         self.case.state.save()
-        self.assertEqual(len(mail.outbox), 0)
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------CLOSED-STAGING-----------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_closed_staging(self):
         """
-        Creating a case: closed > Staging . Mail: NO
+        Creating a case: closed > Staging . Mail: YES
         """
         self.case = Case.objects.create(
             priority=self.priority,
@@ -348,10 +511,19 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Staging")
         self.case.save()
-        self.assertEqual(len(mail.outbox), 1)  # Case status updated
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+        self.assertIn("Case status updated", intern_channel.get_last_message().subject)
 
     # ---------------------------------CLOSED-OPEN--------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_closed_open(self):
         """
         Creating a case: closed > . Not possible.
@@ -364,12 +536,17 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Open")
         self.case.state.save()
-        self.assertEqual(
-            len(mail.outbox), 0
-        )  # New Open Case + Case Closed. Está bien así?
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ---------------------------------CLOSED-CLOSED------------------------------------
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_closed_closed(self):
         """
         Creating a case: closed > . Mail: NO
@@ -382,13 +559,19 @@ class AnnouncementTestCase(TestCase):
         )
         self.case.state = State.objects.get(name="Closed")
         self.case.save()
-        self.assertEqual(
-            len(mail.outbox), 0
-        )  # New Open Case + Case Closed. Está bien así?
+
+        intern_channel = self.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        self.assertIsNone(intern_channel)
 
     # ----------------------------------------------------------------------------------
 
-    # #-------------------------------EVENT-TESTS----------------------------------------
+    # -------------------------------EVENT-TESTS----------------------------------------
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_template_email(self):
         """
         Creating case template and coinciding event. Testing correct case integration and email sending, as well as attachments.
@@ -396,7 +579,7 @@ class AnnouncementTestCase(TestCase):
         self.case_template = CaseTemplate.objects.create(
             priority=self.priority,
             cidr=None,
-            domain="unlp.edu.ar",
+            domain=self.domain,
             event_taxonomy=self.taxonomy,
             event_feed=self.feed,
             case_tlp=self.tlp,
@@ -405,7 +588,7 @@ class AnnouncementTestCase(TestCase):
             active=True,
         )
         self.event = Event.objects.create(
-            domain="info.unlp.edu.ar",
+            domain=self.subdomain,
             taxonomy=self.taxonomy,
             feed=self.feed,
             tlp=self.tlp,
@@ -413,37 +596,58 @@ class AnnouncementTestCase(TestCase):
             notes="Some notes",
             priority=self.priority,
         )
-        attachments = [
-            {
-                "name": "attachment1.txt",
-                "file": b"This is the content of attachment 1.",
-            },
-            {
-                "name": "attachment2.txt",
-                "file": b"This is the content of attachment 2.",
-            },
-        ]
-        self.evidence_file = SimpleUploadedFile(
+        evidence_file = SimpleUploadedFile(
             "file.txt", b"file_content", content_type="text/plain"
         )
 
-        self.evidence = Evidence.objects.create(
-            file=self.evidence_file,
+        evidence = Evidence.objects.create(
+            file=evidence_file,
             object_id=self.event.id,
             content_type=ContentType.objects.get_for_model(Event),
         )
 
-        self.event.save()
         last_case = Case.objects.order_by("-id").first()
-        last_case.state = State.objects.get(name="Closed")
+
+        intern_channel = last_case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        affected_channel = self.event.communication_channels.filter(
+            communication_types__type="affected"
+        ).first()
+
         self.assertEqual(last_case, self.event.case)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(
-            self.evidence.attachment_name,
-            f"Event({self.event.uuid})_{self.event.created.date()}_{self.evidence.filename}",
+
+        # Assert email was sent in intern channel
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+        self.assertIn("Case opened", intern_channel.get_last_message().subject)
+
+        # Assert email was sent in affected channel
+        self.assertIsNotNone(affected_channel)
+        self.assertEqual(len(affected_channel.get_messages()), 1)
+        self.assertIn("Case opened", affected_channel.get_last_message().subject)
+
+        expected_evidence_name = (
+            f"Event({self.event.uuid})_{self.event.created.date()}_{evidence.filename}"
         )
 
-    # #-------------------------------EVENT-TESTS----------------------------------------
+        self.assertEqual(evidence.attachment_name, expected_evidence_name)
+
+        # Assert channelable attachments
+        self.assertEqual(len(intern_channel.channelable.email_attachments), 1)
+        self.assertEqual(
+            intern_channel.channelable.email_attachments[0]["name"],
+            expected_evidence_name,
+        )
+        self.assertEqual(len(affected_channel.channelable.email_attachments), 1)
+        self.assertEqual(
+            affected_channel.channelable.email_attachments[0]["name"],
+            expected_evidence_name,
+        )
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_template_email_with_assigned_name(self):
         """
         Creating case template and coinciding event. Testing correct case integration and email sending, as well as attachments.
@@ -451,7 +655,7 @@ class AnnouncementTestCase(TestCase):
         self.case_template = CaseTemplate.objects.create(
             priority=self.priority,
             cidr=None,
-            domain="unlp.edu.ar",
+            domain=self.domain,
             event_taxonomy=self.taxonomy,
             event_feed=self.feed,
             case_tlp=self.tlp,
@@ -460,7 +664,7 @@ class AnnouncementTestCase(TestCase):
             active=True,
         )
         self.event = Event.objects.create(
-            domain="info.unlp.edu.ar",
+            domain=self.subdomain,
             taxonomy=self.taxonomy,
             feed=self.feed,
             tlp=self.tlp,
@@ -468,38 +672,59 @@ class AnnouncementTestCase(TestCase):
             notes="Some notes",
             priority=self.priority,
         )
-        attachments = [
-            {
-                "name": "attachment1.txt",
-                "file": b"This is the content of attachment 1.",
-            },
-            {
-                "name": "attachment2.txt",
-                "file": b"This is the content of attachment 2.",
-            },
-        ]
-        self.evidence_file = SimpleUploadedFile(
+
+        evidence_file = SimpleUploadedFile(
             "file.txt", b"file_content", content_type="text/plain"
         )
 
-        self.evidence = Evidence.objects.create(
-            file=self.evidence_file,
+        evidence = Evidence.objects.create(
+            file=evidence_file,
             object_id=self.event.id,
             content_type=ContentType.objects.get_for_model(Event),
             assigned_name="EjemploEvidenciá_test-1.archivo_adjunto.txt",
         )
 
-        self.event.save()
         last_case = Case.objects.order_by("-id").first()
-        last_case.state = State.objects.get(name="Closed")
+
+        intern_channel = last_case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        affected_channel = self.event.communication_channels.filter(
+            communication_types__type="affected"
+        ).first()
+
         self.assertEqual(last_case, self.event.case)
-        self.assertEqual(len(mail.outbox), 1)
+
+        # Assert email was sent in intern channel
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+        self.assertIn("Case opened", intern_channel.get_last_message().subject)
+
+        # Assert email was sent in affected channel
+        self.assertIsNotNone(affected_channel)
+        self.assertEqual(len(affected_channel.get_messages()), 1)
+        self.assertIn("Case opened", affected_channel.get_last_message().subject)
+
+        expected_evidence_name = f"Event({self.event.uuid})_{self.event.created.date()}_EjemploEvidenciá-test-1_{evidence.filename}"
+
+        self.assertEqual(evidence.attachment_name, expected_evidence_name)
+
+        # Assert channelable attachments
+        self.assertEqual(len(intern_channel.channelable.email_attachments), 1)
         self.assertEqual(
-            self.evidence.attachment_name,
-            f"Event({self.event.uuid})_{self.event.created.date()}_EjemploEvidenciá-test-1_{self.evidence.filename}",
+            intern_channel.channelable.email_attachments[0]["name"],
+            expected_evidence_name,
+        )
+        self.assertEqual(len(affected_channel.channelable.email_attachments), 1)
+        self.assertEqual(
+            affected_channel.channelable.email_attachments[0]["name"],
+            expected_evidence_name,
         )
 
     # ----------------------------------------------------------------------------------
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     @override_config(TEAM_EMAIL="team@ngen.com")
     def test_event_contact(self):
         """
@@ -508,7 +733,7 @@ class AnnouncementTestCase(TestCase):
         # Assigning new_contact to the domain test.com
         new_contact = Contact(
             name="Test",
-            username="test_contacts",
+            username="test_contact@example.com",
             public_key="...",
             type=Contact.TYPE.email,
             role=Contact.ROLE.technical,
@@ -544,14 +769,36 @@ class AnnouncementTestCase(TestCase):
         )
         # Taking the last created case, making sure it's the one just created, and asserting that the emails are sent to the correct recipients.
         last_case = Case.objects.order_by("-id").first()
-        self.assertEqual(last_case, self.event.case)
-        # Note: first email is sent to the contacts.
-        first_email = mail.outbox[0]
-        self.assertEqual(first_email.to[0], "test_contacts")
-        # Lastly it's sent to admin.
-        second_email = mail.outbox[1]
-        self.assertEqual(second_email.to[0], "team@ngen.com")
 
+        intern_channel = last_case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        affected_channel = self.event.communication_channels.filter(
+            communication_types__type="affected"
+        ).first()
+
+        self.assertEqual(last_case, self.event.case)
+
+        # Assert email is sent to the contacts.
+        self.assertIsNotNone(affected_channel)
+        self.assertEqual(len(affected_channel.get_messages()), 1)
+        self.assertEqual(
+            new_contact.username,
+            affected_channel.get_last_message().recipients[0]["email"],
+        )
+
+        # Assert email is sent to team email
+        self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+        self.assertEqual(
+            "team@ngen.com",
+            intern_channel.get_last_message().recipients[0]["email"],
+        )
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_config(TEAM_EMAIL="team@ngen.com")
     def test_2event_case(self):
         """
         Creating two events with different set contacts, then testing correct email sending.
@@ -559,7 +806,7 @@ class AnnouncementTestCase(TestCase):
         # First, creating test contacts.
         new_contactA = Contact(
             name="A",
-            username="test_A",
+            username="test_A@example.com",
             public_key="...",
             type=Contact.TYPE.email,
             role=Contact.ROLE.technical,
@@ -567,7 +814,7 @@ class AnnouncementTestCase(TestCase):
         new_contactA.save()
         new_contactB = Contact(
             name="B",
-            username="test_B",
+            username="test_B@example.com",
             public_key="...",
             type=Contact.TYPE.email,
             role=Contact.ROLE.technical,
@@ -576,7 +823,7 @@ class AnnouncementTestCase(TestCase):
 
         new_contactC = Contact(
             name="C",
-            username="test_C",
+            username="test_C@example.com",
             public_key="...",
             type=Contact.TYPE.email,
             role=Contact.ROLE.technical,
@@ -585,7 +832,7 @@ class AnnouncementTestCase(TestCase):
 
         new_contactD = Contact(
             name="D",
-            username="test_D",
+            username="test_D@example.com",
             public_key="...",
             type=Contact.TYPE.email,
             role=Contact.ROLE.technical,
@@ -593,8 +840,12 @@ class AnnouncementTestCase(TestCase):
         new_contactD.save()
 
         # Adding the contacts to a list for later testing purposes
-        contact_list1 = ["test_A", "test_B", "test_C"]
-        contact_list2 = ["test_D"]
+        contact_list1 = [
+            "test_A@example.com",
+            "test_B@example.com",
+            "test_C@example.com",
+        ]
+        contact_list2 = ["test_D@example.com"]
 
         # Linking contacts to networks
 
@@ -634,7 +885,7 @@ class AnnouncementTestCase(TestCase):
             case_lifecycle="auto_open",
             active=True,
         )
-        self.event = Event.objects.create(
+        self.event_1 = Event.objects.create(
             domain="test1.com",
             taxonomy=self.taxonomy,
             feed=self.feed,
@@ -643,7 +894,7 @@ class AnnouncementTestCase(TestCase):
             notes="Some notes",
             priority=self.priority,
         )
-        self.event = Event.objects.create(
+        self.event_2 = Event.objects.create(
             domain="test2.com",
             taxonomy=self.taxonomy,
             feed=self.feed,
@@ -652,9 +903,49 @@ class AnnouncementTestCase(TestCase):
             notes="Some notes",
             priority=self.priority,
         )
-        # First email is sent to recipients
-        first_email = mail.outbox[0]
-        self.assertEqual(first_email.to, contact_list1)
-        # Second email is sent to admin, so taking third mail
-        third_email = mail.outbox[2]
-        self.assertEqual(third_email.to, contact_list2)
+
+        intern_channel_1 = self.event_1.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        intern_channel_2 = self.event_2.case.communication_channels.filter(
+            communication_types__type="intern"
+        ).first()
+
+        affected_channel_1 = self.event_1.communication_channels.filter(
+            communication_types__type="affected"
+        ).first()
+
+        affected_channel_2 = self.event_2.communication_channels.filter(
+            communication_types__type="affected"
+        ).first()
+
+        self.assertIsNotNone(affected_channel_1)
+        self.assertEqual(len(affected_channel_1.get_messages()), 1)
+        recipient_emails = [
+            recipient["email"]
+            for recipient in affected_channel_1.get_last_message().recipients
+        ]
+        self.assertEqual(recipient_emails, contact_list1)
+
+        self.assertIsNotNone(affected_channel_2)
+        self.assertEqual(len(affected_channel_2.get_messages()), 1)
+        recipient_emails = [
+            recipient["email"]
+            for recipient in affected_channel_2.get_last_message().recipients
+        ]
+        self.assertEqual(recipient_emails, contact_list2)
+
+        self.assertIsNotNone(intern_channel_1)
+        self.assertEqual(len(intern_channel_1.get_messages()), 1)
+        self.assertEqual(
+            "team@ngen.com",
+            intern_channel_1.get_last_message().recipients[0]["email"],
+        )
+
+        self.assertIsNotNone(intern_channel_2)
+        self.assertEqual(len(intern_channel_2.get_messages()), 1)
+        self.assertEqual(
+            "team@ngen.com",
+            intern_channel_2.get_last_message().recipients[0]["email"],
+        )

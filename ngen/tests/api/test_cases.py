@@ -1,5 +1,8 @@
 from django.urls import reverse
 from rest_framework import status
+from unittest.mock import patch
+from django.conf import settings
+from django.test import override_settings
 
 from ngen.models import (
     Case,
@@ -11,8 +14,28 @@ from ngen.models import (
     Taxonomy,
     Feed,
     User,
+    Network,
+    Contact,
+    NetworkEntity,
 )
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
+
+
+def use_test_email_env():
+    """
+    Change constance config to use test email environment
+    """
+    return patch.dict(
+        settings.CONSTANCE_CONFIG,
+        {
+            "EMAIL_HOST": ("ngen-mail", ""),
+            "EMAIL_SENDER": ("test@ngen.com", ""),
+            "EMAIL_USERNAME": ("username", ""),
+            "EMAIL_PASSWORD": ("password", ""),
+            "EMAIL_PORT": ("1025", ""),
+            "EMAIL_USE_TLS": (False, ""),
+        },
+    )
 
 
 class TestCase(APITestCaseWithLogin):
@@ -21,6 +44,7 @@ class TestCase(APITestCaseWithLogin):
     """
 
     fixtures = [
+        "tests/contact.json",
         "tests/priority.json",
         "tests/tlp.json",
         "tests/user.json",
@@ -29,6 +53,7 @@ class TestCase(APITestCaseWithLogin):
         "tests/taxonomy.json",
         "tests/case_template.json",
         "tests/user.json",
+        "tests/network_entity.json",
     ]
 
     @classmethod
@@ -58,7 +83,20 @@ class TestCase(APITestCaseWithLogin):
         cls.taxonomy = Taxonomy.objects.get(slug="accessible_afp_report")
         cls.user = User.objects.get(username="ngen")
         cls.case_template = CaseTemplate.objects.get(pk=1)
+        cls.domain = "test.com"
+        cls.contact = Contact.objects.get(pk=1)
+        cls.network_entity = NetworkEntity.objects.get(pk=1)
 
+        cls.network = Network.objects.create(
+            domain=cls.domain,
+            active=True,
+            type="external",
+            network_entity=cls.network_entity,
+        )
+        cls.network.contacts.set([cls.contact])
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_get_list(self):
         """
         This will test successful Case GET list
@@ -83,6 +121,8 @@ class TestCase(APITestCaseWithLogin):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], len(cases))
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_get_detail(self):
         """
         This will test successful Case GET detail
@@ -98,13 +138,15 @@ class TestCase(APITestCaseWithLogin):
         response = self.client.get(self.url_detail(case.pk))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_post_with_valid_events(self):
         """
         This will test successful Case POST
         """
 
         _ = Event.objects.create(
-            domain="test.com",
+            domain=self.domain,
             priority=self.priority,
             taxonomy=self.taxonomy,
             feed=self.feed,
@@ -123,6 +165,8 @@ class TestCase(APITestCaseWithLogin):
         response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_post_with_empty_events(self):
         """
         This will test successful Case POST
@@ -138,6 +182,8 @@ class TestCase(APITestCaseWithLogin):
         response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_post_with_invalid_events(self):
         """
         This will test successful Case POST
@@ -153,6 +199,8 @@ class TestCase(APITestCaseWithLogin):
         response = self.client.post(self.url_list, data=json_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_patch(self):
         """
         This will test successful Case PATCH
@@ -174,6 +222,8 @@ class TestCase(APITestCaseWithLogin):
         response = self.client.patch(self.url_detail(case.pk), data=json_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_put(self):
         """
         This will test successful Case PUT
@@ -200,6 +250,8 @@ class TestCase(APITestCaseWithLogin):
         response = self.client.put(self.url_detail(case.pk), data=json_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_delete(self):
         """
         This will test successful Case DELETE
