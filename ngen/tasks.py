@@ -269,6 +269,11 @@ def async_send_email(self, email_message_id: int):
 
         email.extra_headers = headers
 
+        attachments = get_attachments(email_message)
+
+        for attachment in attachments:
+            email.attach(attachment["name"], attachment["file"].read())
+
         email.send(fail_silently=False)
 
         email_message.sent = True
@@ -304,3 +309,23 @@ def retrieve_emails():
         return True
     except Exception:
         return False
+
+
+# Helper functions
+
+
+def get_attachments(email_message):
+    """
+    Helper function to get email attachments.
+    Returns a list of attachments.
+    """
+    message_channel = ngen.models.CommunicationChannel.objects.filter(
+        message_id=email_message.root_message_id
+    ).first()
+
+    if message_channel:
+        attachments = message_channel.channelable.email_attachments
+    else:
+        attachments = email_message.attachments
+
+    return attachments
