@@ -4,6 +4,7 @@ from django.test import TestCase
 from unittest.mock import patch
 from django.conf import settings
 from django.test import override_settings
+from django.utils.translation import gettext_lazy
 
 from ngen.models import (
     Evidence,
@@ -158,7 +159,7 @@ class AnnouncementTestCase(TestCase):
 
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("Case opened", intern_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
 
     # ---------------------------------CLOSED-------------------------------------------
 
@@ -250,7 +251,7 @@ class AnnouncementTestCase(TestCase):
 
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("Case opened", intern_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
 
     # ---------------------------------INITIAL-CLOSED-----------------------------------
 
@@ -344,7 +345,7 @@ class AnnouncementTestCase(TestCase):
 
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("Case opened", intern_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
 
     # ---------------------------------STAGING-CLOSED-----------------------------------
 
@@ -393,7 +394,7 @@ class AnnouncementTestCase(TestCase):
         # Just the mail from Open case
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("Case opened", intern_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
 
     # ---------------------------------OPEN-STAGING-------------------------------------
 
@@ -419,7 +420,7 @@ class AnnouncementTestCase(TestCase):
         # Just the mail from Open case
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("Case opened", intern_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
 
     # ---------------------------------OPEN-OPEN----------------------------------------
 
@@ -445,7 +446,7 @@ class AnnouncementTestCase(TestCase):
         # Just the mail from Open case created
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("Case opened", intern_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
 
     # ---------------------------------OPEN-CLOSED--------------------------------------
 
@@ -518,7 +519,7 @@ class AnnouncementTestCase(TestCase):
 
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("Case status updated", intern_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case status updated")), intern_channel.get_last_message().subject)
 
     # ---------------------------------CLOSED-OPEN--------------------------------------
 
@@ -621,12 +622,12 @@ class AnnouncementTestCase(TestCase):
         # Assert email was sent in intern channel
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("Case opened", intern_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
 
         # Assert email was sent in affected channel
         self.assertIsNotNone(affected_channel)
         self.assertEqual(len(affected_channel.get_messages()), 1)
-        self.assertIn("Case opened", affected_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case opened")), affected_channel.get_last_message().subject)
 
         expected_evidence_name = (
             f"Event({self.event.uuid})_{self.event.created.date()}_{evidence.filename}"
@@ -636,6 +637,7 @@ class AnnouncementTestCase(TestCase):
 
         # Assert channelable attachments
         self.assertEqual(len(intern_channel.channelable.email_attachments), 1)
+
         self.assertEqual(
             intern_channel.channelable.email_attachments[0]["name"],
             expected_evidence_name,
@@ -699,12 +701,12 @@ class AnnouncementTestCase(TestCase):
         # Assert email was sent in intern channel
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("Case opened", intern_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
 
         # Assert email was sent in affected channel
         self.assertIsNotNone(affected_channel)
         self.assertEqual(len(affected_channel.get_messages()), 1)
-        self.assertIn("Case opened", affected_channel.get_last_message().subject)
+        self.assertIn(str(gettext_lazy("Case opened")), affected_channel.get_last_message().subject)
 
         expected_evidence_name = f"Event({self.event.uuid})_{self.event.created.date()}_EjemploEvidenciá-test-1_{evidence.filename}"
 

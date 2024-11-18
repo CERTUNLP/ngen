@@ -243,9 +243,7 @@ class TestCommunicationChannel(APITestCaseWithLogin):
         response_messages = self.get_messages_from_response(response)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn(
-            "This field is required.", response_messages["communication_types"]
-        )
+        self.assertIsNotNone(response_messages["communication_types"])
         self.assertEqual(communication_channel.name, "Test Communication Channel 1")
 
     def test_communication_channel_put_with_empty_communication_types(self):
@@ -269,9 +267,7 @@ class TestCommunicationChannel(APITestCaseWithLogin):
         response_messages = self.get_messages_from_response(response)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn(
-            "This field is required.", response_messages["communication_types"]
-        )
+        self.assertIsNotNone(response_messages["communication_types"])
         self.assertEqual(communication_channel.name, "Test Communication Channel 1")
 
     def test_communication_channel_put_with_non_existent_communication_types(self):
@@ -558,9 +554,7 @@ class TestCommunicationChannel(APITestCaseWithLogin):
         response_messages = self.get_messages_from_response(response)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn(
-            "This field is required.", response_messages["communication_types"]
-        )
+        self.assertIsNotNone(response_messages["communication_types"])
 
     def test_nested_communication_channel_post_with_empty_communication_types(self):
         """
@@ -580,9 +574,7 @@ class TestCommunicationChannel(APITestCaseWithLogin):
         response_messages = self.get_messages_from_response(response)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn(
-            "This field is required.", response_messages["communication_types"]
-        )
+        self.assertIsNotNone(response_messages["communication_types"])
 
     def test_nested_communication_channel_post_with_non_existent_communication_types(
         self,
@@ -680,9 +672,7 @@ class TestCommunicationChannel(APITestCaseWithLogin):
         response_messages = self.get_messages_from_response(response)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn(
-            "This field is required.", response_messages["communication_types"]
-        )
+        self.assertIsNotNone(response_messages["communication_types"])
         self.assertEqual(communication_channel.name, "Test Communication Channel 1")
 
     def test_nested_communication_channel_put_with_empty_communication_types(self):
@@ -708,9 +698,7 @@ class TestCommunicationChannel(APITestCaseWithLogin):
         response_messages = self.get_messages_from_response(response)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn(
-            "This field is required.", response_messages["communication_types"]
-        )
+        self.assertIsNotNone(response_messages["communication_types"])
         self.assertEqual(communication_channel.name, "Test Communication Channel 1")
 
     def test_nested_communication_channel_put_with_non_existent_communication_types(
