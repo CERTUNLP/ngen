@@ -253,22 +253,7 @@ def async_send_email(self, email_message_id: int):
             fail_silently=False,
         )
 
-        rendered_template = {}
-
-        if email_message.template:
-            message_channel = ngen.models.CommunicationChannel.objects.filter(
-                message_id=email_message.root_message_id
-            ).first()
-
-            template_params = (
-                message_channel.channelable.template_params
-                if message_channel
-                else email_message.template_params
-            )
-
-            rendered_template = Communication.render_template(
-                email_message.template, extra_params=template_params
-            )
+        rendered_template = get_rendered_template(email_message)
 
         headers = {
             "Message-ID": email_message.message_id,
@@ -287,10 +272,10 @@ def async_send_email(self, email_message_id: int):
             connection=email_connection,
         )
 
-        if email_message.template:
+        if rendered_template:
             email.attach_alternative(rendered_template.get("html"), "text/html")
             if not email_message.body:
-                email.body = rendered_template.get("text")
+                email_message.body = rendered_template.get("text")
 
         email.extra_headers = headers
 
@@ -339,10 +324,31 @@ def retrieve_emails():
 # Helper functions
 
 
+def get_rendered_template(email_message):
+    """
+    Helper function to render email template.
+    """
+    if email_message.template:
+        message_channel = ngen.models.CommunicationChannel.objects.filter(
+            message_id=email_message.root_message_id
+        ).first()
+
+        template_params = (
+            message_channel.channelable.template_params
+            if message_channel
+            else email_message.template_params
+        )
+
+        return Communication.render_template(
+            email_message.template, extra_params=template_params
+        )
+
+    return {}
+
+
 def get_attachments(email_message):
     """
     Helper function to get email attachments.
-    Returns a list of attachments.
     """
     message_channel = ngen.models.CommunicationChannel.objects.filter(
         message_id=email_message.root_message_id
