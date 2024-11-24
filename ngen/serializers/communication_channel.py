@@ -1,27 +1,8 @@
 # pylint: disable=protected-access, disable=W0223
 from rest_framework import serializers
-
 from ngen import models
-from ngen.serializers.auth import UserMinifiedSerializer
 from ngen.serializers.common.fields import GenericRelationField
 from ngen.serializers.communication_type import CommunicationTypeSerializer
-from ngen.serializers.constituency import ContactSerializer
-
-
-class NetworksWithContactsSerializer(serializers.Serializer):
-    """
-    NetworksWithContactsSerializer class
-    Contract: {cidr_or_domain: [contact1, contact2, ...]}
-    """
-
-    def to_representation(self, instance):
-        key = list(instance.keys())[0]
-        contacts = instance[key]
-        serialized_contacts = ContactSerializer(
-            contacts, context=self.context, many=True
-        ).data
-
-        return {key: serialized_contacts}
 
 
 class CommunicationChannelContactsSerializer(serializers.Serializer):
@@ -33,18 +14,19 @@ class CommunicationChannelContactsSerializer(serializers.Serializer):
         representation = super().to_representation(instance)
 
         if "affected" in instance:
-            representation["affected"] = NetworksWithContactsSerializer(
-                instance["affected"],
-                context=self.context,
-                many=True,
-            ).data
+            representation["affected"] = serializers.ListField(
+                child=serializers.EmailField()
+            ).to_representation(instance["affected"])
 
         if "reporter" in instance:
-            representation["reporter"] = UserMinifiedSerializer(
-                instance["reporter"],
-                context=self.context,
-                many=True,
-            ).data
+            representation["reporter"] = serializers.ListField(
+                child=serializers.EmailField()
+            ).to_representation(instance["reporter"])
+
+        if "intern" in instance:
+            representation["intern"] = serializers.ListField(
+                child=serializers.EmailField()
+            ).to_representation(instance["intern"])
 
         return representation
 

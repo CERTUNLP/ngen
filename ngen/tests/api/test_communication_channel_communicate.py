@@ -85,10 +85,16 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
         """
         initial_count = EmailMessage.objects.count()
         expected_senders = [
-            {"name": self.app_email_username, "email": self.app_email_sender}
+            {
+                "name": self.app_email_username,
+                "email": self.app_email_sender,
+            }
         ]
         expected_recipients = [
-            {"name": self.contact.name, "email": self.contact.username},
+            {
+                "name": self.contact.username.split("@")[0],
+                "email": self.contact.username,
+            },
             {"name": "another_contact", "email": "another_contact@example.com"},
         ]
         params = {"subject": "Test Subject", "body": "Test Body"}
@@ -200,7 +206,10 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
             {"name": self.app_email_username, "email": self.app_email_sender}
         ]
         expected_recipients = [
-            {"name": self.contact.name, "email": self.contact.username},
+            {
+                "name": self.contact.username.split("@")[0],
+                "email": self.contact.username,
+            },
             {"name": "another_contact", "email": "another_contact@example.com"},
         ]
         expected_bcc_recipients = [{"name": "Bcc Contact", "email": "bcc@contact.com"}]
