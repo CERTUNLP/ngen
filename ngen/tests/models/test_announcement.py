@@ -43,6 +43,16 @@ def use_test_email_env():
     )
 
 
+def override_constance_config(**kwargs):
+    """
+    Override constance config
+    """
+    return patch.dict(
+        settings.CONSTANCE_CONFIG,
+        {**settings.CONSTANCE_CONFIG, **kwargs},
+    )
+
+
 class AnnouncementTestCase(TestCase):
     fixtures = [
         "tests/priority.json",
@@ -100,6 +110,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_initial(self):
         """
         Creating case: INITIAL. Mail: NO
@@ -121,6 +132,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_staging(self):
         """
         Creating case: STAGING. Mail: NO
@@ -159,12 +171,15 @@ class AnnouncementTestCase(TestCase):
 
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject
+        )
 
     # ---------------------------------CLOSED-------------------------------------------
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_closed(self):
         """
         Creating case: CLOSED. Mail: NO
@@ -186,6 +201,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_initial_initial(self):
         """
         Creating a case: INITIAL > INITIAL. Mail: NO
@@ -209,6 +225,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_initial_staging(self):
         """
         Creating a case: INITIAL > STAGING. Mail: NO
@@ -232,6 +249,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_initial_open(self):
         """
         Creating a case: INITIAL > OPEN. Mail: YES
@@ -251,12 +269,15 @@ class AnnouncementTestCase(TestCase):
 
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject
+        )
 
     # ---------------------------------INITIAL-CLOSED-----------------------------------
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_initial_closed(self):
         """
         Creating a case: INITIAL > CLOSED. Mail: NO
@@ -280,6 +301,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_staging_initial(self):
         """
         Creating a case: STAGING > INITIAL. Mail: NO
@@ -303,6 +325,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_staging_staging(self):
         """
         Creating a case: STAGING > STAGING. Mail: NO
@@ -326,6 +349,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_staging_open(self):
         """
         Creating a case: STAGING > OPEN. Mail: YES
@@ -345,12 +369,15 @@ class AnnouncementTestCase(TestCase):
 
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject
+        )
 
     # ---------------------------------STAGING-CLOSED-----------------------------------
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_staging_closed(self):
         """
         Creating a case: STAGING > CLOSED. Mail: NO
@@ -394,7 +421,9 @@ class AnnouncementTestCase(TestCase):
         # Just the mail from Open case
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject
+        )
 
     # ---------------------------------OPEN-STAGING-------------------------------------
 
@@ -420,7 +449,9 @@ class AnnouncementTestCase(TestCase):
         # Just the mail from Open case
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject
+        )
 
     # ---------------------------------OPEN-OPEN----------------------------------------
 
@@ -446,7 +477,9 @@ class AnnouncementTestCase(TestCase):
         # Just the mail from Open case created
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject
+        )
 
     # ---------------------------------OPEN-CLOSED--------------------------------------
 
@@ -477,6 +510,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_closed_initial(self):
         """
         Creating a case: closed > Initial. Mail: NO
@@ -500,6 +534,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_closed_staging(self):
         """
         Creating a case: closed > Staging . Mail: YES
@@ -519,12 +554,16 @@ class AnnouncementTestCase(TestCase):
 
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case status updated")), intern_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case status updated")),
+            intern_channel.get_last_message().subject,
+        )
 
     # ---------------------------------CLOSED-OPEN--------------------------------------
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_closed_open(self):
         """
         Creating a case: closed > . Not possible.
@@ -548,6 +587,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
     def test_case_closed_closed(self):
         """
         Creating a case: closed > . Mail: NO
@@ -622,12 +662,17 @@ class AnnouncementTestCase(TestCase):
         # Assert email was sent in intern channel
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject
+        )
 
         # Assert email was sent in affected channel
         self.assertIsNotNone(affected_channel)
         self.assertEqual(len(affected_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case opened")), affected_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case opened")),
+            affected_channel.get_last_message().subject,
+        )
 
         expected_evidence_name = (
             f"Event({self.event.uuid})_{self.event.created.date()}_{evidence.filename}"
@@ -701,12 +746,17 @@ class AnnouncementTestCase(TestCase):
         # Assert email was sent in intern channel
         self.assertIsNotNone(intern_channel)
         self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case opened")), intern_channel.get_last_message().subject
+        )
 
         # Assert email was sent in affected channel
         self.assertIsNotNone(affected_channel)
         self.assertEqual(len(affected_channel.get_messages()), 1)
-        self.assertIn(str(gettext_lazy("Case opened")), affected_channel.get_last_message().subject)
+        self.assertIn(
+            str(gettext_lazy("Case opened")),
+            affected_channel.get_last_message().subject,
+        )
 
         expected_evidence_name = f"Event({self.event.uuid})_{self.event.created.date()}_EjemploEvidenciá-test-1_{evidence.filename}"
 

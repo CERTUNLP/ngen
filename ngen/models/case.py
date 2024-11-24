@@ -8,6 +8,7 @@ from pathlib import Path
 
 from comment.models import Comment
 from constance import config
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -237,7 +238,7 @@ class Case(
         if self.state.attended:
             self.communicate_new_open()
         else:
-            if config.CASE_REPORT_NEW_CASES:
+            if settings.CONSTANCE_CONFIG["CASE_REPORT_NEW_CASES"][0]:
                 self.communicate_new()
 
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
