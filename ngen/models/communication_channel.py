@@ -104,7 +104,7 @@ class CommunicationChannel(AuditModelMixin):
         communication_channel = cls.objects.create(
             name=channel_name,
             channelable=channelable,
-            additional_contacts=additional_contacts,
+            additional_contacts=additional_contacts or [],
         )
         communication_types = [
             CommunicationType.objects.get_or_create(type=type)[0]
@@ -242,54 +242,18 @@ class CommunicationChannel(AuditModelMixin):
 
     def fetch_contact_emails(self):
         """
-        Method to fetch emails of every contact, formatted for sending emails
+        Method to fetch emails of every contact
         """
         contacts = self.fetch_contacts()
 
-        affected_contacts = []
-        reporter_contacts = []
-        intern_contacts = []
+        contact_emails = [
+            email for email_list in contacts.values() for email in email_list
+        ]
 
-        if "reporter" in contacts:
-            # Reporter contacts are User models
-            reporter_contacts = [
-                {"name": f"{c.first_name} {c.last_name}", "email": c.email}
-                for c in contacts["reporter"]
-            ]
+        if self.additional_contacts:
+            contact_emails += self.additional_contacts
 
-        if "affected" in contacts:
-            # Affected contacts are Contact models
-            affected_contacts = [
-                {"name": contact.name, "email": contact.username}
-                for domain in contacts["affected"]
-                for contact_queryset in domain.values()
-                for contact in contact_queryset
-                if contact.type == "email"
-            ]
-
-        if "intern" in contacts:
-            # Intern contacts are string emails
-            intern_contacts = [
-                {"name": email.split("@")[0], "email": email}
-                for email in contacts["intern"]
-            ]
-
-        # Additional contacts are email strings
-        additional_contacts = (
-            [
-                {"name": email.split("@")[0], "email": email}
-                for email in list(self.additional_contacts)
-            ]
-            if self.additional_contacts
-            else []
-        )
-
-        return (
-            affected_contacts
-            + reporter_contacts
-            + intern_contacts
-            + additional_contacts
-        )
+        return contact_emails
 
     def get_messages(self):
         """

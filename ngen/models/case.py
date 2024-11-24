@@ -694,8 +694,11 @@ class Event(
                     return network_contacts[0]
         return contacts
 
-    def get_affected_contacts(self):
-        contacts = []
+    def get_affected_contacts_extended(self):
+        """
+        Returns a list of dictionaries where the keys are the networks cidr or domain
+        and the values are the contacts of the network.
+        """
         priority = (
             self.case.priority.severity
             if self.case and self.case.priority
@@ -708,13 +711,35 @@ class Event(
             network_cidr_or_domain = network.cidr if network.cidr else network.domain
             contacts = list(network.email_contacts(priority))
             if not contacts:
-                contacts = network.ancestors_email_contacts(priority)
+                contacts = list(network.ancestors_email_contacts(priority))
             network_contacts.append({network_cidr_or_domain: contacts})
 
         return network_contacts
 
+    def get_affected_contacts(self):
+        priority = (
+            self.case.priority.severity
+            if self.case and self.case.priority
+            else self.priority.severity
+        )
+        affected_networks = ngen.models.Network.objects.parent_of(self)
+
+        affected_contacts = []
+        for network in affected_networks:
+            network_contacts = list(network.email_contacts(priority))
+            if not network_contacts:
+                network_contacts = list(network.ancestors_email_contacts(priority))
+            network_contact_emails = [
+                contact.username
+                for contact in network_contacts
+                if contact.type == "email"
+            ]
+            affected_contacts.extend(network_contact_emails)
+
+        return affected_contacts
+
     def get_reporter_contacts(self):
-        return [self.reporter]
+        return [self.reporter.email]
 
     def get_internal_contacts(self):
         return self.case.get_internal_contacts() if self.case else []

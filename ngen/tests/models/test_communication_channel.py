@@ -178,12 +178,10 @@ class CommunicationChannelTest(TestCase):
         )
 
         fetch_contacts_result = self.communication_channel.fetch_contacts()
+
         self.assertTrue("affected" in fetch_contacts_result)
         self.assertEqual(len(fetch_contacts_result["affected"]), 1)
-
-        affected_domain = fetch_contacts_result["affected"][0]
-        self.assertEqual(list(affected_domain.keys())[0], self.domain)
-        self.assertEqual(affected_domain[self.domain], [self.contact])
+        self.assertEqual(fetch_contacts_result["affected"], [self.contact.username])
 
     def test_fetch_contacts_with_reporter_type(self):
         """
@@ -198,11 +196,10 @@ class CommunicationChannelTest(TestCase):
         )
 
         fetch_contacts_result = self.communication_channel.fetch_contacts()
-        self.assertTrue("reporter" in fetch_contacts_result)
 
-        reporter = fetch_contacts_result["reporter"][0]
+        self.assertTrue("reporter" in fetch_contacts_result)
         self.assertEqual(len(fetch_contacts_result["reporter"]), 1)
-        self.assertEqual(reporter, self.user)
+        self.assertEqual(fetch_contacts_result["reporter"], [self.user.email])
 
     @override_config(TEAM_EMAIL="team@email.com")
     def test_fetch_contacts_with_intern_type(self):
@@ -218,13 +215,10 @@ class CommunicationChannelTest(TestCase):
         )
 
         fetch_contacts_result = self.communication_channel.fetch_contacts()
-        self.assertTrue("intern" in fetch_contacts_result)
-
-        intern_contacts = fetch_contacts_result["intern"]
-
         assigned_and_team_emails = [self.user.email, "team@email.com"]
 
-        self.assertEqual(intern_contacts, assigned_and_team_emails)
+        self.assertTrue("intern" in fetch_contacts_result)
+        self.assertEqual(fetch_contacts_result["intern"], assigned_and_team_emails)
 
     def test_fetch_contact_emails_with_affected_type(self):
         """
@@ -239,8 +233,8 @@ class CommunicationChannelTest(TestCase):
         )
 
         fetch_contact_emails_result = self.communication_channel.fetch_contact_emails()
-        affected_contact = {"name": self.contact.name, "email": self.contact.username}
-        additional_contact = {"name": "some", "email": "some@contact.com"}
+        affected_contact = self.contact.username
+        additional_contact = "some@contact.com"
 
         expected_result = [affected_contact, additional_contact]
 
@@ -260,11 +254,8 @@ class CommunicationChannelTest(TestCase):
 
         fetch_contact_emails_result = self.communication_channel.fetch_contact_emails()
 
-        reporter = {
-            "name": f"{self.user.first_name} {self.user.last_name}",
-            "email": self.user.email,
-        }
-        additional_contact = {"name": "some", "email": "some@contact.com"}
+        reporter = self.user.email
+        additional_contact = "some@contact.com"
 
         expected_result = [reporter, additional_contact]
 
@@ -285,11 +276,8 @@ class CommunicationChannelTest(TestCase):
 
         fetch_contact_emails_result = self.communication_channel.fetch_contact_emails()
 
-        assigned_and_team_emails = [
-            {"name": self.user.email.split("@")[0], "email": self.user.email},
-            {"name": "team", "email": "team@email.com"},
-        ]
-        additional_contact = [{"name": "some", "email": "some@contact.com"}]
+        assigned_and_team_emails = [self.user.email, "team@email.com"]
+        additional_contact = ["some@contact.com"]
 
         expected_result = assigned_and_team_emails + additional_contact
 
