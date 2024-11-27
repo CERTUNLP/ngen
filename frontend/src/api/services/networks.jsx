@@ -18,14 +18,17 @@ const getNetworks = (currentPage, filters, order, asNetworkAdmin) => {
       return Promise.reject(error);
     });
 };
-const getNetwork = (url) => {
+const getNetwork = (url, avoidRaise = false) => {
   let messageError = `No se ha recuperado la informacion de la red. `;
   return apiInstance
-    .get(url)
+    .get(url, { avoidRaise: avoidRaise })
     .then((response) => {
       return response;
     })
     .catch((error) => {
+      if (avoidRaise) {
+        return Promise.reject(error);
+      }
       let statusText = error.response.statusText;
       messageError += statusText;
       setAlert(messageError, "error", "network");

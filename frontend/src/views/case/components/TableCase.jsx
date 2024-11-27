@@ -223,7 +223,7 @@ const TableCase = ({
                               caseItem.name,
                               caseItem.date,
                               priorityNames[caseItem.priority],
-                              tlpNames[caseItem.tlp].name,
+                              tlpNames[caseItem.tlp]?.name,
                               stateNames[caseItem.state],
                               userNames[caseItem.user_creator],
                               caseItem.events
@@ -260,7 +260,7 @@ const TableCase = ({
                 {!disablePriority && <td>{priorityNames[caseItem.priority]}</td>}
                 {!disableTlp && (
                   <td>
-                    <LetterFormat useBadge={true} stringToDisplay={tlpNames[caseItem.tlp].name} color={tlpNames[caseItem.tlp].color} />
+                    <LetterFormat useBadge={true} stringToDisplay={tlpNames[caseItem.tlp]?.name} color={tlpNames[caseItem.tlp]?.color} />
                   </td>
                 )}
                 <td>{stateNames[caseItem.state] || "-"}</td>
@@ -282,7 +282,7 @@ const TableCase = ({
                           caseItem.name,
                           caseItem.date,
                           priorityNames[caseItem.priority],
-                          tlpNames[caseItem.tlp].name,
+                          tlpNames[caseItem.tlp]?.name,
                           stateNames[caseItem.state],
                           userNames[caseItem.user_creator]
                         )

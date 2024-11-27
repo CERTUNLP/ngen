@@ -4,7 +4,11 @@ from rest_framework import filters, viewsets, mixins
 
 from ngen import models, serializers
 from ngen.filters import FeedFilter, PriorityFilter, TlpFilter
-from ngen.permissions import CustomApiViewPermission, CustomModelPermissions
+from ngen.permissions import (
+    CustomApiViewPermission,
+    CustomModelPermissions,
+    CustomModelPermissionsOrMinified,
+)
 
 
 class FeedViewSet(viewsets.ModelViewSet):
@@ -18,7 +22,17 @@ class FeedViewSet(viewsets.ModelViewSet):
     filterset_class = FeedFilter
     ordering_fields = ["id", "created", "modified", "name", "slug", "events_count"]
     serializer_class = serializers.FeedSerializer
-    permission_classes = [CustomModelPermissions]
+    permission_classes = [CustomModelPermissionsOrMinified]
+
+    def get_serializer_class(self):
+        user = self.request.user
+
+        if user.has_perm("ngen.view_minified_feed") and not user.has_perm(
+            "ngen.view_feed"
+        ):
+            return serializers.FeedMinifiedSerializer
+
+        return self.serializer_class
 
 
 class PriorityViewSet(viewsets.ModelViewSet):
@@ -41,7 +55,17 @@ class PriorityViewSet(viewsets.ModelViewSet):
         "solve_time",
     ]
     serializer_class = serializers.PrioritySerializer
-    permission_classes = [CustomModelPermissions]
+    permission_classes = [CustomModelPermissionsOrMinified]
+
+    def get_serializer_class(self):
+        user = self.request.user
+
+        if user.has_perm("ngen.view_minified_priority") and not user.has_perm(
+            "ngen.view_priority"
+        ):
+            return serializers.PriorityMinifiedSerializer
+
+        return self.serializer_class
 
 
 class TlpViewSet(viewsets.ModelViewSet):
@@ -55,7 +79,17 @@ class TlpViewSet(viewsets.ModelViewSet):
     filterset_class = TlpFilter
     ordering_fields = ["id", "created", "modified", "name", "slug", "code"]
     serializer_class = serializers.TlpSerializer
-    permission_classes = [CustomModelPermissions]
+    permission_classes = [CustomModelPermissionsOrMinified]
+
+    def get_serializer_class(self):
+        user = self.request.user
+
+        if user.has_perm("ngen.view_minified_tlp") and not user.has_perm(
+            "ngen.view_tlp"
+        ):
+            return serializers.TlpMinifiedSerializer
+
+        return self.serializer_class
 
 
 class FeedMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
