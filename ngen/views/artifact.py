@@ -1,13 +1,27 @@
 from rest_framework import viewsets, mixins
 
 from ngen import models, serializers
-from ngen.permissions import CustomApiViewPermission, CustomModelPermissions
+from ngen.permissions import (
+    CustomApiViewPermission,
+    CustomModelPermissions,
+    CustomModelPermissionsOrMinified,
+)
 
 
 class ArtifactViewSet(viewsets.ModelViewSet):
     queryset = models.Artifact.objects.all()
     serializer_class = serializers.ArtifactSerializer
-    permission_classes = [CustomModelPermissions]
+    permission_classes = [CustomModelPermissionsOrMinified]
+
+    def get_serializer_class(self):
+        user = self.request.user
+
+        if user.has_perm("ngen.view_minified_artifact") and not user.has_perm(
+            "ngen.view_artifact"
+        ):
+            return serializers.ArtifactMinifiedSerializer
+
+        return self.serializer_class
 
 
 class ArtifactEnrichmentViewSet(viewsets.ModelViewSet):

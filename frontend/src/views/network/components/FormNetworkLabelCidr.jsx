@@ -11,7 +11,7 @@ const FormNetworkLabelCidr = (props) => {
   }, [props.url]);
 
   const showParentCidr = (url) => {
-    getNetwork(url)
+    getNetwork(url, true)
       .then((response) => {
         setNetwork(response.data);
       })

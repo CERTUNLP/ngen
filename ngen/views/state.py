@@ -3,7 +3,11 @@ from rest_framework import viewsets, filters, mixins
 
 from ngen import models, serializers
 from ngen.filters import StateFilter
-from ngen.permissions import CustomApiViewPermission, CustomModelPermissions
+from ngen.permissions import (
+    CustomApiViewPermission,
+    CustomModelPermissions,
+    CustomModelPermissionsOrMinified,
+)
 
 
 class StateViewSet(viewsets.ModelViewSet):
@@ -26,7 +30,17 @@ class StateViewSet(viewsets.ModelViewSet):
         "active",
     ]
     serializer_class = serializers.StateSerializer
-    permission_classes = [CustomModelPermissions]
+    permission_classes = [CustomModelPermissionsOrMinified]
+
+    def get_serializer_class(self):
+        user = self.request.user
+
+        if user.has_perm("ngen.view_minified_state") and not user.has_perm(
+            "ngen.view_state"
+        ):
+            return serializers.StateMinifiedSerializer
+
+        return self.serializer_class
 
 
 class EdgeViewSet(viewsets.ModelViewSet):

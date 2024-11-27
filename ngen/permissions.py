@@ -9,6 +9,32 @@ class CustomModelPermissions(DjangoModelPermissions):
         self.perms_map["GET"] = ["%(app_label)s.view_%(model_name)s"]
 
 
+class CustomModelPermissionsOrMinified(DjangoModelPermissions):
+
+    def __init__(self):
+        self.perms_map = copy.deepcopy(self.perms_map)  # from EunChong's answer
+        self.perms_map["GET"] = [
+            "%(app_label)s.view_%(model_name)s",
+            "%(app_label)s.view_minified_%(model_name)s",
+        ]
+
+    def has_permission(self, request, view):
+        if not request.user or (
+            not request.user.is_authenticated and self.authenticated_users_only
+        ):
+            return False
+
+        # Workaround to ensure DjangoModelPermissions are not applied
+        # to the root view when using DefaultRouter.
+        if getattr(view, "_ignore_model_permissions", False):
+            return True
+
+        queryset = self._queryset(view)
+        perms = self.get_required_permissions(request.method, queryset.model)
+
+        return any(request.user.has_perm(perm) for perm in perms)
+
+
 class IsSelf(BasePermission):
 
     def has_object_permission(self, request, view, obj):

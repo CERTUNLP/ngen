@@ -19,6 +19,7 @@ import PermissionCheck from "components/Auth/PermissionCheck";
 import { COMPONENT_URL } from "config/constant";
 
 const ReadEvent = ({ routeParams }) => {
+  const basePath = routeParams.basePath || "";
   const [body, setBody] = useState({});
   const [eventItem, setEventItem] = useState(null);
   const [buttonReturn] = useState(localStorage.getItem("button return"));
@@ -32,9 +33,20 @@ const ReadEvent = ({ routeParams }) => {
   //   localStorage.setItem('event', url);
   // };
 
+  function getUrlAsMe(url) {
+    if (basePath.includes("networkadmin") && !url.includes("networkadmin/")) {
+      if (url.includes("api/")) {
+        return url.replace("api/", "api/networkadmin/");
+      } else {
+        return "networkadmin/" + url;
+      }
+    }
+    return url;
+  }
+
   useEffect(() => {
     if (id.id) {
-      getEvent(COMPONENT_URL.event + id.id + "/")
+      getEvent(getUrlAsMe(COMPONENT_URL.event) + id.id + "/")
         .then((response) => {
           setBody(response.data);
           setEventItem(response.data);
@@ -138,7 +150,7 @@ const ReadEvent = ({ routeParams }) => {
       .catch();
   };
   const callbackEvent = (url, set) => {
-    getEvent(url)
+    getEvent(getUrlAsMe(url))
       .then((response) => {
         set(response.data);
       })
