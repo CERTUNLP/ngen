@@ -15,10 +15,10 @@ const FormCreateContact = (props) => {
   const [userOptions, setUserOptions] = useState([]);
   const { t } = useTranslation();
 
-  const [selectPriority, setSelectPriority] = useState();
-  const [selectRole, setSelectRole] = useState();
-  const [selectType, setSelectType] = useState();
-  const [selectUser, setSelectUser] = useState();
+  const [selectPriority, setSelectPriority] = useState("");
+  const [selectRole, setSelectRole] = useState("");
+  const [selectType, setSelectType] = useState("");
+  const [selectUser, setSelectUser] = useState("");
 
   useEffect(() => {
     getMinifiedPriority()
@@ -73,7 +73,7 @@ const FormCreateContact = (props) => {
         }
       });
     }
-  }, [prioritiesOption]);
+  }, [props]);
 
   const roleOptions = [
     {
@@ -101,19 +101,19 @@ const FormCreateContact = (props) => {
   const typeOptions = [
     {
       value: "email",
-      label: "Correo Electronico"
+      label: `${t("ngen.contact.type.email")}`
     },
     {
       value: "telegram",
-      label: "Telegram"
+      label: `${t("ngen.contact.type.telegram")}`
     },
     {
       value: "phone",
-      label: "Telefono"
+      label: `${t("ngen.contact.type.phone")}`
     },
     {
       value: "uri",
-      label: "URI"
+      label: `${t("ngen.contact.type.uri")}`
     }
   ];
 
@@ -130,7 +130,7 @@ const FormCreateContact = (props) => {
                 type="nombre"
                 placeholder={t("ngen.name_one")}
                 maxLength="100"
-                value={props.name}
+                value={props.name ?? ""}
                 onChange={(e) => props.setName(e.target.value)}
                 isInvalid={!validateName(props.name)}
               />
@@ -141,7 +141,7 @@ const FormCreateContact = (props) => {
               set={props.setRole}
               setSelect={setSelectRole}
               options={roleOptions}
-              value={selectRole}
+              value={selectRole ?? ""}
               placeholder={t("ngen.role_one")}
               required={true}
             />
@@ -151,7 +151,7 @@ const FormCreateContact = (props) => {
               set={props.setPriority}
               setSelect={setSelectPriority}
               options={prioritiesOption}
-              value={selectPriority}
+              value={selectPriority ?? ""}
               placeholder={t("ngen.priority_one")}
               required={true}
             />
@@ -163,7 +163,7 @@ const FormCreateContact = (props) => {
               set={props.setType}
               setSelect={setSelectType}
               options={typeOptions}
-              value={selectType}
+              value={selectType ?? ""}
               placeholder={t("ngen.type")}
               required={true}
             />
@@ -172,6 +172,7 @@ const FormCreateContact = (props) => {
             <FormContactSelectUsername
               selectedType={props.type}
               contact={props.contact}
+              value={props.contact ?? ""}
               setContact={props.setContact}
               setValidContact={setValidContact}
             />
@@ -183,7 +184,7 @@ const FormCreateContact = (props) => {
             <Form.Control
               type="string"
               placeholder={t("ngen.key.placeholder")}
-              value={props.keypgp}
+              value={props.keypgp ?? ""}
               maxLength="255"
               onChange={(e) => {
                 props.setKey(e.target.value);
@@ -198,7 +199,7 @@ const FormCreateContact = (props) => {
                 set={props.setUser}
                 setSelect={setSelectUser}
                 options={userOptions}
-                value={selectUser}
+                value={selectUser ?? ""}
                 placeholder={t("ngen.user")}
               />
             </Col>

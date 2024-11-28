@@ -413,6 +413,7 @@ const ReadCase = ({ routeParams }) => {
               disableUuid={false}
               disableColumnDelete={true}
               disableColumnCase={true}
+              basePath = {basePath}
             />
 
             <Card>

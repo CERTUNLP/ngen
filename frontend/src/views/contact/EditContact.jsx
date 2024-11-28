@@ -18,17 +18,17 @@ const EditContact = () => {
   const [supportedPriority, setSupportedPriority] = useState("");
   const [supportedContact, setSupportedContact] = useState("");
   const [supportedKey, setSupportedKey] = useState("");
-  const [networks, setNetworks] = useState([]);
   const [selectType, setSelectType] = useState("");
-  const [id] = useState(useParams());
   const [user, setUser] = useState("");
+  const { id } = useParams();
 
   //Alert
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-    if (id.id) {
-      getContact(COMPONENT_URL.contact + id.id + "/")
+    console.log(id);
+    if (id) {
+      getContact(COMPONENT_URL.contact + id + "/")
         .then((response) => {
           setContact(response.data);
         })
@@ -37,7 +37,8 @@ const EditContact = () => {
   }, [id]);
 
   useEffect(() => {
-    if (contact) {
+    // check contact is defined and not an empty object
+    if (contact && Object.keys(contact).length !== 0 && contact.constructor === Object) {
       setSupportedName(contact.name);
       setSelectRol(contact.role);
       setSupportedPriority(contact.priority);
@@ -47,11 +48,13 @@ const EditContact = () => {
       setUser(contact.user);
     } else {
       const contactUrl = localStorage.getItem("contact");
-      getContact(contactUrl)
-        .then((response) => {
-          setContact(response.data);
-        })
-        .catch((error) => console.log(error));
+      if (contactUrl) {
+        getContact(contactUrl)
+          .then((response) => {
+            setContact(response.data);
+          })
+          .catch((error) => console.log(error));
+      }
     }
   }, [contact]);
 

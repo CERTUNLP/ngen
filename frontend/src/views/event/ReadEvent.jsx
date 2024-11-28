@@ -339,7 +339,7 @@ const ReadEvent = ({ routeParams }) => {
         )}
       </Card>
 
-      <SmallCaseTable readCase={body.case} disableColumOption={true} />
+      <SmallCaseTable readCase={body.case} disableColumOption={true} basePath={basePath} />
 
       <Card>
         <Card.Header>
@@ -369,6 +369,7 @@ const ReadEvent = ({ routeParams }) => {
         disableColumnDelete={false}
         disableMerged={true}
         title={t("ngen.children")}
+        basePath={basePath}
       />
 
       <Card>
