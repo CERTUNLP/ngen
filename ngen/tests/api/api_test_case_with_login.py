@@ -1,3 +1,4 @@
+import json
 from django.urls import reverse
 from rest_framework.test import APITestCase, APIClient
 
@@ -40,5 +41,15 @@ class APITestCaseWithLogin(APITestCase):
             self.client = self.custom_client
         except AttributeError as exc:
             raise AttributeError(
-                "'custom_client' not found, did you override setUpTestData method without calling super().setUpTestData()?"
+                "'custom_client' not found, did you override setUpTestData method "
+                "without calling super().setUpTestData()?"
             ) from exc
+
+    def get_messages_from_response(self, response):
+        """
+        Helper method that returns the messages from the response
+        """
+        try:
+            return json.loads(response.content)
+        except json.JSONDecodeError:
+            return None

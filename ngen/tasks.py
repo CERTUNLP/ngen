@@ -1,9 +1,15 @@
+# pylint: disable=broad-exception-caught
+
 from celery import shared_task
 from constance import config
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
+from django.core.mail import EmailMultiAlternatives
+from django.core.mail.backends.smtp import EmailBackend
+from django.conf import settings
 
+from ngen.mailer.email_client import EmailClient
 import ngen.models
 from ngen import cortex
 from ngen.models.announcement import Communication
@@ -186,3 +192,146 @@ def whois_lookup_task(self, ip_or_domain):
         return whois_data
     except Exception as e:
         return {"error": str(e)}
+
+
+@shared_task(bind=True, max_retries=5)
+def async_send_email(self, email_message_id: int):
+    """
+    Task to send an email asynchronously.
+
+    :param int email_message_id: Email message id to send
+    """
+    if not email_message_id:
+        return False
+
+    try:
+        email_message = ngen.models.EmailMessage.objects.get(id=email_message_id)
+    except ngen.models.EmailMessage.DoesNotExist as e:
+        if self.request.retries == self.max_retries:
+            return False
+
+        exponential_backoff = (self.request.retries + 1) ** 2
+        self.retry(exc=e, countdown=exponential_backoff)
+    try:
+        host = settings.CONSTANCE_CONFIG["EMAIL_HOST"][0]
+        username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
+        password = settings.CONSTANCE_CONFIG["EMAIL_PASSWORD"][0]
+        port = settings.CONSTANCE_CONFIG["EMAIL_PORT"][0]
+        use_tls = settings.CONSTANCE_CONFIG["EMAIL_USE_TLS"][0]
+
+        email_connection = EmailBackend(
+            host=host,
+            username=username,
+            password=password,
+            use_tls=use_tls,
+            port=port or 587,
+            fail_silently=False,
+        )
+
+        rendered_template = get_rendered_template(email_message)
+
+        headers = {
+            "Message-ID": email_message.message_id,
+        }
+
+        if email_message.parent_message_id:
+            headers["References"] = " ".join(email_message.references)
+            headers["In-Reply-To"] = email_message.parent_message_id
+
+        email = EmailMultiAlternatives(
+            subject=email_message.subject,
+            body=email_message.body or rendered_template.get("text"),
+            from_email=email_message.senders[0]["email"],
+            to=[recipient["email"] for recipient in email_message.recipients],
+            bcc=[recipient["email"] for recipient in email_message.bcc_recipients],
+            connection=email_connection,
+        )
+
+        if rendered_template:
+            email.attach_alternative(rendered_template.get("html"), "text/html")
+            if not email_message.body:
+                email_message.body = rendered_template.get("text")
+
+        email.extra_headers = headers
+
+        attachments = get_attachments(email_message)
+
+        for attachment in attachments:
+            email.attach(attachment["name"], attachment["file"].read())
+
+        email.send(fail_silently=False)
+
+        email_message.sent = True
+        email_message.date = timezone.now()
+        return True
+    except Exception:
+        email_message.send_attempt_failed = True
+        return False
+    finally:
+        email_message.save()
+
+
+@shared_task
+def retrieve_emails():
+    """
+    Task to retrieve unread imbox emails.
+    Unread emails are stored and marked as read.
+    """
+    host = settings.CONSTANCE_CONFIG["EMAIL_HOST"][0]
+    username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
+    password = settings.CONSTANCE_CONFIG["EMAIL_PASSWORD"][0]
+
+    try:
+        email_client = EmailClient(host=host, username=username, password=password)
+        unread_emails = email_client.fetch_unread_emails()
+        if unread_emails:
+            email_messages = email_client.map_emails(unread_emails)
+            created_messages = ngen.models.EmailMessage.objects.bulk_create(
+                email_messages
+            )
+            if len(created_messages) == len(unread_emails):
+                email_client.mark_emails_as_read(unread_emails)
+        return True
+    except Exception:
+        return False
+
+
+# Helper functions
+
+
+def get_rendered_template(email_message):
+    """
+    Helper function to render email template.
+    """
+    if email_message.template:
+        message_channel = ngen.models.CommunicationChannel.objects.filter(
+            message_id=email_message.root_message_id
+        ).first()
+
+        template_params = (
+            message_channel.channelable.template_params
+            if message_channel
+            else email_message.template_params
+        )
+
+        return Communication.render_template(
+            email_message.template, extra_params=template_params
+        )
+
+    return {}
+
+
+def get_attachments(email_message):
+    """
+    Helper function to get email attachments.
+    """
+    message_channel = ngen.models.CommunicationChannel.objects.filter(
+        message_id=email_message.root_message_id
+    ).first()
+
+    if message_channel:
+        attachments = message_channel.channelable.email_attachments
+    else:
+        attachments = email_message.attachments
+
+    return attachments
