@@ -62,6 +62,8 @@ const EditSetting = () => {
     } else if (item.key === "NGEN_LANG") {
       localStorage.setItem("ngen_lang", item.value);
       i18n.changeLanguage(item.value);
+    } else if (item.key === "DATE_OPTIONS") {
+      localStorage.setItem("date_options", item.value);
     }
   }
 

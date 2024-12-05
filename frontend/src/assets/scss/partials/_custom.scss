@@ -37,6 +37,7 @@
 
 #teamlogo_login {
   max-width: 200px;
+  margin-top: 20px;
 }
 
 #teamlogo {
@@ -70,4 +71,97 @@
 
 .btn {
 	margin: 1px;
+}
+
+.border-transparent {
+  border: 1px solid transparent;
+}
+
+.table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-false-positive {
+  // background-color: #f1f1f1 !important;
+  color: #999999 !important;
+}
+
+.row-false-positive td {
+  // background-color: #f1f1f1 !important;
+  color: #999999 !important;
+}
+
+.row-false-positive span {
+  // background-color: #f1f1f1 !important;
+  color: #999999 !important;
+}
+
+.row-false-positive i {
+  // background-color: #f1f1f1 !important;
+  color: #ccc !important;
+}
+
+.row-false-positive button {
+  // background-color: #f1f1f1 !important;
+  color: #ccc !important;
+  border-color: #ccc !important;
+}
+
+// .row-false-positive button {
+//   background-color: #f1f1f1 !important;
+//   color: #ccc !important;
+//   border-color: transparent !important;
+// }
+
+
+
+.custom-badge {
+  padding: 5px 10px; /* Ajusta el padding si es necesario */
+  font-weight: bold; /* Cualquier otro estilo adicional */
+}
+
+.tlp-red {
+  color: #ff0000 !important;
+  background-color: #ffffff !important;
+  border-radius: 4px;
+}
+
+.tlp-amber {
+  color: #ffbf00 !important;
+  background-color: #000000 !important;
+  border-radius: 4px;
+}
+
+.tlp-green {
+  color: #00ff00 !important;
+  background-color: #000000 !important;
+  border-radius: 4px;
+}
+
+.tlp-grey {
+  color: #808080 !important;
+  background-color: #ffffff !important;
+  border-radius: 4px;
+}
+
+.tlp-amberstrict {
+  color: #ffbf00 !important;
+  background-color: #000000 !important;
+  border-radius: 4px;
+}
+
+.tlp-clear {
+  color: #ffffff !important;
+  background-color: #000000 !important;
+  border-radius: 4px;
+}
+
+.custom-badge-gray {
+  padding: 5px 10px; /* Ajusta el padding si es necesario */
+  font-weight: bold; /* Cualquier otro estilo adicional */
+  color: #808080 !important;
+  background-color: #ffffff !important;
+  border-radius: 4px;
 }

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Row } from "react-bootstrap";
 import FormEvent from "./components/FormEvent";
 import { postEvent } from "../../api/services/events";
 import { getMinifiedTlp } from "../../api/services/tlp";
@@ -9,7 +8,7 @@ import { getMinifiedFeed } from "../../api/services/feeds";
 import { getMinifiedPriority } from "../../api/services/priorities";
 import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedArtifact } from "../../api/services/artifact";
-import Alert from "../../components/Alert/Alert";
+import { getMinifiedTag } from "../../api/services/tags";
 import { useTranslation } from "react-i18next";
 
 const CreateEvent = ({ routeParams }) => {
@@ -29,7 +28,8 @@ const CreateEvent = ({ routeParams }) => {
     reporter: [],
     case: "",
     tasks: [],
-    evidence: []
+    evidence: [],
+    tags: []
   };
   const [body, setBody] = useState(formEmpty);
   const [evidence, setEvidence] = useState([]);
@@ -39,6 +39,7 @@ const CreateEvent = ({ routeParams }) => {
   const [priorities, setPriorities] = useState([]);
 
   const [listArtifact, setListArtifact] = useState([]);
+  const [listTag, setListTag] = useState([]);
   const [contactCreated, setContactsCreated] = useState(null);
 
   const [tlpNames, setTlpNames] = useState({});
@@ -132,6 +133,17 @@ const CreateEvent = ({ routeParams }) => {
       .catch((error) => {
         console.log(error);
       });
+    
+      getMinifiedTag()
+        .then((response) => {
+          var list = response.map((tag) => {
+            return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
+          });
+          setListTag(list);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
   }, [contactCreated]);
 
   const createEvent = () => {
@@ -150,6 +162,7 @@ const CreateEvent = ({ routeParams }) => {
     formDataEvent.append("case", body.case);
     formDataEvent.append("tasks", body.tasks);
     formDataEvent.append("address_value", body.address_value);
+    formDataEvent.append("tags", body.tags);
     if (evidence !== null) {
       for (let index = 0; index < evidence.length; index++) {
         formDataEvent.append("evidence", evidence[index]);
@@ -192,6 +205,7 @@ const CreateEvent = ({ routeParams }) => {
           tlp={TLP}
           priorities={priorities}
           listArtifact={listArtifact}
+          listTag={listTag}
           setContactsCreated={setContactsCreated}
           evidence={evidence}
           setEvidence={setEvidence}

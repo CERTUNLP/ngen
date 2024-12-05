@@ -141,7 +141,9 @@ router.register(r"minified/case", views.CaseMinifiedViewSet, basename="minified-
 router.register(
     r"minified/artifact", views.ArtifactMinifiedViewSet, basename="minified-artifact"
 )
+router.register(r"minified/tag", views.TagMinifiedViewSet, basename="minified-tag")
 router.register(r"ngenconfig", views.SettingsViewSet, basename="settings")
+router.register(r"tags", views.TagViewSet, basename="tag")
 
 router.register(r"event_analysis", views.EventAnalysisViewSet, basename="eventanalysis")
 

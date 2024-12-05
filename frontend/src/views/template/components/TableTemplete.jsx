@@ -8,6 +8,7 @@ import Alert from "../../../components/Alert/Alert";
 import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
 import setAlert from "utils/setAlert";
+import DateShowField from "components/Field/DateShowField";
 
 const TableTemplete = ({
   list,
@@ -219,9 +220,9 @@ const TableTemplete = ({
                         variant="outline-primary"
                         onClick={() => handleClickCreate(template.url)}
                         style={{
-                          borderRadius: '50px',
-                          border: isCreateCasesDisabled ? '1px solid #555' : '',
-                          color: isCreateCasesDisabled ? '#555' : '',
+                          borderRadius: "50px",
+                          border: isCreateCasesDisabled ? "1px solid #555" : "",
+                          color: isCreateCasesDisabled ? "#555" : ""
                         }}
                         disabled={isCreateCasesDisabled}
                       >
@@ -349,23 +350,13 @@ const TableTemplete = ({
                             <tr>
                               <td>{t("ngen.date.created")}</td>
                               <td>
-                                <Form.Control
-                                  plaintext
-                                  readOnly
-                                  defaultValue={template.created ? template.created.slice(0, 10) + " " + template.created.slice(11, 19) : ""}
-                                />
+                                <DateShowField value={template?.created} asFormControl />
                               </td>
                             </tr>
                             <tr>
                               <td>{t("ngen.date.modified")}</td>
                               <td>
-                                <Form.Control
-                                  plaintext
-                                  readOnly
-                                  defaultValue={
-                                    template.modified ? template.modified.slice(0, 10) + " " + template.modified.slice(11, 19) : ""
-                                  }
-                                />
+                                <DateShowField value={template?.modified} asFormControl />
                               </td>
                             </tr>
                           </tbody>

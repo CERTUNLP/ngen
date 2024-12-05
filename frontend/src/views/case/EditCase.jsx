@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getCase } from "../../api/services/cases";
 import FormCase from "./components/FormCase";
 import { getState } from "../../api/services/states";
+import { getMinifiedTag } from "../../api/services/tags";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "config/constant";
 
@@ -15,6 +16,7 @@ const EditCase = ({asNetworkAdmin}) => {
   const [allStates, setSupportedStates] = useState([]);
   const [updateCase, setUpdateCase] = useState([]);
   const [id] = useState(useParams());
+  const [listTag, setListTag] = useState([]);
 
   useEffect(() => {
     if (id.id) {
@@ -48,6 +50,17 @@ const EditCase = ({asNetworkAdmin}) => {
           console.log(error);
         });
     }
+    
+    getMinifiedTag()
+      .then((response) => {
+        var list = response.map((tag) => {
+          return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
+        });
+        setListTag(list);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [caseItem]);
 
   return (
@@ -56,6 +69,7 @@ const EditCase = ({asNetworkAdmin}) => {
         <FormCase
           caseItem={caseItem}
           allStates={allStates}
+          listTag={listTag}
           edit={true}
           save={t("button.save_changes")}
           evidenceColum={true}

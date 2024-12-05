@@ -1,5 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from taggit.models import (
+    Tag as TagOriginal,
+)  #  Import the original Tag model from taggit
 
 from ngen.models import *
 
@@ -61,6 +64,10 @@ admin.site.register(TodoTask)
 admin.site.register(CommunicationChannel)
 admin.site.register(CommunicationType)
 admin.site.register(CommunicationChannelTypeRelation)
+
+# tag
+admin.site.unregister(TagOriginal)  # Unregister original Tag model
+admin.site.register(Tag)
 
 # analysis
 admin.site.register(EventAnalysis)

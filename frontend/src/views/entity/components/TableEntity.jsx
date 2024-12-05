@@ -5,6 +5,7 @@ import CrudButton from "../../../components/Button/CrudButton";
 import { deleteEntity, getEntity, isActive } from "../../../api/services/entities";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import Ordering from "../../../components/Ordering/Ordering";
+import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder, basePath = "" }) => {
@@ -15,8 +16,6 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
   const [url, setUrl] = useState("");
   const [id, setId] = useState("");
   const [name, setName] = useState("");
-  const [created, setCreated] = useState("");
-  const [modified, setModified] = useState("");
   const [active, setActive] = useState("");
   const { t } = useTranslation();
 
@@ -36,10 +35,6 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
     getEntity(url)
       .then((response) => {
         setEntity(response.data);
-        let datetime = response.data.created.split("T");
-        setCreated(datetime[0] + " " + datetime[1].slice(0, 8));
-        datetime = response.data.modified.split("T");
-        setModified(datetime[0] + " " + datetime[1].slice(0, 8));
         setModalShow(true);
       })
       .catch((error) => {
@@ -178,15 +173,15 @@ const TableEntity = ({ setIsModify, list, loading, setLoading, currentPage, orde
                         </td>
                       </tr>
                       <tr>
-                        <td>Creación</td>
+                        <td>{t("ngen.date.created")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={created} />
+                          <DateShowField value={entity?.created} asFormControl />
                         </td>
                       </tr>
                       <tr>
-                        <td>{t("ngen.date.created")}</td>
+                        <td>{t("ngen.date.modified")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={modified} />
+                          <DateShowField value={entity?.modified} asFormControl />
                         </td>
                       </tr>
                       <tr>

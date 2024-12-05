@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
-import CrudButton from "../../../components/Button/CrudButton";
-import PriorityButton from "../../../components/Button/PriorityButton";
+import CrudButton from "components/Button/CrudButton";
+import PriorityButton from "components/Button/PriorityButton";
+import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 const ModalDetailTask = (props) => {
@@ -13,19 +14,11 @@ const ModalDetailTask = (props) => {
 
   useEffect(() => {
     if (props.task) {
-      formatDate(props.task.created, setCreated);
-      formatDate(props.task.modified, setModified);
       if (props.task.description != null) {
         setRow(props.task.description.length / 40);
       }
     }
   }, [props.task]);
-
-  const formatDate = (datetime, set) => {
-    datetime = datetime.split("T");
-    let format = datetime[0] + " " + datetime[1].slice(0, 8);
-    set(format);
-  };
 
   const textareaStyle = {
     resize: "none",
@@ -108,13 +101,13 @@ const ModalDetailTask = (props) => {
                       <tr>
                         <td>{t("ngen.date.created")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={created} />
+                          <DateShowField value={props?.task?.created} asFormControl />
                         </td>
                       </tr>
                       <tr>
                         <td>{t("ngen.date.modified")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={modified} />
+                          <DateShowField value={props?.task?.modified} asFormControl />
                         </td>
                       </tr>
                     </tbody>

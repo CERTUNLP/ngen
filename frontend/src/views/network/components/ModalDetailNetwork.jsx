@@ -1,29 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
-import CrudButton from "../../../components/Button/CrudButton";
+import CrudButton from "components/Button/CrudButton";
 import { Link } from "react-router-dom";
 import FormNetworkLabelCidr from "./FormNetworkLabelCidr";
 import BadgeNetworkLabelContact from "./BadgeNetworkLabelContact";
-import ActiveButton from "../../../components/Button/ActiveButton";
+import ActiveButton from "components/Button/ActiveButton";
+import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 const ModalDetailNetwork = (props) => {
-  const [created, setCreated] = useState("");
-  const [modified, setModified] = useState("");
   const { t } = useTranslation();
-
-  useEffect(() => {
-    if (props.network) {
-      formatDate(props.network.created, setCreated);
-      formatDate(props.network.modified, setModified);
-    }
-  }, [props.network]);
-
-  const formatDate = (datetime, set) => {
-    datetime = datetime.split("T");
-    let format = datetime[0] + " " + datetime[1].slice(0, 8);
-    set(format);
-  };
 
   return (
     <React.Fragment>
@@ -112,13 +98,13 @@ const ModalDetailNetwork = (props) => {
                       <tr>
                         <td>{t("ngen.date.created")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={created} />
+                          <DateShowField value={props?.network?.created} asFormControl />
                         </td>
                       </tr>
                       <tr>
                         <td>{t("ngen.date.modified")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={modified} />
+                          <DateShowField value={props?.network?.modified} asFormControl />
                         </td>
                       </tr>
                     </tbody>

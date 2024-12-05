@@ -67,6 +67,7 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         "cidr",
         "domain",
         "uuid",
+        "tags__name",
     ]
     filterset_class = EventFilter
     ordering_fields = [
@@ -79,6 +80,7 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         "feed",
         "created",
         "modified",
+        "tags__name",
     ]
     serializer_class = serializers.EventSerializer
     permission_classes = [CustomModelPermissions]
