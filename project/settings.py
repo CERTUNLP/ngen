@@ -289,6 +289,12 @@ CONSTANCE_CONFIG = {
         ),
         "image_field",
     ),
+    "TEAM_LOGO_URL": (
+        os.environ.get("TEAM_LOGO_URL"),
+        gettext_lazy(
+            "Team logo url for emails. Overrides the saved logo. Usefull to access the logo from a public url"
+        ),
+    ),
     "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name"),
     "EMAIL_SENDER": (
         os.environ.get("EMAIL_SENDER"),
