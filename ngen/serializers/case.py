@@ -56,6 +56,9 @@ class EventSerializer(
         queryset=models.User.objects.all(),
         view_name="user-detail",
     )
+    solved_marks = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name="solvedmark-detail"
+    )
     # network = serializers.HyperlinkedRelatedField(
     #     many=False,
     #     read_only=True,
@@ -94,6 +97,7 @@ class EventSerializer(
             "merged",
             "network",
             "initial_taxonomy_slug",
+            "solved_marks",
             "tags",
         )
 
@@ -404,3 +408,9 @@ class CaseMinifiedSerializer(AuditSerializerMixin):
     class Meta:
         model = models.Case
         fields = ["url", "uuid", "name"]
+
+
+class SolvedMarkSerializer(AuditSerializerMixin):
+    class Meta:
+        model = models.SolvedMark
+        fields = "__all__"

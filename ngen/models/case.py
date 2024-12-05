@@ -1,4 +1,5 @@
 import re
+from typing import Collection
 import uuid as uuid
 from collections import defaultdict
 from datetime import timedelta, datetime
@@ -647,6 +648,13 @@ class Event(
     def get_reporter_contacts(self):
         return self
 
+    def mark_as_solved(self, user=None, contact=None, contact_info=None):
+        mark, _ = models.SolvedMark.objects.get_or_create(
+            event=self,
+            defaults={"user": user, "contact": contact, "contact_info": contact_info},
+        )
+        return mark
+
 
 class Evidence(AuditModelMixin, ValidationModelMixin):
     def directory_path(self, filename=None):
@@ -795,3 +803,23 @@ class CaseTemplate(
 
     def __str__(self):
         return str(self.id)
+
+
+class SolvedMark(AuditModelMixin, ValidationModelMixin):
+    event = models.ForeignKey("ngen.Event", models.CASCADE, related_name="solved_marks")
+    contact_info = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="Contact info of the contact if it's not a contact or an user",
+    )
+    contact = models.ForeignKey("ngen.Contact", models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey("ngen.User", models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        db_table = "solved_mark"
+
+    def full_clean(self, *args, **kwargs):
+        super().full_clean(*args, **kwargs)
+        if not self.contact and not self.user and not self.contact_info:
+            raise ValidationError("Contact, User or Contact Info must be set")

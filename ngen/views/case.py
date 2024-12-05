@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 import django_filters
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Subquery, OuterRef, Value
@@ -5,6 +6,7 @@ from django.utils.translation import gettext_lazy
 from rest_framework import filters, viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
 
 from ngen import models, serializers
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
@@ -84,6 +86,68 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
     ]
     serializer_class = serializers.EventSerializer
     permission_classes = [CustomModelPermissions]
+
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path="marksolved/(?P<uuid>[a-f0-9-]+)",
+        url_name="mark_solved",
+    )
+    def mark_solved(self, request, uuid=None):
+        """
+        Action to mark an event as solved.
+        Example path: /api/event/marksolved/<UUID>/?token=<JWT>
+        """
+        jwt = request.query_params.get("token")
+        if not jwt:
+            return Response(
+                {"detail": "Token is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # check valid jwt
+        try:
+            token = AccessToken(jwt)
+        except Exception:
+            return Response(
+                {"detail": "Invalid or expired JWT"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if "event_uuid" not in token or token["event_uuid"] != uuid:
+            return Response(
+                {"detail": "JWT does not match event"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        event = get_object_or_404(models.Event, uuid=uuid)
+
+        if "user" in token:
+            try:
+                user = models.User.objects.get(pk=token["user"])
+            except models.User.DoesNotExist:
+                return Response(
+                    {"detail": "User not found"}, status=status.HTTP_400_BAD_REQUEST
+                )
+
+        if "contact" in token:
+            try:
+                contact = models.Contact.objects.get(pk=token["contact"])
+            except models.Contact.DoesNotExist:
+                return Response(
+                    {"detail": "Contact not found"}, status=status.HTTP_400_BAD_REQUEST
+                )
+
+        if "contact_info" in token:
+            contact_info = token["contact_info"]
+
+        mark = event.mark_as_solved(user, contact, contact_info)
+
+        if mark:
+            return Response(
+                {"detail": "Event marked as solved"}, status=status.HTTP_200_OK
+            )
+        return Response(
+            {"detail": "Event already marked as solved"}, status=status.HTTP_200_OK
+        )
 
     @action(
         methods=["POST"],
@@ -258,3 +322,9 @@ class CaseMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = None
     permission_classes = [CustomApiViewPermission]
     required_permissions = ["ngen.view_minified_case"]
+
+
+class SolvedMarkViewSet(viewsets.ModelViewSet):
+    queryset = models.SolvedMark.objects.all()
+    serializer_class = serializers.SolvedMarkSerializer
+    permission_classes = [CustomModelPermissions]
