@@ -61,3 +61,9 @@ admin.site.register(TodoTask)
 admin.site.register(CommunicationChannel)
 admin.site.register(CommunicationType)
 admin.site.register(CommunicationChannelTypeRelation)
+
+# analysis
+admin.site.register(EventAnalysis)
+
+# mapping
+admin.site.register(AnalyzerMapping)
