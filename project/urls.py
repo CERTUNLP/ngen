@@ -48,6 +48,7 @@ router.register(
 )
 router.register(r"evidence", views.EvidenceViewSet, basename="evidence")
 router.register(r"event", views.EventViewSet, basename="event")
+router.register(r"solvedmark", views.SolvedMarkViewSet, basename="solvedmark")
 router.register(r"taxonomy", views.TaxonomyViewSet, basename="taxonomy")
 router.register(r"taxonomygroup", views.TaxonomyGroupViewSet, basename="taxonomygroup")
 router.register(r"report", views.ReportViewSet, basename="report")
