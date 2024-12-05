@@ -1,26 +1,12 @@
+import DateShowField from "components/Field/DateShowField";
 import React, { useEffect, useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 const ModalDetailEdge = (props) => {
-  const [created, setCreated] = useState("");
-  const [modified, setModified] = useState("");
   const { t } = useTranslation();
 
   const [row] = useState(1);
-
-  useEffect(() => {
-    if (props.edge) {
-      formatDate(props.edge.created, setCreated);
-      formatDate(props.edge.modified, setModified);
-    }
-  }, [props.task]);
-
-  const formatDate = (datetime, set) => {
-    datetime = datetime.split("T");
-    let format = datetime[0] + " " + datetime[1].slice(0, 8);
-    set(format);
-  };
 
   const textareaStyle = {
     resize: "none",
@@ -71,13 +57,13 @@ const ModalDetailEdge = (props) => {
                       <tr>
                         <td>{t("ngen.date.created")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={created} />
+                          <DateShowField value={props?.edge?.created} asFormControl />
                         </td>
                       </tr>
                       <tr>
                         <td>{t("ngen.date.modified")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={modified} />
+                          <DateShowField value={props?.edge?.modified} asFormControl />
                         </td>
                       </tr>
                     </tbody>

@@ -1,30 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
-import Select from "react-select";
-import makeAnimated from "react-select/animated";
 import CrudButton from "components/Button/CrudButton";
-import SelectComponent from "../../../components/Select/SelectComponent";
-import { postArtifact } from "../../../api/services/artifact";
-import { postStringIdentifier } from "../../../api/services/stringIdentifier";
-import Alert from "../../../components/Alert/Alert";
-import { getMinifiedState } from "../../../api/services/states";
-import ModalCreateCase from "../../case/ModalCreateCase";
-import ModalReadCase from "../../case/ModalReadCase";
-import ModalListCase from "../../case/ModalListCase";
-import CreateArtifactModal from "../../artifact/CreateArtifactModal";
-import { getCase } from "../../../api/services/cases";
-import SmallCaseTable from "../../case/components/SmallCaseTable";
-import EvidenceCard from "../../../components/UploadFiles/EvidenceCard";
-import { getEvidence } from "../../../api/services/evidences";
+import SelectComponent from "components/Select/SelectComponent";
+import { postArtifact } from "api/services/artifact";
+import { postStringIdentifier } from "api/services/stringIdentifier";
+import Alert from "components/Alert/Alert";
+import { getMinifiedState } from "api/services/states";
+import ModalCreateCase from "views/case/ModalCreateCase";
+import ModalReadCase from "views/case/ModalReadCase";
+import ModalListCase from "views/case/ModalListCase";
+import CreateArtifactModal from "views/artifact/CreateArtifactModal";
+import CreateTagModal from "views/tag/components/CreateTagModal";
+import SelectTag from "components/Select/SelectTag";
+import SelectArtifact from "components/Select/SelectArtifact";
+import { getCase } from "api/services/cases";
+import SmallCaseTable from "views/case/components/SmallCaseTable";
+import EvidenceCard from "components/UploadFiles/EvidenceCard";
+import { getEvidence } from "api/services/evidences";
 import { useTranslation } from "react-i18next";
 
-const animatedComponents = makeAnimated();
 const FormEvent = (props) => {
   const [date, setDate] = useState(props.body.date ? props.body.date.substring(0, 16) : getCurrentDateTime());
   const [artifactsValueLabel, setArtifactsValueLabel] = useState([]);
   const [modalCreate, setModalCreate] = useState(false);
   const [typeArtifact, setTypeArtifact] = useState("0");
   const [value, setValue] = useState("");
+  const [tagsValueLabel, setTagsValueLabel] = useState([]);
+  const [modalCreateTag, setModalCreateTag] = useState(false);
+  const [colorTag, setColorTag] = useState("#00ffff");
+  const [valueTag, setValueTag] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
@@ -178,6 +182,20 @@ const FormEvent = (props) => {
     setArtifactsValueLabel(listDefaultArtifact);
   }, [props.body.artifacts, props.listArtifact]);
 
+  useEffect(() => {
+    let listDefaultTag = props.listTag
+      .filter((elemento) => props.body.tags.includes(elemento.name))
+      .map((elemento) => ({
+        name: elemento.name,
+        slug: elemento.slug,
+        color: elemento.color,
+        value: elemento.name,
+        label: elemento.name
+      }));
+
+    setTagsValueLabel(listDefaultTag);
+  }, [props.body.tags, props.listTag]);
+
   const completeFieldStringIdentifier = (event) => {
     if (event.target.value !== "") {
       postStringIdentifier(event.target.value)
@@ -187,7 +205,7 @@ const FormEvent = (props) => {
         .catch((error) => {
           console.log(error);
         })
-        .finally(() => { });
+        .finally(() => {});
     }
 
     if (event.target.value === "") {
@@ -203,11 +221,20 @@ const FormEvent = (props) => {
     });
   };
 
-  const selectArtefact = (event) => {
+  const selectArtifact = (event) => {
     props.setBody({
       ...props.body,
       ["artifacts"]: event.map((e) => {
         return e.value;
+      })
+    });
+  };
+
+  const selectTag = (event) => {
+    props.setBody({
+      ...props.body,
+      ["tags"]: event.map((e) => {
+        return e.name;
       })
     });
   };
@@ -270,6 +297,22 @@ const FormEvent = (props) => {
       })
       .finally(() => {
         setModalCreate(false);
+      });
+  };
+
+  const createTag = () => {
+    postTag(colorTag, value)
+      .then((response) => {
+        props.setContactsCreated(response); //
+        setModalCreateTag(false); //
+        setColorTag("-1");
+        setValue("");
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setModalCreateTag(false);
       });
   };
 
@@ -496,6 +539,25 @@ const FormEvent = (props) => {
       )}
       <Card>
         <Card.Header>
+          <Card.Title as="h5">{t("ngen.tag_other")}</Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <Form>
+            <Form.Group controlId="formGridAddress1">
+              <Row>
+                <Col sm={12} lg={9}>
+                  <SelectTag value={tagsValueLabel} onChange={selectTag} options={props.listTag} />
+                </Col>
+                <Col sm={12} lg={3}>
+                  <CrudButton type="create" name={t("ngen.tag_one")} onClick={() => setModalCreateTag(true)} />
+                </Col>
+              </Row>
+            </Form.Group>
+          </Form>
+        </Card.Body>
+      </Card>
+      <Card>
+        <Card.Header>
           <Card.Title as="h5">{t("ngen.artifact_other")}</Card.Title>
         </Card.Header>
         <Card.Body>
@@ -503,13 +565,9 @@ const FormEvent = (props) => {
             <Form.Group controlId="formGridAddress1">
               <Row>
                 <Col sm={12} lg={9}>
-                  <Select
-                    placeholder={t("ngen.artifact_other_select")}
-                    closeMenuOnSelect={false}
-                    components={animatedComponents}
-                    isMulti
+                  <SelectArtifact
                     value={artifactsValueLabel}
-                    onChange={selectArtefact}
+                    onChange={selectArtifact}
                     options={props.listArtifact}
                   />
                 </Col>
@@ -599,6 +657,16 @@ const FormEvent = (props) => {
         />
       )}
 
+      <CreateTagModal
+        show={modalCreateTag}
+        onHide={() => setModalCreateTag(false)}
+        value={valueTag}
+        setValue={setValueTag}
+        colorTag={colorTag}
+        setColorTag={setColorTag}
+        createTag={createTag}
+      />
+
       <CreateArtifactModal
         show={modalCreate}
         onHide={() => setModalCreate(false)}
@@ -610,11 +678,11 @@ const FormEvent = (props) => {
       />
 
       {props.body.tlp !== "" &&
-        props.body.taxonomy !== "" &&
-        props.body.feed !== "" &&
-        props.body.priority !== "" &&
-        props.body.address_value !== "" &&
-        !showErrorMessage ? (
+      props.body.taxonomy !== "" &&
+      props.body.feed !== "" &&
+      props.body.priority !== "" &&
+      props.body.address_value !== "" &&
+      !showErrorMessage ? (
         <Button variant="primary" onClick={props.createEvent}>
           {t("button.save")}
         </Button>

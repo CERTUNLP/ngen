@@ -1,6 +1,7 @@
 from auditlog.registry import auditlog
 from django.apps import apps
 
+from .tag import *  # noqa: F401
 from .administration import *  # noqa: F401
 from .announcement import *  # noqa: F401
 from .artifact import *  # noqa: F401
@@ -15,6 +16,8 @@ from .message import *  # noqa: F401
 from .state import *  # noqa: F401
 from .taxonomy import *  # noqa: F401
 from .common.permission import *  # noqa: F401
+from .analyzer_mapping import *  # noqa: F401
+from .event_analysis import *  # noqa: F401
 
 for model in apps.all_models["ngen"].values():
     if issubclass(model, AuditModelMixin):

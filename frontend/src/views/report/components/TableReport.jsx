@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
-import CrudButton from "../../../components/Button/CrudButton";
-import Alert from "../../../components/Alert/Alert";
-import CallBackendByName from "../../../components/CallBackendByName";
-import { getTaxonomy } from "../../../api/services/taxonomies";
-import { deleteReport } from "../../../api/services/reports";
-import ModalConfirm from "../../../components/Modal/ModalConfirm";
-import Ordering from "../../../components/Ordering/Ordering";
+import CrudButton from "components/Button/CrudButton";
+import Alert from "components/Alert/Alert";
+import CallBackendByName from "components/CallBackendByName";
+import { getTaxonomy } from "api/services/taxonomies";
+import { deleteReport } from "api/services/reports";
+import ModalConfirm from "components/Modal/ModalConfirm";
+import Ordering from "components/Ordering/Ordering";
+import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading }) => {
@@ -189,21 +190,13 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                       <tr>
                         <td>{t("ngen.date.created")}</td>
                         <td>
-                          <Form.Control
-                            plaintext
-                            readOnly
-                            defaultValue={report.created ? report.created.slice(0, 10) + " " + report.created.slice(11, 19) : ""}
-                          />
+                          <DateShowField value={report?.created} asFormControl />
                         </td>
                       </tr>
                       <tr>
                         <td>{t("ngen.date.modified")}</td>
                         <td>
-                          <Form.Control
-                            plaintext
-                            readOnly
-                            defaultValue={report.modified ? report.modified.slice(0, 10) + " " + report.modified.slice(11, 19) : ""}
-                          />
+                          <DateShowField value={report?.modified} asFormControl />
                         </td>
                       </tr>
                     </Table>

@@ -5,6 +5,7 @@ import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import { deleteTaxonomy, getTaxonomy, putActivationStatus } from "../../../api/services/taxonomies";
 import Ordering from "../../../components/Ordering/Ordering";
 import ActiveButton from "../../../components/Button/ActiveButton";
+import DateShowField from "../../../components/Field/DateShowField";
 import CallBackendByName from "../../../components/CallBackendByName";
 import { useTranslation } from "react-i18next";
 
@@ -168,7 +169,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
             let itemNumber = parts[parts.length - 2];
             return (
               <tr key={index}>
-                <td>{taxonomy.created.slice(0, 10) + " " + taxonomy.created.slice(11, 19)}</td>
+                <td><DateShowField value={taxonomy.created} /></td>
                 <td>{taxonomy.name}</td>
                 <td>{taxonomy.type}</td>
                 <td>{minifiedTaxonomies[taxonomy.parent]}</td>

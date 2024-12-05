@@ -75,6 +75,7 @@ django==4.2.16
     #   django-netfields
     #   django-nine
     #   django-picklefield
+    #   django-taggit
     #   django-timezone-field
     #   django-treebeard
     #   djangorestframework
@@ -124,6 +125,8 @@ django-picklefield==3.0.1
     # via
     #   -r requirements.in
     #   django-constance
+django-taggit==6.1.0
+    # via -r requirements.in
 django-timezone-field==5.1
     # via django-celery-beat
 django-treebeard==4.5.1
@@ -187,7 +190,7 @@ pillow==10.3.0
     #   django-colorfield
 pip-chill==1.0.1
     # via -r requirements.in
-pip-tools==7.3.0
+pip-tools==7.4.1
     # via -r requirements.in
 prometheus-client==0.20.0
     # via flower
@@ -202,7 +205,9 @@ pyjwt==2.4.0
     #   -r requirements.in
     #   djangorestframework-simplejwt
 pyproject-hooks==1.0.0
-    # via build
+    # via
+    #   build
+    #   pip-tools
 python-crontab==3.0.0
     # via django-celery-beat
 python-dateutil==2.8.2

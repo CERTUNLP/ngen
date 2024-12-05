@@ -6,24 +6,10 @@ import FormGetName from "../../../components/Form/FormGetName";
 import { getTask } from "../../../api/services/tasks";
 import { getTaxonomy } from "../../../api/services/taxonomies";
 import { useTranslation } from "react-i18next";
+import DateShowField from "components/Field/DateShowField";
 
 const ModalDetailPlaybook = (props) => {
-  const [created, setCreated] = useState("");
-  const [modified, setModified] = useState("");
   const { t } = useTranslation();
-
-  useEffect(() => {
-    if (props.playbook) {
-      formatDate(props.playbook.created, setCreated);
-      formatDate(props.playbook.modified, setModified);
-    }
-  }, [props.playbook]);
-
-  const formatDate = (datetime, set) => {
-    datetime = datetime.split("T");
-    let format = datetime[0] + " " + datetime[1].slice(0, 8);
-    set(format);
-  };
 
   return (
     <React.Fragment>
@@ -86,13 +72,13 @@ const ModalDetailPlaybook = (props) => {
                       <tr>
                         <td>{t("ngen.date.created")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={created} />
+                          <DateShowField value={props?.playbook?.created} asFormControl />
                         </td>
                       </tr>
                       <tr>
                         <td>{t("ngen.date.modified")}</td>
                         <td>
-                          <Form.Control plaintext readOnly defaultValue={modified} />
+                          <DateShowField value={props?.playbook?.modified} asFormControl />
                         </td>
                       </tr>
                     </tbody>

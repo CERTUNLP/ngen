@@ -107,7 +107,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
             />
             <th style={letterSize}>{t("w.active")}</th>
             <Ordering
-              field={t("ngen.entity")}
+              field="network_entity__name"
               label={t("ngen.entity")}
               order={order}
               setOrder={setOrder}

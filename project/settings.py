@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "rest_framework.authtoken",
+    "taggit",
     "ngen.apps.NgenConfig",
     "django.contrib.postgres",
     "netfields",
@@ -387,6 +388,14 @@ CONSTANCE_CONFIG = {
         os.environ.get("CORTEX_APIKEY", ""),
         gettext_lazy("Cortex admin apikey"),
     ),
+    "KINTUN_HOST": (
+        os.environ.get("KINTUN_HOST"),
+        gettext_lazy("Kintun host domain:port"),
+    ),
+    "KINTUN_APIKEY": (
+        os.environ.get("KINTUN_APIKEY", ""),
+        gettext_lazy("Kintun admin apikey"),
+    ),
     "PAGE_SIZE": (
         int(os.environ.get("PAGE_SIZE", 10)),
         gettext_lazy("Default page size"),
@@ -451,7 +460,19 @@ if not os.path.exists(LOGO_WIDE_PATH) and os.path.exists(origin_path):
 
 AUTH_USER_MODEL = "ngen.User"
 
-BLEACH_ALLOWED_TAGS = ["p", "b", "i", "u", "strong", "a", "ul", "li", "div", "br"]
+BLEACH_ALLOWED_TAGS = [
+    "p",
+    "b",
+    "i",
+    "u",
+    "strong",
+    "a",
+    "ul",
+    "li",
+    "div",
+    "br",
+    "pre",
+]
 BLEACH_ALLOWED_ATTRIBUTES = ["href", "title", "style"]
 # Which CSS properties are allowed in 'style' attributes (assuming style is an allowed attribute)
 BLEACH_ALLOWED_STYLES = [

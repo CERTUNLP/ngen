@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Row } from "react-bootstrap";
 import FormEvent from "./components/FormEvent";
 import { getEvent, patchEvent, putEvent } from "../../api/services/events";
 import { useLocation, useParams } from "react-router-dom";
-import Alert from "../../components/Alert/Alert";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import { getMinifiedFeed } from "../../api/services/feeds";
@@ -11,10 +9,11 @@ import { getMinifiedPriority } from "../../api/services/priorities";
 import { deleteEvidence } from "../../api/services/evidences";
 import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedArtifact } from "../../api/services/artifact";
+import { getMinifiedTag } from "../../api/services/tags";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "config/constant";
 
-const EditEvent = ({routeParams}) => {
+const EditEvent = ({ routeParams }) => {
   //const [date, setDate] = useState(caseItem.date  != null ? caseItem.date.substring(0,16) : '') //required
   const { t } = useTranslation();
   const location = useLocation();
@@ -28,6 +27,7 @@ const EditEvent = ({routeParams}) => {
   const [priorities, setPriorities] = useState([]);
   const [users, setUsers] = useState([]);
   const [listArtifact, setListArtifact] = useState([]);
+  const [listTag, setListTag] = useState([]);
   const [contactCreated, setContactsCreated] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
 
@@ -130,6 +130,17 @@ const EditEvent = ({routeParams}) => {
       .catch((error) => {
         console.log(error);
       });
+
+    getMinifiedTag()
+      .then((response) => {
+        var list = response.map((tag) => {
+          return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
+        });
+        setListTag(list);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [contactCreated]);
 
   const resetShowAlert = () => {
@@ -180,9 +191,10 @@ const EditEvent = ({routeParams}) => {
         formDataEvent.append("evidence", evidence);
       }
       //formDataEvent.append('artifacts',body.artifacts);
+      formDataEvent.append("tags", body.tags);
 
       putEvent(body.url, formDataEvent)
-        .then(() => { })
+        .then(() => {})
         .catch((error) => {
           setShowAlert(true); //hace falta?
           console.log(error);
@@ -197,12 +209,11 @@ const EditEvent = ({routeParams}) => {
       }
       //console.log(fecha.toISOString())//YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
 
-      console.log("body", body);
       formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
       //f.append("date", fecha.toISOString())
       formDataEvent.append("priority", body.priority);
       formDataEvent.append("tlp", body.tlp);
-      formDataEvent.append("taxonomy", body.taxonomy)
+      formDataEvent.append("taxonomy", body.taxonomy);
       if (body.artifacts.length > 0) {
         body.artifacts.forEach((item) => {
           formDataEvent.append("artifacts", item);
@@ -219,6 +230,7 @@ const EditEvent = ({routeParams}) => {
       formDataEvent.append("reporter", body.reporter);
       //f.append("case", body.case) //"Invalid hyperlink - No URL match.
       formDataEvent.append("tasks", body.tasks);
+      formDataEvent.append("tags", body.tags);
 
       if (evidence !== null) {
         for (let index = 0; index < evidence.length; index++) {
@@ -230,7 +242,7 @@ const EditEvent = ({routeParams}) => {
       //formDataEvent.append('artifacts',body.artifacts);
 
       patchEvent(body.url, formDataEvent)
-        .then(() => { })
+        .then(() => {})
         .catch((error) => {
           // setShowAlert(true); //hace falta?
           console.log(error);
@@ -251,6 +263,7 @@ const EditEvent = ({routeParams}) => {
           priorities={priorities}
           users={users}
           listArtifact={listArtifact}
+          listTag={listTag}
           setContactsCreated={setContactsCreated}
           evidence={evidence}
           setEvidence={setEvidence}

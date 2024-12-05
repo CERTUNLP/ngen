@@ -11,6 +11,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from ngen import models, serializers
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
 from ngen.tasks import create_cases_for_matching_events
+from ngen.tasks import retest_event_kintun
 from ngen.views.communication_channel import BaseCommunicationChannelsViewSet
 from ngen.permissions import (
     CustomApiViewPermission,
@@ -68,6 +69,7 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         "cidr",
         "domain",
         "uuid",
+        "tags__name",
     ]
     filterset_class = EventFilter
     ordering_fields = [
@@ -80,6 +82,7 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         "feed",
         "created",
         "modified",
+        "tags__name",
     ]
     serializer_class = serializers.EventSerializer
     permission_classes = [CustomModelPermissions]
@@ -144,6 +147,24 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
             )
         return Response(
             {"detail": "Event already marked as solved"}, status=status.HTTP_200_OK
+        )
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="retest",
+        url_name="retest",
+        permission_classes=[CustomModelPermissions],
+    )
+    def retest_event(self, request, pk=None):
+        """
+        Retests events with Kintun API `/event/<pk>/retest/`.
+        """
+        event = self.get_object()
+        retest_event_kintun(event=event)
+        return Response(
+            {"message": gettext_lazy(f"Task retest event for {event.pk} launched")},
+            status=status.HTTP_200_OK,
         )
 
 

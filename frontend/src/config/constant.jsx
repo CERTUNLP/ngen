@@ -85,6 +85,8 @@ export const COMPONENT_URL = {
   groupMinifiedList: "minified/group/",
   caseMinifiedList: "/minified/case/",
   artifactMinifiedList: "minified/artifact/",
+  tagMinifiedList: "minified/tag/",
   group: "groups/",
-  configPublic: "ngenconfig/"
+  configPublic: "ngenconfig/",
+  tag: "tag/",
 };

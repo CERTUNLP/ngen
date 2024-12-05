@@ -3,6 +3,7 @@ import { deleteEvidence } from "../../api/services/evidences";
 import { Button, Card } from "react-bootstrap";
 import ModalConfirm from "../Modal/ModalConfirm";
 import Alert from "../Alert/Alert";
+import DateShowField from "../Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 // Función para obtener el ícono de acuerdo al tipo de archivo
@@ -99,7 +100,7 @@ const ViewFiles = (props) => {
                 <p className="file-meta">
                   {t("date.creation")}:&nbsp;
                   {props.file?.created
-                    ? props.file?.created.slice(0, 10) + " " + props.file?.created.slice(11, 19)
+                    ? <DateShowField value={props?.file?.created} />
                     : t("ngen.not.created.in.system")}
                 </p>
               </div>

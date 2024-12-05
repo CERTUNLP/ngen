@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import FormCase from "./components/FormCase";
 import { getAllStates } from "../../api/services/states";
+import { getMinifiedTag } from "../../api/services/tags";
 import { useTranslation } from "react-i18next";
 
 const CreateCase = ({ routeParams }) => {
   const [allStates, setAllStates] = useState([]); //multiselect
   const [stateName, setStatesName] = useState([]);
+  const [listTag, setListTag] = useState([]);
 
   const caseItem = {
     lifecycle: "", //required
@@ -20,7 +22,8 @@ const CreateCase = ({ routeParams }) => {
     solve_date: null,
     comments: [], //?
     evidence: [],
-    events: []
+    events: [],
+    tags: []
   };
 
   useEffect(() => {
@@ -42,6 +45,17 @@ const CreateCase = ({ routeParams }) => {
       .catch((error) => {
         console.log(error);
       });
+    
+    getMinifiedTag()
+    .then((response) => {
+      var list = response.map((tag) => {
+        return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
+      });
+      setListTag(list);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }, []);
 
   const { t } = useTranslation();
@@ -52,10 +66,12 @@ const CreateCase = ({ routeParams }) => {
         caseItem={caseItem}
         allStates={allStates}
         edit={false}
+        listTag={listTag}
         save={t("button.case_create")}
         evidenceColum={true}
         stateName={stateName}
         setStatesName={setStatesName}
+
         buttonsModalColum={true}
         asNetworkAdmin={routeParams.asNetworkAdmin}
       />

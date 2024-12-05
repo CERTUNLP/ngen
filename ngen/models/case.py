@@ -28,6 +28,8 @@ from django_lifecycle import (
 from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
 from treebeard.al_tree import AL_NodeManager
+from taggit.managers import TaggableManager
+from django.apps import apps
 
 import ngen
 from ngen.models.announcement import Communication
@@ -43,6 +45,7 @@ from .common.mixins import (
     ValidationModelMixin,
     AddressManager,
     ChannelableMixin,
+    # TaggedItemMixin,
 )
 from ..storage import HashedFilenameStorage
 
@@ -63,6 +66,7 @@ class Case(
     Communication,
     ValidationModelMixin,
     ChannelableMixin,
+    # TaggedItemMixin,
 ):
     tlp = models.ForeignKey("ngen.Tlp", models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
@@ -109,6 +113,7 @@ class Case(
     )
     notification_count = models.PositiveSmallIntegerField(default=0)
     comments = GenericRelation(Comment)
+    tags = TaggableManager(through="ngen.TaggedObject")
 
     _temp_events = []
 
@@ -411,6 +416,7 @@ class Event(
     AddressModelMixin,
     ValidationModelMixin,
     ChannelableMixin,
+    # TaggedItemMixin,
 ):
     tlp = models.ForeignKey("ngen.Tlp", models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
@@ -447,6 +453,7 @@ class Event(
     )
     node_order_by = ["id"]
     comments = GenericRelation(Comment)
+    tags = TaggableManager(through="ngen.TaggedObject")
 
     objects = EventManager()
 

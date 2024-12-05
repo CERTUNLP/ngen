@@ -5,6 +5,7 @@ from constance import config
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
+from django.apps import apps
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Length
@@ -19,6 +20,8 @@ from django_lifecycle import (
 from model_utils.models import TimeStampedModel
 from netfields import NetManager, CidrAddressField
 from treebeard.al_tree import AL_Node
+import ngen.models
+from taggit.managers import TaggableManager
 
 import ngen
 from ngen.utils import slugify_underscore
@@ -675,3 +678,11 @@ class ChannelableMixin(models.Model):
 
     def get_reporter_contacts(self):
         raise NotImplementedError
+
+
+# class TaggedItemMixin(models.Model):
+
+#     tags = TaggableManager(through=apps.get_model("ngen", "TaggedItem"))
+
+#     class Meta:
+#         abstract = True

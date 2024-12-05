@@ -125,6 +125,10 @@ p.text-muted {
   font-size: 13px;
 }
 
+.spinner-border {
+  margin: 10px auto;
+}
+
 .card {
   border-radius: 0;
   box-shadow: 0 1px 20px 0 rgba(69, 90, 100, 0.08);
@@ -136,7 +140,7 @@ p.text-muted {
   .card-header {
     background-color: transparent;
     border-bottom: 1px solid #f1f1f1;
-    padding: 20px 25px;
+    padding: 20px 20px 5px 25px;
     position: relative;
 
     h5 {
@@ -216,12 +220,13 @@ p.text-muted {
   .card-footer {
     border-top: 1px solid #f1f1f1;
     background: transparent;
-    padding: 25px;
+    padding: 5px 25px 25px 25px;
   }
 
   .card-block,
   .card-body {
-    padding: 30px 25px;
+    // padding: 30px 25px;
+    padding: 5px 30px 5px 25px;
   }
 
   &.card-load {

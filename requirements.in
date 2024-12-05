@@ -21,7 +21,7 @@ django-picklefield==3.0.1
 django-treebeard==4.5.1
 drf-spectacular==0.26.4
 pip-chill==1.0.1
-pip-tools==7.3.0
+pip-tools==7.4.1
 psycopg2-binary==2.9.9
 pyjwt==2.4.0
 redis==4.4.4
@@ -43,3 +43,4 @@ gunicorn==23.0.0
 python-whois==0.9.4
 whoisit==3.0.4
 publicsuffix2==2.20191221
+django-taggit==6.1.0

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
-import CrudButton from "../../../components/Button/CrudButton";
-import ModalConfirm from "../../../components/Modal/ModalConfirm";
-import { deleteTaxonomyGroup, getTaxonomyGroup } from "../../../api/services/taxonomyGroups";
-import Ordering from "../../../components/Ordering/Ordering";
+import CrudButton from "components/Button/CrudButton";
+import ModalConfirm from "components/Modal/ModalConfirm";
+import { deleteTaxonomyGroup, getTaxonomyGroup } from "api/services/taxonomyGroups";
+import Ordering from "components/Ordering/Ordering";
+import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 const TableTaxonomyGroup = ({ setIsModify, list, loading, order, setOrder, setLoading }) => {
@@ -101,7 +102,9 @@ const TableTaxonomyGroup = ({ setIsModify, list, loading, order, setOrder, setLo
             let itemNumber = parts[parts.length - 2];
             return (
               <tr key={index}>
-                <td>{taxonomyGroup.created.slice(0, 10) + " " + taxonomyGroup.created.slice(11, 19)}</td>
+                <td>
+                  <DateShowField value={taxonomyGroup?.created} />
+                </td>
                 <td>{taxonomyGroup.name}</td>
                 <td>{taxonomyGroup.description}</td>
                 <td>{taxonomyGroup.needs_review ? t("w.yes") : t("w.no")}</td>
@@ -180,25 +183,13 @@ const TableTaxonomyGroup = ({ setIsModify, list, loading, order, setOrder, setLo
                       <tr>
                         <td>{t("ngen.date.created")}</td>
                         <td>
-                          <Form.Control
-                            plaintext
-                            readOnly
-                            defaultValue={
-                              taxonomyGroup ? taxonomyGroup.created.slice(0, 10) + " " + taxonomyGroup.created.slice(11, 19) : ""
-                            }
-                          />
+                          <DateShowField value={taxonomyGroup?.created} asFormControl />
                         </td>
                       </tr>
                       <tr>
                         <td>{t("ngen.date.modified")}</td>
                         <td>
-                          <Form.Control
-                            plaintext
-                            readOnly
-                            defaultValue={
-                              taxonomyGroup ? taxonomyGroup.modified.slice(0, 10) + " " + taxonomyGroup.modified.slice(11, 19) : ""
-                            }
-                          />
+                          <DateShowField value={taxonomyGroup?.modified} asFormControl />
                         </td>
                       </tr>
                     </tbody>

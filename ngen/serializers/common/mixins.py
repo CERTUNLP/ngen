@@ -1,5 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
+from ngen.serializers.common.fields import NewTagListSerializerField
+from taggit.serializers import TaggitSerializer
 
 from ngen import models
 
@@ -122,3 +124,18 @@ class MergeSerializerMixin:
                     extra_kwargs[field.name] = kwargs
 
         return extra_kwargs
+
+
+class TagSerializerMixin(TaggitSerializer):
+    tags = NewTagListSerializerField(required=False)
+
+    def update(self, instance, validated_data):
+        tags = validated_data.pop("tags", [])
+        instance.tags.set(tags)
+        return super().update(instance, validated_data)
+
+    def create(self, validated_data):
+        tags = validated_data.pop("tags", [])
+        instance = super().create(validated_data)
+        instance.tags.set(tags)
+        return instance

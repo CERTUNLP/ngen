@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy
 
 import ngen.models
 from ngen import cortex
+from ngen import kintun
 from ngen.models.announcement import Communication
 from ngen.services.contact_lookup import ContactLookupService
 
@@ -184,5 +185,29 @@ def whois_lookup_task(self, ip_or_domain):
     try:
         whois_data = ContactLookupService.get_contact_info(ip_or_domain)
         return whois_data
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
+def retest_event_kintun(event):
+    """
+    Tarea de Celery para retestear un evento utilizando Kintun.
+    """
+    try:
+        mapping_to = ngen.models.AnalyzerMapping.objects.get(mapping_from=event.taxonomy, analyzer_type='kintun').mapping_to
+        kintun_data = kintun.retest_event_kintun(event, mapping_to)
+        analysis_data = {
+            "date": timezone.now(),
+            "analyzer_type": "kintun",
+            "vulnerable": kintun_data.get('vulnerable', False),
+            "result": kintun_data.get('evidence', ''),
+            "target": event.address_value,
+            "scan_type": kintun_data.get('vuln_type', ''),
+            "analyzer_url": kintun_data.get('_id', ''),
+            "event": event
+        }
+        ngen.models.EventAnalysis.objects.create(**analysis_data)
+        return kintun_data
     except Exception as e:
         return {"error": str(e)}

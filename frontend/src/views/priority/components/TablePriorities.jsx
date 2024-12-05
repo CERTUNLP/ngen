@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
-import { deletePriority } from "../../../api/services/priorities";
-import CrudButton from "../../../components/Button/CrudButton";
-import ModalConfirm from "../../../components/Modal/ModalConfirm";
-import Alert from "../../../components/Alert/Alert";
-import Ordering from "../../../components/Ordering/Ordering";
+import { deletePriority } from "api/services/priorities";
+import CrudButton from "components/Button/CrudButton";
+import ModalConfirm from "components/Modal/ModalConfirm";
+import Alert from "components/Alert/Alert";
+import Ordering from "components/Ordering/Ordering";
+import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, currentPage }) => {
@@ -161,23 +162,13 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
                           <tr>
                             <td>{t("ngen.date.created")}</td>
                             <td>
-                              <Form.Control
-                                plaintext
-                                readOnly
-                                defaultValue={priority.created ? priority.created.slice(0, 10) + " " + priority.created.slice(11, 19) : ""}
-                              />
+                              <DateShowField value={priority?.created} asFormControl />
                             </td>
                           </tr>
                           <tr>
                             <td>{t("ngen.date.modified")}</td>
                             <td>
-                              <Form.Control
-                                plaintext
-                                readOnly
-                                defaultValue={
-                                  priority.modified ? priority.modified.slice(0, 10) + " " + priority.modified.slice(11, 19) : ""
-                                }
-                              />
+                              <DateShowField value={priority?.modified} asFormControl />
                             </td>
                           </tr>
                         </Table>

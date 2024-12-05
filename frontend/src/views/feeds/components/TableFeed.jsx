@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
-import { deleteFeed, getFeed, putActivationStatus } from "../../../api/services/feeds";
-import CrudButton from "../../../components/Button/CrudButton";
-import ActiveButton from "../../../components/Button/ActiveButton";
-import ModalConfirm from "../../../components/Modal/ModalConfirm";
-import Alert from "../../../components/Alert/Alert";
-import Ordering from "../../../components/Ordering/Ordering";
+import { deleteFeed, getFeed, putActivationStatus } from "api/services/feeds";
+import CrudButton from "components/Button/CrudButton";
+import ActiveButton from "components/Button/ActiveButton";
+import ModalConfirm from "components/Modal/ModalConfirm";
+import Alert from "components/Alert/Alert";
+import Ordering from "components/Ordering/Ordering";
+import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
 
 const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage, setIsModify }) => {
@@ -212,21 +213,13 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage, s
                       <tr>
                         <td>{t("ngen.date.created")}</td>
                         <td>
-                          <Form.Control
-                            plaintext
-                            readOnly
-                            defaultValue={feed.created ? feed.created.slice(0, 10) + " " + feed.created.slice(11, 19) : ""}
-                          />
+                          <DateShowField value={feed?.created} asFormControl />
                         </td>
                       </tr>
                       <tr>
                         <td>{t("ngen.date.modified")}</td>
                         <td>
-                          <Form.Control
-                            plaintext
-                            readOnly
-                            defaultValue={feed.modified ? feed.modified.slice(0, 10) + " " + feed.modified.slice(11, 19) : ""}
-                          />
+                          <DateShowField value={feed?.modified} asFormControl />
                         </td>
                       </tr>
                     </Table>
