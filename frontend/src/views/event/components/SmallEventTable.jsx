@@ -18,7 +18,8 @@ const SmallEventTable = ({
   disableMerged,
   disableUuid,
   disableColumnDelete,
-  disableColumnCase
+  disableColumnCase,
+  basePath = ""
 }) => {
   const [taxonomyNames, setTaxonomyNames] = useState({});
   const [feedNames, setFeedNames] = useState({});
@@ -101,6 +102,7 @@ const SmallEventTable = ({
               disableColumnDelete={disableColumnDelete}
               disableMerged={disableMerged}
               disableColumnCase={disableColumnCase}
+              basePath = {basePath}
             />
           }
         </Card.Body>

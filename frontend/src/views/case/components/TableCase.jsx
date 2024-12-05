@@ -222,7 +222,7 @@ const TableCase = ({
                               caseItem.name,
                               caseItem.date,
                               priorityNames[caseItem.priority],
-                              tlpNames[caseItem.tlp].name,
+                              tlpNames[caseItem.tlp]?.name,
                               stateNames[caseItem.state],
                               userNames[caseItem.user_creator],
                               caseItem.events
@@ -298,7 +298,7 @@ const TableCase = ({
                           caseItem.name,
                           caseItem.date,
                           priorityNames[caseItem.priority],
-                          tlpNames[caseItem.tlp].name,
+                          tlpNames[caseItem.tlp]?.name,
                           stateNames[caseItem.state],
                           userNames[caseItem.user_creator]
                         )

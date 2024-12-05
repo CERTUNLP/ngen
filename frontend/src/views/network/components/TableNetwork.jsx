@@ -132,6 +132,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
                   <ActiveButton
                     active={network.active}
                     onClick={() => pressActive(network.domain, network.cidr, network.active, network.url)}
+                    permissions="change_network"
                   />
                 </td>
                 <td>{network.network_entity ? entityNames[network.network_entity] : "-"}</td>

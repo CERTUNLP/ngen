@@ -1,4 +1,4 @@
-import { isBlank, isEmpty, isNull, validateCidr, validateLength, validateSpace, validateSpaces, validateURL } from "../validators";
+import { isBlank, isEmpty, isNull, validateCidr, validateDomain, validateLength, validateSpace, validateSpaces, validateURL } from "../validators";
 
 const validateSelect = (option) => {
   return !isEmpty(option);
@@ -9,7 +9,7 @@ const validateNetworkCIDR = (cidr) => {
 };
 
 const validateNetworkDomain = (domain) => {
-  return validateURL(domain) && validateSpaces(domain) && validateLength(domain, 255) && !isEmpty(domain);
+  return validateDomain(domain) && validateSpaces(domain) && validateLength(domain, 255) && !isEmpty(domain);
 };
 
 const validateUnrequiredInput = (input) => {

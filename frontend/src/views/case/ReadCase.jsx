@@ -38,6 +38,17 @@ const ReadCase = ({ routeParams }) => {
 
   const { t } = useTranslation();
 
+  function getUrlAsMe(url) {
+    if (basePath.includes("networkadmin") && !url.includes("networkadmin/")) {
+      if (url.includes("api/")) {
+        return url.replace("api/", "api/networkadmin/");
+      } else {
+        return "networkadmin/" + url;
+      }
+    }
+    return url;
+  }
+
   const navigateToCase = (url, basePath) => {
     const id = url.split("/")[url.split("/").length - 2];
     navigate(basePath + "/cases/view" + id);
@@ -45,7 +56,7 @@ const ReadCase = ({ routeParams }) => {
 
   useEffect(() => {
     if (id.id) {
-      getCase(COMPONENT_URL.case + id.id + "/")
+      getCase(getUrlAsMe(COMPONENT_URL.case) + id.id + "/")
         .then((response) => {
           setCaseItem(response.data);
         })
@@ -79,7 +90,7 @@ const ReadCase = ({ routeParams }) => {
 
     const getEvidenceFile = (url) => {
       return apiInstance
-        .get(url)
+        .get(getUrlAsMe(url))
         .then((response) => {
           return response.data.file;
         })
@@ -130,12 +141,13 @@ const ReadCase = ({ routeParams }) => {
     };
 
     if (caseItem) {
-      if (caseItem.evidence.length > 0) {
-        getEvidenceFile(caseItem.evidence);
-      }
-      if (caseItem.evidence_events.length > 0) {
-        getEvidenceFile(caseItem.evidence_events);
-      }
+      // This one may be an array of urls, so we need to get the file from each one
+      // if (caseItem.evidence.length > 0) {
+      //   getEvidenceFile(caseItem.evidence);
+      // }
+      // if (caseItem.evidence_events.length > 0) {
+      //   getEvidenceFile(caseItem.evidence_events);
+      // }
       getName(caseItem.priority, setPriority);
       getName(caseItem.tlp, setTlp);
       if (caseItem.assigned) {
@@ -157,7 +169,7 @@ const ReadCase = ({ routeParams }) => {
       const fetchAllEvidences = async () => {
         try {
           // Esperar a que todas las promesas de getEvidence se resuelvan
-          const responses = await Promise.all(caseItem.evidence.map((url) => getEvidence(url)));
+          const responses = await Promise.all(caseItem.evidence.map((url) => getEvidence(getUrlAsMe(url))));
           // Extraer los datos de las respuestas
           const data = responses.map((response) => response.data);
           // Actualizar el estado con los datos de todas las evidencias
@@ -173,7 +185,7 @@ const ReadCase = ({ routeParams }) => {
       const fetchAllEventEvidences = async () => {
         try {
           // Esperar a que todas las promesas de getEvidence se resuelvan
-          const responses = await Promise.all(caseItem.evidence_events.map((url) => getEvidence(url)));
+          const responses = await Promise.all(caseItem.evidence_events.map((url) => getEvidence(getUrlAsMe(url))));
           // Extraer los datos de las respuestas
           const data = responses.map((response) => response.data);
           // Actualizar el estado con los datos de todas las evidencias
@@ -408,6 +420,7 @@ const ReadCase = ({ routeParams }) => {
               disableUuid={false}
               disableColumnDelete={true}
               disableColumnCase={true}
+              basePath = {basePath}
             />
 
             <Card>

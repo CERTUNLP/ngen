@@ -84,6 +84,8 @@ class ConstanceSerializer(serializers.Serializer):
             value_type = type(settings.CONFIG.get(key)[0])
             if value_type == bool:
                 value = str(value).lower() in project_settings.VALUES_TRUE
+            elif value_type == type(None):
+                value = str(value)
             else:
                 value = value_type(value)
             setattr(config, key, "" if value is None else value)

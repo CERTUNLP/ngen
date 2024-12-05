@@ -10,3 +10,5 @@ from .state import *  # noqa: F401
 from .tag import *  # noqa: F401
 from .taxonomy import *  # noqa: F401
 from .tools import *  # noqa: F401
+from .analyzer_mapping import *  # noqa: F401
+from .event_analysis import *  # noqa: F401

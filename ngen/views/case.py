@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from ngen import models, serializers
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
 from ngen.tasks import create_cases_for_matching_events
+from ngen.tasks import retest_event_kintun
 from ngen.views.communication_channel import BaseCommunicationChannelsViewSet
 from ngen.permissions import (
     CustomApiViewPermission,
@@ -83,6 +84,24 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
     ]
     serializer_class = serializers.EventSerializer
     permission_classes = [CustomModelPermissions]
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="retest",
+        url_name="retest",
+        permission_classes=[CustomModelPermissions],
+    )
+    def retest_event(self, request, pk=None):
+        """
+        Retests events with Kintun API `/event/<pk>/retest/`.
+        """
+        event = self.get_object()
+        retest_event_kintun(event=event)
+        return Response(
+            {"message": gettext_lazy(f"Task retest event for {event.pk} launched")},
+            status=status.HTTP_200_OK,
+        )
 
 
 class NetworkAdminEventViewSet(EventViewSet):

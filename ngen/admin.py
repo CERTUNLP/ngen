@@ -68,3 +68,9 @@ admin.site.register(CommunicationChannelTypeRelation)
 # tag
 admin.site.unregister(TagOriginal)  # Unregister original Tag model
 admin.site.register(Tag)
+
+# analysis
+admin.site.register(EventAnalysis)
+
+# mapping
+admin.site.register(AnalyzerMapping)

@@ -78,6 +78,10 @@ const setup = (store) => {
           });
         });
       } else {
+        // check if avoidRaise is true
+        if (originalRequest.avoidRaise) {
+          return Promise.reject(error);
+        }
         console.log(error);
         // check if data is undefined, array or object
         let data = error.response?.data;
@@ -88,7 +92,7 @@ const setup = (store) => {
           data.map((d) => {
             msg += d + " ";
           });
-          setAlert("Error al realizar la petición: " + msg, "error");
+          setAlert("Errores al realizar la petición: " + msg, "error");
         } else {
           let msg = error.response?.data?.non_field_errors ? error.response.data.non_field_errors : "";
           msg = msg ? msg : error.response?.data?.detail ? error.response.data.detail : "";

@@ -124,7 +124,10 @@ class NetworkAdminContactViewSet(ContactViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
-        return queryset.filter(user=user)
+        # user is contact.user or networks are in networks__contacts for user
+        return queryset.filter(
+            models.Q(user=user) | models.Q(networks__contacts__user=user)
+        ).distinct()
 
 
 class EntityMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

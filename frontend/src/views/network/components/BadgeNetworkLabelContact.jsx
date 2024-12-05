@@ -12,7 +12,7 @@ const BadgeNetworkLabelContact = (props) => {
   }, []);
 
   const showContactData = (url) => {
-    getContact(url)
+    getContact(url, true)
       .then((response) => {
         setContact(response.data);
       })

@@ -290,6 +290,12 @@ CONSTANCE_CONFIG = {
         ),
         "image_field",
     ),
+    "TEAM_LOGO_URL": (
+        os.environ.get("TEAM_LOGO_URL"),
+        gettext_lazy(
+            "Team logo url for emails. Overrides the saved logo. Usefull to access the logo from a public url"
+        ),
+    ),
     "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name"),
     "EMAIL_SENDER": (
         os.environ.get("EMAIL_SENDER"),
@@ -381,6 +387,14 @@ CONSTANCE_CONFIG = {
     "CORTEX_APIKEY": (
         os.environ.get("CORTEX_APIKEY", ""),
         gettext_lazy("Cortex admin apikey"),
+    ),
+    "KINTUN_HOST": (
+        os.environ.get("KINTUN_HOST"),
+        gettext_lazy("Kintun host domain:port"),
+    ),
+    "KINTUN_APIKEY": (
+        os.environ.get("KINTUN_APIKEY", ""),
+        gettext_lazy("Kintun admin apikey"),
     ),
     "PAGE_SIZE": (
         int(os.environ.get("PAGE_SIZE", 10)),
@@ -501,8 +515,12 @@ if DEBUG:
         "SHOW_TOOLBAR_CALLBACK": show_toolbar,
     }
 
+frontend_urls = os.environ.get("DJANGO_CORS_ALLOWED_ORIGINS", "")
+if frontend_urls:
+    CORS_ALLOWED_ORIGINS = frontend_urls.split(",")
+else:
+    CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = os.environ.get("DJANGO_CORS_ALLOWED_ORIGINS", "").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
 
 COMMENT_ALLOW_SUBSCRIPTION = True

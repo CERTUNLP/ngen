@@ -8,7 +8,16 @@ import { getMinifiedUser } from "../../../api/services/users";
 import TableCase from "./TableCase";
 import { useTranslation } from "react-i18next";
 
-const SmallCaseTable = ({ readCase, disableLink, modalCase, modalListCase, modalCaseDetail, deleteCaseFromForm, disableColumOption }) => {
+const SmallCaseTable = ({
+  readCase,
+  disableLink,
+  modalCase,
+  modalListCase,
+  modalCaseDetail,
+  deleteCaseFromForm,
+  disableColumOption,
+  basePath = ""
+}) => {
   const [userNames, setUserNames] = useState({});
   const [stateNames, setStateNames] = useState({});
   const [priorityNames, setPriorityNames] = useState({});
@@ -100,30 +109,32 @@ const SmallCaseTable = ({ readCase, disableLink, modalCase, modalListCase, modal
           </Row>
         </Card.Header>
         <Card.Body>
-          { (caseItem.length === 0) ? 
-            t("ngen.no_case") :
-          
-          <TableCase
-            cases={caseItem}
-            disableCheckbox={true}
-            disableDateOrdering={true}
-            priorityNames={priorityNames}
-            stateNames={stateNames}
-            userNames={userNames}
-            tlpNames={tlpNames}
-            editColum={false}
-            deleteColum={true}
-            deleteColumForm={true}
-            detailModal={true}
-            navigationRow={false}
-            selectCase={true}
-            disableNubersOfEvents={true}
-            modalCaseDetail={modalCaseDetail}
-            deleteCaseFromForm={deleteCaseFromForm}
-            disableColumOption={disableColumOption}
-            disableDateModified={true}
-            disableDate={true}
-          />}
+          {caseItem.length === 0 ? (
+            t("ngen.no_case")
+          ) : (
+            <TableCase
+              cases={caseItem}
+              disableCheckbox={true}
+              disableDateOrdering={true}
+              priorityNames={priorityNames}
+              stateNames={stateNames}
+              userNames={userNames}
+              tlpNames={tlpNames}
+              editColum={false}
+              deleteColum={true}
+              deleteColumForm={true}
+              detailModal={true}
+              navigationRow={false}
+              selectCase={true}
+              disableNubersOfEvents={true}
+              modalCaseDetail={modalCaseDetail}
+              deleteCaseFromForm={deleteCaseFromForm}
+              disableColumOption={disableColumOption}
+              disableDateModified={true}
+              disableDate={true}
+              basePath = {basePath}
+            />
+          )}
         </Card.Body>
       </Card>
     </React.Fragment>

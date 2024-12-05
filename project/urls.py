@@ -145,6 +145,10 @@ router.register(r"minified/tag", views.TagMinifiedViewSet, basename="minified-ta
 router.register(r"ngenconfig", views.SettingsViewSet, basename="settings")
 router.register(r"tags", views.TagViewSet, basename="tag")
 
+router.register(r"event_analysis", views.EventAnalysisViewSet, basename="eventanalysis")
+
+router.register(r"analyzer_mapping", views.AnalyzerMappingViewSet, basename="analyzermapping")
+
 if settings.ELASTIC_ENABLED:
     from ngen.documents import CaseDocumentViewSet
 

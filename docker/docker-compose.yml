@@ -11,6 +11,7 @@ services:
       - ./postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+
   ngen-adminer:
     image: adminer
     restart: on-failure
@@ -18,6 +19,7 @@ services:
       ["php", "-d", "upload_max_filesize = 10G", "-d", "post_max_size = 10G", "-S", "[::]:8080", "-t", "/var/www/html"]
     ports:
       - "8080:8080"
+
   ngen-django:
     image: ngen-django:latest
     build:
@@ -37,6 +39,7 @@ services:
       - ngen-rabbitmq
       - ngen-redis
       - ngen-mail
+
   ngen-celery-worker:
     image: ngen-django:latest
     restart: on-failure
@@ -49,6 +52,7 @@ services:
       - ngen-django
       - ngen-rabbitmq
       - ngen-redis
+
   ngen-celery-beat:
     image: ngen-django:latest
     restart: on-failure
@@ -61,6 +65,7 @@ services:
       - ngen-django
       - ngen-rabbitmq
       - ngen-redis
+
   ngen-celery-flower:
     image: ngen-django:latest
     restart: on-failure
@@ -75,12 +80,14 @@ services:
       - ngen-django
       - ngen-rabbitmq
       - ngen-redis
+
   ngen-rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: rabbitmq:3.13-management-alpine
     restart: on-failure
     ports:
       - "5672:5672"
       - "15672:15672"
+
   ngen-redis:
     image: "redis:alpine"
     restart: on-failure
@@ -88,6 +95,7 @@ services:
       - "6379:6379"
     volumes:
       - ./redis:/data
+
   redis-commander:
     image: rediscommander/redis-commander:latest
     restart: on-failure
@@ -99,11 +107,13 @@ services:
       - "8081:8081"
     depends_on:
       - ngen-redis
+
   ngen-mail:
-    image: mailhog/mailhog
+    image: mailhog/mailhog:v1.0.1
     ports:
       - "1025:1025" # smtp server
       - "8025:8025" # web ui
+
   ngen-elasticsearch:
     image: elasticsearch:7.17.4
     profiles: ["elastic"] # once you run with this profile you can't run without it, you should prune containers
@@ -119,6 +129,7 @@ services:
       - ./elasticsearch:/var/lib/elasticsearch/data #sudo  chown -R 1000:1000 elasticsearch
     ports:
       - "9200:9200"
+
   ngen-frontend:
     image: ngen-frontend:latest
     build:
