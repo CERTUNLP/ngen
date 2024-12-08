@@ -1,10 +1,9 @@
 import json
-from unittest.mock import patch
 from django.utils import timezone
-from django.conf import settings
 from django.test import override_settings
 from django.urls import reverse
 from rest_framework import status
+from constance import config
 
 from ngen.models import (
     EmailMessage,
@@ -18,23 +17,7 @@ from ngen.models import (
     Contact,
 )
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
-
-
-def use_test_email_env():
-    """
-    Change constance config to use test email environment
-    """
-    return patch.dict(
-        settings.CONSTANCE_CONFIG,
-        {
-            "EMAIL_HOST": ("ngen-mail", ""),
-            "EMAIL_SENDER": ("test@ngen.com", ""),
-            "EMAIL_USERNAME": ("username", ""),
-            "EMAIL_PASSWORD": ("password", ""),
-            "EMAIL_PORT": ("1025", ""),
-            "EMAIL_USE_TLS": (False, ""),
-        },
-    )
+from ngen.tests.test_helpers import use_test_email_env
 
 
 class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
@@ -60,8 +43,8 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
         basename = "communicationchannel"
         cls.url_detail = lambda pk: reverse(f"{basename}-detail", kwargs={"pk": pk})
         cls.url_communicate = lambda pk: cls.url_detail(pk) + "communicate/"
-        cls.app_email_sender = settings.CONSTANCE_CONFIG["EMAIL_SENDER"][0]
-        cls.app_email_username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
+        cls.app_email_sender = config.EMAIL_SENDER
+        cls.app_email_username = config.EMAIL_USERNAME
         cls.event = Event.objects.create(
             domain="info.unlp.edu.ar",
             taxonomy=Taxonomy.objects.get(slug="botnet"),

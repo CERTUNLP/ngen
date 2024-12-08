@@ -8,7 +8,6 @@ from pathlib import Path
 
 from comment.models import Comment
 from constance import config
-from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -238,7 +237,7 @@ class Case(
         if self.state.attended:
             self.communicate_new_open()
         else:
-            if settings.CONSTANCE_CONFIG["CASE_REPORT_NEW_CASES"][0]:
+            if config.CASE_REPORT_NEW_CASES:
                 self.communicate_new()
 
     @hook(BEFORE_UPDATE, when="state", has_changed=True)
@@ -334,6 +333,7 @@ class Case(
         )
 
     def communicate(self, title: str, template: str, **kwargs):
+        # DEPRECATED: Use communicate_v2 instead
         """
         Send email to a list of recipients in 'event_by_contacts' param
         or those returned by 'event_by_contacts' method on 'to' mail header.

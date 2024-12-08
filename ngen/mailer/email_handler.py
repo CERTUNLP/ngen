@@ -1,6 +1,6 @@
 import re
 from typing import Optional, Union, List, Dict
-from django.conf import settings
+from constance import config
 from ngen.models.email_message import EmailMessage as EmailMessageModel
 from ngen.utils import clean_list
 
@@ -11,8 +11,8 @@ class EmailHandler:
     """
 
     def __init__(self):
-        self.email_sender = settings.CONSTANCE_CONFIG["EMAIL_SENDER"][0]
-        self.email_username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
+        self.email_sender = config.EMAIL_SENDER
+        self.email_username = config.EMAIL_USERNAME
 
         if not self.email_sender:
             raise ValueError("EMAIL_SENDER not configured")

@@ -1,13 +1,12 @@
 # pylint: disable=broad-exception-caught
 
 from celery import shared_task
-from constance import config
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends.smtp import EmailBackend
-from django.conf import settings
+from constance import config
 
 from ngen.mailer.email_client import EmailClient
 import ngen.models
@@ -238,11 +237,11 @@ def async_send_email(self, email_message_id: int):
         exponential_backoff = (self.request.retries + 1) ** 2
         self.retry(exc=e, countdown=exponential_backoff)
     try:
-        host = settings.CONSTANCE_CONFIG["EMAIL_HOST"][0]
-        username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
-        password = settings.CONSTANCE_CONFIG["EMAIL_PASSWORD"][0]
-        port = settings.CONSTANCE_CONFIG["EMAIL_PORT"][0]
-        use_tls = settings.CONSTANCE_CONFIG["EMAIL_USE_TLS"][0]
+        host = config.EMAIL_HOST
+        username = config.EMAIL_USERNAME
+        password = config.EMAIL_PASSWORD
+        port = config.EMAIL_PORT
+        use_tls = config.EMAIL_USE_TLS
 
         email_connection = EmailBackend(
             host=host,
@@ -302,9 +301,9 @@ def retrieve_emails():
     Task to retrieve unread imbox emails.
     Unread emails are stored and marked as read.
     """
-    host = settings.CONSTANCE_CONFIG["EMAIL_HOST"][0]
-    username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
-    password = settings.CONSTANCE_CONFIG["EMAIL_PASSWORD"][0]
+    host = config.EMAIL_HOST
+    username = config.EMAIL_USERNAME
+    password = config.EMAIL_PASSWORD
 
     try:
         email_client = EmailClient(host=host, username=username, password=password)

@@ -1,7 +1,5 @@
 from django.urls import reverse
 from rest_framework import status
-from unittest.mock import patch
-from django.conf import settings
 from django.test import override_settings
 
 from ngen.models import (
@@ -19,23 +17,7 @@ from ngen.models import (
     NetworkEntity,
 )
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
-
-
-def use_test_email_env():
-    """
-    Change constance config to use test email environment
-    """
-    return patch.dict(
-        settings.CONSTANCE_CONFIG,
-        {
-            "EMAIL_HOST": ("ngen-mail", ""),
-            "EMAIL_SENDER": ("test@ngen.com", ""),
-            "EMAIL_USERNAME": ("username", ""),
-            "EMAIL_PASSWORD": ("password", ""),
-            "EMAIL_PORT": ("1025", ""),
-            "EMAIL_USE_TLS": (False, ""),
-        },
-    )
+from ngen.tests.test_helpers import use_test_email_env
 
 
 class TestCase(APITestCaseWithLogin):
