@@ -48,25 +48,25 @@ class EmailClient:
         if self.protocol:
             self.protocol.logout()
 
-    def fetch_emails(self, folder: str, flag: str) -> List[Messages]:
+    def fetch_emails(self, folder: str) -> list:
         """
         Fetch emails from a folder with a specific flag
         """
-        return self.protocol.fetch_emails(folder, flag)
+        return self.protocol.fetch_emails(folder)
 
-    def fetch_all_emails(self) -> List[Messages]:
+    def fetch_all_emails(self) -> list:
         """
         Fetch all emails
         """
         return self.protocol.fetch_all_emails()
 
-    def fetch_unread_emails(self) -> List[Messages]:
+    def fetch_unread_emails(self) -> list:
         """
         Fetch unread emails
         """
         return self.protocol.fetch_unread_emails()
 
-    def mark_emails_as_read(self, emails: List[Messages]):
+    def mark_emails_as_read(self, emails: list):
         """
         Mark emails as read
         """
@@ -74,7 +74,7 @@ class EmailClient:
 
     # Helper methods
 
-    def map_emails(self, emails: List[Messages]) -> List[EmailMessage]:
+    def map_emails(self, emails: list) -> List[EmailMessage]:
         """
         Map email messages to EmailMessage model
         """
@@ -122,7 +122,7 @@ class EmailClient:
 
     def get_custom_email_field(self, message: Messages, field: str):
         """
-        Get references field from email
+        Get custom field from email
         """
         return self.map_raw_email(message.raw_email).get(field, "")
 

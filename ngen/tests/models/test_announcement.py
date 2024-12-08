@@ -1,8 +1,6 @@
 from constance.test import override_config
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from unittest.mock import patch
-from django.conf import settings
 from django.test import override_settings
 from django.utils.translation import gettext_lazy
 
@@ -24,33 +22,7 @@ from ngen.models import (
     Network,
     NetworkEntity,
 )
-
-
-def use_test_email_env():
-    """
-    Change constance config to use test email environment
-    """
-    return patch.dict(
-        settings.CONSTANCE_CONFIG,
-        {
-            "EMAIL_HOST": ("ngen-mail", ""),
-            "EMAIL_SENDER": ("test@ngen.com", ""),
-            "EMAIL_USERNAME": ("username", ""),
-            "EMAIL_PASSWORD": ("password", ""),
-            "EMAIL_PORT": ("1025", ""),
-            "EMAIL_USE_TLS": (False, ""),
-        },
-    )
-
-
-def override_constance_config(**kwargs):
-    """
-    Override constance config
-    """
-    return patch.dict(
-        settings.CONSTANCE_CONFIG,
-        {**settings.CONSTANCE_CONFIG, **kwargs},
-    )
+from ngen.tests.test_helpers import use_test_email_env
 
 
 class AnnouncementTestCase(TestCase):
@@ -110,7 +82,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_initial(self):
         """
         Creating case: INITIAL. Mail: NO
@@ -132,7 +104,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_staging(self):
         """
         Creating case: STAGING. Mail: NO
@@ -154,6 +126,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_config(CASE_REPORT_NEW_CASES=True)
     def test_case_open(self):
         """
         Creating case: OPEN. Mail: YES
@@ -179,7 +152,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_closed(self):
         """
         Creating case: CLOSED. Mail: NO
@@ -201,7 +174,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_initial_initial(self):
         """
         Creating a case: INITIAL > INITIAL. Mail: NO
@@ -225,7 +198,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_initial_staging(self):
         """
         Creating a case: INITIAL > STAGING. Mail: NO
@@ -249,7 +222,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_initial_open(self):
         """
         Creating a case: INITIAL > OPEN. Mail: YES
@@ -277,7 +250,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_initial_closed(self):
         """
         Creating a case: INITIAL > CLOSED. Mail: NO
@@ -301,7 +274,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_staging_initial(self):
         """
         Creating a case: STAGING > INITIAL. Mail: NO
@@ -325,7 +298,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_staging_staging(self):
         """
         Creating a case: STAGING > STAGING. Mail: NO
@@ -349,7 +322,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_staging_open(self):
         """
         Creating a case: STAGING > OPEN. Mail: YES
@@ -377,7 +350,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_staging_closed(self):
         """
         Creating a case: STAGING > CLOSED. Mail: NO
@@ -401,6 +374,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_config(CASE_REPORT_NEW_CASES=True)
     def test_case_open_initial(self):
         """
         Creating a case: open > initial. Mail: NO
@@ -429,6 +403,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_config(CASE_REPORT_NEW_CASES=True)
     def test_case_open_staging(self):
         """
         Creating a case: open > staging. Not possible
@@ -457,6 +432,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_config(CASE_REPORT_NEW_CASES=True)
     def test_case_open_open(self):
         """
         Creating a case: open > open. Mail: NO
@@ -485,6 +461,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_config(CASE_REPORT_NEW_CASES=True)
     def test_case_open_closed(self):
         """
         Creating a case: open > closed. Mail: Case closed
@@ -510,7 +487,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_closed_initial(self):
         """
         Creating a case: closed > Initial. Mail: NO
@@ -534,7 +511,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_closed_staging(self):
         """
         Creating a case: closed > Staging . Mail: YES
@@ -563,7 +540,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_closed_open(self):
         """
         Creating a case: closed > . Not possible.
@@ -587,7 +564,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_constance_config(CASE_REPORT_NEW_CASES=(False, ""))
+    @override_config(CASE_REPORT_NEW_CASES=False)
     def test_case_closed_closed(self):
         """
         Creating a case: closed > . Mail: NO
@@ -613,6 +590,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_config(CASE_REPORT_NEW_CASES=True)
     def test_case_template_email(self):
         """
         Creating case template and coinciding event. Testing correct case integration and email sending, as well as attachments.
@@ -695,6 +673,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_config(CASE_REPORT_NEW_CASES=True)
     def test_case_template_email_with_assigned_name(self):
         """
         Creating case template and coinciding event. Testing correct case integration and email sending, as well as attachments.
@@ -777,6 +756,7 @@ class AnnouncementTestCase(TestCase):
     # ----------------------------------------------------------------------------------
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_config(CASE_REPORT_NEW_CASES=True)
     @override_config(TEAM_EMAIL="team@ngen.com")
     def test_event_contact(self):
         """
@@ -850,6 +830,7 @@ class AnnouncementTestCase(TestCase):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_config(CASE_REPORT_NEW_CASES=True)
     @override_config(TEAM_EMAIL="team@ngen.com")
     def test_2event_case(self):
         """

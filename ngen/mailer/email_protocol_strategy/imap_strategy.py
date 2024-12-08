@@ -24,8 +24,8 @@ class IMAPStrategy(EmailProtocolStrategy):
             self.client.logout()
             self.client = None
 
-    def fetch_emails(self, folder: str, flag: str):
-        return self.client.messages(folder=folder, flag=flag)
+    def fetch_emails(self, folder: str):
+        return self.client.messages(folder=folder)
 
     def fetch_all_emails(self):
         return self.client.messages()

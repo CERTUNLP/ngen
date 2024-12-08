@@ -1,46 +1,14 @@
 import json
 from unittest.mock import patch
-from django.conf import settings
 from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
+from constance import config
 
 from ngen.models import EmailMessage
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
-
-
-def use_test_email_env():
-    """
-    Change constance config to use test email environment
-    """
-    return patch.dict(
-        settings.CONSTANCE_CONFIG,
-        {
-            "EMAIL_HOST": ("ngen-mail", ""),
-            "EMAIL_SENDER": ("test@ngen.com", ""),
-            "EMAIL_USERNAME": ("username", ""),
-            "EMAIL_PASSWORD": ("password", ""),
-            "EMAIL_PORT": ("1025", ""),
-            "EMAIL_USE_TLS": (False, ""),
-        },
-    )
-
-
-def use_incorrect_email_env():
-    """
-    Change constance config to use incorrect email environment
-    """
-    return patch.dict(
-        settings.CONSTANCE_CONFIG,
-        {
-            "EMAIL_HOST": ("localhost", ""),
-            "EMAIL_SENDER": ("test@example.com", ""),
-            "EMAIL_USERNAME": ("username", ""),
-            "EMAIL_PASSWORD": ("password", ""),
-            "EMAIL_PORT": ("9999", ""),
-        },
-    )
+from ngen.tests.test_helpers import use_incorrect_email_env, use_test_email_env
 
 
 class TestEmailMessage(APITestCaseWithLogin):
@@ -64,8 +32,8 @@ class TestEmailMessage(APITestCaseWithLogin):
         cls.url_list = reverse(f"{basename}-list")
         cls.url_detail = lambda pk: reverse(f"{basename}-detail", kwargs={"pk": pk})
         cls.url_send_email = cls.url_list + "send_email/"
-        cls.app_email_sender = settings.CONSTANCE_CONFIG["EMAIL_SENDER"][0]
-        cls.app_email_username = settings.CONSTANCE_CONFIG["EMAIL_USERNAME"][0]
+        cls.app_email_sender = config.EMAIL_SENDER
+        cls.app_email_username = config.EMAIL_USERNAME
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
