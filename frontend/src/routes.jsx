@@ -440,6 +440,14 @@ const routes = [
   },
   {
     exact: "true",
+    path: "/tags",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_tag"],
+    element: lazy(() => import("./views/tag/ListTag"))
+  },
+  {
+    exact: "true",
     path: "/setting",
     layout: AdminLayout,
     guard: PermissionGuard,

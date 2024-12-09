@@ -165,3 +165,8 @@
   background-color: #ffffff !important;
   border-radius: 4px;
 }
+
+.form-control-color {
+  padding: .375rem;
+  height: calc(1.5em + .75rem + var(--bs-border-width)*2);
+}

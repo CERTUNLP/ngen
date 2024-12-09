@@ -3,7 +3,7 @@ import { Card, CloseButton, Col, Modal, Row } from "react-bootstrap";
 import FormTag from "./FormTag";
 import { useTranslation } from "react-i18next";
 
-const CreateTagModal = ({ show, onHide, value, setValue, colorTag, setColorTag, createTag }) => {
+const CreateTagModal = ({ show, onHide, value, setValue, colorTag, setColorTag, createTag, isUpdate=false, url }) => {
   const { t } = useTranslation();
   return (
     <Modal size="lg" show={show} onHide={onHide} aria-labelledby="contained-modal-title-vcenter" centered>
@@ -30,6 +30,8 @@ const CreateTagModal = ({ show, onHide, value, setValue, colorTag, setColorTag, 
                   setColor={setColorTag}
                   ifConfirm={createTag}
                   ifCancel={onHide}
+                  isUpdate={isUpdate}
+                  url={url}
                 />
               </Card.Body>
             </Card>
