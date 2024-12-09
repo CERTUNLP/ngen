@@ -8,6 +8,7 @@ import {
   validateHexadecimal32,
   validateHexadecimal40,
   validateHexadecimal64,
+  validateFile,
   validateIP,
   validateSpace,
   validateUserAgent
@@ -72,6 +73,13 @@ const FormArtifactsSelect = (props) => {
       isInvalid: JSON.parse(!validateSpace(props.value) || !validateDomain(props.value)),
       condition: JSON.parse(validateDomain(props.value)),
       messageDanger: t("ngen.fqdn_valid")
+    },
+    {
+      name: "file",
+      placeholder: t("ngen.filename_add"),
+      isInvalid: JSON.parse(!validateSpace(props.value)),
+      condition: JSON.parse(validateFile(props.value)),
+      messageDanger: t("ngen.file_valid")
     },
     {
       name: "other",
