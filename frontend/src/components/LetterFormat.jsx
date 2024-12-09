@@ -1,7 +1,8 @@
 import React from "react";
 import { Badge } from "react-bootstrap";
+import { getTextColorBasedOnBackground } from "utils/colors";
 
-const LetterFormat = ({ useBadge, stringToDisplay, color }) => {
+const LetterFormat = ({ useBadge, stringToDisplay, color, bgcolor }) => {
   // let styleColor = "";
   // if (stringToDisplay.lower() === "amber") {
   //   styleColor = "tlp-amber";
@@ -10,6 +11,9 @@ const LetterFormat = ({ useBadge, stringToDisplay, color }) => {
   // } else if (stringToDisplay.lower() === "green") {
   //   styleColor = "tlp-green";
   // } else if (stringToDisplay.lower() === "clear") {
+
+  let bgColorToDisplay = bgcolor ? bgcolor : "#CCC";
+  let colorToDisplay = color ? color : getTextColorBasedOnBackground(bgColorToDisplay);
 
   
   return useBadge ? (
@@ -20,10 +24,9 @@ const LetterFormat = ({ useBadge, stringToDisplay, color }) => {
           // Verificar si algún elemento padre tiene la clase 'row-false-positive'
           const hasFalsePositiveParent = element.closest(".row-false-positive");
           if (!hasFalsePositiveParent) {
-            console.log("element", element);
             // Aplicar los estilos personalizados al Badge
-            element.style.setProperty("color", color, "important");
-            element.style.setProperty("background-color", "#000", "important");
+            element.style.setProperty("color", colorToDisplay, "important");
+            element.style.setProperty("background-color", bgColorToDisplay, "important");
           } else {
             // Eliminar color y background de todos los hijos
             element.querySelectorAll("*").forEach((child) => {

@@ -85,18 +85,18 @@ const validateCidr = (address) => {
 
   try {
     addr = new Address4(address);
-  } catch { }
+  } catch {}
   try {
     addr = new Address6(address);
-  } catch { }
-  
+  } catch {}
+
   try {
     if (!addr) {
       return false;
     }
     // Obtener la dirección de red (primer dirección del rango CIDR)
     const startAddress = addr.startAddress().correctForm();
-  
+
     return addr.addressMinusSuffix === startAddress;
   } catch {
     return false;
@@ -137,6 +137,11 @@ const validateDomain = (dominio) => {
   // Verificar si el dominio coincide con el patrón
   return patron.test(dominio);
 };
+
+const validateFile = (file) => {
+  return file !== null;
+};
+
 const validateHexadecimal32 = (valueHexadecimal) => {
   // Verificar la longitud de la cadena
   if (valueHexadecimal.length !== 32) {
@@ -185,6 +190,7 @@ export {
   validateNumbers,
   validateSpace,
   validateURL,
+  validateFile,
   validateCidr,
   validateLength,
   isEmpty,

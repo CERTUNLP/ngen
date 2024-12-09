@@ -6,7 +6,7 @@ from ngen.permissions import CustomModelPermissions, CustomApiViewPermission
 
 
 class TagViewSet(viewsets.ModelViewSet):
-    queryset = models.Tag.objects.all()
+    queryset = models.Tag.objects.all().order_by("name")
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,

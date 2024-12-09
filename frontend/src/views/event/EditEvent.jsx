@@ -49,6 +49,19 @@ const EditEvent = ({ routeParams }) => {
     }
   }, [id]);
 
+  const updateTags = () => {
+    getMinifiedTag()
+      .then((response) => {
+        var list = response.map((tag) => {
+          return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
+        });
+        setListTag(list);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     getMinifiedTlp()
       .then((response) => {
@@ -131,16 +144,7 @@ const EditEvent = ({ routeParams }) => {
         console.log(error);
       });
 
-    getMinifiedTag()
-      .then((response) => {
-        var list = response.map((tag) => {
-          return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
-        });
-        setListTag(list);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    updateTags();
   }, [contactCreated]);
 
   const resetShowAlert = () => {
@@ -264,6 +268,7 @@ const EditEvent = ({ routeParams }) => {
           users={users}
           listArtifact={listArtifact}
           listTag={listTag}
+          updateTags={updateTags}
           setContactsCreated={setContactsCreated}
           evidence={evidence}
           setEvidence={setEvidence}

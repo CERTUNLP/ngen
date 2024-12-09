@@ -97,12 +97,12 @@ const ViewFiles = (props) => {
                 <p className="file-meta">
                   {t("w.size")}: {props.file?.size} Bytes
                 </p>
-                <p className="file-meta">
+                <div className="file-meta">
                   {t("date.creation")}:&nbsp;
                   {props.file?.created
                     ? <DateShowField value={props?.file?.created} />
                     : t("ngen.not.created.in.system")}
-                </p>
+                </div>
               </div>
             </a>
             {props.disableDelete ? (

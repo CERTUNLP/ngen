@@ -18,6 +18,7 @@ import SmallCaseTable from "views/case/components/SmallCaseTable";
 import EvidenceCard from "components/UploadFiles/EvidenceCard";
 import { getEvidence } from "api/services/evidences";
 import { useTranslation } from "react-i18next";
+// import { postTag } from "api/services/tags";
 
 const FormEvent = (props) => {
   const [date, setDate] = useState(props.body.date ? props.body.date.substring(0, 16) : getCurrentDateTime());
@@ -283,7 +284,6 @@ const FormEvent = (props) => {
   };
 
   const createArtifact = () => {
-    console.log(value);
     //postArtifact(typeArtifact, Math.floor(value)) por que use un Math.floor(value) no me acuerdo
     postArtifact(typeArtifact, value)
       .then((response) => {
@@ -300,20 +300,15 @@ const FormEvent = (props) => {
       });
   };
 
-  const createTag = () => {
-    postTag(colorTag, value)
-      .then((response) => {
-        props.setContactsCreated(response); //
-        setModalCreateTag(false); //
-        setColorTag("-1");
-        setValue("");
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setModalCreateTag(false);
+  const createTag = (data) => {
+    props.updateTags(data?.url);
+    if (data) {
+      props.setBody({
+        ...props.body,
+        tags: [...props.body.tags, data.name]
       });
+    }
+    setModalCreateTag(false);
   };
 
   const modalCase = () => {

@@ -145,6 +145,14 @@ const menuItems = {
               breadcrumbs: true
             },
             {
+              id: "tag",
+              title: "menu.tags",
+              type: "item",
+              url: "/tags",
+              icon: "",
+              breadcrumbs: true
+            },
+            {
               id: "report",
               title: "menu.report",
               type: "item",

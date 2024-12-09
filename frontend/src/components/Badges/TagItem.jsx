@@ -4,7 +4,7 @@ import { Badge } from "react-bootstrap";
 const TagItem = ({ tag, itemkey }) => {
   const x = tag || tag.value || tag;
   const tagKey = x.replace(/[^a-zA-Z0-9]/g, "-");
-  console.log("tag", tag);
+
   return (
     <React.Fragment>
       <style type="text/css">
@@ -22,7 +22,6 @@ const TagItem = ({ tag, itemkey }) => {
             // Verificar si algún elemento padre tiene la clase 'row-false-positive'
             const hasFalsePositiveParent = element.closest(".row-false-positive");
             if (!hasFalsePositiveParent) {
-              console.log("element", element);
               // Eliminar color y background de todos los hijos
               element.querySelectorAll("*").forEach((child) => {
                 child.style.removeProperty("color");
