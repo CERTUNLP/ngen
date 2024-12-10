@@ -61,6 +61,13 @@ const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissi
       icon: "fa fa-plus",
       text: text ? text : ""
     },
+    check: {
+      class: text ? "text-capitalize" : "btn-icon btn-rounded",
+      variant: "outline-primary",
+      title: t("crud.check"),
+      icon: "fa fa-check",
+      text: text ? text : ""
+    },
     save: {
       class: text ? "text-capitalize" : "btn-icon btn-rounded",
       variant: "outline-primary",

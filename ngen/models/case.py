@@ -465,6 +465,8 @@ class Event(
             ("add_event_network_admin", "Can add event as network admin"),
             ("change_event_network_admin", "Can change event as network admin"),
             ("delete_event_network_admin", "Can delete event as network admin"),
+            ("can_mark_event_as_solved", "Can mark an event as solved"),
+            ("can_retest_event", "Can retest an event"),
         ]
 
     def __str__(self):
@@ -649,10 +651,11 @@ class Event(
         return self
 
     def mark_as_solved(self, user=None, contact=None, contact_info=None):
-        mark, _ = models.SolvedMark.objects.get_or_create(
+        mark, _ = ngen.models.SolvedMark.objects.get_or_create(
             event=self,
             defaults={"user": user, "contact": contact, "contact_info": contact_info},
         )
+        self.tags.add("solved")
         return mark
 
 

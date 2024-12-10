@@ -3,27 +3,25 @@ import TagItem from "./TagItem";
 import LetterFormat from "components/LetterFormat";
 import { getMinifiedTag } from "api/services/tags";
 
-// Bandera global para evitar múltiples solicitudes
-let isFetchingTags = false;
-
 const TagContainer = ({ tags, maxWidth = "150px", justifyContent = "center" }) => {
   const [fetchedTags, setFetchedTags] = React.useState([]);
+  const [tagsToDisplay, setTagsToDisplay] = React.useState([]);
 
   React.useEffect(() => {
-    if (!isFetchingTags) {
-      isFetchingTags = true; // Activar la bandera global
-      getMinifiedTag()
-        .then((response) => {
-          setFetchedTags(tags.map((tag) => response.find((t) => t.name === tag)));
-        })
-        .catch((error) => {
-          console.error("Error fetching tags:", error);
-        })
-        .finally(() => {
-          isFetchingTags = false; // Desactivar la bandera global
-        });
-    }
+    getMinifiedTag()
+      .then((response) => {
+        setFetchedTags(response);
+      })
+      .catch((error) => {
+        console.error("Error fetching tags:", error);
+      });
   }, []);
+
+  React.useEffect(() => {
+    if (fetchedTags.length > 0) {
+      setTagsToDisplay(tags.map((tag) => fetchedTags.find((ft) => ft.name === tag)));
+    }
+  } , [fetchedTags, tags]);
 
   return (
     <div style={{ width: "100%", textAlign: "center" }}>
@@ -37,8 +35,15 @@ const TagContainer = ({ tags, maxWidth = "150px", justifyContent = "center" }) =
           alignItems: "center"
         }}
       >
-        {tags?.length > 0
-          ? fetchedTags?.map((tag, index) => <LetterFormat key={index} stringToDisplay={tag.name} useBadge={true} bgcolor={tag.color} />)
+        {tagsToDisplay?.length > 0
+          ? tagsToDisplay?.map((tag, index) => (
+              <LetterFormat
+                key={index}
+                stringToDisplay={tag.name}
+                useBadge={true}
+                bgcolor={tag.color}
+              />
+            ))
           : "-"}
       </div>
     </div>

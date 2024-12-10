@@ -102,3 +102,22 @@ class CustomMethodApiViewPermission(BasePermission):
                 return False
 
         return True
+
+
+class ActionPermission(BasePermission):
+    """
+    Generic permission that checks if the user has the permission specified in the action.
+    """
+
+    def has_permission(self, request, view):
+        # Obtains the required permission from action_permissions attribute of the view
+        required_permission = getattr(view, "action_permissions", {}).get(
+            request.method
+        )
+
+        # If there is no permission defined, allow access
+        if not required_permission:
+            return True
+
+        # Check if the user has the required permission
+        return request.user.has_perm(required_permission)

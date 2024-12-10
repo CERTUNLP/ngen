@@ -11,6 +11,7 @@ import DateShowField from "components/Field/DateShowField";
 import TagContainer from "components/Badges/TagContainer";
 import { useTranslation } from "react-i18next";
 import UuidField from "components/Field/UuidField";
+import { markSolved } from "api/services/events";
 
 const TableEvents = ({
   events,
@@ -46,6 +47,7 @@ const TableEvents = ({
   disableOrdering,
   disableColumnCase,
   disableColumnTag,
+  disableMarkSolved,
   basePath = "",
   setRefresh
 }) => {
@@ -77,6 +79,17 @@ const TableEvents = ({
   const modalDelete = (name, url) => {
     setDeleteUrl(url);
     setRemove(true);
+  };
+
+  const buttonMarkSolved = (event) => {
+    markSolved(event.uuid)
+      .then((response) => {
+        setRefresh(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      }
+    );
   };
 
   const handleDelete = () => {
@@ -357,6 +370,11 @@ const TableEvents = ({
                         ""
                       ) : (
                         <CrudButton type="plus" to={basePath + "/templates/create"} state={event} checkPermRoute disabled={event.case} />
+                      )}
+                      {disableMarkSolved ? (
+                        ""
+                      ) : (
+                        <CrudButton type="check" permissions={"can_mark_event_as_solved"} disabled={event.tags.includes("solved")} onClick={() => buttonMarkSolved(event)} />
                       )}
                     </td>
                   ) : (

@@ -17,6 +17,7 @@ from ngen.permissions import (
     CustomApiViewPermission,
     CustomMethodApiViewPermission,
     CustomModelPermissions,
+    ActionPermission,
 )
 
 
@@ -87,59 +88,36 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
     serializer_class = serializers.EventSerializer
     permission_classes = [CustomModelPermissions]
 
+    # Mapeo de permisos por acción
+    action_permissions = {
+        "mark_solved": "ngen.can_mark_event_as_solved",
+        "retest_event": "ngen.can_retest_event",
+    }
+
     @action(
         detail=False,
         methods=["post"],
         url_path="marksolved/(?P<uuid>[a-f0-9-]+)",
         url_name="mark_solved",
+        permission_classes=[ActionPermission],
     )
     def mark_solved(self, request, uuid=None):
         """
         Action to mark an event as solved.
-        Example path: /api/event/marksolved/<UUID>/?token=<JWT>
+        Example path: /api/event/marksolved/<UUID>
         """
-        jwt = request.query_params.get("token")
-        if not jwt:
-            return Response(
-                {"detail": "Token is required"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        # check valid jwt
-        try:
-            token = AccessToken(jwt)
-        except Exception:
-            return Response(
-                {"detail": "Invalid or expired JWT"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        if "event_uuid" not in token or token["event_uuid"] != uuid:
-            return Response(
-                {"detail": "JWT does not match event"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
         event = get_object_or_404(models.Event, uuid=uuid)
+        user = request.user
+        contact = event.network.contacts.filter(user=user).first()
 
-        if "user" in token:
-            try:
-                user = models.User.objects.get(pk=token["user"])
-            except models.User.DoesNotExist:
-                return Response(
-                    {"detail": "User not found"}, status=status.HTTP_400_BAD_REQUEST
-                )
+        if not contact:
+            return Response(
+                {"detail": "User is not a contact of the network"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
-        if "contact" in token:
-            try:
-                contact = models.Contact.objects.get(pk=token["contact"])
-            except models.Contact.DoesNotExist:
-                return Response(
-                    {"detail": "Contact not found"}, status=status.HTTP_400_BAD_REQUEST
-                )
-
-        if "contact_info" in token:
-            contact_info = token["contact_info"]
-
-        mark = event.mark_as_solved(user, contact, contact_info)
+        mark = event.mark_as_solved(user=user, contact=contact)
 
         if mark:
             return Response(
@@ -154,7 +132,7 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         detail=True,
         url_path="retest",
         url_name="retest",
-        permission_classes=[CustomModelPermissions],
+        permission_classes=[ActionPermission],
     )
     def retest_event(self, request, pk=None):
         """

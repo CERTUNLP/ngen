@@ -131,4 +131,22 @@ const getListEvents = (list) => {
   return list;
 };
 
-export { getEvents, postEvent, putEvent, deleteEvent, mergeEvent, getEvent, getAllEvents, getListEvents, patchEvent };
+const markSolved = (uuid) => {
+  // Example path: /api/event/marksolved/<UUID>
+  //el parametro es para completar la url con el numero de pagina
+  let messageSuccess = i18next.t("ngen.edit.event.success");
+  let messageError = i18next.t("ngen.edit.event.error");
+
+  return apiInstance
+    .post(`${COMPONENT_URL.event}marksolved/${uuid}/`)
+    .then((response) => {
+      setAlert(messageSuccess, "success", "event");
+      return response;
+    })
+    .catch((error) => {
+      setAlert(messageError, "error", "event");
+      return Promise.reject(error);
+    });
+};
+
+export { getEvents, postEvent, putEvent, deleteEvent, mergeEvent, getEvent, getAllEvents, getListEvents, patchEvent, markSolved };
