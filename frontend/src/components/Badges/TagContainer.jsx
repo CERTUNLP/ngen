@@ -14,8 +14,7 @@ const TagContainer = ({ tags, maxWidth = "150px", justifyContent = "center" }) =
       isFetchingTags = true; // Activar la bandera global
       getMinifiedTag()
         .then((response) => {
-          console.log(response);
-          setFetchedTags(response); // Guardar los tags en el estado local
+          setFetchedTags(tags.map((tag) => response.find((t) => t.name === tag)));
         })
         .catch((error) => {
           console.error("Error fetching tags:", error);
@@ -35,18 +34,12 @@ const TagContainer = ({ tags, maxWidth = "150px", justifyContent = "center" }) =
           gap: "1px",
           maxWidth: maxWidth,
           justifyContent: justifyContent,
-          alignItems: "center",
+          alignItems: "center"
         }}
       >
-        {tags?.length > 0 ? tags?.map((tag, index) => <TagItem tag={tag} itemkey={index} />) : "-"}
-        {/* {(tags?.length > 0 ? tags : fetchedTags).map((tag, index) => (
-          <LetterFormat
-            key={index}
-            stringToDisplay={tag.name}
-            useBadge={true}
-            bgcolor={tag.color}
-          />
-        ))} */}
+        {tags?.length > 0
+          ? fetchedTags?.map((tag, index) => <LetterFormat key={index} stringToDisplay={tag.name} useBadge={true} bgcolor={tag.color} />)
+          : "-"}
       </div>
     </div>
   );
