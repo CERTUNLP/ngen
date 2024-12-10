@@ -25,5 +25,9 @@ class Tag(TagBase):
 
 class TaggedObject(GenericTaggedItemBase):
     tag = models.ForeignKey(
-        Tag, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_items"
+        Tag,
+        on_delete=models.CASCADE,
+        related_name="%(app_label)s_%(class)s_items",
+        blank=True,
+        null=True,
     )

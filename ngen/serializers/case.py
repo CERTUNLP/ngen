@@ -7,6 +7,7 @@ from rest_framework.exceptions import ValidationError
 from ngen import models
 from ngen.serializers.common.fields import (
     GenericRelationField,
+    NewTagListSerializerField,
     SlugOrHyperlinkedRelatedField,
     TaxonomySlugOrHyperlinkedRelatedField,
 )

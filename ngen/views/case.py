@@ -109,13 +109,15 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
 
         event = get_object_or_404(models.Event, uuid=uuid)
         user = request.user
-        contact = event.network.contacts.filter(user=user).first()
+        contact = None
+        if not user.is_superuser:
+            contact = event.network.contacts.filter(user=user).first()
 
-        if not contact:
-            return Response(
-                {"detail": "User is not a contact of the network"},
-                status=status.HTTP_403_FORBIDDEN,
-            )
+            if not contact:
+                return Response(
+                    {"detail": "User is not a contact of the network"},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
 
         mark = event.mark_as_solved(user=user, contact=contact)
 

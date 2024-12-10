@@ -54,6 +54,19 @@ const CreateEvent = ({ routeParams }) => {
     setShowAlert(false);
   };
 
+  const updateTags = () => {
+    getMinifiedTag()
+      .then((response) => {
+        var list = response.map((tag) => {
+          return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
+        });
+        setListTag(list);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     getMinifiedTlp()
       .then((response) => {
@@ -133,17 +146,19 @@ const CreateEvent = ({ routeParams }) => {
       .catch((error) => {
         console.log(error);
       });
-    
-      getMinifiedTag()
-        .then((response) => {
-          var list = response.map((tag) => {
-            return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
-          });
-          setListTag(list);
-        })
-        .catch((error) => {
-          console.log(error);
+
+    getMinifiedTag()
+      .then((response) => {
+        var list = response.map((tag) => {
+          return { url: tag.url, name: tag.name, color: tag.color, slug: tag.slug, value: tag.name, label: tag.name };
         });
+        setListTag(list);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    updateTags();
   }, [contactCreated]);
 
   const createEvent = () => {
@@ -206,6 +221,7 @@ const CreateEvent = ({ routeParams }) => {
           priorities={priorities}
           listArtifact={listArtifact}
           listTag={listTag}
+          updateTags={updateTags}
           setContactsCreated={setContactsCreated}
           evidence={evidence}
           setEvidence={setEvidence}
