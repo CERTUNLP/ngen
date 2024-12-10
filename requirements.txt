@@ -56,7 +56,7 @@ cron-descriptor==1.4.0
     # via django-celery-beat
 decorator==5.1.1
     # via validators
-django==4.2.16
+django==4.2.17
     # via
     #   -r requirements.in
     #   django-appconf
@@ -268,8 +268,10 @@ tinycss2==1.1.1
     #   bleach
 tld==0.12.6
     # via -r requirements.in
-tornado==6.4.1
-    # via flower
+tornado==6.4.2
+    # via
+    #   -r requirements.in
+    #   flower
 typing==3.7.4.3
     # via cortex4py
 typing-extensions==4.12.2
