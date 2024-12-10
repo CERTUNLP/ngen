@@ -103,7 +103,6 @@ const ReadEvent = ({ routeParams }) => {
     // Llamar a la función para obtener los datos de los eventos hijos
     fetchAllChildren();
 
-
     getMinifiedTag()
       .then((response) => {
         var list = response.map((tag) => {
@@ -361,14 +360,12 @@ const ReadEvent = ({ routeParams }) => {
           <Card.Title as="h5">{t("ngen.tag_other")}</Card.Title>
         </Card.Header>
         <Card.Body>
-          <Row>
-            {body.tags !== undefined
-              ? body.tags.map((name) => {
+          {body.tags !== undefined
+            ? body.tags.map((name) => {
                 const tagItem = listTag.find((tag) => tag.name === name);
-                  return <LetterFormat key={tagItem.name} stringToDisplay={tagItem.name} />;
-                })
-              : ""}
-          </Row>
+                return <LetterFormat key={tagItem.name} stringToDisplay={tagItem.name} useBadge={true} bgcolor={tagItem.color} />;
+              })
+            : ""}
         </Card.Body>
       </Card>
 
@@ -377,13 +374,11 @@ const ReadEvent = ({ routeParams }) => {
           <Card.Title as="h5">{t("ngen.artifact_other")}</Card.Title>
         </Card.Header>
         <Card.Body>
-          <Row>
-            {body.artifacts !== undefined
-              ? body.artifacts.map((url) => {
-                  return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
-                })
-              : ""}
-          </Row>
+          {body.artifacts !== undefined
+            ? body.artifacts.map((url) => {
+                return <CallBackendByType key={url} url={url} callback={callbackArtefact} useBadge={true} />;
+              })
+            : ""}
         </Card.Body>
       </Card>
 

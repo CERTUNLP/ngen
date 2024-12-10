@@ -267,7 +267,7 @@ const TableCase = ({
                 {!disablePriority && <td>{priorityNames[caseItem.priority]}</td>}
                 {!disableTlp && (
                   <td>
-                    <LetterFormat useBadge={true} stringToDisplay={tlpNames[caseItem.tlp]?.name} color={tlpNames[caseItem.tlp]?.color} />
+                    <LetterFormat useBadge={true} stringToDisplay={tlpNames[caseItem.tlp]?.name} color={tlpNames[caseItem.tlp]?.color} bgcolor={"#000"} />
                   </td>
                 )}
                 <td>{stateNames[caseItem.state] || "-"}</td>

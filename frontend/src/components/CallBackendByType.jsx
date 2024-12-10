@@ -11,7 +11,7 @@ const CallBackendByType = ({ url, callback, useBadge }) => {
   return (
     data && (
       <React.Fragment>
-        <LetterFormat useBadge={useBadge} stringToDisplay={data.value} color={"#00FFFF"} />
+        <LetterFormat useBadge={useBadge} stringToDisplay={data.value} color={data.color} />
       </React.Fragment>
     )
   );

@@ -21,7 +21,7 @@ const getContacts = (currentPage, filters, order, asNetworkAdmin) => {
 const getContact = (url, avoidRaise = false) => {
   let messageError = `No se ha recuperado la informacion del contacto. `;
   return apiInstance
-    .get(url)
+    .get(url, { avoidRaise: avoidRaise })
     .then((response) => {
       return response;
     })
