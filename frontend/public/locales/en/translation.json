@@ -18,6 +18,7 @@
   "cidr.domain.email": "CIDR, Domain or Email",
   "config": "Configuration",
   "crud.add": "Add",
+  "crud.check": "Check",
   "crud.delete": "Delete",
   "crud.detail": "Detail",
   "crud.download": "Download",
