@@ -113,7 +113,7 @@ class Case(
     )
     notification_count = models.PositiveSmallIntegerField(default=0)
     comments = GenericRelation(Comment)
-    tags = TaggableManager(through="ngen.TaggedObject")
+    tags = TaggableManager(through="ngen.TaggedObject", blank=True)
 
     _temp_events = []
 
@@ -453,7 +453,7 @@ class Event(
     )
     node_order_by = ["id"]
     comments = GenericRelation(Comment)
-    tags = TaggableManager(through="ngen.TaggedObject")
+    tags = TaggableManager(through="ngen.TaggedObject", blank=True)
 
     objects = EventManager()
 
@@ -656,6 +656,8 @@ class Event(
             defaults={"user": user, "contact": contact, "contact_info": contact_info},
         )
         self.tags.add("solved")
+        # update modified date
+        self.save()
         return mark
 
 

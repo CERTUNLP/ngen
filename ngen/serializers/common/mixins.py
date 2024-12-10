@@ -127,7 +127,7 @@ class MergeSerializerMixin:
 
 
 class TagSerializerMixin(TaggitSerializer):
-    tags = NewTagListSerializerField(required=False)
+    tags = NewTagListSerializerField(required=False, allow_null=True)
 
     def update(self, instance, validated_data):
         tags = validated_data.pop("tags", [])

@@ -149,6 +149,7 @@ class NewTagListSerializerField(TagListSerializerField):
         if not isinstance(value, list):
             self.fail("not_a_list", input_type=type(value).__name__)
 
+        value = [tag for tag in value if tag]
         for s in value:
             if not isinstance(s, six.string_types):
                 self.fail("not_a_str")

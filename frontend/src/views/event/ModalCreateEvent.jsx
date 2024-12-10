@@ -153,6 +153,7 @@ const ModalCreateEvent = ({
     formDataEvent.append("case", body.case);
     formDataEvent.append("tasks", body.tasks);
     formDataEvent.append("address_value", body.address_value);
+    formDataEvent.append("tags", body.tags);
     if (evidence !== null) {
       for (let index = 0; index < evidence.length; index++) {
         formDataEvent.append("evidence", evidence[index]);
