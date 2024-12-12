@@ -132,20 +132,31 @@ class EventSerializer(
     def validate(self, attrs):
         attrs = super().validate(attrs)
 
-        if self.instance:
-            if self.instance.merged or self.instance.is_parent():
-                for attr in list(attrs):
-                    if attr in self.not_allowed_fields():
-                        if config.ALLOWED_FIELDS_BLOCKED_EXCEPTION:
-                            raise ValidationError(
-                                {
-                                    attr: gettext(
-                                        "%s of merged events can't be modified"
-                                    )
-                                    % self.not_allowed_fields()
-                                }
-                            )
-                        attrs.pop(attr)
+        if not self.instance:
+            return attrs
+
+        if not (self.instance.merged or self.instance.is_parent()):
+            return attrs
+
+        # Iterating over the attributes to check if they are allowed
+        for attr in list(attrs):
+            if attr not in self.not_allowed_fields():
+                continue
+
+            # If the attribute is not allowed, we check if it's being modified
+            if (
+                config.ALLOWED_FIELDS_BLOCKED_EXCEPTION
+                and getattr(self.instance, attr, None) != attrs[attr]
+            ):
+                raise ValidationError(
+                    {
+                        attr: gettext("%s of merged events can't be modified")
+                        % self.not_allowed_fields()
+                    }
+                )
+            # Remove the attribute from the attrs if it's not allowed
+            attrs.pop(attr)
+
         return attrs
 
 
