@@ -12,6 +12,12 @@ import TagContainer from "components/Badges/TagContainer";
 import { useTranslation } from "react-i18next";
 import UuidField from "components/Field/UuidField";
 import { markSolved } from "api/services/events";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query';
+import TlpComponent from "../../tanstackquery/TlpComponent";
 
 const TableEvents = ({
   events,
@@ -286,6 +292,7 @@ const TableEvents = ({
                         color={tlpNames && event?.tlp ? tlpNames[event.tlp]?.color : ""}
                         bgcolor={"#000"}
                       />
+                    <TlpComponent tlp={event?.tlp}></TlpComponent>
                     </td>
                   )}
                   {!disableMerged && event.parent ? (
