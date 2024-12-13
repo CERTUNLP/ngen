@@ -286,12 +286,6 @@ const TableEvents = ({
                   <td>{event.address_value}</td>
                   {!disableTlp && (
                     <td>
-                      <LetterFormat
-                        useBadge={true}
-                        stringToDisplay={tlpNames && event?.tlp ? tlpNames[event.tlp]?.name : ""}
-                        color={tlpNames && event?.tlp ? tlpNames[event.tlp]?.color : ""}
-                        bgcolor={"#000"}
-                      />
                     <TlpComponent tlp={event?.tlp}></TlpComponent>
                     </td>
                   )}

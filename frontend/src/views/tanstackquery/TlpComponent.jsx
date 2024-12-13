@@ -1,23 +1,21 @@
 import React from "react";
 import { useQuery } from '@tanstack/react-query';
-import { getMinifiedTlp } from "../../api/services/tlp";
+import { getQueryTlp } from "../../api/services/tlp";
+import LetterFormat from "../../components/LetterFormat";
+
 
 const TlpComponent = ({ tlp }) => {
+
+
   // Fetch data using useQuery, including data transformation
   const { data, isLoading, error } = useQuery({
     queryKey: ['tlpKey'], // Single query key to fetch all TLP data
-    queryFn: async () => {
-      const response = await getMinifiedTlp();
-      
-      // Transform the response into a dictionary
-      let dicTlp = {};
-      response.forEach((tlp) => {
-        dicTlp[tlp.url] = { name: tlp.name, color: tlp.color };
-      });
+    queryFn: getQueryTlp,
 
-      // Return the transformed dictionary (this will be cached)
-      return dicTlp;
-    },
+    staleTime: 5 * 60 * 1000, // Cache the data for 5 minutes
+    refetchOnWindowFocus: false, // Disable refetching when window is focused
+    refetchOnReconnect: false, // Disable refetching when the app reconnects
+
   });
 
   if (isLoading) return <div>Loading...</div>;
@@ -26,17 +24,12 @@ const TlpComponent = ({ tlp }) => {
   const selectedTlp = data?.[tlp];
 
   return (
-    <div>
-      {selectedTlp ? (
+
         <div>
-          <h3 style={{ color: selectedTlp.color }}>{selectedTlp.name}</h3>
+      <LetterFormat useBadge={true} stringToDisplay={selectedTlp.name} color={selectedTlp.color} bgcolor={"#000"}/>
         </div>
-      ) : (
-        <div>No TLP data available.</div>
-      )}
-    </div>
   );
-};
+};  
 
 
 export default TlpComponent;

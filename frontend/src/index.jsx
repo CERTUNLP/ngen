@@ -24,7 +24,9 @@ import {
   QueryClient,
   QueryClientProvider,
   useQuery,
-} from '@tanstack/react-query'
+} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
 
 // Configuración del nuevo método de renderizado de React 18
 const container = document.getElementById("root");
@@ -44,6 +46,8 @@ const initializeApp = async () => {
     root.render(
       <StrictMode>
           <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false} />
+
         <Provider store={store}>
           <ConfigProvider>
             <PersistGate loading={null} persistor={persist}>
