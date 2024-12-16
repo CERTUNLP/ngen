@@ -12,7 +12,6 @@ class IMAPStrategy(EmailProtocolStrategy):
     def __init__(self, host, username, password, port=993):
         super().__init__(host, username, password, port)
         self.client = None
-        self.login()
 
     def login(self):
         self.client = Imbox(

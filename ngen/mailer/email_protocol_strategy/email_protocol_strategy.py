@@ -21,7 +21,7 @@ class EmailProtocolStrategy(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_emails(self, folder, flag) -> list:
+    def fetch_emails(self, folder) -> list:
         raise NotImplementedError
 
     @abstractmethod
