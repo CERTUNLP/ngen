@@ -33,7 +33,7 @@ from django.apps import apps
 
 import ngen
 from ngen.models.announcement import Communication
-from ngen.utils import get_mime_type
+from ngen.utils import clean_list, get_mime_type
 from . import Priority
 from .common.mixins import (
     MergeModelMixin,
@@ -184,21 +184,12 @@ class Case(
 
     @property
     def email_attachments(self) -> list[dict]:
-        # DEPRECATED: Use get_attachments_for_events instead
-        attachments = {}
+        attachments = []
         for evidence in self.evidence_all:
-            attachments[evidence.id] = {
-                "name": evidence.attachment_name,
-                "file": evidence.file,
-            }
-        if self._temp_events:
-            for event in self._temp_events:
-                for evidence in event.evidence.all():
-                    attachments[evidence.id] = {
-                        "name": evidence.attachment_name,
-                        "file": evidence.file,
-                    }
-        return attachments.values()
+            attachments.append(
+                {"name": evidence.attachment_name, "file": evidence.file}
+            )
+        return attachments
 
     def get_attachments_for_events(self, events):
         attachments = {}
@@ -311,10 +302,10 @@ class Case(
         return contacts
 
     def communicate_new(self):
-        self.communicate(gettext_lazy("New case"), "reports/case_report.html")
+        self.communicate_v2(gettext_lazy("New case"), "reports/case_report.html")
 
     def communicate_close(self):
-        self.communicate(gettext_lazy("Case closed"), "reports/case_report.html")
+        self.communicate_v2(gettext_lazy("Case closed"), "reports/case_report.html")
 
     def communicate_open(self):
         title = (
@@ -322,13 +313,13 @@ class Case(
             if self.history.filter(changes__contains='solve_date":').exists()
             else "Case opened"
         )
-        self.communicate(gettext_lazy(title), "reports/case_report.html")
+        self.communicate_v2(gettext_lazy(title), "reports/case_report.html")
 
     def communicate_new_open(self):
-        self.communicate(gettext_lazy("Case opened"), "reports/case_report.html")
+        self.communicate_v2(gettext_lazy("Case opened"), "reports/case_report.html")
 
     def communicate_update(self):
-        self.communicate(
+        self.communicate_v2(
             gettext_lazy("Case status updated"),
             "reports/case_change_state.html",
         )
@@ -342,6 +333,7 @@ class Case(
         )
 
     def communicate(self, title: str, template: str, **kwargs):
+        # DEPRECATED: Use communicate_v2 instead
         """
         Send email to a list of recipients in 'event_by_contacts' param
         or those returned by 'event_by_contacts' method on 'to' mail header.
@@ -385,8 +377,52 @@ class Case(
         # TODO: make communication a class with objects that can be audited
         self.notification_count += 1
 
+    def communicate_v2(self, title: str, template: str):
+        """
+        Communicate V2
+        Send email to the communication channels of all the events
+        associated with the case.
+
+        Send email to the intern communication channel of the case.
+
+        :param title: title of the email
+        :param template: path of template to be rendered
+        """
+        if self._temp_events:
+            self.events.add(*self._temp_events)
+
+        case_events = self.events.all()
+
+        # Communicates on the channels of each event of the case
+        for event in case_events:
+            # If there is no channel with affected contacts, create one
+            ngen.models.CommunicationChannel.get_or_create_channel_with_affected(
+                channelable=event
+            )
+
+            event_channels = event.communication_channels.all()
+
+            # Communicates on each each channel of the event
+            for channel in event_channels:
+                channel.communicate(
+                    subject=self.subject(title),
+                    template=template,
+                )
+
+        intern_channel = (
+            ngen.models.CommunicationChannel.get_or_create_channel_with_intern(
+                channelable=self
+            )
+        )
+        intern_channel.communicate(
+            subject=self.subject(title),
+            template=template,
+        )
+
+        self.notification_count += 1
+
     def get_internal_contacts(self):
-        return ["Internal Contact 1", "Internal Contact 2", "Internal Contact 3"]
+        return clean_list([self.assigned_email, self.team_email])
 
     def get_affected_contacts(self):
         contacts_from_all_events = []
@@ -497,6 +533,29 @@ class Event(
     @property
     def enrichable(self):
         return self.mergeable
+
+    @property
+    def template_params(self) -> dict:
+        return {
+            "case": self.case,
+            "events": [self],
+            "tlp": self.case.tlp,
+            "priority": self.case.priority,
+        }
+
+    @property
+    def evidence_all(self):
+        case_evidence = self.case.evidence.all() if self.case else []
+        return list(self.evidence.all()) + list(case_evidence)
+
+    @property
+    def email_attachments(self) -> list[dict]:
+        attachments = []
+        for evidence in self.evidence_all:
+            attachments.append(
+                {"name": evidence.attachment_name, "file": evidence.file}
+            )
+        return attachments
 
     def update_taxonomy(self):
         if self.taxonomy:
@@ -635,20 +694,55 @@ class Event(
                     return network_contacts[0]
         return contacts
 
-    def get_affected_contacts(self):
+    def get_affected_contacts_extended(self):
+        """
+        Returns a list of dictionaries where the keys are the networks cidr or domain
+        and the values are the contacts of the network.
+        """
+        priority = (
+            self.case.priority.severity
+            if self.case and self.case.priority
+            else self.priority.severity
+        )
         affected_networks = ngen.models.Network.objects.parent_of(self)
 
         network_contacts = []
         for network in affected_networks:
             network_cidr_or_domain = network.cidr if network.cidr else network.domain
-            contacts = network.contacts.all()
+            contacts = list(network.email_contacts(priority))
+            if not contacts:
+                contacts = list(network.ancestors_email_contacts(priority))
             network_contacts.append({network_cidr_or_domain: contacts})
 
-        self.affected_contacts = network_contacts
-        return self
+        return network_contacts
+
+    def get_affected_contacts(self):
+        priority = (
+            self.case.priority.severity
+            if self.case and self.case.priority
+            else self.priority.severity
+        )
+        affected_networks = ngen.models.Network.objects.parent_of(self)
+
+        affected_contacts = []
+        for network in affected_networks:
+            network_contacts = list(network.email_contacts(priority))
+            if not network_contacts:
+                network_contacts = list(network.ancestors_email_contacts(priority))
+            network_contact_emails = [
+                contact.username
+                for contact in network_contacts
+                if contact.type == "email"
+            ]
+            affected_contacts.extend(network_contact_emails)
+
+        return affected_contacts
 
     def get_reporter_contacts(self):
-        return self
+        return [self.reporter.email]
+
+    def get_internal_contacts(self):
+        return self.case.get_internal_contacts() if self.case else []
 
     def mark_as_solved(self, user=None, contact=None, contact_info=None):
         mark, _ = ngen.models.SolvedMark.objects.get_or_create(
