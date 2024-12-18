@@ -10,6 +10,7 @@ import TagContainer from "components/Badges/TagContainer";
 import ListDomain from "./ListDomain";
 import { useTranslation } from "react-i18next";
 import UuidField from "components/Field/UuidField";
+import TlpComponent from "../../tanstackquery/TlpComponent";
 
 const TableCase = ({
   setIfModify,
@@ -267,7 +268,7 @@ const TableCase = ({
                 {!disablePriority && <td>{priorityNames[caseItem.priority]}</td>}
                 {!disableTlp && (
                   <td>
-                    <LetterFormat useBadge={true} stringToDisplay={tlpNames[caseItem.tlp]?.name} color={tlpNames[caseItem.tlp]?.color} bgcolor={"#000"} />
+                    <TlpComponent tlp={caseItem?.tlp}></TlpComponent>
                   </td>
                 )}
                 <td>{stateNames[caseItem.state] || "-"}</td>

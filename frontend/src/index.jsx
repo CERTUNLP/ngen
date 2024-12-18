@@ -20,9 +20,19 @@ import initializeI18n from "./i18n"; // Cargar la configuración de i18n despué
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Importar estilos
 
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+
 // Configuración del nuevo método de renderizado de React 18
 const container = document.getElementById("root");
 const root = createRoot(container);
+
+const queryClient = new QueryClient();
 
 const initializeApp = async () => {
   try {
@@ -35,6 +45,9 @@ const initializeApp = async () => {
     // Renderizar la aplicación
     root.render(
       <StrictMode>
+          <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false} />
+
         <Provider store={store}>
           <ConfigProvider>
             <PersistGate loading={null} persistor={persist}>
@@ -43,6 +56,7 @@ const initializeApp = async () => {
             </PersistGate>
           </ConfigProvider>
         </Provider>
+        </QueryClientProvider>
       </StrictMode>
     );
   } catch (error) {

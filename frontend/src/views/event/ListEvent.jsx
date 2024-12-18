@@ -180,16 +180,16 @@ const ListEvent = ({ routeParams }) => {
       setFeeds(listFeeds);
     });
 
-    getMinifiedTlp().then((response) => {
-      let listTlp = [];
-      let dicTlp = {};
-      response.forEach((tlp) => {
-        listTlp.push({ value: tlp.url, label: tlp.name });
-        dicTlp[tlp.url] = { name: tlp.name, color: tlp.color };
-      });
-      setTlpList(listTlp);
-      setTlpNames(dicTlp);
-    });
+    // getMinifiedTlp().then((response) => {
+    //   let listTlp = [];
+    //   let dicTlp = {};
+    //   response.forEach((tlp) => {
+    //     listTlp.push({ value: tlp.url, label: tlp.name });
+    //     dicTlp[tlp.url] = { name: tlp.name, color: tlp.color };
+    //   });
+    //   setTlpList(listTlp);
+    //   setTlpNames(dicTlp);
+    // });
   }, []);
 
   useEffect(() => {
