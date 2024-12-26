@@ -431,7 +431,10 @@ class ContactFilter(BaseFilter):
         - type (exact)
         - role (exact)
         - priority (exact)
+        - network_id (exact)
     """
+
+    network_id = django_filters.NumberFilter(field_name="networks__id")
 
     class Meta:
         model = Contact
@@ -496,7 +499,10 @@ class NetworkEntityFilter(BaseFilter):
         - slug (icontains)
         - active (exact)
         - networks (exact)
+        - network_id (exact)
     """
+
+    network_id = django_filters.NumberFilter(field_name="networks__id")
 
     class Meta:
         model = NetworkEntity
