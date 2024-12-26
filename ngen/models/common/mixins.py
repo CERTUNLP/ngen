@@ -296,51 +296,59 @@ class PriorityModelMixin(ValidationModelMixin, models.Model):
 
 
 class AddressManager(NetManager):
-    def cidr_parents_of(self, cidr: str):
-        return self.filter(cidr__net_contains_or_equals=cidr).order_by("-cidr")
+    def cidr_parents_of(self, cidr: str, queryset=None):
+        return (
+            self._qs(queryset)
+            .filter(cidr__net_contains_or_equals=cidr)
+            .order_by("-cidr")
+        )
 
-    def domain_parents_of(self, domain: str):
+    def domain_parents_of(self, domain: str, queryset=None):
         query = Q(domain="*") | Q(domain=domain)
         partition = domain.partition(".")[-1]
         while partition:
             query |= Q(domain=partition)
             partition = partition.partition(".")[-1]
-        return self.filter(query).order_by(Length("domain").desc())
+        return self._qs(queryset).filter(query).order_by(Length("domain").desc())
 
-    def parents_of(self, address: "AddressModelMixin"):
+    def parents_of(self, address: "AddressModelMixin", queryset=None):
         if address.cidr:
-            return self.cidr_parents_of(str(address.address))
+            return self.cidr_parents_of(str(address.address), queryset)
         elif address.domain:
-            return self.domain_parents_of(str(address.address))
+            return self.domain_parents_of(str(address.address), queryset)
         return self.none()
 
-    def parents_of_many(self, addresses: list["AddressModelMixin"]):
+    def parents_of_many(self, addresses: list["AddressModelMixin"], queryset=None):
         parents = self.none()
         for address in addresses:
-            parents |= self.parents_of(address)
+            parents |= self.parents_of(address, queryset)
         return parents
 
     def parent_of(self, address: "AddressModelMixin"):
         return self.parents_of(address)
 
-    def cidr_children_of(self, cidr: str):
-        return self.filter(cidr__net_contained_or_equal=cidr).order_by("cidr")
+    def cidr_children_of(self, cidr: str, queryset=None):
+        return (
+            self._qs(queryset)
+            .filter(cidr__net_contained_or_equal=cidr)
+            .order_by("cidr")
+        )
 
-    def domain_children_of(self, domain: str):
-        return self.filter(domain__endswith=domain).order_by("domain")
+    def domain_children_of(self, domain: str, queryset=None):
+        return self._qs(queryset).filter(domain__endswith=domain).order_by("domain")
 
-    def children_of(self, address: "AddressModelMixin"):
+    def children_of(self, address: "AddressModelMixin", queryset=None):
         if address.cidr:
-            return self.cidr_children_of(str(address.address))
+            return self.cidr_children_of(str(address.address), queryset)
         elif address.domain:
-            return self.domain_children_of(str(address.address))
+            return self.domain_children_of(str(address.address), queryset)
         return self.none()
 
-    def children_of_cidr(self, cidr: str):
-        return self.cidr_children_of(cidr)
+    def children_of_cidr(self, cidr: str, queryset=None):
+        return self.cidr_children_of(cidr, queryset)
 
-    def children_of_domain(self, domain: str):
-        return self.domain_children_of(domain)
+    def children_of_domain(self, domain: str, queryset=None):
+        return self.domain_children_of(domain, queryset)
 
     # def children_of_cidr_or_domain(self, cidr: str, domain: str):
     #     if cidr:
@@ -349,20 +357,25 @@ class AddressManager(NetManager):
     #         return self.domain_children_of(domain)
     #     return self.none()
     #
-    def children_of_cidr_or_domain(self, cidr: str, domain: str):
-        return self.children_of_cidr(cidr) | self.children_of_domain(domain)
+    def children_of_cidr_or_domain(self, cidr: str, domain: str, queryset=None):
+        return self.children_of_cidr(cidr, queryset) | self.children_of_domain(
+            domain, queryset
+        )
 
-    def defaults(self):
-        return self.filter(Q(cidr__prefixlen=0) | Q(domain="*"))
+    def defaults(self, queryset=None):
+        return self._qs(queryset).filter(Q(cidr__prefixlen=0) | Q(domain="*"))
 
-    def defaults_ipv4(self):
-        return self.filter(cidr__prefixlen=0, cidr__family=4)
+    def defaults_ipv4(self, queryset=None):
+        return self._qs(queryset).filter(cidr__prefixlen=0, cidr__family=4)
 
-    def defaults_ipv6(self):
-        return self.filter(cidr__prefixlen=0, cidr__family=6)
+    def defaults_ipv6(self, queryset=None):
+        return self._qs(queryset).filter(cidr__prefixlen=0, cidr__family=6)
 
-    def defaults_domain(self):
-        return self.filter(domain="*")
+    def defaults_domain(self, queryset=None):
+        return self._qs(queryset).filter(domain="*")
+
+    def _qs(self, queryset=None):
+        return queryset or self
 
 
 class AddressModelMixin(ValidationModelMixin, models.Model):
