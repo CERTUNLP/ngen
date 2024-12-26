@@ -6,6 +6,7 @@ from ipaddress import ip_network
 
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
+from django.db.models.functions import Length
 
 from ngen.models import (
     Taxonomy,
@@ -59,7 +60,7 @@ class SupernetFilter(django_filters.Filter):
             )  # You could adjust this based on the value type
 
             # Call the parents_of method and pass the queryset to filter
-            queryset = address_manager.parents_of(address, queryset).order_by("-cidr")
+            queryset = address_manager.parents_of(address, queryset)
         return queryset
 
 
