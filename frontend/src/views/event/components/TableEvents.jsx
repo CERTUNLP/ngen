@@ -374,7 +374,7 @@ const TableEvents = ({
                       {disableMarkSolved ? (
                         ""
                       ) : (
-                        <CrudButton type="check" permissions={"can_mark_event_as_solved"} disabled={event.tags.includes("solved")} onClick={() => buttonMarkSolved(event)} />
+                        <CrudButton type="check" permissions={"can_mark_event_as_solved"} disabled={event?.tags?.includes("solved")} onClick={() => buttonMarkSolved(event)} />
                       )}
                     </td>
                   ) : (

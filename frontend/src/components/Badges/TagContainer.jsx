@@ -18,8 +18,8 @@ const TagContainer = ({ tags, maxWidth = "150px", justifyContent = "center" }) =
   }, []);
 
   React.useEffect(() => {
-    if (fetchedTags.length > 0) {
-      setTagsToDisplay(tags.map((tag) => fetchedTags.find((ft) => ft.name === tag)));
+    if (fetchedTags?.length > 0) {
+      setTagsToDisplay(tags?.map((tag) => fetchedTags?.find((ft) => ft?.name === tag)));
     }
   } , [fetchedTags, tags]);
 
