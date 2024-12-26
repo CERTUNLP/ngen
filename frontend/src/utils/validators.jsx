@@ -131,12 +131,20 @@ const validateUserAgent = (userAgent) => {
   return /^[a-zA-Z0-9\s.,/#!$%^&*;:{}=\-_`~()@+?><[\]+]*$/.test(userAgent);
 };
 
-const validateDomain = (dominio) => {
+const validateSubdomain = (dominio) => {
   // Expresión regular para verificar la sintaxis del dominio
   var patron = /^[a-zA-Z0-9]+([-.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/;
   // Verificar si el dominio coincide con el patrón
   return patron.test(dominio);
 };
+
+const validateDomain = (dominio) => {
+  // Expresión regular para verificar la sintaxis del dominio
+  // igual a validateSubdomain pero con posibilidad de solo tld
+  var patron = /^[a-zA-Z0-9]+([-.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}([-.]{1}[a-zA-Z0-9]+)*$/;
+  // Verificar si el dominio coincide con el patrón
+  return patron.test(dominio);
+}
 
 const validateFile = (file) => {
   return file !== null;
@@ -199,6 +207,7 @@ export {
   validateIP,
   validateAutonomousSystem,
   validateUserAgent,
+  validateSubdomain,
   validateDomain,
   validateHexadecimal32,
   validateHexadecimal40,

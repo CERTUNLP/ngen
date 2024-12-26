@@ -94,9 +94,9 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
       <Table responsive hover className="text-center">
         <thead>
           <tr>
-            <th style={letterSize}>{t("ngen.addressvalue")} </th>
-            <th style={letterSize}>{t("ngen.domain")}</th>
-            <th style={letterSize}>{t("ngen.cidr")}</th>
+            <Ordering field="address_value" label={t("ngen.addressvalue")} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+            <Ordering field="domain" label={t("ngen.domain")} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
+            <Ordering field="cidr" label={t("ngen.cidr")} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
             <Ordering
               field="type"
               label={t("ngen.type")}
@@ -105,7 +105,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
               setLoading={setLoading}
               letterSize={letterSize}
             />
-            <th style={letterSize}>{t("w.active")}</th>
+            <Ordering field="active" label={t("ngen.active")} order={order} setOrder={setOrder} setLoading={setLoading} letterSize={letterSize} />
             <Ordering
               field="network_entity__name"
               label={t("ngen.entity")}

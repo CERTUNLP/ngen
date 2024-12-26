@@ -12,7 +12,8 @@ const FilterSelectUrl = ({
   setLoading,
   setCurrentPage,
   value,
-  setValue
+  setValue,
+  label
 }) => {
   const { t } = useTranslation();
 
@@ -38,6 +39,7 @@ const FilterSelectUrl = ({
 
   return (
     <Form.Group>
+      <Form.Label>{label}</Form.Label>
       <Select
         options={options}
         isClearable

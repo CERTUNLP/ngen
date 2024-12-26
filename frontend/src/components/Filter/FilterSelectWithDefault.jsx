@@ -11,7 +11,8 @@ const FilterSelectWithDefault = ({
   setValue,
   setLoading,
   placeholder,
-  setCurrentPage
+  setCurrentPage,
+  label
 }) => {
   const applyFilter = (e) => {
     const filterValue = e?.value;
@@ -28,6 +29,7 @@ const FilterSelectWithDefault = ({
 
   return (
     <Form.Group>
+      <Form.Label>{label}</Form.Label>
       <Select options={options} isClearable placeholder={placeholder} onChange={applyFilter} value={value} />
     </Form.Group>
   );

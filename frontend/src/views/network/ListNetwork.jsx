@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Collapse, Row } from "react-bootstrap";
-import CrudButton from "../../components/Button/CrudButton";
-import { getNetworks } from "../../api/services/networks";
-import { getMinifiedEntity } from "../../api/services/entities";
+import CrudButton from "components/Button/CrudButton";
+import { getNetworks } from "api/services/networks";
+import { getMinifiedEntity } from "api/services/entities";
 import TableNetwork from "./components/TableNetwork";
-import Search from "../../components/Search/Search";
-import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
-import ButtonFilter from "../../components/Button/ButtonFilter";
-import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
-import FilterSelect from "../../components/Filter/FilterSelect";
+import Search from "components/Search/Search";
+import AdvancedPagination from "components/Pagination/AdvancedPagination";
+import ButtonFilter from "components/Button/ButtonFilter";
+import FilterSelectUrl from "components/Filter/FilterSelectUrl";
+import FilterSelect from "components/Filter/FilterSelect";
+import FilterInput from "components/Filter/FilterInput";
+import { validateCidr, validateDomain } from "utils/validators";
 import { useTranslation } from "react-i18next";
 
 const ListNetwork = ({ routeParams }) => {
@@ -33,6 +35,8 @@ const ListNetwork = ({ routeParams }) => {
   const [wordToSearch, setWordToSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [typeFilter, setTypeFilter] = useState("");
+  const [subnetOfFilter, setSubnetOfFilter] = useState("");
+  const [supernetOfFilter, setSupernetOfFilter] = useState("");
   const [entitiesFilter, setEntitiesFilter] = useState("");
   const [order, setOrder] = useState("network_entity__name");
 
@@ -66,7 +70,12 @@ const ListNetwork = ({ routeParams }) => {
   }, []);
 
   useEffect(() => {
-    getNetworks(currentPage, entitiesFilter + typeFilter + wordToSearch, order, routeParams.asNetworkAdmin)
+    getNetworks(
+      currentPage,
+      entitiesFilter + typeFilter + subnetOfFilter + supernetOfFilter + wordToSearch,
+      order,
+      routeParams.asNetworkAdmin
+    )
       .then((response) => {
         setNetwork(response.data.results);
         // Paginación
@@ -83,7 +92,7 @@ const ListNetwork = ({ routeParams }) => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, isModify, wordToSearch, entitiesFilter, typeFilter, order]);
+  }, [currentPage, isModify, wordToSearch, entitiesFilter, typeFilter, subnetOfFilter, supernetOfFilter, order]);
 
   return (
     <React.Fragment>
@@ -115,12 +124,13 @@ const ListNetwork = ({ routeParams }) => {
                     <Col sm={4} lg={4}>
                       <FilterSelectUrl
                         options={entities}
-                        itemName={t("ngen.entity_other")}
+                        itemName={t("ngen.entity")}
                         partOfTheUrl="network_entity"
                         itemFilter={entitiesFilter}
                         itemFilterSetter={setEntitiesFilter}
                         setLoading={setLoading}
                         setCurrentPage={setCurrentPage}
+                        label={t("ngen.entity")}
                       />
                     </Col>
                     <Col sm={4} lg={4}>
@@ -131,6 +141,33 @@ const ListNetwork = ({ routeParams }) => {
                         currentFilter={typeFilter}
                         setLoading={setLoading}
                         placeholder={t("ngen.filter_by") + " " + t("ngen.type")}
+                        label={t("ngen.type")}
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col sm={4} lg={4}>
+                      <FilterInput
+                        partOfTheUrl="subnet_of"
+                        setFilter={setSubnetOfFilter}
+                        currentFilter={subnetOfFilter}
+                        setLoading={setLoading}
+                        placeholder={t("ngen.filter_by") + " " + t("filter.cidr_domain")}
+                        validate={(text) => validateCidr(text) || validateDomain(text) || text === ""}
+                        invalid_msg={t("ngen.invalid.cidr_or_subdomain")}
+                        label={t("w.subnet_of")}
+                      />
+                    </Col>
+                    <Col sm={4} lg={4}>
+                      <FilterInput
+                        partOfTheUrl="supernet_of"
+                        setFilter={setSupernetOfFilter}
+                        currentFilter={supernetOfFilter}
+                        setLoading={setLoading}
+                        placeholder={t("ngen.filter_by") + " " + t("filter.cidr_domain")}
+                        validate={(text) => validateCidr(text) || validateDomain(text) || text === ""}
+                        invalid_msg={t("ngen.invalid.cidr_or_subdomain")}
+                        label={t("w.supernet_of")}
                       />
                     </Col>
                   </Row>

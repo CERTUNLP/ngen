@@ -19,7 +19,7 @@ class NetworkViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["cidr", "type", "domain"]
+    search_fields = ["cidr", "type", "domain", "contacts__username"]
     filterset_class = NetworkFilter
     ordering_fields = [
         "id",
@@ -28,6 +28,7 @@ class NetworkViewSet(viewsets.ModelViewSet):
         "cidr",
         "domain",
         "type",
+        "active",
         "address_value",
         "network_entity",
         "network_entity__name",
