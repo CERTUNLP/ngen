@@ -335,7 +335,11 @@ class AddressManager(NetManager):
         )
 
     def domain_children_of(self, domain: str, queryset=None):
-        return self._qs(queryset).filter(domain__endswith=domain).order_by("domain")
+        return (
+            self._qs(queryset)
+            .filter(domain__endswith=domain)
+            .order_by(Length("domain").desc())
+        )
 
     def children_of(self, address: "AddressModelMixin", queryset=None):
         if address.cidr:
