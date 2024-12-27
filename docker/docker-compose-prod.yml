@@ -35,7 +35,6 @@ services:
       - ngen-postgres
       - ngen-rabbitmq
       - ngen-redis
-      - ngen-mail
   ngen-celery-worker:
     image: certunlp/ngen-django:latest
     restart: always
