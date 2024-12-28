@@ -35,34 +35,31 @@ services:
       - ngen.env
     depends_on:
       - ngen-postgres
-      - ngen-rabbitmq
       - ngen-redis
       - ngen-mail
 
   ngen-celery-worker:
     image: ngen-django:latest
     restart: on-failure
-    command: celery -A project worker -E -l debug
+    command: celery -A project worker -E -l info
     volumes:
       - ../:/code
     env_file:
       - ngen.env
     depends_on:
       - ngen-django
-      - ngen-rabbitmq
       - ngen-redis
 
   ngen-celery-beat:
     image: ngen-django:latest
     restart: on-failure
-    command: celery -A project beat -l debug
+    command: celery -A project beat -l info
     volumes:
       - ../:/code
     env_file:
       - ngen.env
     depends_on:
       - ngen-django
-      - ngen-rabbitmq
       - ngen-redis
 
   ngen-celery-flower:
@@ -77,15 +74,7 @@ services:
       - "5555:5555"
     depends_on:
       - ngen-django
-      - ngen-rabbitmq
       - ngen-redis
-
-  ngen-rabbitmq:
-    image: rabbitmq:3.13-management-alpine
-    restart: on-failure
-    ports:
-      - "5672:5672"
-      - "15672:15672"
 
   ngen-redis:
     image: "redis:alpine"
