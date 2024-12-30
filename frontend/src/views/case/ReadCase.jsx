@@ -397,7 +397,7 @@ const ReadCase = ({ routeParams }) => {
                   {caseItem.tags !== undefined
                     ? caseItem.tags.map((name) => {
                       const tagItem = listTag.find((tag) => tag.name === name);
-                        return <LetterFormat key={tagItem.name} stringToDisplay={tagItem.name} />;
+                        return <LetterFormat key={tagItem?.name} stringToDisplay={tagItem?.name} useBadge={true} bgcolor={tagItem?.color} />;
                       })
                     : ""}
                 </Row>
