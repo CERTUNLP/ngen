@@ -1,6 +1,6 @@
-@import 'react-perfect-scrollbar/dist/css/styles.css';
-@import 'ngx-perfect-scrollbar';
-@import 'react-bootstrap/react-bootstrap';
+@use 'react-perfect-scrollbar/dist/css/styles.css' as *;
+@use 'ngx-perfect-scrollbar' as *;
+@use 'react-bootstrap/react-bootstrap' as *;
 
 .pcoded-header .main-search .input-group-text {
   line-height: 1;

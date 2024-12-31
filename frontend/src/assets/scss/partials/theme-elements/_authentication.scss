@@ -1,6 +1,8 @@
 /**  =====================
       Authentication css start
 ==========================  **/
+@use '../_variables' as *;
+
 .auth-wrapper {
   position: relative;
   display: flex;

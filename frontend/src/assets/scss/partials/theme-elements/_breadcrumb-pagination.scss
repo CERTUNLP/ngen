@@ -2,6 +2,7 @@
       Breadcrumbs & Pagination css start
 ==========================  **/
 /* Breadcrumbs */
+@use '../_variables' as *;
 
 .breadcrumb {
   background-color: $theme-background;
