@@ -22,20 +22,22 @@ RUN npm run build
 # Etapa de producción
 FROM nginx:stable-alpine
 
-# Copiar la salida de la compilación al directorio de nginx
+# Variables de entorno para la configuración dinámica
+ENV STATIC_ROOT=/app/staticfiles \
+    MEDIA_ROOT=/app/mediafiles
+
+# Copiar los artefactos del frontend al directorio estático de Nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copiar archivo de configuración con placeholders
-COPY nginx/nginx.conf /etc/nginx/nginx.conf.template
-
-# Copiar el script de entrada
+# Copiar configuración de Nginx y script de entrada
+COPY nginx/nginx.conf.template /etc/nginx/nginx.conf.template
 COPY nginx/docker-entrypoint.sh /docker-entrypoint.sh
 
-# Dar permisos de ejecución al script de entrada
+# Dar permisos al script de entrada
 RUN chmod +x /docker-entrypoint.sh
 
-# Exponer el puerto 3000
-EXPOSE 3000
+# Exponer puertos necesarios
+EXPOSE 5000
 
-# Usar el script de entrada en lugar del CMD predeterminado de NGINX
+# Usar el script de entrada como punto de inicio
 ENTRYPOINT ["/docker-entrypoint.sh"]
