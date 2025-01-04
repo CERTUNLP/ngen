@@ -88,6 +88,18 @@ Al instalar e iniciar el sistema NGEN se encontrará con las credenciales por de
 Asimismo, el sistema incluye tres redes preestablecidas que son las bases, una IPv4, IPv6 y un dominio por defecto. Estas no deben ser modificadas ni eliminadas, y deben crearse las redes necesarias para su organización.   
 Respecto a las entidades incluye una por defecto, que debe ser modificada para que represente a la organización/constituency. Por otra parte, incluye un contacto que también debe ser modificado. 
 
+## Iniciar la aplicación en Docker en modo desarrollo:
+
+```bash
+$ cd docker
+$ docker compose -f docker-compose-dev.yml build
+$ docker compose -f docker-compose-dev.yml up
+```
+
+La aplicación se iniciará con los siguientes servicios:
+- Frontend server en el puerto `3000`
+- API server en el puerto `8000`
+
 ## Configuraciones globales
 
 En el repositorio [https://github.com/CERTUNLP/ngen](https://github.com/CERTUNLP/ngen) se encuentran dos versiones de NGEN, una para desarrollo (docker/ngen.env) y otra para producción (docker/ngen.prod.env).  
