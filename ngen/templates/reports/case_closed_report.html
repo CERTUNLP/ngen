@@ -1,0 +1,16 @@
+{% extends 'reports/content_base.html' %}
+{% load i18n %}
+{% language lang %}
+
+    {% block content_header %}
+        <h4>
+            {% translate 'Case closed' %}: {{ case.uuid }}
+        </h4>
+    {% endblock %}
+
+    {% block content_body %}
+        {% for event in events %}
+            {% include "reports/event_detail_without_report.html" with event=event %}
+        {% endfor %}
+    {% endblock %}
+{% endlanguage %}

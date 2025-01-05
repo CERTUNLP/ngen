@@ -314,7 +314,7 @@ class Case(
         self.communicate(gettext_lazy("New case"), "reports/case_report.html")
 
     def communicate_close(self):
-        self.communicate(gettext_lazy("Case closed"), "reports/case_report.html")
+        self.communicate(gettext_lazy("Case closed"), "reports/case_closed_report.html")
 
     def communicate_open(self):
         title = (
