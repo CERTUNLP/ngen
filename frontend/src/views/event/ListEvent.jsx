@@ -59,7 +59,7 @@ const ListEvent = ({ routeParams }) => {
   const [tlpList, setTlpList] = useState([]);
   const [taxonomies, setTaxonomies] = useState([]);
   const [feeds, setFeeds] = useState([]);
-
+  
   const [order, setOrder] = useState("-modified");
   const [starDateFilter, setStarDateFilter] = useState("");
   const [endDateFilter, setEndDateFilter] = useState("");
@@ -195,7 +195,7 @@ const ListEvent = ({ routeParams }) => {
   useEffect(() => {
     getEvents(
       currentPage,
-      starDateFilter + endDateFilter + taxonomyFilter + tlpFilter + feedFilter + caseIsNull + parentIsNull + wordToSearch,
+      starDateFilter + endDateFilter + taxonomyFilter + tlpFilter + feedFilter + caseIsNull + parentIsNull + priorityFilter + wordToSearch,
       order,
       routeParams.asNetworkAdmin
     )
@@ -216,7 +216,7 @@ const ListEvent = ({ routeParams }) => {
         setLoading(false);
         setShowAlert(true);
       });
-  }, [currentPage, ifModify, wordToSearch, taxonomyFilter, tlpFilter, feedFilter, filterDate, order, caseIsNull, parentIsNull, refresh]);
+  }, [currentPage, ifModify, wordToSearch, taxonomyFilter, tlpFilter, feedFilter, filterDate, order, caseIsNull, parentIsNull, priorityFilter, refresh]);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
@@ -502,6 +502,17 @@ const ListEvent = ({ routeParams }) => {
                     value={valueParentIsNull}
                     setLoading={setLoading}
                     placeholder={t("ngen.filter_by") + " " + t("ngen.event.parent")}
+                    setCurrentPage={setCurrentPage}
+                  />
+                </Col>
+                <Col sm={4} lg={4}>
+                  <FilterSelectUrl
+                    options={allPriorities}
+                    itemName={t("ngen.priority_other")}
+                    partOfTheUrl="priority"
+                    itemFilter={priorityFilter}
+                    itemFilterSetter={setPriorityFilter}
+                    setLoading={setLoading}
                     setCurrentPage={setCurrentPage}
                   />
                 </Col>
