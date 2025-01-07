@@ -314,7 +314,7 @@ class Case(
         self.communicate(gettext_lazy("New case"), "reports/case_report.html")
 
     def communicate_close(self):
-        self.communicate(gettext_lazy("Case closed"), "reports/case_closed_report.html")
+        self.communicate(gettext_lazy("Case closed"), "reports/case_closed_report.html", attachments=False)
 
     def communicate_open(self):
         title = (
@@ -341,7 +341,7 @@ class Case(
             title,
         )
 
-    def communicate(self, title: str, template: str, **kwargs):
+    def communicate(self, title: str, template: str, attachments=True, **kwargs):
         """
         Send email to a list of recipients in 'event_by_contacts' param
         or those returned by 'event_by_contacts' method on 'to' mail header.
@@ -365,7 +365,7 @@ class Case(
                 self.subject(title),
                 self.render_template(template, extra_params=template_params),
                 recipients,
-                self.get_attachments_for_events(events),
+                self.get_attachments_for_events(events) if attachments else [],
                 self.email_headers,
             )
         else:
