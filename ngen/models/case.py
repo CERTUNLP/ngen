@@ -356,18 +356,19 @@ class Case(
         template_params = self.template_params
         recipients = self.recipients
         team_recipients = [self.assigned_email, self.team_email]
-        for contacts, events in event_by_contacts.items():
-            # Case has events, so send email to contacts of each event (and bcc to team)
-            template_params.update({"events": events})
-            recipients.update({"to": [c.username for c in contacts]})
-            recipients.update({"bcc": team_recipients})
-            self.send_mail(
-                self.subject(title),
-                self.render_template(template, extra_params=template_params),
-                recipients,
-                self.get_attachments_for_events(events),
-                self.email_headers,
-            )
+        if event_by_contacts:
+            for contacts, events in event_by_contacts.items():
+                # Case has events, so send email to contacts of each event (and bcc to team)
+                template_params.update({"events": events})
+                recipients.update({"to": [c.username for c in contacts]})
+                recipients.update({"bcc": team_recipients})
+                self.send_mail(
+                    self.subject(title),
+                    self.render_template(template, extra_params=template_params),
+                    recipients,
+                    self.get_attachments_for_events(events),
+                    self.email_headers,
+                )
         else:
             # Case has no events, so send email only to team (and assignee)
             template_params.update({"events": self.events})
