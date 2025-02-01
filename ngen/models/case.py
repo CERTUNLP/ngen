@@ -304,10 +304,24 @@ class Case(
         return contacts
 
     def events_by_contacts(self):
+        """
+        Organizes events by their associated contacts.
+        This method iterates through all events and groups them based on their email contacts.
+        Each unique set of email contacts will have a list of events associated with it.
+        Returns:
+            defaultdict: A dictionary where the keys are frozensets of email contacts and the values are lists of events.
+        Example:
+            {
+                (contact1, contact2): [event1, event4],
+                (): [event2],
+                (contact1): [event3],
+            }
+        """
+
         contacts = defaultdict(list)
         for event in self.events.all():
             event_contacts = event.email_contacts()
-            contacts[tuple(event_contacts)].append(event)
+            contacts.setdefault(frozenset(event_contacts), []).append(event)
         return contacts
 
     def communicate_new(self):
@@ -355,23 +369,26 @@ class Case(
         event_by_contacts = kwargs.get("event_by_contacts", self.events_by_contacts())
         template_params = self.template_params
         recipients = self.recipients
-        team_recipients = [self.assigned_email, self.team_email]
-        if event_by_contacts:
-            for contacts, events in event_by_contacts.items():
-                # Case has events, so send email to contacts of each event (and bcc to team)
-                template_params.update({"events": events})
-                recipients.update({"to": [c.username for c in contacts]})
-                recipients.update({"bcc": team_recipients})
-                self.send_mail(
-                    self.subject(title),
-                    self.render_template(template, extra_params=template_params),
-                    recipients,
-                    self.get_attachments_for_events(events),
-                    self.email_headers,
-                )
-        else:
-            # Case has no events, so send email only to team (and assignee)
-            template_params.update({"events": self.events})
+        team_recipients = [
+            mail for mail in [self.assigned_email, self.team_email] if mail
+        ]
+
+        for contacts, events in event_by_contacts.items():
+            # Case has events, so send email to contacts of each event (and bcc to team)
+            template_params.update({"events": events})
+            recipients.update({"to": [c.username for c in contacts]})
+            recipients.update({"bcc": team_recipients})
+            self.send_mail(
+                self.subject(title),
+                self.render_template(template, extra_params=template_params),
+                recipients,
+                self.get_attachments_for_events(events),
+                self.email_headers,
+            )
+
+        if not event_by_contacts or frozenset() in event_by_contacts.keys():
+            # Case has no events or there is events without contacts, so send email to team and assignee with those events
+            template_params.update({"events": event_by_contacts.get((), [])})
             recipients.update(
                 {"to": [recipient for recipient in team_recipients if recipient]}
             )
