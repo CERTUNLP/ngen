@@ -1,16 +1,16 @@
 import React from "react";
 import { useQuery } from '@tanstack/react-query';
-import { getQueryTlp } from "../../api/services/tlp";
+import { getQueryState } from "../../api/services/states";
 import LetterFormat from "../../components/LetterFormat";
 
 
-const TlpComponent = ({ tlp }) => {
+const StateComponent = ({ state }) => {
 
 
-  // Fetch data using useQuery, including data transformation
+  // Fetch State data using useQuery.
   const { data, isLoading, error } = useQuery({
-    queryKey: ['tlpKey'], // Single query key to fetch all TLP data
-    queryFn: getQueryTlp,
+    queryKey: ['stateKey'], // Single query key to fetch all TLP data
+    queryFn: getQueryState,
 
     staleTime: 5 * 60 * 1000, 
     refetchOnWindowFocus: false, // Disable refetching when window is focused
@@ -21,15 +21,15 @@ const TlpComponent = ({ tlp }) => {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const selectedTlp = data?.[tlp];
-
+  const selectedState = data?.[state];
+//revisar como se displayea State, si usa letterformat...
   return (
 
         <div>
-      <LetterFormat useBadge={true} stringToDisplay={selectedTlp.name} color={selectedTlp.color} bgcolor={"#000"}/>
+      <LetterFormat useBadge={true} stringToDisplay={selectedState.name}  bgcolor={"#34deeb"}/> 
         </div>
   );
 };  
 
 
-export default TlpComponent;
+export default StateComponent;

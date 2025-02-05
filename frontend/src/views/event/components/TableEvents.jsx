@@ -18,7 +18,8 @@ import {
   useQuery,
 } from '@tanstack/react-query';
 import TlpComponent from "../../tanstackquery/TlpComponent";
-
+import TaxonomyComponent from "../../tanstackquery/TaxonomyComponent";
+import FeedComponent from "views/tanstackquery/FeedComponent";
 const TableEvents = ({
   events,
   loading,
@@ -305,9 +306,11 @@ const TableEvents = ({
                     <td>{event.children ? event.children.length : 0}</td>
                   )}
 
-                  <td>{taxonomyNames[event.taxonomy]}</td>
+                  <td>
+                  <TaxonomyComponent taxonomy={event?.taxonomy}></TaxonomyComponent>
+                  </td>
 
-                  <td>{feedNames[event.feed]}</td>
+                  <td><FeedComponent feed={event?.feed}></FeedComponent></td>
 
                   {!disableColumnCase ? (
                     event.case ? (

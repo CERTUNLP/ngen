@@ -173,4 +173,17 @@ const getState = (url) => {
     });
 };
 
-export { getStates, getAllStates, postState, putState, deleteState, isActive, getState, getMinifiedState };
+const getQueryState = async () => {
+  const response = await getMinifiedState();
+
+  // Transform the response into a dictionary
+  const dicState = {};
+  response.forEach((state) => {
+    dicState[state.url] = state;
+  });
+
+  // Return the transformed dictionary (this will be cached)
+  return dicState;
+};
+
+export { getStates, getAllStates, postState, putState, deleteState, isActive, getState, getMinifiedState, getQueryState };

@@ -1,16 +1,16 @@
 import React from "react";
 import { useQuery } from '@tanstack/react-query';
-import { getQueryTlp } from "../../api/services/tlp";
+import { getQueryTaxonomy } from "../../api/services/taxonomies";
 import LetterFormat from "../../components/LetterFormat";
 
 
-const TlpComponent = ({ tlp }) => {
+const TaxonomyComponent = ({ taxonomy }) => {
 
 
-  // Fetch data using useQuery, including data transformation
+  // Fetch taxonomy data using useQuery.
   const { data, isLoading, error } = useQuery({
-    queryKey: ['tlpKey'], // Single query key to fetch all TLP data
-    queryFn: getQueryTlp,
+    queryKey: ['taxonomyKey'], // Single query key to fetch all TLP data
+    queryFn: getQueryTaxonomy,
 
     staleTime: 5 * 60 * 1000, 
     refetchOnWindowFocus: false, // Disable refetching when window is focused
@@ -21,15 +21,15 @@ const TlpComponent = ({ tlp }) => {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const selectedTlp = data?.[tlp];
-
+  const selectedTaxonomy = data?.[taxonomy];
+//revisar como se displayea taxonomy, si usa letterformat...
   return (
 
         <div>
-      <LetterFormat useBadge={true} stringToDisplay={selectedTlp.name} color={selectedTlp.color} bgcolor={"#000"}/>
+      <LetterFormat useBadge={true} stringToDisplay={selectedTaxonomy.name}  bgcolor={"#0f0"}/> 
         </div>
   );
 };  
 
 
-export default TlpComponent;
+export default TaxonomyComponent;

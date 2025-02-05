@@ -11,7 +11,8 @@ import ListDomain from "./ListDomain";
 import { useTranslation } from "react-i18next";
 import UuidField from "components/Field/UuidField";
 import TlpComponent from "../../tanstackquery/TlpComponent";
-
+import PriorityComponent from "../../tanstackquery/PriorityComponent";
+import StateComponent from "../../tanstackquery/StateComponent";
 const TableCase = ({
   setIfModify,
   cases,
@@ -265,13 +266,13 @@ const TableCase = ({
 
                 {!disableName && <td>{caseItem.name || "-"}</td>}
 
-                {!disablePriority && <td>{priorityNames[caseItem.priority]}</td>}
+                {!disablePriority && <td><PriorityComponent priority={caseItem?.priority}></PriorityComponent></td>}
                 {!disableTlp && (
                   <td>
                     <TlpComponent tlp={caseItem?.tlp}></TlpComponent>
                   </td>
                 )}
-                <td>{stateNames[caseItem.state] || "-"}</td>
+                <td> <StateComponent state={caseItem?.state}></StateComponent></td>
                 {!disableEvents && (
                   <td>
                     <ListDomain events={caseItem.events} />

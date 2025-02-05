@@ -41,6 +41,19 @@ const getTaxonomy = (url) => {
     });
 };
 
+const getQueryTaxonomy = async () => {
+  const response = await getMinifiedTaxonomy();
+
+  // Transform the response into a dictionary
+  const dicTaxonomy = {};
+  response.forEach((taxonomy) => {
+    dicTaxonomy[taxonomy.url] = taxonomy;
+  });
+
+  // Return the transformed dictionary (this will be cached)
+  return dicTaxonomy;
+};
+
 const getAllTaxonomies = (currentPage = 1, results = [], limit = 100) => {
   let messageError = `No se pudo recuperar la informacion de las taxonomias`;
   return apiInstance
@@ -161,6 +174,7 @@ const deleteTaxonomy = (url, name) => {
 export {
   getTaxonomies,
   getTaxonomy,
+  getQueryTaxonomy,
   getAllTaxonomies,
   postTaxonomy,
   putTaxonomy,
