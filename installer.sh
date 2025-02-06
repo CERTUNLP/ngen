@@ -18,6 +18,11 @@ if ! command_exists docker; then
     exit 1
 fi
 
+if ! docker ps &> /dev/null; then
+    echo "[!] If Docker is already installed, make sure the Docker daemon is running and the current user is added to the 'docker' group."
+    exit 1
+fi
+
 # Check if Docker Compose is installed
 if ! command_exists docker-compose && ! docker compose version &> /dev/null; then
     echo "[!] Docker Compose is not installed. Please install Docker Compose before running this script. See https://docs.docker.com/compose/install/ for instructions."
