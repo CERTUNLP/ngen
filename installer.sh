@@ -49,7 +49,14 @@ cd "$docker_dir"
 echo "[?] Select the environment mode:"
 echo "    1) Production"
 echo "    2) Development"
-read -p "[>] Enter the number of your choice: " env_choice
+while true; do
+    read -p "[>] Enter the number of your choice: " env_choice
+    if [[ "$env_choice" == "1" || "$env_choice" == "2" ]]; then
+        break
+    else
+        echo "[!] Invalid choice. Please enter 1 for Production or 2 for Development."
+    fi
+done
 
 if [ "$env_choice" == "1" ]; then
     echo "[+] Setting up production environment..."
