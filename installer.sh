@@ -5,6 +5,7 @@ set -e  # Stop execution on error
 # Variables
 git_repo="https://github.com/CERTUNLP/ngen.git"
 install_dir="$HOME/ngen"
+branch="feature/Refactor_develop_and_production_environment_configuration"
 docker_dir="$install_dir/docker"
 
 # Function to check if a command exists
@@ -34,11 +35,11 @@ echo "[+] Docker and Docker Compose are installed."
 # Clone the repository if it does not exist
 if [ ! -d "$install_dir" ]; then
     echo "[+] Cloning ngen repository..."
-    git clone "$git_repo" "$install_dir"
+    git clone -b "$branch" "$git_repo" "$install_dir"
 else
     echo "[+] Updating existing ngen..."
     cd "$install_dir"
-    git pull
+    git pull origin "$branch"
 fi
 
 # Move to the installation directory
