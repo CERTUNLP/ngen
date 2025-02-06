@@ -7,19 +7,24 @@ git_repo="https://github.com/CERTUNLP/ngen.git"
 install_dir="$HOME/ngen"
 docker_dir="$install_dir/docker"
 
-echo "[+] Installing necessary dependencies..."
-# Check if Docker is installed, if not, install it
-docker --version &> /dev/null || {
-    echo "[+] Installing Docker..."
-    sudo apt update && sudo apt install -y docker.io
-    sudo systemctl enable --now docker
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" &> /dev/null
 }
 
-# Check if Docker Compose is installed, if not, install it
-docker compose version &> /dev/null || {
-    echo "[+] Installing Docker Compose..."
-    sudo apt install -y docker-compose
-}
+# Check if Docker is installed
+if ! command_exists docker; then
+    echo "[!] Docker is not installed. Please install Docker before running this script. See https://docs.docker.com/get-docker/ for instructions."
+    exit 1
+fi
+
+# Check if Docker Compose is installed
+if ! command_exists docker-compose && ! docker compose version &> /dev/null; then
+    echo "[!] Docker Compose is not installed. Please install Docker Compose before running this script. See https://docs.docker.com/compose/install/ for instructions."
+    exit 1
+fi
+
+echo "[+] Docker and Docker Compose are installed."
 
 # Clone the repository if it does not exist
 if [ ! -d "$install_dir" ]; then
