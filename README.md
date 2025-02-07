@@ -28,7 +28,7 @@ incident.
 ## 🚀 Run with the install script
 
 ```bash
-$ bash <(wget -qO- https://raw.githubusercontent.com/CERTUNLP/ngen/main/install.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/CERTUNLP/ngen/main/install.sh)
 ```
 
 
@@ -44,8 +44,8 @@ ngen:ngen
 ### Get the code
 
 ```bash
-$ git clone https://github.com/CERTUNLP/ngen.git
-$ cd ngen
+git clone https://github.com/CERTUNLP/ngen.git
+cd ngen
 ```
 
 ### Start the app in Docker on production
@@ -53,9 +53,9 @@ $ cd ngen
 This uses image from Docker Hub. It is useful for production. Please edit the `.env` file before running the command.
 
 ```bash
-$ cd docker
-$ cp .env/ngen.prod.env.example .env/ngen.prod.env # Edit the .env file
-$ docker compose up
+cd docker
+cp .env/ngen.prod.env.example .env/ngen.prod.env # Edit the .env file
+docker compose up
 ```
 
 ### Start the app in Docker on development
@@ -63,9 +63,9 @@ $ docker compose up
 This builds the image locally. It is useful for development and testing.
 
 ```bash
-$ cd docker
-$ cp .env/ngen.dev.env.example .env/ngen.dev.env # Edit the .env file if needed
-$ docker compose -f docker-compose.dev.yml up
+cd docker
+cp .env/ngen.dev.env.example .env/ngen.dev.env # Edit the .env file if needed
+docker compose -f docker-compose.dev.yml up
 ```
 
 
