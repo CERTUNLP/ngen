@@ -26,21 +26,21 @@ FROM nginx:stable-alpine
 ENV STATIC_ROOT=/app/staticfiles \
     MEDIA_ROOT=/app/mediafiles
 
-# Vite en producción corre en el puerto 5000
-ENV VITE_PORT=5000
+# Vite en producción corre en el puerto 443
+ENV VITE_PORT=443
 
 # Copiar los artefactos del frontend al directorio estático de Nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copiar configuración de Nginx y script de entrada
-COPY nginx/nginx.conf.template /etc/nginx/nginx.conf.template
-COPY nginx/docker-entrypoint.sh /docker-entrypoint.sh
+COPY nginx-prod/nginx.conf.template /etc/nginx/nginx.conf.template
+COPY nginx-prod/docker-entrypoint.sh /docker-entrypoint.sh
 
 # Dar permisos al script de entrada
 RUN chmod +x /docker-entrypoint.sh
 
 # Exponer puertos necesarios
-EXPOSE 5000
+EXPOSE 443
 
 # Usar el script de entrada como punto de inicio
 ENTRYPOINT ["/docker-entrypoint.sh"]

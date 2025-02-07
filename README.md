@@ -84,7 +84,9 @@ Important environment variables:
 - DJANGO_ALLOWED_HOSTS: Is a list of domain names that API Django site can serve. This is a security measure to prevent HTTP Host header attacks, which are possible even under many seemingly-safe web server configurations. Example: 127.0.0.1,localhost,ngen.yourdomain.com
 - DJANGO_CORS_ALLOWED_ORIGINS: A list of origins that are authorized to make cross-site HTTP requests. Keep empty to disable CORS, you can keep it empty for testing purposes. Example: https://ngen.yourdomain.com
 
-- VITE_APP_API_SERVER: The URL of the API Django site, for produccion can be the same as the frontend URL on `/api` path.
+- VITE_APP_API_HOST: The host of the API Django site. Keep empty to use the same host as the frontend.
+- VITE_APP_API_PORT: The port of the API Django site. Keep empty to use the same port as the frontend.
+- VITE_APP_API_PATH: The path of the API Django site. Default is `/api`.
 
 - EMAIL_HOST: The host to use for sending email.
 - EMAIL_PORT: The port to use for the SMTP server. 

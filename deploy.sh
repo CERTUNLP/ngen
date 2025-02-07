@@ -68,6 +68,7 @@ check_env_mode() {
     ENV_FILE="${CONFIG_DIR}/ngen.${ENV_TYPE}.env"
     EXAMPLE_FILE="${CONFIG_DIR}/ngen.${ENV_TYPE}.env.example"
     echo "Environment selected: $ENV_TYPE"
+    echo ""
 }
 
 configure_env_mode() {
@@ -109,6 +110,7 @@ configure_env_mode() {
 
     mv "$tmp_file" "$ENV_FILE"
     echo "✅ Configuration completed: ${ENV_FILE}"
+    echo ""
 }
 
 stop_containers() {
@@ -119,6 +121,7 @@ stop_containers() {
     echo "🔹 Trying to stop production environment..."
     $DOCKER_COMPOSE -f $COMPOSE_PROD down -v || true
     echo "Done."
+    echo ""
 }
 
 start_containers() {
@@ -153,6 +156,22 @@ start_containers() {
     $DOCKER_COMPOSE -f $COMPOSE_FILE up -d
 }
 
+print_service_urls() {
+    if [ "$ENV_TYPE" = "dev" ]; then
+        echo ""
+        echo "🌐 Ngen services are now running. Access the following URLs:"
+        echo "🔹 Ngen Frontend: http://ipaddress:3000"
+        echo "🔹 Ngen API: http://ipaddress:8000"
+        echo ""
+    else
+        echo ""
+        echo "🌐 Ngen services are now running. Access the following URLs:"
+        echo "🔹 Ngen Frontend: https://ipaddress/
+        echo "🔹 Ngen API: https://ipaddress/api"
+        echo ""
+    fi
+}
+
 # Execution flow
 if [ "$ACTION" = "stop" ]; then
     stop_containers
@@ -168,6 +187,8 @@ elif [ "$ACTION" = "start" ]; then
     fi
 
     start_containers
+
+    print_service_urls
 
 elif [ "$ACTION" = "reconfigure" ]; then
     check_env_mode

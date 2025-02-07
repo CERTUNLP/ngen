@@ -1,12 +1,14 @@
 services:
   ngen-frontend:
-    image: certunlp/ngen-frontend:rc-2.2.0
+    image: certunlp/ngen-frontend:rc-2.2.1
     restart: always
     volumes:
       - ./data_static:/app/staticfiles
       - ./data_media:/app/mediafiles
+      - ./ssl-prod:/etc/nginx/ssl/
     ports:
-      - "5000:5000"
+      - "443:443"
+      - "80:80"
 
   ngen-django:
     image: certunlp/ngen-django:rc-2.2.0

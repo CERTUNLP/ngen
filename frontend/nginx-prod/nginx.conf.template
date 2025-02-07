@@ -4,11 +4,20 @@ events {
 
 http {
     include /etc/nginx/mime.types;
-
-    # Server listening on port 5000 without SSL
     server {
-        listen 5000;
+        listen 80;
         server_name _;
+        return 301 https://$host$request_uri;
+    }
+
+    server {
+        listen 443 ssl;
+        server_name _;
+
+        ssl_certificate /etc/nginx/ssl/selfsigned.crt;
+        ssl_certificate_key /etc/nginx/ssl/selfsigned.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
 
         # Serve frontend
         index index.html index.htm;
@@ -20,7 +29,7 @@ http {
 
         # Inject environment variables as JS
         location /env.js {
-            return 200 'localStorage.setItem("API_SERVER", "${VITE_APP_API_SERVER}");';
+            return 200 'localStorage.setItem("API_HOST", "$VITE_APP_API_HOST"); localStorage.setItem("API_PORT", "$VITE_APP_API_PORT"); localStorage.setItem("API_PATH", "$VITE_APP_API_PATH");';
             add_header Content-Type application/javascript;
         }
 

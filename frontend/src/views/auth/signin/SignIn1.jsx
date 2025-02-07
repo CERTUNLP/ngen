@@ -41,8 +41,8 @@ const Signin1 = () => {
           setShowAlert(true);
         });
     } else {
-      console.error("API_SERVER is not set in localStorage");
-      setAlert("API_SERVER is not set in localStorage", "error", "login");
+      console.error(`Backend url cannot be reached: ${external}`);
+      setAlert(`Backend url cannot be reached: ${external}`, "error", "login");
       setShowAlert(true);
     }
   }, []); // El array vacío asegura que useEffect solo se ejecute una vez al montar el componente

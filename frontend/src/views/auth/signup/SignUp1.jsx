@@ -2,7 +2,6 @@ import React from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
-// import { API_SERVER } from "../../../config/constant";
 import RestRegister from "./RestRegister";
 import Breadcrumb from "../../../layouts/AdminLayout/Breadcrumb";
 
