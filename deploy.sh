@@ -77,10 +77,8 @@ configure_env_mode() {
 
     # If configuration file is missing, create from example
     if [ ! -f "$ENV_FILE" ]; then
+        echo "Configuration file not found. Creating new configuration from example file..."
         if [ -f "$EXAMPLE_FILE" ]; then
-            cp "$EXAMPLE_FILE" "$ENV_FILE"
-            echo "Created new ${ENV_TYPE} configuration from example file"
-        else
             echo "Error: Missing example file ${EXAMPLE_FILE}"
             exit 1
         fi
@@ -129,7 +127,7 @@ start_containers() {
         ALT_MODE="Development"
     fi
 
-    echo "⚠️  ${ENV_TYPE^} mode selected. Using $COMPOSE_FILE"
+    echo "${ENV_TYPE^} mode selected. Using $COMPOSE_FILE"
     echo "Removing containers in ${ALT_MODE} mode to avoid conflicts..."
     $DOCKER_COMPOSE -f "$ALT_COMPOSE_FILE" down -v
 
