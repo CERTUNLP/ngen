@@ -10,6 +10,7 @@ RECONFIGURE=false
 COMPOSE_FOLDER="$PWD/docker"
 COMPOSE_DEV="docker-compose-dev.yml"
 COMPOSE_PROD="docker-compose.yml"
+DOCKER_COMPOSE=$(command -v docker-compose || echo "docker compose")
 
 
 echo "🚀 ngen deployment script"
@@ -67,8 +68,6 @@ check_env_mode() {
     ENV_FILE="${CONFIG_DIR}/ngen.${ENV_TYPE}.env"
     EXAMPLE_FILE="${CONFIG_DIR}/ngen.${ENV_TYPE}.env.example"
 
-    DOCKER_COMPOSE=$(command -v docker-compose || echo "docker compose")
-
     echo "Environment: $ENV_TYPE"
 }
 
@@ -114,7 +113,7 @@ configure_env_mode() {
 
 stop_containers() {
     echo "Stopping ngen ${ENV_TYPE} environment..."
-    docker-compose -f $COMPOSE_DEV -f $COMPOSE_PROD down -v
+    $DOCKER_COMPOSE -f $COMPOSE_DEV -f $COMPOSE_PROD down -v
 }
 
 
