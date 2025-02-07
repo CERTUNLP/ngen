@@ -173,8 +173,8 @@ elif [ "$ACTION" = "reconfigure" ]; then
     rm -f "$ENV_FILE"
     configure_env_mode
     echo "✅ Configuration completed: ${ENV_FILE}"
-    echo "▶️ Use 'bash deploy.sh start --$ENV_TYPE' to start Ngen"
-    echo "🛑 Use 'bash deploy.sh stop --$ENV_TYPE' to stop Ngen"
+    echo "Use 'bash deploy.sh start --$ENV_TYPE' to start Ngen"
+    echo "Use 'bash deploy.sh stop --$ENV_TYPE' to stop Ngen"
 fi
 
 exit 0
