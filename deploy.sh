@@ -58,6 +58,9 @@ EXAMPLE_FILE="${CONFIG_DIR}/ngen.${ENV_TYPE}.env.example"
 
 DOCKER_COMPOSE=$(command -v docker-compose || echo "docker compose")
 
+echo "Environment: $ENV_TYPE"
+echo "Configuration file: $ENV_FILE"
+
 # Check for previous configuration
 check_previous_config() {
     if $DOCKER_COMPOSE ps | grep -q -E 'ngen|db'; then
