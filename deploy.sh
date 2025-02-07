@@ -64,9 +64,6 @@ check_previous_config() {
         echo "❗  System is running. Stop it before reconfiguring."
         exit 1
     fi
-    if [ -f "$ENV_FILE" ]; then
-        echo "⚠️  Configuration already exists: $ENV_FILE"
-    fi
 }
 
 # Configure environment
