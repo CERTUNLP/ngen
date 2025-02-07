@@ -27,12 +27,19 @@ $ git clone https://github.com/CERTUNLP/ngen.git
 $ cd ngen
 ```
 
+### Run with the install script
+
+```bash
+$ bash <(wget -qO- https://raw.githubusercontent.com/CERTUNLP/ngen/main/install.sh)
+```
+
 ### Start the app in Docker on production
 
 This uses image on dockerhub.
 
 ```bash
 $ cd docker
+$ cp .env/ngen.prod.env.example .env/ngen.prod.env # Edit the .env file
 $ docker compose up
 ```
 

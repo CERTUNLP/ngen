@@ -19,6 +19,7 @@ jobs:
     - name: Build develop docker containers for Django backend
       run: |
         cd docker
+        cp .env/ngen.dev.env.example .env/ngen.dev.env
         docker compose -f docker-compose-dev.yml build ngen-django
         docker compose -f docker-compose-dev.yml up -d ngen-django
 
