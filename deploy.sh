@@ -2,7 +2,7 @@
 set -e
 
 # Configuration variables
-CONFIG_DIR="docker"
+CONFIG_DIR="docker/.env"
 NON_INTERACTIVE=false
 ACTION=""
 ENV_TYPE=""
