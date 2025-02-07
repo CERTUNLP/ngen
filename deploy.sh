@@ -112,7 +112,7 @@ configure_env_mode() {
 }
 
 stop_containers() {
-    echo "Stopping ngen ${ENV_TYPE} environment..."
+    echo "Stopping all ngen environments..."
     $DOCKER_COMPOSE -f $COMPOSE_DEV -f $COMPOSE_PROD down -v
 }
 
