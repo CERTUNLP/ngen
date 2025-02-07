@@ -9,7 +9,9 @@ ENV_TYPE=""
 RECONFIGURE=false
 COMPOSE_FOLDER="$PWD/docker"
 
-cd $COMPOSE_FOLDER || echo "Error: Docker Compose folder not found. This script must be run from the project root." && exit 1
+echo "🚀 ngen deployment script"
+
+cd $COMPOSE_FOLDER || { echo "Error: Docker Compose folder not found. This script must be run from the project root."; exit 1; }
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
