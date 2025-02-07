@@ -166,7 +166,7 @@ print_service_urls() {
     else
         echo ""
         echo "🌐 Ngen services are now running. Access the following URLs:"
-        echo "🔹 Ngen Frontend: https://ipaddress/
+        echo "🔹 Ngen Frontend: https://ipaddress/"
         echo "🔹 Ngen API: https://ipaddress/api"
         echo ""
     fi
