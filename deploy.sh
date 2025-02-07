@@ -32,7 +32,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             echo "Unknown option: $1"
-            do_exit 1
+            exit 1
             ;;
     esac
 done
@@ -42,7 +42,7 @@ if [ -z "$ENV_TYPE" ]; then
     if [ "$NON_INTERACTIVE" = false ]; then
         echo "Running in non-interactive mode. Use --dev or --prod to specify environment."
         echo "Exiting..."
-        do_exit 1
+        exit 1
     fi
 
     echo "Select the environment mode:"
@@ -82,7 +82,7 @@ configure_environment() {
             echo "Created new ${ENV_TYPE} configuration from example file"
         else
             echo "Error: Missing example file ${EXAMPLE_FILE}"
-            do_exit 1
+            exit 1
         fi
     fi
 
@@ -111,11 +111,6 @@ configure_environment() {
     mv "$tmp_file" "$ENV_FILE"
 }
 
-do_exit() {
-    echo "Exiting..."
-    cd ..
-    exit $1
-}
 
 # Manage containers
 manage_containers() {
@@ -137,7 +132,7 @@ manage_containers() {
 
             if $DOCKER_COMPOSE -f $COMPOSE_FILE ps | grep -q 'Up'; then
                 echo "❗  System is already running. Stop it before starting again."
-                do_exit 1
+                exit 1
             fi
             
             configure_environment
@@ -150,7 +145,7 @@ manage_containers() {
             ;;
         *)
             echo "Invalid action. Use 'start' or 'stop'."
-            do_exit 1
+            exit 1
             ;;
     esac
 }
@@ -168,4 +163,4 @@ else
     echo "Use 'bash deploy.sh stop --$ENV_TYPE' to stop ngen"
 fi
 
-do_exit 0
+exit 0
