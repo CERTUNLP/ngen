@@ -2,12 +2,12 @@
 set -e
 
 # Configuration variables
-CONFIG_DIR=".env"
 NON_INTERACTIVE=false
 ACTION=""
 ENV_TYPE=""
 RECONFIGURE=false
 COMPOSE_FOLDER="$PWD/docker"
+CONFIG_DIR="$COMPOSE_FOLDER/.env"
 COMPOSE_DEV="docker-compose-dev.yml"
 COMPOSE_PROD="docker-compose.yml"
 DOCKER_COMPOSE=$(command -v docker-compose || echo "docker compose")
@@ -39,7 +39,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "Configuration file: $ENV_FILE"
+echo "Configuration file: ${ENV_FILE:-Not set}"
 echo "Docker Compose executable: $DOCKER_COMPOSE"
 echo "Docker Compose folder: $COMPOSE_FOLDER"
 
