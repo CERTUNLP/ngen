@@ -82,7 +82,7 @@ configure_env_mode() {
         exit 1
     fi
 
-    if [ -f "$EXAMPLE_FILE" ]; then
+    if [ ! -f "$EXAMPLE_FILE" ]; then
         echo "❗ Error: Missing example file ${EXAMPLE_FILE}"
         exit 1
     fi
