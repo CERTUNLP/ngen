@@ -43,6 +43,7 @@ echo ""
 echo "Configuration file: ${ENV_FILE:-Not set}"
 echo "Docker Compose executable: $DOCKER_COMPOSE"
 echo "Docker Compose folder: $COMPOSE_FOLDER"
+echo "Non-interactive mode: $NON_INTERACTIVE"
 echo ""
 
 check_env_mode() {
@@ -162,7 +163,7 @@ elif [ "$ACTION" = "start" ]; then
     if [ -f "$ENV_FILE" ]; then
         echo "✅ Using existing configuration file: ${ENV_FILE}"
     else
-        echo "⚙️ Configuration file not found for ${ENV_TYPE}. Creating a new one..."
+        echo "Configuration file not found for ${ENV_TYPE}. Creating a new one..."
         configure_env_mode
     fi
 
