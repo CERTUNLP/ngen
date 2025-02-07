@@ -7,8 +7,9 @@ NON_INTERACTIVE=false
 ACTION=""
 ENV_TYPE=""
 RECONFIGURE=false
+COMPOSE_FOLDER="$PWD/docker"
 
-cd docker || exit
+cd $COMPOSE_FOLDER || echo "Error: Docker Compose folder not found. This script must be run from the project root." && exit 1
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -63,6 +64,8 @@ DOCKER_COMPOSE=$(command -v docker-compose || echo "docker compose")
 
 echo "Environment: $ENV_TYPE"
 echo "Configuration file: $ENV_FILE"
+echo "Docker Compose executable: $DOCKER_COMPOSE"
+echo "Docker Compose folder: $COMPOSE_FOLDER"
 
 # Configure environment
 configure_environment() {
