@@ -10,7 +10,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - ngen.dev.env
+      - .env/ngen.dev.env
     command: >
       sh -c "npm run start"
 
@@ -27,9 +27,9 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ngen.base.db.env
-      - ngen.base.env
-      - ngen.dev.env
+      - .env/ngen.base.db.env
+      - .env/ngen.base.env
+      - .env/ngen.dev.env
     depends_on:
       - ngen-postgres
       - ngen-redis
@@ -37,28 +37,34 @@ services:
 
   ngen-celery-worker:
     image: ngen-django:dev-latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.dev
     restart: on-failure
     command: celery -A project worker -E -l info
     volumes:
       - ../:/code
     env_file:
-      - ngen.base.db.env
-      - ngen.base.env
-      - ngen.dev.env
+      - .env/ngen.base.db.env
+      - .env/ngen.base.env
+      - .env/ngen.dev.env
     depends_on:
       - ngen-django
       - ngen-redis
 
   ngen-celery-beat:
     image: ngen-django:dev-latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.dev
     restart: on-failure
     command: celery -A project beat -l info
     volumes:
       - ../:/code
     env_file:
-      - ngen.base.db.env
-      - ngen.base.env
-      - ngen.dev.env
+      - .env/ngen.base.db.env
+      - .env/ngen.base.env
+      - .env/ngen.dev.env
     depends_on:
       - ngen-django
       - ngen-redis
@@ -67,7 +73,7 @@ services:
     image: postgres:16
     restart: on-failure
     env_file:
-      - ngen.base.db.env
+      - .env/ngen.base.db.env
     volumes:
       - ./data_postgres:/var/lib/postgresql/data
     ports:
@@ -97,13 +103,16 @@ services:
 
   ngen-celery-flower:
     image: ngen-django:dev-latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.dev
     restart: on-failure
     command: celery -A project flower
     volumes:
       - ../:/code
     env_file:
-      - ngen.base.env
-      - ngen.dev.env
+      - .env/ngen.base.env
+      - .env/ngen.dev.env
     ports:
       - "5555:5555"
     depends_on:

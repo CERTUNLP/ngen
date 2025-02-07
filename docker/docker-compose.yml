@@ -17,9 +17,9 @@ services:
       - ./data_static/:/code/staticfiles
       - ./data_media/:/code/mediafiles
     env_file:
-      - ngen.base.db.env
-      - ngen.base.env
-      - ngen.prod.env
+      - .env/ngen.base.db.env
+      - .env/ngen.base.env
+      - .env/ngen.prod.env
     depends_on:
       - ngen-postgres
       - ngen-redis
@@ -29,9 +29,9 @@ services:
     restart: always
     command: celery -A project worker -l warning
     env_file:
-      - ngen.base.db.env
-      - ngen.base.env
-      - ngen.prod.env
+      - .env/ngen.base.db.env
+      - .env/ngen.base.env
+      - .env/ngen.prod.env
     depends_on:
       - ngen-postgres
       - ngen-redis
@@ -41,9 +41,9 @@ services:
     restart: always
     command: celery -A project beat -l warning
     env_file:
-      - ngen.base.db.env
-      - ngen.base.env
-      - ngen.prod.env
+      - .env/ngen.base.db.env
+      - .env/ngen.base.env
+      - .env/ngen.prod.env
     depends_on:
       - ngen-postgres
       - ngen-redis
@@ -52,7 +52,7 @@ services:
     image: postgres:16
     restart: always
     env_file:
-      - ngen.base.db.env
+      - .env/ngen.base.db.env
     volumes:
       - ./data_postgres:/var/lib/postgresql/data
     ports:
