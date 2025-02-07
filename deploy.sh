@@ -15,7 +15,7 @@ DOCKER_COMPOSE=$(command -v docker-compose || echo "docker compose")
 
 echo "🚀 ngen deployment script"
 
-cd $COMPOSE_FOLDER || { echo "Error: Docker Compose folder not found. This script must be run from the project root."; exit 1; }
+cd $COMPOSE_FOLDER || { echo "❗ Error: Docker Compose folder not found. This script must be run from the project root."; exit 1; }
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -77,13 +77,13 @@ configure_env_mode() {
 
     # If configuration file is missing, create from example
     if [ -f "$ENV_FILE" ]; then
-        echo "Error: Configuration file already exists: ${ENV_FILE}"
+        echo "❗ Error: Configuration file already exists: ${ENV_FILE}"
         echo "Use 'bash deploy.sh reconfigure --$ENV_TYPE' to reconfigure"
         exit 1
     fi
 
     if [ -f "$EXAMPLE_FILE" ]; then
-        echo "Error: Missing example file ${EXAMPLE_FILE}"
+        echo "❗ Error: Missing example file ${EXAMPLE_FILE}"
         exit 1
     fi
 
@@ -139,7 +139,6 @@ start_containers() {
         exit 1
     fi
     
-    configure_env_mode
     echo "Starting ngen in ${ENV_TYPE} mode..."
     $DOCKER_COMPOSE -f $COMPOSE_FILE up -d
 }
