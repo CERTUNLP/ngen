@@ -107,7 +107,7 @@ configure_env_mode() {
         fi
 
         echo "${key}=${new_value:-$current_value}" >> "$tmp_file"
-    done < "$ENV_FILE"
+    done < "$EXAMPLE_FILE"
 
     mv "$tmp_file" "$ENV_FILE"
 }
