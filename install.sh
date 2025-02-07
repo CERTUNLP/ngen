@@ -152,6 +152,9 @@ setup_installation() {
 setup_installation
 
 # Run deploy script
-nonint=$([ "${NON_INTERACTIVE}" = "true" ] || [ "${NON_INTERACTIVE}" = "1" ] && echo "--non-interactive")
+nonint=""
+if [ "${NON_INTERACTIVE}" = "true" ]; then
+    nonint="--non-interactive"
+fi
 echo "Running deployment script as: bash deploy.sh start ${ENV_TYPE:+--$ENV_TYPE} ${nonint}"
 cd "${NGEN_INSTALL_DIR}" && bash deploy.sh start ${ENV_TYPE:+--$ENV_TYPE} ${nonint}
