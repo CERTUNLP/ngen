@@ -25,7 +25,7 @@ incident.
 - Docker Compose
 
 
-## Run with the install script
+## 🚀 Run with the install script
 
 ```bash
 $ bash <(wget -qO- https://raw.githubusercontent.com/CERTUNLP/ngen/main/install.sh)
