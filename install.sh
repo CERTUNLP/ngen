@@ -143,4 +143,4 @@ setup_installation
 
 # Run deploy script
 echo "Running deployment script..."
-cd "${NGEN_INSTALL_DIR}" && bash deploy.sh ${NON_INTERACTIVE:+--non-interactive} ${ENV_TYPE:+--$ENV_TYPE}
+cd "${NGEN_INSTALL_DIR}" && bash deploy.sh ${NON_INTERACTIVE:+--non-interactive} ${ENV_TYPE:+--$ENV_TYPE} --start

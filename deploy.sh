@@ -51,9 +51,10 @@ if [ -z "$ENV_TYPE" ]; then
         2) ENV_TYPE="prod" ;;
         *) echo "Invalid choice. Exiting..."; exit 1 ;;
     esac
-    ENV_FILE="${CONFIG_DIR}/ngen.${ENV_TYPE}.env"
-    EXAMPLE_FILE="${CONFIG_DIR}/ngen.${ENV_TYPE}.env.example"
 fi
+
+ENV_FILE="${CONFIG_DIR}/ngen.${ENV_TYPE}.env"
+EXAMPLE_FILE="${CONFIG_DIR}/ngen.${ENV_TYPE}.env.example"
 
 DOCKER_COMPOSE=$(command -v docker-compose || echo "docker compose")
 
@@ -89,10 +90,6 @@ configure_environment() {
             exit 1
         fi
     fi
-
-    backup_file="${ENV_FILE}.backup-$(date +%Y%m%d%H%M%S)"
-    cp "$ENV_FILE" "$backup_file"
-    echo "Backup created: ${backup_file}"
 
     tmp_file="${ENV_FILE}.tmp"
     > "$tmp_file"
@@ -169,6 +166,6 @@ if [ -n "$ACTION" ]; then
     manage_containers
 else
     echo "✅ Configuration completed: ${ENV_FILE}"
-    echo "Use './deploy.sh start --$ENV_TYPE' to start ngen"
-    echo "Use './deploy.sh stop --$ENV_TYPE' to stop ngen"
+    echo "Use 'bash deploy.sh start --$ENV_TYPE' to start ngen"
+    echo "Use 'bash deploy.sh stop --$ENV_TYPE' to stop ngen"
 fi
