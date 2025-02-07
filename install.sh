@@ -136,8 +136,6 @@ setup_installation() {
     fi
 
     echo "Installation completed successfully"
-    echo "Next step is to run the configuration script"
-    echo "cd ${NGEN_INSTALL_DIR} && bash configure.sh"
 }
 
 # Execute installation
@@ -145,4 +143,4 @@ setup_installation
 
 # Run deploy script
 echo "Running deployment script..."
-cd "${NGEN_INSTALL_DIR}" && bash deploy.sh --${ENV_TYPE} ${NON_INTERACTIVE:+--non-interactive}
+cd "${NGEN_INSTALL_DIR}" && bash deploy.sh ${NON_INTERACTIVE:+--non-interactive} ${ENV_TYPE:+--$ENV_TYPE}
