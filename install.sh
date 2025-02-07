@@ -49,6 +49,13 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+echo "🚀 Ngen Installation Script"
+echo ""
+echo "Configuration:"
+echo "  Installation directory: ${NGEN_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
+echo "  Git branch: ${NGEN_BRANCH:-$DEFAULT_BRANCH}"
+echo "  Non-interactive mode: $NON_INTERACTIVE"
+
 # Function to check if a command exists
 command_exists() {
     command -v "$1" &> /dev/null
