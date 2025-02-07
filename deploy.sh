@@ -58,7 +58,8 @@ check_env_mode() {
         read -p "Enter the number of your choice: " env_choice
 
         case "$env_choice" in
-                1) ENV_TYPE="dev" ;; ;;
+            1) ENV_TYPE="dev" ;; 
+            2) ENV_TYPE="prod" ;;
             *) echo "Invalid choice. Exiting..."; exit 1 ;;
         esac
     fi
