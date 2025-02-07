@@ -76,12 +76,15 @@ configure_env_mode() {
     echo "Configuring ngen ${ENV_TYPE} environment..."
 
     # If configuration file is missing, create from example
-    if [ ! -f "$ENV_FILE" ]; then
-        echo "Configuration file not found. Creating new configuration from example file..."
-        if [ -f "$EXAMPLE_FILE" ]; then
-            echo "Error: Missing example file ${EXAMPLE_FILE}"
-            exit 1
-        fi
+    if [ -f "$ENV_FILE" ]; then
+        echo "Error: Configuration file already exists: ${ENV_FILE}"
+        echo "Use 'bash deploy.sh reconfigure --$ENV_TYPE' to reconfigure"
+        exit 1
+    fi
+
+    if [ -f "$EXAMPLE_FILE" ]; then
+        echo "Error: Missing example file ${EXAMPLE_FILE}"
+        exit 1
     fi
 
     tmp_file="${ENV_FILE}.tmp"
@@ -160,6 +163,7 @@ elif [ "$ACTION" = "start" ]; then
 
 elif [ "$ACTION" = "reconfigure" ]; then
     check_env_mode
+    rm -f "$ENV_FILE"
     configure_env_mode
     echo "✅ Configuration completed: ${ENV_FILE}"
     echo "Use 'bash deploy.sh start --$ENV_TYPE' to start ngen"
