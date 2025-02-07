@@ -31,6 +31,19 @@ incident.
 bash <(wget -qO- https://raw.githubusercontent.com/CERTUNLP/ngen/main/install.sh)
 ```
 
+Installation and startup takes several minutes to complete. Check it in docker compose logs for the ngen-django container.
+
+The application runs on different ports:
+
+Production (over HTTPS):
+- Frontend and Backend: Port 443 (Backend uses /api path)
+
+Development (over HTTP):
+- Frontend: Port 3000
+- Backend: Port 8000
+
+Important: Configure production environment variables for security.
+
 
 ## ✨ Default credentials
 

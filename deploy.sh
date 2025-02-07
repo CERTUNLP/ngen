@@ -159,13 +159,13 @@ start_containers() {
 print_service_urls() {
     if [ "$ENV_TYPE" = "dev" ]; then
         echo ""
-        echo "🌐 Ngen services are now running. Access the following URLs:"
+        echo "🌐 Ngen services are now running. By default config access with the following URLs:"
         echo "🔹 Ngen Frontend: http://ipaddress:3000"
         echo "🔹 Ngen API: http://ipaddress:8000"
         echo ""
     else
         echo ""
-        echo "🌐 Ngen services are now running. Access the following URLs:"
+        echo "🌐 Ngen services are now running. By default config access with the following URLs:"
         echo "🔹 Ngen Frontend: https://ipaddress/"
         echo "🔹 Ngen API: https://ipaddress/api"
         echo ""
