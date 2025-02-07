@@ -18,48 +18,88 @@ incident.
 
 ![Example Preview](https://github.com/certunlp/ngen/blob/main/docs/images/preview1.png?raw=true)
 
-## ✨ Quick Start in `Docker`
+## Requirements
+
+- Git
+- Docker
+- Docker Compose
+
+
+## 🚀 Run with the install script
+
+```bash
+bash <(wget -qO- https://raw.githubusercontent.com/CERTUNLP/ngen/main/install.sh)
+```
+
+Installation and startup takes several minutes to complete. Check it in docker compose logs for the ngen-django container.
+
+The application runs on different ports:
+
+Production (over HTTPS):
+- Frontend and Backend: Port 443 (Backend uses /api path)
+
+Development (over HTTP):
+- Frontend: Port 3000
+- Backend: Port 8000
+
+Important: Configure production environment variables for security.
+
+
+## ✨ Default credentials
+
+```
+ngen:ngen
+```
+
+
+## Detailed manual installation
 
 ### Get the code
 
 ```bash
-$ git clone https://github.com/CERTUNLP/ngen.git
-$ cd ngen
-```
-
-### Start the app in Docker on develop mode:
-
-```bash
-$ cd docker
-$ docker compose build
-$ docker compose up
-```
-
-- Frontend server on port `3000`
-- API server on port `8000`
-
-## ✨ Default credentials
-
-```javascript
-ngen:ngen
+git clone https://github.com/CERTUNLP/ngen.git
+cd ngen
 ```
 
 ### Start the app in Docker on production
 
-This uses image on dockerhub.
-Set `DJANGO_DEBUG=False` in the file `ngen.env` and:
+This uses image from Docker Hub. It is useful for production. Please edit the `.env` file before running the command.
 
 ```bash
-$ cd docker
-$ docker compose -f docker-compose-prod.yml up
+cd docker
+cp .env/ngen.prod.env.example .env/ngen.prod.env # Edit the .env file
+docker compose up
 ```
 
-### Start with elasticsearch
+### Start the app in Docker on development
 
-Note: If you want to disable it set `ELASTIC_ENABLED=false` and remove containers (maybe you need to prune).
-Set `ELASTIC_ENABLED=true` in the file `ngen.env` and:
+This builds the image locally. It is useful for development and testing.
 
 ```bash
-$ cd docker
-$ docker compose --profile elastic up
+cd docker
+cp .env/ngen.dev.env.example .env/ngen.dev.env # Edit the .env file if needed
+docker compose -f docker-compose.dev.yml up
 ```
+
+
+### Detailed configuration
+
+There are four configuration files in the `docker/.env` directory. You can edit them to customize the app.
+
+- `ngen.base.env`: Base configuration for the app, shared by all environments and overriden by other files.
+- `ngen.base.db.env`: Database configuration for the app, shared by all environments and overriden by other files.
+- `ngen.dev.env`: Development environment configuration for the app.
+- `ngen.prod.env`: Production environment configuration for the app.
+
+Important environment variables:
+
+- DJANGO_SECRET_KEY: A secret key for a particular Django installation. This is used to provide cryptographic signing, and should be set to a unique, unpredictable value.
+- DJANGO_ALLOWED_HOSTS: Is a list of domain names that API Django site can serve. This is a security measure to prevent HTTP Host header attacks, which are possible even under many seemingly-safe web server configurations. Example: 127.0.0.1,localhost,ngen.yourdomain.com
+- DJANGO_CORS_ALLOWED_ORIGINS: A list of origins that are authorized to make cross-site HTTP requests. Keep empty to disable CORS, you can keep it empty for testing purposes. Example: https://ngen.yourdomain.com
+
+- VITE_APP_API_HOST: The host of the API Django site. Keep empty to use the same host as the frontend.
+- VITE_APP_API_PORT: The port of the API Django site. Keep empty to use the same port as the frontend.
+- VITE_APP_API_PATH: The path of the API Django site. Default is `/api`.
+
+- EMAIL_HOST: The host to use for sending email.
+- EMAIL_PORT: The port to use for the SMTP server. 

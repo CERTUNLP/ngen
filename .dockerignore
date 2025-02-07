@@ -1,9 +1,9 @@
-postgres_data/
+data_postgres/
 redis/
 elasticsearch/
-docker/postgres_data/
+docker/data_postgres/
 docker/elasticsearch/
-docker/redis/
+docker/data_redis/
 docker/
 docker/*
 !docker/entrypoint.sh

@@ -1,0 +1,39 @@
+name: Backend  CI
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      container_django: docker-ngen-django-1
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build develop docker containers for Django backend
+      run: |
+        cd docker
+        cp .env/ngen.dev.env.example .env/ngen.dev.env
+        docker compose -f docker-compose-dev.yml build ngen-django
+        docker compose -f docker-compose-dev.yml up -d ngen-django
+
+        # Test if django container is running
+        max_retries=60
+        retries=0
+        while [[ "$(docker inspect -f '{{.State.Running}}' "$container_django")" != "true" ]]; do
+          retries=$((retries + 1))
+          if [ $retries -ge $max_retries ]; then
+            echo "Container '$container_django' did not start within the timeout."
+            exit 1
+          fi
+          sleep 1
+        done
+
+    - name: Run Django tests
+      run: docker exec "$container_django" ./manage.py test ngen.tests

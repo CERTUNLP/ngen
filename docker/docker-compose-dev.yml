@@ -1,0 +1,148 @@
+services:
+  ngen-frontend:
+    image: ngen-frontend:dev-latest
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - "../frontend/:/app"
+      - "/app/node_modules"
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env/ngen.dev.env
+    command: >
+      sh -c "npm run start"
+
+  ngen-django:
+    image: ngen-django:dev-latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.dev
+    restart: on-failure
+    entrypoint: ./docker/entrypoint.sh
+    command: python manage.py runserver ngen-django:8000
+    volumes:
+      - ../:/code
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env/ngen.base.db.env
+      - .env/ngen.base.env
+      - .env/ngen.dev.env
+    depends_on:
+      - ngen-postgres
+      - ngen-redis
+      - ngen-mail
+
+  ngen-celery-worker:
+    image: ngen-django:dev-latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.dev
+    restart: on-failure
+    command: celery -A project worker -E -l info
+    volumes:
+      - ../:/code
+    env_file:
+      - .env/ngen.base.db.env
+      - .env/ngen.base.env
+      - .env/ngen.dev.env
+    depends_on:
+      - ngen-django
+      - ngen-redis
+
+  ngen-celery-beat:
+    image: ngen-django:dev-latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.dev
+    restart: on-failure
+    command: celery -A project beat -l info
+    volumes:
+      - ../:/code
+    env_file:
+      - .env/ngen.base.db.env
+      - .env/ngen.base.env
+      - .env/ngen.dev.env
+    depends_on:
+      - ngen-django
+      - ngen-redis
+
+  ngen-postgres:
+    image: postgres:16
+    restart: on-failure
+    env_file:
+      - .env/ngen.base.db.env
+    volumes:
+      - ./data_postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  ngen-redis:
+    image: "redis:alpine"
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data_redis:/data
+
+  ngen-mail:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - "1025:1025" # smtp server
+      - "8025:8025" # web ui
+
+  ngen-adminer:
+    image: adminer
+    restart: on-failure
+    command:
+      ["php", "-d", "upload_max_filesize = 10G", "-d", "post_max_size = 10G", "-S", "[::]:8080", "-t", "/var/www/html"]
+    ports:
+      - "8080:8080"
+
+  ngen-celery-flower:
+    image: ngen-django:dev-latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.dev
+    restart: on-failure
+    command: celery -A project flower
+    volumes:
+      - ../:/code
+    env_file:
+      - .env/ngen.base.env
+      - .env/ngen.dev.env
+    ports:
+      - "5555:5555"
+    depends_on:
+      - ngen-django
+      - ngen-redis
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    restart: on-failure
+    environment:
+      - REDIS_HOSTS=local:ngen-redis:6379
+      - HTTP_USER=ngen
+      - HTTP_PASSWORD=ngen
+    ports:
+      - "8081:8081"
+    depends_on:
+      - ngen-redis
+
+  ngen-elasticsearch:
+    image: elasticsearch:7.17.4
+    profiles: ["elastic"] # once you run with this profile you can't run without it, you should prune containers
+    restart: on-failure
+    environment:
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - http.host=0.0.0.0
+      - discovery.type=single-node
+      - script.allowed_types=inline
+      - thread_pool.search.queue_size=100000
+      - thread_pool.write.queue_size=10000
+    volumes:
+      - ./elasticsearch:/var/lib/elasticsearch/data #sudo  chown -R 1000:1000 elasticsearch
+    ports:
+      - "9200:9200"
