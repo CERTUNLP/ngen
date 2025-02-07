@@ -6,6 +6,7 @@ CONFIG_DIR=".env"
 NON_INTERACTIVE=false
 ACTION=""
 ENV_TYPE=""
+RECONFIGURE=false
 
 cd docker || exit
 
@@ -63,25 +64,14 @@ DOCKER_COMPOSE=$(command -v docker-compose || echo "docker compose")
 echo "Environment: $ENV_TYPE"
 echo "Configuration file: $ENV_FILE"
 
-# Check for previous configuration
-check_previous_config() {
-    if $DOCKER_COMPOSE ps | grep -q -E 'ngen|db'; then
-        echo "❗  System is running. Stop it before reconfiguring."
-        do_exit 1
-    fi
-}
-
 # Configure environment
 configure_environment() {
     # If already configured and non-interactive, skip
-    if [ -f "$ENV_FILE" ] && [ "$NON_INTERACTIVE" = true ]; then
-        if [ "$RECONFIGURE" = true ]; then
-            echo "Reconfiguring existing configuration file: ${ENV_FILE}"
-        else
-            echo "Using existing configuration file: ${ENV_FILE}"
-            return
-        fi
+    if [ -f "$ENV_FILE" ] && [ "$NON_INTERACTIVE" = true ] && [ "$RECONFIGURE" = false ]; then
+        echo "Using existing configuration file: ${ENV_FILE}"
+        return
     fi
+
     # If configuration file is missing, create from example
     if [ ! -f "$ENV_FILE" ]; then
         if [ -f "$EXAMPLE_FILE" ]; then
@@ -126,37 +116,33 @@ do_exit() {
 
 # Manage containers
 manage_containers() {
-    if [ ! -f "$ENV_FILE" ]; then
-        echo "Error: Missing configuration file ${ENV_FILE}"
-        do_exit 1
-    fi
-
     if [ "$ENV_TYPE" = "dev" ]; then
         COMPOSE_FILE="docker-compose-dev.yml"
         ALT_COMPOSE_FILE="docker-compose.yml"
         ALT_MODE="Production"
-        echo "⚠️  Development mode selected. Using $COMPOSE_FILE"
     else
         COMPOSE_FILE="docker-compose.yml"
-        ALT_COMPOSE_FILE="docker-compose-prod.yml"
+        ALT_COMPOSE_FILE="docker-compose-dev.yml"
         ALT_MODE="Development"
-        echo "⚠️  Production mode selected. Using $COMPOSE_FILE"
     fi
     
     case "$ACTION" in
         start)
+            echo "⚠️  ${ENV_TYPE^} mode selected. Using $COMPOSE_FILE"
             echo "Removing containers in ${ALT_MODE} mode to avoid conflicts..."
             $DOCKER_COMPOSE -f "$ALT_COMPOSE_FILE" down -v
 
-            echo "Starting ngen in ${ENV_TYPE} mode..."
-            if $DOCKER_COMPOSE ps | grep -q -E 'ngen|db'; then
+            if $DOCKER_COMPOSE -f $COMPOSE_FILE ps | grep -q 'Up'; then
                 echo "❗  System is already running. Stop it before starting again."
                 do_exit 1
             fi
+            
+            configure_environment
+            echo "Starting ngen in ${ENV_TYPE} mode..."
             $DOCKER_COMPOSE -f $COMPOSE_FILE up -d
             ;;
         stop)
-            echo "Stopping ngen..."
+            echo "Stopping ngen ${ENV_TYPE} environment..."
             $DOCKER_COMPOSE -f $COMPOSE_FILE down -v
             ;;
         *)
@@ -167,12 +153,13 @@ manage_containers() {
 }
 
 # Execution flow
-check_previous_config
-configure_environment
-
 if [ -n "$ACTION" ]; then
+    if [ "$ACTION" = "start" ]; then
+        configure_environment
+    fi
     manage_containers
 else
+    configure_environment
     echo "✅ Configuration completed: ${ENV_FILE}"
     echo "Use 'bash deploy.sh start --$ENV_TYPE' to start ngen"
     echo "Use 'bash deploy.sh stop --$ENV_TYPE' to stop ngen"
