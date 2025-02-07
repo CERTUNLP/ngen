@@ -7,6 +7,8 @@ NON_INTERACTIVE=false
 ACTION=""
 ENV_TYPE=""
 
+cd docker || exit
+
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -28,7 +30,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             echo "Unknown option: $1"
-            do_exit
+            do_exit 1
             ;;
     esac
 done
@@ -38,7 +40,7 @@ if [ -z "$ENV_TYPE" ]; then
     if [ "$NON_INTERACTIVE" = false ]; then
         echo "Running in non-interactive mode. Use --dev or --prod to specify environment."
         echo "Exiting..."
-        do_exit
+        do_exit 1
     fi
 
     echo "Select the environment mode:"
@@ -65,7 +67,7 @@ echo "Configuration file: $ENV_FILE"
 check_previous_config() {
     if $DOCKER_COMPOSE ps | grep -q -E 'ngen|db'; then
         echo "❗  System is running. Stop it before reconfiguring."
-        do_exit
+        do_exit 1
     fi
 }
 
@@ -87,7 +89,7 @@ configure_environment() {
             echo "Created new ${ENV_TYPE} configuration from example file"
         else
             echo "Error: Missing example file ${EXAMPLE_FILE}"
-            do_exit
+            do_exit 1
         fi
     fi
 
@@ -119,14 +121,14 @@ configure_environment() {
 do_exit() {
     echo "Exiting..."
     cd ..
-    exit 1
+    exit $1
 }
 
 # Manage containers
 manage_containers() {
     if [ ! -f "$ENV_FILE" ]; then
         echo "Error: Missing configuration file ${ENV_FILE}"
-        do_exit
+        do_exit 1
     fi
 
     if [ "$ENV_TYPE" = "dev" ]; then
@@ -149,7 +151,7 @@ manage_containers() {
             echo "Starting ngen in ${ENV_TYPE} mode..."
             if $DOCKER_COMPOSE ps | grep -q -E 'ngen|db'; then
                 echo "❗  System is already running. Stop it before starting again."
-                do_exit
+                do_exit 1
             fi
             $DOCKER_COMPOSE -f $COMPOSE_FILE up -d
             ;;
@@ -159,7 +161,7 @@ manage_containers() {
             ;;
         *)
             echo "Invalid action. Use 'start' or 'stop'."
-            do_exit
+            do_exit 1
             ;;
     esac
 }
@@ -175,3 +177,5 @@ else
     echo "Use 'bash deploy.sh start --$ENV_TYPE' to start ngen"
     echo "Use 'bash deploy.sh stop --$ENV_TYPE' to stop ngen"
 fi
+
+do_exit 0
