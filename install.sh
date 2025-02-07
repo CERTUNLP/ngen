@@ -49,19 +49,29 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Validate dependencies
-check_dependency() {
-    if ! command -v "$1" >/dev/null 2>&1; then
-        echo "Error: Required dependency not found - $1"
-        exit 1
-    fi
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" &> /dev/null
 }
 
-check_dependency docker
-check_dependency git
-if ! docker compose version >/dev/null 2>&1; then
-    check_dependency docker-compose
+# Docker checks
+if ! command_exists docker; then
+    echo "[!] Docker is not installed. Please install Docker before running this script. See https://docs.docker.com/get-docker/ for instructions."
+    exit 1
 fi
+
+if ! docker ps &> /dev/null; then
+    echo "[!] If Docker is already installed, make sure the Docker daemon is running and the current user is added to the 'docker' group."
+    exit 1
+fi
+
+# Docker Compose checks
+if ! command_exists docker-compose && ! docker compose version &> /dev/null; then
+    echo "[!] Docker Compose is not installed. Please install Docker Compose before running this script. See https://docs.docker.com/compose/install/ for instructions."
+    exit 1
+fi
+
+echo "[+] Docker and Docker Compose are installed."
 
 # Interactive prompts
 get_install_dir() {
