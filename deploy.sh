@@ -143,7 +143,7 @@ manage_containers() {
             ;;
         stop)
             echo "Stopping ngen ${ENV_TYPE} environment..."
-            $DOCKER_COMPOSE -f $COMPOSE_FILE down -v
+            $DOCKER_COMPOSE -f $COMPOSE_FILE -f $ALT_COMPOSE_FILE  down -v
             ;;
         *)
             echo "Invalid action. Use 'start' or 'stop'."
