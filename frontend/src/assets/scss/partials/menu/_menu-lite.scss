@@ -1,4 +1,7 @@
 /* new logo start */
+@use 'sass:color';
+@use 'sass:list';
+@use '../_variables' as *;
 
 .b-brand {
   display: flex;
@@ -326,7 +329,7 @@
           }
 
           &.notification:hover {
-            background: transparentize($primary-color, 0.9);
+            background: color.adjust($primary-color, $alpha: -0.9);
           }
 
           p {
@@ -418,7 +421,7 @@
           &:active,
           &:focus,
           &:hover {
-            background: transparentize($primary-color, 0.9);
+            background: color.adjust($primary-color, $alpha: -0.9);
 
             > a {
               background: transparent;
@@ -793,7 +796,7 @@
   }
 
   .pcoded-submenu {
-    background: darken($header-dark-background, 3%);
+    background: color.adjust($header-dark-background, $lightness: 3%);
     padding: 15px 0;
   }
 
@@ -900,7 +903,7 @@
               left: calc(calc(#{$Menu-collapsed-width} / 2) - 3px);
               width: 1px;
               height: calc(100% - 49px);
-              background: transparentize($menu-dark-text-color, 0.8);
+              background: color.adjust($menu-dark-text-color, $alpha: -0.8);
             }
 
             li {
@@ -1080,7 +1083,7 @@
         }
 
         > a {
-          background: darken($menu-dark-background, 6%);
+          background: color.adjust($menu-dark-background, $lightness: 6%);
           color: #fff;
         }
       }
@@ -1369,11 +1372,11 @@
 /* temp SCSS for document */
 
 @each $value in $color-menu-name {
-  $i: index($color-menu-name, $value);
+  $i: list.index($color-menu-name, $value);
 
   .nav-link {
     &.active.h-#{'' + $value} {
-      background: nth($color-menu-color, $i) !important;
+      background: list.nth($color-menu-color, $i) !important;
     }
   }
 }

@@ -57,10 +57,9 @@ export default defineConfig(({ mode }) => {
     // Configuraciones de CSS
     css: {
       preprocessorOptions: {
-        // scss: {
-        //   charset: false,
-        //   additionalData: `@import "@src/scss/styles/_variables.scss";` // Importar variables globales SCSS
-        // },
+        scss: {
+          api: "modern-compiler"
+        },
         less: {
           charset: false,
           javascriptEnabled: true

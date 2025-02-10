@@ -1,6 +1,9 @@
 /**  =====================
       Data Tables css start
 ==========================  **/
+@use 'sass:color';
+@use '../_variables' as *;
+
 .table {
   color: #888;
 
@@ -42,7 +45,7 @@
 
 .table-striped {
   tbody tr:nth-of-type(2n + 1) {
-    background-color: transparentize($primary-color, 0.95);
+    background-color: color.adjust($primary-color, $alpha: -0.95);
   }
 }
 
@@ -51,7 +54,7 @@
 .table-hover {
   tbody tr {
     &:hover {
-      background-color: transparentize($primary-color, 0.95);
+      background-color: color.adjust($primary-color, $alpha: -0.95);
     }
   }
 }

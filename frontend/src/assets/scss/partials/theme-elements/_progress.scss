@@ -1,6 +1,9 @@
 /**  =====================
       Progress css start
 ==========================  **/
+@use 'sass:list';
+@use '../_variables' as *;
+
 @keyframes progress-bar-stripes {
   from {
     background-position: 16px 0;
@@ -23,11 +26,11 @@
     box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.3);
 
     @each $value in $color-name {
-      $i: index($color-name, $value);
+      $i: list.index($color-name, $value);
 
       &.progress-#{$value},
       &.bg-#{$value} {
-        background: nth($color-color, $i);
+        background: list.nth($color-color, $i);
       }
     }
 

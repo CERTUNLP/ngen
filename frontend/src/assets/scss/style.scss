@@ -20,39 +20,39 @@ File: style.css
         -   Invoice, Full Calender, File Upload,
 =================================================================================
 =================================================================================== */
-@import 'bootstrap/dist/css/bootstrap';
+@use 'bootstrap/dist/css/bootstrap' as *;
 // General theme contents
-@import 'partials/variables';
-@import 'partials/general';
-@import 'partials/generic';
-@import 'partials/mixins/function';
+@use 'partials/variables' as *;
+@use 'partials/general' as *;
+@use 'partials/generic' as *;
+@use 'partials/mixins/function' as *;
 
 // icon
-@import 'partials/font/next-icon';
-@import 'partials/font/feather';
-@import 'partials/font/fontawesome';
+@use 'partials/font/next-icon' as *;
+@use 'partials/font/feather' as *;
+@use 'partials/font/fontawesome' as *;
 
 // important Element
-@import 'partials/menu/menu-lite';
-@import 'partials/widget/widget';
+@use 'partials/menu/menu-lite' as *;
+@use 'partials/widget/widget' as *;
 
 // Theme Element
-@import 'partials/theme-elements/form';
-@import 'partials/theme-elements/radiobox-checkbox';
-@import 'partials/theme-elements/labels-badges';
-@import 'partials/theme-elements/data-tables';
-@import 'partials/theme-elements/authentication';
-@import 'partials/theme-elements/button';
-@import 'partials/theme-elements/breadcrumb-pagination';
-@import 'partials/theme-elements/progress';
-@import 'partials/theme-elements/nav';
+@use 'partials/theme-elements/form' as *;
+@use 'partials/theme-elements/radiobox-checkbox' as *;
+@use 'partials/theme-elements/labels-badges' as *;
+@use 'partials/theme-elements/data-tables' as *;
+@use 'partials/theme-elements/authentication' as *;
+@use 'partials/theme-elements/button' as *;
+@use 'partials/theme-elements/breadcrumb-pagination' as *;
+@use 'partials/theme-elements/progress' as *;
+@use 'partials/theme-elements/nav' as *;
 
 // Other
-@import 'partials/other/chat';
+@use 'partials/other/chat' as *;
 
-@import 'partials/third-party/third-party';
+@use 'partials/third-party/third-party' as *;
 
-@import 'react-dual-listbox/lib/react-dual-listbox';
+@use 'react-dual-listbox/lib/react-dual-listbox' as *;
 
 // Custom
-@import 'partials/custom';
+@use 'partials/custom' as *;

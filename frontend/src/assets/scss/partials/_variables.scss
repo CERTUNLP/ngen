@@ -3,6 +3,9 @@
 // =======================================
 /*
 */
+@use "sass:color";
+@use "sass:map";
+
 $header-height: 70px;
 $Menu-width: 264px;
 $Menu-collapsed-width: 80px;
@@ -47,16 +50,16 @@ $dark-layout-font: #adb7be;
 $menu-icon-color: $primary-color, #ff5252, #01a9ac, #9575cd, #23b7e5, $warning-color;
 // Header background
 $color-header-name: blue, red, purple, lightblue, dark;
-$color-header-color: $primary-color, #ff5252, #9575cd, #23b7e5, lighten($dark-layout, 7%);
+$color-header-color: $primary-color, #ff5252, #9575cd, #23b7e5, color.adjust($dark-layout, $lightness: 7%);
 // Menu background
 $color-menu-name: blue, red, purple, lightblue, dark;
-$color-menu-color: $primary-color, #ff5252, #9575cd, #23b7e5, lighten($dark-layout, 7%);
+$color-menu-color: $primary-color, #ff5252, #9575cd, #23b7e5, color.adjust($dark-layout, $lightness: 7%);
 // Active background color
 $color-active-name: blue, red, purple, lightblue, dark;
-$color-active-color: $primary-color, #ff5252, #9575cd, #23b7e5, lighten($dark-layout, 7%);
+$color-active-color: $primary-color, #ff5252, #9575cd, #23b7e5, color.adjust($dark-layout, $lightness: 7%);
 // Menu title color
 $color-title-name: blue, red, purple, lightblue, dark;
-$color-title-color: $primary-color, #ff5252, #9575cd, #23b7e5, lighten($dark-layout, 7%);
+$color-title-color: $primary-color, #ff5252, #9575cd, #23b7e5, color.adjust($dark-layout, $lightness: 7%);
 
 // layout-6 background color
 $layout-6-bg-color: #23b7e5;
@@ -76,18 +79,18 @@ $color-bt-color: $primary-color, $danger-color, $success-color, $warning-color, 
 $form-bg: #f0f3f6;
 
 $theme-colors: () !default;
-$theme-colors: map-merge(
-                (
-                        'primary': $primary-color,
-                        'secondary': $secondary-color,
-                        'success': $success-color,
-                        'info': $info-color,
-                        'warning': $warning-color,
-                        'danger': $danger-color,
-                        'light': $light-color,
-                        'dark': $dark-color
-                ),
-                $theme-colors
+$theme-colors: map.merge(
+    (
+        'primary': $primary-color,
+        'secondary': $secondary-color,
+        'success': $success-color,
+        'info': $info-color,
+        'warning': $warning-color,
+        'danger': $danger-color,
+        'light': $light-color,
+        'dark': $dark-color
+    ),
+    $theme-colors
 ); // Color contrast
 $yiq-contrasted-threshold: 200 !default;
 $yiq-dark-color: #37474f;
