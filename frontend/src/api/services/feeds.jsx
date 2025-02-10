@@ -133,4 +133,17 @@ const deleteFeed = (url, name) => {
     });
 };
 
-export { getFeeds, getFeed, getAllFeeds, postFeed, putFeed, putActivationStatus, deleteFeed, getMinifiedFeed };
+const getQueryFeed = async () => {
+  const response = await getMinifiedFeed();
+
+  // Transform the response into a dictionary
+  const dicFeed = {};
+  response.forEach((feed) => {
+    dicFeed[feed.url] = feed;
+  });
+
+  // Return the transformed dictionary (this will be cached)
+  return dicFeed;
+};
+
+export { getFeeds, getFeed, getAllFeeds, postFeed, putFeed, putActivationStatus, deleteFeed, getMinifiedFeed, getQueryFeed };

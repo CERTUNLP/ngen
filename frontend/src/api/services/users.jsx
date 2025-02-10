@@ -222,10 +222,24 @@ const deleteUser = (url) => {
       return Promise.reject(error);
     });
 };
+
+const getQueryUser = async () => {
+  const response = await getMinifiedUser();
+
+  // Transform the response into a dictionary
+  const dicUser = {};
+  response.forEach((user) => {
+    dicUser[user.url] = user;
+  });
+
+  // Return the transformed dictionary (this will be cached)
+  return dicUser;
+};
+
 /*
 "error": [
         "(\"Cannot delete some instances of model 'User' because they are referenced through protected foreign keys: 
         'Case.user_creator', 'Case.assigned', 'Event.reporter'.\", {<Case: 1>, <Event: 1:unlp.com>})"
     ]
 */
-export { getUsers, getUser, getAllUsers, postUser, putUser, deleteUser, isActive, getMinifiedUser, isSuperuser, isStaff };
+export { getUsers, getUser, getAllUsers, postUser, putUser, deleteUser, isActive, getMinifiedUser, isSuperuser, isStaff, getQueryUser };

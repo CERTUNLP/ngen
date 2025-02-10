@@ -12,7 +12,14 @@ import TagContainer from "components/Badges/TagContainer";
 import { useTranslation } from "react-i18next";
 import UuidField from "components/Field/UuidField";
 import { markSolved } from "api/services/events";
-
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query';
+import TlpComponent from "../../tanstackquery/TlpComponent";
+import TaxonomyComponent from "../../tanstackquery/TaxonomyComponent";
+import FeedComponent from "views/tanstackquery/FeedComponent";
 const TableEvents = ({
   events,
   loading,
@@ -280,12 +287,7 @@ const TableEvents = ({
                   <td>{event.address_value}</td>
                   {!disableTlp && (
                     <td>
-                      <LetterFormat
-                        useBadge={true}
-                        stringToDisplay={tlpNames && event?.tlp ? tlpNames[event.tlp]?.name : ""}
-                        color={tlpNames && event?.tlp ? tlpNames[event.tlp]?.color : ""}
-                        bgcolor={"#000"}
-                      />
+                    <TlpComponent tlp={event?.tlp}></TlpComponent>
                     </td>
                   )}
                   {!disableMerged && event.parent ? (
@@ -304,9 +306,11 @@ const TableEvents = ({
                     <td>{event.children ? event.children.length : 0}</td>
                   )}
 
-                  <td>{taxonomyNames[event.taxonomy]}</td>
+                  <td>
+                  <TaxonomyComponent taxonomy={event?.taxonomy}></TaxonomyComponent>
+                  </td>
 
-                  <td>{feedNames[event.feed]}</td>
+                  <td><FeedComponent feed={event?.feed}></FeedComponent></td>
 
                   {!disableColumnCase ? (
                     event.case ? (
