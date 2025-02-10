@@ -164,7 +164,7 @@ En el detalle de un evento, además de los datos presentes en el listado de even
 ### 1.3. Casos  
 
 Un caso es una investigación sobre un potencial incidente de seguridad que tiene asociado uno o más eventos, y cuenta con evidencias propias.   
-Asimismo, los casos pueden fusionarse (acción que se conoce como “Merge”). 
+Asimismo, los casos pueden fusionarse (acción que se conoce como “Merge”). Cuando dicha fusión ocurre, un caso pasa a ser el padre del resto y es el que reúne la información más importante de todos los que se fusionaron así como de los eventos asociados a éstos. A partir de ese momento los casos hijos dejan de estar visibles al usuario final como casos individuales en el listado correspondiente. Sin embargo los eventos de todos los casos fusionados continúan estando visibles para el usuario final en el listado de eventos y las nuevas detecciones son asociadas al evento según corresponda. 
 
 #### 1.3.1. Listado de casos
 
