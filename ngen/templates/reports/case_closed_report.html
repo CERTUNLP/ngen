@@ -1,0 +1,21 @@
+{% extends 'reports/content_base.html' %}
+{% load i18n %}
+{% language lang %}
+
+    {% block content_header %}
+        <h4>
+            {% translate 'Case closed' %}: {{ case.uuid }}
+        </h4>
+        {% translate 'Thank you for collaborating with the mitigation of the incident' %}
+    {% endblock %}
+    {% block content_body %}
+        {% for event in events %}
+            <div class="content">
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                    {% include "reports/basic_event_report.html" with event=event %}
+                </div>
+            </div>
+        {% endfor %}
+    {% endblock %}
+
+{% endlanguage %}
