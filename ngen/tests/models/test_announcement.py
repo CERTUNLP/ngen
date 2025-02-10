@@ -436,8 +436,10 @@ class AnnouncementTestCase(TestCase):
         self.event.save()
         last_case = Case.objects.order_by("-id").first()
         last_case.state = State.objects.get(name="Closed")
+        last_case.save()
         self.assertEqual(last_case, self.event.case)
-        self.assertEqual(len(mail.outbox), 1)
+        # Should be a email of Open case and Closed case.
+        self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(
             self.evidence.attachment_name,
             f"Event({self.event.uuid})_{self.event.created.date()}_{self.evidence.filename}",
@@ -548,10 +550,10 @@ class AnnouncementTestCase(TestCase):
         # Note: first email is sent to the contacts.
         first_email = mail.outbox[0]
         self.assertEqual(first_email.to[0], "test_contacts")
-        # Lastly it's sent to admin.
-        second_email = mail.outbox[1]
-        self.assertEqual(second_email.to[0], "team@ngen.com")
+        # Lastly bcc sent to team.
+        self.assertEqual(first_email.bcc[0], "team@ngen.com")
 
+    @override_config(TEAM_EMAIL="team@ngen.com")
     def test_2event_case(self):
         """
         Creating two events with different set contacts, then testing correct email sending.
@@ -655,6 +657,9 @@ class AnnouncementTestCase(TestCase):
         # First email is sent to recipients
         first_email = mail.outbox[0]
         self.assertEqual(first_email.to, contact_list1)
-        # Second email is sent to admin, so taking third mail
-        third_email = mail.outbox[2]
-        self.assertEqual(third_email.to, contact_list2)
+        # Second email is sent to the second set of contacts
+        second_mail = mail.outbox[1]
+        self.assertEqual(second_mail.to, contact_list2)
+        # first and second mail bcc should be the team
+        self.assertEqual(first_email.bcc[0], "team@ngen.com")
+        self.assertEqual(second_mail.bcc[0], "team@ngen.com")
