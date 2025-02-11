@@ -6,6 +6,7 @@ from ipaddress import ip_network
 
 import django_filters
 from django_filters import DateFilter, DateFromToRangeFilter
+from django.db.models.functions import Length
 
 from ngen.models import (
     Taxonomy,
@@ -22,6 +23,7 @@ from ngen.models import (
     Contact,
     Playbook,
 )
+from ngen.models.common.mixins import AddressManager
 
 
 class BaseFilter(django_filters.FilterSet):
@@ -44,6 +46,42 @@ class BaseFilter(django_filters.FilterSet):
     modified_range = DateFromToRangeFilter(field_name="modified")
 
 
+class SupernetFilter(django_filters.Filter):
+    def filter(self, queryset, value):
+        # Get the domain value from the filter
+        if value:
+
+            address_manager = AddressManager()
+
+            # Create an address-like object to pass to the parents_of method
+            # Assuming you're looking for domain-based parents
+            address = Network(
+                address_value=value
+            )  # You could adjust this based on the value type
+
+            # Call the parents_of method and pass the queryset to filter
+            queryset = address_manager.parents_of(address, queryset)
+        return queryset
+
+
+class SubnetFilter(django_filters.Filter):
+    def filter(self, queryset, value):
+        # Get the domain value from the filter
+        if value:
+
+            address_manager = AddressManager()
+
+            # Create an address-like object to pass to the parents_of method
+            # Assuming you're looking for domain-based parents
+            address = Network(
+                address_value=value
+            )  # You could adjust this based on the value type
+
+            # Call the parents_of method and pass the queryset to filter
+            queryset = address_manager.children_of(address, queryset)
+        return queryset
+
+
 class NgenAddressModelFilter(django_filters.FilterSet):
     """
     NgenAddressModel model filter.
@@ -52,6 +90,9 @@ class NgenAddressModelFilter(django_filters.FilterSet):
         - domain (exact)
         - is_subnet_of (net_contained_or_equal)
         - is_subdomain_of (domain_is_equal_or_subdomain_of)
+        - is_parent_of (net_contained_or_equal)
+        - supernet_of (net_contained_or_equal)
+        - subnet_of (net_contained_or_equal)
     """
 
     cidr = django_filters.CharFilter(field_name="cidr", lookup_expr="exact")
@@ -63,6 +104,10 @@ class NgenAddressModelFilter(django_filters.FilterSet):
     is_subdomain_of = django_filters.CharFilter(
         field_name="domain", method="domain_is_subdomain_of", label="Is subdomain of"
     )
+    supernet_of = SupernetFilter(
+        field_name="address", label="Supernet of domain or cidr"
+    )
+    subnet_of = SubnetFilter(field_name="address", label="Subnet of domain or cidr")
 
     def domain_is_subdomain_of(self, queryset, name, value):
         """
@@ -387,7 +432,10 @@ class ContactFilter(BaseFilter):
         - type (exact)
         - role (exact)
         - priority (exact)
+        - network_id (exact)
     """
+
+    network_id = django_filters.NumberFilter(field_name="networks__id")
 
     class Meta:
         model = Contact
@@ -452,7 +500,10 @@ class NetworkEntityFilter(BaseFilter):
         - slug (icontains)
         - active (exact)
         - networks (exact)
+        - network_id (exact)
     """
+
+    network_id = django_filters.NumberFilter(field_name="networks__id")
 
     class Meta:
         model = NetworkEntity

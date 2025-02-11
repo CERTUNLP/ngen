@@ -180,22 +180,22 @@ const ListEvent = ({ routeParams }) => {
       setFeeds(listFeeds);
     });
 
-    getMinifiedTlp().then((response) => {
-      let listTlp = [];
-      let dicTlp = {};
-      response.forEach((tlp) => {
-        listTlp.push({ value: tlp.url, label: tlp.name });
-        dicTlp[tlp.url] = { name: tlp.name, color: tlp.color };
-      });
-      setTlpList(listTlp);
-      setTlpNames(dicTlp);
-    });
+    // getMinifiedTlp().then((response) => {
+    //   let listTlp = [];
+    //   let dicTlp = {};
+    //   response.forEach((tlp) => {
+    //     listTlp.push({ value: tlp.url, label: tlp.name });
+    //     dicTlp[tlp.url] = { name: tlp.name, color: tlp.color };
+    //   });
+    //   setTlpList(listTlp);
+    //   setTlpNames(dicTlp);
+    // });
   }, []);
 
   useEffect(() => {
     getEvents(
       currentPage,
-      starDateFilter + endDateFilter + taxonomyFilter + tlpFilter + feedFilter + caseIsNull + parentIsNull + wordToSearch,
+      starDateFilter + endDateFilter + taxonomyFilter + tlpFilter + feedFilter + caseIsNull + parentIsNull + priorityFilter + wordToSearch,
       order,
       routeParams.asNetworkAdmin
     )
@@ -216,7 +216,7 @@ const ListEvent = ({ routeParams }) => {
         setLoading(false);
         setShowAlert(true);
       });
-  }, [currentPage, ifModify, wordToSearch, taxonomyFilter, tlpFilter, feedFilter, filterDate, order, caseIsNull, parentIsNull, refresh]);
+    }, [currentPage, ifModify, wordToSearch, taxonomyFilter, tlpFilter, feedFilter, filterDate, order, caseIsNull, parentIsNull, priorityFilter, refresh]);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
@@ -502,6 +502,17 @@ const ListEvent = ({ routeParams }) => {
                     value={valueParentIsNull}
                     setLoading={setLoading}
                     placeholder={t("ngen.filter_by") + " " + t("ngen.event.parent")}
+                    setCurrentPage={setCurrentPage}
+                  />
+                </Col>
+                <Col sm={4} lg={4}>
+                  <FilterSelectUrl
+                    options={allPriorities}
+                    itemName={t("ngen.priority_other")}
+                    partOfTheUrl="priority"
+                    itemFilter={priorityFilter}
+                    itemFilterSetter={setPriorityFilter}
+                    setLoading={setLoading}
                     setCurrentPage={setCurrentPage}
                   />
                 </Col>

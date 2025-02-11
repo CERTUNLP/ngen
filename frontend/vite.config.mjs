@@ -11,7 +11,6 @@ export default defineConfig(({ mode }) => {
   console.log(env);
 
   // Definir URL base y puerto
-  const API_SERVER = env.VITE_APP_BASE_NAME ? `${env.VITE_APP_BASE_NAME}` : "/";
   const PORT = env.VITE_PORT || 3000;
 
   return {
@@ -47,10 +46,6 @@ export default defineConfig(({ mode }) => {
     // Definir variables globales o condiciones de construcción
     define: {
       global: "window"
-      //   __APP_ENV__: JSON.stringify(env.APP_ENV),
-      //   "process.env.NODE_ENV": JSON.stringify(mode),
-      //   "process.env.VITE_APP_API_SERVER": JSON.stringify(env.VITE_APP_API_SERVER),
-      //   TEST123: JSON.stringify(env.VITE_APP_API_SERVER)
     },
     // Resolución de módulos y alias
     resolve: {
@@ -62,10 +57,9 @@ export default defineConfig(({ mode }) => {
     // Configuraciones de CSS
     css: {
       preprocessorOptions: {
-        // scss: {
-        //   charset: false,
-        //   additionalData: `@import "@src/scss/styles/_variables.scss";` // Importar variables globales SCSS
-        // },
+        scss: {
+          api: "modern-compiler"
+        },
         less: {
           charset: false,
           javascriptEnabled: true
@@ -88,7 +82,6 @@ export default defineConfig(({ mode }) => {
       }
     },
     // URL base de la aplicación
-    base: API_SERVER,
     // Plugins de Vite
     plugins: [
       react(), // Soporte para React

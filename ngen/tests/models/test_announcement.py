@@ -472,14 +472,16 @@ class AnnouncementTestCase(TestCase):
             casetemplate_creator=self.case_template,
             state=State.objects.get(name="Open"),
         )
-        self.case.state = State.objects.get(name="Closed")
-        self.case.save()
-
         intern_channel = self.case.communication_channels.filter(
             communication_types__type="intern"
         ).first()
 
         self.assertIsNotNone(intern_channel)
+        self.assertEqual(len(intern_channel.get_messages()), 1)
+
+        self.case.state = State.objects.get(name="Closed")
+        self.case.save()
+
         self.assertEqual(len(intern_channel.get_messages()), 2)
         self.assertIn("Re: ", intern_channel.get_last_message().subject)
 

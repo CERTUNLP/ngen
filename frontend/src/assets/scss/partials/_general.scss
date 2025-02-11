@@ -1,6 +1,9 @@
 /**  =====================
       Custom css start
 ==========================  **/
+@use 'sass:color';
+@use '_variables' as *;
+
 body {
   font-family: $theme-font-family;
   font-size: $theme-font-size;
@@ -333,7 +336,7 @@ p.text-muted {
     &:active,
     &:focus,
     &:hover {
-      background: transparentize($primary-color, 0.9);
+      background: color.adjust($primary-color, $alpha: -0.9);
 
       > a {
         background: transparent;

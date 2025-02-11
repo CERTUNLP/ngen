@@ -43,6 +43,19 @@ const getPriority = (url) => {
     });
 };
 
+const getQueryPriority = async () => {
+  const response = await getMinifiedPriority();
+
+  // Transform the response into a dictionary
+  const dicPriority = {};
+  response.forEach((priority) => {
+    dicPriority[priority.url] = priority;
+  });
+
+  // Return the transformed dictionary (this will be cached)
+  return dicPriority;
+};
+
 const getAllPriorities = (currentPage = 1, results = [], limit = 100) => {
   return apiInstance
     .get(COMPONENT_URL.priority, {
@@ -171,4 +184,4 @@ const deletePriority = (url) => {
       return Promise.reject(error);
     });
 };
-export { getPriorities, getAllPriorities, getPriority, postPriority, deletePriority, putPriority, getMinifiedPriority };
+export { getPriorities, getAllPriorities, getPriority, postPriority, deletePriority, putPriority, getMinifiedPriority, getQueryPriority };

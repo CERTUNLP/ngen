@@ -113,11 +113,13 @@ celerybeat.pid
 .env
 *.env
 .venv
+*.tmp
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+!*.env.example
 
 # Spyder project settings
 .spyderproject
@@ -140,8 +142,8 @@ dmypy.json
 /.idea/
 /dbname.json
 /ngen-adminer-postgrs.sql
-/docker/redis
+/docker/data_redis
 /docker/elasticsearch
-/docker/postgres_data/
-/docker/ngen_media/
-/docker/ngen_static/
+/docker/data_postgres/
+/docker/data_media/
+/docker/data_static/

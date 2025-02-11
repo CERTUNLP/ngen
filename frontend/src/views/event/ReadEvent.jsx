@@ -363,7 +363,7 @@ const ReadEvent = ({ routeParams }) => {
           {body.tags !== undefined
             ? body.tags.map((name) => {
                 const tagItem = listTag.find((tag) => tag.name === name);
-                return <LetterFormat key={tagItem.name} stringToDisplay={tagItem.name} useBadge={true} bgcolor={tagItem.color} />;
+                return <LetterFormat key={tagItem?.name} stringToDisplay={tagItem?.name} useBadge={true} bgcolor={tagItem?.color} />;
               })
             : ""}
         </Card.Body>

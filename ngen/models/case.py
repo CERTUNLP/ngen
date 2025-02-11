@@ -295,17 +295,34 @@ class Case(
         return contacts
 
     def events_by_contacts(self):
+        """
+        Organizes events by their associated contacts.
+        This method iterates through all events and groups them based on their email contacts.
+        Each unique set of email contacts will have a list of events associated with it.
+        Returns:
+            defaultdict: A dictionary where the keys are frozensets of email contacts and the values are lists of events.
+        Example:
+            {
+                (contact1, contact2): [event1, event4],
+                (): [event2],
+                (contact1): [event3],
+            }
+        """
+
         contacts = defaultdict(list)
         for event in self.events.all():
             event_contacts = event.email_contacts()
-            contacts[tuple(event_contacts)].append(event)
+            contacts.setdefault(frozenset(event_contacts), []).append(event)
         return contacts
 
     def communicate_new(self):
         self.communicate_v2(gettext_lazy("New case"), "reports/case_report.html")
 
     def communicate_close(self):
-        self.communicate_v2(gettext_lazy("Case closed"), "reports/case_report.html")
+        self.communicate_v2(
+            gettext_lazy("Case closed"),
+            "reports/case_closed_report.html",
+        )
 
     def communicate_open(self):
         title = (
@@ -332,50 +349,53 @@ class Case(
             title,
         )
 
-    def communicate(self, title: str, template: str, **kwargs):
-        # DEPRECATED: Use communicate_v2 instead
-        """
-        Send email to a list of recipients in 'event_by_contacts' param
-        or those returned by 'event_by_contacts' method on 'to' mail header.
-        Also send a copy to assigned user and team email if they are set.
+    # def communicate(self, title: str, template: str, attachments=True, **kwargs):
+    #     """
+    #     Send email to a list of recipients in 'event_by_contacts' param
+    #     or those returned by 'event_by_contacts' method on 'to' mail header.
+    #     Also send a copy to assigned user and team email if they are set.
 
-        :param title: title of the email
-        :param template: template to be rendered
-        :param kwargs: extra params to be passed to template
-        :return: None
-        """
-        event_by_contacts = kwargs.get("event_by_contacts", self.events_by_contacts())
-        template_params = self.template_params
-        recipients = self.recipients
-        team_recipients = [self.assigned_email, self.team_email]
-        for contacts, events in event_by_contacts.items():
-            # Case has events, so send email to contacts of each event (and bcc to team)
-            template_params.update({"events": events})
-            recipients.update({"to": [c.username for c in contacts]})
-            recipients.update({"bcc": team_recipients})
-            self.send_mail(
-                self.subject(title),
-                self.render_template(template, extra_params=template_params),
-                recipients,
-                self.get_attachments_for_events(events),
-                self.email_headers,
-            )
-        else:
-            # Case has no events, so send email only to team (and assignee)
-            template_params.update({"events": self.events})
-            recipients.update(
-                {"to": [recipient for recipient in team_recipients if recipient]}
-            )
-            self.send_mail(
-                self.subject(title),
-                self.render_template(template, extra_params=self.template_params),
-                recipients,
-                self.email_attachments,
-                self.email_headers,
-            )
-        # Increment notification_count
-        # TODO: make communication a class with objects that can be audited
-        self.notification_count += 1
+    #     :param title: title of the email
+    #     :param template: template to be rendered
+    #     :param kwargs: extra params to be passed to template
+    #     :return: None
+    #     """
+    #     event_by_contacts = kwargs.get("event_by_contacts", self.events_by_contacts())
+    #     template_params = self.template_params
+    #     recipients = self.recipients
+    #     team_recipients = [
+    #         mail for mail in [self.assigned_email, self.team_email] if mail
+    #     ]
+
+    #     for contacts, events in event_by_contacts.items():
+    #         # Case has events, so send email to contacts of each event (and bcc to team)
+    #         template_params.update({"events": events})
+    #         recipients.update({"to": [c.username for c in contacts]})
+    #         recipients.update({"bcc": team_recipients})
+    #         self.send_mail(
+    #             self.subject(title),
+    #             self.render_template(template, extra_params=template_params),
+    #             recipients,
+    #             self.get_attachments_for_events(events) if attachments else [],
+    #             self.email_headers,
+    #         )
+
+    #     if not event_by_contacts or frozenset() in event_by_contacts.keys():
+    #         # Case has no events or there is events without contacts, so send email to team and assignee with those events
+    #         template_params.update({"events": event_by_contacts.get((), [])})
+    #         recipients.update(
+    #             {"to": [recipient for recipient in team_recipients if recipient]}
+    #         )
+    #         self.send_mail(
+    #             self.subject(title),
+    #             self.render_template(template, extra_params=self.template_params),
+    #             recipients,
+    #             self.email_attachments,
+    #             self.email_headers,
+    #         )
+    #     # Increment notification_count
+    #     # TODO: make communication a class with objects that can be audited
+    #     self.notification_count += 1
 
     def communicate_v2(self, title: str, template: str):
         """
@@ -418,7 +438,6 @@ class Case(
             subject=self.subject(title),
             template=template,
         )
-
         self.notification_count += 1
 
     def get_internal_contacts(self):

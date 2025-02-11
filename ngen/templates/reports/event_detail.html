@@ -1,28 +1,8 @@
 {% load i18n ngen_tags %}
 <div class="content">
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-    {% language lang %}
-        <h5>{% translate 'Event' %}: {{ event.uuid }}</h5>
-        <small class="lead">
-            <strong>{% translate 'Taxonomy' %}:</strong>
-            {% for tax in event.taxonomy.get_ancestors %}
-                {{ tax }} -> 
-            {% endfor %}
-            {{ event.taxonomy }} ({{ event.taxonomy.type }})
-        </small>
-        <br>
-        <small class="lead"><strong>{% translate 'Affected resources' %}:</strong>
-            {{ event.address }}</small>
-        <br>
-        <small class="lead"><strong>{% translate 'Event Date' %}:</strong>
-            {{ event.date | date:"Y-m-d H:i:s" }} UTC</small>
-        <br>
-        {% if event.notes %}
-            <small class="lead"><strong>{% translate 'Notes' %}:</strong>
-                <div style="word-wrap: break-word;">{{ event.notes | render_report_content:event }}</div>
-            <br>
-        {% endif %}
-    {% endlanguage %}
+
+    {% include "reports/basic_event_report.html" with event=event %}
 
     {% get_matching_report event.taxonomy lang|default:config.NGEN_LANG as reports %}
     {% for report in reports %}

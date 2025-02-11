@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-// import { API_SERVER } from "../../../config/constant";
 
 import { ConfigContext } from "../../../contexts/ConfigContext";
 import * as actionType from "../../../store/actions";

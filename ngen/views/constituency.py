@@ -12,14 +12,22 @@ from ngen.permissions import (
 
 
 class NetworkViewSet(viewsets.ModelViewSet):
-    queryset = models.Network.objects.all()
+    queryset = models.Network.objects.annotate(
+        contact_count=Count("contacts"), children_count=Count("children")
+    )
     serializer_class = serializers.NetworkSerializer
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["cidr", "type", "domain"]
+    search_fields = [
+        "cidr",
+        "type",
+        "domain",
+        "contacts__username",
+        "network_entity__name",
+    ]
     filterset_class = NetworkFilter
     ordering_fields = [
         "id",
@@ -28,9 +36,13 @@ class NetworkViewSet(viewsets.ModelViewSet):
         "cidr",
         "domain",
         "type",
+        "active",
         "address_value",
         "network_entity",
         "network_entity__name",
+        "contact_count",
+        "contacts__username",
+        "children_count",
     ]
     permission_classes = [CustomModelPermissions]
 

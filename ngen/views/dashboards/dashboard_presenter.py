@@ -5,6 +5,7 @@ Dashboard Presenter
 from datetime import datetime, timedelta
 
 from django.db.models import Count, Q
+from django.utils import timezone
 
 from ngen.models.administration import Feed
 from ngen.models.auth import User
@@ -39,7 +40,7 @@ class DashboardPresenter:
         """
         param_date = self.get_query_param("date_from")
         if not param_date:
-            return datetime.now() - timedelta(days=30)
+            return timezone.now() - timedelta(days=30)
 
         return self.parse_date(param_date, "date_from")
 
@@ -49,7 +50,7 @@ class DashboardPresenter:
         """
         param_date = self.get_query_param("date_to")
         if not param_date:
-            return datetime.now()
+            return timezone.now()
 
         return self.parse_date(param_date, "date_to")
 
@@ -162,7 +163,11 @@ class DashboardPresenter:
         Return a datetime object from a date string.
         """
         try:
-            return datetime.strptime(date_string, date_format)
+            # Get a naive datetime object from the date string
+            naive_date = datetime.strptime(date_string, date_format)
+
+            # Make the datetime object timezone aware
+            return timezone.make_aware(naive_date, timezone.get_current_timezone())
         except ValueError as exc:
             raise ValueError(
                 f"Invalid '{param_name}' format. Use YYYY-MM-DDTHH:MM:SSZ"

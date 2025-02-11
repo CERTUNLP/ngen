@@ -1,8 +1,11 @@
 export const loadEnv = () => {
   return new Promise((resolve, reject) => {
-    // primero ver si existe import.meta.env.VITE_APP_API_SERVER o localStorage
-    const apiUrl = import.meta.env.VITE_APP_API_SERVER || localStorage.getItem("API_SERVER");
-
+    // primero ver si existe import.meta.env.VITE_APP_API o localStorage
+    let API_HOST = import.meta.env.VITE_APP_API_HOST || localStorage.getItem("API_HOST");
+    let API_PORT = import.meta.env.VITE_APP_API_PORT || localStorage.getItem("API_PORT");
+    let API_PATH = import.meta.env.VITE_APP_API_PATH || localStorage.getItem("API_PATH");
+    let apiUrl = normalizeApiUrl(API_HOST, API_PORT, API_PATH);
+    
     if (apiUrl) {
       localStorage.setItem("API_SERVER", apiUrl);
       resolve({ API_SERVER: apiUrl });
@@ -11,15 +14,20 @@ export const loadEnv = () => {
       const script = document.createElement("script");
       script.src = "/env.js"; // Carga el archivo env.js desde el servidor
       script.onload = () => {
-        const apiUrl = localStorage.getItem("API_SERVER");
-        if (apiUrl) {
-          resolve({ API_SERVER: apiUrl });
+        let apiUrlRetrieved = normalizeApiUrl(localStorage.getItem("API_HOST"), localStorage.getItem("API_PORT"), localStorage.getItem("API_PATH"));
+        if (apiUrlRetrieved) {
+          resolve({ API_SERVER: apiUrlRetrieved });
         } else {
-          reject(new Error("No se pudo cargar API_SERVER desde localStorage"));
+          reject(new Error("No se pudo cargar API desde localStorage"));
         }
       };
       script.onerror = () => reject(new Error("Error al cargar env.js"));
       document.head.appendChild(script);
     }
   });
+};
+
+const normalizeApiUrl = (host, port, path) => {
+  let portValue = port || window.location.port;
+  return `${window.location.protocol}//${host || window.location.hostname}${portValue ? ":" + portValue : ""}${path || "/api/"}`;
 };

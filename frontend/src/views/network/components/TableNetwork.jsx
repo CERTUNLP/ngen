@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "../../../components/Button/CrudButton";
 import { deleteNetwork, getNetwork, isActive } from "../../../api/services/networks";
+import BadgeNetworkLabelContact from "./BadgeNetworkLabelContact";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import ActiveButton from "../../../components/Button/ActiveButton";
 import ModalDetailNetwork from "./ModalDetailNetwork";
@@ -94,9 +95,30 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
       <Table responsive hover className="text-center">
         <thead>
           <tr>
-            <th style={letterSize}>{t("ngen.addressvalue")} </th>
-            <th style={letterSize}>{t("ngen.domain")}</th>
-            <th style={letterSize}>{t("ngen.cidr")}</th>
+            <Ordering
+              field="address_value"
+              label={t("ngen.addressvalue")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
+            <Ordering
+              field="domain"
+              label={t("ngen.domain")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
+            <Ordering
+              field="cidr"
+              label={t("ngen.cidr")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
             <Ordering
               field="type"
               label={t("ngen.type")}
@@ -105,10 +127,33 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
               setLoading={setLoading}
               letterSize={letterSize}
             />
-            <th style={letterSize}>{t("w.active")}</th>
+            <Ordering
+              field="active"
+              label={t("ngen.active")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
             <Ordering
               field="network_entity__name"
               label={t("ngen.entity")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
+            <Ordering
+              field="contact_count"
+              label={t("ngen.contact_other")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
+            <Ordering
+              field="children_count"
+              label={t("ngen.children")}
               order={order}
               setOrder={setOrder}
               setLoading={setLoading}
@@ -136,6 +181,12 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
                   />
                 </td>
                 <td>{network.network_entity ? entityNames[network.network_entity] : "-"}</td>
+                <td>
+                  {network.contacts?.length > 0 ? network.contacts.map((contactItem, index) => {
+                    return <BadgeNetworkLabelContact url={contactItem} key={index} />;
+                  }) : "-"}
+                </td>
+                <td>{network.children.length}</td>
                 <td>
                   <CrudButton type="read" onClick={() => showNetwork(network.url)} />
                   <CrudButton type="edit" to={`${basePath}/networks/edit/${itemNumber}`} checkPermRoute />

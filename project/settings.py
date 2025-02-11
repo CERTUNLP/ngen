@@ -25,13 +25,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-#j!42e(tj8h#n&nl#cxg#(lu=j9=(pcf*=tep$qv%@1^yst4!*"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 VALUES_TRUE = ("True", "true", "1", "yes", "on", "t", "y")
 DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() in VALUES_TRUE
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = [
+    v
+    for v in os.environ.get(
+        "DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,0.0.0.0,ngen-django"
+    ).split(",")
+    if v
+]
 
 # Application definition
 
@@ -108,7 +114,7 @@ WSGI_APPLICATION = "project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("POSTGRES_NAME"),
+        "NAME": os.environ.get("POSTGRES_DB"),
         "USER": os.environ.get("POSTGRES_USER"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
         "HOST": os.environ.get("POSTGRES_HOST"),
@@ -201,7 +207,6 @@ EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
 # CELERY_EMAIL_BACKEND
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_PORT = os.environ.get("EMAIL_PORT")
-EMAIL_SENDER = os.environ.get("EMAIL_SENDER")
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
     "attend_cases": {
@@ -219,9 +224,7 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 CONSTANCE_BACKEND = "constance.backends.redisd.CachingRedisBackend"
-CONSTANCE_REDIS_CONNECTION = os.environ.get(
-    "CONSTANCE_REDIS_CONNECTION", "redis://ngen-redis:6379/1"
-)
+CONSTANCE_REDIS_CONNECTION = os.environ.get("CONSTANCE_REDIS_CONNECTION")
 CONSTANCE_REDIS_CACHE_TIMEOUT = int(os.environ.get("CONSTANCE_REDIS_CACHE_TIMEOUT", 60))
 CONSTANCE_FILE_ROOT = "config"
 CONSTANCE_ADDITIONAL_FIELDS = {
@@ -286,7 +289,6 @@ CONSTANCE_CONFIG = {
         ),
     ),
     "TEAM_URL": (os.environ.get("TEAM_URL"), gettext_lazy("CSIRT site url")),
-    "TEAM_SITE": (os.environ.get("TEAM_SITE"), gettext_lazy("CSIRT team site")),
     "TEAM_LOGO": (
         os.path.join(CONSTANCE_FILE_ROOT, "teamlogo.png"),
         gettext_lazy(
@@ -534,7 +536,11 @@ if frontend_urls:
 else:
     CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
+CSRF_TRUSTED_ORIGINS = [
+    v
+    for v in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", frontend_urls).split(",")
+    if v
+]
 
 COMMENT_ALLOW_SUBSCRIPTION = True
 COMMENT_ALLOW_TRANSLATION = True

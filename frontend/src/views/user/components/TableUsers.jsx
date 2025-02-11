@@ -14,6 +14,7 @@ import { getPriority } from "../../../api/services/priorities";
 import { useTranslation } from "react-i18next";
 import YesNoField from "components/Field/YesNoField";
 import { userIsSuperuser, userIsStaff } from "utils/permissions";
+import UserComponent from "views/tanstackquery/UserComponent";
 
 function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, setIsModify }) {
   const [remove, setRemove] = useState(false);
