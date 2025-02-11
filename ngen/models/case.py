@@ -349,6 +349,14 @@ class Case(
             title,
         )
 
+    def subject_v2(self, channel_type: str) -> str:
+        return "[%s][TLP:%s][%s] Case ID: %s" % (
+            config.TEAM_NAME,
+            self.tlp.name.upper(),
+            channel_type.upper(),
+            self.uuid,
+        )
+
     # def communicate(self, title: str, template: str, attachments=True, **kwargs):
     #     """
     #     Send email to a list of recipients in 'event_by_contacts' param
@@ -397,7 +405,7 @@ class Case(
     #     # TODO: make communication a class with objects that can be audited
     #     self.notification_count += 1
 
-    def communicate_v2(self, title: str, template: str):
+    def communicate_v2(self, title: str, template: str, disable_attachments=True):
         """
         Communicate V2
         Send email to the communication channels of all the events
@@ -425,7 +433,7 @@ class Case(
             # Communicates on each each channel of the event
             for channel in event_channels:
                 channel.communicate(
-                    subject=self.subject(title),
+                    subject=self.subject_v2("AFFECTED"),
                     template=template,
                 )
 
@@ -435,7 +443,7 @@ class Case(
             )
         )
         intern_channel.communicate(
-            subject=self.subject(title),
+            subject=self.subject_v2("INTERN"),
             template=template,
         )
         self.notification_count += 1

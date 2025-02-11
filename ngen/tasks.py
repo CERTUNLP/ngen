@@ -200,17 +200,19 @@ def retest_event_kintun(event):
     Tarea de Celery para retestear un evento utilizando Kintun.
     """
     try:
-        mapping_to = ngen.models.AnalyzerMapping.objects.get(mapping_from=event.taxonomy, analyzer_type='kintun').mapping_to
+        mapping_to = ngen.models.AnalyzerMapping.objects.get(
+            mapping_from=event.taxonomy, analyzer_type="kintun"
+        ).mapping_to
         kintun_data = kintun.retest_event_kintun(event, mapping_to)
         analysis_data = {
             "date": timezone.now(),
             "analyzer_type": "kintun",
-            "vulnerable": kintun_data.get('vulnerable', False),
-            "result": kintun_data.get('evidence', ''),
+            "vulnerable": kintun_data.get("vulnerable", False),
+            "result": kintun_data.get("evidence", ""),
             "target": event.address_value,
-            "scan_type": kintun_data.get('vuln_type', ''),
-            "analyzer_url": kintun_data.get('_id', ''),
-            "event": event
+            "scan_type": kintun_data.get("vuln_type", ""),
+            "analyzer_url": kintun_data.get("_id", ""),
+            "event": event,
         }
         ngen.models.EventAnalysis.objects.create(**analysis_data)
         return kintun_data
