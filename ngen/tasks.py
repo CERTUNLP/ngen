@@ -1,7 +1,9 @@
 # pylint: disable=broad-exception-caught
 
+from os import path
 from celery import shared_task
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
+from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
 from django.core.mail import EmailMultiAlternatives
@@ -228,13 +230,13 @@ def async_send_email(self, email_message_id: int):
     :param int email_message_id: Email message id to send
     """
     if not email_message_id:
-        return False
+        return {"status": "error", "message": "Email message id not provided"}
 
     try:
         email_message = ngen.models.EmailMessage.objects.get(id=email_message_id)
     except ngen.models.EmailMessage.DoesNotExist as e:
         if self.request.retries == self.max_retries:
-            return False
+            return {"status": "error", "message": f"Email {email_message_id} not found"}
 
         exponential_backoff = (self.request.retries + 1) ** 2
         self.retry(exc=e, countdown=exponential_backoff)
@@ -278,17 +280,17 @@ def async_send_email(self, email_message_id: int):
         email.extra_headers = headers
 
         for attachment in email_message.attachments:
-            with attachment["file"] as file:
-                email.attach(attachment["name"], attachment["file"].read())
+            with open(path.join(settings.MEDIA_ROOT, attachment["file"]), "rb") as file:
+                email.attach(attachment["name"], file.read())
 
         email.send(fail_silently=False)
 
         email_message.sent = True
         email_message.date = timezone.now()
-        return True
-    except Exception:
+        return {"status": "success", "message": f"Email {email_message_id} sent"}
+    except Exception as e:
         email_message.send_attempt_failed = True
-        return False
+        raise e
     finally:
         email_message.save()
 
