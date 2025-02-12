@@ -1,8 +1,17 @@
 import re
 from typing import Optional, Union, List, Dict
 from constance import config
+
 from ngen.models.email_message import EmailMessage as EmailMessageModel
 from ngen.utils import clean_list
+from ngen.models.announcement import Communication
+
+
+EMAIL_TEMPLATES = {
+    "case_report": "reports/case_report.html",
+    "case_closed_report": "reports/case_closed_report.html",
+    "case_change_state": "reports/case_change_state.html",
+}
 
 
 class EmailHandler:
@@ -132,6 +141,7 @@ class EmailHandler:
         template: Optional[str] = None,
         template_params: Optional[dict] = None,
         in_reply_to: EmailMessageModel = None,
+        attachments: Optional[List[Dict[str, str]]] = None,
     ):
         """
         Method to send emails.
@@ -163,6 +173,15 @@ class EmailHandler:
         if not body and not template:
             raise ValueError("Send email failed. Neither Body nor Template provided.")
 
+        if template and template not in EMAIL_TEMPLATES:
+            raise ValueError("Send email failed. Invalid template")
+
+        rendered_template = {}
+        if template:
+            rendered_template = Communication.render_template(
+                EMAIL_TEMPLATES[template], extra_params=template_params
+            )
+
         if in_reply_to and not isinstance(in_reply_to, EmailMessageModel):
             raise ValueError("Send email failed. in_reply_to must be an EmailMessage")
 
@@ -193,9 +212,11 @@ class EmailHandler:
             recipients=recipients,
             bcc_recipients=bcc_recipients,
             subject=subject,
-            body=body,
+            body=body or rendered_template.get("text", ""),
+            body_html=rendered_template.get("html", ""),
             template=template,
-            template_params=template_params,
+            template_params=None,
+            attachments=attachments if attachments else [],
         )
 
         return email_message

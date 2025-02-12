@@ -278,6 +278,7 @@ class CommunicationChannel(AuditModelMixin):
         template: Optional[str] = None,
         template_params: Optional[dict] = None,
         bcc_recipients: Optional[list] = None,
+        attachments: Optional[list] = None,
     ):
         """
         Method to send an email in a communication channel.
@@ -298,6 +299,7 @@ class CommunicationChannel(AuditModelMixin):
             template=template,
             template_params=template_params,
             in_reply_to=self.get_last_message() if self.message_id else None,
+            attachments=attachments,
         )
 
         if not self.message_id:

@@ -187,7 +187,10 @@ class Case(
         attachments = []
         for evidence in self.evidence_all:
             attachments.append(
-                {"name": evidence.attachment_name, "file": evidence.file}
+                {
+                    "name": evidence.attachment_name,
+                    "file": evidence.directory_path(evidence.filename),
+                }
             )
         return attachments
 
@@ -200,6 +203,18 @@ class Case(
                     "file": evidence.file,
                 }
         return attachments.values()
+
+    def get_attachments_for_events_v2(self, events):
+        attachments = []
+        for event in events:
+            for evidence in event.evidence.all():
+                attachments.append(
+                    {
+                        "name": evidence.attachment_name,
+                        "file": evidence.directory_path(evidence.filename),
+                    }
+                )
+        return attachments
 
     @property
     def assigned_email(self):
@@ -316,30 +331,19 @@ class Case(
         return contacts
 
     def communicate_new(self):
-        self.communicate_v2(gettext_lazy("New case"), "reports/case_report.html")
+        self.communicate_v2("case_report")
 
     def communicate_close(self):
-        self.communicate_v2(
-            gettext_lazy("Case closed"),
-            "reports/case_closed_report.html",
-        )
+        self.communicate_v2("case_closed_report")
 
     def communicate_open(self):
-        title = (
-            "Case reopened"
-            if self.history.filter(changes__contains='solve_date":').exists()
-            else "Case opened"
-        )
-        self.communicate_v2(gettext_lazy(title), "reports/case_report.html")
+        self.communicate_v2("case_report")
 
     def communicate_new_open(self):
-        self.communicate_v2(gettext_lazy("Case opened"), "reports/case_report.html")
+        self.communicate_v2("case_report")
 
     def communicate_update(self):
-        self.communicate_v2(
-            gettext_lazy("Case status updated"),
-            "reports/case_change_state.html",
-        )
+        self.communicate_v2("case_change_state")
 
     def subject(self, title: str = None) -> str:
         return "[%s][TLP:%s][ID:%s] %s" % (
@@ -405,7 +409,7 @@ class Case(
     #     # TODO: make communication a class with objects that can be audited
     #     self.notification_count += 1
 
-    def communicate_v2(self, title: str, template: str, disable_attachments=True):
+    def communicate_v2(self, template: str, send_attachments=True):
         """
         Communicate V2
         Send email to the communication channels of all the events
@@ -420,6 +424,7 @@ class Case(
             self.events.add(*self._temp_events)
 
         case_events = self.events.all()
+        template_params = self.template_params
 
         # Communicates on the channels of each event of the case
         for event in case_events:
@@ -435,6 +440,12 @@ class Case(
                 channel.communicate(
                     subject=self.subject_v2("AFFECTED"),
                     template=template,
+                    template_params=template_params,
+                    attachments=(
+                        self.get_attachments_for_events_v2([event])
+                        if send_attachments
+                        else []
+                    ),
                 )
 
         intern_channel = (
@@ -445,6 +456,8 @@ class Case(
         intern_channel.communicate(
             subject=self.subject_v2("INTERN"),
             template=template,
+            template_params=template_params,
+            attachments=self.email_attachments if send_attachments else [],
         )
         self.notification_count += 1
 

@@ -43,7 +43,6 @@ class NetworkAdminEvidenceViewSet(EvidenceViewSet):
         # Obtener el content type del modelo relacionado (Network en este caso)
         event_ct = ContentType.objects.get(model="event")
         case_ct = ContentType.objects.get(model="case")
-        print(event_ct, case_ct)
         events = models.Event.objects.filter(network__contacts__user=user).values_list(
             "id", flat=True
         )

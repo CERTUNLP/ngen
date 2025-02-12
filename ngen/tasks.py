@@ -238,6 +238,7 @@ def async_send_email(self, email_message_id: int):
 
         exponential_backoff = (self.request.retries + 1) ** 2
         self.retry(exc=e, countdown=exponential_backoff)
+
     try:
         host = config.EMAIL_HOST
         username = config.EMAIL_USERNAME
@@ -254,8 +255,6 @@ def async_send_email(self, email_message_id: int):
             fail_silently=False,
         )
 
-        rendered_template = get_rendered_template(email_message)
-
         headers = {
             "Message-ID": email_message.message_id,
         }
@@ -266,24 +265,21 @@ def async_send_email(self, email_message_id: int):
 
         email = EmailMultiAlternatives(
             subject=email_message.subject,
-            body=email_message.body or rendered_template.get("text"),
+            body=email_message.body,
             from_email=email_message.senders[0]["email"],
             to=[recipient["email"] for recipient in email_message.recipients],
             bcc=[recipient["email"] for recipient in email_message.bcc_recipients],
             connection=email_connection,
         )
 
-        if rendered_template:
-            email.attach_alternative(rendered_template.get("html"), "text/html")
-            if not email_message.body:
-                email_message.body = rendered_template.get("text")
+        if email_message.body_html:
+            email.attach_alternative(email_message.body_html, "text/html")
 
         email.extra_headers = headers
 
-        attachments = get_attachments(email_message)
-
-        for attachment in attachments:
-            email.attach(attachment["name"], attachment["file"].read())
+        for attachment in email_message.attachments:
+            with attachment["file"] as file:
+                email.attach(attachment["name"], attachment["file"].read())
 
         email.send(fail_silently=False)
 
@@ -320,44 +316,3 @@ def retrieve_emails():
         return True
     except Exception:
         return False
-
-
-# Helper functions
-
-
-def get_rendered_template(email_message):
-    """
-    Helper function to render email template.
-    """
-    if email_message.template:
-        message_channel = ngen.models.CommunicationChannel.objects.filter(
-            message_id=email_message.root_message_id
-        ).first()
-
-        template_params = (
-            message_channel.channelable.template_params
-            if message_channel
-            else email_message.template_params
-        )
-
-        return Communication.render_template(
-            email_message.template, extra_params=template_params
-        )
-
-    return {}
-
-
-def get_attachments(email_message):
-    """
-    Helper function to get email attachments.
-    """
-    message_channel = ngen.models.CommunicationChannel.objects.filter(
-        message_id=email_message.root_message_id
-    ).first()
-
-    if message_channel:
-        attachments = message_channel.channelable.email_attachments
-    else:
-        attachments = email_message.attachments
-
-    return attachments

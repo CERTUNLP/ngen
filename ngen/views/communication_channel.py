@@ -20,6 +20,7 @@ from ngen.serializers.communication_channel import (
 from ngen.serializers.communication_type import CommunicationTypeSerializer
 from ngen.permissions import CustomModelPermissions
 from ngen.serializers.email_message import EmailMessageSerializer
+from ngen.mailer.email_handler import EMAIL_TEMPLATES
 
 
 class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
@@ -244,6 +245,16 @@ class CommunicationChannelViewSet(viewsets.ModelViewSet):
                 )
 
             params = self.build_params(request)
+            if not "template" in params and not "body" in params:
+                return Response(
+                    {"error": "Either template or body is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if params["template"] in EMAIL_TEMPLATES:
+                return Response(
+                    {"error": "Template is not allowed"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             channel = self.get_object()
             sent_email = channel.communicate(**params)
             data = EmailMessageSerializer(sent_email, context={"request": request}).data
