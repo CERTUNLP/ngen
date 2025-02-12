@@ -194,17 +194,19 @@ const FormCase = (props) => {
   }, [allPriorities, allTlp, allUsers, props.allStates]);
 
   useEffect(() => {
-    let listDefaultTag = props.listTag
-      .filter((elemento) => props.caseItem.tags.includes(elemento.name))
-      .map((elemento) => ({
-        name: elemento.name,
-        slug: elemento.slug,
-        color: elemento.color,
-        value: elemento.name,
-        label: elemento.name
-      }));
-    
-    setTagsValueLabel(listDefaultTag);
+    if (props.listTag !== undefined) {
+      let listDefaultTag = props.listTag
+        .filter((elemento) => props.caseItem.tags.includes(elemento.name))
+        .map((elemento) => ({
+          name: elemento.name,
+          slug: elemento.slug,
+          color: elemento.color,
+          value: elemento.name,
+          label: elemento.name
+        }));
+      
+      setTagsValueLabel(listDefaultTag);
+    }
   }, [props.caseItem.tags, props.listTag]);
 
   useEffect(() => {
@@ -697,29 +699,31 @@ const FormCase = (props) => {
         </Card.Body>
       </Card>
 
-      <Card>
-        <Card.Header>
-          <Card.Title as="h5">{t("ngen.tag_other")}</Card.Title>
-        </Card.Header>
-        <Card.Body>
-          <Form>
-            <Form.Group controlId="formGridAddress1">
-              <Row>
-                <Col sm={12} lg={9}>
-                  <SelectTag
-                    value={tagsValueLabel}
-                    onChange={selectTag}
-                    options={props.listTag}
-                  />
-                </Col>
-                <Col sm={12} lg={3}>
-                  <CrudButton type="create" name={t("ngen.tag_one")} onClick={() => setModalCreateTag(true)} />
-                </Col>
-              </Row>
-            </Form.Group>
-          </Form>
-        </Card.Body>
-      </Card>
+      { props.disableTags ? "" : (
+        <Card>
+          <Card.Header>
+            <Card.Title as="h5">{t("ngen.tag_other")}</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <Form>
+              <Form.Group controlId="formGridAddress1">
+                <Row>
+                  <Col sm={12} lg={9}>
+                    <SelectTag
+                      value={tagsValueLabel}
+                      onChange={selectTag}
+                      options={props.listTag}
+                    />
+                  </Col>
+                  <Col sm={12} lg={3}>
+                    <CrudButton type="create" name={t("ngen.tag_one")} onClick={() => setModalCreateTag(true)} />
+                  </Col>
+                </Row>
+              </Form.Group>
+            </Form>
+          </Card.Body>
+        </Card>
+      )}
 
       {props.disableTableEvent ? (
         ""
