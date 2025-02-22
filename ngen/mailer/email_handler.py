@@ -167,7 +167,7 @@ class EmailHandler:
         if not recipients and not bcc_recipients and not in_reply_to:
             raise ValueError("Send email failed. Recipients not provided")
 
-        if not subject:
+        if not subject and not in_reply_to:
             raise ValueError("Send email failed. Subject not provided")
 
         if not body and not template:
