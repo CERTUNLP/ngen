@@ -315,6 +315,12 @@ def retrieve_emails():
             )
             if len(created_messages) == len(unread_emails):
                 email_client.mark_emails_as_read(unread_emails)
-        return True
-    except Exception:
-        return False
+        return {
+            "status": "success",
+            "message": f"{len(unread_emails)} new message/s stored",
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": e,
+        }
