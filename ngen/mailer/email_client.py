@@ -1,4 +1,6 @@
+from os import makedirs, path
 import email
+from django.conf import settings
 from email.message import Message
 from typing import List
 from imbox.messages import Messages
@@ -74,26 +76,60 @@ class EmailClient:
 
     # Helper methods
 
+    def map_email(self, email: Messages) -> EmailMessage:
+        """
+        Map email message and its attachments to EmailMessage model
+        """
+
+        email_message = EmailMessage(
+            root_message_id=self.get_root_message_id(email)
+            or self.get_message_id(email),
+            parent_message_id=self.get_parent_message_id(email),
+            references=self.get_references_field(email),
+            message_id=self.get_message_id(email),
+            senders=email.sent_from,
+            recipients=email.sent_to,
+            date=email.parsed_date,
+            subject=email.subject.strip().replace("\r", "").replace("\n", ""),
+            body=email.body["plain"][0],
+            sent=True,
+        )
+
+        attachments = []
+
+        for attachment in email.attachments:
+            filename = attachment.get("filename")
+            content = attachment.get("content")
+
+            if not filename or not content:
+                continue
+
+            attachment_path = email_message.attachment_path(filename)
+            download_path = path.join(settings.MEDIA_ROOT, attachment_path)
+            makedirs(path.dirname(download_path), exist_ok=True)
+
+            try:
+                with open(download_path, "wb") as file:
+                    file.write(content.read())
+
+                attachments.append(
+                    {
+                        "name": filename,
+                        "file": attachment_path,
+                    }
+                )
+            except IOError as e:
+                print(f"Failed to save attachment {filename}: {e}")
+
+        email_message.attachments = attachments
+
+        return email_message
+
     def map_emails(self, emails: list) -> List[EmailMessage]:
         """
-        Map email messages to EmailMessage model
+        Map a list of email messages to a list of EmailMessage model, using EmailClient.map_email helper method
         """
-        return [
-            EmailMessage(
-                root_message_id=self.get_root_message_id(message)
-                or self.get_message_id(message),
-                parent_message_id=self.get_parent_message_id(message),
-                references=self.get_references_field(message),
-                message_id=self.get_message_id(message),
-                senders=message.sent_from,
-                recipients=message.sent_to,
-                date=message.parsed_date,
-                subject=message.subject.strip().replace("\r", "").replace("\n", ""),
-                body=message.body["plain"][0],
-                sent=True,
-            )
-            for uid, message in emails
-        ]
+        return [self.map_email(email) for uid, email in emails]
 
     def get_root_message_id(self, message: Messages):
         """

@@ -2,9 +2,11 @@
 EmailMessage model
 """
 
+from os import path
 from email.utils import make_msgid
 from django.db import models
 from ngen.models.common.mixins import AuditModelMixin
+from django.conf import settings
 
 
 class EmailMessage(AuditModelMixin):
@@ -45,3 +47,15 @@ class EmailMessage(AuditModelMixin):
         Get all messages of a given root message id
         """
         return cls.objects.filter(root_message_id=root_message_id).order_by("created")
+
+    def attachment_path(self, filename):
+        """
+        Return the relative path for an email attachment
+        """
+        attachments_path = path.join(
+            settings.EMAIL_ATTACHMENTS_FILE_ROOT,
+            self.message_id or self.id,
+            filename,
+        )
+
+        return attachments_path

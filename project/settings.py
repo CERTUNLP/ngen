@@ -207,6 +207,10 @@ EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
 # CELERY_EMAIL_BACKEND
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_PORT = os.environ.get("EMAIL_PORT")
+
+EMAIL_ATTACHMENTS_FILE_ROOT = "email_attachments"
+os.makedirs(os.path.join(MEDIA_ROOT, EMAIL_ATTACHMENTS_FILE_ROOT), exist_ok=True)
+
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
     "attend_cases": {
