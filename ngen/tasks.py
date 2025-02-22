@@ -317,7 +317,7 @@ def retrieve_emails():
                 email_client.mark_emails_as_read(unread_emails)
         return {
             "status": "success",
-            "message": f"{len(unread_emails)} new message/s stored",
+            "message": f"{len(unread_emails)} new email/s stored",
         }
     except Exception as e:
         return {
