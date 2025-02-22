@@ -55,15 +55,20 @@ class Communication:
         content = {}
         lang = lang if lang else config.NGEN_LANG
         params = {"lang": lang, "config": config}
+
         if extra_params:
             params.update(extra_params)
+
         content["text"] = re.sub(
             r"\n+",
             "\n",
             strip_tags(get_template(template).render(params)).replace("  ", ""),
         )
+
         params.update({"html": True})
-        content["html"] = get_template(template).render(params)
+        html = re.sub(r"\s+", " ", get_template(template).render(params)).strip()
+        content["html"] = html
+
         return content
 
     def communicate(self, title: str, template: str, **kwargs):

@@ -6,6 +6,8 @@
         <h4>
             {% translate 'Case' %}: {{ case.uuid }}
         </h4>
+        <small class="lead"><strong>{% translate 'Case state' %}:</strong>
+            {{ case.state.name }}</small>
     {% endblock %}
 
     {% block content_body %}

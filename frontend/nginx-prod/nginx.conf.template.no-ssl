@@ -1,0 +1,66 @@
+events {
+    worker_connections 1024;
+}
+
+http {
+    # Define dynamic variables for X-Forwarded-*
+    # because maybe there is a reverse proxy in front of this server
+    map $http_x_forwarded_proto $proxy_x_forwarded_proto {
+        default $scheme;  # Use $scheme if there is no X-Forwarded-Proto
+        "~https" "https"; # Use the value of X-Forwarded-Proto if present
+    }
+
+    map $http_x_forwarded_host $proxy_x_forwarded_host {
+        default $host;    # Use $host if there is no X-Forwarded-Host
+        "~.+" $http_x_forwarded_host; # Use the value of X-Forwarded-Host if present
+    }
+
+    map $http_x_forwarded_port $proxy_x_forwarded_port {
+        default $server_port; # Use $server_port if there is no X-Forwarded-Port
+        "~.+" $http_x_forwarded_port; # Use the value of X-Forwarded-Port if present
+    }
+    
+    include /etc/nginx/mime.types;
+    server {
+        listen 80;
+        server_name _;
+
+        # Serve frontend
+        index index.html index.htm;
+        root /usr/share/nginx/html;
+
+        location / {
+            try_files $uri /index.html;
+        }
+
+        # Inject environment variables as JS
+        location /env.js {
+            return 200 'localStorage.setItem("API_HOST", "$VITE_APP_API_HOST"); localStorage.setItem("API_PORT", "$VITE_APP_API_PORT"); localStorage.setItem("API_PATH", "$VITE_APP_API_PATH");';
+            add_header Content-Type application/javascript;
+        }
+
+        # Proxy for backend API
+        location /api {
+            proxy_pass http://ngen-django:8000/api;
+            proxy_read_timeout 90;
+            proxy_connect_timeout 90;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Server $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;  # Use the dynamic variable
+            proxy_set_header X-Forwarded-Host $proxy_x_forwarded_host;    # Use the dynamic variable
+            proxy_set_header X-Forwarded-Port $proxy_x_forwarded_port;    # Use the dynamic variable
+        }
+
+        # Serve static files from API
+        location /api/static/ {
+            alias /app/staticfiles/;
+        }
+
+        # Serve media files from API
+        location /api/media/ {
+            alias /app/mediafiles/;
+        }
+    }
+}

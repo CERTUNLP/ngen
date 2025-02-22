@@ -1,12 +1,12 @@
-# Etapa base para la instalación de dependencias
+# Base stage for dependency installation
 FROM python:3.11-alpine3.20 AS base
 
-# Configurar variables de entorno para pip
+# Configure environment variables for pip
 ENV PIP_NO_CACHE_DIR=true \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Instalar las dependencias de compilación necesarias temporalmente
+# Temporarily install necessary build dependencies
 RUN apk add --no-cache --virtual .build-deps \
     build-base \
     gettext \
@@ -15,27 +15,30 @@ RUN apk add --no-cache --virtual .build-deps \
     musl-dev \
     python3-dev
 
-# Copiar el archivo de requisitos
+# Copy the requirements file
 COPY requirements.txt /code/requirements.txt
 
-# Instalar las dependencias de Python
+# Install Python dependencies
 RUN pip install --no-cache-dir --prefix=/install -r /code/requirements.txt
 
-# Imagen final
+# Final image
 FROM python:3.11-alpine3.20
 
-# Configurar variables de entorno
+# Configure environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Instalar solo las librerías necesarias en la imagen final
+# Install only the necessary libraries in the final image
 RUN apk add --no-cache libmagic
 
-# Copiar las dependencias instaladas desde la etapa base
+# Copy installed dependencies from the base stage
 COPY --from=base /install /usr/local
 
-# Copiar el código de la aplicación
+# Copy the application code
 COPY . /code/
 
-# Configurar el directorio de trabajo
+# Expose port 8000 but we will use a reverse proxy to serve the app anyway
+EXPOSE 8000
+
+# Set the working directory
 WORKDIR /code

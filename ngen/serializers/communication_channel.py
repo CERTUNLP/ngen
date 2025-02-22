@@ -1,61 +1,8 @@
-# pylint: disable=protected-access
+# pylint: disable=protected-access, disable=W0223
 from rest_framework import serializers
-
 from ngen import models
-from ngen.serializers.case import EventSerializerReduced
 from ngen.serializers.common.fields import GenericRelationField
 from ngen.serializers.communication_type import CommunicationTypeSerializer
-from ngen.serializers.constituency import ContactSerializer
-
-
-class NetworksWithContactsSerializer(serializers.Serializer):
-    """
-    NetworksWithContactsSerializer class
-    Contract: [{cidr: [contact1, contact2, ...]}, {domain: [contact1, contact2, ...]
-    """
-
-    queryset = serializers.ListField(child=serializers.DictField())
-
-    def to_representation(self, instance):
-        data = []
-        for item in instance:
-            key = list(item.keys())[0]
-            queryset = item[key]
-            serialized_queryset = ContactSerializer(
-                queryset, context=self.context, many=True
-            ).data
-            data.append({key: serialized_queryset})
-        return data
-
-
-class EventWithAffectedContactsSerializer(EventSerializerReduced):
-    """
-    EventsWithAffectedContactsSerializer class
-    """
-
-    affected_contacts = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Event
-        fields = [
-            "url",
-            "feed",
-            "tlp",
-            "priority",
-            "taxonomy",
-            "cidr",
-            "domain",
-            "date",
-            "affected_contacts",
-        ]
-
-    def get_affected_contacts(self, obj):
-        """
-        Method to get affected contacts
-        """
-        return NetworksWithContactsSerializer(
-            obj.affected_contacts, context=self.context
-        ).to_representation(obj.affected_contacts)
 
 
 class CommunicationChannelContactsSerializer(serializers.Serializer):
@@ -63,17 +10,23 @@ class CommunicationChannelContactsSerializer(serializers.Serializer):
     NetworkContactsSerializer class
     """
 
-    reporter = EventSerializerReduced(required=False, many=True)
-
     def to_representation(self, instance):
         representation = super().to_representation(instance)
 
         if "affected" in instance:
-            representation["affected"] = EventWithAffectedContactsSerializer(
-                instance["affected"],
-                context=self.context,
-                many=True,
-            ).data
+            representation["affected"] = serializers.ListField(
+                child=serializers.EmailField()
+            ).to_representation(instance["affected"])
+
+        if "reporter" in instance:
+            representation["reporter"] = serializers.ListField(
+                child=serializers.EmailField()
+            ).to_representation(instance["reporter"])
+
+        if "intern" in instance:
+            representation["intern"] = serializers.ListField(
+                child=serializers.EmailField()
+            ).to_representation(instance["intern"])
 
         return representation
 
@@ -89,7 +42,7 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
     )
     channel_types = serializers.SerializerMethodField(read_only=True)
     additional_contacts = serializers.ListField(
-        child=serializers.IntegerField(), write_only=True, required=False
+        child=serializers.EmailField(), required=False
     )
 
     class Meta:
@@ -118,14 +71,13 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
 
         return representation
 
-    def validate(self, data):
+    def validate(self, attrs):
         """
         Overwrite validate to verify IDs collections
         """
-        self.validate_ids(data, "communication_types", models.CommunicationType)
-        self.validate_ids(data, "additional_contacts", models.Contact)
+        self.validate_ids(attrs, "communication_types", models.CommunicationType)
 
-        return data
+        return attrs
 
     def validate_ids(self, data, field_name, model):
         """
@@ -139,7 +91,8 @@ class CommunicationChannelSerializer(serializers.HyperlinkedModelSerializer):
         if ids_not_found:
             raise serializers.ValidationError(
                 {
-                    field_name: f"{model._meta.verbose_name_plural.title()} with IDs {ids_not_found} not found"
+                    field_name: f"{model._meta.verbose_name_plural.title()} "
+                    f"with IDs {ids_not_found} not found"
                 }
             )
 

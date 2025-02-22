@@ -74,3 +74,4 @@ admin.site.register(EventAnalysis)
 
 # mapping
 admin.site.register(AnalyzerMapping)
+admin.site.register(EmailMessage)

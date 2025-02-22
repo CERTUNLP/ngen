@@ -19,28 +19,29 @@ COPY . ./
 RUN npm run build
 
 
-# Etapa de producción
+# Production stage
 FROM nginx:stable-alpine
 
-# Variables de entorno para la configuración dinámica
+# Environment variables for dynamic configuration
 ENV STATIC_ROOT=/app/staticfiles \
     MEDIA_ROOT=/app/mediafiles
 
-# Vite en producción corre en el puerto 443
+# Vite in production runs on port 443
 ENV VITE_PORT=443
 
-# Copiar los artefactos del frontend al directorio estático de Nginx
+# Copy frontend artifacts to Nginx static directory
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copiar configuración de Nginx y script de entrada
-COPY nginx-prod/nginx.conf.template /etc/nginx/nginx.conf.template
+# Copy Nginx configuration and entry script
+COPY nginx-prod/nginx.conf.template.ssl /etc/nginx/nginx.conf.template.ssl
+COPY nginx-prod/nginx.conf.template.no-ssl /etc/nginx/nginx.conf.template.no-ssl
 COPY nginx-prod/docker-entrypoint.sh /docker-entrypoint.sh
 
-# Dar permisos al script de entrada
+# Give permissions to the entry script
 RUN chmod +x /docker-entrypoint.sh
 
-# Exponer puertos necesarios
-EXPOSE 443
+# Expose necessary ports
+EXPOSE 80 443
 
-# Usar el script de entrada como punto de inicio
+# Use the entry script as the entry point
 ENTRYPOINT ["/docker-entrypoint.sh"]

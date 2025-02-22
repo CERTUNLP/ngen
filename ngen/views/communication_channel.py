@@ -1,3 +1,9 @@
+# pylint: disable=broad-exception-caught
+
+"""
+Communication channel views
+"""
+
 import django_filters
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import resolve
@@ -13,6 +19,8 @@ from ngen.serializers.communication_channel import (
 )
 from ngen.serializers.communication_type import CommunicationTypeSerializer
 from ngen.permissions import CustomModelPermissions
+from ngen.serializers.email_message import EmailMessageSerializer
+from ngen.mailer.email_handler import EMAIL_TEMPLATES
 
 
 class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
@@ -71,7 +79,7 @@ class BaseCommunicationChannelsViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["get"],
-        url_path="communicationchannels/(?P<communication_channel_id>[^/.]+)",  # <int:communication_channel_id> !!!!!!!!!!
+        url_path="communicationchannels/(?P<communication_channel_id>[^/.]+)",
     )
     def communication_channels_detail(
         self, request, pk=None, communication_channel_id=None
@@ -221,6 +229,85 @@ class CommunicationChannelViewSet(viewsets.ModelViewSet):
         Use reduced serializer for list action, complete serializer for other actions
         """
         return self.serializer_class_by_action.get(self.action, self.serializer_class)
+
+    @action(detail=True, methods=["post"], url_path="communicate")
+    def communicate(self, request, pk=None):
+        """
+        Endpoint to send an email in a communication channel.
+        """
+
+        try:
+            validation = self.validate_params(request)
+            if not validation["success"]:
+                return Response(
+                    {"error": ", ".join(validation["errors"])},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            params = self.build_params(request)
+            if not "template" in params and not "body" in params:
+                return Response(
+                    {"error": "Either template or body is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if params["template"] in EMAIL_TEMPLATES:
+                return Response(
+                    {"error": "Template is not allowed"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            channel = self.get_object()
+            sent_email = channel.communicate(**params)
+            data = EmailMessageSerializer(sent_email, context={"request": request}).data
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception:
+            return Response(
+                {"error": "There was an error communicating in the channel."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def validate_params(self, request):
+        """
+        Validates the parameters for the communicate action
+        """
+        result = {"success": True, "errors": []}
+        subject = request.data.get("subject")
+        body = request.data.get("body")
+        template = request.data.get("template")
+
+        if not body:
+            result["success"] = False
+            result["errors"].append("Body is required")
+        elif not isinstance(body, str):
+            result["success"] = False
+            result["errors"].append("Body must be a string")
+
+        if subject and not isinstance(subject, str):
+            result["success"] = False
+            result["errors"].append("Subject must be a string")
+
+        if template and not isinstance(template, str):
+            result["success"] = False
+            result["errors"].append("Template must be a string")
+
+        return result
+
+    def build_params(self, request):
+        """
+        Builds the parameters for the communicate endpoint
+        """
+        bcc_recipients = request.data.get("bcc_recipients")
+        subject = request.data.get("subject")
+        body = request.data.get("body")
+        template = request.data.get("template")
+        template_params = request.data.get("template_params")
+
+        return {
+            "bcc_recipients": bcc_recipients,
+            "subject": subject,
+            "body": body,
+            "template": template,
+            "template_params": template_params,
+        }
 
 
 class CommunicationTypeViewSet(viewsets.ModelViewSet):

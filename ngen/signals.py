@@ -10,6 +10,8 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 from ngen.models import ArtifactRelation
+from ngen.models.email_message import EmailMessage
+from ngen.tasks import async_send_email
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -49,3 +51,12 @@ def artifactrelation_delete_callback(sender, **kwargs):
     )
     if count == 0:
         obj.artifact.delete()
+
+
+@receiver(post_save, sender=EmailMessage)
+def send_email_after_create(instance=None, created=False, **_kwargs):
+    """
+    Send email asynchronously after creating an EmailMessage instance.
+    """
+    if created:
+        async_send_email.delay(instance.id)

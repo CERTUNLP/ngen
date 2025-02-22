@@ -46,6 +46,7 @@ router.register(
 router.register(
     r"communication_type", views.CommunicationTypeViewSet, basename="communicationtype"
 )
+router.register(r"emailmessage", views.EmailMessageViewSet, basename="emailmessage")
 router.register(r"evidence", views.EvidenceViewSet, basename="evidence")
 router.register(r"event", views.EventViewSet, basename="event")
 router.register(r"solvedmark", views.SolvedMarkViewSet, basename="solvedmark")
