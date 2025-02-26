@@ -225,6 +225,6 @@ class EmailHandler:
                 attachments=attachments if attachments else [],
             )
 
-            transaction.on_commit(lambda: async_send_email.delay(email_message.id))
+            async_send_email.delay(email_message.id)
 
         return email_message
