@@ -51,12 +51,3 @@ def artifactrelation_delete_callback(sender, **kwargs):
     )
     if count == 0:
         obj.artifact.delete()
-
-
-@receiver(post_save, sender=EmailMessage)
-def send_email_after_create(instance=None, created=False, **_kwargs):
-    """
-    Send email asynchronously after creating an EmailMessage instance.
-    """
-    if created:
-        async_send_email.delay(instance.id)

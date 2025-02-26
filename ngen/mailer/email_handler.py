@@ -3,8 +3,10 @@ from typing import Optional, Union, List, Dict
 from constance import config
 
 from ngen.models.email_message import EmailMessage as EmailMessageModel
+from ngen.tasks import async_send_email
 from ngen.utils import clean_list
 from ngen.models.announcement import Communication
+from django.db import transaction
 
 
 EMAIL_TEMPLATES = {
@@ -200,23 +202,29 @@ class EmailHandler:
             if not subject.startswith("Re: "):
                 subject = f"Re: {subject}"
 
-        # Email is sent asynchronously in post_save signal
-        email_message = EmailMessageModel.objects.create(
-            root_message_id=in_reply_to.root_message_id if in_reply_to else message_id,
-            parent_message_id=in_reply_to.message_id if in_reply_to else None,
-            references=(
-                in_reply_to.references + [in_reply_to.message_id] if in_reply_to else []
-            ),
-            message_id=message_id,
-            senders=[{"name": self.email_username, "email": self.email_sender}],
-            recipients=recipients,
-            bcc_recipients=bcc_recipients,
-            subject=subject,
-            body=body or rendered_template.get("text", ""),
-            body_html=rendered_template.get("html", ""),
-            template=template,
-            template_params=None,
-            attachments=attachments if attachments else [],
-        )
+        with transaction.atomic():
+            email_message = EmailMessageModel.objects.create(
+                root_message_id=(
+                    in_reply_to.root_message_id if in_reply_to else message_id
+                ),
+                parent_message_id=in_reply_to.message_id if in_reply_to else None,
+                references=(
+                    in_reply_to.references + [in_reply_to.message_id]
+                    if in_reply_to
+                    else []
+                ),
+                message_id=message_id,
+                senders=[{"name": self.email_username, "email": self.email_sender}],
+                recipients=recipients,
+                bcc_recipients=bcc_recipients,
+                subject=subject,
+                body=body or rendered_template.get("text", ""),
+                body_html=rendered_template.get("html", ""),
+                template=template,
+                template_params=None,
+                attachments=attachments if attachments else [],
+            )
+
+            transaction.on_commit(lambda: async_send_email.delay(email_message.id))
 
         return email_message
