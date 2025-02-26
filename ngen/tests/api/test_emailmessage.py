@@ -536,7 +536,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             "subject": "Test Subject Success Email",
             "body": "Test body",
             "template": "case_report",
-            # "template_params": {"param1": "value1", "param2": "value2"},
+            "template_params": {"param1": "value1", "param2": "value2"},
         }
 
         response = self.client.post(
@@ -551,9 +551,6 @@ class TestEmailMessage(APITestCaseWithLogin):
         created_email_message = EmailMessage.objects.get(id=response.data["id"])
 
         self.assertEqual(created_email_message.template, json_data["template"])
-        # self.assertEqual(
-        #     created_email_message.template_params, json_data["template_params"]
-        # )
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)

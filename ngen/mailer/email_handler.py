@@ -221,7 +221,6 @@ class EmailHandler:
                 body=body or rendered_template.get("text", ""),
                 body_html=rendered_template.get("html", ""),
                 template=template,
-                template_params=None,
                 attachments=attachments if attachments else [],
             )
 
