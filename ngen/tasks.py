@@ -2,6 +2,7 @@
 
 from os import path
 from celery import shared_task
+from django_celery_beat.models import PeriodicTask
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
 from django.conf import settings
 from django.utils import timezone
@@ -16,6 +17,10 @@ from ngen import cortex
 from ngen import kintun
 from ngen.models.announcement import Communication
 from ngen.services.contact_lookup import ContactLookupService
+
+
+class TaskFailure(Exception):
+    pass
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
@@ -305,22 +310,41 @@ def retrieve_emails():
     username = config.EMAIL_USERNAME
     password = config.EMAIL_PASSWORD
 
+    if not host or not username or not password:
+        deactivated = ""
+        task = PeriodicTask.objects.filter(name="retrieve_emails").first()
+        if task:
+            task.enabled = False
+            task.save()
+            deactivated = "Task deactivated. "
+        raise TaskFailure(
+            f"{deactivated}Email configuration not set. EMAIL_HOST: '{host}', EMAIL_USERNAME: '{username}', EMAIL_PASSWORD: ????"
+        )
+
+    email_client = None
     try:
         email_client = EmailClient(host=host, username=username, password=password)
         unread_emails = email_client.fetch_unread_emails()
+
         if unread_emails:
             email_messages = email_client.map_emails(unread_emails)
             created_messages = ngen.models.EmailMessage.objects.bulk_create(
                 email_messages
             )
+
             if len(created_messages) == len(unread_emails):
                 email_client.mark_emails_as_read(unread_emails)
+
         return {
             "status": "success",
             "message": f"{len(unread_emails)} new email/s stored",
         }
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": e,
-        }
+
+    except ConnectionRefusedError:
+        raise TaskFailure(
+            f"Connection refused: Server '{host}' with username '{username}' and password *****"
+        )
+
+    finally:
+        if email_client:
+            email_client.logout()

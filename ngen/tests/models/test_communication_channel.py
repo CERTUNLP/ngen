@@ -128,9 +128,9 @@ class CommunicationChannelTest(TestCase):
         """
         This will test channelable communication_channels relation
         """
-        self.assertEqual(self.event.communication_channels.count(), 1)
+        self.assertEqual(self.event.communication_channels.count(), 2)
         self.assertEqual(
-            self.event.communication_channels.first(), self.communication_channel
+            self.event.communication_channels.last(), self.communication_channel
         )
 
     def test_additional_contacts(self):
