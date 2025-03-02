@@ -47,6 +47,7 @@ const ModalCreateCase = ({
             refresh={refresh}
             setRefresh={setRefresh}
             asNetworkAdmin={asNetworkAdmin}
+            disableTags={true}
           />
         </div>
       </Modal.Body>

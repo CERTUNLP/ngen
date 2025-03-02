@@ -912,6 +912,7 @@ class CaseTemplate(
             state=self.case_state,
             casetemplate_creator=self,
             events=events,
+            priority=self.case_priority,
         )
 
     @property

@@ -31,6 +31,7 @@ class CaseTest(TestCase):
         cls.tlp = Tlp.objects.get(slug="green")
         cls.state = State.objects.get(slug="open")
         cls.name = "Test Case"
+        cls.lifecycle = "manual"
 
         cls.template1 = CaseTemplate.objects.create(
             domain="info.unlp.edu.ar",
@@ -93,6 +94,12 @@ class CaseTest(TestCase):
         """
         self.assertEqual(self.case.name, self.name)
 
+    def test_lifecycle(self):
+        """
+        This will test Case lifecycle attribute
+        """
+        self.assertEqual(self.case.lifecycle, self.lifecycle)
+        
     def validate_unique_case_tempalte(self):
         """
         This will test Case casetemplate_creator attribute
