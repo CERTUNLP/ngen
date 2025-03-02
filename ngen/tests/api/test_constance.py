@@ -4,6 +4,7 @@ from constance.test import override_config
 from django.urls import reverse
 from rest_framework import status
 from rest_framework_simplejwt.tokens import Token
+from django.utils.translation import gettext_lazy
 
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
 
@@ -49,7 +50,14 @@ class TestConstance(APITestCaseWithLogin):
         self.assertEqual(response.data["value"], "abuse@ngen.com")
         self.assertEqual(response.data["value_type"], "str")
         self.assertEqual(response.data["default"], "abuse@yourdomain.com")
-        self.assertTrue("CSIRT abuse email" in response.data["help_text"])
+        self.assertIn(
+            str(
+                gettext_lazy(
+                    "CSIRT abuse email. This is an email to receive abuse reports from external sources"
+                )
+            ),
+            response.data["help_text"],
+        )
 
     @override_config(TEAM_EMAIL="team@ngen.com")
     def test_constance_post(self):

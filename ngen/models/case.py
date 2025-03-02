@@ -33,7 +33,7 @@ from django.apps import apps
 
 import ngen
 from ngen.models.announcement import Communication
-from ngen.utils import get_mime_type
+from ngen.utils import clean_list, get_mime_type
 from . import Priority
 from .common.mixins import (
     MergeModelMixin,
@@ -184,21 +184,15 @@ class Case(
 
     @property
     def email_attachments(self) -> list[dict]:
-        # DEPRECATED: Use get_attachments_for_events instead
-        attachments = {}
+        attachments = []
         for evidence in self.evidence_all:
-            attachments[evidence.id] = {
-                "name": evidence.attachment_name,
-                "file": evidence.file,
-            }
-        if self._temp_events:
-            for event in self._temp_events:
-                for evidence in event.evidence.all():
-                    attachments[evidence.id] = {
-                        "name": evidence.attachment_name,
-                        "file": evidence.file,
-                    }
-        return attachments.values()
+            attachments.append(
+                {
+                    "name": evidence.attachment_name,
+                    "file": evidence.directory_path(evidence.filename),
+                }
+            )
+        return attachments
 
     def get_attachments_for_events(self, events):
         attachments = {}
@@ -209,6 +203,18 @@ class Case(
                     "file": evidence.file,
                 }
         return attachments.values()
+
+    def get_attachments_for_events_v2(self, events):
+        attachments = []
+        for event in events:
+            for evidence in event.evidence.all():
+                attachments.append(
+                    {
+                        "name": evidence.attachment_name,
+                        "file": evidence.directory_path(evidence.filename),
+                    }
+                )
+        return attachments
 
     @property
     def assigned_email(self):
@@ -325,27 +331,19 @@ class Case(
         return contacts
 
     def communicate_new(self):
-        self.communicate(gettext_lazy("New case"), "reports/case_report.html")
+        self.communicate_v2("case_report")
 
     def communicate_close(self):
-        self.communicate(gettext_lazy("Case closed"), "reports/case_closed_report.html", attachments=False)
+        self.communicate_v2("case_closed_report")
 
     def communicate_open(self):
-        title = (
-            "Case reopened"
-            if self.history.filter(changes__contains='solve_date":').exists()
-            else "Case opened"
-        )
-        self.communicate(gettext_lazy(title), "reports/case_report.html")
+        self.communicate_v2("case_report")
 
     def communicate_new_open(self):
-        self.communicate(gettext_lazy("Case opened"), "reports/case_report.html")
+        self.communicate_v2("case_report")
 
     def communicate_update(self):
-        self.communicate(
-            gettext_lazy("Case status updated"),
-            "reports/case_change_state.html",
-        )
+        self.communicate_v2("case_change_state")
 
     def subject(self, title: str = None) -> str:
         return "[%s][TLP:%s][ID:%s] %s" % (
@@ -355,56 +353,116 @@ class Case(
             title,
         )
 
-    def communicate(self, title: str, template: str, attachments=True, **kwargs):
+    def subject_v2(self, channel_type: str = None) -> str:
+        channel_section = f"[{channel_type.upper()}]" if channel_type else ""
+        return f"[{config.TEAM_NAME}][TLP:{self.tlp.name.upper()}]{channel_section} Case ID: {self.uuid}"
+
+    # def communicate(self, title: str, template: str, attachments=True, **kwargs):
+    #     """
+    #     Send email to a list of recipients in 'event_by_contacts' param
+    #     or those returned by 'event_by_contacts' method on 'to' mail header.
+    #     Also send a copy to assigned user and team email if they are set.
+
+    #     :param title: title of the email
+    #     :param template: template to be rendered
+    #     :param kwargs: extra params to be passed to template
+    #     :return: None
+    #     """
+    #     event_by_contacts = kwargs.get("event_by_contacts", self.events_by_contacts())
+    #     template_params = self.template_params
+    #     recipients = self.recipients
+    #     team_recipients = [
+    #         mail for mail in [self.assigned_email, self.team_email] if mail
+    #     ]
+
+    #     for contacts, events in event_by_contacts.items():
+    #         # Case has events, so send email to contacts of each event (and bcc to team)
+    #         template_params.update({"events": events})
+    #         recipients.update({"to": [c.username for c in contacts]})
+    #         recipients.update({"bcc": team_recipients})
+    #         self.send_mail(
+    #             self.subject(title),
+    #             self.render_template(template, extra_params=template_params),
+    #             recipients,
+    #             self.get_attachments_for_events(events) if attachments else [],
+    #             self.email_headers,
+    #         )
+
+    #     if not event_by_contacts or frozenset() in event_by_contacts.keys():
+    #         # Case has no events or there is events without contacts, so send email to team and assignee with those events
+    #         template_params.update({"events": event_by_contacts.get((), [])})
+    #         recipients.update(
+    #             {"to": [recipient for recipient in team_recipients if recipient]}
+    #         )
+    #         self.send_mail(
+    #             self.subject(title),
+    #             self.render_template(template, extra_params=self.template_params),
+    #             recipients,
+    #             self.email_attachments,
+    #             self.email_headers,
+    #         )
+    #     # Increment notification_count
+    #     # TODO: make communication a class with objects that can be audited
+    #     self.notification_count += 1
+
+    def communicate_v2(
+        self,
+        template: str,
+        events: Collection["Event"] = None,
+        send_attachments: bool = True,
+    ):
         """
-        Send email to a list of recipients in 'event_by_contacts' param
-        or those returned by 'event_by_contacts' method on 'to' mail header.
-        Also send a copy to assigned user and team email if they are set.
+        Communicate V2
+        Send email to the communication channels of all the events
+        associated with the case.
+
+        Send email to the intern communication channel of the case.
 
         :param title: title of the email
-        :param template: template to be rendered
-        :param kwargs: extra params to be passed to template
-        :return: None
+        :param template: path of template to be rendered
         """
-        event_by_contacts = kwargs.get("event_by_contacts", self.events_by_contacts())
+        if self._temp_events:
+            self.events.add(*self._temp_events)
+
         template_params = self.template_params
-        recipients = self.recipients
-        team_recipients = [
-            mail for mail in [self.assigned_email, self.team_email] if mail
-        ]
 
-        for contacts, events in event_by_contacts.items():
-            # Case has events, so send email to contacts of each event (and bcc to team)
-            template_params.update({"events": events})
-            recipients.update({"to": [c.username for c in contacts]})
-            recipients.update({"bcc": team_recipients})
-            self.send_mail(
-                self.subject(title),
-                self.render_template(template, extra_params=template_params),
-                recipients,
-                self.get_attachments_for_events(events) if attachments else [],
-                self.email_headers,
+        # Communicates on the channels of each event of the case
+        for event in events or self.events.all():
+            # If there is no channel with affected contacts, create one
+            ngen.models.CommunicationChannel.get_or_create_channel_with_affected(
+                channelable=event
             )
 
-        if not event_by_contacts or frozenset() in event_by_contacts.keys():
-            # Case has no events or there is events without contacts, so send email to team and assignee with those events
-            template_params.update({"events": event_by_contacts.get((), [])})
-            recipients.update(
-                {"to": [recipient for recipient in team_recipients if recipient]}
+            event_channels = event.communication_channels.all()
+
+            # Communicates on each each channel of the event
+            for channel in event_channels:
+                channel.communicate(
+                    subject=self.subject_v2("AFFECTED"),
+                    template=template,
+                    template_params=template_params,
+                    attachments=(
+                        self.get_attachments_for_events_v2([event])
+                        if send_attachments
+                        else []
+                    ),
+                )
+
+        intern_channel = (
+            ngen.models.CommunicationChannel.get_or_create_channel_with_intern(
+                channelable=self
             )
-            self.send_mail(
-                self.subject(title),
-                self.render_template(template, extra_params=self.template_params),
-                recipients,
-                self.email_attachments,
-                self.email_headers,
-            )
-        # Increment notification_count
-        # TODO: make communication a class with objects that can be audited
+        )
+        intern_channel.communicate(
+            subject=self.subject_v2("INTERN"),
+            template=template,
+            template_params=template_params,
+            attachments=self.email_attachments if send_attachments else [],
+        )
         self.notification_count += 1
 
     def get_internal_contacts(self):
-        return ["Internal Contact 1", "Internal Contact 2", "Internal Contact 3"]
+        return clean_list([self.assigned_email, self.team_email])
 
     def get_affected_contacts(self):
         contacts_from_all_events = []
@@ -516,6 +574,29 @@ class Event(
     def enrichable(self):
         return self.mergeable
 
+    @property
+    def template_params(self) -> dict:
+        return {
+            "case": self.case,
+            "events": [self],
+            "tlp": self.case.tlp,
+            "priority": self.case.priority,
+        }
+
+    @property
+    def evidence_all(self):
+        case_evidence = self.case.evidence.all() if self.case else []
+        return list(self.evidence.all()) + list(case_evidence)
+
+    @property
+    def email_attachments(self) -> list[dict]:
+        attachments = []
+        for evidence in self.evidence_all:
+            attachments.append(
+                {"name": evidence.attachment_name, "file": evidence.file}
+            )
+        return attachments
+
     def update_taxonomy(self):
         if self.taxonomy:
             if not self.initial_taxonomy_slug:
@@ -595,11 +676,7 @@ class Event(
         # a CaseTemplate, because the case is created after the event and
         # self.case is None
         if self.case and self.case.state.attended and self.case.events.count() >= 1:
-            self.case.communicate(
-                gettext_lazy("New event on case"),
-                "reports/case_assign.html",
-                event_by_contacts={tuple(self.email_contacts()): [self]},
-            )
+            self.case.communicate_v2("case_assign", events=[self])
 
     def clean(self):
         super().clean()
@@ -653,20 +730,55 @@ class Event(
                     return network_contacts[0]
         return contacts
 
-    def get_affected_contacts(self):
+    def get_affected_contacts_extended(self):
+        """
+        Returns a list of dictionaries where the keys are the networks cidr or domain
+        and the values are the contacts of the network.
+        """
+        priority = (
+            self.case.priority.severity
+            if self.case and self.case.priority
+            else self.priority.severity
+        )
         affected_networks = ngen.models.Network.objects.parent_of(self)
 
         network_contacts = []
         for network in affected_networks:
             network_cidr_or_domain = network.cidr if network.cidr else network.domain
-            contacts = network.contacts.all()
+            contacts = list(network.email_contacts(priority))
+            if not contacts:
+                contacts = list(network.ancestors_email_contacts(priority))
             network_contacts.append({network_cidr_or_domain: contacts})
 
-        self.affected_contacts = network_contacts
-        return self
+        return network_contacts
+
+    def get_affected_contacts(self):
+        priority = (
+            self.case.priority.severity
+            if self.case and self.case.priority
+            else self.priority.severity
+        )
+        affected_networks = ngen.models.Network.objects.parent_of(self)
+
+        affected_contacts = []
+        for network in affected_networks:
+            network_contacts = list(network.email_contacts(priority))
+            if not network_contacts:
+                network_contacts = list(network.ancestors_email_contacts(priority))
+            network_contact_emails = [
+                contact.username
+                for contact in network_contacts
+                if contact.type == "email"
+            ]
+            affected_contacts.extend(network_contact_emails)
+
+        return affected_contacts
 
     def get_reporter_contacts(self):
-        return self
+        return [self.reporter.email]
+
+    def get_internal_contacts(self):
+        return self.case.get_internal_contacts() if self.case else []
 
     def mark_as_solved(self, user=None, contact=None, contact_info=None):
         mark, _ = ngen.models.SolvedMark.objects.get_or_create(

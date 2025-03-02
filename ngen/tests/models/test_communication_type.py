@@ -5,21 +5,7 @@ Django Unit Tests for Communication Type model
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from ngen.models import (
-    Tlp,
-    Priority,
-    CaseTemplate,
-    State,
-    Case,
-    CommunicationType,
-    Event,
-    Taxonomy,
-    Feed,
-    User,
-    Network,
-    NetworkEntity,
-    Contact,
-)
+from ngen.models import CommunicationType
 
 
 class CommunicationTypeTest(TestCase):
@@ -27,60 +13,11 @@ class CommunicationTypeTest(TestCase):
     This will handle Communication Type model tests
     """
 
-    fixtures = [
-        "tests/priority.json",
-        "tests/tlp.json",
-        "tests/user.json",
-        "tests/state.json",
-        "tests/feed.json",
-        "tests/taxonomy.json",
-        "tests/case_template.json",
-        "tests/contact.json",
-        "tests/network_entity.json",
-        "tests/feed.json",
-    ]
-
     @classmethod
     def setUpTestData(cls):
         """
         Communication Type model test setup data
         """
-
-        cls.priority = Priority.objects.get(slug="high")
-        cls.tlp = Tlp.objects.get(slug="green")
-        cls.state = State.objects.get(slug="open")
-        cls.case_template = CaseTemplate.objects.get(pk=1)
-        cls.taxonomy = Taxonomy.objects.get(slug="botnet")
-        cls.feed = Feed.objects.get(slug="csirtamericas")
-        cls.user = User.objects.get(username="ngen")
-        cls.contact = Contact.objects.get(pk=1)
-        cls.entity = NetworkEntity.objects.get(pk=1)
-        cls.domain = "testdomain.unlp.edu.ar"
-
-        cls.network = Network.objects.create(
-            domain=cls.domain, active=True, type="external", network_entity=cls.entity
-        )
-        cls.network.contacts.set([cls.contact])
-
-        cls.event = Event.objects.create(
-            domain=cls.domain,
-            taxonomy=cls.taxonomy,
-            feed=cls.feed,
-            tlp=cls.tlp,
-            reporter=cls.user,
-            notes="Some notes",
-            priority=cls.priority,
-        )
-
-        cls.case = Case.objects.create(
-            priority=cls.priority,
-            tlp=cls.tlp,
-            casetemplate_creator=cls.case_template,
-            state=cls.state,
-            name="Test Case",
-        )
-
-        cls.case.events.set([cls.event])
 
         cls.affected_type = CommunicationType.objects.create(type="affected")
         cls.reporter_type = CommunicationType.objects.create(type="reporter")

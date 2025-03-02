@@ -1,14 +1,26 @@
+# pylint: disable=broad-exception-caught
+
+from os import path
 from celery import shared_task
-from constance import config
+from django_celery_beat.models import PeriodicTask
 from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
+from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
+from django.core.mail import EmailMultiAlternatives
+from django.core.mail.backends.smtp import EmailBackend
+from constance import config
 
+from ngen.mailer.email_client import EmailClient
 import ngen.models
 from ngen import cortex
 from ngen import kintun
 from ngen.models.announcement import Communication
 from ngen.services.contact_lookup import ContactLookupService
+
+
+class TaskFailure(Exception):
+    pass
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
@@ -195,19 +207,142 @@ def retest_event_kintun(event):
     Tarea de Celery para retestear un evento utilizando Kintun.
     """
     try:
-        mapping_to = ngen.models.AnalyzerMapping.objects.get(mapping_from=event.taxonomy, analyzer_type='kintun').mapping_to
+        mapping_to = ngen.models.AnalyzerMapping.objects.get(
+            mapping_from=event.taxonomy, analyzer_type="kintun"
+        ).mapping_to
         kintun_data = kintun.retest_event_kintun(event, mapping_to)
         analysis_data = {
             "date": timezone.now(),
             "analyzer_type": "kintun",
-            "vulnerable": kintun_data.get('vulnerable', False),
-            "result": kintun_data.get('evidence', ''),
+            "vulnerable": kintun_data.get("vulnerable", False),
+            "result": kintun_data.get("evidence", ""),
             "target": event.address_value,
-            "scan_type": kintun_data.get('vuln_type', ''),
-            "analyzer_url": kintun_data.get('_id', ''),
-            "event": event
+            "scan_type": kintun_data.get("vuln_type", ""),
+            "analyzer_url": kintun_data.get("_id", ""),
+            "event": event,
         }
         ngen.models.EventAnalysis.objects.create(**analysis_data)
         return kintun_data
     except Exception as e:
         return {"error": str(e)}
+
+
+@shared_task(bind=True, max_retries=5)
+def async_send_email(self, email_message_id: int):
+    """
+    Task to send an email asynchronously.
+
+    :param int email_message_id: Email message id to send
+    """
+    if not email_message_id:
+        return {"status": "error", "message": "Email message id not provided"}
+
+    try:
+        email_message = ngen.models.EmailMessage.objects.get(id=email_message_id)
+    except ngen.models.EmailMessage.DoesNotExist as e:
+        if self.request.retries == self.max_retries:
+            return {"status": "error", "message": f"Email {email_message_id} not found"}
+
+        exponential_backoff = (self.request.retries + 1) ** 2
+        self.retry(exc=e, countdown=exponential_backoff)
+
+    mail_conf = {
+        "host": config.EMAIL_HOST,
+        "port": config.EMAIL_PORT or 587,
+        "use_tls": config.EMAIL_USE_TLS,
+        "fail_silently": False,
+    }
+
+    if config.EMAIL_USERNAME and config.EMAIL_PASSWORD:
+        mail_conf["username"] = config.EMAIL_USERNAME
+        mail_conf["password"] = config.EMAIL_PASSWORD
+
+    try:
+        email_connection = EmailBackend(**mail_conf)
+
+        headers = {
+            "Message-ID": email_message.message_id,
+        }
+
+        if email_message.parent_message_id:
+            headers["References"] = " ".join(email_message.references)
+            headers["In-Reply-To"] = email_message.parent_message_id
+
+        email = EmailMultiAlternatives(
+            subject=email_message.subject,
+            body=email_message.body,
+            from_email=email_message.senders[0]["email"],
+            to=[recipient["email"] for recipient in email_message.recipients],
+            bcc=[recipient["email"] for recipient in email_message.bcc_recipients],
+            connection=email_connection,
+        )
+
+        if email_message.body_html:
+            email.attach_alternative(email_message.body_html, "text/html")
+
+        email.extra_headers = headers
+
+        for attachment in email_message.attachments:
+            with open(path.join(settings.MEDIA_ROOT, attachment["file"]), "rb") as file:
+                email.attach(attachment["name"], file.read())
+
+        email.send(fail_silently=False)
+
+        email_message.sent = True
+        email_message.date = timezone.now()
+        return {"status": "success", "message": f"Email {email_message_id} sent"}
+    except Exception as e:
+        email_message.send_attempt_failed = True
+        raise e
+    finally:
+        email_message.save()
+
+
+@shared_task
+def retrieve_emails():
+    """
+    Task to retrieve unread imbox emails.
+    Unread emails are stored and marked as read.
+    """
+    host = config.EMAIL_HOST
+    username = config.EMAIL_USERNAME
+    password = config.EMAIL_PASSWORD
+
+    if not host or not username or not password:
+        deactivated = ""
+        task = PeriodicTask.objects.filter(name="retrieve_emails").first()
+        if task:
+            task.enabled = False
+            task.save()
+            deactivated = "Task deactivated. "
+        raise TaskFailure(
+            f"{deactivated}Email configuration not set. EMAIL_HOST: '{host}', EMAIL_USERNAME: '{username}', EMAIL_PASSWORD: ????"
+        )
+
+    email_client = None
+    try:
+        email_client = EmailClient(host=host, username=username, password=password)
+        unread_emails = email_client.fetch_unread_emails()
+
+        if unread_emails:
+            email_messages = email_client.map_emails(unread_emails)
+            created_messages = ngen.models.EmailMessage.objects.bulk_create(
+                email_messages
+            )
+
+            if len(created_messages) == len(unread_emails):
+                email_client.mark_emails_as_read(unread_emails)
+
+        return {
+            "status": "success",
+            "message": f"{len(unread_emails)} new email/s stored",
+        }
+
+    except ConnectionRefusedError:
+        raise TaskFailure(
+            f"Connection refused: Server '{host}' with username '{username}' and password *****"
+        )
+
+    finally:
+        if email_client:
+            email_client.logout()

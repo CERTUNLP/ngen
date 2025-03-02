@@ -231,7 +231,7 @@ const FormCreateNetwork = (props) => {
                 validateAddressValueOrNetworkOrDomain(props) &&
                 !showErrorMessage &&
                 validateSelect(props.type) &&
-                props.contacts.length > 0 ? (
+                props.contacts?.length > 0 ? (
                   <>
                     <Button variant="primary" onClick={props.ifConfirm}>
                       {t("button.save")}

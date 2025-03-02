@@ -26,6 +26,13 @@ class EventTest(TestCase):
     This will handle Event model tests
     """
 
+    fixtures = [
+        "tests/priority.json",
+        "tests/contact.json",
+        "tests/network_entity.json",
+        "tests/network.json",
+    ]
+
     @classmethod
     def setUpTestData(cls):
         """
@@ -44,7 +51,7 @@ class EventTest(TestCase):
             name="Clear",
             code=0,
         )
-        cls.priority = Priority.objects.create(name="Medium", severity=3)
+        cls.priority = Priority.objects.get(name="Medium", severity=3)
         cls.user = User.objects.create(
             username="test", password="test", priority=cls.priority
         )

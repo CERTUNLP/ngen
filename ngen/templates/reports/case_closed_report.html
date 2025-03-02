@@ -6,6 +6,9 @@
         <h4>
             {% translate 'Case closed' %}: {{ case.uuid }}
         </h4>
+        <small class="lead"><strong>{% translate 'Case state' %}:</strong>
+            {{ case.state.name }}</small>
+        <br>
         {% translate 'Thank you for collaborating with the mitigation of the incident' %}
     {% endblock %}
     {% block content_body %}

@@ -25,6 +25,9 @@ class EventFilterTest(BaseFilterTest):
         "tests/taxonomy.json",
         "tests/state.json",
         "tests/case_template.json",
+        "tests/contact.json",
+        "tests/network_entity.json",
+        "tests/network.json",
     ]
 
     @classmethod

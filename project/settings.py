@@ -207,6 +207,10 @@ EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
 # CELERY_EMAIL_BACKEND
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_PORT = os.environ.get("EMAIL_PORT")
+
+EMAIL_ATTACHMENTS_FILE_ROOT = "email_attachments"
+os.makedirs(os.path.join(MEDIA_ROOT, EMAIL_ATTACHMENTS_FILE_ROOT), exist_ok=True)
+
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
     "attend_cases": {
@@ -215,6 +219,10 @@ CELERY_BEAT_SCHEDULE = {
     },
     "solve_cases": {
         "task": "ngen.tasks.solve_cases",
+        "schedule": crontab(minute="*/1"),
+    },
+    "retrieve_emails": {
+        "task": "ngen.tasks.retrieve_emails",
         "schedule": crontab(minute="*/1"),
     },
 }
@@ -293,17 +301,26 @@ CONSTANCE_CONFIG = {
         "image_field",
     ),
     "TEAM_LOGO_URL": (
-        os.environ.get("TEAM_LOGO_URL"),
+        os.environ.get("TEAM_LOGO_URL", ""),
         gettext_lazy(
             "Team logo url for emails. Overrides the saved logo. Usefull to access the logo from a public url"
         ),
     ),
     "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name"),
+    "EMAIL_HOST": (os.environ.get("EMAIL_HOST"), "Email host"),
     "EMAIL_SENDER": (
         os.environ.get("EMAIL_SENDER"),
         gettext_lazy(
             "SMTP sender email address. This is the email that will be used to send emails from ngen"
         ),
+    ),
+    "EMAIL_USERNAME": (os.environ.get("EMAIL_USERNAME"), "Email username"),
+    "EMAIL_PASSWORD": (os.environ.get("EMAIL_PASSWORD"), "Email password"),
+    "EMAIL_PORT": (os.environ.get("EMAIL_PORT"), "Email port"),
+    "EMAIL_USE_TLS": (
+        os.environ.get("EMAIL_USE_TLS", "false").lower() in VALUES_TRUE,
+        "Email use TLS",
+        bool,
     ),
     "NGEN_LANG": (os.environ.get("NGEN_LANG"), gettext_lazy("NGEN default language")),
     "NGEN_LANG_EXTERNAL": (

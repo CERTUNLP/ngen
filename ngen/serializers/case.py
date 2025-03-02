@@ -319,6 +319,24 @@ class CaseSerializer(
         case = super().create(validated_data)
         return case
 
+    def update(self, instance, validated_data):
+        """
+        Update a case and add the events to the case.
+        This functions is used because updating the events collection is not triggered the signal/save method of the
+        event model.
+        We need to manually call the case_assign_communication method for each event.
+        """
+        events = validated_data.pop("events", None)
+
+        case = super().update(instance, validated_data)
+
+        if events is not None:
+            for event in events:
+                event.case = case
+                event.save()
+
+        return case
+
 
 class NetworkAdminCaseSerializer(CaseSerializer):
     events = serializers.HyperlinkedRelatedField(
