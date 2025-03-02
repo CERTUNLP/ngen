@@ -353,13 +353,9 @@ class Case(
             title,
         )
 
-    def subject_v2(self, channel_type: str) -> str:
-        return "[%s][TLP:%s][%s] Case ID: %s" % (
-            config.TEAM_NAME,
-            self.tlp.name.upper(),
-            channel_type.upper(),
-            self.uuid,
-        )
+    def subject_v2(self, channel_type: str = None) -> str:
+        channel_section = f"[{channel_type.upper()}]" if channel_type else ""
+        return f"[{config.TEAM_NAME}][TLP:{self.tlp.name.upper()}]{channel_section} Case ID: {self.uuid}"
 
     # def communicate(self, title: str, template: str, attachments=True, **kwargs):
     #     """
@@ -409,7 +405,12 @@ class Case(
     #     # TODO: make communication a class with objects that can be audited
     #     self.notification_count += 1
 
-    def communicate_v2(self, template: str, send_attachments=True):
+    def communicate_v2(
+        self,
+        template: str,
+        events: Collection["Event"] = None,
+        send_attachments: bool = True,
+    ):
         """
         Communicate V2
         Send email to the communication channels of all the events
@@ -423,11 +424,10 @@ class Case(
         if self._temp_events:
             self.events.add(*self._temp_events)
 
-        case_events = self.events.all()
         template_params = self.template_params
 
         # Communicates on the channels of each event of the case
-        for event in case_events:
+        for event in events or self.events.all():
             # If there is no channel with affected contacts, create one
             ngen.models.CommunicationChannel.get_or_create_channel_with_affected(
                 channelable=event
@@ -676,11 +676,7 @@ class Event(
         # a CaseTemplate, because the case is created after the event and
         # self.case is None
         if self.case and self.case.state.attended and self.case.events.count() >= 1:
-            self.case.communicate(
-                gettext_lazy("New event on case"),
-                "reports/case_assign.html",
-                event_by_contacts={tuple(self.email_contacts()): [self]},
-            )
+            self.case.communicate_v2("case_assign", events=[self])
 
     def clean(self):
         super().clean()
