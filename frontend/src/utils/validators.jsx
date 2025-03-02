@@ -33,7 +33,7 @@ const validateSpace = (text) => {
 };
 
 const validateLength = (text, maxLength) => {
-  return text && text.length <= maxLength;
+  return !!text && text.length <= maxLength;
 };
 
 const isEmpty = (text) => {
@@ -141,7 +141,7 @@ const validateSubdomain = (dominio) => {
 const validateDomain = (dominio) => {
   // Expresión regular para verificar la sintaxis del dominio
   // igual a validateSubdomain pero con posibilidad de solo tld
-  var patron = /^[a-zA-Z0-9]+([-.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}([-.]{1}[a-zA-Z0-9]+)*$/;
+  var patron = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$|^[a-zA-Z]{2,}$/;
   // Verificar si el dominio coincide con el patrón
   return patron.test(dominio);
 }
