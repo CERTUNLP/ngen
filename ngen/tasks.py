@@ -246,21 +246,19 @@ def async_send_email(self, email_message_id: int):
         exponential_backoff = (self.request.retries + 1) ** 2
         self.retry(exc=e, countdown=exponential_backoff)
 
-    try:
-        host = config.EMAIL_HOST
-        username = config.EMAIL_USERNAME
-        password = config.EMAIL_PASSWORD
-        port = config.EMAIL_PORT
-        use_tls = config.EMAIL_USE_TLS
+    mail_conf = {
+        "host": config.EMAIL_HOST,
+        "port": config.EMAIL_PORT or 587,
+        "use_tls": config.EMAIL_USE_TLS,
+        "fail_silently": False,
+    }
 
-        email_connection = EmailBackend(
-            host=host,
-            username=username,
-            password=password,
-            use_tls=use_tls,
-            port=port or 587,
-            fail_silently=False,
-        )
+    if config.EMAIL_USERNAME and config.EMAIL_PASSWORD:
+        mail_conf["username"] = config.EMAIL_USERNAME
+        mail_conf["password"] = config.EMAIL_PASSWORD
+
+    try:
+        email_connection = EmailBackend(**mail_conf)
 
         headers = {
             "Message-ID": email_message.message_id,

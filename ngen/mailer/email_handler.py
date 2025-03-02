@@ -29,9 +29,6 @@ class EmailHandler:
         if not self.email_sender:
             raise ValueError("EMAIL_SENDER not configured")
 
-        if not self.email_username:
-            raise ValueError("EMAIL_USERNAME not configured")
-
     def is_valid_email(self, email: str):
         """
         Method to validate email format.
