@@ -221,3 +221,31 @@ class TaxonomyTestCase(TestCase):
         with self.assertRaises(ValidationError):
             self.aNode_child4.parent = self.aNode_child3
             self.aNode_child4.save()
+        # Nuevas pruebas añadidas (comentadas en el código original):
+
+    def test_create_taxonomy(self):
+        """Verifica que se crea una taxonomía correctamente."""
+        self.assertEqual(self.parent.name, "Parent")
+        self.assertEqual(self.child1.parent, self.parent)
+
+    def test_is_internal_property(self):
+        """Verifica la propiedad is_internal."""
+        self.assertEqual(self.child1.is_internal, self.child1.group==None)
+        self.assertEqual(self.aNode_child3.is_internal, self.child1.group==None)
+        self.assertEqual(not self.parent2.is_internal, self.parent2.group!=None)
+
+    def test_is_alias_property(self):
+        """Verifica la propiedad is_alias."""
+        self.assertTrue(self.aNode_child3.is_alias)
+
+    def test_alias_of_itself_raises_error(self):
+        """Verifica que una taxonomía no puede ser alias de sí misma."""
+        with self.assertRaises(ValidationError):
+            alias = Taxonomy(name="Invalid Alias", alias_of=self.parent)
+            alias.full_clean()
+
+    def test_alias_of_alias_raises_error(self):
+        """Verifica que una taxonomía no puede ser alias de otro alias."""
+        with self.assertRaises(ValidationError):
+            alias = Taxonomy(name="Alias", alias_of=self.aNode_child3)
+            alias.full_clean()
