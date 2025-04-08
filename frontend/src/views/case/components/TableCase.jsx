@@ -13,6 +13,7 @@ import UuidField from "components/Field/UuidField";
 import TlpComponent from "../../tanstackquery/TlpComponent";
 import PriorityComponent from "../../tanstackquery/PriorityComponent";
 import StateComponent from "../../tanstackquery/StateComponent";
+
 const TableCase = ({
   setIfModify,
   cases,

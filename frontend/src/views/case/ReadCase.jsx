@@ -14,13 +14,10 @@ import CrudButton from "components/Button/CrudButton";
 import LetterFormat from "components/LetterFormat";
 import DateShowField from "components/Field/DateShowField";
 
-const ReadCase = ({ routeParams }) => {
-  const basePath = routeParams.basePath || "";
+const ReadCase = ({ routeParams, useLocalStorage=false }) => {
+  const basePath = routeParams?.basePath || "";
   const [caseItem, setCaseItem] = useState(null);
   const [buttonReturn] = useState(localStorage.getItem("button return"));
-
-  const [id] = useState(useParams());
-  const [date, setDate] = useState("");
 
   const [assigned, setAssigned] = useState("");
   const [creatorUser, setCreatorUser] = useState("");
@@ -29,7 +26,7 @@ const ReadCase = ({ routeParams }) => {
   const [state, setState] = useState("");
 
   const [modalShowEvent, setModalShowEvent] = useState(false);
-
+  
   const [list, setList] = useState([]);
   const [listTag, setListTag] = useState([]);
 
@@ -54,22 +51,27 @@ const ReadCase = ({ routeParams }) => {
     navigate(basePath + "/cases/view" + id);
   };
 
+  let id = null;
+  let caseUrl = null;
+
+  if (useLocalStorage) {
+    caseUrl = localStorage.getItem('case');
+    id = caseUrl.split("/").slice(-2, -1)[0];
+  } else {
+    id = useParams().id;
+    caseUrl = `${getUrlAsMe(COMPONENT_URL.case)}${id}/`;
+  }
+
   useEffect(() => {
-    if (id.id) {
-      getCase(getUrlAsMe(COMPONENT_URL.case) + id.id + "/")
-        .then((response) => {
-          setCaseItem(response.data);
-        })
-        .catch((error) => console.log(error));
-    } else {
-      const url = localStorage.getItem("case");
-      getCase(url)
+    if (caseUrl) {
+      getCase(caseUrl)
         .then((response) => {
           setCaseItem(response.data);
         })
         .catch((error) => console.log(error));
     }
-  }, [id]);
+    // No necesitas el 'else' porque si 'caseUrl' no existe, no se hará la petición.
+  }, [caseUrl]);
 
   useEffect(() => {
     if (caseItem !== null) {
@@ -231,7 +233,7 @@ const ReadCase = ({ routeParams }) => {
                       </td>
                       <td>{t("ngen.system.id")}</td>
                       <td>
-                        <Form.Control plaintext readOnly defaultValue={id.id} />
+                        <Form.Control plaintext readOnly defaultValue={id} />
                       </td>
                     </tr>
                     <tr>

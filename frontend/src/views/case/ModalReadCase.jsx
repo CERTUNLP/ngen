@@ -19,7 +19,7 @@ const ModalReadCase = ({ modalShowCase, tableDetail, returnToListOfCases, linkCa
       <Modal.Header closeButton />
       <Modal.Body>
         <div id="example-collapse-text">
-          <ReadCase />
+          <ReadCase useLocalStorage={true} />
         </div>
       </Modal.Body>
       {tableDetail ? (
