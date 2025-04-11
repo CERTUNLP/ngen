@@ -26,13 +26,16 @@ const SmallCaseTable = ({
   const [priorityNames, setPriorityNames] = useState({});
   const [caseItem, setCaseItem] = useState([]);
   const [tlpNames, setTlpNames] = useState({});
+  const [loadingCases, setLoadingCases] = useState(true);
   const { t } = useTranslation();
 
   useEffect(() => {
     if (readCase) {
+      setLoadingCases(true);
       getCase(readCase)
         .then((response) => {
           setCaseItem([response.data]);
+          setLoadingCases(false);
         })
         .catch((error) => {
           console.log(error);
@@ -112,32 +115,41 @@ const SmallCaseTable = ({
           </Row>
         </Card.Header>
         <Card.Body>
-          {caseItem.length === 0 ? (
-            t("ngen.no_case")
-          ) : (
-            <TableCase
-              cases={caseItem}
-              disableCheckbox={true}
-              disableDateOrdering={true}
-              priorityNames={priorityNames}
-              stateNames={stateNames}
-              userNames={userNames}
-              tlpNames={tlpNames}
-              editColum={false}
-              deleteColum={true}
-              deleteColumForm={true}
-              detailModal={true}
-              navigationRow={false}
-              selectCase={true}
-              disableNubersOfEvents={true}
-              modalCaseDetail={modalCaseDetail}
-              deleteCaseFromForm={deleteCaseFromForm}
-              disableColumOption={disableColumOption}
-              disableDateModified={true}
-              disableDate={true}
-              basePath = {basePath}
-            />
-          )}
+          {
+            loadingCases ? (
+              <div className="text-center">
+                <div className="spinner-border" role="status">
+                </div>
+              </div>
+            )
+            :
+            caseItem.length === 0 ? (
+              t("ngen.no_case")
+              )
+              : 
+              <TableCase
+                cases={caseItem}
+                disableCheckbox={true}
+                disableDateOrdering={true}
+                priorityNames={priorityNames}
+                stateNames={stateNames}
+                userNames={userNames}
+                tlpNames={tlpNames}
+                editColum={false}
+                deleteColum={true}
+                deleteColumForm={true}
+                detailModal={true}
+                navigationRow={false}
+                selectCase={true}
+                disableNubersOfEvents={true}
+                modalCaseDetail={modalCaseDetail}
+                deleteCaseFromForm={deleteCaseFromForm}
+                disableColumOption={disableColumOption}
+                disableDateModified={true}
+                disableDate={true}
+                basePath = {basePath}
+              />
+          }
         </Card.Body>
       </Card>
     </React.Fragment>

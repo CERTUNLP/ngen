@@ -27,7 +27,8 @@ const ReadCase = ({ routeParams, useLocalStorage=false }) => {
 
   const [modalShowEvent, setModalShowEvent] = useState(false);
   
-  const [list, setList] = useState([]);
+  const [eventList, setEventList] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
   const [listTag, setListTag] = useState([]);
 
   const [evidences, setEvidences] = useState([]);
@@ -75,13 +76,15 @@ const ReadCase = ({ routeParams, useLocalStorage=false }) => {
 
   useEffect(() => {
     if (caseItem !== null) {
+      setLoadingEvents(true);
       const eventPromises = caseItem.events.map((url) => getEvent(url));
 
       Promise.all(eventPromises)
         .then((responses) => {
           // Todas las llamadas se han completado exitosamente
           const eventsData = responses.map((response) => response.data);
-          setList(eventsData);
+          setEventList(eventsData);
+          setLoadingEvents(false);
         })
         .catch((error) => {
           // Maneja cualquier error que ocurra durante las llamadas
@@ -416,13 +419,14 @@ const ReadCase = ({ routeParams, useLocalStorage=false }) => {
             />
 
             <SmallEventTable
-              list={list}
+              list={eventList}
               disableLink={true}
               disableColumOption={false}
               disableUuid={false}
               disableColumnDelete={true}
               disableColumnCase={true}
-              basePath = {basePath}
+              basePath={basePath}
+              loading={loadingEvents}
             />
 
             <Card>
