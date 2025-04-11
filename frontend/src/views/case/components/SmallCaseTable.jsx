@@ -43,6 +43,7 @@ const SmallCaseTable = ({
     }
     if (readCase === undefined) {
       setCaseItem([]);
+      setLoadingCases(false);
     }
 
     getMinifiedTlp().then((response) => {
