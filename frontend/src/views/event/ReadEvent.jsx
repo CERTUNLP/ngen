@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button, Card, Col, Form, Row, Table } from "react-bootstrap";
-import CallBackendByName from "../../components/CallBackendByName";
-import CallBackendByType from "../../components/CallBackendByType";
-import { getTaxonomy } from "../../api/services/taxonomies";
-import { getPriority } from "../../api/services/priorities";
-import { getUser } from "../../api/services/users";
-import { getTLPSpecific } from "../../api/services/tlp";
-import { getFeed } from "../../api/services/feeds";
-import { getEvent } from "../../api/services/events";
+import CrudButton from "components/Button/CrudButton";
+import CallBackendByName from "components/CallBackendByName";
+import CallBackendByType from "components/CallBackendByType";
+import { getTaxonomy } from "api/services/taxonomies";
+import { getPriority } from "api/services/priorities";
+import { getUser } from "api/services/users";
+import { getTLPSpecific } from "api/services/tlp";
+import { getFeed } from "api/services/feeds";
+import { getEvent } from "api/services/events";
 import SmallEventTable from "./components/SmallEventTable";
-import { getArtefact } from "../../api/services/artifact";
-import { getMinifiedTag } from "../../api/services/tags";
+import { getArtefact } from "api/services/artifact";
+import { getMinifiedTag } from "api/services/tags";
 import SmallCaseTable from "../case/components/SmallCaseTable";
-import { getEvidence } from "../../api/services/evidences";
-import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
+import { getEvidence } from "api/services/evidences";
+import EvidenceCard from "components/UploadFiles/EvidenceCard";
 import { useTranslation } from "react-i18next";
 import PermissionCheck from "components/Auth/PermissionCheck";
 import { COMPONENT_URL } from "config/constant";
@@ -194,6 +195,14 @@ const ReadEvent = ({ routeParams }) => {
 
   return (
     <React.Fragment>
+      <Row>
+        <Col>
+          <h1 className="h3 mb-4 text-gray-800">{t("ngen.event_one")} {body.uuid}</h1>
+        </Col>
+        <Col className="text-right" style={{ textAlign: 'right' }}>
+          <CrudButton type="edit" to={`${basePath}/events/edit/${id.id}`} checkPermRoute />
+        </Col>
+      </Row>
       <Card>
         <Card.Header>
           <Card.Title as="h5">{t("menu.principal")}</Card.Title>

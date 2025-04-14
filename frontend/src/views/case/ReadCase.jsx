@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
+import { Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import SmallEventTable from "../event/components/SmallEventTable";
 import { getCase } from "../../api/services/cases";
@@ -220,6 +220,14 @@ const ReadCase = ({ routeParams, useLocalStorage=false }) => {
   return (
     caseItem && (
       <React.Fragment>
+        <Row>
+          <Col>
+            <h1 className="h3 mb-4 text-gray-800">{t("ngen.case_one")} {caseItem.uuid}</h1>
+          </Col>
+          <Col className="text-right" style={{ textAlign: 'right' }}>
+            <CrudButton type="edit" to={`${basePath}/cases/edit/${id}`} checkPermRoute />
+          </Col>
+        </Row>
         <Row>
           <Col sm={12}>
             <Card>
