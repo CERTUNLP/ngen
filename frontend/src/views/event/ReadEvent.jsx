@@ -13,7 +13,9 @@ import SmallEventTable from "./components/SmallEventTable";
 import { getArtefact } from "../../api/services/artifact";
 import { getMinifiedTag } from "../../api/services/tags";
 import SmallCaseTable from "../case/components/SmallCaseTable";
+import SmallRetestTable from "./components/SmallRetestTable";
 import { getEvidence } from "../../api/services/evidences";
+import { getRetests } from "../../api/services/eventAnalysis";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
 import { useTranslation } from "react-i18next";
 import PermissionCheck from "components/Auth/PermissionCheck";
@@ -26,6 +28,8 @@ const ReadEvent = ({ routeParams }) => {
   const [eventItem, setEventItem] = useState(null);
   const [buttonReturn] = useState(localStorage.getItem("button return"));
   const [evidences, setEvidences] = useState([]);
+  const [retests, setRetests] = useState([]);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [id] = useState(useParams());
   const [children, setChildren] = useState([]);
   const [childrenEvidences, setChildrenEvidences] = useState([]);
@@ -113,6 +117,22 @@ const ReadEvent = ({ routeParams }) => {
       .catch((error) => {
         console.log(error);
       });
+  }, [eventItem]);
+
+  useEffect(() => {
+    const fetchAllRetests = async () => {
+      if (eventItem) {
+        try {
+          const response = await getRetests(eventItem.url, isFirstLoad);
+          setRetests(response || []);
+        } catch (error) {
+          console.error("Error fetching retests data:", error);
+        } finally {
+          setIsFirstLoad(false);
+        }
+      }
+    };
+    fetchAllRetests();
   }, [eventItem]);
 
   useEffect(() => {
@@ -397,6 +417,15 @@ const ReadEvent = ({ routeParams }) => {
         title={t("ngen.children")}
         basePath={basePath}
       />
+
+      <Card>
+        <SmallRetestTable
+          retests={retests}
+          eventId={id.id}
+          eventUrl={eventItem?.url}
+          taxonomyUrl={eventItem?.taxonomy}
+        />
+      </Card>
 
       <Card>
         <Card.Header>
