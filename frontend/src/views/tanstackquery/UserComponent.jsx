@@ -22,11 +22,11 @@ const UserComponent = ({ user }) => {
   if (error) return <div>Error: {error.message}</div>;
 
   const selectedUser = data?.[user];
-//revisar como se displayea user, si usa letterformat...
+// User Table display??
   return (
 
         <div>
-      <LetterFormat useBadge={true} stringToDisplay={selectedUser.name}  bgcolor={"#0f0"}/> 
+      <LetterFormat useBadge={true} stringToDisplay={selectedUser.username}  bgcolor={"#0f0"}/> 
         </div>
   );
 };  

@@ -11,7 +11,7 @@ import DateShowField from "components/Field/DateShowField";
 import TagContainer from "components/Badges/TagContainer";
 import { useTranslation } from "react-i18next";
 import UuidField from "components/Field/UuidField";
-import { markSolved } from "api/services/events";
+import { markSolved } from "api/services/events"; 
 import {
   QueryClient,
   QueryClientProvider,
@@ -165,6 +165,7 @@ const TableEvents = ({
     event?.tags?.includes("falso positivo") ? "row-false-positive" : "row-default";  
 
   const letterSize = {};
+  
   return (
     <React.Fragment>
       <ul className="list-group my-4">
