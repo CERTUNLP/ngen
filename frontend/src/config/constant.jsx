@@ -89,4 +89,6 @@ export const COMPONENT_URL = {
   group: "groups/",
   configPublic: "ngenconfig/",
   tag: "tag/",
+  eventAnalysis: "eventanalysis/",
+  analyzerMapping: "analyzermapping/",
 };

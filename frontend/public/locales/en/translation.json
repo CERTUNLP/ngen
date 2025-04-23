@@ -494,5 +494,20 @@
   "ngen.no_case": "Not assigned to a case",
   "ngen.no_evidence": "There are no evidences uploaded",
   "ngen.no_event_in_case": "This case has no events",
-  "ngen.conection_failed": "Connection failed with the server"
+  "ngen.conection_failed": "Connection failed with the server",
+  "ngen.retests": "Retests",
+  "ngen.retest.target": "IP/Domain",
+  "ngen.retest.result": "Result",
+  "ngen.retest.vulnerable": "Vulnerable",
+  "ngen.retest.analyzerType": "Analyzer Type",
+  "ngen.retest.date": "Date",
+  "ngen.retest.details": "Details",
+  "ngen.no_retests": "No retests available",
+  "ngen.retest.create": "Retest",
+  "ngen.retest.success": "Retest triggered successfully!",
+  "ngen.retest.error": "Failed to trigger retest.",
+  "ngen.retest.refresh": "Refresh",
+  "ngen.retest.no_analyzer_mapping": "There is no analyzer mapping related to the event's taxonomy.",
+  "ngen.retest.refresh.success": "Retests table refreshed successfully!",
+  "ngen.retest.refresh.error": "Failed to refresh retests table."
 }
