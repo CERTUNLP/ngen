@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { Col, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import { getCase } from "../../api/services/cases";
+import CrudButton from "components/Button/CrudButton";
+import { getCase } from "api/services/cases";
 import FormCase from "./components/FormCase";
-import { getState } from "../../api/services/states";
-import { getMinifiedTag } from "../../api/services/tags";
+import { getState } from "api/services/states";
+import { getMinifiedTag } from "api/services/tags";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "config/constant";
 
-const EditCase = ({asNetworkAdmin}) => {
+const EditCase = ({ routeParams }) => {
+  const basePath = routeParams?.basePath || "";
   const { t } = useTranslation();
 
   const [caseItem, setCaseItem] = useState(null);
@@ -15,12 +18,12 @@ const EditCase = ({asNetworkAdmin}) => {
   //multiselect
   const [allStates, setSupportedStates] = useState([]);
   const [updateCase, setUpdateCase] = useState([]);
-  const [id] = useState(useParams());
+  const [id] = useState(useParams().id);
   const [listTag, setListTag] = useState([]);
 
   useEffect(() => {
-    if (id.id) {
-      getCase(COMPONENT_URL.case + id.id + "/")
+    if (id) {
+      getCase(COMPONENT_URL.case + id + "/")
         .then((response) => {
           setCaseItem(response.data);
         })
@@ -66,6 +69,14 @@ const EditCase = ({asNetworkAdmin}) => {
   return (
     caseItem && (
       <React.Fragment>
+        <Row>
+          <Col>
+            <h1 className="h3 mb-4 text-gray-800">{t("ngen.case_one")} {caseItem.uuid}</h1>
+          </Col>
+          <Col className="text-right" style={{ textAlign: 'right' }}>
+            <CrudButton type="read" to={`${basePath}/cases/view/${id}`} checkPermRoute />
+          </Col>
+        </Row>
         <FormCase
           caseItem={caseItem}
           allStates={allStates}
@@ -76,7 +87,7 @@ const EditCase = ({asNetworkAdmin}) => {
           buttonsModalColum={true}
           setUpdateCase={setUpdateCase}
           updateCase={updateCase}
-          asNetworkAdmin={asNetworkAdmin}
+          asNetworkAdmin={routeParams.asNetworkAdmin}
         />
       </React.Fragment>
     )

@@ -67,6 +67,7 @@ const FormEvent = (props) => {
   const [selectCase, setSelectCase] = useState("");
   const [states, setStates] = useState([]); //multiselect
   const [allStates, setAllStates] = useState({}); //multiselect
+  const [caseTable, setCaseTable] = useState(undefined);
 
   const [modalShowCase, setModalShowCase] = useState(false);
   const [caseToLink, setCaseToLink] = useState({});
@@ -117,29 +118,38 @@ const FormEvent = (props) => {
       });
   }, []);
 
+
+
+  useEffect(() => {
+    if (props.body.case !== null) {
+      getCase(props.body.case)
+        .then((response) => {
+          setCaseTable(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [props.body.case]);
+
+
   useEffect(() => {
     if (
       Object.keys(props.priorityNames).length !== 0 &&
       Object.keys(props.tlpNames).length !== 0 &&
       Object.keys(allStates).length !== 0 &&
       Object.keys(props.userNames).length !== 0 &&
-      props.body.case !== null
+      caseTable !== undefined
     ) {
-      getCase(props.body.case)
-        .then((response) => {
-          setCaseToLink({
-            value: response.data.url,
-            name: response.data.name,
-            date: response.data.date,
-            priority: props.priorityNames[response.data.priority],
-            tlp: response.data.tlp ? props.tlpNames[response.data.tlp].name : "",
-            state: allStates[response.data.state],
-            user: props.userNames[response.data.user_creator]
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      setCaseToLink({
+        value: caseTable.url,
+        name: caseTable.name,
+        date: caseTable.date,
+        priority: props.priorityNames[caseTable.priority],
+        tlp: caseTable.tlp ? props.tlpNames[caseTable.tlp].name : "",
+        state: allStates[caseTable.state],
+        user: props.userNames[caseTable.user_creator]
+      });
     }
 
     if (props.tlp.length > 0) {
@@ -170,7 +180,7 @@ const FormEvent = (props) => {
         }
       });
     }
-  }, [props.priorityNames, props.tlpNames, props.userNames, allStates]);
+  }, [props.priorityNames, props.tlpNames, props.userNames, allStates, caseTable]);
 
   useEffect(() => {
     let listDefaultArtifact = props.listArtifact
@@ -398,6 +408,7 @@ const FormEvent = (props) => {
   const deleteCaseFromForm = () => {
     setCaseToLink({});
     setSelectedCases([]);
+    setCaseTable(undefined);
   };
 
   return (
@@ -580,10 +591,11 @@ const FormEvent = (props) => {
         <SmallCaseTable
           readCase={caseToLink.value}
           modalCaseDetail={tableCaseDetail}
-          disableLink={true}
           modalCase={modalCase}
           modalListCase={modalListCase}
           deleteCaseFromForm={deleteCaseFromForm}
+          disableCreateButton={() => {return caseTable}}
+          disableLinkButton={() => {return caseTable}}
         />
       )}
 
