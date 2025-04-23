@@ -598,7 +598,7 @@ SIMPLE_JWT = {
 }
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# This variables are used to provide visualization on the admin interface
+# These variables are used to provide visualization on the admin interface
 # and are not used in the code
 ENVIRON_CONFIG = {
     "DEBUG": DEBUG,
