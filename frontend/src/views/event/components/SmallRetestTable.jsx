@@ -63,7 +63,6 @@ const SmallRetestTable = ({ retests, eventId, eventUrl, taxonomyUrl }) => {
   const refreshRetests = async () => {
     setIsLoading(true);
     setIsRefreshDisabled(true);
-    console.log("Refresh Retests");
     try {
       const response = await getRetests(eventUrl);
       const sortedRetests = (response || []).sort(

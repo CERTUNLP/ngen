@@ -234,7 +234,10 @@ def retest_event_kintun(event_id):
         
         return kintun_data
     except Exception as e:
-        event_analysis.delete()
+        try:
+            event_analysis.delete()
+        except Exception as delete_error:
+            return {"error": f"Original error: {str(e)}, Deletion error: {str(delete_error)}"}
         return {"error": str(e)}
 
 
