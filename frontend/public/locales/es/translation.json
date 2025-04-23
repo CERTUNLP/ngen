@@ -133,6 +133,7 @@
   "ngen.color.placeholder": "Agregar un color",
   "ngen.color.validate": "Introducir un color",
   "ngen.comments": "Comentarios",
+  "ngen.configuration.editable_via_env": "Editable a través de variables de entorno",
   "ngen.contact.create": "Crear contacto",
   "ngen.contact.detail": "Detalle del contacto",
   "ngen.contact.edit": "Editar contacto",
