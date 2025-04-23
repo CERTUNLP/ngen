@@ -535,6 +535,7 @@ if DEBUG:
     }
 
 frontend_urls = os.environ.get("DJANGO_CORS_ALLOWED_ORIGINS", "")
+CORS_ALLOW_ALL_ORIGINS = False
 if frontend_urls:
     CORS_ALLOWED_ORIGINS = frontend_urls.split(",")
 else:
