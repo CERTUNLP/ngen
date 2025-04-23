@@ -29,7 +29,7 @@ def get_settings():
 
     # append static settings
     for key, value in project_settings.ENVIRON_CONFIG.items():
-        if not key in settings.CONFIG:
+        if key not in settings.CONFIG:
             data = {
                 "key": key,
                 "default": value,
