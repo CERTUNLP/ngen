@@ -10,26 +10,32 @@ import { useTranslation } from "react-i18next";
 
 const SmallCaseTable = ({
   readCase,
-  disableLink,
+  showCreateButton,
+  showLinkButton,
   modalCase,
   modalListCase,
   modalCaseDetail,
   deleteCaseFromForm,
   disableColumOption,
-  basePath = ""
+  basePath = "",
+  disableCreateButton = () => { return false; },
+  disableLinkButton = () => { return false; },
 }) => {
   const [userNames, setUserNames] = useState({});
   const [stateNames, setStateNames] = useState({});
   const [priorityNames, setPriorityNames] = useState({});
   const [caseItem, setCaseItem] = useState([]);
   const [tlpNames, setTlpNames] = useState({});
+  const [loadingCases, setLoadingCases] = useState(true);
   const { t } = useTranslation();
 
   useEffect(() => {
     if (readCase) {
+      setLoadingCases(true);
       getCase(readCase)
         .then((response) => {
           setCaseItem([response.data]);
+          setLoadingCases(false);
         })
         .catch((error) => {
           console.log(error);
@@ -37,6 +43,7 @@ const SmallCaseTable = ({
     }
     if (readCase === undefined) {
       setCaseItem([]);
+      setLoadingCases(false);
     }
 
     getMinifiedTlp().then((response) => {
@@ -88,18 +95,18 @@ const SmallCaseTable = ({
             <Col sm={12} lg={8}>
               <Card.Title as="h5">{t("ngen.case_one")}</Card.Title>
             </Col>
-            {disableLink ? (
+            {!showCreateButton ? (
               <Col sm={12} lg={2}>
-                <Button size="lm" variant="outline-dark" onClick={() => modalCase()}>
+                <Button size="lm" variant="outline-dark" onClick={() => modalCase()} disabled={disableCreateButton()}>
                   {t("ngen.case.create")}
                 </Button>
               </Col>
             ) : (
               ""
             )}
-            {disableLink ? (
+            {!showLinkButton ? (
               <Col sm={12} lg={2}>
-                <Button size="lm" variant="outline-dark" onClick={() => modalListCase()}>
+                <Button size="lm" variant="outline-dark" onClick={() => modalListCase()} disabled={disableLinkButton()}>
                   {t("ngen.case_link")}
                 </Button>
               </Col>
@@ -109,32 +116,41 @@ const SmallCaseTable = ({
           </Row>
         </Card.Header>
         <Card.Body>
-          {caseItem.length === 0 ? (
-            t("ngen.no_case")
-          ) : (
-            <TableCase
-              cases={caseItem}
-              disableCheckbox={true}
-              disableDateOrdering={true}
-              priorityNames={priorityNames}
-              stateNames={stateNames}
-              userNames={userNames}
-              tlpNames={tlpNames}
-              editColum={false}
-              deleteColum={true}
-              deleteColumForm={true}
-              detailModal={true}
-              navigationRow={false}
-              selectCase={true}
-              disableNubersOfEvents={true}
-              modalCaseDetail={modalCaseDetail}
-              deleteCaseFromForm={deleteCaseFromForm}
-              disableColumOption={disableColumOption}
-              disableDateModified={true}
-              disableDate={true}
-              basePath = {basePath}
-            />
-          )}
+          {
+            loadingCases ? (
+              <div className="text-center">
+                <div className="spinner-border" role="status">
+                </div>
+              </div>
+            )
+            :
+            caseItem.length === 0 ? (
+              t("ngen.no_case")
+              )
+              : 
+              <TableCase
+                cases={caseItem}
+                disableCheckbox={true}
+                disableDateOrdering={true}
+                priorityNames={priorityNames}
+                stateNames={stateNames}
+                userNames={userNames}
+                tlpNames={tlpNames}
+                editColum={false}
+                deleteColum={true}
+                deleteColumForm={true}
+                detailModal={true}
+                navigationRow={false}
+                selectCase={true}
+                disableNubersOfEvents={true}
+                modalCaseDetail={modalCaseDetail}
+                deleteCaseFromForm={deleteCaseFromForm}
+                disableColumOption={disableColumOption}
+                disableDateModified={true}
+                disableDate={true}
+                basePath = {basePath}
+              />
+          }
         </Card.Body>
       </Card>
     </React.Fragment>

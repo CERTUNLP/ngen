@@ -202,28 +202,42 @@ def whois_lookup_task(self, ip_or_domain):
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
-def retest_event_kintun(event):
+def retest_event_kintun(event_id):
     """
     Tarea de Celery para retestear un evento utilizando Kintun.
     """
     try:
+        event = ngen.models.Event.objects.get(pk=event_id)
         mapping_to = ngen.models.AnalyzerMapping.objects.get(
-            mapping_from=event.taxonomy, analyzer_type="kintun"
+            mapping_from=event.taxonomy
         ).mapping_to
-        kintun_data = kintun.retest_event_kintun(event, mapping_to)
         analysis_data = {
             "date": timezone.now(),
             "analyzer_type": "kintun",
-            "vulnerable": kintun_data.get("vulnerable", False),
-            "result": kintun_data.get("evidence", ""),
+            "vulnerable": False,
+            "result": "in_progress",
             "target": event.address_value,
-            "scan_type": kintun_data.get("vuln_type", ""),
-            "analyzer_url": kintun_data.get("_id", ""),
+            "scan_type": "in_progress",
+            "analyzer_url": "in_progress",
             "event": event,
         }
-        ngen.models.EventAnalysis.objects.create(**analysis_data)
+        event_analysis = ngen.models.EventAnalysis.objects.create(**analysis_data)
+        
+        kintun_data = kintun.retest_event_kintun(event, mapping_to)
+        
+        event_analysis.vulnerable = kintun_data.get("vulnerable", False)
+        event_analysis.result = kintun_data.get("evidence", "")
+        event_analysis.scan_type = kintun_data.get("vuln_type", "")
+        event_analysis.analyzer_url = kintun_data.get("_id", "")
+
+        event_analysis.save()
+        
         return kintun_data
     except Exception as e:
+        try:
+            event_analysis.delete()
+        except Exception as delete_error:
+            return {"error": f"Original error: {str(e)}, Deletion error: {str(delete_error)}"}
         return {"error": str(e)}
 
 

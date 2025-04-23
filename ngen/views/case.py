@@ -140,7 +140,14 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         Retests events with Kintun API `/event/<pk>/retest/`.
         """
         event = self.get_object()
-        retest_event_kintun(event=event)
+
+        if models.EventAnalysis.objects.filter(event=event, result="in_progress").exists():
+            return Response(
+                {"message": gettext_lazy("A retest is already in progress for this event.")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+    
+        retest_event_kintun.delay(event_id=event.id)
         return Response(
             {"message": gettext_lazy(f"Task retest event for {event.pk} launched")},
             status=status.HTTP_200_OK,

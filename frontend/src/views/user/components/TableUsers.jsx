@@ -14,7 +14,9 @@ import { getPriority } from "../../../api/services/priorities";
 import { useTranslation } from "react-i18next";
 import YesNoField from "components/Field/YesNoField";
 import { userIsSuperuser, userIsStaff } from "utils/permissions";
+import LetterFormat from "components/LetterFormat";
 import UserComponent from "views/tanstackquery/UserComponent";
+
 
 function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, setIsModify }) {
   const [remove, setRemove] = useState(false);
@@ -163,11 +165,15 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
           </thead>
           <tbody>
             {users.map((user, index) => {
+            
+            
+            
               const parts = user.url.split("/");
               let itemNumber = parts[parts.length - 2];
               return (
                 <tr key={index}>
-                  <td>{user.username}</td>
+                  <td><UserComponent user={user.url}></UserComponent>
+                  </td>
                   <td>{user.email}</td>
                   <td>{user.first_name}</td>
                   <td>
