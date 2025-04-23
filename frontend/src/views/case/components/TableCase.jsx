@@ -13,6 +13,8 @@ import UuidField from "components/Field/UuidField";
 import TlpComponent from "../../tanstackquery/TlpComponent";
 import PriorityComponent from "../../tanstackquery/PriorityComponent";
 import StateComponent from "../../tanstackquery/StateComponent";
+import EventComponent from "views/tanstackquery/EventComponent";
+import TaxonomyComponent from "views/tanstackquery/TaxonomyComponent";
 const TableCase = ({
   setIfModify,
   cases,
@@ -199,12 +201,12 @@ const TableCase = ({
           </tr>
         </thead>
         <tbody>
+        
           {list.map((caseItem, index) => {
             if (!caseItem) {
               // fixes some rendering issues
               return null;
             }
-
             const parts = caseItem.url.split("/");
             let itemNumber = parts[parts.length - 2];
 
@@ -273,9 +275,11 @@ const TableCase = ({
                   </td>
                 )}
                 <td> <StateComponent state={caseItem?.state}></StateComponent></td>
-                {!disableEvents && (
+                {!disableEvents && caseItem?.events && (
                   <td>
-                    <ListDomain events={caseItem.events} />
+<EventComponent event={caseItem?.events?.[0]} />
+<TaxonomyComponent taxonomy={caseItem?.events?.[0]?.taxonomy || {}} />
+
                   </td>
                 )}
                 {!disableNubersOfEvents && <td>{caseItem.events_count}</td>}

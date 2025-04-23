@@ -9,7 +9,7 @@ const TaxonomyComponent = ({ taxonomy }) => {
 
   // Fetch taxonomy data using useQuery.
   const { data, isLoading, error } = useQuery({
-    queryKey: ['taxonomyKey'], // Single query key to fetch all TLP data
+    queryKey: ['taxonomyKey'], // Single query key to fetch all this Taxonomy data
     queryFn: getQueryTaxonomy,
 
     staleTime: 5 * 60 * 1000, 
@@ -22,11 +22,14 @@ const TaxonomyComponent = ({ taxonomy }) => {
   if (error) return <div>Error: {error.message}</div>;
 
   const selectedTaxonomy = data?.[taxonomy];
-//revisar como se displayea taxonomy, si usa letterformat...
   return (
 
         <div>
-      <LetterFormat useBadge={true} stringToDisplay={selectedTaxonomy.name}  bgcolor={"#0f0"}/> 
+<LetterFormat 
+  useBadge={true}
+  stringToDisplay={selectedTaxonomy?.name || ""} 
+  bgcolor="#0f0" 
+/>
         </div>
   );
 };  
