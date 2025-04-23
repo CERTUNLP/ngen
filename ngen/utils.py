@@ -23,8 +23,22 @@ def get_settings():
                 else getattr(config, key)
             ),
             "value_type": type(default).__name__,
+            "editable": True,
         }
         setting_list.append(data)
+
+    # append static settings
+    for key, value in project_settings.ENVIRON_CONFIG.items():
+        if not key in settings.CONFIG:
+            data = {
+                "key": key,
+                "default": value,
+                "help_text": "",
+                "value": value,
+                "value_type": type(value).__name__,
+                "editable": False,
+            }
+            setting_list.append(data)
 
     setting_list = sorted(setting_list, key=lambda x: x["key"])
     return setting_list

@@ -42,6 +42,7 @@ class ConstanceSerializer(serializers.Serializer):
     help_text = serializers.SerializerMethodField()
     value_type = serializers.SerializerMethodField()
     value = ConstanceValueField()
+    editable = serializers.BooleanField(default=True)
     settings = None
 
     def get_settings(self):

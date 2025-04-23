@@ -135,24 +135,32 @@ const EditSetting = () => {
                       <td>
                         <Form.Control style={textareaStyle} as="textarea" rows={3} readOnly value={setting.help_text} />
                       </td>
-                      <td>{setting.default}</td>
+                      <td>{setting.default.toString()}</td>
                       <td>
-                        <Form.Group controlId={`formGridAddress${index}`}>
-                          <Form.Control
-                            name="value"
-                            value={setting.value}
-                            maxLength="150"
-                            placeholder={t("w.issue.placeholder")}
-                            onChange={(e) => completeField(e, setting.url)}
-                          />
-                        </Form.Group>
+                        {setting.editable ? (
+                          <Form.Group controlId={`formGridAddress${index}`}>
+                            <Form.Control
+                              name="value"
+                              value={setting.value.toString()}
+                              maxLength="150"
+                              placeholder={t("w.issue.placeholder")}
+                              onChange={(e) => completeField(e, setting.url)}
+                            />
+                          </Form.Group>
+                        ) : (
+                          <span>{setting.value.toString()}</span>
+                        )}
                       </td>
                       <PermissionCheck permissions="change_constance">
                         <td>
-                          {setting.key !== "TEAM_LOGO" ? (
-                            <CrudButton type="save" variant="outline-warning" onClick={() => PatchSetting(setting.url)} text={t("button.save")} />
+                          {setting.editable ? (
+                            setting.key !== "TEAM_LOGO" ? (
+                              <CrudButton type="save" variant="outline-warning" onClick={() => PatchSetting(setting.url)} text={t("button.save")} />
+                            ) : (
+                              <UploadButton variant="outline-warning" text={t("w.upload")} uploadHandler={uploadHandler} />
+                              )
                           ) : (
-                            <UploadButton variant="outline-warning" text={t("w.upload")} uploadHandler={uploadHandler} />
+                            <></>
                           )}
                         </td>
                       </PermissionCheck>
