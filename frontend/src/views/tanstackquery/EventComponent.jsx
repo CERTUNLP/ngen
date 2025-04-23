@@ -7,7 +7,7 @@ import LetterFormat from "../../components/LetterFormat";
 const EventComponent = ({ event }) => {
 
 
-  // Fetch user data using useQuery.
+  // Fetch event data using useQuery.
   const { data, isLoading, error } = useQuery({
     queryKey: ['eventKey'], // Single query key to fetch all event data
     queryFn: getQueryEvent,
