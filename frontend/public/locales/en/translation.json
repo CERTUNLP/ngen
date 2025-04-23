@@ -133,6 +133,7 @@
   "ngen.color": "Color",
   "ngen.color.placeholder": "Add a color",
   "ngen.color.validate": "Enter a color",
+  "ngen.configuration.editable_via_env": "This option is editable via environment variables",
   "ngen.comments": "Comments",
   "ngen.contact.create": "Create contact",
   "ngen.contact.detail": "Contact detail",
