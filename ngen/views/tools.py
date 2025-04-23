@@ -96,9 +96,16 @@ class ConstanceViewSet(viewsets.ModelViewSet):
         """PATCH - Update <key>"""
         data = request.data.copy()
         data["key"] = key
-        if not key in [item["key"] for item in get_settings()]:
+        items = get_settings()
+        item = [item for item in items if item["key"] == key]
+        if not item:
             return Response(
                 status=status.HTTP_404_NOT_FOUND, data={"message": "Key not found."}
+            )
+        if not item[0]["editable"]:
+            return Response(
+                status=status.HTTP_405_METHOD_NOT_ALLOWED,
+                data={"message": "Key is not editable."},
             )
         serializer = serializers.ConstanceSerializer(data=data)
         if serializer.is_valid():
@@ -128,7 +135,13 @@ class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
     lookup_field = "key"
     lookup_value_regex = "[A-Za-z_][A-Za-z0-9_]*"
-    valid_keys = ["NGEN_LANG", "NGEN_LANG_EXTERNAL", "PAGE_SIZE"]
+    valid_keys = [
+        "NGEN_LANG",
+        "NGEN_LANG_EXTERNAL",
+        "PAGE_SIZE",
+        "JWT_ACCESS_TOKEN_LIFETIME",
+        "JWT_REFRESH_TOKEN_LIFETIME",
+    ]
 
     def get_queryset(self):
         """GET - List all instances"""

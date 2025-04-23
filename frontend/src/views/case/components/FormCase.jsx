@@ -19,6 +19,7 @@ import EvidenceCard from "components/UploadFiles/EvidenceCard";
 import { getEvidence } from "api/services/evidences";
 import ModalCreateEvent from "views/event/ModalCreateEvent";
 import CrudButton from "components/Button/CrudButton";
+import { event } from "jquery";
 
 const FormCase = (props) => {
   // props: edit, caseitem, allStates
@@ -75,6 +76,8 @@ const FormCase = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedEvent, setSelectedEvent] = useState([]);
   const [eventList, setEventList] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [hasFetchedEvents, setHasFetchedEvents] = useState(false);
   const [taxonomyFilter, setTaxonomyFilter] = useState("");
   const [tlpFilter, setTlpFilter] = useState("");
   const [feedFilter, setFeedFilter] = useState("");
@@ -117,13 +120,20 @@ const FormCase = (props) => {
   }, [props.caseItem.evidence]);
 
   useEffect(() => {
+    if (events?.length === 0) {
+      setEventList([]);
+      setSelectedEvent([]);
+      setLoadingEvents(false);
+    }
     if (
       Object.keys(taxonomyNames).length !== 0 &&
       Object.keys(feedNames).length !== 0 &&
       Object.keys(tlpNames).length !== 0 &&
-      events.length > 0
+      events.length > 0 &&
+      !hasFetchedEvents // Add this condition
     ) {
       async function fetchAndSetEvents(events) {
+        setLoadingEvents(true);
         try {
           const responses = await Promise.all(
             events.map((event) =>
@@ -132,6 +142,8 @@ const FormCase = (props) => {
               })
             )
           );
+          setLoadingEvents(false);
+          setHasFetchedEvents(true);
           const newEventList = responses.map((response) => ({
             url: response.url,
             uuid: response.uuid,
@@ -149,11 +161,9 @@ const FormCase = (props) => {
           console.error("Error fetching events:", error);
         }
       }
-
-      // Llamada a la función
       fetchAndSetEvents(events);
     }
-  }, [taxonomyNames, feedNames, tlpNames, events]);
+  }, [taxonomyNames, feedNames, tlpNames, events, hasFetchedEvents]); 
 
   useEffect(() => {
     if (allPriorities.length > 0) {
@@ -737,6 +747,7 @@ const FormCase = (props) => {
           disableUuid={false}
           disableColumOption={false}
           disableLink={true}
+          loading={loadingEvents}  
         />
       )}
 

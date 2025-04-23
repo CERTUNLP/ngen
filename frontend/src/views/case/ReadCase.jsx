@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
+import { Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import SmallEventTable from "../event/components/SmallEventTable";
 import { getCase } from "../../api/services/cases";
@@ -14,13 +14,10 @@ import CrudButton from "components/Button/CrudButton";
 import LetterFormat from "components/LetterFormat";
 import DateShowField from "components/Field/DateShowField";
 
-const ReadCase = ({ routeParams }) => {
-  const basePath = routeParams.basePath || "";
+const ReadCase = ({ routeParams, useLocalStorage=false }) => {
+  const basePath = routeParams?.basePath || "";
   const [caseItem, setCaseItem] = useState(null);
   const [buttonReturn] = useState(localStorage.getItem("button return"));
-
-  const [id] = useState(useParams());
-  const [date, setDate] = useState("");
 
   const [assigned, setAssigned] = useState("");
   const [creatorUser, setCreatorUser] = useState("");
@@ -29,8 +26,9 @@ const ReadCase = ({ routeParams }) => {
   const [state, setState] = useState("");
 
   const [modalShowEvent, setModalShowEvent] = useState(false);
-
-  const [list, setList] = useState([]);
+  
+  const [eventList, setEventList] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
   const [listTag, setListTag] = useState([]);
 
   const [evidences, setEvidences] = useState([]);
@@ -54,32 +52,39 @@ const ReadCase = ({ routeParams }) => {
     navigate(basePath + "/cases/view" + id);
   };
 
+  let id = null;
+  let caseUrl = null;
+
+  if (useLocalStorage) {
+    caseUrl = localStorage.getItem('case');
+    id = caseUrl.split("/").slice(-2, -1)[0];
+  } else {
+    id = useParams().id;
+    caseUrl = `${getUrlAsMe(COMPONENT_URL.case)}${id}/`;
+  }
+
   useEffect(() => {
-    if (id.id) {
-      getCase(getUrlAsMe(COMPONENT_URL.case) + id.id + "/")
-        .then((response) => {
-          setCaseItem(response.data);
-        })
-        .catch((error) => console.log(error));
-    } else {
-      const url = localStorage.getItem("case");
-      getCase(url)
+    if (caseUrl) {
+      getCase(caseUrl)
         .then((response) => {
           setCaseItem(response.data);
         })
         .catch((error) => console.log(error));
     }
-  }, [id]);
+    // No necesitas el 'else' porque si 'caseUrl' no existe, no se hará la petición.
+  }, [caseUrl]);
 
   useEffect(() => {
     if (caseItem !== null) {
+      setLoadingEvents(true);
       const eventPromises = caseItem.events.map((url) => getEvent(url));
 
       Promise.all(eventPromises)
         .then((responses) => {
           // Todas las llamadas se han completado exitosamente
           const eventsData = responses.map((response) => response.data);
-          setList(eventsData);
+          setEventList(eventsData);
+          setLoadingEvents(false);
         })
         .catch((error) => {
           // Maneja cualquier error que ocurra durante las llamadas
@@ -216,6 +221,14 @@ const ReadCase = ({ routeParams }) => {
     caseItem && (
       <React.Fragment>
         <Row>
+          <Col>
+            <h1 className="h3 mb-4 text-gray-800">{t("ngen.case_one")} {caseItem.uuid}</h1>
+          </Col>
+          <Col className="text-right" style={{ textAlign: 'right' }}>
+            <CrudButton type="edit" to={`${basePath}/cases/edit/${id}`} checkPermRoute />
+          </Col>
+        </Row>
+        <Row>
           <Col sm={12}>
             <Card>
               <Card.Header>
@@ -231,7 +244,7 @@ const ReadCase = ({ routeParams }) => {
                       </td>
                       <td>{t("ngen.system.id")}</td>
                       <td>
-                        <Form.Control plaintext readOnly defaultValue={id.id} />
+                        <Form.Control plaintext readOnly defaultValue={id} />
                       </td>
                     </tr>
                     <tr>
@@ -414,13 +427,14 @@ const ReadCase = ({ routeParams }) => {
             />
 
             <SmallEventTable
-              list={list}
+              list={eventList}
               disableLink={true}
               disableColumOption={false}
               disableUuid={false}
               disableColumnDelete={true}
               disableColumnCase={true}
-              basePath = {basePath}
+              basePath={basePath}
+              loading={loadingEvents}
             />
 
             <Card>

@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import FormEvent from "./components/FormEvent";
-import { getEvent, patchEvent, putEvent } from "../../api/services/events";
+import {Col, Row } from "react-bootstrap";
+import CrudButton from "components/Button/CrudButton";
+import { getEvent, patchEvent, putEvent } from "api/services/events";
 import { useLocation, useParams } from "react-router-dom";
-import { getMinifiedTlp } from "../../api/services/tlp";
-import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
-import { getMinifiedFeed } from "../../api/services/feeds";
-import { getMinifiedPriority } from "../../api/services/priorities";
-import { deleteEvidence } from "../../api/services/evidences";
-import { getMinifiedUser } from "../../api/services/users";
-import { getMinifiedArtifact } from "../../api/services/artifact";
-import { getMinifiedTag } from "../../api/services/tags";
+import { getMinifiedTlp } from "api/services/tlp";
+import { getMinifiedTaxonomy } from "api/services/taxonomies";
+import { getMinifiedFeed } from "api/services/feeds";
+import { getMinifiedPriority } from "api/services/priorities";
+import { deleteEvidence } from "api/services/evidences";
+import { getMinifiedUser } from "api/services/users";
+import { getMinifiedArtifact } from "api/services/artifact";
+import { getMinifiedTag } from "api/services/tags";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "config/constant";
 
 const EditEvent = ({ routeParams }) => {
   //const [date, setDate] = useState(caseItem.date  != null ? caseItem.date.substring(0,16) : '') //required
+  const basePath = routeParams?.basePath || "";
   const { t } = useTranslation();
   const location = useLocation();
   const fromState = location.state;
@@ -35,11 +38,11 @@ const EditEvent = ({ routeParams }) => {
   const [priorityNames, setPriorityNames] = useState({});
   const [userNames, setUserNames] = useState({});
   const [updateEvidence, setUpdateEvidence] = useState([]);
-  const [id] = useState(useParams());
+  const [id] = useState(useParams().id);
 
   useEffect(() => {
-    if (id.id) {
-      getEvent(COMPONENT_URL.event + id.id + "/")
+    if (id) {
+      getEvent(COMPONENT_URL.event + id + "/")
         .then((response) => {
           response.data.case = response.data.case ? response.data.case : "";
           response.data.date = response.data.date.substring(0, 16);
@@ -257,6 +260,14 @@ const EditEvent = ({ routeParams }) => {
   return (
     body && (
       <div>
+        <Row>
+          <Col>
+            <h1 className="h3 mb-4 text-gray-800">{t("ngen.event_one")} {body.uuid}</h1>
+          </Col>
+          <Col className="text-right" style={{ textAlign: 'right' }}>
+            <CrudButton type="read" to={`${basePath}/events/view/${id}`} checkPermRoute />
+          </Col>
+        </Row>
         <FormEvent
           createEvent={editEvent}
           setBody={setBody}

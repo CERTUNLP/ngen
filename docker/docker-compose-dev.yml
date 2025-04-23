@@ -41,7 +41,7 @@ services:
       context: ../
       dockerfile: docker/Dockerfile.dev
     restart: on-failure
-    command: celery -A project worker -E -l info
+    command: celery -A project worker -E -l debug
     volumes:
       - ../:/code
     env_file:
@@ -92,6 +92,7 @@ services:
     ports:
       - "1025:1025" # smtp server
       - "8025:8025" # web ui
+    entrypoint: ["/bin/sh", "-c", "MailHog &>/dev/null"]
 
   ngen-adminer:
     image: adminer

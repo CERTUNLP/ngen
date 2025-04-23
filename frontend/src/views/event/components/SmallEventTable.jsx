@@ -5,6 +5,7 @@ import { getMinifiedTlp } from "../../../api/services/tlp";
 import { getMinifiedFeed } from "../../../api/services/feeds";
 import TableEvents from "./TableEvents";
 import { useTranslation } from "react-i18next";
+import { use } from "react";
 
 const SmallEventTable = ({
   list,
@@ -19,11 +20,13 @@ const SmallEventTable = ({
   disableUuid,
   disableColumnDelete,
   disableColumnCase,
-  basePath = ""
+  basePath = "",
+  loading
 }) => {
   const [taxonomyNames, setTaxonomyNames] = useState({});
   const [feedNames, setFeedNames] = useState({});
   const [tlpNames, setTlpNames] = useState({});
+  const [loadingEvents, setLoadingEvents] = useState(true);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -49,6 +52,11 @@ const SmallEventTable = ({
       setTlpNames(dicTlp);
     });
   }, []);
+
+  useEffect(() => {
+    setLoadingEvents(loading);
+  }, [loading]);
+
 
   return (
     <React.Fragment>
@@ -79,31 +87,38 @@ const SmallEventTable = ({
           </Row>
         </Card.Header>
         <Card.Body>
-          {(list.length === 0) ?
-            t("ngen.no_event_in_case") :
-
-            <TableEvents
-              events={list}
-              taxonomyNames={taxonomyNames}
-              feedNames={feedNames}
-              tlpNames={tlpNames}
-              disableDate={true}
-              disableCheckbox={true}
-              disableTemplate={true}
-              deleteColumForm={true}
-              disableColumnEdit={true}
-              disableCheckboxAll={true}
-              detailModal={false}
-              modalEventDetail={modalEventDetail}
-              deleteEventFromForm={deleteEventFromForm}
-              disableColumOption={disableColumOption}
-              disableUuid={disableUuid}
-              disableDateModified={true}
-              disableColumnDelete={disableColumnDelete}
-              disableMerged={disableMerged}
-              disableColumnCase={disableColumnCase}
-              basePath = {basePath}
-            />
+          {
+            loadingEvents ?
+              <div className="text-center">
+                <div className="spinner-border" role="status">
+                </div>
+              </div>
+              :
+              (list.length === 0) ?
+                t("ngen.no_event_in_case")
+                :
+                <TableEvents
+                  events={list}
+                  taxonomyNames={taxonomyNames}
+                  feedNames={feedNames}
+                  tlpNames={tlpNames}
+                  disableDate={true}
+                  disableCheckbox={true}
+                  disableTemplate={true}
+                  deleteColumForm={true}
+                  disableColumnEdit={true}
+                  disableCheckboxAll={true}
+                  detailModal={false}
+                  modalEventDetail={modalEventDetail}
+                  deleteEventFromForm={deleteEventFromForm}
+                  disableColumOption={disableColumOption}
+                  disableUuid={disableUuid}
+                  disableDateModified={true}
+                  disableColumnDelete={disableColumnDelete}
+                  disableMerged={disableMerged}
+                  disableColumnCase={disableColumnCase}
+                  basePath = {basePath}
+                />
           }
         </Card.Body>
       </Card>
