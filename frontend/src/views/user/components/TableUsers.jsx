@@ -166,8 +166,8 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
           <tbody>
             {users.map((user, index) => {
             
-            console.log("TablaU")
-            console.log(user)
+            
+            
               const parts = user.url.split("/");
               let itemNumber = parts[parts.length - 2];
               return (
