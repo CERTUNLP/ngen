@@ -23,8 +23,6 @@ const UserComponent = ({ user }) => {
 
   const selectedUser = data?.[user];
 // User Table display??
-console.log("Datos");
-console.log(data);
   return (
 
         <div>
