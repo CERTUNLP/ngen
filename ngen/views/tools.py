@@ -133,6 +133,7 @@ class ConstanceViewSet(viewsets.ModelViewSet):
 class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ConstanceSerializer
     permission_classes = [permissions.AllowAny]
+    pagination_class = None
     lookup_field = "key"
     lookup_value_regex = "[A-Za-z_][A-Za-z0-9_]*"
     valid_keys = [
