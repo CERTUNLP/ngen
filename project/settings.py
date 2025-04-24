@@ -511,6 +511,7 @@ BLEACH_STRIP_TAGS = True
 # Strip comments, or leave them in.
 BLEACH_STRIP_COMMENTS = False
 
+DEBUG_INTERNAL_IPS = []
 if DEBUG:
     import socket  # only if you haven't already imported this
 
