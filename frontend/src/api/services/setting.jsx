@@ -66,7 +66,6 @@ function updateConfigs(key, value) {
 }
 
 const getValue = (key, defaultValue = undefined, cached = true) => {
-  console.log(key, cached)
   if (cached) {
     const cachedValue = localStorage.getItem(key);
     if (cachedValue !== null && cachedValue !== undefined) {
