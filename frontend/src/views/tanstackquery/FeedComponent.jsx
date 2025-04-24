@@ -21,12 +21,12 @@ const FeedComponent = ({ feed }) => {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const selectedTlp = data?.[feed];
+  const element = data?.[feed];
 
   return (
 
         <div>
-      <LetterFormat useBadge={true} stringToDisplay={selectedTlp.feed} bgcolor={"#03fca5"}/>
+      <LetterFormat useBadge={true} stringToDisplay={element.name} bgcolor={"#03fca5"}/>
         </div>
   );
 };  

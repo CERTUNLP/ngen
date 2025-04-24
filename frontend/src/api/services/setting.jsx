@@ -1,5 +1,5 @@
 import apiInstance from "../api";
-import { COMPONENT_URL, PAGE, PAGE_SIZE } from "../../config/constant";
+import { COMPONENT_URL, PAGE, SETTING } from "../../config/constant";
 import setAlert from "../../utils/setAlert";
 
 const getAllSetting = (currentPage = 1, results = [], limit = 100) => {
@@ -37,7 +37,7 @@ const getSetting = (currentPage) => {
     });
 };
 
-const patchSetting = (url, value) => {
+const patchSetting = (url, key, value) => {
   let messageSuccess = `Configuracion guardada con exito.`;
   let messageError = `No se ha podido guardar la configuracion. `;
 
@@ -46,6 +46,7 @@ const patchSetting = (url, value) => {
       value: value
     })
     .then((response) => {
+      updateConfigs(key, value);
       setAlert(messageSuccess, "success", "setting");
       return response;
     })
@@ -57,27 +58,43 @@ const patchSetting = (url, value) => {
     });
 };
 
-const settingPageSize = () => {
-  const cacheKey = `page_size`;
-  const cachedPageSize = localStorage.getItem(cacheKey);
+function updateConfigs(key, value) {
+  localStorage.setItem(key, value);
+  if (key === "NGEN_LANG") {
+    i18n.changeLanguage(value);
+  }
+}
 
-  if (cachedPageSize) {
-    return Promise.resolve(cachedPageSize);
+const getValue = (key, defaultValue = undefined, cached = true) => {
+  if (cached) {
+    const cachedValue = localStorage.getItem(key);
+    if (cachedValue !== null && cachedValue !== undefined) {
+      return Promise.resolve(cachedValue);
+    }
   }
 
-  let messageError = `No se pudo recuperar la información del tamaño de página`;
+  let messageError = `No se pudo recuperar la información de la configuración`;
   return apiInstance
-    .get(COMPONENT_URL.configPublic + PAGE_SIZE)
+    .get(COMPONENT_URL.configPublic)
     .then((response) => {
-      // Almacenar en localStorage
-      localStorage.setItem(cacheKey, response.data.value);
-      return response;
+      response.data.forEach((item) => {
+        localStorage.setItem(item.key, item.value);
+      });
+      const fetchedValue = response.data.find((item) => item.key === key);
+      const value = fetchedValue ? fetchedValue.value : defaultValue;
+      return value;
     })
     .catch((error) => {
       setAlert(messageError, "error", "state");
       return Promise.reject(error);
     });
 };
+const getSettingLanguage = () => getValue(SETTING.NGEN_LANG);
+
+const getSettingPageSize = () => getValue(SETTING.PAGE_SIZE).then((val) => parseInt(val));
+
+const getSettingJWTRefreshTokenLifetime = (cached = true) =>
+  getValue(SETTING.JWT_REFRESH_TOKEN_LIFETIME, undefined, cached).then((val) => parseInt(val));
 
 const uploadTeamLogo = (file) => {
   let messageSuccess = `Logo del equipo subido con exito.`;
@@ -98,6 +115,15 @@ const uploadTeamLogo = (file) => {
       setAlert(messageError, "error", "team");
       return Promise.reject(error);
     });
-}
+};
 
-export { getAllSetting, patchSetting, getSetting, settingPageSize, uploadTeamLogo };
+export {
+  getAllSetting,
+  patchSetting,
+  getSetting,
+  getSettingPageSize,
+  uploadTeamLogo,
+  getValue,
+  getSettingLanguage,
+  getSettingJWTRefreshTokenLifetime
+};
