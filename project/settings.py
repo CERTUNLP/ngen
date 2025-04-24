@@ -314,12 +314,18 @@ CONSTANCE_CONFIG = {
             "SMTP sender email address. This is the email that will be used to send emails from ngen"
         ),
     ),
-    "EMAIL_USERNAME": (os.environ.get("EMAIL_USERNAME"), "Email username"),
-    "EMAIL_PASSWORD": (os.environ.get("EMAIL_PASSWORD"), "Email password"),
-    "EMAIL_PORT": (os.environ.get("EMAIL_PORT"), "Email port"),
+    "EMAIL_USERNAME": (
+        os.environ.get("EMAIL_USERNAME"),
+        "Email username to fetch (required) and send emails (optional)",
+    ),
+    "EMAIL_PASSWORD": (
+        os.environ.get("EMAIL_PASSWORD"),
+        "Email password to fetch (required) and send emails (optional)",
+    ),
+    "EMAIL_PORT": (os.environ.get("EMAIL_PORT"), "Email port to send emails"),
     "EMAIL_USE_TLS": (
         os.environ.get("EMAIL_USE_TLS", "false").lower() in VALUES_TRUE,
-        "Email use TLS",
+        "Email use TLS to send emails",
         bool,
     ),
     "NGEN_LANG": (os.environ.get("NGEN_LANG"), gettext_lazy("NGEN default language")),
@@ -461,7 +467,7 @@ CONSTANCE_CONFIG = {
         bool,
     ),
 }
-CONSTANCE_CONFIG_PASSWORDS = ["CORTEX_APIKEY"]
+CONSTANCE_CONFIG_PASSWORDS = ["CORTEX_APIKEY", "KINTUN_APIKEY", "EMAIL_PASSWORD"]
 
 os.makedirs(os.path.join(MEDIA_ROOT, CONSTANCE_FILE_ROOT), exist_ok=True)
 LOGO_PATH = os.path.join(f"{MEDIA_ROOT}", CONSTANCE_CONFIG["TEAM_LOGO"][0])
@@ -561,10 +567,10 @@ if ELASTIC_ENABLED:
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=os.environ.get("JWT_ACCESS_TOKEN_LIFETIME", 5)
+        minutes=int(os.environ.get("JWT_ACCESS_TOKEN_LIFETIME", 5))
     ),
     "REFRESH_TOKEN_LIFETIME": timedelta(
-        minutes=os.environ.get("JWT_REFRESH_TOKEN_LIFETIME", 60)
+        minutes=int(os.environ.get("JWT_REFRESH_TOKEN_LIFETIME", 60))
     ),
     "ROTATE_REFRESH_TOKENS": True,
     # Blacklist refresh tokens could be a logging problem on refresh token rotation if they are parallel requests
