@@ -2,7 +2,12 @@ export const BASE_URL = import.meta.env.VITE_APP_BASE_URL || "/home";
 export const BASENAME = import.meta.env.VITE_APP_BASENAME || "";
 export const BASE_TITLE = " | ngen ";
 export const PAGE = "?page=";
-export const PAGE_SIZE = "PAGE_SIZE/";
+
+export const SETTING = {
+  PAGE_SIZE: "PAGE_SIZE",
+  NGEN_LANG: "NGEN_LANG",
+  JWT_REFRESH_TOKEN_LIFETIME: "JWT_REFRESH_TOKEN_LIFETIME"
+};
 
 export const CONFIG = {
   layout: "vertical", // disable on free version
