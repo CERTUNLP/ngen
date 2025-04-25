@@ -1,6 +1,7 @@
 import apiInstance from "../api";
-import { COMPONENT_URL, PAGE, SETTING } from "../../config/constant";
-import setAlert from "../../utils/setAlert";
+import { COMPONENT_URL, PAGE, SETTING } from "config/constant";
+import setAlert from "utils/setAlert";
+import i18n from "i18next";
 
 const getAllSetting = (currentPage = 1, results = [], limit = 100) => {
   return apiInstance

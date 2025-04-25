@@ -18,7 +18,7 @@ const EditSetting = () => {
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const textareaStyle = {
     resize: "none",
@@ -128,20 +128,20 @@ const EditSetting = () => {
                       <td>
                         <Form.Control style={textareaStyle} as="textarea" rows={3} readOnly value={setting.help_text} />
                       </td>
-                      <td>{setting.default.toString()}</td>
+                      <td>{setting.default?.toString()}</td>
                       <td>
                         {setting.editable ? (
                           <Form.Group controlId={`formGridAddress${index}`}>
                             <Form.Control
                               name="value"
-                              value={setting.value.toString()}
+                              value={setting.value?.toString()}
                               maxLength="150"
                               placeholder={t("w.issue.placeholder")}
                               onChange={(e) => completeField(e, setting.url)}
                             />
                           </Form.Group>
                         ) : (
-                          <span>{setting.value.toString()}</span>
+                          <span>{setting.value?.toString()}</span>
                         )}
                       </td>
                       <PermissionCheck permissions="change_constance">
