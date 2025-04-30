@@ -21,12 +21,15 @@ const EventComponent = ({ event }) => {
   return (
     <div>
       <LetterFormat 
-        useBadge={true} 
-        stringToDisplay={
-          `${selectedEvent?.domain || selectedEvent?.cidr || "No event available"} - ${selectedEvent?.initial_taxonomy_slug || ''}`
-        } 
-        bgcolor={"#0f0"} 
-      />
+  useBadge={true} 
+  stringToDisplay={
+    selectedEvent
+      ? `${selectedEvent.domain || selectedEvent.cidr} - ${selectedEvent.initial_taxonomy_slug || ''}`
+      : ''
+  }
+  bgcolor={"#0f0"} 
+/>
+
     </div>
   );
 };
