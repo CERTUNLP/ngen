@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import TableRetests from "./TableRetests";
 import { getRetests, postRetest } from "../../../api/services/eventAnalysis";
 import Alert from "components/Alert/Alert";
-import { getAnalyzerMappings } from "../../../api/services/analyzerMapping";
+import { getAllAnalyzerMappings } from "../../../api/services/analyzerMapping";
 
 const SmallRetestTable = ({ retests, eventId, eventUrl, taxonomyUrl }) => {
   const { t } = useTranslation();
@@ -27,7 +27,7 @@ const SmallRetestTable = ({ retests, eventId, eventUrl, taxonomyUrl }) => {
   useEffect(() => {
     const checkAnalyzerMapping = async () => {
       try {
-        const mappings = await getAnalyzerMappings();
+        const mappings = await getAllAnalyzerMappings();
         const isMapped = mappings.results.some(
           (mapping) => mapping.mapping_from === taxonomyUrl
         );

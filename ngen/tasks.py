@@ -208,12 +208,14 @@ def retest_event_kintun(event_id):
     """
     try:
         event = ngen.models.Event.objects.get(pk=event_id)
-        mapping_to = ngen.models.AnalyzerMapping.objects.get(
+        analyzer_mapping = ngen.models.AnalyzerMapping.objects.get(
             mapping_from=event.taxonomy
-        ).mapping_to
+        )
+        mapping_to = analyzer_mapping.mapping_to
+        analyzer_type = analyzer_mapping.analyzer_type
         analysis_data = {
             "date": timezone.now(),
-            "analyzer_type": "kintun",
+            "analyzer_type": analyzer_type,
             "vulnerable": False,
             "result": "in_progress",
             "target": event.address_value,

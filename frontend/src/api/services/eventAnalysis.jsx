@@ -27,7 +27,6 @@ const getRetests = (eventUrl, suppressAlert) => {
 const postRetest = (eventId) => {
   const messageSuccess = i18next.t("ngen.retest.success");
   const messageError = i18next.t("ngen.retest.error");
-
   return apiInstance
     .post(`${COMPONENT_URL.event}${eventId}/retest/`, {})
     .then((response) => {
