@@ -18,7 +18,7 @@ const EditSetting = () => {
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const textareaStyle = {
     resize: "none",
@@ -56,25 +56,18 @@ const EditSetting = () => {
     return url.replace(new RegExp(partToRemove + ".*?(/|$)"), "");
   }
 
-  function updateConfigs(item) {
-    if (item.key === "PAGE_SIZE") {
-      localStorage.setItem("page_size", item.value);
-    } else if (item.key === "NGEN_LANG") {
-      localStorage.setItem("ngen_lang", item.value);
-      i18n.changeLanguage(item.value);
-    } else if (item.key === "DATE_OPTIONS") {
-      localStorage.setItem("date_options", item.value);
-    }
-  }
-
   const PatchSetting = (url) => {
     // Aquí puedes implementar la lógica para enviar el patch request
     let item = list[list.findIndex((item) => item.url === url)];
 
-    patchSetting(url, item.value)
-      .then((response) => {
-        setIfModify(response);
-        updateConfigs(item);
+    patchSetting(url, item.key, item.value)
+    .then((response) => {
+      if (item.key === "PAGE_SIZE") {
+        setCurrentPage(1);
+        setUpdatePagination(!updatePagination);
+      }
+      setIfModify(response);
+      updateConfigs(item);
       })
       .catch((error) => console.log(error))
       .finally(() => {
@@ -135,20 +128,20 @@ const EditSetting = () => {
                       <td>
                         <Form.Control style={textareaStyle} as="textarea" rows={3} readOnly value={setting.help_text} />
                       </td>
-                      <td>{setting.default.toString()}</td>
+                      <td>{setting.default?.toString()}</td>
                       <td>
                         {setting.editable ? (
                           <Form.Group controlId={`formGridAddress${index}`}>
                             <Form.Control
                               name="value"
-                              value={setting.value.toString()}
+                              value={setting.value?.toString()}
                               maxLength="150"
                               placeholder={t("w.issue.placeholder")}
                               onChange={(e) => completeField(e, setting.url)}
                             />
                           </Form.Group>
                         ) : (
-                          <span>{setting.value.toString()}</span>
+                          <span>{setting.value?.toString()}</span>
                         )}
                       </td>
                       <PermissionCheck permissions="change_constance">

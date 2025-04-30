@@ -131,6 +131,19 @@ const getListEvents = (list) => {
   return list;
 };
 
+const getQueryEvent = async () => {
+  const response = await getAllEvents();
+
+  // Transform the response into a dictionary
+  const dicEvents = {};
+  response.forEach((event) => {
+    dicEvents[event.url] = event;
+  });
+
+  // Return the transformed dictionary (this will be cached)
+  return dicEvents;
+};
+
 const markSolved = (uuid) => {
   // Example path: /api/event/marksolved/<UUID>
   //el parametro es para completar la url con el numero de pagina
@@ -149,4 +162,4 @@ const markSolved = (uuid) => {
     });
 };
 
-export { getEvents, postEvent, putEvent, deleteEvent, mergeEvent, getEvent, getAllEvents, getListEvents, patchEvent, markSolved };
+export { getEvents, postEvent, putEvent, deleteEvent, mergeEvent, getEvent, getAllEvents, getListEvents, patchEvent, markSolved, getQueryEvent };

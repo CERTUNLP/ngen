@@ -1,6 +1,6 @@
 import Pagination from "react-bootstrap/Pagination";
 import React, { useEffect, useState } from "react";
-import { settingPageSize } from "../../api/services/setting";
+import { getSettingPageSize } from "../../api/services/setting";
 
 const AdvancedPagination = ({
   countItems,
@@ -24,7 +24,7 @@ const AdvancedPagination = ({
   const [pageSize, setPageSize] = useState(null);
 
   useEffect(() => {
-    settingPageSize()
+    getSettingPageSize()
       .then((value) => {
         setPageSize(value);
       })

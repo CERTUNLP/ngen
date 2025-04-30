@@ -1,16 +1,16 @@
 import React from "react";
 import { useQuery } from '@tanstack/react-query';
-import { getQueryTaxonomy } from "../../api/services/taxonomies";
+import { getQueryEvent } from "api/services/events";
 import LetterFormat from "../../components/LetterFormat";
 
 
-const TaxonomyComponent = ({ taxonomy }) => {
+const EventComponent = ({ event }) => {
 
 
-  // Fetch taxonomy data using useQuery.
+  // Fetch event data using useQuery.
   const { data, isLoading, error } = useQuery({
-    queryKey: ['taxonomyKey'], // Single query key to fetch all this Taxonomy data
-    queryFn: getQueryTaxonomy,
+    queryKey: ['eventKey'], // Single query key to fetch all event data
+    queryFn: getQueryEvent,
 
     staleTime: 5 * 60 * 1000, 
     refetchOnWindowFocus: false, // Disable refetching when window is focused
@@ -21,18 +21,23 @@ const TaxonomyComponent = ({ taxonomy }) => {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const selectedTaxonomy = data?.[taxonomy];
+  const selectedEvent = data?.[event];
+
   return (
 
         <div>
 <LetterFormat 
-  useBadge={true}
-  stringToDisplay={selectedTaxonomy?.name || ""} 
-  bgcolor="#0f0" 
+  useBadge={true} 
+  stringToDisplay={
+    `${selectedEvent?.domain || selectedEvent?.cidr || "No event available"} - ${selectedEvent?.initial_taxonomy_slug || ''}`
+  } 
+  bgcolor={"#0f0"} 
 />
-        </div>
+
+
+           </div>
   );
 };  
 
 
-export default TaxonomyComponent;
+export default EventComponent;
