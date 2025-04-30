@@ -15,6 +15,9 @@ import PriorityComponent from "../../tanstackquery/PriorityComponent";
 import StateComponent from "../../tanstackquery/StateComponent";
 import EventComponent from "views/tanstackquery/EventComponent";
 import TaxonomyComponent from "views/tanstackquery/TaxonomyComponent";
+
+
+
 const TableCase = ({
   setIfModify,
   cases,
@@ -277,8 +280,8 @@ const TableCase = ({
                 <td> <StateComponent state={caseItem?.state}></StateComponent></td>
                 {!disableEvents && caseItem?.events && (
                   <td>
-                      <EventComponent event={caseItem?.events?.[0]} />
-                      <TaxonomyComponent taxonomy={caseItem?.events?.[0]?.taxonomy || {}} />
+<EventComponent event={caseItem?.events?.[0]} />
+<TaxonomyComponent taxonomy={caseItem?.events?.[0]?.taxonomy || {}} />
 
                   </td>
                 )}

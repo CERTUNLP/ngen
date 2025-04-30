@@ -740,7 +740,7 @@ class Event(
             if self.case and self.case.priority
             else self.priority.severity
         )
-        affected_networks = ngen.models.Network.objects.parent_of(self)
+        affected_networks = ngen.models.Network.objects.parent_of(self)[:1]
 
         network_contacts = []
         for network in affected_networks:
@@ -758,7 +758,7 @@ class Event(
             if self.case and self.case.priority
             else self.priority.severity
         )
-        affected_networks = ngen.models.Network.objects.parent_of(self)
+        affected_networks = ngen.models.Network.objects.parent_of(self)[:1]
 
         affected_contacts = []
         for network in affected_networks:

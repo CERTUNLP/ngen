@@ -12,6 +12,7 @@ const EventComponent = ({ event }) => {
     staleTime: 5 * 60 * 1000, 
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+
   });
 
   if (isLoading) return <div>Loading...</div>;
