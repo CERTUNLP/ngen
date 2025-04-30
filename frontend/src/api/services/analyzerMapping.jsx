@@ -84,7 +84,6 @@ const putAnalyzerMapping = (url, data) => {
   const filters = `mapping_to__icontains=${data.mapping_to}&mapping_from__name__icontains=${data.mapping_from_name}&analyzer_type=${data.analyzer_type}`;
   return getAnalyzerMappings(1, filters, "date")
     .then((response) => {
-      console.log("Response data:", response.data.results.length > 0);
       if (response.data.results.length > 0) {
         setAlert(messageError, "error", "analyzermapping");
         return Promise.reject(new Error(messageError));
