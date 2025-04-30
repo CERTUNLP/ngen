@@ -441,6 +441,7 @@ class Case(
                     subject=self.subject_v2("AFFECTED"),
                     template=template,
                     template_params=template_params,
+                    bcc_recipients=config.TEAM_EMAIL,
                     attachments=(
                         self.get_attachments_for_events_v2([event])
                         if send_attachments
