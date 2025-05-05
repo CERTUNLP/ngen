@@ -22,6 +22,8 @@ from ngen.models import (
     Network,
     Contact,
     Playbook,
+    AnalyzerMapping,
+    EventAnalysis
 )
 from ngen.models.common.mixins import AddressManager
 
@@ -512,4 +514,22 @@ class NetworkEntityFilter(BaseFilter):
             "slug": ["icontains"],
             "active": ["exact"],
             "networks": ["exact"],
+        }
+
+
+class AnalyzerMappingFilter(BaseFilter):
+    """
+    AnalyzerMapping model filter.
+    Allows to filter by:
+        - mapping_to (icontains)
+        - mapping_from__name (icontains)
+        - analyzer_type (exact)
+    """
+
+    class Meta:
+        model = AnalyzerMapping
+        fields = {
+            "mapping_to": ["icontains"],
+            "mapping_from__name": ["icontains"],
+            "analyzer_type": ["exact"],
         }

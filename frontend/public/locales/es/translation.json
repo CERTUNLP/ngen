@@ -81,6 +81,7 @@
   "menu.states": "Estados",
   "menu.taxonomies": "Taxonomías",
   "menu.taxonomygroups": "Grupos de Taxonomías",
+  "menu.analyzermappings": "Mapeo de Analizadores",
   "menu.templates": "Plantillas",
   "menu.tags": "Etiquetas",
   "menu.tlp": "TLP",
@@ -508,5 +509,10 @@
   "ngen.retest.refresh": "Actualizar", 
   "ngen.retest.no_analyzer_mapping": "No hay ningun analizador mapeado para la taxonomia del evento", 
   "ngen.retest.refresh.success": "Tabla de retests actualizada con éxito.",
-  "ngen.retest.refresh.error": "No se pudo actualizar la tabla de retests."
+  "ngen.retest.refresh.error": "No se pudo actualizar la tabla de retests.",
+  "ngen.analyzer_mapping.mapping_from": "Taxonomia",
+  "ngen.analyzer_mapping.mapping_to": "Mapeado a",
+  "ngen.analyzer_mapping.analyzer_type": "Analizador",
+  "ngen.analyzer_mapping.details": "Detalles",
+  "ngen.analyzer_mapping": "Mapeo de analizador"
 }

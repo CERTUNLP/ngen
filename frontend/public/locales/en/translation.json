@@ -81,6 +81,7 @@
   "menu.states": "States",
   "menu.taxonomies": "Taxonomies",
   "menu.taxonomygroups": "Taxonomy Groups",
+  "menu.analyzermappings": "Analyzer Mappings",
   "menu.templates": "Templates",
   "menu.tags": "Tags",
   "menu.tlp": "TLP",
@@ -509,5 +510,10 @@
   "ngen.retest.refresh": "Refresh",
   "ngen.retest.no_analyzer_mapping": "There is no analyzer mapping related to the event's taxonomy.",
   "ngen.retest.refresh.success": "Retests table refreshed successfully!",
-  "ngen.retest.refresh.error": "Failed to refresh retests table."
+  "ngen.retest.refresh.error": "Failed to refresh retests table.",
+  "ngen.analyzer_mapping.mapping_from": "Taxonomy",
+  "ngen.analyzer_mapping.mapping_to": "Mapping to",
+  "ngen.analyzer_mapping.analyzer_type": "Analyzer",
+  "ngen.analyzer_mapping.details": "Details",
+  "ngen.analyzer_mapping": "Analyzer mapping"
 }
