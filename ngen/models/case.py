@@ -474,7 +474,7 @@ class Case(
         """
         # this function is not using get_team_email_by_priority() because can
         # return None and this is not the expected behavior
-        return clean_list([self.assigned_email, self.TEAM_EMAIL])
+        return clean_list([self.assigned_email, config.TEAM_EMAIL])
 
     def get_affected_contacts(self):
         contacts_from_all_events = []
