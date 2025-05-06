@@ -469,7 +469,12 @@ class Case(
         self.notification_count += 1
 
     def get_internal_contacts(self):
-        return clean_list([self.assigned_email, self.get_team_email_by_priority()])
+        """
+        Returns a list of internal contacts of the case.
+        """
+        # this function is not using get_team_email_by_priority() because can
+        # return None and this is not the expected behavior
+        return clean_list([self.assigned_email, self.TEAM_EMAIL])
 
     def get_affected_contacts(self):
         contacts_from_all_events = []
