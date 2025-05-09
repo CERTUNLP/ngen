@@ -24,7 +24,7 @@ import ngen.models
 from taggit.managers import TaggableManager
 
 import ngen
-from ngen.utils import slugify_underscore
+from ngen.utils import clean_list, slugify_underscore
 from .parsing import StringIdentifier, StringType
 
 
@@ -141,18 +141,24 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
         raise NotImplementedError
 
     @property
-    def blocked_fields(self) -> bool:
+    def blocked_fields(self) -> list[str]:
+        """
+        Fields that are blocked to be modified on blocked instances.
+        """
         key = f"BLOCKED_FIELDS_{self.__class__.__name__.upper()}"
         values = getattr(config, key, []).split(",")
         values += [f"{v}_id" for v in values]
-        return values
+        return clean_list(values)
 
     @property
-    def allowed_fields_on_merged(self) -> bool:
+    def allowed_fields_on_merged(self) -> list[str]:
+        """
+        Fields that are allowed to be modified on merged instances.
+        """
         key = f"ALLOWED_FIELDS_MERGED_{self.__class__.__name__.upper()}"
         values = getattr(config, key, []).split(",")
         values += [f"{v}_id" for v in values]
-        return values
+        return clean_list(values)
 
     @property
     def mergeable(self) -> bool:
