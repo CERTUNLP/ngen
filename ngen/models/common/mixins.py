@@ -141,8 +141,8 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
         raise NotImplementedError
 
     @property
-    def allowed_fields(self) -> bool:
-        key = f"ALLOWED_FIELDS_BLOCKED_{self.__class__.__name__.upper()}"
+    def blocked_fields(self) -> bool:
+        key = f"BLOCKED_FIELDS_{self.__class__.__name__.upper()}"
         values = getattr(config, key, []).split(",")
         values += [f"{v}_id" for v in values]
         return values
@@ -236,8 +236,10 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
         if self.blocked:
             exceptions = {}
             for attr in self.__dict__:
-                if attr not in self.allowed_fields and self.has_changed(attr):
-                    if config.ALLOWED_FIELDS_BLOCKED_EXCEPTION:
+                if attr in self.blocked_fields and str(self.initial_value(attr)) != str(
+                    getattr(self, attr)
+                ):
+                    if config.BLOCKED_FIELDS_EXCEPTION:
                         exceptions[attr] = [
                             {
                                 "__all__": gettext_lazy(

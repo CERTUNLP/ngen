@@ -345,21 +345,20 @@ CONSTANCE_CONFIG = {
             "Event comma separated fields that could be modified if the instance is merged"
         ),
     ),
-    "ALLOWED_FIELDS_BLOCKED_CASE": (
-        os.environ.get("ALLOWED_FIELDS_BLOCKED_CASE"),
+    "BLOCKED_FIELDS_CASE": (
+        os.environ.get("BLOCKED_FIELDS_CASE"),
         gettext_lazy(
             "Case comma separated fields that could be modified if the instance is blocked"
         ),
     ),
-    "ALLOWED_FIELDS_BLOCKED_EVENT": (
-        os.environ.get("ALLOWED_FIELDS_BLOCKED_EVENT"),
+    "BLOCKED_FIELDS_EVENT": (
+        os.environ.get("BLOCKED_FIELDS_EVENT"),
         gettext_lazy(
             "Event comma separated fields that could be modified if the instance is blocked"
         ),
     ),
-    "ALLOWED_FIELDS_BLOCKED_EXCEPTION": (
-        os.environ.get("ALLOWED_FIELDS_BLOCKED_EXCEPTION", "false").lower()
-        in VALUES_TRUE,
+    "BLOCKED_FIELDS_EXCEPTION": (
+        os.environ.get("BLOCKED_FIELDS_EXCEPTION", "false").lower() in VALUES_TRUE,
         gettext_lazy(
             "If True, ngen will raise an exception if a blocked field is modified"
         ),

@@ -109,8 +109,8 @@ class EventSerializer(
         )
 
     @staticmethod
-    def allowed_fields():
-        return config.ALLOWED_FIELDS_BLOCKED_EVENT.split(",")
+    def blocked_fields():
+        return config.BLOCKED_FIELDS_EVENT.split(",")
 
     @staticmethod
     def not_allowed_fields():
@@ -145,7 +145,7 @@ class EventSerializer(
 
             # If the attribute is not allowed, we check if it's being modified
             if (
-                config.ALLOWED_FIELDS_BLOCKED_EXCEPTION
+                config.BLOCKED_FIELDS_EXCEPTION
                 and getattr(self.instance, attr, None) != attrs[attr]
             ):
                 raise ValidationError(
@@ -186,8 +186,8 @@ class EventSerializerReduced(
 ):
 
     @staticmethod
-    def allowed_fields():
-        return config.ALLOWED_FIELDS_BLOCKED_EVENT.split(",")
+    def blocked_fields():
+        return config.BLOCKED_FIELDS_EVENT.split(",")
 
     class Meta:
         model = models.Event
@@ -295,8 +295,8 @@ class CaseSerializer(
         )
 
     @staticmethod
-    def allowed_fields():
-        return config.ALLOWED_FIELDS_BLOCKED_CASE.split(",")
+    def blocked_fields():
+        return config.BLOCKED_FIELDS_CASE.split(",")
 
     def get_comments(self, obj):
         comments_qs = Comment.objects.filter_parents_by_object(obj)
@@ -367,8 +367,8 @@ class CaseSerializerReduced(
 ):
 
     @staticmethod
-    def allowed_fields():
-        return config.ALLOWED_FIELDS_BLOCKED_CASE.split(",")
+    def blocked_fields():
+        return config.BLOCKED_FIELDS_CASE.split(",")
 
     class Meta:
         model = models.Case
