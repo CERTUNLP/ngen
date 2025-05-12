@@ -279,20 +279,23 @@ CONSTANCE_CONFIG = {
         gettext_lazy(
             "CSIRT team email. This is an email to receive notifications and reports from ngen to the team"
         ),
+        str,
     ),
     "TEAM_EMAIL_PRIORITY": (
         os.environ.get("TEAM_EMAIL_PRIORITY"),
         gettext_lazy(
             "CSIRT team email default priority (Critical is the lowest and will only recieve critical emails, Very low is the highest and will recieve all emails) priority_field"
         ),
+        "priority_field",
     ),
     "TEAM_ABUSE": (
         os.environ.get("TEAM_ABUSE"),
         gettext_lazy(
             "CSIRT abuse email. This is an email to receive abuse reports from external sources"
         ),
+        str,
     ),
-    "TEAM_URL": (os.environ.get("TEAM_URL"), gettext_lazy("CSIRT site url")),
+    "TEAM_URL": (os.environ.get("TEAM_URL"), gettext_lazy("CSIRT site url"), str),
     "TEAM_LOGO": (
         os.path.join(CONSTANCE_FILE_ROOT, "teamlogo.png"),
         gettext_lazy(
@@ -305,14 +308,16 @@ CONSTANCE_CONFIG = {
         gettext_lazy(
             "Team logo url for emails. Overrides the saved logo. Usefull to access the logo from a public url"
         ),
+        str,
     ),
-    "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name"),
-    "EMAIL_HOST": (os.environ.get("EMAIL_HOST"), "Email host"),
+    "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name", str),
+    "EMAIL_HOST": (os.environ.get("EMAIL_HOST"), "Email host", str),
     "EMAIL_SENDER": (
         os.environ.get("EMAIL_SENDER"),
         gettext_lazy(
             "SMTP sender email address. This is the email that will be used to send emails from ngen"
         ),
+        str,
     ),
     "EMAIL_USERNAME": (
         os.environ.get("EMAIL_USERNAME"),
@@ -322,7 +327,7 @@ CONSTANCE_CONFIG = {
         os.environ.get("EMAIL_PASSWORD"),
         "Email password to fetch (required) and send emails (optional)",
     ),
-    "EMAIL_PORT": (os.environ.get("EMAIL_PORT"), "Email port to send emails"),
+    "EMAIL_PORT": (os.environ.get("EMAIL_PORT"), "Email port to send emails", int),
     "EMAIL_USE_TLS": (
         os.environ.get("EMAIL_USE_TLS", "false").lower() in VALUES_TRUE,
         "Email use TLS to send emails",
@@ -338,24 +343,28 @@ CONSTANCE_CONFIG = {
         gettext_lazy(
             "Case comma separated fields that could be modified if the instance is merged"
         ),
+        list,
     ),
     "ALLOWED_FIELDS_MERGED_EVENT": (
         os.environ.get("ALLOWED_FIELDS_MERGED_EVENT"),
         gettext_lazy(
             "Event comma separated fields that could be modified if the instance is merged"
         ),
+        list,
     ),
     "BLOCKED_FIELDS_CASE": (
         os.environ.get("BLOCKED_FIELDS_CASE"),
         gettext_lazy(
             "Case comma separated fields that could be modified if the instance is blocked"
         ),
+        list,
     ),
     "BLOCKED_FIELDS_EVENT": (
         os.environ.get("BLOCKED_FIELDS_EVENT"),
         gettext_lazy(
             "Event comma separated fields that could be modified if the instance is blocked"
         ),
+        list,
     ),
     "BLOCKED_FIELDS_EXCEPTION": (
         os.environ.get("BLOCKED_FIELDS_EXCEPTION", "false").lower() in VALUES_TRUE,
@@ -407,18 +416,22 @@ CONSTANCE_CONFIG = {
     "CORTEX_HOST": (
         os.environ.get("CORTEX_HOST"),
         gettext_lazy("Cortex host domain:port"),
+        str,
     ),
     "CORTEX_APIKEY": (
         os.environ.get("CORTEX_APIKEY", ""),
         gettext_lazy("Cortex admin apikey"),
+        str,
     ),
     "KINTUN_HOST": (
         os.environ.get("KINTUN_HOST"),
         gettext_lazy("Kintun host domain:port"),
+        str,
     ),
     "KINTUN_APIKEY": (
         os.environ.get("KINTUN_APIKEY", ""),
         gettext_lazy("Kintun admin apikey"),
+        str,
     ),
     "PAGE_SIZE": (
         int(os.environ.get("PAGE_SIZE", 10)),
