@@ -109,7 +109,14 @@ class EventSerializer(
         )
 
     @staticmethod
-    def blocked_fields():
+    def blocked_fields() -> list:
+        """
+        Returns a list of blocked fields for the EventSerializer.
+        The blocked fields are defined in the config.BLOCKED_FIELDS_EVENT setting.
+        If the setting is not defined, an empty list is returned.
+        """
+        if not config.BLOCKED_FIELDS_EVENT:
+            return []
         return config.BLOCKED_FIELDS_EVENT.split(",")
 
     @staticmethod
@@ -187,6 +194,8 @@ class EventSerializerReduced(
 
     @staticmethod
     def blocked_fields():
+        if not config.BLOCKED_FIELDS_EVENT:
+            return []
         return config.BLOCKED_FIELDS_EVENT.split(",")
 
     class Meta:
@@ -296,6 +305,13 @@ class CaseSerializer(
 
     @staticmethod
     def blocked_fields():
+        """
+        Returns a list of blocked fields for the CaseSerializer.
+        The blocked fields are defined in the config.BLOCKED_FIELDS_CASE setting.
+        If the setting is not defined, an empty list is returned.
+        """
+        if not config.BLOCKED_FIELDS_CASE:
+            return []
         return config.BLOCKED_FIELDS_CASE.split(",")
 
     def get_comments(self, obj):
@@ -368,6 +384,13 @@ class CaseSerializerReduced(
 
     @staticmethod
     def blocked_fields():
+        """
+        Returns a list of blocked fields for the CaseSerializerReduced.
+        The blocked fields are defined in the config.BLOCKED_FIELDS_CASE setting.
+        If the setting is not defined, an empty list is returned.
+        """
+        if not config.BLOCKED_FIELDS_CASE:
+            return []
         return config.BLOCKED_FIELDS_CASE.split(",")
 
     class Meta:

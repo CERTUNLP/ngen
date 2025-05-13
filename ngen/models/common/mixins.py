@@ -655,8 +655,9 @@ class ArtifactRelatedMixin(models.Model):
         based on the artifacts_dict property of the instance.
         """
         if self.enrichable:
+            artifact_types = config.ALLOWED_ARTIFACTS_TYPES or ""
             for artifact_type, artifact_values in self.artifacts_dict.items():
-                if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(","):
+                if artifact_type in artifact_types.split(","):
                     relations = []
                     for artifact_value in artifact_values:
                         artifact, created = ngen.models.Artifact.objects.get_or_create(
