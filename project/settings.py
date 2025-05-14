@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 import shutil
+import re
 from datetime import timedelta
 from pathlib import Path
 
@@ -617,6 +618,76 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+# Get APP Version, Commit and Branch from environment variables
+def read_git_file(path):
+    try:
+        with open(path, "r") as f:
+            return f.read().strip()
+    except Exception:
+        return None
+
+
+def get_git_info_from_files():
+    git_dir = os.path.join(BASE_DIR, ".git")
+
+    # Get the commit
+    head_path = os.path.join(git_dir, "HEAD")
+    head_content = read_git_file(head_path)
+
+    if not head_content:
+        return "unknown", "unknown", "unknown"
+
+    if head_content.startswith("ref:"):
+        ref = head_content.split(" ")[1].strip()
+        ref_path = os.path.join(git_dir, ref)
+        commit = read_git_file(ref_path)
+        branch = os.path.basename(ref.split("/")[-1])
+    else:
+        commit = head_content
+        branch = "detached"
+
+    if not commit:
+        return "unknown", "unknown", "unknown"
+
+    # Search for the latest tag pointing to that commit (in .git/refs/tags or packed-refs)
+    tags_dir = os.path.join(git_dir, "refs", "tags")
+    tag = None
+
+    # Search in refs/tags
+    if os.path.isdir(tags_dir):
+        for t in sorted(os.listdir(tags_dir), reverse=True):
+            tag_path = os.path.join(tags_dir, t)
+            tag_commit = read_git_file(tag_path)
+            if tag_commit and commit.startswith(tag_commit[: len(commit)]):
+                tag = t
+                break
+
+    # If not found, search in packed-refs
+    if not tag:
+        packed_refs = os.path.join(git_dir, "packed-refs")
+        if os.path.exists(packed_refs):
+            with open(packed_refs, "r") as f:
+                for line in f:
+                    if re.match(r"^[0-9a-f]{40} refs/tags/", line):
+                        hash_, ref = line.strip().split(" ")
+                        if commit.startswith(hash_[: len(commit)]):
+                            tag = ref.split("/")[-1]
+                            break
+
+    version = tag if tag else "dev"
+    return version, commit[:7], branch
+
+
+APP_VERSION_TAG = os.environ.get("APP_VERSION_TAG", "")
+APP_COMMIT = os.environ.get("APP_COMMIT", "")
+APP_BRANCH = os.environ.get("APP_BRANCH", "")
+APP_BUILD_FILE = os.environ.get("APP_BUILD_FILE", "unknown")
+
+if not all([APP_VERSION_TAG, APP_COMMIT, APP_BRANCH]):
+    APP_VERSION_TAG, APP_COMMIT, APP_BRANCH = get_git_info_from_files()
+
 
 # These variables are used to provide visualization on the admin interface
 # and are not used in the code

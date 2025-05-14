@@ -1,5 +1,10 @@
 export const BASE_URL = import.meta.env.VITE_APP_BASE_URL || "/home";
 export const BASENAME = import.meta.env.VITE_APP_BASENAME || "";
+export const MODE = import.meta.env.MODE || "development";
+export const APP_VERSION_TAG = import.meta.env.VITE_APP_VERSION_TAG || 'unknown';
+export const APP_COMMIT = import.meta.env.VITE_APP_COMMIT || 'unknown';
+export const APP_BRANCH = import.meta.env.VITE_APP_BRANCH || 'unknown';
+export const APP_BUILD_FILE = import.meta.env.VITE_APP_BUILD_FILE || "unknown";
 export const BASE_TITLE = " | ngen ";
 export const PAGE = "?page=";
 
@@ -96,4 +101,5 @@ export const COMPONENT_URL = {
   tag: "tag/",
   eventAnalysis: "eventanalysis/",
   analyzerMapping: "analyzermapping/",
+  version: "version/",
 };
