@@ -21,12 +21,17 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract tag version
+      - name: Extract metadata and set variables
         id: vars
         run: |
           RAW_TAG=${GITHUB_REF#refs/tags/}
-          CLEAN_TAG=${RAW_TAG#v}  # Elimina la v si está al principio
+          CLEAN_TAG=${RAW_TAG#v}
+          COMMIT=$(git rev-parse --short HEAD)
+          BRANCH=$(git branch -r --contains "$GITHUB_SHA" | grep -v '\->' | head -n 1 | sed 's|origin/||')
           echo "TAG=$CLEAN_TAG" >> $GITHUB_OUTPUT
+          echo "RAW_TAG=$RAW_TAG" >> $GITHUB_OUTPUT
+          echo "COMMIT=$COMMIT" >> $GITHUB_OUTPUT
+          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
 
       - name: Build and push backend image for ngen-django
         uses: docker/build-push-action@v5
@@ -35,6 +40,13 @@ jobs:
           file: docker/Dockerfile.prod
           push: true
           tags: certunlp/ngen-django:latest,certunlp/ngen-django:${{ steps.vars.outputs.TAG }}
+          build-args: |
+            APP_VERSION_TAG=${{ steps.vars.outputs.RAW_TAG }}
+            APP_COMMIT=${{ steps.vars.outputs.COMMIT }}
+            APP_BRANCH=${{ steps.vars.outputs.BRANCH }}
+          labels: |
+            org.opencontainers.image.version=${{ steps.vars.outputs.RAW_TAG }}
+            org.opencontainers.image.revision=${{ steps.vars.outputs.COMMIT }}
 
       - name: Build and push backend image for ngen
         uses: docker/build-push-action@v5
@@ -43,6 +55,13 @@ jobs:
           file: docker/Dockerfile.prod
           push: true
           tags: certunlp/ngen:latest,certunlp/ngen:${{ steps.vars.outputs.TAG }}
+          build-args: |
+            APP_VERSION_TAG=${{ steps.vars.outputs.RAW_TAG }}
+            APP_COMMIT=${{ steps.vars.outputs.COMMIT }}
+            APP_BRANCH=${{ steps.vars.outputs.BRANCH }}
+          labels: |
+            org.opencontainers.image.version=${{ steps.vars.outputs.RAW_TAG }}
+            org.opencontainers.image.revision=${{ steps.vars.outputs.COMMIT }}
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
@@ -51,3 +70,10 @@ jobs:
           file: frontend/Dockerfile.prod
           push: true
           tags: certunlp/ngen-frontend:latest,certunlp/ngen-frontend:${{ steps.vars.outputs.TAG }}
+          build-args: |
+            APP_VERSION_TAG=${{ steps.vars.outputs.RAW_TAG }}
+            APP_COMMIT=${{ steps.vars.outputs.COMMIT }}
+            APP_BRANCH=${{ steps.vars.outputs.BRANCH }}
+          labels: |
+            org.opencontainers.image.version=${{ steps.vars.outputs.RAW_TAG }}
+            org.opencontainers.image.revision=${{ steps.vars.outputs.COMMIT }}

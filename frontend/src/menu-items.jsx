@@ -244,6 +244,15 @@ const menuItems = {
               classes: "",
               icon: "",
               breadcrumbs: true
+            },
+            {
+              id: "about",
+              title: "menu.about",
+              type: "item",
+              url: "/about",
+              classes: "",
+              icon: "",
+              breadcrumbs: true
             }
           ]
         }

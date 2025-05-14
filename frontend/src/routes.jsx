@@ -649,6 +649,13 @@ const routes = [
     routeParams: { asNetworkAdmin: true, basePath: "/networkadmin" }
   },
   {
+    exact: "true",
+    path: "/about",
+    layout: AdminLayout,
+    guard: AuthGuard,
+    element: lazy(() => import("./views/home/About.jsx")),
+  },
+  {
     path: "*",
     exact: "true",
     element: () => <Navigate to={BASE_URL} />

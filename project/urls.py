@@ -149,7 +149,9 @@ router.register(r"tag", views.TagViewSet, basename="tag")
 
 router.register(r"eventanalysis", views.EventAnalysisViewSet, basename="eventanalysis")
 
-router.register(r"analyzermapping", views.AnalyzerMappingViewSet, basename="analyzermapping")
+router.register(
+    r"analyzermapping", views.AnalyzerMappingViewSet, basename="analyzermapping"
+)
 
 if settings.ELASTIC_ENABLED:
     from ngen.documents import CaseDocumentViewSet
@@ -196,7 +198,6 @@ urlpatterns = [
         views.CookieTokenLogoutView.as_view(),
         name="ctoken-logout",
     ),
-    path("api/about/", views.AboutView.as_view(), name="about"),
     path("__debug__/", include("debug_toolbar.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
@@ -240,6 +241,11 @@ urlpatterns = [
     ),
     path(
         "api/result/<str:task_id>/", views.TaskStatusView.as_view(), name="task_status"
+    ),
+    path(
+        "api/version/",
+        views.VersionView.as_view(),
+        name="version",
     ),
 ]
 

@@ -22,5 +22,15 @@ COPY . ./
 # Expose port
 EXPOSE 3000
 
+# Add version information
+ARG APP_VERSION_TAG
+ARG APP_COMMIT
+ARG APP_BRANCH
+ENV VITE_APP_VERSION_TAG=$APP_VERSION_TAG
+ENV VITE_APP_COMMIT=$APP_COMMIT
+ENV VITE_APP_BRANCH=$APP_BRANCH
+ENV VITE_APP_BUILD_FILE="dev"
+RUN echo "{\"tag\": \"$VITE_APP_VERSION_TAG\", \"commit\": \"$VITE_APP_COMMIT\", \"branch\": \"$VITE_APP_BRANCH\", \"build_file\": \"$VITE_APP_BUILD_FILE\"}" > /app/public/version.json
+
 # start app
 CMD ["npm", "run","start"]
