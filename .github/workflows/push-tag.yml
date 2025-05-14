@@ -29,6 +29,7 @@ jobs:
           COMMIT=$(git rev-parse --short HEAD)
           BRANCH=$(git branch -r --contains "$GITHUB_SHA" | grep -v '\->' | head -n 1 | sed 's|origin/||')
           echo "TAG=$CLEAN_TAG" >> $GITHUB_OUTPUT
+          echo "RAW_TAG=$RAW_TAG" >> $GITHUB_OUTPUT
           echo "COMMIT=$COMMIT" >> $GITHUB_OUTPUT
           echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
 
