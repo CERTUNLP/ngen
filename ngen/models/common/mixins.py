@@ -146,7 +146,8 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
         Fields that are blocked to be modified on blocked instances.
         """
         key = f"BLOCKED_FIELDS_{self.__class__.__name__.upper()}"
-        values = getattr(config, key, []).split(",")
+        values = getattr(config, key, "") or ""
+        values = values.split(",")
         values += [f"{v}_id" for v in values]
         return clean_list(values)
 
@@ -156,7 +157,8 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
         Fields that are allowed to be modified on merged instances.
         """
         key = f"ALLOWED_FIELDS_MERGED_{self.__class__.__name__.upper()}"
-        values = getattr(config, key, []).split(",")
+        values = getattr(config, key, "") or ""
+        values = values.split(",")
         values += [f"{v}_id" for v in values]
         return clean_list(values)
 
