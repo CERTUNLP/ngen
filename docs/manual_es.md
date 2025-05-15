@@ -24,63 +24,41 @@
 
 [**Estructura**](#estructura)
 
-- [**1\. Principal**](#1-principal)
-
-	- [1.1. Métricas](#11-métricas)
-
-	- [1.2. Eventos](#12-eventos)
-
-		- [1.2.1. Listado de eventos](#121-listado-de-eventos)
-
-		- [1.2.2. Detalle de los eventos](#122-detalle-de-los-eventos)
-
-	- [1.3. Casos](#13-casos)
-
-		- [1.3.1. Listado de casos](#131-listado-de-casos)
-
-		- [1.3.2. Detalle de los casos](#132-detalle-de-los-casos)
-
-		- [1.3.3. Ventanas de tiempo](#133-ventanas-de-tiempo)
-
+- [**Configuración Inicial**](#configuración-inicial)
+	- [Iniciar la aplicación en Docker en modo desarrollo:](#iniciar-la-aplicación-en-docker-en-modo-desarrollo)
+	- [Configuraciones globales](#configuraciones-globales)
+- [**Estructura**](#estructura)
+	- [1. **Principal**](#1-principal)
+		- [1.1. Métricas](#11-métricas)
+		- [1.2. Eventos](#12-eventos)
+			- [1.2.1. Listado de eventos](#121-listado-de-eventos)
+			- [1.2.2. Detalle de los eventos](#122-detalle-de-los-eventos)
+		- [1.3. Casos](#13-casos)
+			- [1.3.1. Listado de casos](#131-listado-de-casos)
+			- [1.3.2. Detalle de los casos](#132-detalle-de-los-casos)
+			- [1.3.3. Ventanas de tiempo](#133-ventanas-de-tiempo)
 			- [1.3.3.1. Ventanas de atención y resolución](#1331-ventanas-de-atención-y-resolución)
-
-- [**2\. Constituencias**](#2-constituencias)
-
-	- [2.1. Entidades](#21-entidades)
-
-	- [2.2. Redes](#22-redes)
-
-	- [2.3. Contactos](#23-contactos)
-
-- [**3\. Configuración**](#3-configuración)
-
-	- [3.1. Plataforma](#31-plataforma)
-
-		- [3.1.1. TLP](#311-tlp)
-
-		- [3.1.2. Reporte](#312-reporte)
-
-		- [3.1.3. Fuentes](#313-fuentes)
-
-		- [3.1.4. Prioridades](#314-prioridades)
-
-		- [3.1.5. Playbooks](#315-playbooks)
-
-		- [3.1.6. Taxonomía](#316-taxonomía)
-
-		- [3.1.7. Grupos de Taxonomías](#317-grupos-de-taxonomías)
-
-		- [3.1.8. Estados](#318-estados)
-
-			- [3.1.8.1. Transiciones](#3181-transiciones)
-
-		- [3.1.9. Plantilla](#319-plantilla)
-
-		- [3.1.10. Usuarios](#3110-usuarios)
-
-		- [3.1.11. Configuración](#3111-configuración)
-
-- [**4\. Perfil**](#4-perfil)
+	- [2. **Constituencias**](#2-constituencias)
+		- [2.1. Entidades](#21-entidades)
+		- [2.2. Redes](#22-redes)
+		- [2.3. Contactos](#23-contactos)
+	- [3. **Configuración**](#3-configuración)
+		- [3.1. Plataforma](#31-plataforma)
+			- [3.1.1. TLP](#311-tlp)
+			- [3.1.2. Reporte](#312-reporte)
+			- [3.1.3. Fuentes](#313-fuentes)
+			- [3.1.4. Prioridades](#314-prioridades)
+			- [3.1.5. Playbooks](#315-playbooks)
+			- [3.1.6. Taxonomía](#316-taxonomía)
+			- [3.1.7. Grupos de Taxonomías](#317-grupos-de-taxonomías)
+			- [3.1.8. Mapeo de Analizadores](#318-mapeo-de-analizadores)
+				- [Retests en el Detalle de un Evento](#retests-en-el-detalle-de-un-evento)
+			- [3.1.9. Estados](#319-estados)
+				- [3.1.9.1. Transiciones](#3191-transiciones)
+			- [3.1.10. Plantilla](#3110-plantilla)
+			- [3.1.11. Usuarios](#3111-usuarios)
+			- [3.1.12. Configuración](#3112-configuración)
+	- [4. Perfil](#4-perfil)
 
 # **Configuración Inicial**
 
@@ -304,7 +282,46 @@ El grupo indica a qué grupo de taxonomías externas pertenece, si no se selecci
 Representa los esquemas de clasificación de eventos de ciberseguridad utilizados por la organización y por los feed a partir de los cuales se obtiene la información relativa a los incidentes y vulnerabilidades.   
 Los esquemas de clasificación ajenos a la organización se vinculan con el esquema interno a través de los alias. Cada tipo de incidente o vulnerabilidad que es parte de un esquema externo será un alias de un tipo propio de la organización. Por ejemplo: blacklisted-ip de shadowserver puede ser un alias del tipo blocklist de la organización.
 
-#### 3.1.8. Estados 
+#### 3.1.8. Mapeo de Analizadores
+
+En esta sección se encuentra la vista dedicada al mapeo de analizadores. Si desea conocer en profundidad qué son los analizadores y cómo funcionan, puede consultar el documento [Analizadores](./analizadores.md).
+
+La vista de mapeo de analizadores permite gestionar las relaciones entre las taxonomías internas de la plataforma con las definidas en los analizadores. En esta pantalla se muestra una tabla con los mapeos creados, donde se pueden visualizar y gestionar los siguientes campos:
+
+- Taxonomía a mapear: La taxonomía interna que se desea mapear.
+- Taxonomía destino: La taxonomía externa con la que se realiza el mapeo, es decir, la que recibe el analizador.
+- Tipo de analizador: El tipo de analizador que se utiliza para realizar el mapeo.
+
+A continuación, se presenta una imagen de la tabla que muestra los mapeos creados:
+
+<div align="center">
+    <img src="./images/image10.png" alt="Tabla de Mapeo de Analizadores" width="600" />
+</div>
+
+En esta vista, los usuarios pueden crear, editar o eliminar mapeos según sea necesario. Para crear un nuevo mapeo, es necesario completar los campos mencionados anteriormente. Esto asegura que las taxonomías estén correctamente vinculadas y que los analizadores puedan procesar la información de manera adecuada.
+
+##### Retests en el Detalle de un Evento
+
+En el detalle de un evento, existe una sección dedicada a los **retests**. Esta sección puede presentarse de tres formas, dependiendo de la relación del evento con los mapeos de analizadores:
+
+1. Sin mapeo de analizador relacionado con la taxonomía del evento:   
+   <div align="center">
+       <img src="./images/image11.png" alt="Sin mapeo relacionado" width="600" />
+   </div>
+
+2. Con mapeo, pero sin retests disponibles:  
+   <div align="center">
+       <img src="./images/image12.png" alt="Sin retests disponibles" width="600" />
+   </div>
+
+3. Con mapeo y retests disponibles: se muestra una tabla con los resultados de los escaneos realizados junto con dos íconos a la derecha del titulo:  
+   - Ícono izquierdo: Permite refrescar la tabla para obtener los resultados más recientes.  
+   - Ícono derecho: Permite iniciar un nuevo retest.  
+   <div align="center">
+       <img src="./images/image13.png" alt="Tabla de retests" width="600" />
+   </div>
+
+#### 3.1.9. Estados 
 
 Define los estados de avance del tratamiento de un caso. Por ejemplo, “Nuevo”, “Abierto”, “Cerrado”. Cada estado tiene dos variables relacionadas, atendido y resuelto. 
 
@@ -313,7 +330,7 @@ Define los estados de avance del tratamiento de un caso. Por ejemplo, “Nuevo�
 - Open: el valor de atendido es verdadero y el de resuelto es falso.  
 - Closed: ambas variables tienen el valor verdadero. 
 
-##### 3.1.8.1. Transiciones 
+##### 3.1.9.1. Transiciones 
 
 El sistema incluye por defecto las siguientes transiciones:
 
@@ -325,12 +342,12 @@ El sistema incluye por defecto las siguientes transiciones:
 - closed \-\> staging.
 
 
-#### 3.1.9. Plantilla 
+#### 3.1.10. Plantilla 
 
 Una plantilla define la creación automática de un caso ante la presencia de eventos con determinadas características.   
 Por ejemplo, se puede definir una plantilla que a partir de un evento de tipo Vulnerable en la red 10.10.0.0/16 que llegue del feed Shadowserver se cree automáticamente un caso con una prioridad y un TLP determinado. 
 
-#### 3.1.10. Usuarios 
+#### 3.1.11. Usuarios 
 
 En esta sección se pueden crear, modificar y borrar los usuarios de la plataforma NGEN. 
 	<div align= "center">
@@ -353,7 +370,7 @@ Asimismo, se pueden definir roles dentro del sistema, NGEN incluye por defecto l
 - Generador de eventos (Event Publisher), un usuario con este rol es aquel que puede publicar eventos, es el único permiso que posee. Su uso es adecuado para los bots.
 
 
-#### 3.1.11. Configuración  
+#### 3.1.12. Configuración  
 
 Permite definir parámetros globales del sistema, por ejemplo el idioma, la dirección de email que utilizará el sistema para los reportes, etc. 
 
