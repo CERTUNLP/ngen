@@ -33,6 +33,7 @@
 		- [1.2. Eventos](#12-eventos)
 			- [1.2.1. Listado de eventos](#121-listado-de-eventos)
 			- [1.2.2. Detalle de los eventos](#122-detalle-de-los-eventos)
+				- [1.2.2.1 Tabla de retests](#1221-tabla-de-retests)
 		- [1.3. Casos](#13-casos)
 			- [1.3.1. Listado de casos](#131-listado-de-casos)
 			- [1.3.2. Detalle de los casos](#132-detalle-de-los-casos)
@@ -52,7 +53,6 @@
 			- [3.1.6. Taxonomía](#316-taxonomía)
 			- [3.1.7. Grupos de Taxonomías](#317-grupos-de-taxonomías)
 			- [3.1.8. Mapeo de Analizadores](#318-mapeo-de-analizadores)
-				- [Retests en el Detalle de un Evento](#retests-en-el-detalle-de-un-evento)
 			- [3.1.9. Estados](#319-estados)
 				- [3.1.9.1. Transiciones](#3191-transiciones)
 			- [3.1.10. Plantilla](#3110-plantilla)
@@ -137,6 +137,28 @@ En el detalle de un evento, además de los datos presentes en el listado de even
 * los artefactos;  
 * las evidencias;  
 * las notas. 
+* la tabla de retests, detallada en la siguiente seccion.
+
+##### 1.2.2.1 Tabla de retests
+
+Esta sección puede presentarse de tres formas, dependiendo de la relación del evento con los mapeos de analizadores:
+
+1. Sin mapeo de analizador relacionado con la taxonomía del evento:   
+   <div align="center">
+       <img src="./images/image11.png" alt="Sin mapeo relacionado" width="600" />
+   </div>
+
+2. Con mapeo, pero sin retests disponibles:  
+   <div align="center">
+       <img src="./images/image12.png" alt="Sin retests disponibles" width="600" />
+   </div>
+
+3. Con mapeo y retests disponibles: se muestra una tabla con los resultados de los escaneos realizados junto con dos íconos a la derecha del titulo:  
+   - Ícono izquierdo: Permite refrescar la tabla para obtener los resultados más recientes.  
+   - Ícono derecho: Permite iniciar un nuevo retest.  
+   <div align="center">
+       <img src="./images/image13.png" alt="Tabla de retests" width="600" />
+   </div>
 
 
 ### 1.3. Casos  
@@ -300,26 +322,6 @@ A continuación, se presenta una imagen de la tabla que muestra los mapeos cread
 
 En esta vista, los usuarios pueden crear, editar o eliminar mapeos según sea necesario. Para crear un nuevo mapeo, es necesario completar los campos mencionados anteriormente. Esto asegura que las taxonomías estén correctamente vinculadas y que los analizadores puedan procesar la información de manera adecuada.
 
-##### Retests en el Detalle de un Evento
-
-En el detalle de un evento, existe una sección dedicada a los **retests**. Esta sección puede presentarse de tres formas, dependiendo de la relación del evento con los mapeos de analizadores:
-
-1. Sin mapeo de analizador relacionado con la taxonomía del evento:   
-   <div align="center">
-       <img src="./images/image11.png" alt="Sin mapeo relacionado" width="600" />
-   </div>
-
-2. Con mapeo, pero sin retests disponibles:  
-   <div align="center">
-       <img src="./images/image12.png" alt="Sin retests disponibles" width="600" />
-   </div>
-
-3. Con mapeo y retests disponibles: se muestra una tabla con los resultados de los escaneos realizados junto con dos íconos a la derecha del titulo:  
-   - Ícono izquierdo: Permite refrescar la tabla para obtener los resultados más recientes.  
-   - Ícono derecho: Permite iniciar un nuevo retest.  
-   <div align="center">
-       <img src="./images/image13.png" alt="Tabla de retests" width="600" />
-   </div>
 
 #### 3.1.9. Estados 
 
