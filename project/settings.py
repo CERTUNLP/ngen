@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 import shutil
+import re
 from datetime import timedelta
 from pathlib import Path
 
@@ -279,20 +280,23 @@ CONSTANCE_CONFIG = {
         gettext_lazy(
             "CSIRT team email. This is an email to receive notifications and reports from ngen to the team"
         ),
+        str,
     ),
     "TEAM_EMAIL_PRIORITY": (
         os.environ.get("TEAM_EMAIL_PRIORITY"),
         gettext_lazy(
             "CSIRT team email default priority (Critical is the lowest and will only recieve critical emails, Very low is the highest and will recieve all emails) priority_field"
         ),
+        "priority_field",
     ),
     "TEAM_ABUSE": (
         os.environ.get("TEAM_ABUSE"),
         gettext_lazy(
             "CSIRT abuse email. This is an email to receive abuse reports from external sources"
         ),
+        str,
     ),
-    "TEAM_URL": (os.environ.get("TEAM_URL"), gettext_lazy("CSIRT site url")),
+    "TEAM_URL": (os.environ.get("TEAM_URL"), gettext_lazy("CSIRT site url"), str),
     "TEAM_LOGO": (
         os.path.join(CONSTANCE_FILE_ROOT, "teamlogo.png"),
         gettext_lazy(
@@ -305,14 +309,16 @@ CONSTANCE_CONFIG = {
         gettext_lazy(
             "Team logo url for emails. Overrides the saved logo. Usefull to access the logo from a public url"
         ),
+        str,
     ),
-    "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name"),
-    "EMAIL_HOST": (os.environ.get("EMAIL_HOST"), "Email host"),
+    "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name", str),
+    "EMAIL_HOST": (os.environ.get("EMAIL_HOST"), "Email host", str),
     "EMAIL_SENDER": (
         os.environ.get("EMAIL_SENDER"),
         gettext_lazy(
             "SMTP sender email address. This is the email that will be used to send emails from ngen"
         ),
+        str,
     ),
     "EMAIL_USERNAME": (
         os.environ.get("EMAIL_USERNAME"),
@@ -322,7 +328,7 @@ CONSTANCE_CONFIG = {
         os.environ.get("EMAIL_PASSWORD"),
         "Email password to fetch (required) and send emails (optional)",
     ),
-    "EMAIL_PORT": (os.environ.get("EMAIL_PORT"), "Email port to send emails"),
+    "EMAIL_PORT": (os.environ.get("EMAIL_PORT"), "Email port to send emails", int),
     "EMAIL_USE_TLS": (
         os.environ.get("EMAIL_USE_TLS", "false").lower() in VALUES_TRUE,
         "Email use TLS to send emails",
@@ -338,28 +344,31 @@ CONSTANCE_CONFIG = {
         gettext_lazy(
             "Case comma separated fields that could be modified if the instance is merged"
         ),
+        list,
     ),
     "ALLOWED_FIELDS_MERGED_EVENT": (
         os.environ.get("ALLOWED_FIELDS_MERGED_EVENT"),
         gettext_lazy(
             "Event comma separated fields that could be modified if the instance is merged"
         ),
+        list,
     ),
-    "ALLOWED_FIELDS_BLOCKED_CASE": (
-        os.environ.get("ALLOWED_FIELDS_BLOCKED_CASE"),
+    "BLOCKED_FIELDS_CASE": (
+        os.environ.get("BLOCKED_FIELDS_CASE"),
         gettext_lazy(
             "Case comma separated fields that could be modified if the instance is blocked"
         ),
+        list,
     ),
-    "ALLOWED_FIELDS_BLOCKED_EVENT": (
-        os.environ.get("ALLOWED_FIELDS_BLOCKED_EVENT"),
+    "BLOCKED_FIELDS_EVENT": (
+        os.environ.get("BLOCKED_FIELDS_EVENT"),
         gettext_lazy(
             "Event comma separated fields that could be modified if the instance is blocked"
         ),
+        list,
     ),
-    "ALLOWED_FIELDS_BLOCKED_EXCEPTION": (
-        os.environ.get("ALLOWED_FIELDS_BLOCKED_EXCEPTION", "false").lower()
-        in VALUES_TRUE,
+    "BLOCKED_FIELDS_EXCEPTION": (
+        os.environ.get("BLOCKED_FIELDS_EXCEPTION", "false").lower() in VALUES_TRUE,
         gettext_lazy(
             "If True, ngen will raise an exception if a blocked field is modified"
         ),
@@ -408,18 +417,22 @@ CONSTANCE_CONFIG = {
     "CORTEX_HOST": (
         os.environ.get("CORTEX_HOST"),
         gettext_lazy("Cortex host domain:port"),
+        str,
     ),
     "CORTEX_APIKEY": (
         os.environ.get("CORTEX_APIKEY", ""),
         gettext_lazy("Cortex admin apikey"),
+        str,
     ),
     "KINTUN_HOST": (
         os.environ.get("KINTUN_HOST"),
         gettext_lazy("Kintun host domain:port"),
+        str,
     ),
     "KINTUN_APIKEY": (
         os.environ.get("KINTUN_APIKEY", ""),
         gettext_lazy("Kintun admin apikey"),
+        str,
     ),
     "PAGE_SIZE": (
         int(os.environ.get("PAGE_SIZE", 10)),
@@ -605,6 +618,76 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+# Get APP Version, Commit and Branch from environment variables
+def read_git_file(path):
+    try:
+        with open(path, "r") as f:
+            return f.read().strip()
+    except Exception:
+        return None
+
+
+def get_git_info_from_files():
+    git_dir = os.path.join(BASE_DIR, ".git")
+
+    # Get the commit
+    head_path = os.path.join(git_dir, "HEAD")
+    head_content = read_git_file(head_path)
+
+    if not head_content:
+        return "unknown", "unknown", "unknown"
+
+    if head_content.startswith("ref:"):
+        ref = head_content.split(" ")[1].strip()
+        ref_path = os.path.join(git_dir, ref)
+        commit = read_git_file(ref_path)
+        branch = os.path.basename(ref.split("/")[-1])
+    else:
+        commit = head_content
+        branch = "detached"
+
+    if not commit:
+        return "unknown", "unknown", "unknown"
+
+    # Search for the latest tag pointing to that commit (in .git/refs/tags or packed-refs)
+    tags_dir = os.path.join(git_dir, "refs", "tags")
+    tag = None
+
+    # Search in refs/tags
+    if os.path.isdir(tags_dir):
+        for t in sorted(os.listdir(tags_dir), reverse=True):
+            tag_path = os.path.join(tags_dir, t)
+            tag_commit = read_git_file(tag_path)
+            if tag_commit and commit.startswith(tag_commit[: len(commit)]):
+                tag = t
+                break
+
+    # If not found, search in packed-refs
+    if not tag:
+        packed_refs = os.path.join(git_dir, "packed-refs")
+        if os.path.exists(packed_refs):
+            with open(packed_refs, "r") as f:
+                for line in f:
+                    if re.match(r"^[0-9a-f]{40} refs/tags/", line):
+                        hash_, ref = line.strip().split(" ")
+                        if commit.startswith(hash_[: len(commit)]):
+                            tag = ref.split("/")[-1]
+                            break
+
+    version = tag if tag else "dev"
+    return version, commit[:7], branch
+
+
+APP_VERSION_TAG = os.environ.get("APP_VERSION_TAG", "")
+APP_COMMIT = os.environ.get("APP_COMMIT", "")
+APP_BRANCH = os.environ.get("APP_BRANCH", "")
+APP_BUILD_FILE = os.environ.get("APP_BUILD_FILE", "unknown")
+
+if not all([APP_VERSION_TAG, APP_COMMIT, APP_BRANCH]):
+    APP_VERSION_TAG, APP_COMMIT, APP_BRANCH = get_git_info_from_files()
+
 
 # These variables are used to provide visualization on the admin interface
 # and are not used in the code

@@ -167,11 +167,9 @@ def enrich_artifact(artifact_id):
                         success=report.report.get("success"),
                     )
                     if config.ARTIFACT_RECURSIVE_ENRICHMENT:
+                        allowed_types = config.ALLOWED_ARTIFACTS_TYPES or ""
                         for job_artifact in api.jobs.get_artifacts(job.id):
-                            if (
-                                job_artifact.dataType
-                                in config.ALLOWED_ARTIFACTS_TYPES.split(",")
-                            ):
+                            if job_artifact.dataType in allowed_types.split(","):
                                 new_artifact, created = (
                                     ngen.models.Artifact.objects.get_or_create(
                                         value=job_artifact.data,
@@ -224,22 +222,24 @@ def retest_event_kintun(event_id):
             "event": event,
         }
         event_analysis = ngen.models.EventAnalysis.objects.create(**analysis_data)
-        
+
         kintun_data = kintun.retest_event_kintun(event, mapping_to)
-        
+
         event_analysis.vulnerable = kintun_data.get("vulnerable", False)
         event_analysis.result = kintun_data.get("evidence", "")
         event_analysis.scan_type = kintun_data.get("vuln_type", "")
         event_analysis.analyzer_url = kintun_data.get("_id", "")
 
         event_analysis.save()
-        
+
         return kintun_data
     except Exception as e:
         try:
             event_analysis.delete()
         except Exception as delete_error:
-            return {"error": f"Original error: {str(e)}, Deletion error: {str(delete_error)}"}
+            return {
+                "error": f"Original error: {str(e)}, Deletion error: {str(delete_error)}"
+            }
         return {"error": str(e)}
 
 

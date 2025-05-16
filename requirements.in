@@ -1,5 +1,5 @@
 cortex4py==2.1.0
-django==4.2.18
+django==4.2.20
 django-auditlog==2.3.0
 django-bleach==3.0.0
 django-celery-beat==2.5.0
@@ -45,3 +45,4 @@ whoisit==3.0.4
 publicsuffix2==2.20191221
 django-taggit==6.1.0
 tornado==6.4.2
+imbox==0.9.8

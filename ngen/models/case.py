@@ -222,8 +222,14 @@ class Case(
             return self.assigned.email
         return None
 
-    @property
-    def team_email(self):
+    def get_team_email_by_priority(self):
+        """
+        Get the team email if the priority (config.TEAM_EMAIL_PRIORITY) is
+        greater than or equal to the case priority.
+        Used by get_internal_contacts() method to send emails to the team on
+        bcc.
+        :return: team email or None
+        """
         priority = Priority.objects.get(name=config.TEAM_EMAIL_PRIORITY)
         if config.TEAM_EMAIL and priority.severity >= self.priority.severity:
             return config.TEAM_EMAIL
@@ -372,7 +378,7 @@ class Case(
     #     template_params = self.template_params
     #     recipients = self.recipients
     #     team_recipients = [
-    #         mail for mail in [self.assigned_email, self.team_email] if mail
+    #         mail for mail in [self.assigned_email, self.get_team_email_by_priority()] if mail
     #     ]
 
     #     for contacts, events in event_by_contacts.items():
@@ -441,6 +447,7 @@ class Case(
                     subject=self.subject_v2("AFFECTED"),
                     template=template,
                     template_params=template_params,
+                    bcc_recipients=self.get_internal_contacts(),
                     attachments=(
                         self.get_attachments_for_events_v2([event])
                         if send_attachments
@@ -462,7 +469,12 @@ class Case(
         self.notification_count += 1
 
     def get_internal_contacts(self):
-        return clean_list([self.assigned_email, self.team_email])
+        """
+        Returns a list of internal contacts of the case.
+        """
+        # this function is not using get_team_email_by_priority() because can
+        # return None and this is not the expected behavior
+        return clean_list([self.assigned_email, config.TEAM_EMAIL])
 
     def get_affected_contacts(self):
         contacts_from_all_events = []

@@ -61,6 +61,6 @@ def get_mime_type(file):
 
 def clean_list(input_list):
     """
-    Remove None values and empty strings from a list
+    Remove None and empty values from a list
     """
-    return list(filter(None, input_list))
+    return [item for item in input_list if item not in (None, "", [], {}, ())]

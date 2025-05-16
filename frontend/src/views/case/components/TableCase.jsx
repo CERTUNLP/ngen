@@ -17,6 +17,7 @@ import EventComponent from "views/tanstackquery/EventComponent";
 import TaxonomyComponent from "views/tanstackquery/TaxonomyComponent";
 
 
+
 const TableCase = ({
   setIfModify,
   cases,

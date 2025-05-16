@@ -22,18 +22,6 @@ from project import settings
 from ngen.tasks import whois_lookup_task
 
 
-class AboutView(TemplateView):
-    html = True
-    template_name = "reports/base.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["html"] = True
-        context["case"] = models.Case.objects.get(pk=161701)
-        context["config"] = constance.config
-        return context
-
-
 class DisabledView(APIView):
     """View for disabled endpoints"""
 
@@ -262,3 +250,28 @@ class TaskStatusView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+class VersionView(APIView):
+    """
+    View to return about the version of the application.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        version = settings.APP_VERSION_TAG
+        commit = settings.APP_COMMIT
+        branch = settings.APP_BRANCH
+        build_file = settings.APP_BUILD_FILE
+        mode = "development" if settings.DEBUG else "production"
+        return Response(
+            {
+                "version": version,
+                "commit": commit,
+                "branch": branch,
+                "build_file": build_file,
+                "environment": mode,
+            },
+            status=status.HTTP_200_OK,
+        )

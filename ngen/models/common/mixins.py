@@ -24,7 +24,7 @@ import ngen.models
 from taggit.managers import TaggableManager
 
 import ngen
-from ngen.utils import slugify_underscore
+from ngen.utils import clean_list, slugify_underscore
 from .parsing import StringIdentifier, StringType
 
 
@@ -141,18 +141,26 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
         raise NotImplementedError
 
     @property
-    def allowed_fields(self) -> bool:
-        key = f"ALLOWED_FIELDS_BLOCKED_{self.__class__.__name__.upper()}"
-        values = getattr(config, key, []).split(",")
+    def blocked_fields(self) -> list[str]:
+        """
+        Fields that are blocked to be modified on blocked instances.
+        """
+        key = f"BLOCKED_FIELDS_{self.__class__.__name__.upper()}"
+        values = getattr(config, key, "") or ""
+        values = values.split(",")
         values += [f"{v}_id" for v in values]
-        return values
+        return clean_list(values)
 
     @property
-    def allowed_fields_on_merged(self) -> bool:
+    def allowed_fields_on_merged(self) -> list[str]:
+        """
+        Fields that are allowed to be modified on merged instances.
+        """
         key = f"ALLOWED_FIELDS_MERGED_{self.__class__.__name__.upper()}"
-        values = getattr(config, key, []).split(",")
+        values = getattr(config, key, "") or ""
+        values = values.split(",")
         values += [f"{v}_id" for v in values]
-        return values
+        return clean_list(values)
 
     @property
     def mergeable(self) -> bool:
@@ -236,8 +244,10 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
         if self.blocked:
             exceptions = {}
             for attr in self.__dict__:
-                if attr not in self.allowed_fields and self.has_changed(attr):
-                    if config.ALLOWED_FIELDS_BLOCKED_EXCEPTION:
+                if attr in self.blocked_fields and str(self.initial_value(attr)) != str(
+                    getattr(self, attr)
+                ):
+                    if config.BLOCKED_FIELDS_EXCEPTION:
                         exceptions[attr] = [
                             {
                                 "__all__": gettext_lazy(
@@ -647,8 +657,9 @@ class ArtifactRelatedMixin(models.Model):
         based on the artifacts_dict property of the instance.
         """
         if self.enrichable:
+            artifact_types = config.ALLOWED_ARTIFACTS_TYPES or ""
             for artifact_type, artifact_values in self.artifacts_dict.items():
-                if artifact_type in config.ALLOWED_ARTIFACTS_TYPES.split(","):
+                if artifact_type in artifact_types.split(","):
                     relations = []
                     for artifact_value in artifact_values:
                         artifact, created = ngen.models.Artifact.objects.get_or_create(
