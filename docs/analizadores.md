@@ -26,7 +26,6 @@
     - [Función de Kintun](#función-de-kintun)
     - [Integración con NGEN](#integración-con-ngen)
     - [Uso de Kintun en NGEN](#uso-de-kintun-en-ngen)
-- [Conclusión](#conclusión)
 
 
 
@@ -38,13 +37,17 @@ Los analizadores en NGEN son componentes esenciales que permiten a la plataforma
 
 ## ¿Qué son los Analizadores?
 
-Los analizadores son herramientas o servicios que conectan NGEN con sistemas externos, como escáneres de vulnerabilidades o bases de datos de amenazas. Actúan como intermediarios que permiten a la plataforma obtener datos relevantes de estas fuentes y asociarlos a los eventos y casos internos.
+Los analizadores son herramientas o servicios que conectan NGEN con sistemas externos, como escáners de vulnerabilidades o bases de datos de amenazas. Actúan como intermediarios permitiendo a la plataforma obtener datos relevantes de estas fuentes y asociarlos a los eventos y casos internos.
 
 Cada analizador está vinculado a taxonomías específicas, lo que significa que NGEN puede solicitar información externa basada en la clasificación de un evento.
+Los analizadores en NGEN, como Kintun, son herramientas poderosas que enriquecen la gestión de incidentes de ciberseguridad al integrar información externa valiosa. Al conectar NGEN con fuentes especializadas, los analizadores permiten obtener una visión más completa de los eventos y casos, automatizar tareas críticas y mantener la información actualizada.
+
+
+
 
 ## Propósito de los Analizadores
 
-El objetivo principal de los analizadores es complementar la información de los eventos en NGEN con datos externos, mejorando la capacidad de los equipos de respuesta a incidentes para tomar decisiones informadas. Estos analizadores permiten a los miembros del CSIRT verificar manualmente si un artefacto reportado en un evento (como una IP o dominio) sigue activo o está asociado a comportamientos maliciosos conocidos. Esto evita la necesidad de realizar pruebas manuales externas, facilitando la tarea de retests y enriqueciendo los datos de los eventos con información relevante y actualizada.
+El objetivo principal de los analizadores es complementar la información de los eventos en NGEN con datos externos, mejorando la capacidad de toma de decisiones de los equipos de respuesta a incidentes. Estos analizadores permiten a los miembros del CSIRT verificar manualmente si un artefacto asociado a un evento (como una IP o dominio) sigue activo o está relacionado con comportamientos maliciosos conocidos. Esto evita la necesidad de realizar pruebas manuales externas, facilitando la tarea de retests y enriqueciendo los eventos con información relevante y actualizada.
 
 ## Integración con Fuentes Externas
 
@@ -56,7 +59,7 @@ Por ejemplo, si un evento tiene la taxonomía "Vulnerable" y existe un mapeo con
 
 ## Kintun: Escaner de vulnerabilidades
 
-**Kintun** es un analizador específico integrado en NGEN, diseñado para escanear redes en busca de vulnerabilidades o malas configuraciones. Se trata de un escáner de vulnerabilidades RESTful, lo que permite a NGEN interactuar con él mediante una API para solicitar escaneos y recibir resultados de forma programática. Más detalles sobre Kintun están disponibles en su repositorio: [https://github.com/CERTUNLP/kintun](https://github.com/CERTUNLP/kintun/blob/master/README.md).
+**Kintun** es un analizador específico integrado en NGEN, diseñado para escanear redes en busca de vulnerabilidades o malas configuraciones. Se trata de un escáner de vulnerabilidades RESTful, lo que permite a NGEN interactuar con él mediante una API para solicitar escaneos y recibir resultados de forma automática. Más detalles sobre Kintun están disponibles en su repositorio: [https://github.com/CERTUNLP/kintun](https://github.com/CERTUNLP/kintun/blob/master/README.md).
 
 ### Función de Kintun
 
@@ -78,9 +81,6 @@ El uso de Kintun dentro de NGEN incluye las siguientes funcionalidades:
 
 Por ejemplo, si un evento indica una posible vulnerabilidad en un servidor web, un retest con Kintun puede confirmar si el servidor sigue siendo vulnerable o si las medidas de mitigación han sido efectivas.
 
-# Conclusión
-
-Los analizadores en NGEN, como Kintun, son herramientas poderosas que enriquecen la gestión de incidentes de ciberseguridad al integrar información externa valiosa. Al conectar NGEN con fuentes especializadas, los analizadores permiten obtener una visión más completa de los eventos y casos, automatizar tareas críticas y mantener la información actualizada.
 
 ---
 
