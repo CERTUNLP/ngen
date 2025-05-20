@@ -152,7 +152,7 @@ class EmailMessageTest(TestCase):
         Verifies that messages with None as root_message_id are not returned in threads.
         """
         bad_message = EmailMessage.objects.create(
-            root_message_id=None,
+            root_message_id="testgetmessagethread@test.com",
             parent_message_id=None,
             message_id="<bad@cert.unlp.edu.ar>",
             references=[],
