@@ -340,7 +340,7 @@ class Case(
         self.communicate_v2("case_report")
 
     def communicate_close(self):
-        self.communicate_v2("case_closed_report")
+        self.communicate_v2(template="case_closed_report", send_attachments=False)
 
     def communicate_open(self):
         self.communicate_v2("case_report")
