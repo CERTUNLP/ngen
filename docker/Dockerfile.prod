@@ -38,7 +38,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 # Install only the necessary libraries in the final image
-RUN apk add --no-cache libmagic
+RUN apk add --no-cache libmagic gettext
 
 # Copy installed dependencies from the base stage
 COPY --from=base /install /usr/local
@@ -47,6 +47,10 @@ COPY --from=base /install /usr/local
 COPY . /code/
 
 # Add version information
+ARG APP_VERSION_TAG
+ARG APP_COMMIT
+ARG APP_BRANCH
+ARG APP_BUILD_FILE="prod"
 RUN echo "{\"tag\": \"$APP_VERSION_TAG\", \"commit\": \"$APP_COMMIT\", \"branch\": \"$APP_BRANCH\", \"build_file\": \"$APP_BUILD_FILE\"}" > /code/version.json
 
 # Expose port 8000 but we will use a reverse proxy to serve the app anyway

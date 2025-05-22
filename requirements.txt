@@ -58,7 +58,7 @@ cron-descriptor==1.4.0
     # via django-celery-beat
 decorator==5.1.1
     # via validators
-django==4.2.20
+django==4.2.21
     # via
     #   -r requirements.in
     #   django-appconf
@@ -156,11 +156,13 @@ flower==2.0.1
     # via -r requirements.in
 gunicorn==23.0.0
     # via -r requirements.in
-h11==0.14.0
+h11==0.16.0
     # via httpcore
-httpcore==1.0.6
-    # via httpx
-httpx==0.27.2
+httpcore==1.0.9
+    # via
+    #   -r requirements.in
+    #   httpx
+httpx==0.28.1
     # via whoisit
 humanize==4.10.0
     # via flower
@@ -258,9 +260,7 @@ six==1.16.0
     #   elasticsearch-dsl
     #   python-dateutil
 sniffio==1.3.1
-    # via
-    #   anyio
-    #   httpx
+    # via anyio
 sqlparse==0.5.1
     # via
     #   -r requirements.in
@@ -272,7 +272,7 @@ tinycss2==1.1.1
     #   bleach
 tld==0.12.6
     # via -r requirements.in
-tornado==6.4.2
+tornado==6.5
     # via
     #   -r requirements.in
     #   flower
