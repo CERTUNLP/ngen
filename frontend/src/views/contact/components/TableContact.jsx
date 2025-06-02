@@ -4,6 +4,7 @@ import CrudButton from "../../../components/Button/CrudButton";
 import { deleteContact, getContact } from "../../../api/services/contacts";
 import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import PriorityButton from "../../../components/Button/PriorityButton";
+import PriorityComponent from "views/tanstackquery/PriorityComponent";
 import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
 import { getMinifiedUser } from "api/services/users";
@@ -122,7 +123,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                 <td>{labelRole[contact.role]}</td>
                 <td>{contact.username}</td>
                 <td>
-                  <PriorityButton url={contact.priority} />
+                <PriorityComponent priority={contact.priority}></PriorityComponent> 
                 </td>
                 <td>
                   <CrudButton type="read" onClick={() => showContact(contact.url)} />
