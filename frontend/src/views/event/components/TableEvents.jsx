@@ -12,11 +12,6 @@ import TagContainer from "components/Badges/TagContainer";
 import { useTranslation } from "react-i18next";
 import UuidField from "components/Field/UuidField";
 import { markSolved } from "api/services/events"; 
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from '@tanstack/react-query';
 import TlpComponent from "../../tanstackquery/TlpComponent";
 import TaxonomyComponent from "../../tanstackquery/TaxonomyComponent";
 import FeedComponent from "views/tanstackquery/FeedComponent";
@@ -28,7 +23,6 @@ const TableEvents = ({
   order,
   setOrder,
   setLoading,
-  taxonomyNames,
   feedNames,
   tlpNames,
   disableDate,

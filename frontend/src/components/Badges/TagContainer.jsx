@@ -1,27 +1,35 @@
 import React from "react";
-import TagItem from "./TagItem";
-import LetterFormat from "components/LetterFormat";
+import { useQuery } from "@tanstack/react-query";
 import { getMinifiedTag } from "api/services/tags";
+import LetterFormat from "components/LetterFormat";
 
-const TagContainer = ({ tags, maxWidth = "150px", justifyContent = "center" }) => {
-  const [fetchedTags, setFetchedTags] = React.useState([]);
-  const [tagsToDisplay, setTagsToDisplay] = React.useState([]);
+const TagContainer = ({
+  tags, // e.g. ['urgent', 'important']
+  maxWidth = "150px",
+  justifyContent = "center",
+  component: TagComponent = LetterFormat,
+}) => {
+  const { data: allTags = [], isLoading, error } = useQuery({
+    queryKey: ["minified-tags"],
+    queryFn: getMinifiedTag,
+    staleTime: 5 * 60 * 1000, // optional: 5 minutes
+  });
 
-  React.useEffect(() => {
-    getMinifiedTag()
-      .then((response) => {
-        setFetchedTags(response);
-      })
-      .catch((error) => {
-        console.error("Error fetching tags:", error);
-      });
-  }, []);
+  const tagsToDisplay = React.useMemo(() => {
+    if (!tags?.length || !allTags?.length) return [];
+    return tags
+      .map((tagName) => allTags.find((t) => t?.name === tagName))
+      .filter(Boolean);
+  }, [tags, allTags]);
 
-  React.useEffect(() => {
-    if (fetchedTags?.length > 0) {
-      setTagsToDisplay(tags?.map((tag) => fetchedTags?.find((ft) => ft?.name === tag)));
-    }
-  } , [fetchedTags, tags]);
+  if (isLoading) {
+    return <div style={{ textAlign: "center" }}>Loading tags...</div>;
+  }
+
+  if (error) {
+    console.error("Error loading tags:", error);
+    return <div style={{ textAlign: "center" }}>Failed to load tags.</div>;
+  }
 
   return (
     <div style={{ width: "100%", textAlign: "center" }}>
@@ -32,19 +40,22 @@ const TagContainer = ({ tags, maxWidth = "150px", justifyContent = "center" }) =
           gap: "1px",
           maxWidth: maxWidth,
           justifyContent: justifyContent,
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
-        {tagsToDisplay?.length > 0
-          ? tagsToDisplay?.map((tag, index) => (
-              <LetterFormat
-                key={index}
-                stringToDisplay={tag.name}
-                useBadge={true}
-                bgcolor={tag.color}
-              />
-            ))
-          : "-"}
+        {tagsToDisplay.length > 0 ? (
+          tagsToDisplay.map((tag, index) => (
+            <TagComponent
+              key={index}
+              stringToDisplay={tag.name}
+              bgcolor={tag.color}
+              useBadge={true}
+              tag={tag} // optional if component needs full tag
+            />
+          ))
+        ) : (
+          "-"
+        )}
       </div>
     </div>
   );
