@@ -113,7 +113,7 @@ def contact_summary(contacts=None, tlp=None, days=None):
         else:
             default_value = 14
             timedeltavalue = timezone.timedelta(days=default_value)
-            print(
+            logger.warning(
                 f"No interval found for the periodic task 'ngen.tasks.contact_summary'. Using default value: {default_value} days."
             )
 
