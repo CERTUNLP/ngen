@@ -23,11 +23,6 @@ def mail_logo():
 
 
 @register.simple_tag
-def summary_days():
-    return config.SUMMARY_DAYS
-
-
-@register.simple_tag
 def encode_static(path, encoding="base64", file_type="image"):
     """
     a template tag that returns a encoded string representation of a staticfile

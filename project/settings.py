@@ -465,13 +465,6 @@ CONSTANCE_CONFIG = {
         os.environ.get("SUMMARY_TLP", "red"),
         gettext_lazy("Default TLP for summary"),
     ),
-    "SUMMARY_DAYS": (
-        int(os.environ.get("SUMMARY_DAYS", 7)),
-        gettext_lazy(
-            "Default days for summary. This must be equal to the periodic task schedule created"
-        ),
-        int,
-    ),
     "TAXONOMY_ALLOW_AUTO_CREATE": (
         os.environ.get("TAXONOMY_ALLOW_AUTO_CREATE", "true").lower() in VALUES_TRUE,
         gettext_lazy(
