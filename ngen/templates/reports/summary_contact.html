@@ -3,7 +3,6 @@
 
 {% language lang %}
     {% block content_header %}
-        {% summary_days as days %}
         <div class="content">
             <h4>
                 {% blocktranslate trimmed with contact_name=contact.name %}
@@ -12,7 +11,7 @@
             </h4>
             <p>
                 {% blocktranslate trimmed %}
-                    Here is a summary of your cases of the last {{ days }} days.
+                    Below are all your unsolved cases, along with a summary of your closed cases from the last {{ days }} days.
                 {% endblocktranslate %}
             </p>
         </div>

@@ -276,8 +276,8 @@ msgid "Hello %(contact_name)s"
 msgstr "Hola %(contact_name)s"
 
 #, python-format
-msgid "Here is a summary of your cases of the last %(days)s days."
-msgstr "Aquí tiene un resumen de sus casos de los últimos %(days)s días."
+msgid "Below are all your unsolved cases, along with a summary of your closed cases from the last %(days)s days."
+msgstr "A continuación se muestran todos sus casos sin resolver, junto con un resumen de sus casos cerrados de los últimos %(days)s días."
 
 msgid "Congratulation! You have <strong>0</strong> unsolved cases"
 msgstr "¡Felicidades! Tiene <strong>0</strong> casos no resueltos"

@@ -87,7 +87,7 @@ def case_renotification():
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
-def contact_summary(contacts=None, tlp=None):
+def contact_summary(contacts=None, tlp=None, days=None):
     """
     Send summary of open cases to all network admins
     """
@@ -96,6 +96,26 @@ def contact_summary(contacts=None, tlp=None):
 
     tlp = tlp.lower() if tlp else config.SUMMARY_TLP.lower()
     tlp_obj = ngen.models.Tlp.objects.get(slug=tlp) if tlp and tlp != "none" else None
+
+    # Get the interval for the periodic task
+    if days is not None:
+        timedeltavalue = timezone.timedelta(days=days)
+    else:
+        task = PeriodicTask.objects.filter(task="ngen.tasks.contact_summary").first()
+        if task and task.interval:
+            interval = task.interval
+            period = interval.period  # 'seconds', 'minutes', 'hours', 'days', 'weeks'
+            every = interval.every
+
+            # Create a timedelta object based on the interval
+            timedelta_kwargs = {period: every}
+            timedeltavalue = timezone.timedelta(**timedelta_kwargs)
+        else:
+            default_value = 14
+            timedeltavalue = timezone.timedelta(days=default_value)
+            logger.warning(
+                f"No interval found for the periodic task 'ngen.tasks.contact_summary'. Using default value: {default_value} days."
+            )
 
     for contact in contacts:
         # Get all open cases for the contact
@@ -111,9 +131,9 @@ def contact_summary(contacts=None, tlp=None):
         closed_cases = ngen.models.Case.objects.filter(
             state__solved=True,
             events__network__contacts=contact,
-            solve_date__gte=timezone.now()
-            - timezone.timedelta(days=config.SUMMARY_DAYS),
+            solve_date__gte=timezone.now() - timedeltavalue,
         ).prefetch_related("events")
+
         list_closed_cases = [
             {"case": case, "events": case.events.filter(network__contacts=contact)}
             for case in closed_cases
@@ -125,6 +145,7 @@ def contact_summary(contacts=None, tlp=None):
                 list_open_cases,
                 list_closed_cases,
                 tlp_obj,
+                days=timedeltavalue.total_seconds() / 86400,
             )
 
 

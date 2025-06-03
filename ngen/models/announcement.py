@@ -103,7 +103,7 @@ class Communication:
         raise NotImplementedError
 
     @staticmethod
-    def communicate_contact_summary(contact, open_cases, closed_cases, tlp):
+    def communicate_contact_summary(contact, open_cases, closed_cases, tlp, days):
         """
         Weekly cases summary communication
         """
@@ -122,6 +122,7 @@ class Communication:
                     "open_cases": open_cases,
                     "closed_cases": closed_cases,
                     "tlp": tlp,
+                    "days": days,
                 },
             ),
             {
