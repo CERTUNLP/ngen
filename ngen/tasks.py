@@ -145,7 +145,7 @@ def contact_summary(contacts=None, tlp=None, days=None):
                 list_open_cases,
                 list_closed_cases,
                 tlp_obj,
-                days=timedeltavalue.days,
+                days=timedeltavalue.total_seconds() / 86400,
             )
 
 
