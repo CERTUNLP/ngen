@@ -50,21 +50,21 @@ const DashDefault = ({ routeParams }) => {
     setLoadingEvents(true);
     setLoadingFeeds(true);
     setLoadingEntities(true);
-    getMinifiedTaxonomy().then((response) => {
-      let dicTaxonomy = {};
-      response.forEach((taxonomy) => {
-        dicTaxonomy[taxonomy.url] = taxonomy.name;
-      });
-      setTaxonomyNames(dicTaxonomy);
-    });
+    // getMinifiedTaxonomy().then((response) => {
+    //   let dicTaxonomy = {};
+    //   response.forEach((taxonomy) => {
+    //     dicTaxonomy[taxonomy.url] = taxonomy.name;
+    //   });
+    //   setTaxonomyNames(dicTaxonomy);
+    // });
 
-    getMinifiedFeed().then((response) => {
-      let dicFeed = {};
-      response.forEach((feed) => {
-        dicFeed[feed.url] = feed.name;
-      });
-      setFeedNames(dicFeed);
-    });
+    // getMinifiedFeed().then((response) => {
+    //   let dicFeed = {};
+    //   response.forEach((feed) => {
+    //     dicFeed[feed.url] = feed.name;
+    //   });
+    //   setFeedNames(dicFeed);
+    // });
 
     if (currentUserHasPermissions("view_dashboard")) {
       getDashboardFeed(starDateFilter + endDateFilter)

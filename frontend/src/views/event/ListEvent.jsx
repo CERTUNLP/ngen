@@ -130,55 +130,55 @@ const ListEvent = ({ routeParams }) => {
       .catch((error) => {
         console.log(error);
       });
-    getMinifiedState()
-      .then((response) => {
-        let list = [];
-        let dicState = {};
-        response.forEach((stateItem) => {
-          list.push({ value: stateItem.url, label: stateItem.name });
-          dicState[stateItem.url] = stateItem.name;
-        });
-        setStates(list);
-        setStateNames(dicState);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    getMinifiedTaxonomy().then((response) => {
-      let listTaxonomies = [];
-      let dicTaxonomy = {};
-      response.forEach((taxonomy) => {
-        listTaxonomies.push({ value: taxonomy.url, label: taxonomy.name });
-        dicTaxonomy[taxonomy.url] = taxonomy.name;
-      });
-      setTaxonomyNames(dicTaxonomy);
-      setTaxonomies(listTaxonomies);
-    });
-    getMinifiedPriority()
-      .then((response) => {
-        let listPriority = [];
-        let dicPriority = {};
-        response.forEach((priority) => {
-          listPriority.push({ value: priority.url, label: priority.name });
-          dicPriority[priority.url] = priority.name;
-        });
-        setPriorityNames(dicPriority);
-        setAllPriorities(listPriority);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    // getMinifiedState()
+    //   .then((response) => {
+    //     let list = [];
+    //     let dicState = {};
+    //     response.forEach((stateItem) => {
+    //       list.push({ value: stateItem.url, label: stateItem.name });
+    //       dicState[stateItem.url] = stateItem.name;
+    //     });
+    //     setStates(list);
+    //     setStateNames(dicState);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+    // // getMinifiedTaxonomy().then((response) => {
+    // //   let listTaxonomies = [];
+    // //   let dicTaxonomy = {};
+    // //   response.forEach((taxonomy) => {
+    // //     listTaxonomies.push({ value: taxonomy.url, label: taxonomy.name });
+    // //     dicTaxonomy[taxonomy.url] = taxonomy.name;
+    // //   });
+    // //   setTaxonomyNames(dicTaxonomy);
+    // //   setTaxonomies(listTaxonomies);
+    // // });
+    // getMinifiedPriority()
+    //   .then((response) => {
+    //     let listPriority = [];
+    //     let dicPriority = {};
+    //     response.forEach((priority) => {
+    //       listPriority.push({ value: priority.url, label: priority.name });
+    //       dicPriority[priority.url] = priority.name;
+    //     });
+    //     setPriorityNames(dicPriority);
+    //     setAllPriorities(listPriority);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
 
-    getMinifiedFeed().then((response) => {
-      let listFeeds = [];
-      let dicFeed = {};
-      response.forEach((feed) => {
-        listFeeds.push({ value: feed.url, label: feed.name });
-        dicFeed[feed.url] = feed.name;
-      });
-      setFeedNames(dicFeed);
-      setFeeds(listFeeds);
-    });
+    // getMinifiedFeed().then((response) => {
+    //   let listFeeds = [];
+    //   let dicFeed = {};
+    //   response.forEach((feed) => {
+    //     listFeeds.push({ value: feed.url, label: feed.name });
+    //     dicFeed[feed.url] = feed.name;
+    //   });
+    //   setFeedNames(dicFeed);
+    //   setFeeds(listFeeds);
+    // });
 
     // getMinifiedTlp().then((response) => {
     //   let listTlp = [];
