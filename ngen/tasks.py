@@ -1,5 +1,6 @@
 # pylint: disable=broad-exception-caught
 
+import logging
 from os import path
 from celery import shared_task
 from django_celery_beat.models import PeriodicTask
@@ -17,6 +18,8 @@ from ngen import cortex
 from ngen import kintun
 from ngen.models.announcement import Communication
 from ngen.services.contact_lookup import ContactLookupService
+
+logger = logging.getLogger(__name__)
 
 
 class TaskFailure(Exception):
@@ -145,7 +148,7 @@ def contact_summary(contacts=None, tlp=None, days=None):
                 list_open_cases,
                 list_closed_cases,
                 tlp_obj,
-                days=timedeltavalue.total_seconds() / 86400,
+                days=int(timedeltavalue.total_seconds() / 86400),
             )
 
 
@@ -161,7 +164,7 @@ def enrich_artifact(artifact_id):
     if not api:
         return "Cortex down"
     artifact = ngen.models.Artifact.objects.get(pk=artifact_id)
-    print("Enrichment for {}".format(artifact))
+    logger.warning("Enrichment for {}".format(artifact))
     if artifact.type in config.ALLOWED_ARTIFACTS_TYPES.split(","):
         jobs = []
         artifact.enrichments.all().delete()
