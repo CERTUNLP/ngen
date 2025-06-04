@@ -1,15 +1,14 @@
 import re
 import logging
 from collections import defaultdict
-
-from constance import config
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, get_connection
 from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy
 from django_bleach.models import BleachField
 from model_utils import Choices
+from constance import config
 
 from ngen.models.common.mixins import (
     AuditModelMixin,
@@ -31,22 +30,35 @@ class Communication:
         extra_headers: dict = {},
     ):
         if recipients["to"]:
-            email = EmailMultiAlternatives(
-                subject,
-                content["text"],
-                recipients["from"],
-                recipients["to"],
-                bcc=recipients.get("bcc", []),
-                cc=recipients.get("cc", []),
+            connection = get_connection(
+                backend="django.core.mail.backends.smtp.EmailBackend",
+                host=config.EMAIL_HOST,
+                port=config.EMAIL_PORT,
+                username=config.EMAIL_USERNAME,
+                password=config.EMAIL_PASSWORD,
+                use_tls=config.EMAIL_USE_TLS,
             )
+
+            email = EmailMultiAlternatives(
+                subject=subject,
+                body=content["text"],
+                from_email=recipients["from"],
+                to=recipients["to"],
+                cc=recipients.get("cc", []),
+                bcc=recipients.get("bcc", []),
+                headers=extra_headers,
+                connection=connection,
+            )
+
             email.attach_alternative(content["html"], "text/html")
-            email.extra_headers.update(extra_headers)
+
             for attachment in attachments:
                 try:
                     email.attach(attachment["name"], attachment["file"].read())
                 except Exception as e:
                     logger.error(f"Error attaching file: {e}")
-            email.send()
+
+            email.send(fail_silently=False)
 
     @staticmethod
     def render_template(
