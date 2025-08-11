@@ -124,7 +124,6 @@ class ContactViewSet(viewsets.ModelViewSet):
         "username",
         "role",
         "type",
-        "priority",
     ]
     filterset_class = ContactFilter
     ordering_fields = [
