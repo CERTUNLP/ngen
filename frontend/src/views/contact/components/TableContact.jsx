@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
-import CrudButton from "../../../components/Button/CrudButton";
-import { deleteContact, getContact } from "../../../api/services/contacts";
-import ModalConfirm from "../../../components/Modal/ModalConfirm";
-import PriorityButton from "../../../components/Button/PriorityButton";
-import Ordering from "../../../components/Ordering/Ordering";
+import CrudButton from "components/Button/CrudButton";
+import { deleteContact, getContact } from "api/services/contacts";
+import ModalConfirm from "components/Modal/ModalConfirm";
+import PriorityButton from "components/Button/PriorityButton";
+import ContactCheckButton from "components/Button/ContactCheckButton";
+import Ordering from "components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
 import { getMinifiedUser } from "api/services/users";
 import FormGetName from "components/Form/FormGetName";
+import DateShowField from "components/Field/DateShowField";
 
 const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder, basePath = "" }) => {
   const [contact, setContact] = useState("");
@@ -99,6 +101,14 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
         <thead>
           <tr>
             <Ordering
+              field="modified"
+              label={t("ngen.date.modified")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
+            <Ordering
               field="name"
               label={t("ngen.name_one")}
               order={order}
@@ -106,9 +116,46 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
               setLoading={setLoading}
               letterSize={letterSize}
             />
-            <th>{t("ngen.role_one")}</th>
-            <th>{t("ngen.contact_other")}</th>
-            <th>{t("ngen.priority_one")}</th>
+            <Ordering
+              field="role"
+              label={t("ngen.role_one")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
+            <Ordering
+              field="type"
+              label={t("ngen.type")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
+            <Ordering
+              field="username"
+              label={t("ngen.value")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
+            <Ordering
+              field="priority"
+              label={t("ngen.priority_one")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
+            <Ordering
+              field="last_check__confirmed"
+              label={t("ngen.contact_check.last_contact_check")}
+              order={order}
+              setOrder={setOrder}
+              setLoading={setLoading}
+              letterSize={letterSize}
+            />
             <th>{t("ngen.action_one")}</th>
           </tr>
         </thead>
@@ -118,11 +165,16 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
             let itemNumber = parts[parts.length - 2];
             return (
               <tr key={contact.url}>
+                <td><DateShowField value={contact.modified} /></td>
                 <td>{contact.name}</td>
                 <td>{labelRole[contact.role]}</td>
+                <td>{labelContact[contact.type]}</td>
                 <td>{contact.username}</td>
                 <td>
                   <PriorityButton url={contact.priority} />
+                </td>
+                <td>
+                  <ContactCheckButton url={contact.last_check} contact_url={contact.url} />
                 </td>
                 <td>
                   <CrudButton type="read" onClick={() => showContact(contact.url)} />

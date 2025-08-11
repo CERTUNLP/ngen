@@ -62,13 +62,20 @@ const validateNumbers = (text) => {
   return /^[0-9]+$/g.test(text);
 };
 
+const validateUUID = (str) => {
+  const pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return str === "*" || pattern.test(str);
+};
+
 const validateURL = (str) => {
   var pattern = /\bhttps?:\/\/[^\s/$.?#].[^\s]*\b/i;
   return str === "*" || !!pattern.test(str);
 };
+
 const validateHours = (hours) => {
   return /^(0?[0-9]|1[0-9]|2[0-3])$/.test(hours);
 };
+
 const validateMinutes = (minutes) => {
   return /^(0?[0-9]|[1-5][0-9])$/.test(minutes);
 };
@@ -196,6 +203,7 @@ export {
   validateNumber,
   validateAlphanumeric,
   validateNumbers,
+  validateUUID,
   validateSpace,
   validateURL,
   validateFile,

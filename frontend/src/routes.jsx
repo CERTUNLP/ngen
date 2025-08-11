@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import Loader from "./components/Loader/Loader";
 import AdminLayout from "./layouts/AdminLayout";
+import PublicLayout from "./layouts/PublicLayout";
 
 import { BASE_URL } from "./config/constant";
 
@@ -62,6 +63,12 @@ const routes = [
     exact: "true",
     path: "/unauthorized",
     element: lazy(() => import("./views/auth/unauthorized/Unauthorized"))
+  },
+  {
+    exact: "true",
+    path: "/contactcheck/validate/:uuid",
+    layout: PublicLayout,
+    element: lazy(() => import("./views/contact/ContactCheckForm"))
   },
   {
     exact: "true",

@@ -5,7 +5,7 @@
 <small class="lead">
     <strong>{% translate 'Taxonomy' %}:</strong>
     {% for tax in event.taxonomy.get_ancestors %}
-        {{ tax }} -> 
+    {{ tax }} ->
     {% endfor %}
     {{ event.taxonomy }} ({{ event.taxonomy.type }})
 </small>
@@ -17,8 +17,8 @@
     {{ event.date | date:"Y-m-d H:i:s" }} UTC</small>
 <br>
 {% if event.notes %}
-    <small class="lead"><strong>{% translate 'Notes' %}:</strong>
-        <div style="word-wrap: break-word;">{{ event.notes | render_report_content:event }}</div>
+<small class="lead"><strong>{% translate 'Notes' %}:</strong>
+    <div style="word-wrap: break-word;">{{ event.notes | render_report_content:event }}</div>
     <br>
-{% endif %}
-{% endlanguage %}
+    {% endif %}
+    {% endlanguage %}

@@ -82,6 +82,7 @@ class ContactSerializer(AuditSerializerMixin):
             "priority",
             "user",
             "networks",
+            "last_check",
         ]
 
 
@@ -103,3 +104,26 @@ class ContactMinifiedSerializer(AuditSerializerMixin):
     class Meta:
         model = models.Contact
         fields = ["url", "name"]
+
+
+class ContactCheckValidationSerializer(serializers.Serializer):
+    confirmed = serializers.BooleanField()
+    notes = serializers.CharField(allow_blank=True, required=False)
+
+
+class ContactCheckSerializer(AuditSerializerMixin):
+    class Meta:
+        model = models.ContactCheck
+        fields = [
+            "url",
+            "history",
+            "created",
+            "modified",
+            "contact",
+            "confirmed",
+            "is_valid",
+            "is_pending",
+            "notes",
+            "uuid",
+            "accessed_at",
+        ]

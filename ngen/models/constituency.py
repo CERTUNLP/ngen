@@ -1,9 +1,14 @@
+import uuid
+from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy
 from model_utils import Choices
+from constance import config
 
 from ngen.models import Event
+from ngen.tasks import send_contact_check_reminder, send_contact_check_submitted
 from ngen.models.common.mixins import (
     AuditModelMixin,
     PriorityModelMixin,
@@ -189,6 +194,13 @@ class Contact(AuditModelMixin, PriorityModelMixin, ValidationModelMixin):
         blank=True,
         related_name="contacts",
     )
+    last_check = models.OneToOneField(
+        "ContactCheck",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="last_for_contact",
+    )
 
     def __init__(self, *args, **kwargs):
         super(Contact, self).__init__(*args, **kwargs)
@@ -234,3 +246,96 @@ class NetworkEntity(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
                 "Can delete network entity as network admin",
             ),
         ]
+
+
+class ContactCheck(AuditModelMixin):
+    contact = models.ForeignKey(
+        "Contact",
+        on_delete=models.CASCADE,
+        related_name="checks",
+    )
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    accessed_at = models.DateTimeField(null=True, blank=True)
+    confirmed = models.BooleanField(
+        null=True,
+        blank=True,
+        help_text="If the contact confirmed that their information is up-to-date.",
+    )
+    is_lastone = models.BooleanField(
+        default=True,
+        help_text="If the ContactCheck is the last one.",
+    )
+    notes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = "contact_check"
+        verbose_name = "Contact Verification"
+        verbose_name_plural = "Contact Verifications"
+
+    def __str__(self):
+        return f"Check {self.uuid} for {self.contact.username}"
+
+    @property
+    def is_pending(self):
+        return self.accessed_at is None
+
+    @property
+    def is_valid(self):
+        return self.is_pending is True and self.is_lastone is True and not self.is_old()
+
+    def is_old(self):
+        if self.created:
+            seconds = config.CONTACT_CHECK_MAX_TIME
+            if seconds:
+                return self.created + timedelta(seconds=seconds) < timezone.now()
+        return False
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        if is_new:
+            # If new, check if the frontend public URL is configured
+            if not config.FRONTEND_PUBLIC_URL:
+                raise ValidationError(
+                    {
+                        "__all__": "Frontend public URL must be configured to create a contact check."
+                    }
+                )
+        else:
+            # If not new, check if the link has already been used
+            old = ContactCheck.objects.filter(pk=self.pk).first()
+            if old:
+                if not old.is_pending:
+                    raise ValidationError(
+                        {
+                            "__all__": "This link has already been used or is no longer valid."
+                        }
+                    )
+
+        # Disable old checks for the contact
+        if is_new:
+            ContactCheck.objects.filter(contact=self.contact).exclude(
+                pk=self.pk
+            ).exclude(is_lastone=False).update(is_lastone=False)
+
+        # Save the contact check
+        super().save(*args, **kwargs)
+
+        if is_new:
+            # If new, set the last check for the contact instance
+            Contact.objects.filter(id=self.contact_id).update(last_check=self)
+            send_contact_check_reminder.delay(self.pk)
+        else:
+            if not self.confirmed and not self.is_pending and old and old.is_pending:
+                # If not new, check if the data of the contact is not confirmed
+                # and send a notification
+                send_contact_check_submitted.delay(self.pk)
+
+    def get_validation_url(self):
+        frontend_url = config.FRONTEND_PUBLIC_URL
+        if frontend_url.endswith("/"):
+            frontend_url = frontend_url[:-1]
+        path = f"/contactcheck/validate/{self.uuid}"
+        return f"{frontend_url}{path}"
+
+    def get_autoconfirm_url(self):
+        return f"{self.get_validation_url()}?confirm=true"

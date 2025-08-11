@@ -129,7 +129,7 @@ const TableNetwork = ({ setIsModify, list, loading, order, setOrder, setLoading,
             />
             <Ordering
               field="active"
-              label={t("ngen.active")}
+              label={t("w.active")}
               order={order}
               setOrder={setOrder}
               setLoading={setLoading}

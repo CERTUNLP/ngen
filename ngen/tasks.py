@@ -386,3 +386,52 @@ def retrieve_emails():
     finally:
         if email_client:
             email_client.logout()
+
+
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
+def send_contact_checks(contact_ids=None):
+    """
+    Sends contact checks to all contacts or a specific list of contact IDs.
+    """
+
+    if not config.FRONTEND_PUBLIC_URL:
+        raise TaskFailure(
+            "Frontend public URL must be configured to send contact checks."
+        )
+
+    # Obtener contactos
+    contacts = (
+        ngen.models.Contact.objects.filter(type="email", id__in=contact_ids)
+        if contact_ids
+        else ngen.models.Contact.objects.filter(type="email")
+    )
+
+    for contact in contacts:
+        # Crear el check
+        ngen.models.ContactCheck.objects.create(contact=contact)
+
+
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
+def send_contact_check_reminder(check_id):
+    """
+    Sends a reminder email to the contact to complete the verification form.
+    """
+    check = ngen.models.ContactCheck.objects.get(pk=check_id)
+    Communication.send_contact_check_email(
+        contact=check.contact,
+        networks=check.contact.networks.all(),
+        check=check,
+    )
+
+
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
+def send_contact_check_submitted(check_id):
+    """
+    Sends an email to the team when a contact completes the verification form.
+    """
+    check = ngen.models.ContactCheck.objects.get(pk=check_id)
+    Communication.send_contact_check_submitted(
+        contact=check.contact,
+        networks=check.contact.networks.all(),
+        check=check,
+    )
