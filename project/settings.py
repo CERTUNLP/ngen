@@ -275,6 +275,10 @@ CONSTANCE_ADDITIONAL_FIELDS = {
     ],
 }
 CONSTANCE_CONFIG = {
+    "FRONTEND_PUBLIC_URL": (
+        os.environ.get("FRONTEND_PUBLIC_URL"),
+        gettext_lazy("Public URL for the frontend"),
+    ),
     "TEAM_EMAIL": (
         os.environ.get("TEAM_EMAIL"),
         gettext_lazy(
@@ -382,6 +386,11 @@ CONSTANCE_CONFIG = {
     "PRIORITY_SOLVE_TIME_DEFAULT": (
         int(os.environ.get("PRIORITY_SOLVE_TIME_DEFAULT", 10080)),
         gettext_lazy("Priority default solve time in minutes"),
+        int,
+    ),
+    "CONTACT_CHECK_MAX_TIME": (
+        int(os.environ.get("CONTACT_CHECK_MAX_TIME", 0)),
+        gettext_lazy("Max time for contact checks in seconds"),
         int,
     ),
     "CASE_DEFAULT_LIFECYCLE": (

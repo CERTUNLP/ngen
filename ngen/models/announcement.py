@@ -57,7 +57,7 @@ class Communication:
                     email.attach(attachment["name"], attachment["file"].read())
                 except Exception as e:
                     logger.error(f"Error attaching file: {e}")
-
+            print(f"Sending email to {recipients['to']}")
             email.send(fail_silently=False)
 
     @staticmethod
@@ -141,6 +141,63 @@ class Communication:
                 "to": [contact.username],
                 "from": config.EMAIL_SENDER,
                 "bcc": [config.TEAM_EMAIL],
+            },
+        )
+
+    @staticmethod
+    def send_contact_check_email(contact, networks, check):
+        """
+        Sends an email to the contact to validate their information.
+        """
+        subject = "[%s] %s" % (
+            config.TEAM_NAME,
+            gettext_lazy("Contact verification"),
+        )
+
+        template = "reports/contact_check.html"
+
+        Communication.send_mail(
+            subject,
+            Communication.render_template(
+                template,
+                extra_params={
+                    "contact": contact,
+                    "networks": networks,
+                    "check": check,
+                },
+            ),
+            {
+                "to": [contact.username],
+                "from": config.EMAIL_SENDER,
+                "bcc": [config.TEAM_EMAIL],
+            },
+        )
+
+    @staticmethod
+    def send_contact_check_submitted(contact, networks, check):
+        """
+        Sends an email to the team when a contact completes the verification form.
+        """
+        subject = "[%s] %s" % (
+            config.TEAM_NAME,
+            gettext_lazy("Contact check submitted"),
+        )
+
+        template = "reports/contact_check_submitted.html"
+
+        Communication.send_mail(
+            subject,
+            Communication.render_template(
+                template,
+                extra_params={
+                    "contact": contact,
+                    "networks": networks,
+                    "check": check,
+                },
+            ),
+            {
+                "to": [config.TEAM_EMAIL],
+                "from": config.EMAIL_SENDER,
             },
         )
 

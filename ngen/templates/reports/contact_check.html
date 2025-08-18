@@ -1,0 +1,100 @@
+{% extends 'reports/content_base.html' %}
+{% load i18n ngen_tags %}
+
+{% language lang %}
+{% block content_header %}
+<div class="content">
+    <h4>
+        {% blocktranslate trimmed with contact_name=contact.name %}
+        Hello {{ contact_name }}
+        {% endblocktranslate %},
+    </h4>
+    <p>
+        {% blocktranslate trimmed %}
+        We are reviewing our records to ensure we have your most up-to-date information.
+        {% endblocktranslate %}
+    </p>
+</div>
+{% endblock %}
+
+{% block content_body %}
+<div class="content">
+    <p><strong>{% blocktranslate %}Associated networks:{% endblocktranslate %}</strong></p>
+    <ul>
+        {% for network in networks %}
+        <li>
+            {{ network }}
+            {% if network.network_entity %}
+            ({% blocktranslate trimmed %}Entity{% endblocktranslate %}: {{ network.network_entity }})
+            {% endif %}
+        </li>
+        {% empty %}
+        <li>{% blocktranslate %}No associated networks.{% endblocktranslate %}</li>
+        {% endfor %}
+    </ul>
+
+    <p><strong>{% blocktranslate %}Role:{% endblocktranslate %}</strong>
+        {% if contact.role %}
+        {{ contact.role }}
+        {% else %}
+        {% blocktranslate %}No role specified.{% endblocktranslate %}
+        {% endif %}
+    </p>
+
+    <p><strong>{% blocktranslate %}Priority:{% endblocktranslate %}</strong>
+        {% if contact.priority %}
+        {{ contact.priority }}
+        {% else %}
+        {% blocktranslate %}No priority specified.{% endblocktranslate %}
+        {% endif %}
+    </p>
+
+    <p><strong>{% blocktranslate %}PGP public key:{% endblocktranslate %}</strong>
+        {% if contact.public_key %}
+        {% blocktranslate %}Yes{% endblocktranslate %}
+        {% else %}
+        {% blocktranslate %}No{% endblocktranslate %}
+        {% endif %}
+    </p>
+
+    <p><strong>{% blocktranslate %}Has an Ngen account:{% endblocktranslate %}</strong>
+        {% if contact.user %}
+        {% blocktranslate %}Yes{% endblocktranslate %}
+        {% else %}
+        {% blocktranslate %}No{% endblocktranslate %}
+        {% endif %}
+    </p>
+
+    <ul>
+        <li>
+            <strong>
+                {% blocktranslate trimmed %}
+                Are your current details correct?
+                {% endblocktranslate %}
+            </strong><br>
+            {% blocktranslate trimmed %}
+            Confirm by submitting this form:
+            {% endblocktranslate %}
+            <a href="{{ check.get_autoconfirm_url }}">{{ check.get_autoconfirm_url }}</a>
+        </li>
+        <li>
+            <strong>
+                {% blocktranslate trimmed %}
+                Need to update your information?
+                {% endblocktranslate %}
+            </strong><br>
+            {% blocktranslate trimmed %}
+            Submit changes via this form:
+            {% endblocktranslate %}
+            <a href="{{ check.get_validation_url }}">{{ check.get_validation_url }}</a>
+        </li>
+    </ul>
+
+    <p>
+        {% blocktranslate trimmed %}
+        <strong>Note:</strong> If we don't receive your confirmation, we'll remove your details from our system.
+        {% endblocktranslate %}
+    </p>
+</div>
+{% endblock %}
+{% endlanguage %}

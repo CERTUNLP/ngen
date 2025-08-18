@@ -55,6 +55,7 @@ router.register(r"taxonomygroup", views.TaxonomyGroupViewSet, basename="taxonomy
 router.register(r"report", views.ReportViewSet, basename="report")
 router.register(r"network", views.NetworkViewSet, basename="network")
 router.register(r"contact", views.ContactViewSet, basename="contact")
+router.register(r"contactcheck", views.ContactCheckViewSet, basename="contactcheck")
 router.register(r"entity", views.NetworkEntityViewSet, basename="networkentity")
 router.register(r"user", views.UserViewSet, basename="user")
 router.register(r"profile", views.UserProfileViewSet, basename="profile")
@@ -163,6 +164,11 @@ if settings.ELASTIC_ENABLED:
 urlpatterns = [
     path("api/admin/", admin.site.urls),
     path("api/", include(router.urls)),
+    # path(
+    #     "api/contactcheck/<uuid:uuid>/validate/",
+    #     views.ContactCheckValidationView.as_view(),
+    #     name="contactcheck-validate",
+    # ),
     path("api/comment/", comment_views.CommentList.as_view(), name="comment-list"),
     path(
         "api/comment/create/",

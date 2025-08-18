@@ -1,0 +1,71 @@
+{% extends 'reports/content_base.html' %}
+{% load i18n ngen_tags %}
+
+{% language lang %}
+{% block content_header %}
+<div class="content">
+    <h4>
+        {% blocktranslate trimmed with contact_name=contact.name %}
+        Contact verification result for {{ contact_name }}
+        {% endblocktranslate %}
+    </h4>
+    <p>
+        {% blocktranslate trimmed %}
+        The following is a summary of the contact's submitted verification and associated information.
+        {% endblocktranslate %}
+    </p>
+</div>
+{% endblock %}
+
+{% block content_body %}
+<div class="content">
+
+    <p><strong>{% blocktranslate %}Contact details:{% endblocktranslate %}</strong></p>
+    <ul>
+        <li><strong>{% blocktranslate %}Name:{% endblocktranslate %}</strong> {{ contact.name }}</li>
+        <li><strong>{% blocktranslate %}Email:{% endblocktranslate %}</strong> {{ contact.username }}</li>
+        <li><strong>{% blocktranslate %}Role:{% endblocktranslate %}</strong> {{ contact.role }}</li>
+        <li><strong>{% blocktranslate %}Priority:{% endblocktranslate %}</strong> {{ contact.priority }}</li>
+        <li><strong>{% blocktranslate %}Has Ngen account:{% endblocktranslate %}</strong> {% if contact.user %}{%
+            translate "Yes" %}{% else %}{% translate "No" %}{% endif %}</li>
+        <li><strong>{% blocktranslate %}PGP key present:{% endblocktranslate %}</strong> {% if contact.public_key %}{%
+            translate "Yes" %}{% else %}{% translate "No" %}{% endif %}</li>
+    </ul>
+
+    <p><strong>{% blocktranslate %}Associated networks:{% endblocktranslate %}</strong></p>
+    <ul>
+        {% for network in networks %}
+        <li>
+            {{ network }}
+            {% if network.network_entity %}
+            ({% blocktranslate trimmed %}Entity{% endblocktranslate %}: {{ network.network_entity }})
+            {% endif %}
+        </li>
+        {% empty %}
+        <li>{% blocktranslate %}No associated networks.{% endblocktranslate %}</li>
+        {% endfor %}
+    </ul>
+
+    <p><strong>{% blocktranslate %}Check status:{% endblocktranslate %}</strong>
+        {% if check.confirmed %}
+        ✅ {% blocktranslate %}Confirmed as valid{% endblocktranslate %}
+        {% else %}
+        ❌ {% blocktranslate %}Marked as invalid{% endblocktranslate %}
+        {% endif %}
+    </p>
+
+    <p><strong>{% blocktranslate %}Submitted notes:{% endblocktranslate %}</strong><br>
+        {% if check.notes %}
+        <em>{{ check.notes }}</em>
+        {% else %}
+        <em>{% blocktranslate %}No notes provided.{% endblocktranslate %}</em>
+        {% endif %}
+    </p>
+
+    <p><strong>{% blocktranslate %}Submitted at:{% endblocktranslate %}</strong>
+        {{ check.accessed_at | date:"Y-m-d H:i:s" }} UTC</p>
+    <p><strong>{% blocktranslate %}Submission UUID:{% endblocktranslate %}</strong> {{ check.uuid }}</p>
+
+</div>
+{% endblock %}
+{% endlanguage %}
