@@ -116,9 +116,10 @@ class TreeModelMixin(AL_Node, ValidationModelMixin):
 
     def clean_fields(self, exclude=None):
         # Check loops. This is not really performant, but it works
+        visited = set()
         elem = self.parent
         while elem:
-            if elem.pk == self.pk:
+            if elem.pk == self.pk or elem.pk in visited:
                 raise ValidationError(
                     {
                         "parent": [
@@ -128,6 +129,7 @@ class TreeModelMixin(AL_Node, ValidationModelMixin):
                         ]
                     }
                 )
+            visited.add(elem.pk)
             elem = elem.parent
         super().clean_fields(exclude=exclude)
 
