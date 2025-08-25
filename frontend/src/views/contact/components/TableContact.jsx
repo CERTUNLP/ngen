@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { getMinifiedUser } from "api/services/users";
 import FormGetName from "components/Form/FormGetName";
 import DateShowField from "components/Field/DateShowField";
+import PermissionCheck from "components/Auth/PermissionCheck";
 
 const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder, basePath = "" }) => {
   const [contact, setContact] = useState("");
@@ -148,14 +149,16 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
               setLoading={setLoading}
               letterSize={letterSize}
             />
-            <Ordering
-              field="last_check__confirmed"
-              label={t("ngen.contact_check.last_contact_check")}
-              order={order}
-              setOrder={setOrder}
-              setLoading={setLoading}
-              letterSize={letterSize}
-            />
+            <PermissionCheck permissions={["view_contactcheck","add_contactcheck"]}>
+              <Ordering
+                field="last_check__confirmed"
+                label={t("ngen.contact_check.last_contact_check")}
+                order={order}
+                setOrder={setOrder}
+                setLoading={setLoading}
+                letterSize={letterSize}
+              />
+            </PermissionCheck>
             <th>{t("ngen.action_one")}</th>
           </tr>
         </thead>
@@ -173,9 +176,11 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                 <td>
                   <PriorityButton url={contact.priority} />
                 </td>
-                <td>
-                  <ContactCheckButton url={contact.last_check} contact_url={contact.url} />
-                </td>
+                <PermissionCheck permissions={["view_contactcheck","add_contactcheck"]}>
+                  <td>
+                    <ContactCheckButton url={contact.last_check} contact_url={contact.url} />
+                    </td>
+                </PermissionCheck>
                 <td>
                   <CrudButton type="read" onClick={() => showContact(contact.url)} />
                   <CrudButton

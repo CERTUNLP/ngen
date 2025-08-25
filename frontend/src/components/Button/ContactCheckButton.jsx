@@ -10,6 +10,7 @@ import {
 import DateShowField from "components/Field/DateShowField";
 import CrudButton from "components/Button/CrudButton";
 import { BsArrowRightShort, BsInfoCircle } from "react-icons/bs";
+import PermissionCheck from "components/Auth/PermissionCheck";
 import { useTranslation } from "react-i18next";
 
 const ContactCheckButton = ({ url, contact_url }) => {
@@ -115,26 +116,30 @@ const ContactCheckButton = ({ url, contact_url }) => {
   return (
     <>
       <ButtonGroup className="me-2" size="sm">
-        {urlToUse && contactCheck && (
-          <Button
-            variant={getBadgeColor()}
-            onClick={handleBadgeClick}
-            title={t("w.show_details")}
-            style={{
-              fontWeight: "bold",
-              paddingLeft: "0.75rem",
-              paddingRight: "0.75rem",
-              color: "#333",
-              backgroundColor: getBadgeColor(),
-              borderColor: "rgba(0,0,0,0.1)"
-            }}
-          >
-            {getBadgeText()}
+        <PermissionCheck permissions={["view_contactcheck"]}>
+          {urlToUse && contactCheck && (
+            <Button
+              variant={getBadgeColor()}
+              onClick={handleBadgeClick}
+              title={t("w.show_details")}
+              style={{
+                fontWeight: "bold",
+                paddingLeft: "0.75rem",
+                paddingRight: "0.75rem",
+                color: "#333",
+                backgroundColor: getBadgeColor(),
+                borderColor: "rgba(0,0,0,0.1)"
+              }}
+            >
+              {getBadgeText()}
+            </Button>
+            )}
+        </PermissionCheck>
+        <PermissionCheck permissions={["add_contactcheck"]}>
+          <Button variant={"btn btn-outline-primary"} onClick={handleResendClick} title={t("ngen.contactcheck.resend")}>
+            <BsArrowRightShort />
           </Button>
-        )}
-        <Button variant={"btn btn-outline-primary"} onClick={handleResendClick} title={t("ngen.contactcheck.resend")}>
-          <BsArrowRightShort />
-        </Button>
+        </PermissionCheck>
       </ButtonGroup>
 
       {showPopup && contactCheck && (
