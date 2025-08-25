@@ -114,8 +114,11 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationMode
             network.save()
 
     def delete(self):
+        # Update the parent Network of the children
         if self.get_children():
             self.get_children().update(parent=self.parent)
+        # Update the network of the events
+        self.events.update(network=self.parent)
         super().delete()
 
     def clean(self):
@@ -146,14 +149,53 @@ class Network(AuditModelMixin, TreeModelMixin, AddressModelMixin, ValidationMode
                 {"__all__": [f"Network must have a valid address (cidr/domain)"]}
             )
 
+    def _reorder_events_of_my_parent_and_me(self):
+        if self.parent:
+            # Events that truly belong to me
+            my_events = self.parent.events.children_of(self)
+
+            # Events that should remain with the parent
+            parent_events = self.events.exclude(pk__in=my_events)
+
+            # Bulk update
+            parent_events.update(network=self.parent)
+            my_events.update(network=self)
+        else:
+            Event.objects.children_of(self).filter(network=None).update(network=self)
+
+    def _reorder_networks_that_belongs_to_me(self):
+        Network.objects.direct_children_of(self).update(parent=self)
+
     def save(self, *args, **kwargs):
         self.full_clean()
+
+        # Check if the network is being updated
+        network_changed = False
+        old_parent = None
+        if self.pk:
+            # if the network is being updated
+            # Take old parent reference (if it existed in the DB)
+            old = Network.objects.filter(pk=self.pk).first()
+            if old:
+                network_changed = old.cidr != self.cidr or old.domain != self.domain
+                if network_changed:
+                    old_parent = old.parent
+
         super().save(*args, **kwargs)
-        Network.objects.direct_children_of(self).update(parent=self)
-        events = Event.objects.children_of(self)
-        if self.parent:
-            events = events.filter(network=self.parent)
-        events.update(network=self)
+
+        # Order networks and events on edit network
+        if network_changed:
+            # Order old events
+            if old_parent and old_parent.pk != self.parent_id:
+                # If I changed parents, return the events to the old parent
+                old_events = Event.objects.filter(network=self)
+                old_events.update(network=old_parent)
+
+        # Order networks
+        self._reorder_networks_that_belongs_to_me()
+
+        # Order events
+        self._reorder_events_of_my_parent_and_me()
 
     def ancestors_email_contacts(self, priority):
         return self.get_ancestors_related(

@@ -230,9 +230,6 @@ class ContactCheckViewSet(viewsets.ModelViewSet):
             contact_id=contact_id
         ).order_by("-created")
         serializer = self.get_serializer(contact_checks, many=True)
-        print(
-            f"Contact checks for contact_id {contact_id}: {serializer.data} {len(contact_checks)}"
-        )
         return Response(serializer.data[:1], status=status.HTTP_200_OK)
 
     @action(
