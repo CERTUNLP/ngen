@@ -23,7 +23,6 @@ from ngen.models import (
     Contact,
     Playbook,
     AnalyzerMapping,
-    EventAnalysis
 )
 from ngen.models.common.mixins import AddressManager
 
@@ -62,7 +61,8 @@ class SupernetFilter(django_filters.Filter):
             )  # You could adjust this based on the value type
 
             # Call the parents_of method and pass the queryset to filter
-            queryset = address_manager.parents_of(address, queryset)
+            if queryset.exists():
+                queryset = address_manager.parents_of(address, queryset)
         return queryset
 
 
@@ -80,7 +80,8 @@ class SubnetFilter(django_filters.Filter):
             )  # You could adjust this based on the value type
 
             # Call the parents_of method and pass the queryset to filter
-            queryset = address_manager.children_of(address, queryset)
+            if queryset.exists():
+                queryset = address_manager.children_of(address, queryset)
         return queryset
 
 
