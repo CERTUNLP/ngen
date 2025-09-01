@@ -121,7 +121,8 @@ const FormEvent = (props) => {
 
 
   useEffect(() => {
-    if (props.body.case !== null) {
+    if (props.body.case) {
+      console.log(props.body.case);
       getCase(props.body.case)
         .then((response) => {
           setCaseTable(response.data);
@@ -594,8 +595,8 @@ const FormEvent = (props) => {
           modalCase={modalCase}
           modalListCase={modalListCase}
           deleteCaseFromForm={deleteCaseFromForm}
-          disableCreateButton={() => {return caseTable}}
-          disableLinkButton={() => {return caseTable}}
+          disableCreateButton={() => { return caseTable !== undefined }}
+          disableLinkButton={() => { return caseTable !== undefined }}
         />
       )}
 

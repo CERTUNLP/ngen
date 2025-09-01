@@ -280,9 +280,9 @@ const TableCase = ({
                 <td> <StateComponent state={caseItem?.state}></StateComponent></td>
                 {!disableEvents && caseItem?.events && (
                   <td>
-<EventComponent event={caseItem?.events?.[0]} />
-<TaxonomyComponent taxonomy={caseItem?.events?.[0]?.taxonomy || {}} />
-
+                    {caseItem.events.map((event, idx) => (
+                      <EventComponent key={idx} event={event} />
+                    ))}
                   </td>
                 )}
                 {!disableNubersOfEvents && <td>{caseItem.events_count}</td>}
