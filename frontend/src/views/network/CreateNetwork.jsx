@@ -31,7 +31,7 @@ const CreateNetwork = () => {
         let listContact = response.map((contactsItem) => {
           return {
             value: contactsItem.url,
-            label: contactsItem.name + " (" + labelRole[contactsItem.role] + ")"
+            label: contactsItem.name + " (" + labelRole[contactsItem.role] + ") " + contactsItem.username
           };
         });
         setContactsOption(listContact);
