@@ -90,12 +90,26 @@ def case_renotification():
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
-def contact_summary(contacts=None, tlp=None, days=None):
+def contact_summary(
+    contact_ids=[], contact_usernames=[], tlp=None, days=None, contact_type="email"
+):
     """
-    Send summary of open cases to all network admins
+    Send summary of open cases to all network admins or specific contacts.
+
+    :param list contact_ids: List of contact IDs to send the summary to. If empty, send to all contacts.
+    :param list contact_usernames: List of contact usernames to send the summary to. If empty, send to all contacts.
+    :param str tlp: TLP (Traffic Light Protocol) level for the summary, defaults to config.SUMMARY_TLP.
+    :param int days: Number of days to look back for closed cases, default is the period of the periodic task if exists or 14 days if not exists.
+    :param str contact_type: Type of contact to filter by, defaults to "email".
     """
-    if contacts is None:
-        contacts = ngen.models.Contact.objects.filter(type="email")
+    if contact_ids or contact_usernames:
+        contacts = ngen.models.Contact.objects.filter(
+            id__in=contact_ids, type=contact_type
+        ) | ngen.models.Contact.objects.filter(
+            username__in=contact_usernames, type=contact_type
+        )
+    else:
+        contacts = ngen.models.Contact.objects.filter(type=contact_type)
 
     tlp = tlp.lower() if tlp else config.SUMMARY_TLP.lower()
     tlp_obj = ngen.models.Tlp.objects.get(slug=tlp) if tlp and tlp != "none" else None

@@ -39,6 +39,7 @@ const ListNetwork = ({ routeParams }) => {
   const [supernetOfFilter, setSupernetOfFilter] = useState("");
   const [entitiesFilter, setEntitiesFilter] = useState("");
   const [order, setOrder] = useState("network_entity__name");
+  const [filterChanged, setFilterChanged] = useState(false);
 
   const [entityNames, setEntityNames] = useState({});
 
@@ -70,6 +71,11 @@ const ListNetwork = ({ routeParams }) => {
   }, []);
 
   useEffect(() => {
+    setCurrentPage(1);
+    setFilterChanged(!filterChanged);
+  }, [wordToSearch, entitiesFilter, typeFilter, subnetOfFilter, supernetOfFilter, order]);
+
+  useEffect(() => {
     getNetworks(
       currentPage,
       entitiesFilter + typeFilter + subnetOfFilter + supernetOfFilter + wordToSearch,
@@ -78,7 +84,6 @@ const ListNetwork = ({ routeParams }) => {
     )
       .then((response) => {
         setNetwork(response.data.results);
-        // Paginación
         setCountItems(response.data.count);
         if (currentPage === 1) {
           setUpdatePagination(true);
@@ -92,7 +97,7 @@ const ListNetwork = ({ routeParams }) => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, isModify, wordToSearch, entitiesFilter, typeFilter, subnetOfFilter, supernetOfFilter, order]);
+  }, [currentPage, isModify, filterChanged]);
 
   return (
     <React.Fragment>

@@ -10,8 +10,8 @@ import { useTranslation } from "react-i18next";
 
 const SmallCaseTable = ({
   readCase,
-  showCreateButton,
-  showLinkButton,
+  hideCreateButton,
+  hideLinkButton,
   modalCase,
   modalListCase,
   modalCaseDetail,
@@ -95,7 +95,7 @@ const SmallCaseTable = ({
             <Col sm={12} lg={8}>
               <Card.Title as="h5">{t("ngen.case_one")}</Card.Title>
             </Col>
-            {!showCreateButton ? (
+            {!hideCreateButton ? (
               <Col sm={12} lg={2}>
                 <Button size="lm" variant="outline-dark" onClick={() => modalCase()} disabled={disableCreateButton()}>
                   {t("ngen.case.create")}
@@ -104,7 +104,7 @@ const SmallCaseTable = ({
             ) : (
               ""
             )}
-            {!showLinkButton ? (
+            {!hideLinkButton ? (
               <Col sm={12} lg={2}>
                 <Button size="lm" variant="outline-dark" onClick={() => modalListCase()} disabled={disableLinkButton()}>
                   {t("ngen.case_link")}

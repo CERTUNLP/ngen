@@ -382,7 +382,7 @@ const ReadEvent = ({ routeParams }) => {
         )}
       </Card>
 
-      <SmallCaseTable readCase={body.case} disableColumOption={true} basePath={basePath} />
+      <SmallCaseTable readCase={body.case} disableColumOption={true} basePath={basePath} hideCreateButton={true} hideLinkButton={true} />
 
       <Card>
         <Card.Header>
