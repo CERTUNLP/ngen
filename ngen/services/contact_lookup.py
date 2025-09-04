@@ -1,3 +1,4 @@
+from ngen.models.common.mixins import AddressManager
 import whois
 import whoisit
 import socket
@@ -16,6 +17,15 @@ logger = logging.getLogger(__name__)
 class ContactLookupService:
 
     @staticmethod
+    def clean_email(email):
+        """
+        Limpia una dirección de correo electrónico eliminando espacios y caracteres no deseados.
+        """
+        if not email:
+            return ""
+        return email.strip(" <>'\"\n\r\t").lower()
+
+    @staticmethod
     def whois_lookup(domain, str_type=None):
         """
         Perform WHOIS lookup for a domain.
@@ -31,9 +41,11 @@ class ContactLookupService:
 
             whois_data = whois.whois(domain)
             emails = whois_data.get("emails", [])
+            emails = emails if type(emails) == list else [emails]
+            emails = [ContactLookupService.clean_email(e) for e in emails if e]
             return {
                 "raw": whois_data,
-                "abuse_emails": emails if type(emails) == list else [emails],
+                "abuse_emails": emails,
             }
 
         except Exception as e:
@@ -82,6 +94,8 @@ class ContactLookupService:
             except Exception as e:
                 logger.error(f"Error in RDAP lookup: {e}")
 
+            emails = [ContactLookupService.clean_email(e) for e in emails if e]
+
             return {"raw": res, "abuse_emails": emails}
 
         except Exception as e:
@@ -117,6 +131,9 @@ class ContactLookupService:
                     for l in response.text.lower().split("\n")
                     if l.startswith("contact: mailto:")
                 ]
+                abuse_emails = [
+                    ContactLookupService.clean_email(e) for e in abuse_emails if e
+                ]
                 return {
                     "url": parsed_url,
                     "raw": response.text,
@@ -129,6 +146,48 @@ class ContactLookupService:
         except Exception as e:
             logger.error(f"Error in security txt lookup: {e}")
             return {"error": str(e)}
+
+    @staticmethod
+    def ngen_lookup(domain_or_ip):
+        """
+        Perform a search for contact info based on self database.
+        """
+        from ngen.models.constituency import Network
+
+        # Get the domain value from the filter
+        if domain_or_ip:
+
+            address_manager = AddressManager()
+
+            # Create an address-like object to pass to the parents_of method
+            # Assuming you're looking for domain-based parents
+            address = Network(
+                address_value=domain_or_ip
+            )  # You could adjust this based on the value type
+
+            # Call the parents_of method to get parent networks
+            network = Network.objects.parents_of(address).first()
+            if network:
+                emails = []
+                contacts = network.contacts.all()
+                if contacts:
+                    emails = [
+                        ContactLookupService.clean_email(c.username)
+                        for c in contacts
+                        if c.type == "email" and c.username
+                    ]
+                entity = network.network_entity
+                return {
+                    "query": domain_or_ip,
+                    "type": address.sid.network_type,
+                    "data": {
+                        "network": network.address_value,
+                        "entity": entity.name if entity else None,
+                        "abuse_emails": emails,
+                    },
+                    "abuse_emails": emails,
+                }
+        return {"error": "No contact info found."}
 
     @staticmethod
     def resolve_ip(domain):
@@ -159,13 +218,17 @@ class ContactLookupService:
             "query": domain_or_ip,
             "type": str_type4,
             "data": contact_info,
-            "abuse_emails": list(
-                set(
-                    contact_info["whois"].get("abuse_emails", [])
-                    + contact_info["rdap"].get("abuse_emails", [])
-                    + contact_info["securitytxt"].get("abuse_emails", [])
+            "abuse_emails": [
+                r
+                for r in list(
+                    set(
+                        contact_info["whois"].get("abuse_emails", [])
+                        + contact_info["rdap"].get("abuse_emails", [])
+                        + contact_info["securitytxt"].get("abuse_emails", [])
+                    )
                 )
-            ),
+                if r
+            ],
         }
 
     @staticmethod
@@ -209,6 +272,8 @@ class ContactLookupService:
             url_ip_domain, original_type
         )
 
+        result["ngen"] = ContactLookupService.ngen_lookup(url_ip_domain)
+
         hostname_query = None
         hostname_type = None
         solved_domain_query = None
@@ -249,7 +314,7 @@ class ContactLookupService:
                         )
                     )
                 except Exception as e:
-                    logger.error(
+                    logger.debug(
                         f"Error in resolving domain <{hostname_query}> from <{url_ip_domain}>: {e}"
                     )
 
@@ -266,13 +331,14 @@ class ContactLookupService:
                             sld, StringType.DOMAIN, url=url
                         )
                 except Exception as e:
-                    logger.error(
+                    logger.debug(
                         f"Error in getting SLD <{hostname_query}> from <{url_ip_domain}>: {e}"
                     )
 
         result["abuse_emails"] = list(
             set(
                 result.get("original", {}).get("abuse_emails", [])
+                + result.get("ngen", {}).get("abuse_emails", [])
                 + result.get("hostname", {}).get("abuse_emails", [])
                 + result.get("solved_domain", {}).get("abuse_emails", [])
                 + result.get("sld", {}).get("abuse_emails", [])

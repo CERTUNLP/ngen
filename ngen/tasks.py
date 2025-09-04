@@ -230,8 +230,8 @@ def whois_lookup_task(self, ip_or_domain):
     """
     Tarea de Celery para hacer una búsqueda WHOIS.
     """
+    whois_data = ContactLookupService.get_contact_info(ip_or_domain)
     try:
-        whois_data = ContactLookupService.get_contact_info(ip_or_domain)
         return whois_data
     except Exception as e:
         return {"error": str(e)}

@@ -1,0 +1,41 @@
+.json-view {
+  font-family: monospace;
+  background-color: #272822 !important; /* fondo monokai */
+  color: #f8f8f2;            /* texto default */
+  padding: 1rem;
+  border-radius: 0.25rem;
+  width: 100%;
+}
+
+.json-view .json-view--property {
+  color: #66d9ef; /* claves */
+}
+
+.json-view .json-view--string {
+  color: #e6db74; /* strings */
+}
+
+.json-view .json-view--number {
+  color: #ae81ff;
+}
+
+.json-view .json-view--boolean {
+  color: #fd971f;
+}
+
+.json-view .json-view--null {
+  color: #f92672;
+}
+
+.json-view .jv-indent {
+  padding-left: 1rem;
+}
+
+.jv-button {
+    background-color: #2a575f !important; /* color de fondo */
+    color: #272822 !important; /* color de texto */
+    border: none !important; /* sin borde */
+    border-radius: 0.25rem !important; /* bordes redondeados */
+    margin: 0.1rem 0.1rem !important; /* padding */
+    cursor: pointer !important; /* cursor pointer */
+}

@@ -241,7 +241,7 @@ urlpatterns = [
         views.TeamLogoFileUploadView.as_view(),
     ),
     path(
-        "api/lookup/<str:ip_or_domain>/",
+        "api/lookup/",
         views.WhoisLookupView.as_view(),
         name="whois_lookup",
     ),

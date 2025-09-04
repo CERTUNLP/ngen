@@ -5,7 +5,7 @@ import { getMinifiedEntity } from "../../../api/services/entities";
 import CrudButton from "components/Button/CrudButton";
 import FormCreateContact from "../../contact/components/FormCreateContact";
 import { postContact } from "../../../api/services/contacts";
-import { validateSelect, validateAddressValueOrNetworkOrDomain } from "../../../utils/validators/network";
+import { validateSelect, validateAddressValueOrNetworkOrDomainInObj } from "../../../utils/validators/network";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import DropdownState from "../../../components/Dropdown/DropdownState";
@@ -228,7 +228,7 @@ const FormCreateNetwork = (props) => {
           <Col>
             <Form.Group>
               {
-                validateAddressValueOrNetworkOrDomain(props) &&
+                validateAddressValueOrNetworkOrDomainInObj(props) &&
                 !showErrorMessage &&
                 validateSelect(props.type) &&
                 props.contacts?.length > 0 ? (

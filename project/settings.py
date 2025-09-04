@@ -18,6 +18,7 @@ from pathlib import Path
 
 from celery.schedules import crontab
 from django.utils.translation import gettext_lazy
+from django.utils.safestring import mark_safe
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -71,6 +72,7 @@ INSTALLED_APPS = [
     "colorfield",
     "comment",
     "drf_spectacular",
+    "drf_spectacular_sidecar",
     "generic_relations",
     # django_elasticsearch_dsl added later
 ]
@@ -716,4 +718,12 @@ ENVIRON_CONFIG = {
     ),
     "JWT_ACCESS_TOKEN_LIFETIME": SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
     "JWT_REFRESH_TOKEN_LIFETIME": SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"],
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "NGEN API",
+    "VERSION": "1.0.0",  # TODO: Update version with git/build tag version
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SCHEMA_PATH_PREFIX": r"/api",
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
 }

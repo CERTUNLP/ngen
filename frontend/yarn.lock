@@ -2064,7 +2064,7 @@ convert-source-map@^1.5.0:
 convert-source-map@^2.0.0:
   version "2.0.0"
 
-copy-to-clipboard@^3.3.1:
+copy-to-clipboard@^3.3.1, copy-to-clipboard@^3.3.3:
   version "3.3.3"
   dependencies:
     toggle-selection "^1.0.6"
@@ -3993,6 +3993,13 @@ react@*, "react@^15.3.0 || 16 || 17 || 18", "react@^16.4.2 || ^17.0.0 || ^18.0.0
   version "18.3.1"
   dependencies:
     loose-envify "^1.1.0"
+
+react18-json-view@^0.2.9:
+  version "0.2.9"
+  resolved "https://registry.npmjs.org/react18-json-view/-/react18-json-view-0.2.9.tgz"
+  integrity sha512-z3JQgCwZRKbmWh54U94loCU6vE0ZoDBK7C8ZpcMYQB8jYMi+mR/fcgMI9jKgATeF0I6+OAF025PD+UKkXIqueQ==
+  dependencies:
+    copy-to-clipboard "^3.3.3"
 
 readdirp@~3.6.0:
   version "3.6.0"

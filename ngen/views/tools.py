@@ -207,9 +207,16 @@ class WhoisLookupView(APIView):
     """
 
     permission_classes = [permissions.IsAdminUser]
+    serializer_class = serializers.WhoisLookupSerializer
 
-    def get(self, request, ip_or_domain):
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        ip_or_domain = serializer.validated_data["ip_or_domain"]
+
         task = whois_lookup_task.delay(ip_or_domain)
+
         return Response(
             {
                 "task_id": task.id,
@@ -231,8 +238,10 @@ class TaskStatusView(APIView):
     def get(self, request, task_id):
         task_result = AsyncResult(task_id)
 
+        print(task_result)
+
         if task_result.state == "PENDING":
-            return Response({"status": "Pending"}, status=status.HTTP_200_OK)
+            return Response({"status": "PENDING"}, status=status.HTTP_200_OK)
         elif task_result.state != "FAILURE":
             return Response(
                 {
