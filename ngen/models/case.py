@@ -845,7 +845,7 @@ class Event(
         addr = lambda nombre: re.sub(r'[<>:"/\\|?*]', "_", nombre).strip() or "archivo"
         event_path = (
             base_path
-            / f"event_{addr(self.address.address)[:50]}_{str(self.uuid).split('-')[0]}"
+            / f"event_{addr(str(self.address.address))[:50]}_{str(self.uuid).split('-')[0]}"
         )
         event_path.mkdir(parents=True, exist_ok=True)
 
