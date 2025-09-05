@@ -141,12 +141,18 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         """
         event = self.get_object()
 
-        if models.EventAnalysis.objects.filter(event=event, result="in_progress").exists():
+        if models.EventAnalysis.objects.filter(
+            event=event, result="in_progress"
+        ).exists():
             return Response(
-                {"message": gettext_lazy("A retest is already in progress for this event.")},
+                {
+                    "message": gettext_lazy(
+                        "A retest is already in progress for this event."
+                    )
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-    
+
         retest_event_kintun.delay(event_id=event.id)
         return Response(
             {"message": gettext_lazy(f"Task retest event for {event.pk} launched")},

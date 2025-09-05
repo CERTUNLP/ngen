@@ -802,6 +802,72 @@ class Event(
         self.save()
         return mark
 
+    @staticmethod
+    def export_events_to_zip(events):
+        import shutil
+
+        uniq_id = uuid.uuid4().hex[0:6]
+        base_path = Path("/tmp")
+        now = timezone.now().strftime("%Y%m%d_%H%M%S")
+        export_dir = base_path / f"export_{now}_{uniq_id}"
+        p = Path(export_dir)
+        p.mkdir(parents=True, exist_ok=True)
+
+        for event in events:
+            event.export_event_to_directory(export_dir)
+
+        # print all files and folders in export_dir
+        for path in p.rglob("*"):
+            print(path.relative_to(p))
+
+        zip_filename = f"events_{now}_{uniq_id}.zip"
+        zip_path = base_path / zip_filename
+
+        shutil.make_archive(
+            str(zip_path.with_suffix("")), "zip", root_dir=str(export_dir)
+        )
+        # shutil.rmtree(export_dir)
+        return zip_path
+
+    def export_event_to_directory(self, path):
+        """
+        Export a single event to a directory with the following structure:
+
+        /path/event_<address>_<short_uuid>/
+            event_report.html
+            event_report.txt
+            evidence/
+                <evidence files>
+        """
+
+        base_path = Path(path)
+        base_path.mkdir(parents=True, exist_ok=True)
+        addr = lambda nombre: re.sub(r'[<>:"/\\|?*]', "_", nombre).strip() or "archivo"
+        event_path = (
+            base_path
+            / f"event_{addr(self.address.address)[:50]}_{str(self.uuid).split('-')[0]}"
+        )
+        event_path.mkdir(parents=True, exist_ok=True)
+
+        exported_template = Communication.render_template(
+            "reports/case_report.html", extra_params=self.template_params
+        )
+        with open(event_path / "event_report.html", "w") as f:
+            f.write(exported_template.get("html", ""))
+
+        with open(event_path / "event_report.txt", "w") as f:
+            f.write(exported_template.get("text", ""))
+
+        # Export evidence files
+        evidence_path = event_path / "evidence"
+        evidence_path.mkdir(exist_ok=True)
+        for evidence in self.evidence.all():
+            evidence_file_path = evidence_path / evidence.attachment_name
+            with open(evidence_file_path, "wb") as ef:
+                ef.write(evidence.file.read())
+
+        return event_path
+
 
 class Evidence(AuditModelMixin, ValidationModelMixin):
     def directory_path(self, filename=None):

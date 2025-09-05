@@ -122,6 +122,38 @@ class Communication:
         subject = "[%s][TLP:%s] %s" % (
             config.TEAM_NAME,
             tlp.name.upper(),
+            gettext_lazy("Full Summary"),
+        )
+        template = "reports/summary_contact.html"
+        Communication.send_mail(
+            subject,
+            Communication.render_template(
+                template,
+                extra_params={
+                    "contact": contact,
+                    "open_cases": open_cases,
+                    "closed_cases": closed_cases,
+                    "tlp": tlp,
+                    "days": days,
+                },
+            ),
+            {
+                "to": [contact.username],
+                "from": config.EMAIL_SENDER,
+                "bcc": [config.TEAM_EMAIL],
+            },
+        )
+
+    @staticmethod
+    def communicate_contact_summary_export(
+        contact, open_cases, closed_cases, tlp, days, attachments=[]
+    ):
+        """
+        Weekly cases summary communication
+        """
+        subject = "[%s][TLP:%s] %s" % (
+            config.TEAM_NAME,
+            tlp.name.upper(),
             gettext_lazy("Summary"),
         )
         template = "reports/summary_contact.html"
@@ -142,6 +174,7 @@ class Communication:
                 "from": config.EMAIL_SENDER,
                 "bcc": [config.TEAM_EMAIL],
             },
+            attachments=attachments,
         )
 
     @staticmethod

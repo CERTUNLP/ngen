@@ -467,3 +467,7 @@ class SolvedMarkSerializer(AuditSerializerMixin):
     class Meta:
         model = models.SolvedMark
         fields = "__all__"
+
+
+class ExportEventsSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
