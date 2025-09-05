@@ -125,13 +125,31 @@ const menuItems = {
     },
     {
       id: "config",
-      title: "menu.config",
+      title: "menu.platform",
       type: "group",
       icon: "icon-pages",
       children: [
         {
+          id: "tools",
+          title: "menu.tools",
+          type: "collapse",
+          icon: "fas fa-tools",
+          link: false,
+          children: [
+            {
+              id: "lookup",
+              title: "menu.lookup",
+              type: "item",
+              url: "/tools/lookup",
+              // icon: "fas fa-search",
+              icon: "",
+              breadcrumbs: true
+            }
+          ]
+        },
+        {
           id: "platform",
-          title: "menu.platform",
+          title: "menu.config",
           type: "collapse",
           icon: "feather icon-settings",
           link: false,

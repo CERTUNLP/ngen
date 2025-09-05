@@ -102,4 +102,5 @@ export const COMPONENT_URL = {
   eventAnalysis: "eventanalysis/",
   analyzerMapping: "analyzermapping/",
   version: "version/",
+  lookup: "lookup/"
 };

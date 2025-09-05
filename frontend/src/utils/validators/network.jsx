@@ -20,8 +20,12 @@ const validateAddressValue = (addressValue) => {
   return validateNetworkCIDR(addressValue) || validateNetworkDomain(addressValue);
 };
 
-const validateAddressValueOrNetworkOrDomain = (obj) => {
+const validateAddressValueOrNetworkOrDomainInObj = (obj) => {
   return validateAddressValue(obj.address_value) || validateNetworkCIDR(obj.cidr) || validateNetworkDomain(obj.domain);
 }
 
-export { validateSelect, validateNetworkCIDR, validateNetworkDomain, validateUnrequiredInput, validateAddressValue, validateAddressValueOrNetworkOrDomain };
+const validateAddressValueOrNetworkOrDomain = (input) => {
+  return validateAddressValue(input) || validateNetworkCIDR(input) || validateNetworkDomain(input);
+}
+
+export { validateSelect, validateNetworkCIDR, validateNetworkDomain, validateUnrequiredInput, validateAddressValue, validateAddressValueOrNetworkOrDomainInObj, validateAddressValueOrNetworkOrDomain };

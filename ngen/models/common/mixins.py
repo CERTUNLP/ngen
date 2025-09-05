@@ -327,6 +327,7 @@ class AddressManager(NetManager):
         if address.cidr:
             return self.cidr_parents_of(str(address.address), queryset)
         elif address.domain:
+            print(address, address.domain, address.address)
             return self.domain_parents_of(str(address.address), queryset)
         return self.none()
 

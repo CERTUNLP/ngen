@@ -485,6 +485,14 @@ const routes = [
   },
   {
     exact: "true",
+    path: "/tools/lookup",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_lookup"],
+    element: lazy(() => import("./views/tools/lookup/ShowLookup"))
+  },
+  {
+    exact: "true",
     path: "/setting",
     layout: AdminLayout,
     guard: PermissionGuard,
