@@ -122,7 +122,7 @@ class Communication:
         subject = "[%s][TLP:%s] %s" % (
             config.TEAM_NAME,
             tlp.name.upper(),
-            gettext_lazy("Full Summary"),
+            gettext_lazy("Summary"),
         )
         template = "reports/summary_contact.html"
         Communication.send_mail(
@@ -149,12 +149,12 @@ class Communication:
         contact, open_cases, closed_cases, tlp, days, attachments=[]
     ):
         """
-        Weekly cases summary communication
+        Weekly cases summary communication with exported attachments
         """
         subject = "[%s][TLP:%s] %s" % (
             config.TEAM_NAME,
             tlp.name.upper(),
-            gettext_lazy("Summary"),
+            gettext_lazy("Full Summary"),
         )
         template = "reports/summary_contact.html"
         Communication.send_mail(
