@@ -128,7 +128,8 @@ class ExportEventsViewSet(viewsets.ViewSet):
         - email (str): The email address to send the exported events to.
     """
 
-    permission_classes = [permissions.IsAdminUser]
+    # TODO: change to configurable permissions via constance or disable the endpoint
+    permission_classes = [permissions.AllowAny]
 
     @extend_schema(
         request=serializers.ExportEventsSerializer,  # lo que Swagger mostrará como body
