@@ -206,7 +206,7 @@ class WhoisLookupView(APIView):
     Inicia la tarea de búsqueda WHOIS y devuelve el ID de la tarea.
     """
 
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]  # ahora todos los autenticados pueden usarlo
     serializer_class = serializers.WhoisLookupSerializer
 
     def post(self, request):
@@ -214,8 +214,12 @@ class WhoisLookupView(APIView):
         serializer.is_valid(raise_exception=True)
 
         ip_or_domain = serializer.validated_data["ip_or_domain"]
+        scope = serializer.validated_data.get("scope", None)
 
-        task = whois_lookup_task.delay(ip_or_domain)
+        if request.user.is_superuser or request.user.has_perm("ngen.can_do_whois_extended"):
+            task = whois_lookup_task.delay(ip_or_domain)
+        elif request.user.is_superuser or request.user.has_perm("ngen.can_do_whois"):
+            task = limited_whois_lookup_task.delay(ip_or_domain)
 
         return Response(
             {

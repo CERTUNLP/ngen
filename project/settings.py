@@ -72,7 +72,6 @@ INSTALLED_APPS = [
     "colorfield",
     "comment",
     "drf_spectacular",
-    "drf_spectacular_sidecar",
     "generic_relations",
     # django_elasticsearch_dsl added later
 ]
