@@ -226,13 +226,38 @@ def enrich_artifact(artifact_id):
 
 
 @shared_task(bind=True)
-def whois_lookup_task(self, ip_or_domain):
+def whois_lookup(self, ip_or_domain, scope=None):
     """
     Tarea de Celery para hacer una búsqueda WHOIS.
     """
-    whois_data = ContactLookupService.get_contact_info(ip_or_domain)
+    whois_data = ContactLookupService.get_contact_info(ip_or_domain, scope=scope)
     try:
         return whois_data
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@shared_task(bind=True)
+def internal_address_info(
+    self,
+    ip_or_domain,
+    with_contacts=False,
+    with_events=False,
+    with_networks=False,
+    with_entity=False,
+):
+    """
+    Tarea para obtener información de una dirección desde Ngen.
+    """
+    try:
+        internal_address_info = ContactLookupService.get_address_info(
+            ip_or_domain,
+            with_contacts=with_contacts,
+            with_events=with_events,
+            with_networks=with_networks,
+            with_entity=with_entity,
+        )
+        return internal_address_info
     except Exception as e:
         return {"error": str(e)}
 

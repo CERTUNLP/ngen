@@ -246,6 +246,11 @@ urlpatterns = [
         name="whois_lookup",
     ),
     path(
+        "api/addressinfo/",
+        views.AddressInfoView.as_view(),
+        name="address_info",
+    ),
+    path(
         "api/result/<str:task_id>/", views.TaskStatusView.as_view(), name="task_status"
     ),
     path(

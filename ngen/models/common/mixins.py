@@ -361,6 +361,12 @@ class AddressManager(NetManager):
             return self.domain_children_of(str(address.address), queryset)
         return self.none()
 
+    def children_of_by_string(self, address: str, queryset=None):
+        network = ngen.models.Network(address_value=address)
+        if network.address:
+            return self.children_of(network, queryset)
+        return self.none()
+
     def children_of_cidr(self, cidr: str, queryset=None):
         return self.cidr_children_of(cidr, queryset)
 
