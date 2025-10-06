@@ -234,7 +234,8 @@ def whois_lookup(self, ip_or_domain, scope=None):
     try:
         return whois_data
     except Exception as e:
-        return {"error": str(e)}
+        logger.error(f"Error in whois_lookup task: {e}")
+        return {"error": "An error occurred while processing the WHOIS data."}
 
 
 @shared_task(bind=True)
@@ -259,7 +260,10 @@ def internal_address_info(
         )
         return internal_address_info
     except Exception as e:
-        return {"error": str(e)}
+        logger.error(f"Error in internal_address_info task: {e}")
+        return {
+            "error": "An error occurred while processing the internal address information."
+        }
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
@@ -300,10 +304,10 @@ def retest_event_kintun(event_id):
         try:
             event_analysis.delete()
         except Exception as delete_error:
-            return {
-                "error": f"Original error: {str(e)}, Deletion error: {str(delete_error)}"
-            }
-        return {"error": str(e)}
+            logger.error(
+                f"Original error: {str(e)}, Deletion error: {str(delete_error)}"
+            )
+        return {"error": "An error occurred while processing the event."}
 
 
 @shared_task(bind=True, max_retries=5)
