@@ -16,6 +16,15 @@ logger = logging.getLogger(__name__)
 class ContactLookupService:
 
     @staticmethod
+    def clean_email(email):
+        """
+        Limpia una dirección de correo electrónico eliminando espacios y caracteres no deseados.
+        """
+        if not email:
+            return ""
+        return email.strip(" <>'\"\n\r\t").lower()
+
+    @staticmethod
     def whois_lookup(domain, str_type=None):
         """
         Perform WHOIS lookup for a domain.
@@ -31,9 +40,11 @@ class ContactLookupService:
 
             whois_data = whois.whois(domain)
             emails = whois_data.get("emails", [])
+            emails = emails if type(emails) == list else [emails]
+            emails = [ContactLookupService.clean_email(e) for e in emails if e]
             return {
                 "raw": whois_data,
-                "abuse_emails": emails if type(emails) == list else [emails],
+                "abuse_emails": emails,
             }
 
         except Exception as e:
@@ -82,6 +93,8 @@ class ContactLookupService:
             except Exception as e:
                 logger.error(f"Error in RDAP lookup: {e}")
 
+            emails = [ContactLookupService.clean_email(e) for e in emails if e]
+
             return {"raw": res, "abuse_emails": emails}
 
         except Exception as e:
@@ -117,6 +130,9 @@ class ContactLookupService:
                     for l in response.text.lower().split("\n")
                     if l.startswith("contact: mailto:")
                 ]
+                abuse_emails = [
+                    ContactLookupService.clean_email(e) for e in abuse_emails if e
+                ]
                 return {
                     "url": parsed_url,
                     "raw": response.text,
@@ -129,6 +145,45 @@ class ContactLookupService:
         except Exception as e:
             logger.error(f"Error in security txt lookup: {e}")
             return {"error": str(e)}
+
+    @staticmethod
+    def ngen_lookup(domain_or_ip):
+        """
+        Perform a search for contact info based on self database.
+        """
+        from ngen.models.constituency import Network
+
+        # Get the domain value from the filter
+        if domain_or_ip:
+            # Create an address-like object to pass to the parents_of method
+            # Assuming you're looking for domain-based parents
+            address = Network(
+                address_value=domain_or_ip
+            )  # You could adjust this based on the value type
+
+            # Call the parents_of method to get parent networks
+            network = Network.objects.parents_of(address).first()
+            if network:
+                emails = []
+                contacts = network.contacts.all()
+                if contacts:
+                    emails = [
+                        ContactLookupService.clean_email(c.username)
+                        for c in contacts
+                        if c.type == "email" and c.username
+                    ]
+                entity = network.network_entity
+                return {
+                    "query": domain_or_ip,
+                    "type": address.sid.network_type,
+                    "data": {
+                        "network": network.address_value,
+                        "entity": entity.name if entity else None,
+                        "abuse_emails": emails,
+                    },
+                    "abuse_emails": emails,
+                }
+        return {"error": "No contact info found."}
 
     @staticmethod
     def resolve_ip(domain):
@@ -159,13 +214,17 @@ class ContactLookupService:
             "query": domain_or_ip,
             "type": str_type4,
             "data": contact_info,
-            "abuse_emails": list(
-                set(
-                    contact_info["whois"].get("abuse_emails", [])
-                    + contact_info["rdap"].get("abuse_emails", [])
-                    + contact_info["securitytxt"].get("abuse_emails", [])
+            "abuse_emails": [
+                r
+                for r in list(
+                    set(
+                        contact_info["whois"].get("abuse_emails", [])
+                        + contact_info["rdap"].get("abuse_emails", [])
+                        + contact_info["securitytxt"].get("abuse_emails", [])
+                    )
                 )
-            ),
+                if r
+            ],
         }
 
     @staticmethod
@@ -178,12 +237,14 @@ class ContactLookupService:
         )
 
     @staticmethod
-    def get_contact_info(url_ip_domain):
+    def get_contact_info_external(url_ip_domain, scope=None):
         """
         Perform combined WHOIS, RDAP and security.txt lookup for a domain, IP or URL.
+        scope: "internal" for Ngen data, "external" for whois/rdap data or None for both
 
         Returns a dictionary with the results of the lookups with the following
         keys:
+        - ngen: Lookup results from the internal NGEN database.
         - original: Lookup results for the original input.
         - hostname: Lookup results for the hostname extracted from the URL. If the
             input is a domain, this will be the same as the original lookup. If the original
@@ -202,77 +263,85 @@ class ContactLookupService:
         """
         result = {}
 
-        # Guess the type of the query input
-        original_type = StringIdentifier.guess(url_ip_domain)
-        # Get the lookup for the original query input
-        result["original"] = ContactLookupService.get_contact_info_of_type(
-            url_ip_domain, original_type
-        )
+        if scope == "internal" or scope is None:
+            result["ngen"] = ContactLookupService.ngen_lookup(url_ip_domain)
 
-        hostname_query = None
-        hostname_type = None
-        solved_domain_query = None
-        url = None
+        if scope == "external" or scope is None:
+            # Guess the type of the query input
+            original_type = StringIdentifier.guess(url_ip_domain)
 
-        try:
-            if original_type == StringType.URL:
-                # Extract the hostname from the URL
-                url = url_ip_domain
-                hostname_query = urlparse(url_ip_domain).hostname
-                hostname_type = StringIdentifier.guess(hostname_query)
-            elif original_type == StringType.DOMAIN:
-                # Use the domain as the hostname
-                hostname_query = url_ip_domain
-                hostname_type = StringType.DOMAIN
-        except Exception as e:
-            logger.error(f"Error in extracting hostname <{url_ip_domain}>: {e}")
-
-        if hostname_query:
-            # Get the lookup for the hostname
-            result["hostname"] = ContactLookupService.get_contact_info_of_type(
-                hostname_query, hostname_type, url=url
+            # Get the lookup for the original query input
+            result["original"] = ContactLookupService.get_contact_info_of_type(
+                url_ip_domain, original_type
             )
 
-            if hostname_type == StringType.DOMAIN:
-                # If original input is a domain or an url with a domain
-                # Ex: example.com or http://sub.example.com/path
+            hostname_query = None
+            hostname_type = None
+            solved_domain_query = None
+            url = None
 
-                try:
-                    # Get the IP of domain
-                    solved_domain_query = ContactLookupService.resolve_ip(
-                        hostname_query
-                    )
-                    solved_domain_type = StringIdentifier.guess(solved_domain_query)
-                    result["solved_domain"] = (
-                        ContactLookupService.get_contact_info_of_type(
-                            solved_domain_query, solved_domain_type, url=url
+            try:
+                if original_type == StringType.URL:
+                    # Extract the hostname from the URL
+                    url = url_ip_domain
+                    hostname_query = urlparse(url_ip_domain).hostname
+                    hostname_type = StringIdentifier.guess(hostname_query)
+                elif original_type == StringType.DOMAIN:
+                    # Use the domain as the hostname
+                    hostname_query = url_ip_domain
+                    hostname_type = StringType.DOMAIN
+            except Exception as e:
+                logger.error(f"Error in extracting hostname <{url_ip_domain}>: {e}")
+
+            if hostname_query:
+                # Get the lookup for the hostname
+                result["hostname"] = ContactLookupService.get_contact_info_of_type(
+                    hostname_query, hostname_type, url=url
+                )
+
+                if hostname_type == StringType.DOMAIN:
+                    # If original input is a domain or an url with a domain
+                    # Ex: example.com or http://sub.example.com/path
+
+                    try:
+                        # Get the IP of domain
+                        solved_domain_query = ContactLookupService.resolve_ip(
+                            hostname_query
                         )
-                    )
-                except Exception as e:
-                    logger.error(
-                        f"Error in resolving domain <{hostname_query}> from <{url_ip_domain}>: {e}"
-                    )
-
-                try:
-                    # Get the second level domain
-                    sld = get_sld(hostname_query)
-
-                    if sld == hostname_query:
-                        result["sld_hostname"] = result["hostname"]
-                    elif sld == solved_domain_query:
-                        result["sld_solved_domain"] = result["solved_domain"]
-                    else:
-                        result["sld"] = ContactLookupService.get_contact_info_of_type(
-                            sld, StringType.DOMAIN, url=url
+                        solved_domain_type = StringIdentifier.guess(solved_domain_query)
+                        result["solved_domain"] = (
+                            ContactLookupService.get_contact_info_of_type(
+                                solved_domain_query, solved_domain_type, url=url
+                            )
                         )
-                except Exception as e:
-                    logger.error(
-                        f"Error in getting SLD <{hostname_query}> from <{url_ip_domain}>: {e}"
-                    )
+                    except Exception as e:
+                        logger.debug(
+                            f"Error in resolving domain <{hostname_query}> from <{url_ip_domain}>: {e}"
+                        )
+
+                    try:
+                        # Get the second level domain
+                        sld = get_sld(hostname_query)
+
+                        if sld == hostname_query:
+                            result["sld_hostname"] = result["hostname"]
+                        elif sld == solved_domain_query:
+                            result["sld_solved_domain"] = result["solved_domain"]
+                        else:
+                            result["sld"] = (
+                                ContactLookupService.get_contact_info_of_type(
+                                    sld, StringType.DOMAIN, url=url
+                                )
+                            )
+                    except Exception as e:
+                        logger.debug(
+                            f"Error in getting SLD <{hostname_query}> from <{url_ip_domain}>: {e}"
+                        )
 
         result["abuse_emails"] = list(
             set(
                 result.get("original", {}).get("abuse_emails", [])
+                + result.get("ngen", {}).get("abuse_emails", [])
                 + result.get("hostname", {}).get("abuse_emails", [])
                 + result.get("solved_domain", {}).get("abuse_emails", [])
                 + result.get("sld", {}).get("abuse_emails", [])
@@ -280,3 +349,89 @@ class ContactLookupService:
         )
 
         return result
+
+    @staticmethod
+    def get_address_info(
+        domain_or_ip,
+        with_contacts=False,
+        with_networks=False,
+        with_entity=False,
+        with_events=False,
+    ):
+        """
+        Perform a search for address info based on self database.
+        if with_contacts is True, should have permission ngen.can_view_contacts,
+        if with_events is True, should have permission ngen.can_view_events,
+        if with_networks is True, should have permission ngen.can_view_networks,
+        if with_entity is True, should have permission ngen.can_view_entities,
+        if with_cases is True, should have permission ngen.can_view_cases.
+        Returns a dictionary with the results of the lookups with the following
+        keys:
+        - query: The original query input.
+        - type: The guessed type of the input (IP, DOMAIN, URL, ASN).
+        - data: A dictionary with the following keys:
+            - network: The network that contains the IP or domain.
+            - parent_networks: A list of parent networks of the network.
+            - entity: The entity associated with the network.
+            - contacts: A list of contacts associated with the network.
+        """
+        from ngen.models.constituency import Network
+
+        # Get the domain value from the filter
+        if domain_or_ip:
+            # Create an address-like object to pass to the parents_of method
+            # Assuming you're looking for domain-based parents
+            address = Network(
+                address_value=domain_or_ip
+            )  # You could adjust this based on the value type
+
+            result = {"query": domain_or_ip, "type": address.sid.network_type}
+            data = {
+                "parent_networks": [],
+                "entity": None,
+                "contacts": [],
+                "events": [],
+            }
+
+            # Call the parents_of method to get parent networks
+            parent_networks = Network.objects.parents_of(address).all()
+            network = parent_networks[0] if parent_networks else None
+
+            if with_networks:
+                data["parent_networks"] = [str(n) for n in parent_networks]
+
+            if network:
+                if with_contacts:
+                    contacts = network.contacts.all()
+                    if contacts:
+                        data["contacts"] = [
+                            {
+                                "type": c.type,
+                                "username": c.username,
+                                "name": c.name,
+                                "role": c.role,
+                            }
+                            for c in contacts
+                        ]
+                if with_entity:
+                    data["entity"] = str(network.network_entity)
+
+            if with_events:
+                from ngen.models import Event
+
+                events = Event.objects.children_of_by_string(domain_or_ip)
+                if events:
+                    data["events"] = [
+                        {
+                            "uuid": str(e.uuid),
+                            "address": e.address_value,
+                            "taxonomy": e.taxonomy.name if e.taxonomy else None,
+                            "feed": e.feed.name if e.feed else None,
+                            "date": e.date,
+                        }
+                        for e in events
+                    ]
+
+            result["data"] = data
+            return result
+        return {"error": "No contact info found."}

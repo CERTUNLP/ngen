@@ -241,9 +241,14 @@ urlpatterns = [
         views.TeamLogoFileUploadView.as_view(),
     ),
     path(
-        "api/lookup/<str:ip_or_domain>/",
+        "api/lookup/",
         views.WhoisLookupView.as_view(),
         name="whois_lookup",
+    ),
+    path(
+        "api/addressinfo/",
+        views.AddressInfoView.as_view(),
+        name="address_info",
     ),
     path(
         "api/export_events/",

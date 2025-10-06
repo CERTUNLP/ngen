@@ -314,3 +314,4 @@ whoisit==3.0.4
 # The following packages are considered to be unsafe in a requirements file:
 # pip
 # setuptools
+drf-spectacular-sidecar

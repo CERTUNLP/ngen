@@ -21,7 +21,7 @@ from ngen.permissions import (
     CustomModelPermissions,
 )
 from project import settings
-from ngen.tasks import whois_lookup_task, export_events_for_email_task
+from ngen.tasks import whois_lookup, export_events_for_email_task, internal_address_info
 
 
 class DisabledView(APIView):
@@ -248,10 +248,20 @@ class WhoisLookupView(APIView):
     Inicia la tarea de búsqueda WHOIS y devuelve el ID de la tarea.
     """
 
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.can_do_whois"]
+    serializer_class = serializers.WhoisLookupSerializer
 
-    def get(self, request, ip_or_domain):
-        task = whois_lookup_task.delay(ip_or_domain)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        ip_or_domain = serializer.validated_data["ip_or_domain"]
+        scope = serializer.validated_data.get("scope", None)
+
+        if request.user.is_superuser or request.user.has_perm("ngen.can_do_whois_full"):
+            task = whois_lookup.delay(ip_or_domain, scope=scope)
+
         return Response(
             {
                 "task_id": task.id,
@@ -261,6 +271,45 @@ class WhoisLookupView(APIView):
             },
             status=status.HTTP_202_ACCEPTED,
         )
+
+
+class AddressInfoView(APIView):
+    """
+    Busca información de dirección IP o dominio.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = serializers.AddressInfoSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ip_or_domain = serializer.validated_data["ip_or_domain"]
+
+        with_contacts = serializer.validated_data[
+            "with_contacts"
+        ] and request.user.has_perm("ngen.view_contact")
+        with_networks = serializer.validated_data[
+            "with_networks"
+        ] and request.user.has_perm("ngen.view_network")
+        with_entity = serializer.validated_data[
+            "with_entity"
+        ] and request.user.has_perm("ngen.view_entity")
+        with_events = serializer.validated_data[
+            "with_events"
+        ] and request.user.has_perm("ngen.view_event")
+        with_cases = serializer.validated_data["with_cases"] and request.user.has_perm(
+            "ngen.view_case"
+        )
+
+        data = internal_address_info(
+            ip_or_domain,
+            with_contacts=with_contacts,
+            with_networks=with_networks,
+            with_entity=with_entity,
+            with_events=with_events,
+        )
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class TaskStatusView(APIView):
@@ -273,8 +322,10 @@ class TaskStatusView(APIView):
     def get(self, request, task_id):
         task_result = AsyncResult(task_id)
 
+        print(task_result)
+
         if task_result.state == "PENDING":
-            return Response({"status": "Pending"}, status=status.HTTP_200_OK)
+            return Response({"status": "PENDING"}, status=status.HTTP_200_OK)
         elif task_result.state != "FAILURE":
             return Response(
                 {

@@ -127,3 +127,17 @@ class StringIdentifierSerializer(serializers.Serializer):
             "all_network_types": ngen.models.common.parsing.StringIdentifier.all_network_types(),
             "all_artifact_types": ngen.models.common.parsing.StringIdentifier.all_artifact_types(),
         }
+
+
+class WhoisLookupSerializer(serializers.Serializer):
+    ip_or_domain = serializers.CharField(max_length=255)
+    scope = serializers.CharField(max_length=255, required=False)
+
+
+class AddressInfoSerializer(serializers.Serializer):
+    ip_or_domain = serializers.CharField(max_length=255)
+    with_contacts = serializers.BooleanField(default=True)
+    with_networks = serializers.BooleanField(default=True)
+    with_entity = serializers.BooleanField(default=True)
+    with_events = serializers.BooleanField(default=True)
+    with_cases = serializers.BooleanField(default=True)

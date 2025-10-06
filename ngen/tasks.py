@@ -226,15 +226,44 @@ def enrich_artifact(artifact_id):
 
 
 @shared_task(bind=True)
-def whois_lookup_task(self, ip_or_domain):
+def whois_lookup(self, ip_or_domain, scope=None):
     """
     Tarea de Celery para hacer una búsqueda WHOIS.
     """
+    whois_data = ContactLookupService.get_contact_info(ip_or_domain, scope=scope)
     try:
-        whois_data = ContactLookupService.get_contact_info(ip_or_domain)
         return whois_data
     except Exception as e:
-        return {"error": str(e)}
+        logger.error(f"Error in whois_lookup task: {e}")
+        return {"error": "An error occurred while processing the WHOIS data."}
+
+
+@shared_task(bind=True)
+def internal_address_info(
+    self,
+    ip_or_domain,
+    with_contacts=False,
+    with_events=False,
+    with_networks=False,
+    with_entity=False,
+):
+    """
+    Tarea para obtener información de una dirección desde Ngen.
+    """
+    try:
+        internal_address_info = ContactLookupService.get_address_info(
+            ip_or_domain,
+            with_contacts=with_contacts,
+            with_events=with_events,
+            with_networks=with_networks,
+            with_entity=with_entity,
+        )
+        return internal_address_info
+    except Exception as e:
+        logger.error(f"Error in internal_address_info task: {e}")
+        return {
+            "error": "An error occurred while processing the internal address information."
+        }
 
 
 @shared_task(store_errors_even_if_ignored=True)
@@ -344,10 +373,10 @@ def retest_event_kintun(event_id):
         try:
             event_analysis.delete()
         except Exception as delete_error:
-            return {
-                "error": f"Original error: {str(e)}, Deletion error: {str(delete_error)}"
-            }
-        return {"error": str(e)}
+            logger.error(
+                f"Original error: {str(e)}, Deletion error: {str(delete_error)}"
+            )
+        return {"error": "An error occurred while processing the event."}
 
 
 @shared_task(bind=True, max_retries=5)
