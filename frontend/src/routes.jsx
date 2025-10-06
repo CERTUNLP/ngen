@@ -72,6 +72,12 @@ const routes = [
   },
   {
     exact: "true",
+    path: "/networkadmin/exportevents",
+    layout: PublicLayout,
+    element: lazy(() => import("./views/event/ExportEventsForm"))
+  },
+  {
+    exact: "true",
     path: "/home",
     layout: AdminLayout,
     guard: AuthGuard,

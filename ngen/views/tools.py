@@ -1,15 +1,17 @@
 import os
-import constance
+import time
+import random
 from auditlog.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.views.generic import TemplateView
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, status, viewsets, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from constance import config
 from celery.result import AsyncResult
+from drf_spectacular.utils import extend_schema
 
 from ngen import models, serializers
 from ngen.utils import get_settings
@@ -19,7 +21,7 @@ from ngen.permissions import (
     CustomModelPermissions,
 )
 from project import settings
-from ngen.tasks import whois_lookup, internal_address_info
+from ngen.tasks import whois_lookup, export_events_for_email_task, internal_address_info
 
 
 class DisabledView(APIView):
@@ -115,6 +117,46 @@ class ConstanceViewSet(viewsets.ModelViewSet):
         return Response(
             status=status.HTTP_405_METHOD_NOT_ALLOWED,
             data={"message": "DELETE method is not allowed."},
+        )
+
+
+class ExportEventsViewSet(viewsets.ViewSet):
+    """
+    Public viewset to export events in different formats. Runs a celery task to generate the export file.
+
+    Required request data:
+        - email (str): The email address to send the exported events to.
+    """
+
+    # TODO: change to configurable permissions via constance or disable the endpoint
+    permission_classes = [permissions.AllowAny]
+
+    @extend_schema(
+        request=serializers.ExportEventsSerializer,  # lo que Swagger mostrará como body
+        responses={
+            202: serializers.ExportEventsSerializer
+        },  # lo que Swagger mostrará como respuesta
+        description="Inicia la exportación de eventos y envía el archivo por correo electrónico.",
+        summary="Exportar eventos por correo electrónico",
+    )
+    def create(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response(
+                {"message": "Email is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        # add random delay to avoid email enumeration attacks
+        time.sleep(random.randint(1000, 5000) / 1000)
+        # check if email is valid
+        contact = models.Contact.objects.filter(username=email).first()
+        if contact:
+            export_events_for_email_task.delay(email)
+        return Response(
+            {
+                "message": "Task to export cases launched. The exported file will be sent to the provided email address once ready."
+            },
+            status=status.HTTP_202_ACCEPTED,
         )
 
 

@@ -266,6 +266,75 @@ def internal_address_info(
         }
 
 
+@shared_task(store_errors_even_if_ignored=True)
+def export_events_for_email_task(email, days=14):
+    """
+    Tarea de Celery para exportar eventos en un zip y enviarlos a correo electrónico.
+    """
+    try:
+        contact = ngen.models.Contact.objects.filter(username=email).first()
+        if not contact:
+            raise ValueError(f"Contact with email {email} not found")
+
+        cases = ngen.models.Case.objects.filter(
+            events__network__contacts=contact, state__solved=False
+        ).distinct()
+
+        timedeltavalue = timezone.timedelta(days=days)
+
+        # Open cases
+        open_cases = ngen.models.Case.objects.filter(
+            state__attended=True, events__network__contacts=contact
+        ).prefetch_related("events")
+
+        list_open_cases = [
+            {"case": case, "events": case.events.filter(network__contacts=contact)}
+            for case in open_cases
+        ]
+
+        # Events export
+        events_to_export = ngen.models.Event.objects.filter(
+            network__contacts=contact, case__in=cases
+        ).distinct()
+        exported_data = ngen.models.Event.export_events_to_zip(events_to_export)
+
+        # Closed cases
+        closed_cases = ngen.models.Case.objects.filter(
+            state__solved=True,
+            events__network__contacts=contact,
+            solve_date__gte=timezone.now() - timedeltavalue,
+        ).prefetch_related("events")
+
+        list_closed_cases = [
+            {"case": case, "events": case.events.filter(network__contacts=contact)}
+            for case in closed_cases
+        ]
+
+        # TLP
+        tlp = config.SUMMARY_TLP.lower()
+        tlp_obj = (
+            ngen.models.Tlp.objects.get(slug=tlp) if tlp and tlp != "none" else None
+        )
+
+        logger.info(f"Task - Sending email to {email}, file: {exported_data}")
+        with open(exported_data, "rb") as f:
+            Communication.communicate_contact_summary_export(
+                contact,
+                list_open_cases,
+                list_closed_cases,
+                tlp_obj,
+                days=int(timedeltavalue.total_seconds() / 86400),
+                attachments=[{"name": exported_data.name, "file": f}],
+            )
+
+        return {"status": "success", "message": f"Cases exported and sent to {email}"}
+
+    except Exception:
+        logger.exception(f"Task failed for {email}")
+        # raise to let celery handle retries if configured
+        raise
+
+
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def retest_event_kintun(event_id):
     """

@@ -251,6 +251,11 @@ urlpatterns = [
         name="address_info",
     ),
     path(
+        "api/export_events/",
+        views.ExportEventsViewSet.as_view({"post": "create"}),
+        name="export_events",
+    ),
+    path(
         "api/result/<str:task_id>/", views.TaskStatusView.as_view(), name="task_status"
     ),
     path(
