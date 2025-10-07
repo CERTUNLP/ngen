@@ -226,7 +226,7 @@ class Case(
         """
         Get the team email if the priority (config.TEAM_EMAIL_PRIORITY) is
         greater than or equal to the case priority.
-        Used by get_internal_contacts() method to send emails to the team on
+        Used by get_team_and_assigned_contacts() method to send emails to the team on
         bcc.
         :return: team email or None
         """
@@ -447,7 +447,7 @@ class Case(
                     subject=self.subject_v2("AFFECTED"),
                     template=template,
                     template_params=template_params,
-                    bcc_recipients=self.get_internal_contacts(),
+                    bcc_recipients=self.get_team_and_assigned_contacts(),
                     attachments=(
                         self.get_attachments_for_events_v2([event])
                         if send_attachments
@@ -468,7 +468,7 @@ class Case(
         )
         self.notification_count += 1
 
-    def get_internal_contacts(self):
+    def get_team_and_assigned_contacts(self):
         """
         Returns a list of internal contacts of the case.
         """
@@ -789,8 +789,8 @@ class Event(
     def get_reporter_contacts(self):
         return [self.reporter.email]
 
-    def get_internal_contacts(self):
-        return self.case.get_internal_contacts() if self.case else []
+    def get_team_and_assigned_contacts(self):
+        return self.case.get_team_and_assigned_contacts() if self.case else []
 
     def mark_as_solved(self, user=None, contact=None, contact_info=None):
         mark, _ = ngen.models.SolvedMark.objects.get_or_create(

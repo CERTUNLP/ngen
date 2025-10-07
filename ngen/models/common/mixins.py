@@ -707,7 +707,7 @@ class ChannelableMixin(models.Model):
     class Meta:
         abstract = True
 
-    def get_internal_contacts(self):
+    def get_team_and_assigned_contacts(self):
         raise NotImplementedError
 
     def get_affected_contacts(self):
