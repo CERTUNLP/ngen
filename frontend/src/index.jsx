@@ -2,7 +2,7 @@
 import "react-app-polyfill/ie11";
 import "react-app-polyfill/stable";
 
-import React, { StrictMode } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client"; // Nueva forma de renderizado con React 18+
 import { Provider } from "react-redux"; // Para integrar Redux
 import { ConfigProvider } from "./contexts/ConfigContext"; // Proveedor de configuración personalizada
@@ -20,13 +20,10 @@ import initializeI18n from "./i18n"; // Cargar la configuración de i18n despué
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Importar estilos
 
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
+const isDev = import.meta.env.MODE === "development";
 
 // Configuración del nuevo método de renderizado de React 18
 const container = document.getElementById("root");
@@ -43,11 +40,8 @@ const initializeApp = async () => {
     await initializeI18n();
 
     // Renderizar la aplicación
-    root.render(
-      <StrictMode>
-          <QueryClientProvider client={queryClient}>
-          <ReactQueryDevtools initialIsOpen={false} />
-
+    const app = (
+      <QueryClientProvider client={queryClient}>
         <Provider store={store}>
           <ConfigProvider>
             <PersistGate loading={null} persistor={persist}>
@@ -56,8 +50,11 @@ const initializeApp = async () => {
             </PersistGate>
           </ConfigProvider>
         </Provider>
-        </QueryClientProvider>
-      </StrictMode>
+        {isDev && <ReactQueryDevtools initialIsOpen={false} />}
+      </QueryClientProvider>
+    );
+    root.render(
+      isDev ? app : <React.StrictMode>{app}</React.StrictMode>
     );
   } catch (error) {
     console.error("Error inicializando la aplicación:", error);
