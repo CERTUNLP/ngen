@@ -1,4 +1,5 @@
 import re
+import logging
 from typing import Collection
 import uuid as uuid
 from collections import defaultdict
@@ -47,6 +48,8 @@ from .common.mixins import (
     # TaggedItemMixin,
 )
 from ..storage import HashedFilenameStorage
+
+logger = logging.getLogger(__name__)
 
 LIFECYCLE = Choices(
     ("manual", gettext_lazy("Manual")),
@@ -358,9 +361,28 @@ class Case(
             title,
         )
 
-    def subject_v2(self, channel_type: str = None) -> str:
-        channel_section = f"[{channel_type.upper()}]" if channel_type else ""
-        return f"[{config.TEAM_NAME}][TLP:{self.tlp.name.upper()}]{channel_section} Case ID: {self.uuid}"
+    def subject_v2(self, template: str = None, channel_type: str = None) -> str:
+        """
+        Formatea el asunto del correo electrónico utilizando un template y variables específicas.
+        """
+        # Usar template de configuración si existe, sino el por defecto
+        if template is None:
+            template = config.CASE_EMAIL_SUBJECT_TEMPLATE
+
+        variables = {
+            "team_name": config.TEAM_NAME,
+            "tlp": self.tlp.name.upper(),
+            "channel_type": channel_type.upper() if channel_type else "",
+            "uuid": self.uuid,
+            "short_uuid": str(self.uuid).split("-")[0],
+        }
+
+        # Eliminar dobles espacios y corchetes vacíos
+        res = template.format(**variables)
+        res = re.sub(r"\s{2,}", " ", res)
+        res = re.sub(r"\[\s*\]", "", res)
+
+        return res.strip()
 
     # def communicate(self, title: str, template: str, attachments=True, **kwargs):
     #     """
@@ -437,7 +459,9 @@ class Case(
                 event, template, template_params, send_attachments
             )
 
-        self.communicate_intern(template, template_params, send_attachments)
+        if config.CREATE_INTERNAL_COMMUNICATION_CHANNEL:
+            # Communicates on the internal channel of the case
+            self.communicate_intern(template, template_params, send_attachments)
         self.notification_count += 1
 
     def get_team_and_assigned_contacts(self):
@@ -472,7 +496,6 @@ class Case(
         :param template_params: parameters to be passed to the template
         :param send_attachments: whether to send attachments or not
         """
-        print(f"Communicating affected for event {event.id} on case {self.id}")
         if event.network.type == "internal":
             # Internal network event should not communicate to affected contacts of DB
             # If there is no channel with affected contacts, create one
@@ -480,11 +503,15 @@ class Case(
                 event, template, template_params, send_attachments
             )
         else:
-            print(f"Event {event.id} is external, communicating to affected contacts")
-            # External network event should communicate to affected contacts from RDAP, WHOIS, etc.
-            ngen.tasks.get_affected_contacts_and_communicate_event(
-                event.id, template, template_params, send_attachments
-            )
+            if config.REPORT_EXTERNAL_CONTACTS:
+                # External network event should communicate to affected contacts from RDAP, WHOIS, etc.
+                ngen.tasks.get_affected_contacts_and_communicate_event(
+                    event.id, template, template_params, send_attachments
+                )
+            else:
+                logger.info(
+                    f"Skipping communication for event {event.id} on case {self.id} because REPORT_EXTERNAL_CONTACTS is False"
+                )
 
     def communicate_intern(self, template, template_params, send_attachments):
         """
@@ -500,7 +527,7 @@ class Case(
             )
         )
         intern_channel.communicate(
-            subject=self.subject_v2("INTERN"),
+            subject=self.subject_v2(channel_type="INTERN"),
             template=template,
             template_params=template_params,
             attachments=self.email_attachments if send_attachments else [],
@@ -537,7 +564,7 @@ class Case(
         # Communicates on each each channel of the event
         for channel in event_channels:
             channel.communicate(
-                subject=self.subject_v2("AFFECTED"),
+                subject=self.subject_v2(channel_type="AFFECTED"),
                 template=template,
                 template_params=template_params,
                 bcc_recipients=self.get_team_and_assigned_contacts(),

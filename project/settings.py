@@ -404,6 +404,33 @@ CONSTANCE_CONFIG = {
         gettext_lazy("Send report on new cases"),
         bool,
     ),
+    "REPORT_EXTERNAL_CONTACTS": (
+        os.environ.get("REPORT_EXTERNAL_CONTACTS", "false").lower() in VALUES_TRUE,
+        gettext_lazy(
+            "Report events with external network to affected contact emails from RDAP, WHOIS, etc."
+        ),
+        bool,
+    ),
+    "CREATE_INTERNAL_COMMUNICATION_CHANNEL": (
+        os.environ.get("CREATE_INTERNAL_COMMUNICATION_CHANNEL", "true").lower()
+        in VALUES_TRUE,
+        gettext_lazy(
+            "Create internal communication channel for each case automatically"
+        ),
+        bool,
+    ),
+    "CASE_EMAIL_SUBJECT_TEMPLATE": (
+        os.environ.get(
+            "CASE_EMAIL_SUBJECT_TEMPLATE",
+            "[{team_name}][TLP:{tlp}][{channel_type}] Case ID: {uuid}",
+        ),
+        mark_safe(
+            gettext_lazy(
+                "Case email subject template. Variables: {team_name}, {tlp}, {channel_type}, {uuid}, {short_uuid}. Double spaces and empty [] will be removed automatically."
+            )
+        ),
+        str,
+    ),
     "PRIORITY_DEFAULT": (
         os.environ.get("PRIORITY_DEFAULT", "Medium"),
         gettext_lazy("Default priority"),
