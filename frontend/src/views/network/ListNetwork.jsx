@@ -159,7 +159,7 @@ const ListNetwork = ({ routeParams }) => {
                         setLoading={setLoading}
                         placeholder={t("ngen.filter_by") + " " + t("filter.cidr_domain")}
                         validate={(text) => validateCidr(text) || validateDomain(text) || text === ""}
-                        invalid_msg={t("ngen.invalid.cidr_or_subdomain")}
+                        invalid_msg={t("ngen.invalid.cidr_or_domain")}
                         label={t("w.subnet_of")}
                       />
                     </Col>
@@ -171,7 +171,7 @@ const ListNetwork = ({ routeParams }) => {
                         setLoading={setLoading}
                         placeholder={t("ngen.filter_by") + " " + t("filter.cidr_domain")}
                         validate={(text) => validateCidr(text) || validateDomain(text) || text === ""}
-                        invalid_msg={t("ngen.invalid.cidr_or_subdomain")}
+                        invalid_msg={t("ngen.invalid.cidr_or_domain")}
                         label={t("w.supernet_of")}
                       />
                     </Col>

@@ -71,7 +71,7 @@ class AnnouncementTestCase(TestCase):
         cls.network = Network.objects.create(
             domain=cls.domain,
             active=True,
-            type="external",
+            type="internal",
             network_entity=cls.network_entity,
         )
         cls.network.contacts.set([cls.contact])

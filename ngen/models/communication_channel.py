@@ -41,7 +41,7 @@ class CommunicationType(AuditModelMixin):
         type_method_mapper = {
             CommunicationType.TYPE_CHOICES.affected: self.get_affected_contacts,
             CommunicationType.TYPE_CHOICES.reporter: self.get_reporter_contacts,
-            CommunicationType.TYPE_CHOICES.intern: self.get_internal_contacts,
+            CommunicationType.TYPE_CHOICES.intern: self.get_team_and_assigned_contacts,
         }
         method = type_method_mapper.get(self.type)
 
@@ -62,11 +62,11 @@ class CommunicationType(AuditModelMixin):
         """
         return channelable_mixin.get_reporter_contacts()
 
-    def get_internal_contacts(self, channelable_mixin: ChannelableMixin):
+    def get_team_and_assigned_contacts(self, channelable_mixin: ChannelableMixin):
         """
         Method to get internal contacts.
         """
-        return channelable_mixin.get_internal_contacts()
+        return channelable_mixin.get_team_and_assigned_contacts()
 
 
 class CommunicationChannel(AuditModelMixin):

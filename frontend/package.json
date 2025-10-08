@@ -16,7 +16,6 @@
     "@nivo/bar": "^0.87.0",
     "@nivo/core": "^0.87.0",
     "@nivo/pie": "^0.87.0",
-    "@originjs/vite-plugin-commonjs": "^1.0.3",
     "@popperjs/core": "^2.11.8",
     "@react-google-maps/api": "^2.19.3",
     "@reduxjs/toolkit": "^2.2.7",

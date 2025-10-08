@@ -58,7 +58,8 @@ class CommunicationTypeTest(TestCase):
             self.reporter_type.get_contacts_method().__name__, "get_reporter_contacts"
         )
         self.assertEqual(
-            self.intern_type.get_contacts_method().__name__, "get_internal_contacts"
+            self.intern_type.get_contacts_method().__name__,
+            "get_team_and_assigned_contacts",
         )
 
         self.intern_type.type = "wrong_type"
