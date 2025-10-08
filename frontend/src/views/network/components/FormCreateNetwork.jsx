@@ -192,7 +192,7 @@ const FormCreateNetwork = (props) => {
           <Col sm={12} lg={8}>
             <Form.Group controlId="Form.Network.Contacts.Multiselect">
               <Form.Label>
-                {t("ngen.contact_other")} <b style={{ color: "red" }}>*</b>
+                {t("ngen.contact_other")}
               </Form.Label>
               <Select
                 value={contactsValueLabel}
@@ -231,7 +231,7 @@ const FormCreateNetwork = (props) => {
                 validateAddressValueOrNetworkOrDomainInObj(props) &&
                 !showErrorMessage &&
                 validateSelect(props.type) &&
-                props.contacts?.length > 0 ? (
+                props.contacts?.length >= 0 ? (
                   <>
                     <Button variant="primary" onClick={props.ifConfirm}>
                       {t("button.save")}
