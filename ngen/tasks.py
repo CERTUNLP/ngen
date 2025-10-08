@@ -549,3 +549,22 @@ def send_contact_check_submitted(check_id):
         networks=check.contact.networks.all(),
         check=check,
     )
+
+
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
+def get_affected_contacts_and_communicate_event(
+    event_id, template, template_params, send_attachments
+):
+    """
+    Get affected contacts for an event and communicate the event to them.
+    """
+    event = ngen.models.Event.objects.get(pk=event_id)
+    emails = whois_lookup(event.address_value, scope="external").get("abuse_emails", [])
+    event.case.communicate_to_contacts(
+        event=event,
+        template=template,
+        template_params=template_params,
+        send_attachments=send_attachments,
+        channel_name="Affected Communication Channel with External Contacts",
+        additional_contacts=emails,
+    )

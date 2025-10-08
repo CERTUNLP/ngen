@@ -60,7 +60,7 @@ class CommunicationChannelTest(TestCase):
         cls.domain = "testdomain.unlp.edu.ar"
 
         cls.network = Network.objects.create(
-            domain=cls.domain, active=True, type="external", network_entity=cls.entity
+            domain=cls.domain, active=True, type="internal", network_entity=cls.entity
         )
         cls.network.contacts.set([cls.contact])
 

@@ -29,7 +29,6 @@ from django_lifecycle.priority import HIGHEST_PRIORITY
 from model_utils import Choices
 from treebeard.al_tree import AL_NodeManager
 from taggit.managers import TaggableManager
-from django.apps import apps
 
 import ngen
 from ngen.models.announcement import Communication
@@ -434,38 +433,11 @@ class Case(
 
         # Communicates on the channels of each event of the case
         for event in events or self.events.all():
-            # If there is no channel with affected contacts, create one
-            ngen.models.CommunicationChannel.get_or_create_channel_with_affected(
-                channelable=event
+            self.communicate_affected(
+                event, template, template_params, send_attachments
             )
 
-            event_channels = event.communication_channels.all()
-
-            # Communicates on each each channel of the event
-            for channel in event_channels:
-                channel.communicate(
-                    subject=self.subject_v2("AFFECTED"),
-                    template=template,
-                    template_params=template_params,
-                    bcc_recipients=self.get_team_and_assigned_contacts(),
-                    attachments=(
-                        self.get_attachments_for_events_v2([event])
-                        if send_attachments
-                        else []
-                    ),
-                )
-
-        intern_channel = (
-            ngen.models.CommunicationChannel.get_or_create_channel_with_intern(
-                channelable=self
-            )
-        )
-        intern_channel.communicate(
-            subject=self.subject_v2("INTERN"),
-            template=template,
-            template_params=template_params,
-            attachments=self.email_attachments if send_attachments else [],
-        )
+        self.communicate_intern(template, template_params, send_attachments)
         self.notification_count += 1
 
     def get_team_and_assigned_contacts(self):
@@ -489,6 +461,92 @@ class Case(
             reporters_from_all_events.append(event.get_reporter_contacts())
 
         return reporters_from_all_events
+
+    def communicate_affected(self, event, template, template_params, send_attachments):
+        """
+        Communicate affected
+        Send email to the communication channels of the events
+
+        :param event: event to communicate
+        :param template: path of template to be rendered
+        :param template_params: parameters to be passed to the template
+        :param send_attachments: whether to send attachments or not
+        """
+        print(f"Communicating affected for event {event.id} on case {self.id}")
+        if event.network.type == "internal":
+            # Internal network event should not communicate to affected contacts of DB
+            # If there is no channel with affected contacts, create one
+            self.communicate_to_contacts(
+                event, template, template_params, send_attachments
+            )
+        else:
+            print(f"Event {event.id} is external, communicating to affected contacts")
+            # External network event should communicate to affected contacts from RDAP, WHOIS, etc.
+            ngen.tasks.get_affected_contacts_and_communicate_event(
+                event.id, template, template_params, send_attachments
+            )
+
+    def communicate_intern(self, template, template_params, send_attachments):
+        """
+        Communicate intern
+        Send email to the internal communication channel of the case
+
+        :param template: path of template to be rendered
+        :param template_params: parameters to be passed to the template
+        """
+        intern_channel = (
+            ngen.models.CommunicationChannel.get_or_create_channel_with_intern(
+                channelable=self
+            )
+        )
+        intern_channel.communicate(
+            subject=self.subject_v2("INTERN"),
+            template=template,
+            template_params=template_params,
+            attachments=self.email_attachments if send_attachments else [],
+        )
+
+    def communicate_to_contacts(
+        self,
+        event,
+        template,
+        template_params,
+        send_attachments,
+        channel_name=None,
+        additional_contacts=None,
+    ):
+        """
+        Communicate to contacts
+        Send email to the affected contacts of the event
+
+        :param event: event to communicate
+        :param template: path of template to be rendered
+        :param template_params: parameters to be passed to the template
+        :param channel_name: name of the channel to communicate on
+        :param additional_contacts: additional contacts to include in the communication
+        """
+        # TODO: this can be moved to Event model
+        ngen.models.CommunicationChannel.get_or_create_channel_with_affected(
+            channelable=event,
+            channel_name=channel_name,
+            additional_contacts=additional_contacts,
+        )
+
+        event_channels = event.communication_channels.all()
+
+        # Communicates on each each channel of the event
+        for channel in event_channels:
+            channel.communicate(
+                subject=self.subject_v2("AFFECTED"),
+                template=template,
+                template_params=template_params,
+                bcc_recipients=self.get_team_and_assigned_contacts(),
+                attachments=(
+                    self.get_attachments_for_events_v2([event])
+                    if send_attachments
+                    else []
+                ),
+            )
 
 
 class EventManager(AL_NodeManager, AddressManager):
