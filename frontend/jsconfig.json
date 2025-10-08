@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "commonjs",
-    "baseUrl": "src"
+    "module": "esnext",
+    "moduleResolution": "node",
+    "baseUrl": "src",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
