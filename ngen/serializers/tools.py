@@ -141,3 +141,8 @@ class AddressInfoSerializer(serializers.Serializer):
     with_entity = serializers.BooleanField(default=True)
     with_events = serializers.BooleanField(default=True)
     with_cases = serializers.BooleanField(default=True)
+
+
+class AnalyzeObjectSerializer(serializers.Serializer):
+    obj_id = serializers.CharField(required=True, help_text="ID del objeto a analizar")
+    obj_type = serializers.CharField(required=True, help_text="Tipo del objeto")

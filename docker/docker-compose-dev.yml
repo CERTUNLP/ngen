@@ -1,4 +1,12 @@
 services:
+  ngen-ai:
+    build: ./ai-service
+    container_name: ngen-ai
+    ports:
+      - "9000:9000"
+    environment:
+      - MODEL_NAME=bert-base-multilingual-cased
+
   ngen-frontend:
     image: ngen-frontend:dev-latest
     build:

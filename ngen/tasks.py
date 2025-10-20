@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends.smtp import EmailBackend
 from constance import config
+import requests
 
 from ngen.mailer.email_client import EmailClient
 import ngen.models
@@ -549,3 +550,32 @@ def send_contact_check_submitted(check_id):
         networks=check.contact.networks.all(),
         check=check,
     )
+
+
+@shared_task
+def analyze_obj_task(obj_id, obj_type):
+    """
+    Tarea para analizar un objeto (evento, caso, etc.) utilizando el servicio de AI
+    """
+    # podés guardar el resultado en la base de datos
+    from .models import Event
+
+    types_dict = {
+        "event": Event,
+    }
+
+    obj = types_dict[obj_type].objects.get(id=obj_id)
+    print(f"Analizando objeto {obj_type} con ID {obj_id}")
+    print(f"Datos del objeto: {obj.__dict__}")
+
+    response = requests.post(
+        f"http://ngen-ai:9000/analyze/",
+        json={"data": str(obj.__dict__)},
+        timeout=10,
+    )
+    print(f"Respuesta del servicio AI: {response.status_code} - {response.text}")
+    data = response.json()
+    obj.ai_analysis = data.get("analysis", "")
+
+    obj.save()
+    return data

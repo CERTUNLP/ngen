@@ -21,7 +21,12 @@ from ngen.permissions import (
     CustomModelPermissions,
 )
 from project import settings
-from ngen.tasks import whois_lookup, export_events_for_email_task, internal_address_info
+from ngen.tasks import (
+    whois_lookup,
+    export_events_for_email_task,
+    internal_address_info,
+    analyze_obj_task,
+)
 
 
 class DisabledView(APIView):
@@ -368,3 +373,54 @@ class VersionView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class AnalyzeObjectViewSet(viewsets.ViewSet):
+    """
+    ViewSet for various tools.
+    """
+
+    permission_classes = [permissions.IsAdminUser]
+
+    @extend_schema(
+        request=serializers.AnalyzeObjectSerializer,  # lo que Swagger mostrará como body
+        responses={
+            202: serializers.AnalyzeObjectSerializer
+        },  # lo que Swagger mostrará como respuesta
+        description="Inicia el análisis de un objeto utilizando el servicio de AI.",
+        summary="Analizar objeto con AI",
+    )
+    def post(self, request):
+        serializer = serializers.AnalyzeObjectSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "message": "obj_id and obj_type are required.",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        obj_id = serializer.validated_data["obj_id"]
+        obj_type = serializer.validated_data["obj_type"]
+
+        task = analyze_obj_task(obj_id, obj_type)
+
+        return Response(
+            {
+                "result": "Task to analyze object launched.",
+                "task": task,
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
+
+        # return Response(
+        #     {
+        #         "task_id": task.id,
+        #         "url": request.build_absolute_uri(
+        #             reverse("task_status", args=[task.id])
+        #         ),
+        #     },
+        #     status=status.HTTP_202_ACCEPTED,
+        # )

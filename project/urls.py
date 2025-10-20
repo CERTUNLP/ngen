@@ -256,6 +256,11 @@ urlpatterns = [
         name="export_events",
     ),
     path(
+        "api/ai/",
+        views.AnalyzeObjectViewSet.as_view({"post": "post"}),
+        name="ai",
+    ),
+    path(
         "api/result/<str:task_id>/", views.TaskStatusView.as_view(), name="task_status"
     ),
     path(
