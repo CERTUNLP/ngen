@@ -258,6 +258,7 @@ urlpatterns = [
     path(
         "api/result/<str:task_id>/", views.TaskStatusView.as_view(), name="task_status"
     ),
+    path("api/task/run", views.TaskRunView.as_view(), name="task_run"),
     path(
         "api/version/",
         views.VersionView.as_view(),
