@@ -234,6 +234,32 @@ class Communication:
             },
         )
 
+    @staticmethod
+    def send_event_sla_reminder(events):
+        """
+        Sends an email reminder for events approaching SLA deadlines.
+        """
+        subject = "[%s] %s" % (
+            config.TEAM_NAME,
+            gettext_lazy("SLA Reminder"),
+        )
+
+        template = "reports/event_sla_reminder.html"
+
+        Communication.send_mail(
+            subject,
+            Communication.render_template(
+                template,
+                extra_params={
+                    "events": events,
+                },
+            ),
+            {
+                "to": [config.TEAM_EMAIL],
+                "from": config.EMAIL_SENDER,
+            },
+        )
+
 
 class Announcement(
     AuditModelMixin,

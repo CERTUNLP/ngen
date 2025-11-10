@@ -1,0 +1,44 @@
+{% extends 'reports/content_base.html' %}
+{% load i18n %}
+{% language lang %}
+
+    {% block content_header %}
+        <div class="content">
+            <h4>{% translate 'Hello' %},</h4>
+            <p>
+                {% blocktranslate trimmed %}
+                    Below are all your unattended events.
+                {% endblocktranslate %}
+            </p>
+        </div>
+    {% endblock %}
+    
+    {% block content_body %}
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+            <h5>{% translate 'Unnatended Events' %}: {{ events|length }}</h5>
+            
+            <table border="1" cellpadding="10" cellspacing="0" class="tsummary tunsolved">
+                <thead>
+                    <tr>
+                        <th>{% translate 'Date' %}</th>
+                        <th>{% translate 'Event' %}</th>
+                        <th>{% translate 'Priority' %}</th>
+                        <th>{% translate 'Taxonomy' %}</th>
+                        <th>{% translate 'Affected resources' %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td class="tcenter" title="{{ event.date | date:'Y-m-d H:i:s' }} UTC">{{ event.date | date:"Y-m-d" }}</td>
+                            <td class="tcenter" title="{{ event.uuid }}">{{ event.uuid|stringformat:"s"|slice:":8" }}</td>
+                            <td class="tcenter" title="{{ event.priority.name }}">{{ event.priority.name|stringformat:"s"|slice:":8" }}</td>
+                            <td class="tcenter" title="{{ event.taxonomy }} ({{ event.taxonomy.type }})">{{ event.taxonomy|stringformat:"s"|slice:":12" }}</td>
+                            <td class="tcenter" title="{{ event.address }}">{{ event.address|stringformat:"s"|slice:":18" }}</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endblock %}
+{% endlanguage %}
