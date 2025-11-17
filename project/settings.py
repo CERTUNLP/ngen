@@ -475,6 +475,11 @@ CONSTANCE_CONFIG = {
         os.environ.get("SUMMARY_TLP", "red"),
         gettext_lazy("Default TLP for summary"),
     ),
+    "FULL_SUMMARY_REPORT_LINK": (
+        os.environ.get("FULL_SUMMARY_REPORT_LINK", ""),
+        gettext_lazy("Full summary public report link"),
+        str,
+    ),
     "TAXONOMY_ALLOW_AUTO_CREATE": (
         os.environ.get("TAXONOMY_ALLOW_AUTO_CREATE", "true").lower() in VALUES_TRUE,
         gettext_lazy(

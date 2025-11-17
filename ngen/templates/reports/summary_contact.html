@@ -14,6 +14,13 @@
                     Below are all your unsolved cases, along with a summary of your closed cases from the last {{ days }} days.
                 {% endblocktranslate %}
             </p>
+            {% if full_summary_report_link %}
+                <p>
+                    {% blocktranslate trimmed with link=full_summary_report_link %}
+                        If you would like to see more details, you can export the full report from: <a href="{{ link }}">{{ link }}</a>
+                    {% endblocktranslate %}
+                </p>
+            {% endif %}
         </div>
     {% endblock %}
 

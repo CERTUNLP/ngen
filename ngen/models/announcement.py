@@ -5,7 +5,7 @@ from django.core.mail import EmailMultiAlternatives, get_connection
 from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
-from django.utils.translation import gettext_lazy
+from django.utils.translation import gettext
 from django_bleach.models import BleachField
 from model_utils import Choices
 from constance import config
@@ -122,7 +122,7 @@ class Communication:
         subject = "[%s][TLP:%s] %s" % (
             config.TEAM_NAME,
             tlp.name.upper(),
-            gettext_lazy("Summary"),
+            gettext("Summary"),
         )
         template = "reports/summary_contact.html"
         Communication.send_mail(
@@ -135,6 +135,7 @@ class Communication:
                     "closed_cases": closed_cases,
                     "tlp": tlp,
                     "days": days,
+                    "full_summary_report_link": config.FULL_SUMMARY_REPORT_LINK,
                 },
             ),
             {
@@ -154,7 +155,7 @@ class Communication:
         subject = "[%s][TLP:%s] %s" % (
             config.TEAM_NAME,
             tlp.name.upper(),
-            gettext_lazy("Full Summary"),
+            gettext("Full Summary"),
         )
         template = "reports/summary_contact.html"
         Communication.send_mail(
@@ -184,7 +185,7 @@ class Communication:
         """
         subject = "[%s] %s" % (
             config.TEAM_NAME,
-            gettext_lazy("Contact verification"),
+            gettext("Contact verification"),
         )
 
         template = "reports/contact_check.html"
@@ -213,7 +214,7 @@ class Communication:
         """
         subject = "[%s] %s" % (
             config.TEAM_NAME,
-            gettext_lazy("Contact check submitted"),
+            gettext("Contact check submitted"),
         )
 
         template = "reports/contact_check_submitted.html"
