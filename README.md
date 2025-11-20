@@ -3,8 +3,8 @@
 <h2 align="center">Incident Response Management System</h2>
 
 <p align="center">
-<a href="https://github.com/certunlp/ngen/actions"><img alt="Actions Status" src="https://github.com/certunlp/ngen/actions/workflows/backend.yml/badge.svg"></a>
-<a href="https://github.com/certunlp/ngen/actions"><img alt="Actions Status" src="https://github.com/certunlp/ngen/actions/workflows/frontend.yml/badge.svg"></a>
+<a href="https://github.com/certunlp/ngen/actions"><img alt="Actions Status" src="https://github.com/certunlp/ngen/actions/workflows/backend-dev.yml/badge.svg"></a>
+<a href="https://github.com/certunlp/ngen/actions"><img alt="Actions Status" src="https://github.com/certunlp/ngen/actions/workflows/frontend-dev.yml/badge.svg"></a>
 <img alt="Version" src="https://img.shields.io/badge/version-0.1.0-brightblue">
 <a href="https://www.gnu.org/licenses/gpl-3.0"><img alt="License: GPL v3" src="https://img.shields.io/badge/License-GPLv3-blue.svg"></a>
 <a href="https://github.com/certunlp/ngen"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
