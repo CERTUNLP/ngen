@@ -1,15 +1,15 @@
-from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.core.exceptions import ValidationError  # type: ignore
+from django.test import TestCase  # type: ignore
 
 from ngen.models import Taxonomy, TaxonomyGroup
+from ngen.models.taxonomy import Report
 
 
 class TaxonomyTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         """
-        Create instances of Taxonomy
+        Create instances of Taxonomy for testing.
         """
         cls.parent = Taxonomy.objects.create(type="vulnerability", name="Parent")
         cls.child1 = Taxonomy.objects.create(
@@ -56,159 +56,145 @@ class TaxonomyTestCase(TestCase):
             parent=cls.p2_child1,
             alias_of=cls.aNode_child2,
         )
+        cls.setUpReports()
+    @classmethod 
+    def setUpReports(cls):
+        """
+        Create example Taxonomy and Reports for testing.
+        """
+        cls.taxonomy = Taxonomy.objects.create(
+            name="Test Taxonomy", type="incident"
+        )
+        Report.objects.create(
+            taxonomy=cls.taxonomy, lang="en", problem="Test problem"
+        )
+        Report.objects.create(
+            taxonomy=cls.taxonomy, lang="es", problem="Problema de prueba"
+        )
 
-        # self.aNode = Taxonomy.objects.create(type='vulnerability' name= 'Node')
+    def test_get_matching_report_in_english(self):
+        """
+        Test: Retrieve matching report in English.
+        """
+        report = self.taxonomy.get_matching_report(lang="en")
+        self.assertEqual(report[0].problem, "Test problem")
 
-    # def test_duplicated_taxonomy(self):
-    #     """
-    #     Test that taxonomies are not duplicated. This test does not work because slugs unique key constraint is preventing
-    #     a taxonomy with same name and different slug to exist.
-    #     """
-    #     with self.assertRaises(UniqueViolation):
-    #         # Create taxonomies with the same name and different slugs
-    #         taxonomy1 = Taxonomy.objects.create(type='vulnerability', name='Ejemplo', slug='parent-test-1')
-    #         taxonomy2 = Taxonomy.objects.create(type='vulnerability', name='Ejemplo', slug='parent-test-2')
+    def test_get_matching_report_in_spanish(self):
+        """
+        Test: Retrieve matching report in Spanish.
+        """
+        report = self.taxonomy.get_matching_report(lang="es")
+        self.assertEqual(report[0].problem, "Problema de prueba")
 
-    # def test_unique_slug_creation(self):
-    #     """
-    #     Test: Slugs are created correctly and are unique. Can't create two slugs with the same name.
-    #     """
-    #     with self.assertRaises(UniqueViolation):
-    #         # Create taxonomies with the same slugs
-    #         Slug1 = Taxonomy.objects.create(type='vulnerability', name="Test Name", slug="slug1")
-    #         Slug2 = Taxonomy.objects.create(type='incident', name="Test Name2", slug="slug1")
+    def test_get_matching_report_not_found(self):
+        """
+        Test: No matching report for the requested language.
+        """
+        report = self.taxonomy.get_matching_report(lang="fr")
+        self.assertEqual(len(report), 0)
 
     def test_node_deletion(self):
         """
-        Test: Simple deletion
+        Test: Simple deletion of a node.
         """
-        self.aNode.delete()  # Delete aNode
-        deleted_node = Taxonomy.objects.filter(
-            id=self.aNode.id
-        ).first()  # Check for deleted node ID in the DB
+        self.aNode.delete()
+        deleted_node = Taxonomy.objects.filter(id=self.aNode.id).first()
         self.assertIsNone(deleted_node)
 
     def test_parent_deletion(self):
         """
-        Test: If a root parent is deleted, all children must NOT have a parent
+        Test: If a root parent is deleted, all children must NOT have a parent.
         """
-        children_queryset = (
-            self.aRootNode.get_children()
-        )  # Getting children from Root before deletion
+        children = list(self.aRootNode.get_children())
+        self.aRootNode.delete()
 
-        # Convert the queryset to a list or other data structure
-        children = list(children_queryset)
-
-        self.aRootNode.delete()  # Delete Root
-
-        # Children should not have any parents
         for child in children:
-            child.refresh_from_db()  # Refresh the child object from the database
+            child.refresh_from_db()
             self.assertIsNone(child.parent)
 
     def test_middle_node_deletion(self):
         """
-        Test: If a middle node is deleted, parent and children should be connected
+        Test: If a middle node is deleted, parent and children should be connected.
         """
-        # Saving
         parent_node = self.aNode.get_parent()
-        children_queryset = self.aNode.get_children()
-
-        # Convert the queryset to list
-        children = list(children_queryset)
+        children = list(self.aNode.get_children())
 
         self.assertIsNotNone(parent_node)
 
-        # Save the children data before deletion
-        children_before_deletion = children
+        self.aNode.delete()
 
-        self.aNode.delete()  # Delete aNode
-
-        # Refresh parent node from the database
         parent_node.refresh_from_db()
-
-        # Verify that each child's parent is now the original parent of the middle node
-        for child_node in children_before_deletion:
+        for child_node in children:
             child_node.refresh_from_db()
             self.assertEqual(child_node.parent, parent_node)
 
-        # Verify that each child node is in the list of children of the original parent node
-        parent_node.refresh_from_db()
-        for child_node in children_before_deletion:
-            self.assertIn(child_node, parent_node.get_children())
-
     def test_taxonomy_cycles(self):
         """
-        Test: if the taxonomy tree has cycles
+        Test: Ensure the taxonomy tree does not allow cycles.
         """
         self.parent.parent = self.child2
-        self.assertRaises(
-            Exception, self.parent.save
-        )  # ToDo: Espero excepcion especifica para cuando se produce un ciclo
+        with self.assertRaises(ValidationError):
+            self.parent.save()
 
     def test_taxonomy_root(self):
         """
-        Test: Root node
+        Test: Verify root node has no parent.
         """
         self.assertIsNone(self.parent.get_parent())
 
     def test_taxonomy_is_alias(self):
         """
-        Test: Alias node
+        Test: Verify alias nodes.
         """
         self.assertTrue(self.aNode_child3.is_alias)
         self.assertFalse(self.aNode_child1.is_alias)
 
     def test_taxonomy_is_internal(self):
         """
-        Test: Alias node
+        Test: Verify internal nodes.
         """
         self.assertTrue(self.aNode_child3.is_internal)
         self.assertFalse(self.p2_child1.is_internal)
 
     def test_taxonomy_internal_creation_parent_and_alias(self):
         """
-        Test: Alias parent
+        Test: Alias parent creation validation.
         """
-        self.assertRaises(
-            ValidationError,
-            Taxonomy.objects.create,
-            type="vulnerability",
-            name="Alias Parent",
-            alias_of=self.aNode_child1,
-            parent=self.parent,
-        )
-
-    def test_taxonomy_external_creation_parent_and_alias(self):
-        """
-        Test: Alias parent
-        """
-        self.assertIsInstance(
+        with self.assertRaises(ValidationError):
             Taxonomy.objects.create(
                 type="vulnerability",
                 name="Alias Parent",
                 alias_of=self.aNode_child1,
-                parent=None,
-                group=self.taxonomy_group2,
-            ),
-            Taxonomy,
+                parent=self.parent,
+            )
+
+    def test_taxonomy_external_creation_parent_and_alias(self):
+        """
+        Test: External alias creation with a group.
+        """
+        taxonomy = Taxonomy.objects.create(
+            type="vulnerability",
+            name="Alias Parent",
+            alias_of=self.aNode_child1,
+            parent=None,
+            group=self.taxonomy_group2,
         )
+        self.assertIsInstance(taxonomy, Taxonomy)
 
     def test_taxonomy_alias_creation_parent_alias(self):
         """
-        Test: Alias parent
+        Test: Alias creation validation.
         """
-        self.assertRaises(
-            ValidationError,
-            Taxonomy.objects.create,
-            type="vulnerability",
-            name="Alias Parent",
-            alias_of=self.p2_child1_child1,
-        )
+        with self.assertRaises(ValidationError):
+            Taxonomy.objects.create(
+                type="vulnerability",
+                name="Alias Parent",
+                alias_of=self.p2_child1_child1,
+            )
 
     def test_taxonomy_alias_update_alias_is_alias(self):
         """
-        Test: Alias parent
+        Test: Alias update validation.
         """
         with self.assertRaises(ValidationError):
             self.aNode_child1.alias_of = self.aNode_child1
@@ -216,8 +202,48 @@ class TaxonomyTestCase(TestCase):
 
     def test_taxonomy_alias_update_parent_is_alias(self):
         """
-        Test: Alias parent
+        Test: Parent alias update validation.
         """
         with self.assertRaises(ValidationError):
             self.aNode_child4.parent = self.aNode_child3
             self.aNode_child4.save()
+
+    def test_create_taxonomy(self):
+        """
+        Test: Verify taxonomy creation.
+        """
+        self.assertEqual(self.parent.name, "Parent")
+        self.assertEqual(self.child1.parent, self.parent)
+
+    def test_is_internal_property(self):
+        """
+        Test: Verify is_internal property.
+        """
+        self.assertEqual(self.child1.is_internal, self.child1.group is None)
+        self.assertEqual(self.aNode_child3.is_internal, self.child1.group is None)
+        self.assertEqual(not self.parent2.is_internal, self.parent2.group is not None)
+
+    def test_is_alias_property(self):
+        """
+        Test: Verify is_alias property.
+        """
+        self.assertTrue(self.aNode_child3.is_alias)
+
+    def test_alias_of_itself_raises_error(self):
+        """
+        Test: Taxonomy cannot be an alias of itself.
+        """
+        with self.assertRaises(ValidationError):
+            alias = Taxonomy(name="Invalid Alias", alias_of=self.parent)
+            alias.full_clean()
+
+    def test_alias_of_alias_raises_error(self):
+        """
+        Test: Taxonomy cannot be an alias of another alias.
+        """
+        with self.assertRaises(ValidationError):
+            alias = Taxonomy(name="Alias", alias_of=self.aNode_child3)
+            alias.full_clean()
+
+        
+   

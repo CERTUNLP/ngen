@@ -4,7 +4,7 @@ Django Unit Tests for Event model
 
 import uuid
 
-from django.test import TestCase
+from django.test import TestCase # type: ignore
 
 from ngen.models import (
     Event,
