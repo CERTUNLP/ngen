@@ -57,7 +57,7 @@ cron-descriptor==1.4.0
     # via django-celery-beat
 decorator==5.1.1
     # via validators
-django==4.2.25
+django==4.2.26
     # via
     #   -r requirements.in
     #   django-appconf
