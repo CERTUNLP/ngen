@@ -1,79 +1,82 @@
 name: Build and Push Docker Images
 
+permissions:
+  contents: read
+
 on:
   push:
     tags:
-      - 'v*'  # Se ejecuta solo cuando haces git push de un tag como v1.2.3
+    - 'v*' # Se ejecuta solo cuando haces git push de un tag como v1.2.3
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract metadata and set variables
-        id: vars
-        run: |
-          RAW_TAG=${GITHUB_REF#refs/tags/}
-          CLEAN_TAG=${RAW_TAG#v}
-          COMMIT=$(git rev-parse --short HEAD)
-          BRANCH=$(git branch -r --contains "$GITHUB_SHA" | grep -v '\->' | head -n 1 | sed 's|origin/||')
-          echo "TAG=$CLEAN_TAG" >> $GITHUB_OUTPUT
-          echo "RAW_TAG=$RAW_TAG" >> $GITHUB_OUTPUT
-          echo "COMMIT=$COMMIT" >> $GITHUB_OUTPUT
-          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
+    - name: Extract metadata and set variables
+      id: vars
+      run: |
+        RAW_TAG=${GITHUB_REF#refs/tags/}
+        CLEAN_TAG=${RAW_TAG#v}
+        COMMIT=$(git rev-parse --short HEAD)
+        BRANCH=$(git branch -r --contains "$GITHUB_SHA" | grep -v '\->' | head -n 1 | sed 's|origin/||')
+        echo "TAG=$CLEAN_TAG" >> $GITHUB_OUTPUT
+        echo "RAW_TAG=$RAW_TAG" >> $GITHUB_OUTPUT
+        echo "COMMIT=$COMMIT" >> $GITHUB_OUTPUT
+        echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
 
-      - name: Build and push backend image for ngen-django
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: docker/Dockerfile.prod
-          push: true
-          tags: certunlp/ngen-django:latest,certunlp/ngen-django:${{ steps.vars.outputs.TAG }}
-          build-args: |
-            APP_VERSION_TAG=${{ steps.vars.outputs.RAW_TAG }}
-            APP_COMMIT=${{ steps.vars.outputs.COMMIT }}
-            APP_BRANCH=${{ steps.vars.outputs.BRANCH }}
-          labels: |
-            org.opencontainers.image.version=${{ steps.vars.outputs.RAW_TAG }}
-            org.opencontainers.image.revision=${{ steps.vars.outputs.COMMIT }}
+    - name: Build and push backend image for ngen-django
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: docker/Dockerfile.prod
+        push: true
+        tags: certunlp/ngen-django:latest,certunlp/ngen-django:${{ steps.vars.outputs.TAG }}
+        build-args: |
+          APP_VERSION_TAG=${{ steps.vars.outputs.RAW_TAG }}
+          APP_COMMIT=${{ steps.vars.outputs.COMMIT }}
+          APP_BRANCH=${{ steps.vars.outputs.BRANCH }}
+        labels: |
+          org.opencontainers.image.version=${{ steps.vars.outputs.RAW_TAG }}
+          org.opencontainers.image.revision=${{ steps.vars.outputs.COMMIT }}
 
-      - name: Build and push backend image for ngen
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: docker/Dockerfile.prod
-          push: true
-          tags: certunlp/ngen:latest,certunlp/ngen:${{ steps.vars.outputs.TAG }}
-          build-args: |
-            APP_VERSION_TAG=${{ steps.vars.outputs.RAW_TAG }}
-            APP_COMMIT=${{ steps.vars.outputs.COMMIT }}
-            APP_BRANCH=${{ steps.vars.outputs.BRANCH }}
-          labels: |
-            org.opencontainers.image.version=${{ steps.vars.outputs.RAW_TAG }}
-            org.opencontainers.image.revision=${{ steps.vars.outputs.COMMIT }}
+    - name: Build and push backend image for ngen
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: docker/Dockerfile.prod
+        push: true
+        tags: certunlp/ngen:latest,certunlp/ngen:${{ steps.vars.outputs.TAG }}
+        build-args: |
+          APP_VERSION_TAG=${{ steps.vars.outputs.RAW_TAG }}
+          APP_COMMIT=${{ steps.vars.outputs.COMMIT }}
+          APP_BRANCH=${{ steps.vars.outputs.BRANCH }}
+        labels: |
+          org.opencontainers.image.version=${{ steps.vars.outputs.RAW_TAG }}
+          org.opencontainers.image.revision=${{ steps.vars.outputs.COMMIT }}
 
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          file: frontend/Dockerfile.prod
-          push: true
-          tags: certunlp/ngen-frontend:latest,certunlp/ngen-frontend:${{ steps.vars.outputs.TAG }}
-          build-args: |
-            APP_VERSION_TAG=${{ steps.vars.outputs.RAW_TAG }}
-            APP_COMMIT=${{ steps.vars.outputs.COMMIT }}
-            APP_BRANCH=${{ steps.vars.outputs.BRANCH }}
-          labels: |
-            org.opencontainers.image.version=${{ steps.vars.outputs.RAW_TAG }}
-            org.opencontainers.image.revision=${{ steps.vars.outputs.COMMIT }}
+    - name: Build and push frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        file: frontend/Dockerfile.prod
+        push: true
+        tags: certunlp/ngen-frontend:latest,certunlp/ngen-frontend:${{ steps.vars.outputs.TAG }}
+        build-args: |
+          APP_VERSION_TAG=${{ steps.vars.outputs.RAW_TAG }}
+          APP_COMMIT=${{ steps.vars.outputs.COMMIT }}
+          APP_BRANCH=${{ steps.vars.outputs.BRANCH }}
+        labels: |
+          org.opencontainers.image.version=${{ steps.vars.outputs.RAW_TAG }}
+          org.opencontainers.image.revision=${{ steps.vars.outputs.COMMIT }}
