@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-11 13:58+0000\n"
+"POT-Creation-Date: 2025-11-18 12:00+0000\n"
 "PO-Revision-Date: 2024-09-10 10:30+0000\n"
 "Last-Translator: Mateo Durante <mdurante@cert.unlp.edu.ar>\n"
 "Language-Team: en/es <soporte@cert.unlp.edu.ar>\n"
@@ -12,50 +12,75 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "Full Summary"
-msgstr "Resumen completo" 
-
+#: ngen/models/announcement.py:125
 msgid "Summary"
 msgstr "Resumen"
 
+#: ngen/models/announcement.py:158
+msgid "Full Summary"
+msgstr "Resumen completo"
+
+#: ngen/models/announcement.py:188
+msgid "Contact verification"
+msgstr "Verificación de contacto"
+
+#: ngen/models/announcement.py:217
+msgid "Contact check submitted"
+msgstr "Verificación de contacto enviada"
+
+#: ngen/models/artifact.py:15 project/settings.py:269 project/settings.py:273
 msgid "Domain"
 msgstr "Dominio"
 
+#: ngen/models/artifact.py:16
 msgid "FQDN"
 msgstr "FQDN"
 
+#: ngen/models/artifact.py:18
 msgid "Mail"
 msgstr "Correo"
 
+#: ngen/models/artifact.py:20 project/settings.py:272
 msgid "File"
 msgstr "Archivo"
 
+#: ngen/models/artifact.py:21 ngen/models/taxonomy.py:23
 msgid "Other"
 msgstr "Otro"
 
+#: ngen/models/artifact.py:22
 msgid "User agent"
 msgstr "Agente de usuario"
 
+#: ngen/models/artifact.py:23
 msgid "Autonomous system"
 msgstr "Sistema autónomo"
 
+#: ngen/models/artifact.py:62
 msgid ""
 "Designates whether this relation was created automatically and may will be "
 "removed automatically when the related object is modified."
-msgstr "Indica si esta relación fue creada automáticamente y será eliminada si se modifica el objeto relacionado."
+msgstr ""
+"Indica si esta relación fue creada automáticamente y será eliminada si se "
+"modifica el objeto relacionado."
 
+#: ngen/models/case.py:53 project/settings.py:256
 msgid "Manual"
 msgstr "Manual"
 
+#: ngen/models/case.py:54 project/settings.py:257
 msgid "Auto"
 msgstr "Automático"
 
+#: ngen/models/case.py:55 project/settings.py:258
 msgid "Auto open"
 msgstr "Apertura automática"
 
+#: ngen/models/case.py:56 project/settings.py:259
 msgid "Auto close"
 msgstr "Cierre automático"
 
+#: ngen/models/case.py:274
 #, python-format
 msgid ""
 "It's not possible to change the state %s to %s. The new possible states are "
@@ -63,39 +88,31 @@ msgid ""
 msgstr ""
 "No es posible cambiar el estado %s a %s. Los nuevos estados posibles son %s."
 
-msgid "New case"
-msgstr "Nuevo caso"
-
-msgid "Case closed"
-msgstr "Caso cerrado"
-
-msgid "Case opened"
-msgstr "Caso abierto"
-
-msgid "Case status updated"
-msgstr "Estado del caso actualizado"
-
-msgid "New event on case"
-msgstr "Nuevo evento en caso"
-
+#: ngen/models/case.py:698
 msgid "Date cannot be in the future"
 msgstr "La fecha no puede estar en el futuro"
 
+#: ngen/models/common/mixins.py:127
 msgid "Parent can't be a descendant of the instance."
 msgstr "El padre no puede ser un descendiente de la instancia."
 
+#: ngen/models/common/mixins.py:178
 msgid "The parent must not be the same instance."
 msgstr "El padre no debe ser la misma instancia."
 
+#: ngen/models/common/mixins.py:182
 msgid "The parent is not mergeable or is blocked."
 msgstr "El padre no es fusionable o está bloqueado."
 
+#: ngen/models/common/mixins.py:186
 msgid "The child is not mergeable or is blocked."
 msgstr "El hijo no es fusionable o está bloqueado."
 
+#: ngen/models/common/mixins.py:216
 msgid "Parent of merged instances can't be modified"
 msgstr "Las instancias fusionadas no pueden ser modificadas."
 
+#: ngen/models/common/mixins.py:242
 #, python-brace-format
 msgid ""
 "Merged instances can't be modified: {self}, {self.parent}, {self.children}"
@@ -103,92 +120,122 @@ msgstr ""
 "Las instancias fusionadas no pueden ser modificadas: {self}, {self.parent}, "
 "{self.children}."
 
+#: ngen/models/common/mixins.py:256
 #, python-brace-format
 msgid "{attr} of blocked instances can't be modified"
 msgstr "{attr} de las instancias bloqueadas no puede ser modificado"
 
+#: ngen/models/common/mixins.py:465
 msgid "Address must be either a CIDR or a domain"
 msgstr "La dirección debe ser un CIDR o un dominio"
 
+#: ngen/models/constituency.py:80
 msgid "Internal"
 msgstr "Interno"
 
+#: ngen/models/constituency.py:80
 msgid "External"
 msgstr "Externo"
 
+#: ngen/models/constituency.py:218 ngen/templates/reports/base_footer.html:29
 msgid "Email"
 msgstr "Correo electrónico"
 
+#: ngen/models/constituency.py:219
 msgid "Telegram"
 msgstr "Telegram"
 
+#: ngen/models/constituency.py:220
 msgid "Phone"
 msgstr "Teléfono"
 
+#: ngen/models/constituency.py:221
 msgid "URI"
 msgstr "URI"
 
+#: ngen/models/constituency.py:225
 msgid "Technical"
 msgstr "Técnico"
 
+#: ngen/models/constituency.py:226
 msgid "Administrative"
 msgstr "Administrativo"
 
+#: ngen/models/constituency.py:227
 msgid "Abuse"
 msgstr "Abuso"
 
+#: ngen/models/constituency.py:228
 msgid "Notifications"
 msgstr "Notificaciones"
 
+#: ngen/models/constituency.py:229
 msgid "NOC"
 msgstr "NOC"
 
+#: ngen/models/tag.py:9
 msgid "Color must be a valid hexadecimal code (e.g. #007bff)"
 msgstr "El color debe ser un código hexadecimal válido (por ejemplo, #007bff)"
 
+#: ngen/models/tag.py:19
 msgid "CustomTag"
 msgstr "EtiquetaPersonalizada"
 
+#: ngen/models/tag.py:20
 msgid "CustomTags"
 msgstr "EtiquetasPersonalizadas"
 
+#: ngen/models/taxonomy.py:21
 msgid "Vulnerability"
 msgstr "Vulnerabilidad"
 
+#: ngen/models/taxonomy.py:22
 msgid "Incident"
 msgstr "Incidente"
 
+#: ngen/models/taxonomy.py:91
 msgid "Group must be the same as parent group and cannot be changed"
-msgstr "El grupo debe ser el mismo que el del grupo padre y no puede modificarse"
+msgstr ""
+"El grupo debe ser el mismo que el del grupo padre y no puede modificarse"
 
+#: ngen/models/taxonomy.py:93
 msgid "Parent must be on the same group"
 msgstr "El padre debe estar en el mismo grupo"
 
+#: ngen/models/taxonomy.py:99
 msgid "Cannot change group"
 msgstr "No se puede cambiar el grupo"
 
+#: ngen/models/taxonomy.py:104
 msgid "Cannot create an alias of an alias"
 msgstr "No se puede crear un alias de un alias"
 
+#: ngen/models/taxonomy.py:109
 msgid "Cannot create an alias of itself"
 msgstr "No se puede crear un alias de sí mismo"
 
+#: ngen/models/taxonomy.py:116
 msgid "Only internal taxonomies can be aliased"
 msgstr "Solo las taxonomías internas pueden tener alias"
 
+#: ngen/models/taxonomy.py:125
 msgid "Internal taxonomy with parent cannot have alias"
 msgstr "Una taxonomía interna con padre no puede tener alias"
 
+#: ngen/models/taxonomy.py:128
 msgid "Internal taxonomy alias cannot have parent"
 msgstr "Un alias de taxonomía interna no puede tener padre"
 
+#: ngen/serializers/case.py:160
 #, python-format
 msgid "%s of merged events can't be modified"
 msgstr "%s de los eventos fusionados no pueden ser modificados"
 
+#: ngen/tasks.py:88
 msgid "Renotification: New Case"
 msgstr "Renotificación: Nuevo Caso"
 
+#: ngen/templates/reports/base_footer.html:9
 msgid ""
 "Please remember to reply with the same subject and ID for better tracking of "
 "the case."
@@ -196,40 +243,67 @@ msgstr ""
 "Recuerde responder con el mismo asunto e ID para un mejor seguimiento del "
 "caso."
 
+#: ngen/templates/reports/base_footer.html:11
 msgid "Please do not hesitate to contact us if you need further assistance."
 msgstr "No dude en contactarnos si necesita más ayuda."
 
+#: ngen/templates/reports/base_footer.html:13
 msgid "Sincerely"
 msgstr "Atentamente"
 
+#: ngen/templates/reports/base_footer.html:25
 msgid "Contact information"
 msgstr "Información de contacto"
 
+#: ngen/templates/reports/base_footer.html:46
 msgid "This report was generated with"
 msgstr "Este informe fue generado con"
 
+#: ngen/templates/reports/base_header_right.html:7
+#: ngen/templates/reports/summary_case_detail_open.html:11
 msgid "Priority"
 msgstr "Prioridad"
 
+#: ngen/templates/reports/basic_event_report.html:4
+#: ngen/templates/reports/summary_case_detail_closed.html:13
+#: ngen/templates/reports/summary_case_detail_open.html:28
 msgid "Event"
 msgstr "Evento"
 
+#: ngen/templates/reports/basic_event_report.html:6
+#: ngen/templates/reports/summary_case_detail_closed.html:14
+#: ngen/templates/reports/summary_case_detail_open.html:30
 msgid "Taxonomy"
 msgstr "Taxonomía"
 
+#: ngen/templates/reports/basic_event_report.html:13
+#: ngen/templates/reports/summary_case_detail_closed.html:15
 msgid "Affected resources"
 msgstr "Recursos afectados"
 
+#: ngen/templates/reports/basic_event_report.html:16
 msgid "Event Date"
 msgstr "Fecha del evento"
 
+#: ngen/templates/reports/basic_event_report.html:20
 msgid "Notes"
 msgstr "Notas"
 
+#: ngen/templates/reports/case_assign.html:6
+msgid "New event on case"
+msgstr "Nuevo evento en caso"
+
+#: ngen/templates/reports/case_assign.html:12
 #, python-format
 msgid "A new event has been added to the case %(id)s"
 msgstr "Se ha agregado un nuevo evento al caso %(id)s"
 
+#: ngen/templates/reports/case_change_state.html:7
+#: ngen/tests/models/test_announcement.py:525
+msgid "Case status updated"
+msgstr "Estado del caso actualizado"
+
+#: ngen/templates/reports/case_change_state.html:13
 #, python-format
 msgid ""
 "We want to inform you that the state of the case number <strong>%(id)s</"
@@ -238,53 +312,250 @@ msgstr ""
 "Queremos informarle que el estado del caso número <strong>%(id)s</strong> ha "
 "cambiado a: \"<strong>%(state)s</strong>\""
 
+#: ngen/templates/reports/case_closed_report.html:7
+msgid "Case closed"
+msgstr "Caso cerrado"
+
+#: ngen/templates/reports/case_closed_report.html:9
+#: ngen/templates/reports/case_report.html:9
 msgid "Case state"
 msgstr "Estado del caso"
 
+#: ngen/templates/reports/case_closed_report.html:12
 msgid "Thank you for collaborating with the mitigation of the incident"
 msgstr "Gracias por colaborar con la mitigación del incidente"
 
+#: ngen/templates/reports/case_report.html:7
+#: ngen/templates/reports/summary_case_detail_closed.html:12
+#: ngen/templates/reports/summary_case_detail_open.html:27
 msgid "Case"
 msgstr "Caso"
 
-msgid "Problem"
-msgstr "Problema"
-
-msgid "Related issues"
-msgstr "Problemas relacionados"
-
-msgid "How to verify the issue"
-msgstr "Cómo verificar el problema"
-
-msgid "Recommendations"
-msgstr "Recomendaciones"
-
-msgid "For more information"
-msgstr "Para obtener más información"
-
-msgid "Solved cases"
-msgstr "Casos resueltos"
-
-msgid "Date"
-msgstr "Fecha"
-
-msgid "State"
-msgstr "Estado"
-
-msgid "Unsolved cases"
-msgstr "Casos no resueltos"
-
+#: ngen/templates/reports/contact_check.html:8
+#: ngen/templates/reports/summary_contact.html:8
 #, python-format
 msgid "Hello %(contact_name)s"
 msgstr "Hola %(contact_name)s"
 
-#, python-format
-msgid "Below are all your unsolved cases, along with a summary of your closed cases from the last %(days)s days."
-msgstr "A continuación se muestran todos sus casos sin resolver, junto con un resumen de sus casos cerrados de los últimos %(days)s días."
+#: ngen/templates/reports/contact_check.html:13
+msgid ""
+"We are reviewing our records to ensure we have your most up-to-date "
+"information."
+msgstr ""
+"Estamos revisando nuestros registros para asegurarnos de tener su información "
+"más actualizada."
 
+#: ngen/templates/reports/contact_check.html:22
+#: ngen/templates/reports/contact_check_submitted.html:35
+msgid "Associated networks:"
+msgstr "Redes asociadas:"
+
+#: ngen/templates/reports/contact_check.html:28
+#: ngen/templates/reports/contact_check_submitted.html:41
+msgid "Entity"
+msgstr "Entidad"
+
+#: ngen/templates/reports/contact_check.html:32
+#: ngen/templates/reports/contact_check_submitted.html:45
+msgid "No associated networks."
+msgstr "No hay redes asociadas."
+
+#: ngen/templates/reports/contact_check.html:36
+#: ngen/templates/reports/contact_check_submitted.html:27
+msgid "Role:"
+msgstr "Rol:"
+
+#: ngen/templates/reports/contact_check.html:40
+msgid "No role specified."
+msgstr "No se ha especificado ningún rol."
+
+#: ngen/templates/reports/contact_check.html:44
+#: ngen/templates/reports/contact_check_submitted.html:28
+msgid "Priority:"
+msgstr "Prioridad:"
+
+#: ngen/templates/reports/contact_check.html:48
+msgid "No priority specified."
+msgstr "No se ha especificado ninguna prioridad."
+
+#: ngen/templates/reports/contact_check.html:52
+msgid "PGP public key:"
+msgstr "Clave pública PGP:"
+
+#: ngen/templates/reports/contact_check.html:54
+#: ngen/templates/reports/contact_check.html:62
+msgid "Yes"
+msgstr "Sí"
+
+#: ngen/templates/reports/contact_check.html:56
+#: ngen/templates/reports/contact_check.html:64
+#: ngen/templates/reports/contact_check_submitted.html:30
+#: ngen/templates/reports/contact_check_submitted.html:32
+msgid "No"
+msgstr "No"
+
+#: ngen/templates/reports/contact_check.html:60
+msgid "Has an Ngen account:"
+msgstr "Tiene una cuenta de Ngen:"
+
+#: ngen/templates/reports/contact_check.html:71
+msgid "Are your current details correct?"
+msgstr "¿Son correctos sus datos actuales?"
+
+#: ngen/templates/reports/contact_check.html:75
+msgid "Confirm by submitting this form:"
+msgstr "Confirme enviando este formulario:"
+
+#: ngen/templates/reports/contact_check.html:82
+msgid "Need to update your information?"
+msgstr "¿Necesita actualizar su información?"
+
+#: ngen/templates/reports/contact_check.html:86
+msgid "Submit changes via this form:"
+msgstr "Envíe los cambios a través de este formulario:"
+
+#: ngen/templates/reports/contact_check.html:94
+msgid ""
+"<strong>Note:</strong> If we don't receive your confirmation, we'll remove "
+"your details from our system."
+msgstr ""
+"<strong>Nota:</strong> Si no recibimos su confirmación, eliminaremos "
+"su información de nuestro sistema."
+
+#: ngen/templates/reports/contact_check_submitted.html:8
+#, python-format
+msgid "Contact verification result for %(contact_name)s"
+msgstr "Resultado de la verificación de contacto para %(contact_name)s"
+
+#: ngen/templates/reports/contact_check_submitted.html:13
+msgid ""
+"The following is a summary of the contact's submitted verification and "
+"associated information."
+msgstr ""
+"A continuación se muestra un resumen de la verificación enviada "
+"del contacto y la información asociada."
+
+#: ngen/templates/reports/contact_check_submitted.html:23
+msgid "Contact details:"
+msgstr "Detalles del contacto:"
+
+#: ngen/templates/reports/contact_check_submitted.html:25
+msgid "Name:"
+msgstr "Nombre:"
+
+#: ngen/templates/reports/contact_check_submitted.html:26
+msgid "Email:"
+msgstr "Correo electrónico:"
+
+#: ngen/templates/reports/contact_check_submitted.html:29
+msgid "Has Ngen account:"
+msgstr "Tiene una cuenta de Ngen:"
+
+#: ngen/templates/reports/contact_check_submitted.html:31
+msgid "PGP key present:"
+msgstr "Clave PGP presente:"
+
+#: ngen/templates/reports/contact_check_submitted.html:49
+msgid "Check status:"
+msgstr "Estado del caso:"
+
+#: ngen/templates/reports/contact_check_submitted.html:51
+msgid "Confirmed as valid"
+msgstr "Confirmado como válido"
+
+#: ngen/templates/reports/contact_check_submitted.html:53
+msgid "Marked as invalid"
+msgstr "Marcado como inválido"
+
+#: ngen/templates/reports/contact_check_submitted.html:57
+msgid "Submitted notes:"
+msgstr "Notas enviadas:"
+
+#: ngen/templates/reports/contact_check_submitted.html:61
+msgid "No notes provided."
+msgstr "No se han proporcionado notas."
+
+#: ngen/templates/reports/contact_check_submitted.html:65
+msgid "Submitted at:"
+msgstr "Enviado en:"
+
+#: ngen/templates/reports/contact_check_submitted.html:67
+msgid "Submission UUID:"
+msgstr "UUID de envío:"
+
+#: ngen/templates/reports/event_detail.html:19
+msgid "Problem"
+msgstr "Problema"
+
+#: ngen/templates/reports/event_detail.html:25
+msgid "Related issues"
+msgstr "Problemas relacionados"
+
+#: ngen/templates/reports/event_detail.html:31
+msgid "How to verify the issue"
+msgstr "Cómo verificar el problema"
+
+#: ngen/templates/reports/event_detail.html:37
+msgid "Recommendations"
+msgstr "Recomendaciones"
+
+#: ngen/templates/reports/event_detail.html:43
+msgid "For more information"
+msgstr "Para obtener más información"
+
+#: ngen/templates/reports/summary_case_detail_closed.html:5
+msgid "Solved cases"
+msgstr "Casos resueltos"
+
+#: ngen/templates/reports/summary_case_detail_closed.html:10
+#: ngen/templates/reports/summary_case_detail_open.html:10
+msgid "Date"
+msgstr "Fecha"
+
+#: ngen/templates/reports/summary_case_detail_closed.html:11
+#: ngen/templates/reports/summary_case_detail_open.html:29
+msgid "State"
+msgstr "Estado"
+
+#: ngen/templates/reports/summary_case_detail_open.html:5
+msgid "Unsolved cases"
+msgstr "Casos no resueltos"
+
+#: ngen/templates/reports/summary_case_detail_open.html:12
+msgid "Details"
+msgstr "Detalles"
+
+#: ngen/templates/reports/summary_case_detail_open.html:31
+msgid "Type"
+msgstr "Tipo"
+
+#: ngen/templates/reports/summary_case_detail_open.html:32
+msgid "Resources"
+msgstr "Recursos"
+
+#: ngen/templates/reports/summary_contact.html:13
+#, python-format
+msgid ""
+"Below are all your unsolved cases, along with a summary of your closed cases "
+"from the last %(days)s days."
+msgstr ""
+"A continuación se muestran todos sus casos sin resolver, junto con un "
+"resumen de sus casos cerrados de los últimos %(days)s días."
+
+#: ngen/templates/reports/summary_contact.html:19
+#, python-format
+msgid ""
+"If you would like to see more details, you can export the full report from: "
+"<a href=\"%(link)s\">%(link)s</a>"
+msgstr ""
+"Si desea ver más detalles, puede exportar el informe completo desde: "
+"<a href=\"%(link)s\">%(link)s</a>"
+
+#: ngen/templates/reports/summary_contact.html:31
 msgid "Congratulation! You have <strong>0</strong> unsolved cases"
 msgstr "¡Felicidades! Tiene <strong>0</strong> casos no resueltos"
 
+#: ngen/tests/api/test_constance.py:56 project/settings.py:300
 msgid ""
 "CSIRT abuse email. This is an email to receive abuse reports from external "
 "sources"
@@ -292,35 +563,51 @@ msgstr ""
 "Correo electrónico de abuso del CSIRT. Este es un correo para recibir "
 "reportes de abuso de fuentes externas"
 
-#, fuzzy, python-brace-format
-#| msgid "Task create cases for matching events launched"
-msgid "Task retest event for {event.pk} launched"
-msgstr "Tarea de creación de casos para eventos coincidentes lanzada"
+#: ngen/views/case.py:150
+msgid "A retest is already in progress for this event."
+msgstr "Ya hay una nueva prueba en curso para este evento."
 
+#: ngen/views/case.py:158
+msgid "Task retest event for {event.pk} launched"
+msgstr "Tarea de nueva prueba del evento para {event.pk} lanzada"
+
+#: ngen/views/case.py:306
 msgid "Task create cases for matching events launched"
 msgstr "Tarea de creación de casos para eventos coincidentes lanzada"
 
+#: project/settings.py:173
 msgid "English"
 msgstr "Inglés"
 
+#: project/settings.py:174
 msgid "Spanish"
 msgstr "Español"
 
+#: project/settings.py:243
 msgid "Critical"
 msgstr "Crítico"
 
+#: project/settings.py:244
 msgid "High"
 msgstr "Alto"
 
+#: project/settings.py:245
 msgid "Medium"
 msgstr "Medio"
 
+#: project/settings.py:246
 msgid "Low"
 msgstr "Bajo"
 
+#: project/settings.py:247
 msgid "Very low"
 msgstr "Muy bajo"
 
+#: project/settings.py:281
+msgid "Public URL for the frontend"
+msgstr "URL pública para el frontend"
+
+#: project/settings.py:286
 msgid ""
 "CSIRT team email. This is an email to receive notifications and reports from "
 "ngen to the team"
@@ -328,6 +615,7 @@ msgstr ""
 "Correo electrónico del equipo CSIRT. Este es un correo para recibir "
 "notificaciones e informes de ngen al equipo"
 
+#: project/settings.py:293
 msgid ""
 "CSIRT team email default priority (Critical is the lowest and will only "
 "recieve critical emails, Very low is the highest and will recieve all "
@@ -337,9 +625,11 @@ msgstr ""
 "prioridad más baja y solo recibirá correos críticos, Muy baja es la "
 "prioridad más alta y recibirá todos los correos)"
 
+#: project/settings.py:304
 msgid "CSIRT site url"
 msgstr "URL del sitio del CSIRT"
 
+#: project/settings.py:308
 #, python-brace-format
 msgid ""
 "Team logo will be saved at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo.png and "
@@ -350,13 +640,15 @@ msgstr ""
 "png y se generará una imagen de máximo 200x50 píxeles para el logo de correo "
 "electrónico en /api/media/{CONSTANCE_FILE_ROOT}/teamlogo_200_50.png"
 
+#: project/settings.py:315
 msgid ""
 "Team logo url for emails. Overrides the saved logo. Usefull to access the "
 "logo from a public url"
 msgstr ""
-"URL del logo del equipo para correos. Reemplaza el logo guardado. "
-"Util para acceder al logo desde una URL pública"
+"URL del logo del equipo para correos. Reemplaza el logo guardado. Útil para "
+"acceder al logo desde una URL pública"
 
+#: project/settings.py:324
 msgid ""
 "SMTP sender email address. This is the email that will be used to send "
 "emails from ngen"
@@ -364,30 +656,36 @@ msgstr ""
 "Dirección de correo del remitente SMTP. Este es el correo que se usará para "
 "enviar correos desde ngen"
 
+#: project/settings.py:342
 msgid "NGEN default language"
 msgstr "Idioma predeterminado de NGEN"
 
+#: project/settings.py:345
 msgid "NGEN language for external reports"
 msgstr "Idioma de NGEN para informes externos"
 
+#: project/settings.py:350
 msgid ""
 "Case comma separated fields that could be modified if the instance is merged"
 msgstr ""
 "Campos de casos separados por comas que podrían modificarse si la instancia "
 "se fusiona"
 
+#: project/settings.py:357
 msgid ""
 "Event comma separated fields that could be modified if the instance is merged"
 msgstr ""
 "Campos de eventos separados por comas que podrían modificarse si la "
 "instancia está fusionada"
 
+#: project/settings.py:364
 msgid ""
 "Case comma separated fields that could be modified if the instance is blocked"
 msgstr ""
 "Campos de casos separados por comas que podrían modificarse si la instancia "
 "está bloqueada"
 
+#: project/settings.py:371
 msgid ""
 "Event comma separated fields that could be modified if the instance is "
 "blocked"
@@ -395,87 +693,98 @@ msgstr ""
 "Campos de eventos separados por comas que podrían modificarse si la "
 "instancia está bloqueada"
 
+#: project/settings.py:378
 msgid "If True, ngen will raise an exception if a blocked field is modified"
 msgstr ""
 "Si es Verdadero, ngen generará una excepción si se modifica un campo "
 "bloqueado"
 
+#: project/settings.py:384
 msgid "Priority default attend time in minutes"
 msgstr "Tiempo de atención predeterminado de prioridad en minutos"
 
+#: project/settings.py:389
 msgid "Priority default solve time in minutes"
 msgstr "Tiempo de resolución predeterminado de prioridad en minutos"
 
+#: project/settings.py:394
+msgid "Max time for contact checks in seconds"
+msgstr "Tiempo máximo para verificaciones de contacto en segundos"
+
+#: project/settings.py:399
 msgid "Case default lifecycle"
 msgstr "Ciclo de vida predeterminado del caso"
 
+#: project/settings.py:404
 msgid "Send report on new cases"
 msgstr "Enviar informe sobre nuevos casos"
 
+#: project/settings.py:409
 msgid "Default priority"
 msgstr "Prioridad predeterminada"
 
+#: project/settings.py:414
 msgid "Allowed artifact types"
 msgstr "Tipos de artefactos permitidos"
 
+#: project/settings.py:419
 msgid "Save enrichment even if it fails"
 msgstr "Guardar enriquecimiento incluso si falla"
 
+#: project/settings.py:424
 msgid "Enrich artifacts from artifacts enrichmets"
 msgstr "Enriquecer los artefactos a partir de sus enriquecimientos"
 
+#: project/settings.py:429
 msgid "Cortex host domain:port"
 msgstr "Dominio del host de Cortex:puerto"
 
+#: project/settings.py:434
 msgid "Cortex admin apikey"
 msgstr "Clave API de administrador de Cortex"
 
-#, fuzzy
-#| msgid "Cortex host domain:port"
+#: project/settings.py:439
 msgid "Kintun host domain:port"
-msgstr "Dominio del host de Cortex:puerto"
+msgstr "Dominio del host de Kintun:puerto"
 
-#, fuzzy
-#| msgid "Cortex admin apikey"
+#: project/settings.py:444
 msgid "Kintun admin apikey"
-msgstr "Clave API de administrador de Cortex"
+msgstr "Clave API de administrador de Kintun"
 
+#: project/settings.py:449
 msgid "Default page size"
 msgstr "Tamaño de página predeterminado"
 
+#: project/settings.py:454
 msgid "Max page size (use with caution)"
 msgstr "Tamaño máximo de página (usar con precaución)"
 
+#: project/settings.py:459
 msgid "Auto merge events with same domain/cidr and traxonomy"
 msgstr "Fusión automática de eventos con el mismo dominio/cidr y taxonomía"
 
+#: project/settings.py:464
 msgid "Add `same feed` to the auto merge events condition"
 msgstr "Agregar `mismo feed` a la condición de fusión automática de eventos"
 
+#: project/settings.py:470
 msgid ""
 "Add an optional time window to the auto merge events condition (0 disabled)"
 msgstr ""
 "Agregar una ventana de tiempo opcional a la condición de fusión automática "
 "de eventos (0 deshabilitado)"
 
+#: project/settings.py:476
 msgid "Default TLP for summary"
 msgstr "TLP por defecto para el resumen"
 
-msgid ""
-"Default days for summary. This must be equal to the periodic task schedule "
-"created"
-msgstr ""
-"Días predeterminados para el resumen. Esto debe ser igual al horario de la "
-"tarea periódica creada"
+#: project/settings.py:480
+msgid "Full summary public report link"
+msgstr "Enlace al informe público de resumen completo"
 
+#: project/settings.py:486
 msgid ""
 "Allow auto creation of taxonomies and groups by the slug on event creation"
 msgstr ""
 "Permitir la creación automática de taxonomías y grupos por el slug al crear "
 "un evento"
-
-#~ msgid "CSIRT team site"
-#~ msgstr "Sitio del equipo CSIRT"
-
-#~ msgid "Case reopened"
-#~ msgstr "Caso reabierto"

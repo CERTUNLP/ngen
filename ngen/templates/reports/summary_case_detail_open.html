@@ -8,23 +8,29 @@
                 <thead>
                     <tr>
                         <th>{% translate 'Date' %}</th>
-                        <th>{% translate 'State' %}</th>
-                        <th>{% translate 'Case' %}</th>
-                        <th>{% translate 'Event' %}</th>
-                        <th>{% translate 'Taxonomy' %}</th>
-                        <th>{% translate 'Affected resources' %}</th>
+                        <th>{% translate 'Priority' %}</th>
+                        <th>{% translate 'Details' %}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in cases %}
                         {% for event in item.events %}
                         <tr>
-                            <td class="tcenter" title="{{ item.case.date | date:'Y-m-d H:i:s' }} UTC">{{ item.case.date | date:"Y-m-d" }}</td>
-                            <td class="tcenter" title="{{ item.case.state.name }}">{{ item.case.state.name|stringformat:"s"|slice:":8" }}</td>
-                            <td class="tcenter" title="{{ item.case.uuid }}">{{ item.case.uuid|stringformat:"s"|slice:":8" }}</td>
-                            <td class="tcenter" title="{{ event.uuid }}">{{ event.uuid|stringformat:"s"|slice:":8" }}</td>
-                            <td class="tcenter" title="{{ event.taxonomy }} ({{ event.taxonomy.type }})">{{ event.taxonomy|stringformat:"s"|slice:":12" }}</td>
-                            <td class="tcenter" title="{{ event.address }}">{{ event.address|stringformat:"s"|slice:":18" }}</td>
+                            <td class="tcenter">
+                                {{ item.case.date | date:"Y-m-d" }}<br>
+                                <small>{{ item.case.date | date:"H:i:s" }} UTC</small>
+                            </td>
+                            <td class="tcenter">
+                                {{ item.case.priority.name }}
+                            </td>
+                            <td style="padding: 10px; vertical-align: top; font-size: 12px;">
+                                <strong>{% translate 'Case' %}:</strong> {{ item.case.uuid|stringformat:"s"|slice:":8" }}<br>
+                                <strong>{% translate 'Event' %}:</strong> {{ event.uuid|stringformat:"s"|slice:":8" }}<br>
+                                <strong>{% translate 'State' %}:</strong> {{ item.case.state.name }}<br>
+                                <strong>{% translate 'Taxonomy' %}:</strong> {{ event.taxonomy }}<br>
+                                <strong>{% translate 'Type' %}:</strong> {{ event.taxonomy.type }}<br>
+                                <strong>{% translate 'Resources' %}:</strong> {{ event.address }}<br>
+                            </td>
                         </tr>
                         {% endfor %}
                     {% endfor %}
