@@ -1,6 +1,6 @@
 services:
   ngen-frontend:
-    image: certunlp/ngen-frontend:2.3.12
+    image: certunlp/ngen-frontend:latest
     restart: always
     volumes:
       - ./data_static:/app/staticfiles
@@ -11,7 +11,7 @@ services:
       - "80:80"
 
   ngen-django:
-    image: certunlp/ngen-django:2.3.12
+    image: certunlp/ngen-django:latest
     restart: always
     entrypoint: ./docker/entrypoint.sh
     command: gunicorn project.wsgi:application --bind 0.0.0.0:8000
@@ -27,7 +27,7 @@ services:
       - ngen-redis
 
   ngen-celery-worker:
-    image: certunlp/ngen-django:2.3.12
+    image: certunlp/ngen-django:latest
     restart: always
     command: celery -A project worker -l warning
     env_file:
@@ -39,7 +39,7 @@ services:
       - ngen-redis
 
   ngen-celery-beat:
-    image: certunlp/ngen-django:2.3.12
+    image: certunlp/ngen-django:latest
     restart: always
     command: celery -A project beat -l warning
     env_file:
