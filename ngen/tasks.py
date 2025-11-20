@@ -553,3 +553,54 @@ def send_contact_check_submitted(check_id):
         networks=check.contact.networks.all(),
         check=check,
     )
+
+
+@shared_task(ignore_result=True, store_errors_even_if_ignored=True)
+def event_sla_reminder(minutes=None):
+    """
+    Envia un mail al team con los eventos que estan por superar el SLA.
+    """
+
+    # Get the interval for the periodic task
+    if minutes is not None:
+        try:
+            minutes = int(minutes)
+        except ValueError:
+            raise TaskFailure("Minutes parameter must be an integer.")
+        timedeltavalue = timezone.timedelta(minutes=minutes)
+    else:
+        task = PeriodicTask.objects.filter(task="ngen.tasks.event_sla_reminder").first()
+        if task and task.interval:
+            interval = task.interval
+            period = (
+                interval.period
+            )  # 'seconds', 'minutes', 'hours', 'minutes', 'weeks'
+            every = interval.every
+
+            # Create a timedelta object based on the interval
+            timedelta_kwargs = {period: every}
+            timedeltavalue = timezone.timedelta(**timedelta_kwargs)
+        else:
+            default_value = 14
+            timedeltavalue = timezone.timedelta(minutes=default_value)
+            logger.warning(
+                f"No interval found for the periodic task 'ngen.tasks.event_sla_reminder'. Using default value: {default_value} days."
+            )
+    # search attend SLA
+    events = (
+        ngen.models.Event.objects.filter(
+            case=None
+            # date__gt=timezone.now() - (F("priority__attend_time") - timedeltavalue),
+            # date__lte=timezone.now() - F("priority__attend_time"),
+        )
+        .exclude(tags__slug="no_sla")
+        .order_by("priority__severity")
+    )
+    if events.exists():
+        Communication.send_event_sla_reminder(events)
+        return {
+            "status": "success",
+            "message": f"SLA reminder sent for {events.count()} events",
+        }
+    else:
+        return {"status": "success", "message": "No events approaching SLA deadlines"}

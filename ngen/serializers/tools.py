@@ -141,3 +141,9 @@ class AddressInfoSerializer(serializers.Serializer):
     with_entity = serializers.BooleanField(default=True)
     with_events = serializers.BooleanField(default=True)
     with_cases = serializers.BooleanField(default=True)
+
+
+class TaskRunSerializer(serializers.Serializer):
+    task_name = serializers.CharField(max_length=255)
+    params = serializers.DictField(child=serializers.CharField(), required=False)
+    async_run = serializers.BooleanField(default=True)

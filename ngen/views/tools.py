@@ -368,3 +368,66 @@ class VersionView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class TaskRunView(APIView):
+    """
+    View to trigger a specific task run manually.
+    """
+
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = serializers.TaskRunSerializer
+
+    def post(self, request):
+        task_name = request.data.get("task_name")
+        async_run = request.data.get("async_run", True)
+        params = request.data.get("params", {})
+        available_tasks = [
+            "attend_cases",
+            "solve_cases",
+            "case_renotification",
+            "contact_summary",
+            "create_cases_for_matching_events",
+            "enrich_artifact",
+            "whois_lookup",
+            "internal_address_info",
+            "export_events_for_email_task",
+            "retest_event_kintun",
+            "async_send_email",
+            "retrieve_emails",
+            "send_contact_checks",
+            "send_contact_check_reminder",
+            "send_contact_check_submitted",
+            "event_sla_reminder",
+        ]
+        # get function form the module
+        task = None
+        if task_name in available_tasks:
+            print("Looking for task:", task_name)
+            task = getattr(models.tasks, task_name, None)
+
+        if not task:
+            return Response(
+                {"message": f"Task {task_name} not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # run the task
+        if async_run:
+            t = task.delay(**params)
+            return Response(
+                {
+                    "task_id": t.id,
+                    "message": f"Task {task_name} triggered successfully.",
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            res = task(**params)
+            return Response(
+                {
+                    "message": f"Task {task_name} executed successfully.",
+                    "result": res,
+                },
+                status=status.HTTP_200_OK,
+            )
