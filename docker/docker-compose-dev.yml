@@ -97,8 +97,7 @@ services:
   ngen-adminer:
     image: adminer
     restart: on-failure
-    command:
-      ["php", "-d", "upload_max_filesize = 10G", "-d", "post_max_size = 10G", "-S", "[::]:8080", "-t", "/var/www/html"]
+    command: php -d upload_max_filesize=10G -d post_max_size=10G -S [::]:8080 -t /var/www/html
     ports:
       - "8080:8080"
 
@@ -120,7 +119,7 @@ services:
       - ngen-django
       - ngen-redis
 
-  redis-commander:
+  ngen-redis-commander:
     image: rediscommander/redis-commander:latest
     restart: on-failure
     environment:

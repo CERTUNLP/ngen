@@ -136,9 +136,13 @@ def contact_summary(
 
     for contact in contacts:
         # Get all open cases for the contact
-        open_cases = ngen.models.Case.objects.filter(
-            state__attended=True, events__network__contacts=contact
-        ).prefetch_related("events")
+        open_cases = (
+            ngen.models.Case.objects.filter(
+                state__attended=True, events__network__contacts=contact
+            )
+            .prefetch_related("events")
+            .order_by("priority__severity")
+        )
         list_open_cases = [
             {"case": case, "events": case.events.filter(network__contacts=contact)}
             for case in open_cases

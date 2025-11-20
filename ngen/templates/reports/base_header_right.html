@@ -3,12 +3,12 @@
     <td align="right">
         <div class="right-header">
             {% if priority %}
-                <h6 style="color: {{ priority.color }};">
+                <h6 style="color: {{ priority.color }} !important;">
                     {% translate 'Priority' %}{% if not html %}:{% endif %} {% translate priority.name %}
                 </h6>
             {% endif %}
             {% if tlp %}
-                <h6 style="color: {{ tlp.color }};">
+                <h6 style="color: {{ tlp.color }} !important;">
                     TLP:{{ tlp | upper }}
                 </h6>
             {% endif %}

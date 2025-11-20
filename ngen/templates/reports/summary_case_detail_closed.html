@@ -18,7 +18,7 @@
                 <tbody>
                     {% for item in cases %}
                         {% for event in item.events %}
-                        <tr>
+                        <tr style="font-size: 12px;">
                             <td class="tcenter" title="{{ item.case.date | date:'Y-m-d H:i:s' }} UTC">{{ item.case.date | date:"Y-m-d" }}</td>
                             <td class="tcenter" title="{{ item.case.state.name }}">{{ item.case.state.name|stringformat:"s"|slice:":8" }}</td>
                             <td class="tcenter" title="{{ item.case.uuid }}">{{ item.case.uuid|stringformat:"s"|slice:":8" }}</td>

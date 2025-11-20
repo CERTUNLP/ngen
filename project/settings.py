@@ -333,7 +333,7 @@ CONSTANCE_CONFIG = {
         os.environ.get("EMAIL_PASSWORD"),
         "Email password to fetch (required) and send emails (optional)",
     ),
-    "EMAIL_PORT": (os.environ.get("EMAIL_PORT"), "Email port to send emails", int),
+    "EMAIL_PORT": (int(os.environ.get("EMAIL_PORT")), "Email port to send emails", int),
     "EMAIL_USE_TLS": (
         os.environ.get("EMAIL_USE_TLS", "false").lower() in VALUES_TRUE,
         "Email use TLS to send emails",
@@ -349,28 +349,28 @@ CONSTANCE_CONFIG = {
         gettext_lazy(
             "Case comma separated fields that could be modified if the instance is merged"
         ),
-        list,
+        str,
     ),
     "ALLOWED_FIELDS_MERGED_EVENT": (
         os.environ.get("ALLOWED_FIELDS_MERGED_EVENT"),
         gettext_lazy(
             "Event comma separated fields that could be modified if the instance is merged"
         ),
-        list,
+        str,
     ),
     "BLOCKED_FIELDS_CASE": (
         os.environ.get("BLOCKED_FIELDS_CASE"),
         gettext_lazy(
             "Case comma separated fields that could be modified if the instance is blocked"
         ),
-        list,
+        str,
     ),
     "BLOCKED_FIELDS_EVENT": (
         os.environ.get("BLOCKED_FIELDS_EVENT"),
         gettext_lazy(
             "Event comma separated fields that could be modified if the instance is blocked"
         ),
-        list,
+        str,
     ),
     "BLOCKED_FIELDS_EXCEPTION": (
         os.environ.get("BLOCKED_FIELDS_EXCEPTION", "false").lower() in VALUES_TRUE,
@@ -501,6 +501,11 @@ CONSTANCE_CONFIG = {
     "SUMMARY_TLP": (
         os.environ.get("SUMMARY_TLP", "red"),
         gettext_lazy("Default TLP for summary"),
+    ),
+    "FULL_SUMMARY_REPORT_LINK": (
+        os.environ.get("FULL_SUMMARY_REPORT_LINK", ""),
+        gettext_lazy("Full summary public report link"),
+        str,
     ),
     "TAXONOMY_ALLOW_AUTO_CREATE": (
         os.environ.get("TAXONOMY_ALLOW_AUTO_CREATE", "true").lower() in VALUES_TRUE,
