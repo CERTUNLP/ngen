@@ -57,6 +57,7 @@
     "react-router-dom": "^6.26.0",
     "react-select": "^5.8.0",
     "react-toastify": "^10.0.5",
+    "react-update-popup": "^2.1.1",
     "react18-json-view": "^0.2.9",
     "redux": "^4.2.1",
     "redux-form": "^8.3.10",

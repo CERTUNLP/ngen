@@ -46,6 +46,13 @@ COPY nginx-prod/nginx.conf.template.no-ssl /etc/nginx/nginx.conf.template.no-ssl
 COPY nginx-prod/docker-entrypoint.sh /docker-entrypoint.sh
 
 # Add version information
+ARG APP_VERSION_TAG
+ARG APP_COMMIT
+ARG APP_BRANCH
+ENV VITE_APP_VERSION_TAG=$APP_VERSION_TAG
+ENV VITE_APP_COMMIT=$APP_COMMIT
+ENV VITE_APP_BRANCH=$APP_BRANCH
+ENV VITE_APP_BUILD_FILE="prod"
 RUN echo "{\"tag\": \"$VITE_APP_VERSION_TAG\", \"commit\": \"$VITE_APP_COMMIT\", \"branch\": \"$VITE_APP_BRANCH\", \"build_file\": \"$VITE_APP_BUILD_FILE\"}" > /usr/share/nginx/html/version.json
 
 # Give permissions to the entry script
