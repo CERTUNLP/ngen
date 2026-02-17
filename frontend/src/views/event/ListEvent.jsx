@@ -86,7 +86,7 @@ const ListEvent = ({ routeParams }) => {
   const [showModalListCase, setShowModalListCase] = useState(false);
 
   const caseItem = {
-    lifecycle: "", //required
+    lifecycle: "auto", //required
     priority: "", //required
     tlp: "", //required
     state: "", //required
@@ -116,6 +116,7 @@ const ListEvent = ({ routeParams }) => {
   const [priorityFilter, setPriorityFilter] = useState("");
   const [selectCase, setSelectCase] = useState(""); //puede que se use en el multiselect, tengo ver bien cual es su utilidad
   const [updatePaginationCase, setUpdatePaginationCase] = useState(false);
+  const [caseDefaults, setCaseDefaults] = useState(caseItem);
 
   useEffect(() => {
     getMinifiedUser()
@@ -247,6 +248,13 @@ const ListEvent = ({ routeParams }) => {
   const modalCase = () => {
     //setId
     //setUpdatePagination(true)
+    if (selectedEvent.length > 0) {
+      // get event from selectedEvent to get tlp and priority to set default values in the case creation form
+      let event = events.find((event) => event.url === selectedEvent[0]);
+      caseItem.tlp = event.tlp;
+      caseItem.priority = event.priority;
+      setCaseDefaults(caseItem);
+    }
     setShowOptionsToAddCase(true);
   };
 
@@ -539,6 +547,7 @@ const ListEvent = ({ routeParams }) => {
             disableMerged={false}
             disbleDateModified={false}
             disableDate={false}
+            disableMarkSolved={true}
             basePath={routeParams.basePath}
             setRefresh={setRefresh}
           />
@@ -599,7 +608,7 @@ const ListEvent = ({ routeParams }) => {
         <ModalCreateCase
           showModalCase={showModalCase}
           setShowModalCase={setShowModalCase}
-          caseItem={caseItem}
+          caseItem={caseDefaults}
           states={states}
           setSelectCase={setSelectCase}
           stateNames={states}
