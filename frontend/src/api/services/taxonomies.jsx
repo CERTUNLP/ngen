@@ -7,6 +7,33 @@ const getMinifiedTaxonomy = () => {
   return apiInstance
     .get(COMPONENT_URL.taxonomyMinifiedList)
     .then((response) => {
+      // return taxonomies that the group is null
+      return response.data.filter((taxonomy) => taxonomy.group === null);
+    })
+    .catch((error) => {
+      setAlert(messageError, "error", "taxonomy");
+      return Promise.reject(error);
+    });
+};
+
+const getMinifiedTaxonomyWithinGroup = () => {
+  let messageError = `No se pudo recuperar la informacion de las taxonomias`;
+  return apiInstance
+    .get(COMPONENT_URL.taxonomyMinifiedList)
+    .then((response) => {
+      return response.data.filter((taxonomy) => taxonomy.group !== null);
+    })
+    .catch((error) => {
+      setAlert(messageError, "error", "taxonomy");
+      return Promise.reject(error);
+    });
+};
+
+const getMinifiedTaxonomyAll = () => {
+  let messageError = `No se pudo recuperar la informacion de las taxonomias`;
+  return apiInstance
+    .get(COMPONENT_URL.taxonomyMinifiedList)
+    .then((response) => {
       return response.data;
     })
     .catch((error) => {
@@ -180,5 +207,7 @@ export {
   putTaxonomy,
   putActivationStatus,
   deleteTaxonomy,
-  getMinifiedTaxonomy
+  getMinifiedTaxonomy,
+  getMinifiedTaxonomyAll,
+  getMinifiedTaxonomyWithinGroup
 };
