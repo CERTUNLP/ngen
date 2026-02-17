@@ -446,6 +446,7 @@
   "ngen.template.add": "Agregar plantilla",
   "ngen.template.detail": "Detalle de la plantilla",
   "ngen.template.edit": "Editar plantilla",
+  "ngen.template.from_event": "Del evento",
   "ngen.template.matching_events_without_case": "Eventos coincidentes sin caso",
   "ngen.template.empty_tlp_desc": "Usar el TLP del evento",
   "ngen.template.empty_priority_desc": "Usar la prioridad del evento",

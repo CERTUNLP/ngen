@@ -1,7 +1,8 @@
 import React from "react";
 import { useQuery } from '@tanstack/react-query';
-import { getQueryPriority } from "../../api/services/priorities";
-import LetterFormat from "../../components/LetterFormat";
+import { getQueryPriority } from "api/services/priorities";
+import LetterFormat from "components/LetterFormat";
+import { getTextColorBasedOnBackground } from "utils/colors";
 
 
 const PriorityComponent = ({ priority }) => {
@@ -27,7 +28,8 @@ const PriorityComponent = ({ priority }) => {
       <LetterFormat 
         useBadge={true} 
         stringToDisplay={selectedPriority.name}  
-        bgcolor={"#0a0"}
+        bgcolor={selectedPriority.color}
+        color={getTextColorBasedOnBackground(selectedPriority.color)}
       /> 
     </span>
   );

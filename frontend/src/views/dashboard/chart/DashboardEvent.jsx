@@ -50,6 +50,7 @@ const DashboardEvent = ({ list, loading, basePath }) => {
           disableDateModified={true}
           disableColumOption={false}
           disableColumView={false}
+          disableMarkSolved={true}
           loading={loading}
           basePath={basePath}
         />

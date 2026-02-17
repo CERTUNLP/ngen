@@ -542,6 +542,7 @@ const ListEvent = ({ routeParams }) => {
             taxonomyNames={taxonomyNames}
             feedNames={feedNames}
             tlpNames={tlpNames}
+            disableTlp={true}
             disableCheckbox={false}
             disableUuid={false}
             disableMerged={false}

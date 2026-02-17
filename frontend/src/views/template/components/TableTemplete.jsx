@@ -9,6 +9,11 @@ import Ordering from "../../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
 import setAlert from "utils/setAlert";
 import DateShowField from "components/Field/DateShowField";
+import PriorityComponent from "views/tanstackquery/PriorityComponent";
+import TlpComponent from "views/tanstackquery/TlpComponent";
+import StateComponent from "views/tanstackquery/StateComponent";
+import FeedComponent from "views/tanstackquery/FeedComponent";
+import TaxonomyComponent from "views/tanstackquery/TaxonomyComponent";
 
 const TableTemplete = ({
   list,
@@ -151,16 +156,16 @@ const TableTemplete = ({
                 letterSize={letterSize}
               />
               <Ordering
-                field="case_priority"
-                label={t("ngen.priority_one")}
+                field="case_state"
+                label={t("ngen.state_one")}
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
                 letterSize={letterSize}
               />
               <Ordering
-                field="case_state"
-                label={t("ngen.state_one")}
+                field="case_priority"
+                label={t("ngen.priority_one")}
                 order={order}
                 setOrder={setOrder}
                 setLoading={setLoading}
@@ -192,8 +197,8 @@ const TableTemplete = ({
               return (
                 <tr key={index}>
                   <td>{template.cidr || template.domain}</td>
-                  <td>{taxonomyNames[template.event_taxonomy]}</td>
-                  <td>{feedNames[template.event_feed]}</td>
+                  <td><TaxonomyComponent taxonomy={template.event_taxonomy} /></td>
+                  <td><FeedComponent feed={template.event_feed} /></td>
                   <td>
                     <ActiveButton
                       active={+template.active}
@@ -210,9 +215,9 @@ const TableTemplete = ({
                       permissions="change_casetemplate"
                     />
                   </td>
-                  <td>{priorityNames[template.case_priority]}</td>
-                  <td>{stateNames[template.case_state]}</td>
-                  <td>{tlpNames[template.case_tlp]}</td>
+                  <td><StateComponent state={template.case_state} /></td>
+                  <td>{template.case_priority ? <PriorityComponent priority={template.case_priority} /> : t("ngen.template.from_event")}</td>
+                  <td>{template.case_tlp ? <TlpComponent tlp={template.case_tlp} /> : t("ngen.template.from_event")}</td>
                   <td>
                     {template.matching_events_without_case_count > 0 ? (
                       <Button
