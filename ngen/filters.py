@@ -379,11 +379,11 @@ class CaseTemplateFilter(BaseFilter, NgenAddressModelFilter):
     Allows to filter by:
         - case_lifecycle (exact)
         - active (exact)
-        - priority (exact)
         - event_taxonomy (exact)
         - event_feed (exact)
         - case_tlp (exact)
         - case_state (exact)
+        - case_priority (exact)
         - inherits NgenAddressModelFilter
     """
 
@@ -393,11 +393,11 @@ class CaseTemplateFilter(BaseFilter, NgenAddressModelFilter):
             "address_value": ["icontains"],
             "case_lifecycle": ["exact"],
             "active": ["exact"],
-            "priority": ["exact"],
             "event_taxonomy": ["exact"],
             "event_feed": ["exact"],
             "case_tlp": ["exact"],
             "case_state": ["exact"],
+            "case_priority": ["exact"],
         }
 
 

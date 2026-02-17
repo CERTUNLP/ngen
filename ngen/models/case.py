@@ -967,18 +967,29 @@ class Evidence(AuditModelMixin, ValidationModelMixin):
         super().save(*args, **kwargs)
 
 
-class CaseTemplate(
-    AuditModelMixin, PriorityModelMixin, AddressModelMixin, ValidationModelMixin
-):
+class CaseTemplate(AuditModelMixin, AddressModelMixin, ValidationModelMixin):
     event_taxonomy = models.ForeignKey("ngen.Taxonomy", models.PROTECT)
     event_feed = models.ForeignKey("ngen.Feed", models.PROTECT)
 
-    case_tlp = models.ForeignKey("ngen.Tlp", models.PROTECT)
+    case_tlp = models.ForeignKey(
+        "ngen.Tlp",
+        models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="TLP of the cases created with this template. If not set, it will be the same as the first event that triggered the case creation or TLP default if there is no events.",
+    )
     case_state = models.ForeignKey(
         "ngen.State", models.PROTECT, related_name="decision_states"
     )
     case_lifecycle = models.CharField(
         choices=LIFECYCLE, default=LIFECYCLE.auto, max_length=20
+    )
+    case_priority = models.ForeignKey(
+        "Priority",
+        models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="Priority of the cases created with this template. If not set, it will be the same as the first event that triggered the case creation or priority default if there is no events.",
     )
 
     active = models.BooleanField(default=True)
@@ -1005,18 +1016,20 @@ class CaseTemplate(
     def event_domain(self):
         return self.domain
 
-    @property
-    def case_priority(self) -> "Priority":
-        return self.priority
-
     def create_case(self, events: list = []) -> "Case":
         return Case.objects.create(
-            tlp=self.case_tlp,
+            tlp=self.case_tlp
+            or (events[0].tlp if events else ngen.models.Tlp.get_default()),
             lifecycle=self.case_lifecycle,
             state=self.case_state,
             casetemplate_creator=self,
             events=events,
-            priority=self.case_priority,
+            priority=self.case_priority
+            or (
+                events[0].priority
+                if events and events[0].priority
+                else ngen.models.Priority.get_default()
+            ),
         )
 
     @property

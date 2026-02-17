@@ -664,7 +664,6 @@ class AnnouncementTestCase(TestCase):
         Creating case template and coinciding event. Testing correct case integration and email sending, as well as attachments.
         """
         self.case_template = CaseTemplate.objects.create(
-            priority=self.priority,
             cidr=None,
             domain=self.domain,
             event_taxonomy=self.taxonomy,
@@ -672,6 +671,7 @@ class AnnouncementTestCase(TestCase):
             case_tlp=self.tlp,
             case_state=State.objects.get(name="Open"),
             case_lifecycle="auto_open",
+            case_priority=self.priority,
             active=True,
         )
         self.event = Event.objects.create(

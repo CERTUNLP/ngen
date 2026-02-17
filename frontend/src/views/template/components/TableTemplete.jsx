@@ -151,7 +151,7 @@ const TableTemplete = ({
                 letterSize={letterSize}
               />
               <Ordering
-                field="priority"
+                field="case_priority"
                 label={t("ngen.priority_one")}
                 order={order}
                 setOrder={setOrder}
@@ -210,7 +210,7 @@ const TableTemplete = ({
                       permissions="change_casetemplate"
                     />
                   </td>
-                  <td>{priorityNames[template.priority]}</td>
+                  <td>{priorityNames[template.case_priority]}</td>
                   <td>{stateNames[template.case_state]}</td>
                   <td>{tlpNames[template.case_tlp]}</td>
                   <td>

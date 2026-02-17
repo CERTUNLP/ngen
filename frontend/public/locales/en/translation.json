@@ -447,6 +447,8 @@
   "ngen.template.detail": "Template detail",
   "ngen.template.edit": "Edit template",
   "ngen.template.matching_events_without_case": "Matching events without case",
+  "ngen.template.empty_tlp_desc": "Use the TLP from the event",
+  "ngen.template.empty_priority_desc": "Use the priority from the event",
   "ngen.template_other": "Templates",
   "ngen.tlp": "TLP",
   "ngen.tlp.code": "TLP Code",

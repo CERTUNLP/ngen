@@ -409,6 +409,11 @@ CONSTANCE_CONFIG = {
         gettext_lazy("Default priority"),
         "priority_field",
     ),
+    "TLP_DEFAULT": (
+        os.environ.get("TLP_DEFAULT", "Red"),
+        gettext_lazy("Default TLP"),
+        "tlp_field",
+    ),
     "ALLOWED_ARTIFACTS_TYPES": (
         os.environ.get("ALLOWED_ARTIFACTS_TYPES"),
         gettext_lazy("Allowed artifact types"),

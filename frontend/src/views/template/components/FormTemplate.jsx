@@ -49,7 +49,7 @@ const FormTemplate = (props) => {
     }
     if (props.priorities.length > 0) {
       props.priorities.forEach((item) => {
-        if (item.value === props.body.priority) {
+        if (item.value === props.body.case_priority) {
           setSelectPriority({ label: item.label, value: item.value });
         }
       });
@@ -75,12 +75,12 @@ const FormTemplate = (props) => {
     props.taxonomy,
     props.feeds,
     lifeCicle,
+    props.body.event_feed,
+    props.body.event_taxonomy,
     props.body.case_lifecycle,
     props.body.case_state,
     props.body.case_tlp,
-    props.body.event_feed,
-    props.body.event_taxonomy,
-    props.body.priority
+    props.body.case_priority
   ]);
 
   const completeFieldStringIdentifier = (event) => {
@@ -188,48 +188,7 @@ const FormTemplate = (props) => {
         <Card.Body>
           <Form>
             <Row>
-              <Col sm={12} lg={4}>
-                <SelectComponent
-                  controlId="exampleForm.ControlSelect1"
-                  label={t("ngen.tlp")}
-                  options={props.tlp}
-                  value={selectTlp}
-                  nameField="case_tlp"
-                  onChange={completeField1}
-                  placeholder={t("ngen.tlp.select")}
-                  setOption={setSelectTlp}
-                  required={true}
-                />
-              </Col>
-              <Col sm={12} lg={4}>
-                <SelectComponent
-                  controlId="exampleForm.ControlSelect1"
-                  label={t("ngen.priority_other")}
-                  options={props.priorities}
-                  value={selectPriority}
-                  nameField="priority"
-                  onChange={completeField1}
-                  placeholder={t("ngen.priority.select")}
-                  setOption={setSelectPriority}
-                  required={true}
-                />
-              </Col>
-              <Col sm={12} lg={4}>
-                <SelectComponent
-                  controlId="exampleForm.ControlSelect1"
-                  label={t("ngen.state_other")}
-                  options={props.states}
-                  value={selectState}
-                  nameField="case_state"
-                  onChange={completeField1}
-                  placeholder={t("ngen.state.select")}
-                  setOption={setSelectState}
-                  required={true}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col sm={12} lg={4}>
+              <Col sm={12} lg={3}>
                 <SelectComponent
                   controlId="exampleForm.ControlSelect1"
                   label={t("ngen.lifecycle_one")}
@@ -242,16 +201,51 @@ const FormTemplate = (props) => {
                   required={true}
                 />
               </Col>
+              <Col sm={12} lg={3}>
+                <SelectComponent
+                  controlId="exampleForm.ControlSelect1"
+                  label={t("ngen.state_one")}
+                  options={props.states}
+                  value={selectState}
+                  nameField="case_state"
+                  onChange={completeField1}
+                  placeholder={t("ngen.state.select")}
+                  setOption={setSelectState}
+                  required={true}
+                />
+              </Col>
+              <Col sm={12} lg={3}>
+                <SelectComponent
+                  controlId="exampleForm.ControlSelect1"
+                  label={t("ngen.tlp")}
+                  options={props.tlp}
+                  value={selectTlp}
+                  nameField="case_tlp"
+                  onChange={completeField1}
+                  placeholder={t("ngen.template.empty_tlp_desc")}
+                  setOption={setSelectTlp}
+                />
+              </Col>
+              <Col sm={12} lg={3}>
+                <SelectComponent
+                  controlId="exampleForm.ControlSelect1"
+                  label={t("ngen.priority_one")}
+                  options={props.priorities}
+                  value={selectPriority}
+                  nameField="case_priority"
+                  onChange={completeField1}
+                  placeholder={t("ngen.template.empty_priority_desc")}
+                  setOption={setSelectPriority}
+                />
+              </Col>
             </Row>
           </Form>
         </Card.Body>
       </Card>
       {props.body.event_taxonomy !== "-1" &&
         props.body.event_feed !== "-1" &&
-        props.body.case_tlp !== "-1" &&
-        props.body.priority !== "-1" &&
-        props.body.case_state !== "-1" &&
         props.body.address_value !== "" &&
+        props.body.case_state !== "-1" &&
         !showErrorMessage ? (
         <Button variant="primary" onClick={props.createTemplate}>
           {t("button.save")}

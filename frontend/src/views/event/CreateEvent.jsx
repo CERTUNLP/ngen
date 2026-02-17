@@ -29,7 +29,8 @@ const CreateEvent = ({ routeParams }) => {
     case: "",
     tasks: [],
     evidence: [],
-    tags: []
+    tags: [],
+    avoid_auto_merge: false
   };
   const [body, setBody] = useState(formEmpty);
   const [evidence, setEvidence] = useState([]);
