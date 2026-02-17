@@ -4,6 +4,7 @@ import CrudButton from "components/Button/CrudButton";
 import SelectComponent from "components/Select/SelectComponent";
 import { postArtifact } from "api/services/artifact";
 import { postStringIdentifier } from "api/services/stringIdentifier";
+import { getEvent, patchEvent, putEvent, simulateEvent } from "api/services/events";
 import Alert from "components/Alert/Alert";
 import { getMinifiedState } from "api/services/states";
 import ModalCreateCase from "views/case/ModalCreateCase";
@@ -16,9 +17,15 @@ import SelectArtifact from "components/Select/SelectArtifact";
 import { getCase } from "api/services/cases";
 import SmallCaseTable from "views/case/components/SmallCaseTable";
 import EvidenceCard from "components/UploadFiles/EvidenceCard";
+import TlpComponent from "views/tanstackquery/TlpComponent";
+import TaxonomyComponent from "views/tanstackquery/TaxonomyComponent";
+import FeedComponent from "views/tanstackquery/FeedComponent";
+import PriorityComponent from "views/tanstackquery/PriorityComponent";
+import StateComponent from "views/tanstackquery/StateComponent";
 import { getEvidence } from "api/services/evidences";
 import { useTranslation } from "react-i18next";
 // import { postTag } from "api/services/tags";
+import Modal from "react-bootstrap/Modal";
 
 const FormEvent = (props) => {
   const [date, setDate] = useState(props.body.date ? props.body.date.substring(0, 16) : getCurrentDateTime());
@@ -32,6 +39,9 @@ const FormEvent = (props) => {
   const [valueTag, setValueTag] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [simulationResult, setSimulationResult] = useState({});
+  const [showSimulationResultMergeModal, setShowSimulationResultMergeModal] = useState(false);
+  const [showSimulationResultTemplateModal, setShowSimulationResultTemplateModal] = useState(false);
 
   //modal create case
   const [showModalCase, setShowModalCase] = useState(false);
@@ -184,6 +194,7 @@ const FormEvent = (props) => {
   }, [props.priorityNames, props.tlpNames, props.userNames, allStates, caseTable]);
 
   useEffect(() => {
+    console.log("props.body.artifacts", props.body.artifacts);
     let listDefaultArtifact = props.listArtifact
       .filter((elemento) => props.body.artifacts.includes(elemento.value))
       .map((elemento) => ({
@@ -208,11 +219,41 @@ const FormEvent = (props) => {
     setTagsValueLabel(listDefaultTag);
   }, [props.body.tags, props.listTag]);
 
-  const completeFieldStringIdentifier = (event) => {
-    if (event.target.value !== "") {
-      postStringIdentifier(event.target.value)
+  useEffect(() => {
+    simulate();
+  }, [props.body.tlp, props.body.taxonomy, props.body.feed, props.body.priority]);
+
+  const simulate = () => {
+    if (filledFields()) {
+      setSimulationResult({});
+      // copio props.body, saco reporter, date y parent como claves y envio a simulateevent
+      let body = { ...props.body };
+      delete body.reporter;
+      delete body.date;
+      delete body.parent;
+      console.log(body);
+      simulateEvent(body)
         .then((response) => {
-          setShowErrorMessage(response.data.artifact_type === "OTHER" || response.data.artifact_type === "EMAIL");
+          setSimulationResult(response.data);
+          // setShowSimulationResult(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
+
+  const completeFieldStringIdentifier = (event) => {
+    setShowErrorMessage(true);
+    if (event.target.value !== "") {
+      props.body.address_value = event.target.value;
+      postStringIdentifier(event.target.value)
+      .then((response) => {
+          let error = response.data.artifact_type === "OTHER" || response.data.artifact_type === "EMAIL";
+          setShowErrorMessage(error);
+          if (!error) {
+            simulate();
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -383,6 +424,10 @@ const FormEvent = (props) => {
     setPriorityFilter("");
     setStateFilter("");
     setWordToSearch("");
+  }
+
+  const filledFields = () => {
+    return props.body.tlp !== "" && props.body.taxonomy !== "" && props.body.feed !== "" && props.body.priority !== "" && props.body.address_value !== "";
   }
 
   const tableCaseDetail = (url, name, date, priority, tlp, state, user) => {
@@ -685,21 +730,157 @@ const FormEvent = (props) => {
         createArtifact={createArtifact}
       />
 
-      {props.body.tlp !== "" &&
-      props.body.taxonomy !== "" &&
-      props.body.feed !== "" &&
-      props.body.priority !== "" &&
-      props.body.address_value !== "" &&
-      !showErrorMessage ? (
-        <Button variant="primary" onClick={props.createEvent}>
-          {t("button.save")}
-        </Button>
-      ) : (
-        <Button variant="primary" disabled>
-          {t("button.save")}
-        </Button>
-      )}
-      <CrudButton type="cancel" />
+      {/* TODO: Replace this with single event modal */}
+      <Modal show={showSimulationResultMergeModal} onHide={() => setShowSimulationResultMergeModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t("ngen.event.simulation.merge_modal_title")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{t("ngen.event.simulation.merge_modal_message")}</p>
+          
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.uuid")}:</strong> 
+            <span>{simulationResult?.simulated_event_data?.uuid}</span>
+          </div>
+          
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("date.one")}:</strong> 
+            <span>{simulationResult?.simulated_event_data?.date}</span>
+          </div>
+
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.tlp")}:</strong> 
+            <TlpComponent tlp={simulationResult?.simulated_event_data?.tlp} />
+          </div>
+
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.taxonomy_one")}:</strong> 
+            <TaxonomyComponent taxonomy={simulationResult?.simulated_event_data?.taxonomy} />
+          </div>
+
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.feed")}:</strong> 
+            <FeedComponent feed={simulationResult?.simulated_event_data?.feed} />
+          </div>
+
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.priority_one")}:</strong> 
+            <PriorityComponent priority={simulationResult?.simulated_event_data?.priority} />
+          </div>
+
+          <div className="d-flex align-items-center">
+            <strong className="me-2">{t("notes")}:</strong> 
+            <span>{simulationResult?.simulated_event_data?.notes}</span>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowSimulationResultMergeModal(false)}>
+            {t("button.close")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* TODO: Replace this with single templatecase modal */}
+      <Modal show={showSimulationResultTemplateModal} onHide={() => setShowSimulationResultTemplateModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t("ngen.event.simulation.template_modal_title")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{t("ngen.event.simulation.template_modal_message")}</p>
+          
+
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.addressvalue")}:</strong> 
+            <span>{simulationResult?.template?.address_value}</span>
+          </div>
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.taxonomy_one")}:</strong> 
+            <TaxonomyComponent taxonomy={simulationResult?.template?.event_taxonomy} />
+          </div>
+          
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.feed")}:</strong> 
+            <FeedComponent feed={simulationResult?.template?.event_feed} />
+          </div>
+          
+
+          <hr />
+
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.tlp")}:</strong> 
+            <TlpComponent tlp={simulationResult?.template?.case_tlp} />
+          </div>
+
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.state_one")}:</strong> 
+            <StateComponent state={simulationResult?.template?.case_state} />
+          </div>
+
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.priority_one")}:</strong> 
+            <PriorityComponent priority={simulationResult?.template?.priority} />
+          </div>
+
+          <div className="d-flex align-items-center mb-1">
+            <strong className="me-2">{t("ngen.lifecycle_one")}:</strong> 
+            <span>{simulationResult?.template?.case_lifecycle}</span>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowSimulationResultTemplateModal(false)}>
+            {t("button.close")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      
+      <div className="simulation-container">
+        {!filledFields() || showErrorMessage ? (
+          // CASO 1: Campos incompletos
+          <div className="alert alert-info">
+            <strong>{t("ngen.event.simulation.incomplete_fields_warning")}</strong>
+            {/* Traducción sugerida: 
+              "Debe completar todos los campos requeridos para previsualizar las acciones que se ejecutarán." 
+            */}
+          </div>
+        ) : (
+          // CASO 2: Campos completos - Mostrar tipo de ejecución
+          <div className="simulation-actions">
+            {simulationResult?.applies_merge ? (
+              <div className="alert alert-warning" onClick={() => setShowSimulationResultMergeModal(true)} style={{cursor: 'pointer'}}>
+                <strong>{t("ngen.event.simulation.will_merge_title")}</strong>
+              </div>
+            ) : (
+              <div className="alert alert-secondary">
+                <strong>{t("ngen.event.simulation.will_not_merge")}</strong>
+              </div>
+            )}
+            {simulationResult?.applies_template ? (
+              simulationResult.applies_merge ? (
+                <div className="alert alert-info" onClick={() => setShowSimulationResultMergeModal(true)} style={{cursor: 'pointer'}}>
+                  <strong>{t("ngen.event.simulation.matches_template_but_merges")}</strong>
+                </div>
+              ) : (
+              <div className="alert alert-primary" onClick={() => setShowSimulationResultTemplateModal(true)} style={{cursor: 'pointer'}}>
+                <strong>{t("ngen.event.simulation.will_use_template_title")}</strong>
+              </div>
+            )):(
+              <div className="alert alert-secondary">
+                <strong>{t("ngen.event.simulation.does_not_match_template")}</strong>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="button-container">
+        {filledFields() && !showErrorMessage ? (
+          <Button variant="success" onClick={props.createEvent}>
+            {t("button.save")}
+          </Button>
+        ):(<Button variant="secondary" disabled>{t("button.save")}</Button>)
+        }
+        <CrudButton type="cancel" />
+      </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FormEvent from "./components/FormEvent";
 import {Col, Row } from "react-bootstrap";
 import CrudButton from "components/Button/CrudButton";
-import { getEvent, patchEvent, putEvent } from "api/services/events";
+import { getEvent, patchEvent, putEvent, simulateEvent } from "api/services/events";
 import { useLocation, useParams } from "react-router-dom";
 import { getMinifiedTlp } from "api/services/tlp";
 import { getMinifiedTaxonomy } from "api/services/taxonomies";
@@ -39,9 +39,9 @@ const EditEvent = ({ routeParams }) => {
   const [userNames, setUserNames] = useState({});
   const [updateEvidence, setUpdateEvidence] = useState([]);
   const [id] = useState(useParams().id);
+  const [sent, setSent] = useState(0);
 
-  useEffect(() => {
-    if (id) {
+  const updateEvent = () => {
       getEvent(COMPONENT_URL.event + id + "/")
         .then((response) => {
           response.data.case = response.data.case ? response.data.case : "";
@@ -49,9 +49,14 @@ const EditEvent = ({ routeParams }) => {
           setBody(response.data);
         })
         .catch((error) => console.log(error));
-    }
-  }, [id]);
+  };
 
+  useEffect(() => {
+    if (id) {
+      updateEvent();
+    }
+  }, [id, sent]);
+  
   const updateTags = () => {
     getMinifiedTag()
       .then((response) => {
@@ -148,13 +153,14 @@ const EditEvent = ({ routeParams }) => {
       });
 
     updateTags();
-  }, [contactCreated]);
+  }, [contactCreated, sent]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
   };
 
-  const editEvent = () => {
+  const editEvent = ({ simulate = false } = {}) => {
+    console.log(body);
     const formDataEvent = new FormData();
 
     if (body.children.length === 0) {
@@ -200,12 +206,24 @@ const EditEvent = ({ routeParams }) => {
       //formDataEvent.append('artifacts',body.artifacts);
       formDataEvent.append("tags", body.tags);
 
-      putEvent(body.url, formDataEvent)
-        .then(() => {})
-        .catch((error) => {
-          setShowAlert(true); //hace falta?
-          console.log(error);
-        });
+      if (simulate) {
+        simulateEvent(formDataEvent)
+          .then(() => {})
+          .catch((error) => {
+            setShowAlert(true); //hace falta?
+            console.log(error);
+          });
+
+      } else {
+        putEvent(body.url, formDataEvent)
+          .then(() => {
+            setSent(sent + 1);
+          })
+          .catch((error) => {
+            setShowAlert(true); //hace falta?
+            console.log(error);
+          });
+      }
     } else {
       if (evidence instanceof FileList) {
         body.evidence.forEach((url) => {
@@ -248,12 +266,23 @@ const EditEvent = ({ routeParams }) => {
       }
       //formDataEvent.append('artifacts',body.artifacts);
 
-      patchEvent(body.url, formDataEvent)
-        .then(() => {})
-        .catch((error) => {
-          // setShowAlert(true); //hace falta?
-          console.log(error);
-        });
+      if (simulate) {
+        simulateEvent(formDataEvent)
+          .then(() => {})
+          .catch((error) => {
+            // setShowAlert(true); //hace falta?
+            console.log(error);
+          });
+      } else {
+        patchEvent(body.url, formDataEvent)
+          .then(() => {
+            setSent(sent + 1);
+          })
+          .catch((error) => {
+            // setShowAlert(true); //hace falta?
+            console.log(error);
+          });
+      }
     }
   };
 
@@ -270,6 +299,7 @@ const EditEvent = ({ routeParams }) => {
         </Row>
         <FormEvent
           createEvent={editEvent}
+          simulateEvent={() => {return editEvent({simulate: true})}}
           setBody={setBody}
           body={body}
           feeds={feeds}

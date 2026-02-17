@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormEvent from "./components/FormEvent";
-import { postEvent } from "../../api/services/events";
+import { postEvent, simulateEvent } from "../../api/services/events";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import { getMinifiedFeed } from "../../api/services/feeds";
@@ -161,7 +161,7 @@ const CreateEvent = ({ routeParams }) => {
     updateTags();
   }, [contactCreated]);
 
-  const createEvent = () => {
+  const createEvent = (simulate = false) => {
     const formDataEvent = new FormData();
 
     formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
@@ -190,22 +190,31 @@ const CreateEvent = ({ routeParams }) => {
       formDataEvent.append("artifacts", item);
     });
 
-    postEvent(formDataEvent)
-      .then((response) => {
-        if (response.data.parent !== null) {
-          localStorage.setItem("event", response.data.parent);
-          localStorage.setItem("return", "List events");
-          localStorage.setItem("button return", "");
-          localStorage.setItem("navigation", "");
-          navigate("/events/view");
-        } else {
-          navigate("/events");
-        }
-      })
-      .catch((error) => {
-        setShowAlert(true);
-        console.log(error);
-      });
+    if (simulate) {
+      simulateEvent(formDataEvent)
+        .then(() => {})
+        .catch((error) => {
+          setShowAlert(true); //hace falta?
+          console.log(error);
+        });
+    } else {
+      postEvent(formDataEvent)
+        .then((response) => {
+          if (response.data.parent !== null) {
+            localStorage.setItem("event", response.data.parent);
+            localStorage.setItem("return", "List events");
+            localStorage.setItem("button return", "");
+            localStorage.setItem("navigation", "");
+            navigate("/events/view");
+          } else {
+            navigate("/events");
+          }
+        })
+        .catch((error) => {
+          setShowAlert(true);
+          console.log(error);
+        });
+    }
   };
 
   return (
@@ -213,6 +222,7 @@ const CreateEvent = ({ routeParams }) => {
       <div>
         <FormEvent
           createEvent={createEvent}
+          simulateEvent={() => {return createEvent({simulate: true})}}
           setBody={setBody}
           body={body}
           feeds={feeds}

@@ -162,4 +162,21 @@ const markSolved = (uuid) => {
     });
 };
 
-export { getEvents, postEvent, putEvent, deleteEvent, mergeEvent, getEvent, getAllEvents, getListEvents, patchEvent, markSolved, getQueryEvent };
+const simulateEvent = (formData) => {
+  let messageSuccess = i18next.t("ngen.simulate.event.success");
+  let messageError = i18next.t("ngen.simulate.event.error");
+
+    console.log("formData", formData);
+  return apiInstance
+    .post(`${COMPONENT_URL.event}simulate/`, formData)
+    .then((response) => {
+      // setAlert(messageSuccess, "success", "event");
+      return response;
+    })
+    .catch((error) => {
+      setAlert(messageError, "error", "event");
+      return Promise.reject(error);
+    });
+};
+
+export { getEvents, postEvent, putEvent, deleteEvent, mergeEvent, getEvent, getAllEvents, getListEvents, patchEvent, markSolved, getQueryEvent, simulateEvent };
