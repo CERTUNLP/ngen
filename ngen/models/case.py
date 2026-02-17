@@ -542,6 +542,12 @@ class Event(
     node_order_by = ["id"]
     comments = GenericRelation(Comment)
     tags = TaggableManager(through="ngen.TaggedObject", blank=True)
+    avoid_auto_merge = models.BooleanField(
+        default=False,
+        help_text=gettext_lazy(
+            "If true, this event will not be automatically merged with other events even if they have the same taxonomy, feed, cidr and domain. Can be merged manually with any event."
+        ),
+    )
 
     objects = EventManager()
 
@@ -671,7 +677,7 @@ class Event(
     @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
         new_parent_event = self.get_merge_target()
-        if new_parent_event and self.parent is None:
+        if new_parent_event and not self.avoid_auto_merge and self.parent is None:
             self.parent = new_parent_event
             # Update parent modified date
             self.parent.save()

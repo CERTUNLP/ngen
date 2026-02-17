@@ -163,10 +163,9 @@ const markSolved = (uuid) => {
 };
 
 const simulateEvent = (formData) => {
-  let messageSuccess = i18next.t("ngen.simulate.event.success");
-  let messageError = i18next.t("ngen.simulate.event.error");
+  let messageSuccess = i18next.t("ngen.event.simulate.event.success");
+  let messageError = i18next.t("ngen.event.simulate.event.error");
 
-    console.log("formData", formData);
   return apiInstance
     .post(`${COMPONENT_URL.event}simulate/`, formData)
     .then((response) => {

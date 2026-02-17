@@ -195,6 +195,7 @@ const EditEvent = ({ routeParams }) => {
       formDataEvent.append("reporter", body.reporter);
       //f.append("case", body.case) //"Invalid hyperlink - No URL match.
       formDataEvent.append("tasks", body.tasks);
+      formDataEvent.append("avoid_auto_merge", body.avoid_auto_merge);
 
       if (evidence !== null) {
         for (let index = 0; index < evidence.length; index++) {

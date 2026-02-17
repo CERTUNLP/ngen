@@ -166,7 +166,7 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
 
     @property
     def mergeable(self) -> bool:
-        return not self.merged and not self.blocked
+        return not self.merged and not self.blocked and not self.avoid_auto_merge
 
     @property
     def merged(self) -> bool:

@@ -185,6 +185,8 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
             if k in model_fields or k.endswith("_id")
         }
 
+        # eliminamos campos que puedan causar problemas al crear la instancia:
+        event_data.pop("artifacts", None)
         # 2. Creamos la instancia EN MEMORIA (sin .save())
         # Esto permite que los métodos del modelo funcionen pero no afecta la DB
         event = models.Event(**event_data)
@@ -255,14 +257,18 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
             else None
         )
 
+        applies_merge = (
+            is_new and potential_merge_parent is not None and not event.avoid_auto_merge
+        )
+
         return Response(
             {
                 "network": network_data,
                 "affected_contacts": contacts_data,
                 "parent_to_merge": merge_parent_data,
                 "template": template_data,
-                "applies_merge": is_new and potential_merge_parent is not None,
-                "applies_template": potential_merge_parent is None
+                "applies_merge": applies_merge,
+                "applies_template": not applies_merge
                 and potential_template is not None,
                 "simulated_event_data": serializers.EventSerializer(
                     event, context=serializer_context

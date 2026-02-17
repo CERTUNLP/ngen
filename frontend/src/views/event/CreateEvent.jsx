@@ -161,7 +161,7 @@ const CreateEvent = ({ routeParams }) => {
     updateTags();
   }, [contactCreated]);
 
-  const createEvent = (simulate = false) => {
+  const createEvent = ({ simulate = false } = {}) => {
     const formDataEvent = new FormData();
 
     formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
@@ -178,6 +178,7 @@ const CreateEvent = ({ routeParams }) => {
     formDataEvent.append("tasks", body.tasks);
     formDataEvent.append("address_value", body.address_value);
     formDataEvent.append("tags", body.tags);
+    formDataEvent.append("avoid_auto_merge", body.avoid_auto_merge);
     if (evidence !== null) {
       for (let index = 0; index < evidence.length; index++) {
         formDataEvent.append("evidence", evidence[index]);
@@ -205,7 +206,7 @@ const CreateEvent = ({ routeParams }) => {
             localStorage.setItem("return", "List events");
             localStorage.setItem("button return", "");
             localStorage.setItem("navigation", "");
-            navigate("/events/view");
+            navigate("/events");
           } else {
             navigate("/events");
           }

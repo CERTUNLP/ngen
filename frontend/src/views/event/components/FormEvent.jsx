@@ -132,7 +132,6 @@ const FormEvent = (props) => {
 
   useEffect(() => {
     if (props.body.case) {
-      console.log(props.body.case);
       getCase(props.body.case)
         .then((response) => {
           setCaseTable(response.data);
@@ -194,7 +193,6 @@ const FormEvent = (props) => {
   }, [props.priorityNames, props.tlpNames, props.userNames, allStates, caseTable]);
 
   useEffect(() => {
-    console.log("props.body.artifacts", props.body.artifacts);
     let listDefaultArtifact = props.listArtifact
       .filter((elemento) => props.body.artifacts.includes(elemento.value))
       .map((elemento) => ({
@@ -221,7 +219,7 @@ const FormEvent = (props) => {
 
   useEffect(() => {
     simulate();
-  }, [props.body.tlp, props.body.taxonomy, props.body.feed, props.body.priority]);
+  }, [props.body.tlp, props.body.taxonomy, props.body.feed, props.body.priority, props.body.avoid_auto_merge]);
 
   const simulate = () => {
     if (filledFields()) {
@@ -231,7 +229,6 @@ const FormEvent = (props) => {
       delete body.reporter;
       delete body.date;
       delete body.parent;
-      console.log(body);
       simulateEvent(body)
         .then((response) => {
           setSimulationResult(response.data);
@@ -645,6 +642,75 @@ const FormEvent = (props) => {
         />
       )}
 
+      {props.disableCardEvidence ? (
+        ""
+      ) : (
+        <EvidenceCard
+          evidences={props.evidence}
+          setEvidences={props.setEvidence}
+          setUpdateCase={props.setUpdateEvidence}
+          updateCase={props.updateEvidence}
+        />
+      )}
+
+      <Card>
+        <Card.Header>
+          <Card.Title as="h5">{t("ngen.event.simulation.card.title")}</Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <div className="simulation-container">
+            {/* checkbox avoid merge event */}
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                id="avoid-auto-merge"
+                label={t("ngen.event.avoid_auto_merge")}
+                checked={props.body.avoid_auto_merge}
+                onChange={(e) => {
+                  props.setBody({
+                    ...props.body,
+                    avoid_auto_merge: e.target.checked
+                  });
+                }}
+              />
+            </Form.Group>
+            {!filledFields() || showErrorMessage ? (
+              // CASO 1: Campos incompletos
+              <div className="alert alert-info">
+                <strong>{t("ngen.event.simulation.incomplete_fields_warning")}</strong>
+              </div>
+            ) : (
+              // CASO 2: Campos completos - Mostrar tipo de ejecución
+              <div className="simulation-actions">
+                {simulationResult?.applies_merge ? (
+                  <div className="alert alert-warning" onClick={() => setShowSimulationResultMergeModal(true)} style={{cursor: 'pointer'}}>
+                    <strong>{t("ngen.event.simulation.will_merge_title")}</strong>
+                  </div>
+                ) : (
+                  <div className="alert alert-secondary">
+                    <strong>{t("ngen.event.simulation.will_not_merge")}</strong>
+                  </div>
+                )}
+                {simulationResult?.applies_template ? (
+                  simulationResult.applies_merge ? (
+                    <div className="alert alert-info" onClick={() => setShowSimulationResultMergeModal(true)} style={{cursor: 'pointer'}}>
+                      <strong>{t("ngen.event.simulation.matches_template_but_merges")}</strong>
+                    </div>
+                  ) : (
+                  <div className="alert alert-primary" onClick={() => setShowSimulationResultTemplateModal(true)} style={{cursor: 'pointer'}}>
+                    <strong>{t("ngen.event.simulation.will_use_template_title")}</strong>
+                  </div>
+                )):(
+                  <div className="alert alert-secondary">
+                    <strong>{t("ngen.event.simulation.does_not_match_template")}</strong>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </Card.Body>
+      </Card>
+
       <ModalCreateCase
         showModalCase={showModalCase}
         setShowModalCase={setShowModalCase}
@@ -698,17 +764,6 @@ const FormEvent = (props) => {
         returnToListOfCases={returnToListOfCases}
         linkCaseToEvent={linkCaseToEvent}
       />
-
-      {props.disableCardEvidence ? (
-        ""
-      ) : (
-        <EvidenceCard
-          evidences={props.evidence}
-          setEvidences={props.setEvidence}
-          setUpdateCase={props.setUpdateEvidence}
-          updateCase={props.updateEvidence}
-        />
-      )}
 
       <CreateTagModal
         show={modalCreateTag}
@@ -832,45 +887,6 @@ const FormEvent = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      
-      <div className="simulation-container">
-        {!filledFields() || showErrorMessage ? (
-          // CASO 1: Campos incompletos
-          <div className="alert alert-info">
-            <strong>{t("ngen.event.simulation.incomplete_fields_warning")}</strong>
-            {/* Traducción sugerida: 
-              "Debe completar todos los campos requeridos para previsualizar las acciones que se ejecutarán." 
-            */}
-          </div>
-        ) : (
-          // CASO 2: Campos completos - Mostrar tipo de ejecución
-          <div className="simulation-actions">
-            {simulationResult?.applies_merge ? (
-              <div className="alert alert-warning" onClick={() => setShowSimulationResultMergeModal(true)} style={{cursor: 'pointer'}}>
-                <strong>{t("ngen.event.simulation.will_merge_title")}</strong>
-              </div>
-            ) : (
-              <div className="alert alert-secondary">
-                <strong>{t("ngen.event.simulation.will_not_merge")}</strong>
-              </div>
-            )}
-            {simulationResult?.applies_template ? (
-              simulationResult.applies_merge ? (
-                <div className="alert alert-info" onClick={() => setShowSimulationResultMergeModal(true)} style={{cursor: 'pointer'}}>
-                  <strong>{t("ngen.event.simulation.matches_template_but_merges")}</strong>
-                </div>
-              ) : (
-              <div className="alert alert-primary" onClick={() => setShowSimulationResultTemplateModal(true)} style={{cursor: 'pointer'}}>
-                <strong>{t("ngen.event.simulation.will_use_template_title")}</strong>
-              </div>
-            )):(
-              <div className="alert alert-secondary">
-                <strong>{t("ngen.event.simulation.does_not_match_template")}</strong>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
 
       <div className="button-container">
         {filledFields() && !showErrorMessage ? (
