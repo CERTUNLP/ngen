@@ -5,34 +5,35 @@ import LetterFormat from "../../components/LetterFormat";
 
 
 const TaxonomyComponent = ({ taxonomy }) => {
-
-
-  // Fetch taxonomy data using useQuery.
   const { data, isLoading, error } = useQuery({
-    queryKey: ['taxonomyKey'], // Single query key to fetch all this Taxonomy data
+    queryKey: ['taxonomyKey'],
     queryFn: getQueryTaxonomy,
-
     staleTime: 5 * 60 * 1000, 
-    refetchOnWindowFocus: false, // Disable refetching when window is focused
-    refetchOnReconnect: false, // Disable refetching when the app reconnects
-
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading) return null;
+  if (error) return null;
 
   const selectedTaxonomy = data?.[taxonomy];
-  return (
 
-        <div>
-<LetterFormat 
-  useBadge={true}
-  stringToDisplay={selectedTaxonomy?.name || ""} 
-  bgcolor="#0f0" 
-/>
-        </div>
+  // Validación de existencia
+  if (!taxonomy || !selectedTaxonomy) {
+    console.warn(`TaxonomyComponent: El valor "${taxonomy}" no se encontró en la data.`);
+    return <span />;
+  }
+
+  return (
+    <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <LetterFormat 
+        useBadge={true}
+        stringToDisplay={selectedTaxonomy.name} 
+        bgcolor="#0f0" 
+      />
+    </span>
   );
-};  
+}; 
 
 
 export default TaxonomyComponent;

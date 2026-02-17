@@ -5,31 +5,33 @@ import LetterFormat from "../../components/LetterFormat";
 
 
 const StateComponent = ({ state }) => {
-
-
-  // Fetch State data using useQuery.
   const { data, isLoading, error } = useQuery({
-    queryKey: ['stateKey'], // Single query key to fetch all TLP data
+    queryKey: ['stateKey'],
     queryFn: getQueryState,
-
-    staleTime: 5 * 60 * 1000, 
-    refetchOnWindowFocus: false, // Disable refetching when window is focused
-    refetchOnReconnect: false, // Disable refetching when the app reconnects
-
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading || error) return null;
 
   const selectedState = data?.[state];
-//revisar como se displayea State, si usa letterformat...
-  return (
 
-        <div>
-      <LetterFormat useBadge={true} stringToDisplay={selectedState.name}  bgcolor={"#34deeb"}/> 
-        </div>
+  if (!state || !selectedState) {
+    console.warn(`StateComponent: Estado "${state}" no encontrado.`);
+    return <span />;
+  }
+
+  return (
+    <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <LetterFormat 
+        useBadge={true} 
+        stringToDisplay={selectedState.name}  
+        bgcolor={"#34deeb"}
+      /> 
+    </span>
   );
-};  
+};
 
 
 export default StateComponent;
