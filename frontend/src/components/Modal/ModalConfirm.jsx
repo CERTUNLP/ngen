@@ -67,6 +67,12 @@ const ModalConfirm = (props) => {
       message: eventOrCase.includes("event") ? `${t("ngen.merge.message.event")} ${warning}` : `${t("ngen.merge.message.case")} ${warning}`,
       variantButtonConfirm: "outline-primary",
       textButtonConfirm: t("ngen.accept")
+    },
+    reiterate: {
+      header: `${props.component ? t("ngen.reiterate.header.case") : t("ngen.reiterate")}`,
+      message: `${t("ngen.reiterate.message.case")}`,
+      variantButtonConfirm: "outline-info",
+      textButtonConfirm: t("ngen.reiterate")
     }
   };
 

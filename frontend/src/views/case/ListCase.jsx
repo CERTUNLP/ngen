@@ -265,6 +265,7 @@ const ListCase = ({ routeParams }) => {
                 userNames={userNames}
                 editColum={true}
                 deleteColum={true}
+                reiterateColum={true}
                 navigationRow={true}
                 buttonReturn={false}
                 disableNubersOfEvents={true}

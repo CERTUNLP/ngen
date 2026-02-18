@@ -14,6 +14,7 @@ EMAIL_TEMPLATES = {
     "case_closed_report": "reports/case_closed_report.html",
     "case_change_state": "reports/case_change_state.html",
     "case_assign": "reports/case_assign.html",
+    "case_reiterate": "reports/case_reiterate.html",
 }
 
 

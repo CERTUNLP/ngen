@@ -296,14 +296,11 @@ class CommunicationChannel(AuditModelMixin):
         ):
         """
         Reitera comunicación enviando SOLO evidencia nueva desde última comunicación.
+        Si no hay evidencia nueva, envía el email sin adjuntos (recordatorio).
         """
         new_evidence = self.get_evidence_since_last_communication(all_evidence)
         
-        if not new_evidence:
-            # Opcionalmente: enviar de todas formas o retornar sin enviar
-            return None
-        
-        # Formatear evidencias como adjuntos
+        # Formatear evidencias como adjuntos (puede ser lista vacía)
         attachments = [
             {
                 "name": ev.attachment_name,
@@ -311,6 +308,12 @@ class CommunicationChannel(AuditModelMixin):
             }
             for ev in new_evidence
         ]
+        
+        # Agregar información sobre nueva evidencia a los parámetros del template
+        if template_params is None:
+            template_params = {}
+        template_params['has_new_evidence'] = len(new_evidence) > 0
+        template_params['new_evidence_count'] = len(new_evidence)
     
         return self.communicate(
             subject=subject,

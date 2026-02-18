@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Form, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "components/Button/CrudButton";
-import { deleteCase } from "api/services/cases";
+import { deleteCase, reiterateCase } from "api/services/cases";
 import ModalConfirm from "components/Modal/ModalConfirm";
 import Ordering from "components/Ordering/Ordering";
 import LetterFormat from "components/LetterFormat";
@@ -33,6 +33,7 @@ const TableCase = ({
   userNames,
   editColum,
   deleteColum,
+  reiterateColum = false,
   detailModal,
   modalCaseDetail,
   navigationRow,
@@ -56,6 +57,7 @@ const TableCase = ({
 }) => {
   const [url, setUrl] = useState(null);
   const [modalDelete, setModalDelete] = useState(false);
+  const [modalReiterate, setModalReiterate] = useState(false);
   const [id, setId] = useState(null);
 
   //checkbox
@@ -110,6 +112,26 @@ const TableCase = ({
       })
       .finally(() => {
         setModalDelete(false);
+      });
+  };
+
+  //Reiterate Case
+  const Reiterate = (url, id) => {
+    setId(id);
+    setUrl(url);
+    setModalReiterate(true);
+  };
+
+  const reiterate = (url) => {
+    reiterateCase(url)
+      .then((response) => {
+        setIfModify(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setModalReiterate(false);
       });
   };
 
@@ -319,6 +341,14 @@ const TableCase = ({
                   {!disableColumOption && editColum && (
                     <CrudButton type="edit" to={`${basePath}/cases/edit/${itemNumber}`} checkPermRoute />
                   )}
+                  {!disableColumOption && reiterateColum && (
+                    <CrudButton 
+                      type="reiterate" 
+                      onClick={() => Reiterate(caseItem.url, itemNumber)} 
+                      permissions="change_case" 
+                      disabled={stateNames[caseItem.state]?.toLowerCase() !== "open"}
+                    />
+                  )}
                   {!disableColumOption &&
                     deleteColum &&
                     (deleteColumForm ? (
@@ -339,6 +369,14 @@ const TableCase = ({
         showModal={modalDelete}
         onHide={() => setModalDelete(false)}
         ifConfirm={() => removeCase(url)}
+      />
+      <ModalConfirm
+        type="reiterate"
+        component={t("ngen.case_one")}
+        name={id}
+        showModal={modalReiterate}
+        onHide={() => setModalReiterate(false)}
+        ifConfirm={() => reiterate(url)}
       />
     </React.Fragment>
   );

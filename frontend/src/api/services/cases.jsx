@@ -180,4 +180,21 @@ const mergeCase = (urlParent, urlChildren) => {
     });
 };
 
-export { getCases, getAllCases, getOrderingCases, getCase, postCase, putCase, deleteCase, mergeCase, patchCase, getMinifiedCase };
+const reiterateCase = (url) => {
+  let messageSuccess = i18next.t("ngen.reiterate.case.success");
+  let messageError = i18next.t("ngen.reiterate.case.error") + " .";
+  return apiInstance
+    .post(url + "reiterate/")
+    .then((response) => {
+      setAlert(messageSuccess, "success", "case");
+      return response;
+    })
+    .catch((error) => {
+      let statusText = error.response.statusText;
+      messageError += statusText;
+      setAlert(messageError, "error", "case");
+      return Promise.reject(error);
+    });
+};
+
+export { getCases, getAllCases, getOrderingCases, getCase, postCase, putCase, deleteCase, mergeCase, patchCase, getMinifiedCase, reiterateCase };

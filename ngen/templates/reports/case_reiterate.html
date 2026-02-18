@@ -9,18 +9,33 @@
             <strong>{% translate 'Case state' %}:</strong> {{ case.state.name }}
         </small>
         <br>
-        <span class="badge badge-info">
-            {% translate 'Updated with new evidence' %}
-        </span>
+        {% if has_new_evidence %}
+            <span class="badge badge-info">
+                {% translate 'Updated with new evidence' %}
+            </span>
+        {% else %}
+            <span class="badge badge-warning">
+                {% translate 'Reminder - No new evidence' %}
+            </span>
+        {% endif %}
     {% endblock %}
 
     {% block content_body %}
-        <p class="lead">
-            {% blocktranslate trimmed with id=case.uuid %}
-                This is a follow-up communication for case {{ id }} 
-                with additional evidence attached.
-            {% endblocktranslate %}
-        </p>
+        {% if has_new_evidence %}
+            <p class="lead">
+                {% blocktranslate trimmed with id=case.uuid count=new_evidence_count %}
+                    This is a follow-up communication for case {{ id }} 
+                    with {{ count }} new evidence file(s) attached.
+                {% endblocktranslate %}
+            </p>
+        {% else %}
+            <p class="lead">
+                {% blocktranslate trimmed with id=case.uuid %}
+                    This is a follow-up reminder for case {{ id }}.
+                    There is no new evidence since the last communication.
+                {% endblocktranslate %}
+            </p>
+        {% endif %}
         {% for event in events %}
             {% include "reports/event_detail.html" with event=event %}
         {% endfor %}

@@ -485,9 +485,11 @@ class Case(
         
         # Reiterar en canales de eventos
         for event in self.events.all():
+            # Obtener evidencia del caso y del evento como objetos
+            event_evidence = list(self.evidence.all()) + list(event.evidence.all())
             for channel in event.communication_channels.all():
                 channel.communicate_reiterate(
-                    all_evidence=self.get_attachments_for_events_v2([event]),
+                    all_evidence=event_evidence,
                     subject=self.subject_v2(channel_type="AFFECTED-REITERATE"),
                     template=template,
                     template_params=template_params,

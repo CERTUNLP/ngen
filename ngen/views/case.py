@@ -322,6 +322,24 @@ class CaseViewSet(BaseCommunicationChannelsViewSet):
     serializer_class = serializers.CaseSerializer
     permission_classes = [CustomModelPermissions]
 
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="reiterate",
+        url_name="reiterate",
+        permission_classes=[ActionPermission],
+    )
+    def reiterate_case(self, request, pk=None):
+        """
+        Reiterate communication for a case with new evidence `/case/<pk>/reiterate/`.
+        """
+        case = self.get_object()
+        case.communicate_reiterate()
+        return Response(
+            {"message": gettext_lazy(f"Case {case.pk} communication reiterated successfully")},
+            status=status.HTTP_200_OK,
+        )
+
 
 class NetworkAdminCaseViewSet(CaseViewSet):
     serializer_class = serializers.NetworkAdminCaseSerializer

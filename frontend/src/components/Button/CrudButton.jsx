@@ -90,6 +90,13 @@ const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissi
       icon: " 	fas fa-arrow-right",
       text: "",
     },
+    reiterate: {
+      class: text ? "text-capitalize" : "btn-icon btn-rounded",
+      variant: "outline-info",
+      title: t("crud.reiterate"),
+      icon: "fas fa-redo",
+      text: text ? text : ""
+    },
   };
 
   let component = (
