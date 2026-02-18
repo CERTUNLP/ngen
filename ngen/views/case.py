@@ -90,6 +90,7 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
     action_permissions = {
         "mark_solved": "ngen.can_mark_event_as_solved",
         "retest_event": "ngen.can_retest_event",
+        "simulate_event": "ngen.add_event",  # use create event permission for simulate action
     }
 
     @action(
