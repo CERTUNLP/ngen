@@ -271,6 +271,55 @@ class CommunicationChannel(AuditModelMixin):
         messages = self.get_messages()
         return messages.last() if messages else None
 
+    def get_evidence_since_last_communication(self, all_evidence: list) -> list:
+        """
+        Filtra evidencias creadas después de la última comunicación del canal.
+        Si no hay comunicaciones previas, retorna todas las evidencias.
+        """
+        last_msg = self.get_last_message()
+        
+        if not last_msg:
+            return all_evidence  # Primera comunicación
+        
+        return [
+            evidence for evidence in all_evidence 
+            if evidence.created > last_msg.created
+        ]
+
+    def communicate_reiterate(
+            self,
+            all_evidence: list,
+            subject: str = None,
+            template: str = None,
+            template_params: dict = None,
+            **kwargs
+        ):
+        """
+        Reitera comunicación enviando SOLO evidencia nueva desde última comunicación.
+        """
+        new_evidence = self.get_evidence_since_last_communication(all_evidence)
+        
+        if not new_evidence:
+            # Opcionalmente: enviar de todas formas o retornar sin enviar
+            return None
+        
+        # Formatear evidencias como adjuntos
+        attachments = [
+            {
+                "name": ev.attachment_name,
+                "file": ev.directory_path(ev.filename)
+            }
+            for ev in new_evidence
+        ]
+    
+        return self.communicate(
+            subject=subject,
+            template=template,
+            template_params=template_params,
+            attachments=attachments,
+            **kwargs
+        )
+
     def communicate(
         self,
         subject: Optional[str] = None,

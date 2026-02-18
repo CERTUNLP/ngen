@@ -464,6 +464,39 @@ class Case(
             self.communicate_intern(template, template_params, send_attachments)
         self.notification_count += 1
 
+    # En Case:
+    def communicate_reiterate(self, template="case_reiterate"):
+        """Reitera comunicación con evidencia nueva en todos los canales"""
+        template_params = self.template_params
+        
+        # Reiterar en canal interno
+        if config.CREATE_INTERNAL_COMMUNICATION_CHANNEL:
+            intern_channel = self.communication_channels.filter(
+                communication_types__type='intern'
+            ).first()
+            
+            if intern_channel:
+                intern_channel.communicate_reiterate(
+                    all_evidence=self.evidence_all,
+                    subject=self.subject_v2(channel_type="INTERN-REITERATE"),
+                    template=template,
+                    template_params=template_params
+                )
+        
+        # Reiterar en canales de eventos
+        for event in self.events.all():
+            for channel in event.communication_channels.all():
+                channel.communicate_reiterate(
+                    all_evidence=self.get_attachments_for_events_v2([event]),
+                    subject=self.subject_v2(channel_type="AFFECTED-REITERATE"),
+                    template=template,
+                    template_params=template_params,
+                    bcc_recipients=self.get_team_and_assigned_contacts()
+                )
+        
+        self.notification_count += 1
+        self.save()
+
     def get_team_and_assigned_contacts(self):
         """
         Returns a list of internal contacts of the case.

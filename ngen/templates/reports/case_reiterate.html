@@ -1,0 +1,28 @@
+{% extends 'reports/content_base.html' %}
+{% load i18n %}
+{% language lang %}
+    {% block content_header %}
+        <h4>
+            {% translate 'Case Follow-up' %}: {{ case.uuid }}
+        </h4>
+        <small class="lead">
+            <strong>{% translate 'Case state' %}:</strong> {{ case.state.name }}
+        </small>
+        <br>
+        <span class="badge badge-info">
+            {% translate 'Updated with new evidence' %}
+        </span>
+    {% endblock %}
+
+    {% block content_body %}
+        <p class="lead">
+            {% blocktranslate trimmed with id=case.uuid %}
+                This is a follow-up communication for case {{ id }} 
+                with additional evidence attached.
+            {% endblocktranslate %}
+        </p>
+        {% for event in events %}
+            {% include "reports/event_detail.html" with event=event %}
+        {% endfor %}
+    {% endblock %}
+{% endlanguage %}
