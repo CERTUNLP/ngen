@@ -464,32 +464,42 @@ class Case(
             self.communicate_intern(template, template_params, send_attachments)
         self.notification_count += 1
 
-    # En Case:
+
     def communicate_reiterate(self, template="case_reiterate"):
         """Reitera comunicación con evidencia nueva en todos los canales"""
         template_params = self.template_params
         
+        # Recolectar TODA la evidencia: caso + eventos + eventos hijos
+        all_evidence = list(self.evidence.all())
+        for event in self.events.all():
+            all_evidence.extend(list(event.evidence.all()))
+            # Agregar evidencia de eventos hijos (merged events)
+            for child_event in event.children.all():
+                all_evidence.extend(list(child_event.evidence.all()))
+        
         # Reiterar en canal interno
         if config.CREATE_INTERNAL_COMMUNICATION_CHANNEL:
-            intern_channel = self.communication_channels.filter(
-                communication_types__type='intern'
-            ).first()
-            
-            if intern_channel:
-                intern_channel.communicate_reiterate(
-                    all_evidence=self.evidence_all,
-                    subject=self.subject_v2(channel_type="INTERN-REITERATE"),
-                    template=template,
-                    template_params=template_params
-                )
+            intern_channel = ngen.models.CommunicationChannel.get_or_create_channel_with_intern(
+                channelable=self
+            )
+            intern_channel.communicate_reiterate(
+                all_evidence=all_evidence,
+                subject=self.subject_v2(channel_type="INTERN-REITERATE"),
+                template=template,
+                template_params=template_params
+            )
         
-        # Reiterar en canales de eventos
+        # Reiterar en canales de eventos afectados
         for event in self.events.all():
-            # Obtener evidencia del caso y del evento como objetos
-            event_evidence = list(self.evidence.all()) + list(event.evidence.all())
+            # Crear canales de comunicación si no existen
+            ngen.models.CommunicationChannel.get_or_create_channel_with_affected(
+                channelable=event
+            )
+            
+            # Enviar reiteración a todos los canales del evento
             for channel in event.communication_channels.all():
                 channel.communicate_reiterate(
-                    all_evidence=event_evidence,
+                    all_evidence=all_evidence,
                     subject=self.subject_v2(channel_type="AFFECTED-REITERATE"),
                     template=template,
                     template_params=template_params,
