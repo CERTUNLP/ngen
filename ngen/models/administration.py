@@ -74,3 +74,7 @@ class Tlp(AuditModelMixin, SlugModelMixin, ValidationModelMixin):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def get_default(cls):
+        return cls.objects.get(name__iexact=config.TLP_DEFAULT)

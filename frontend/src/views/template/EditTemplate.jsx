@@ -116,12 +116,12 @@ const EditTemplate = () => {
       body.url,
       body.address_value,
       body.active,
-      body.priority,
       body.event_taxonomy,
       body.event_feed,
       body.case_lifecycle,
+      body.case_state,
       body.case_tlp,
-      body.case_state
+      body.case_priority,
     )
       .then(() => {
         window.location.href = "/templates";

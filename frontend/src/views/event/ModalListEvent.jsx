@@ -127,6 +127,7 @@ const ModalListEvent = (props) => {
             disableCheckboxAll={false}
             disableColumnDelete={true}
             disableTemplate={true}
+            disableMarkSolved={true}
             disableColumnEdit={true}
             detailModal={false}
             modalEventDetail={props.modalEventDetail}

@@ -19,11 +19,11 @@ const CreateTemplate = () => {
     domain: "",
     address_value: formEvent.address_value ? formEvent.address_value : "",
     active: true,
-    priority: "-1",
+    case_priority: null,
     event_taxonomy: formEvent.taxonomy ? formEvent.taxonomy : "",
     event_feed: formEvent.feed ? formEvent.feed : "",
     case_lifecycle: "auto",
-    case_tlp: "-1",
+    case_tlp: null,
     case_state: "-1"
   };
   const [body, setBody] = useState(formEmpty);
@@ -120,12 +120,12 @@ const CreateTemplate = () => {
     postTemplate(
       body.address_value,
       body.active,
-      body.priority,
       body.event_taxonomy,
       body.event_feed,
       body.case_lifecycle,
+      body.case_state,
       body.case_tlp,
-      body.case_state
+      body.case_priority,
     )
       .then(() => {
         window.location.href = "/templates";

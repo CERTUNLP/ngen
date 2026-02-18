@@ -84,7 +84,7 @@ class TodoTaskSerializer(AuditSerializerMixin):
 class TaxonomyMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Taxonomy
-        fields = ["url", "name"]
+        fields = ["url", "name", "group"]
 
 
 class TaxonomyGroupMinifiedSerializer(serializers.ModelSerializer):

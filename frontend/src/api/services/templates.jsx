@@ -41,18 +41,18 @@ const getTemplate = (url) => {
     });
 };
 
-const postTemplate = (address_value, active, priority, event_taxonomy, event_feed, case_lifecycle, case_tlp, case_state) => {
+const postTemplate = (address_value, active, event_taxonomy, event_feed, case_lifecycle, case_state, case_tlp, case_priority) => {
   let messageSuccess = `La plantilla se pudo crear correctamente`;
   let messageError = `La plantilla no se pudo crear`;
   const body = {
     address_value: address_value,
     active: active,
-    priority: priority,
     event_taxonomy: event_taxonomy,
     event_feed: event_feed,
     case_lifecycle: case_lifecycle,
     case_tlp: case_tlp,
-    case_state: case_state
+    case_state: case_state,
+    case_priority: case_priority,
   };
   return apiInstance
     .post(COMPONENT_URL.template, body)
@@ -73,7 +73,7 @@ const postTemplate = (address_value, active, priority, event_taxonomy, event_fee
     });
 };
 
-const putTemplate = (url, address_value, active, priority, event_taxonomy, event_feed, case_lifecycle, case_tlp, case_state) => {
+const putTemplate = (url, address_value, active, event_taxonomy, event_feed, case_lifecycle, case_state, case_tlp, case_priority) => {
   let messageSuccess = `La plantilla se pudo editar correctamente`;
   let messageError = `La plantilla no se pudo editar`;
   return apiInstance
@@ -82,12 +82,12 @@ const putTemplate = (url, address_value, active, priority, event_taxonomy, event
       cidr: "",
       domain: "",
       active: active,
-      priority: priority,
       event_taxonomy: event_taxonomy,
       event_feed: event_feed,
       case_lifecycle: case_lifecycle,
       case_tlp: case_tlp,
-      case_state: case_state
+      case_state: case_state,
+      case_priority: case_priority,
     })
     .then((response) => {
       setAlert(messageSuccess, "success", "template");

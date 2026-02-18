@@ -4,33 +4,33 @@ import { getEvent } from "api/services/events";
 import LetterFormat from "../../components/LetterFormat";
 
 const EventComponent = ({ event }) => {
-  
   const { data, isLoading, error } = useQuery({
-    queryKey: ['eventKey', event], // Every event is identified by its url 
-    queryFn: () => getEvent(event).then((res) => res.data), // getEvent receives an URL and retrieves an event
-    enabled: !!event, // Only runs if event is valid
-    staleTime: 5 * 60 * 1000, 
+    queryKey: ['eventKey', event],
+    queryFn: () => getEvent(event).then((res) => res.data),
+    enabled: !!event, // Seguridad: no dispara la petición si event es null/undefined
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading || error) return null;
 
-  const selectedEvent = data;
-  return (
-    <div>
-      <LetterFormat 
-  useBadge={true} 
-  stringToDisplay={
-    selectedEvent
-      ? `${selectedEvent.domain || selectedEvent.cidr} - ${selectedEvent.initial_taxonomy_slug || ''}`
-      : ''
+  // Si la API respondió pero la data está vacía
+  if (!data) {
+    console.warn(`EventComponent: No se pudo recuperar data para el evento: ${event}`);
+    return <span />;
   }
-  bgcolor={"#0f0"} 
-/>
 
-    </div>
+  const displayText = `${data.domain || data.cidr || 'N/A'} - ${data.initial_taxonomy_slug || ''}`;
+
+  return (
+    <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <LetterFormat 
+        useBadge={true} 
+        stringToDisplay={displayText}
+        bgcolor={"#0f0"} 
+      />
+    </span>
   );
 };
 

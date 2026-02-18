@@ -5,31 +5,33 @@ import LetterFormat from "../../components/LetterFormat";
 
 
 const UserComponent = ({ user }) => {
-
-
-  // Fetch user data using useQuery.
   const { data, isLoading, error } = useQuery({
-    queryKey: ['userKey'], // Single query key to fetch all TLP data
+    queryKey: ['userKey'],
     queryFn: getQueryUser,
-
-    staleTime: 5 * 60 * 1000, 
-    refetchOnWindowFocus: false, // Disable refetching when window is focused
-    refetchOnReconnect: false, // Disable refetching when the app reconnects
-
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading || error) return null;
 
   const selectedUser = data?.[user];
-// User Table display??
-  return (
 
-        <div>
-      <LetterFormat useBadge={true} stringToDisplay={selectedUser.username}  bgcolor={"#0f0"}/> 
-        </div>
+  if (!user || !selectedUser) {
+    console.warn(`UserComponent: Usuario "${user}" no encontrado.`);
+    return <span />;
+  }
+
+  return (
+    <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <LetterFormat 
+        useBadge={true} 
+        stringToDisplay={selectedUser.username || selectedUser.first_name || "Unknown"}  
+        bgcolor={"#0f0"}
+      /> 
+    </span>
   );
-};  
+};
 
 
 export default UserComponent;

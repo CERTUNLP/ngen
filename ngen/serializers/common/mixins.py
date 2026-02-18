@@ -111,12 +111,12 @@ class MergeSerializerMixin:
             and self.instance
             and not self.instance.mergeable
         ):
+            bf = []
             if self.instance.blocked:
-                blocked_fields = self.blocked_fields()
-            elif self.instance.merged:
-                blocked_fields = []
+                bf = self.instance.blocked_fields
+
             for field in self.instance._meta.fields:
-                if field.name in blocked_fields:
+                if field.name in bf:
                     kwargs = extra_kwargs.get(field.name, {})
                     kwargs["read_only"] = True
                     if field.is_relation:

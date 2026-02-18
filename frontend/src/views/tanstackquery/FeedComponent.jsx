@@ -5,31 +5,35 @@ import LetterFormat from "../../components/LetterFormat";
 
 
 const FeedComponent = ({ feed }) => {
-
-
-  // Fetch data using useQuery, including data transformation
   const { data, isLoading, error } = useQuery({
-    queryKey: ['feedKey'], // Single query key to fetch all TLP data
+    queryKey: ['feedKey'],
     queryFn: getQueryFeed,
-
     staleTime: 5 * 60 * 1000, 
-    refetchOnWindowFocus: false, // Disable refetching when window is focused
-    refetchOnReconnect: false, // Disable refetching when the app reconnects
-
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading) return null; // O un spinner pequeño si prefieres
+  if (error) return null;
 
   const element = data?.[feed];
 
-  return (
+  // Validación de existencia
+  if (!feed || !element) {
+    console.warn(`FeedComponent: El valor "${feed}" no se encontró en la data.`);
+    return <span />; 
+  }
 
-        <div>
-      <LetterFormat useBadge={true} stringToDisplay={element.name} bgcolor={"#03fca5"}/>
-        </div>
+  return (
+    <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <LetterFormat 
+        useBadge={true} 
+        stringToDisplay={element.name} 
+        bgcolor={"#03fca5"}
+      />
+    </span>
   );
-};  
+};
 
 
 export default FeedComponent;

@@ -35,19 +35,19 @@ class CaseTest(TestCase):
 
         cls.template1 = CaseTemplate.objects.create(
             domain="info.unlp.edu.ar",
-            priority=Priority.objects.get(slug="critical"),
             event_taxonomy=Taxonomy.objects.get(slug="blacklist"),
             event_feed=Feed.objects.get(slug="csirtamericas"),
             case_tlp=Tlp.objects.get(slug="clear"),
             case_state=State.objects.get(slug="staging"),
+            case_priority=Priority.objects.get(slug="critical"),
         )
         cls.template2 = CaseTemplate.objects.create(
             domain="alumnos.unlp.edu.ar",
-            priority=Priority.objects.get(slug="high"),
             event_taxonomy=Taxonomy.objects.get(slug="botnet"),
             event_feed=Feed.objects.get(slug="bro"),
             case_tlp=Tlp.objects.get(slug="green"),
             case_state=State.objects.get(slug="staging"),
+            case_priority=Priority.objects.get(slug="high"),
         )
 
         cls.case = Case.objects.create(
@@ -99,7 +99,7 @@ class CaseTest(TestCase):
         This will test Case lifecycle attribute
         """
         self.assertEqual(self.case.lifecycle, self.lifecycle)
-        
+
     def validate_unique_case_tempalte(self):
         """
         This will test Case casetemplate_creator attribute

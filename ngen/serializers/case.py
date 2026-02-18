@@ -100,6 +100,7 @@ class EventSerializer(
             "initial_taxonomy_slug",
             "solved_marks",
             "tags",
+            "avoid_auto_merge",
         )
 
     def get_comments(self, obj):
@@ -115,6 +116,7 @@ class EventSerializer(
         The blocked fields are defined in the config.BLOCKED_FIELDS_EVENT setting.
         If the setting is not defined, an empty list is returned.
         """
+        print(config.BLOCKED_FIELDS_EVENT)
         if not config.BLOCKED_FIELDS_EVENT:
             return []
         return config.BLOCKED_FIELDS_EVENT.split(",")

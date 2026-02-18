@@ -586,7 +586,7 @@ class AnnouncementTestCase(TestCase):
         Creating case template and coinciding event. Testing correct case integration and email sending, as well as attachments.
         """
         self.case_template = CaseTemplate.objects.create(
-            priority=self.priority,
+            case_priority=self.priority,
             cidr=None,
             domain=self.domain,
             event_taxonomy=self.taxonomy,
@@ -664,7 +664,6 @@ class AnnouncementTestCase(TestCase):
         Creating case template and coinciding event. Testing correct case integration and email sending, as well as attachments.
         """
         self.case_template = CaseTemplate.objects.create(
-            priority=self.priority,
             cidr=None,
             domain=self.domain,
             event_taxonomy=self.taxonomy,
@@ -672,6 +671,7 @@ class AnnouncementTestCase(TestCase):
             case_tlp=self.tlp,
             case_state=State.objects.get(name="Open"),
             case_lifecycle="auto_open",
+            case_priority=self.priority,
             active=True,
         )
         self.event = Event.objects.create(
@@ -760,7 +760,7 @@ class AnnouncementTestCase(TestCase):
 
         # Creating new case template + event
         self.case_template = CaseTemplate.objects.create(
-            priority=self.priority,
+            case_priority=self.priority,
             cidr=None,
             domain="test.com",
             event_taxonomy=self.taxonomy,
@@ -877,7 +877,7 @@ class AnnouncementTestCase(TestCase):
         # Case and event creation
 
         self.case_template = CaseTemplate.objects.create(
-            priority=self.priority,
+            case_priority=self.priority,
             cidr=None,
             domain="test1.com",
             event_taxonomy=self.taxonomy,
@@ -888,7 +888,7 @@ class AnnouncementTestCase(TestCase):
             active=True,
         )
         self.case_template = CaseTemplate.objects.create(
-            priority=self.priority,
+            case_priority=self.priority,
             cidr=None,
             domain="test2.com",
             event_taxonomy=self.taxonomy,

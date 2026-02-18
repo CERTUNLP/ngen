@@ -11,6 +11,7 @@ import { getMinifiedUser } from "api/services/users";
 import FormGetName from "components/Form/FormGetName";
 import DateShowField from "components/Field/DateShowField";
 import PermissionCheck from "components/Auth/PermissionCheck";
+import PriorityComponent from "views/tanstackquery/PriorityComponent";
 
 const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder, basePath = "" }) => {
   const [contact, setContact] = useState("");
@@ -174,7 +175,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                 <td>{labelContact[contact.type]}</td>
                 <td>{contact.username}</td>
                 <td>
-                  <PriorityButton url={contact.priority} />
+                  <PriorityComponent priority={contact.priority} />
                 </td>
                 <PermissionCheck permissions={["view_contactcheck","add_contactcheck"]}>
                   <td>

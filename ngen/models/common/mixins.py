@@ -166,7 +166,11 @@ class MergeModelMixin(LifecycleModelMixin, TreeModelMixin):
 
     @property
     def mergeable(self) -> bool:
-        return not self.merged and not self.blocked
+        return (
+            not self.merged
+            and not self.blocked
+            and not getattr(self, "avoid_auto_merge", False)
+        )
 
     @property
     def merged(self) -> bool:
@@ -327,7 +331,6 @@ class AddressManager(NetManager):
         if address.cidr:
             return self.cidr_parents_of(str(address.address), queryset)
         elif address.domain:
-            print(address, address.domain, address.address)
             return self.domain_parents_of(str(address.address), queryset)
         return self.none()
 

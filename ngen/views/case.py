@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy
 from rest_framework import filters, viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import AccessToken
 
 from ngen import models, serializers
 from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
@@ -156,6 +155,125 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         retest_event_kintun.delay(event_id=event.id)
         return Response(
             {"message": gettext_lazy(f"Task retest event for {event.pk} launched")},
+            status=status.HTTP_200_OK,
+        )
+
+    @action(
+        methods=["POST"],
+        detail=False,
+        url_path="simulate",
+        url_name="simulate",
+        permission_classes=[ActionPermission],
+    )
+    def simulate_event(self, request):
+        """
+        Simulates event creation. Returns the network, contact, taxonomy, casetemplate, merged event.
+        """
+        # 1. Usamos el serializer para validar los datos que entran (IP, taxonomía, etc.)
+        serializer = serializers.EventSerializer(
+            data=request.data, context={"request": request, "view": self}
+        )
+        serializer.is_valid(raise_exception=True)
+
+        # 2. Filtrar solo los campos que existen en el modelo Event
+        # Esto evita el AttributeError con 'artifacts' y otros campos calculados
+        model_fields = [f.name for f in models.Event._meta.get_fields()]
+        # También incluimos los campos que terminan en _id para las FK
+        event_data = {
+            k: v
+            for k, v in serializer.validated_data.items()
+            if k in model_fields or k.endswith("_id")
+        }
+
+        # eliminamos campos que puedan causar problemas al crear la instancia:
+        event_data.pop("artifacts", None)
+        # 2. Creamos la instancia EN MEMORIA (sin .save())
+        # Esto permite que los métodos del modelo funcionen pero no afecta la DB
+        event = models.Event(**event_data)
+        if not event.reporter:
+            event.reporter = request.user
+
+        # Determinar si es un evento nuevo o uno existente (para simular ambos casos)
+        # si el evento ya existe (tiene uuid o url), se simula como si se estuviera editando
+        uuid = request.data.get("uuid", None)
+        is_new = request.data.get("url", uuid) is None
+
+        # 3. Ejecutamos manualmente la lógica de los hooks
+        # Nota: Como no llamamos a save(), los @hook no se disparan solos
+
+        # A. Ver a qué red se asignaría
+        potential_network = event.get_network()
+        data = event.get_affected_contacts_extended() or [{}]
+        # affected_contacts = list(data.values()) if data else []
+        affected_contacts = next(
+            iter(data[0].values() if isinstance(data[0], dict) else [data[0]]),
+            [],
+        )
+
+        # B. Ver si se mergearía con alguien
+        potential_merge_parent = event.get_merge_target()
+        if (
+            potential_merge_parent
+            and not is_new
+            and potential_merge_parent.uuid == uuid
+        ):
+            # Si el evento ya existe y el potencial merge parent es él mismo, no aplicaría merge
+            potential_merge_parent = None
+
+        # C. Ver si aplicaría un Template (si no hay merge)
+        # los templates solo se aplican a eventos nuevos, no a eventos existentes editados
+        potential_template = event.get_case_template() if is_new else None
+
+        # Serialización de los objetos
+        serializer_context = {"request": request, "view": self}
+
+        # Serialización de los objetos con el contexto necesario
+        network_data = (
+            serializers.NetworkSerializer(
+                potential_network, context=serializer_context
+            ).data
+            if potential_network
+            else None
+        )
+        contacts_data = (
+            serializers.ContactSerializer(
+                affected_contacts, many=True, context=serializer_context
+            ).data
+            if affected_contacts
+            else []
+        )
+        merge_parent_data = (
+            serializers.EventSerializer(
+                potential_merge_parent, context=serializer_context
+            ).data
+            if potential_merge_parent
+            else None
+        )
+        template_data = (
+            serializers.CaseTemplateSerializer(
+                potential_template, context=serializer_context
+            ).data
+            if potential_template
+            else None
+        )
+
+        applies_merge = (
+            is_new and potential_merge_parent is not None and not event.avoid_auto_merge
+        )
+
+        return Response(
+            {
+                "network": network_data,
+                "affected_contacts": contacts_data,
+                "parent_to_merge": merge_parent_data,
+                "template": template_data,
+                "applies_merge": applies_merge,
+                "applies_template": not applies_merge
+                and potential_template is not None,
+                "simulated_event_data": serializers.EventSerializer(
+                    event, context=serializer_context
+                ).data,
+            },
             status=status.HTTP_200_OK,
         )
 

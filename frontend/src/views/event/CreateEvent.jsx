@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormEvent from "./components/FormEvent";
-import { postEvent } from "../../api/services/events";
+import { postEvent, simulateEvent } from "../../api/services/events";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import { getMinifiedFeed } from "../../api/services/feeds";
@@ -29,7 +29,8 @@ const CreateEvent = ({ routeParams }) => {
     case: "",
     tasks: [],
     evidence: [],
-    tags: []
+    tags: [],
+    avoid_auto_merge: false
   };
   const [body, setBody] = useState(formEmpty);
   const [evidence, setEvidence] = useState([]);
@@ -161,7 +162,7 @@ const CreateEvent = ({ routeParams }) => {
     updateTags();
   }, [contactCreated]);
 
-  const createEvent = () => {
+  const createEvent = ({ simulate = false } = {}) => {
     const formDataEvent = new FormData();
 
     formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
@@ -178,6 +179,7 @@ const CreateEvent = ({ routeParams }) => {
     formDataEvent.append("tasks", body.tasks);
     formDataEvent.append("address_value", body.address_value);
     formDataEvent.append("tags", body.tags);
+    formDataEvent.append("avoid_auto_merge", body.avoid_auto_merge);
     if (evidence !== null) {
       for (let index = 0; index < evidence.length; index++) {
         formDataEvent.append("evidence", evidence[index]);
@@ -190,22 +192,31 @@ const CreateEvent = ({ routeParams }) => {
       formDataEvent.append("artifacts", item);
     });
 
-    postEvent(formDataEvent)
-      .then((response) => {
-        if (response.data.parent !== null) {
-          localStorage.setItem("event", response.data.parent);
-          localStorage.setItem("return", "List events");
-          localStorage.setItem("button return", "");
-          localStorage.setItem("navigation", "");
-          navigate("/events/view");
-        } else {
-          navigate("/events");
-        }
-      })
-      .catch((error) => {
-        setShowAlert(true);
-        console.log(error);
-      });
+    if (simulate) {
+      simulateEvent(formDataEvent)
+        .then(() => {})
+        .catch((error) => {
+          setShowAlert(true); //hace falta?
+          console.log(error);
+        });
+    } else {
+      postEvent(formDataEvent)
+        .then((response) => {
+          if (response.data.parent !== null) {
+            localStorage.setItem("event", response.data.parent);
+            localStorage.setItem("return", "List events");
+            localStorage.setItem("button return", "");
+            localStorage.setItem("navigation", "");
+            navigate("/events");
+          } else {
+            navigate("/events");
+          }
+        })
+        .catch((error) => {
+          setShowAlert(true);
+          console.log(error);
+        });
+    }
   };
 
   return (
@@ -213,6 +224,7 @@ const CreateEvent = ({ routeParams }) => {
       <div>
         <FormEvent
           createEvent={createEvent}
+          simulateEvent={() => {return createEvent({simulate: true})}}
           setBody={setBody}
           body={body}
           feeds={feeds}

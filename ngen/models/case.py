@@ -627,6 +627,12 @@ class Event(
     node_order_by = ["id"]
     comments = GenericRelation(Comment)
     tags = TaggableManager(through="ngen.TaggedObject", blank=True)
+    avoid_auto_merge = models.BooleanField(
+        default=False,
+        help_text=gettext_lazy(
+            "If true, this event will not be automatically merged with other events even if they have the same taxonomy, feed, cidr and domain. Can be merged manually with any event."
+        ),
+    )
 
     objects = EventManager()
 
@@ -701,56 +707,76 @@ class Event(
             if self.taxonomy.alias_of:
                 self.taxonomy = self.taxonomy.alias_of
 
+    def get_merge_target(self):
+        """
+        Returns the event that should be merged with or None.
+        """
+        self.update_taxonomy()
+
+        if not config.AUTO_MERGE_EVENTS:
+            return None
+
+        extra_filters = {}
+        if config.AUTO_MERGE_BY_FEED:
+            extra_filters.update({"feed": self.feed})
+        if config.AUTO_MERGE_TIME_WINDOW_MINUTES:
+            minutes_limit = config.AUTO_MERGE_TIME_WINDOW_MINUTES
+            date_limit = datetime.now() - timedelta(minutes=minutes_limit)
+            extra_filters.update({"date__gte": date_limit})
+
+        event = (
+            self.__class__.objects.filter(
+                Q(case__isnull=True) | Q(case__state__blocked=False),
+                parent__isnull=True,
+                cidr=self.cidr,
+                domain=self.domain,
+                taxonomy=self.taxonomy,
+                **extra_filters,
+            )
+            .order_by("id")
+            .last()
+        )
+
+        # Check if event is mergeable (not blocked, not parent, not already merged)
+        # Should not be merged because last query will return events without parent
+        # But if it's blocked, it should not be merged
+        if event and event.mergeable:
+            return event
+
+    def get_network(self):
+        """
+        Get the network of the event based on the cidr or domain.
+        """
+        return ngen.models.Network.objects.parent_of(self).first()
+
+    def get_case_template(self):
+        """
+        Get the case template of the event based on the taxonomy and feed.
+        """
+        return (
+            CaseTemplate.objects.parents_of(self)
+            .filter(event_taxonomy=self.taxonomy, event_feed=self.feed, active=True)
+            .first()
+        )
+
     @hook(BEFORE_CREATE, priority=HIGHEST_PRIORITY)
     def auto_merge(self):
-        self.update_taxonomy()
-        if config.AUTO_MERGE_EVENTS:
-            extra_filters = {}
-            if config.AUTO_MERGE_BY_FEED:
-                extra_filters.update({"feed": self.feed})
-            if config.AUTO_MERGE_TIME_WINDOW_MINUTES:
-                minutes_limit = config.AUTO_MERGE_TIME_WINDOW_MINUTES
-                date_limit = datetime.now() - timedelta(minutes=minutes_limit)
-                extra_filters.update({"date__gte": date_limit})
-
-            # This will find the last event that is not merged and has the same cidr, domain and taxonomy
-            # If this event is blocked it will not be merged
-            event = (
-                self.__class__.objects.filter(
-                    Q(case__isnull=True) | Q(case__state__blocked=False),
-                    parent__isnull=True,
-                    cidr=self.cidr,
-                    domain=self.domain,
-                    taxonomy=self.taxonomy,
-                    **extra_filters,
-                )
-                .order_by("id")
-                .last()
-            )
-
-            # Check if event is mergeable (not blocked, not parent, not already merged)
-            # Should not be merged because last query will return events without parent
-            # But if it's blocked, it should not be merged
-            if event and event.mergeable:
-                if self.parent is None:
-                    self.parent = event
-                    # Update parent modified date
-                    self.parent.save()
+        new_parent_event = self.get_merge_target()
+        if new_parent_event and not self.avoid_auto_merge and self.parent is None:
+            self.parent = new_parent_event
+            # Update parent modified date
+            self.parent.save()
 
     @hook(BEFORE_CREATE)
     @hook(BEFORE_UPDATE, when="network", has_changed=True)
     def network_assign(self):
-        self.network = ngen.models.Network.objects.parent_of(self).first()
+        self.network = self.get_network()
 
     @hook(AFTER_CREATE)
     def create_case(self):
         """Check if case should be created and create it"""
         if not self.parent:
-            template = (
-                CaseTemplate.objects.parents_of(self)
-                .filter(event_taxonomy=self.taxonomy, event_feed=self.feed, active=True)
-                .first()
-            )
+            template = self.get_case_template()
             if template:
                 self.case = template.create_case(events=[self])
 
@@ -1026,18 +1052,29 @@ class Evidence(AuditModelMixin, ValidationModelMixin):
         super().save(*args, **kwargs)
 
 
-class CaseTemplate(
-    AuditModelMixin, PriorityModelMixin, AddressModelMixin, ValidationModelMixin
-):
+class CaseTemplate(AuditModelMixin, AddressModelMixin, ValidationModelMixin):
     event_taxonomy = models.ForeignKey("ngen.Taxonomy", models.PROTECT)
     event_feed = models.ForeignKey("ngen.Feed", models.PROTECT)
 
-    case_tlp = models.ForeignKey("ngen.Tlp", models.PROTECT)
+    case_tlp = models.ForeignKey(
+        "ngen.Tlp",
+        models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="TLP of the cases created with this template. If not set, it will be the same as the first event that triggered the case creation or TLP default if there is no events.",
+    )
     case_state = models.ForeignKey(
         "ngen.State", models.PROTECT, related_name="decision_states"
     )
     case_lifecycle = models.CharField(
         choices=LIFECYCLE, default=LIFECYCLE.auto, max_length=20
+    )
+    case_priority = models.ForeignKey(
+        "Priority",
+        models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="Priority of the cases created with this template. If not set, it will be the same as the first event that triggered the case creation or priority default if there is no events.",
     )
 
     active = models.BooleanField(default=True)
@@ -1064,18 +1101,20 @@ class CaseTemplate(
     def event_domain(self):
         return self.domain
 
-    @property
-    def case_priority(self) -> "Priority":
-        return self.priority
-
     def create_case(self, events: list = []) -> "Case":
         return Case.objects.create(
-            tlp=self.case_tlp,
+            tlp=self.case_tlp
+            or (events[0].tlp if events else ngen.models.Tlp.get_default()),
             lifecycle=self.case_lifecycle,
             state=self.case_state,
             casetemplate_creator=self,
             events=events,
-            priority=self.case_priority,
+            priority=self.case_priority
+            or (
+                events[0].priority
+                if events and events[0].priority
+                else ngen.models.Priority.get_default()
+            ),
         )
 
     @property

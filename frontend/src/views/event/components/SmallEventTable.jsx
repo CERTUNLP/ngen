@@ -108,6 +108,7 @@ const SmallEventTable = ({
                   deleteColumForm={true}
                   disableColumnEdit={true}
                   disableCheckboxAll={true}
+                  disableMarkSolved={true}
                   detailModal={false}
                   modalEventDetail={modalEventDetail}
                   deleteEventFromForm={deleteEventFromForm}

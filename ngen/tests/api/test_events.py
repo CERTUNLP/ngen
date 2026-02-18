@@ -331,7 +331,7 @@ class TestEvent(APITestCaseWithLogin):
         initial_case_count = Case.objects.count()
 
         case_template = CaseTemplate.objects.create(
-            priority_id=2,
+            case_priority_id=2,
             cidr=None,
             domain="*",
             event_taxonomy_id=91,

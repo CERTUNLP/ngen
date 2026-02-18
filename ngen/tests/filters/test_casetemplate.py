@@ -52,7 +52,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
             event_feed=cls.feed_1,
             case_tlp=cls.tlp_1,
             case_state=cls.state_1,
-            priority=cls.priority_1,
+            case_priority=cls.priority_1,
             case_lifecycle="auto",
             active=False,
         )
@@ -67,7 +67,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
             event_feed=cls.feed_2,
             case_tlp=cls.tlp_2,
             case_state=cls.state_2,
-            priority=cls.priority_2,
+            case_priority=cls.priority_2,
             case_lifecycle="auto",
             active=True,
         )
@@ -78,7 +78,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
             event_feed=cls.feed_3,
             case_tlp=cls.tlp_3,
             case_state=cls.state_2,
-            priority=cls.priority_3,
+            case_priority=cls.priority_3,
             case_lifecycle="manual",
             active=True,
         )
@@ -89,7 +89,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
             event_feed=cls.feed_3,
             case_tlp=cls.tlp_3,
             case_state=cls.state_2,
-            priority=cls.priority_3,
+            case_priority=cls.priority_3,
             case_lifecycle="manual",
             active=False,
         )
@@ -234,7 +234,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
         Test filter by priority.
         """
 
-        params = {"priority": self.priority_2}
+        params = {"case_priority": self.priority_2}
 
         filtered_queryset = self.filter(params).qs
 
