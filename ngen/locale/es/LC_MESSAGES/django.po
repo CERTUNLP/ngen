@@ -788,3 +788,33 @@ msgid ""
 msgstr ""
 "Permitir la creación automática de taxonomías y grupos por el slug al crear "
 "un evento"
+
+#: ngen/templates/reports/case_reiterate.html
+msgid "Case Follow-up"
+msgstr "Seguimiento de caso"
+
+#: ngen/templates/reports/case_reiterate.html
+msgid "Updated with new evidence"
+msgstr "Actualizado con nueva evidencia"
+
+#: ngen/templates/reports/case_reiterate.html
+msgid "Reminder - No new evidence"
+msgstr "Recordatorio - Sin nueva evidencia"
+
+#: ngen/templates/reports/case_reiterate.html
+#, python-format
+msgid ""
+"This is a follow-up communication for case %(id)s with %(count)s new "
+"evidence file(s) attached."
+msgstr ""
+"Esta es una comunicación de seguimiento para el caso %(id)s con %(count)s "
+"archivo(s) de evidencia nueva adjunto(s)."
+
+#: ngen/templates/reports/case_reiterate.html
+#, python-format
+msgid ""
+"This is a follow-up reminder for case %(id)s. There is no new evidence "
+"since the last communication."
+msgstr ""
+"Este es un recordatorio de seguimiento para el caso %(id)s. No hay nueva "
+"evidencia desde la última comunicación."
