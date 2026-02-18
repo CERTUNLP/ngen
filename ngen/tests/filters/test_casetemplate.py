@@ -234,7 +234,7 @@ class CaseTemplateFilterTest(BaseFilterTest):
         Test filter by priority.
         """
 
-        params = {"priority": self.priority_2}
+        params = {"case_priority": self.priority_2}
 
         filtered_queryset = self.filter(params).qs
 

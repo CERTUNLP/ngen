@@ -67,7 +67,7 @@ class EventTest(TestCase):
         cls.state = State.objects.create(name="Open")
 
         cls.case_template = CaseTemplate.objects.create(
-            priority=cls.priority,
+            case_priority=cls.priority,
             cidr=None,
             domain="info.unlp.edu.ar",
             event_taxonomy=cls.taxonomy,

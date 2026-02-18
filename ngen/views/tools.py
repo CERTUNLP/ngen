@@ -322,8 +322,6 @@ class TaskStatusView(APIView):
     def get(self, request, task_id):
         task_result = AsyncResult(task_id)
 
-        print(task_result)
-
         if task_result.state == "PENDING":
             return Response({"status": "PENDING"}, status=status.HTTP_200_OK)
         elif task_result.state != "FAILURE":
