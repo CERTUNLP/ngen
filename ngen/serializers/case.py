@@ -276,6 +276,7 @@ class CaseSerializer(
             "uuid",
             "lifecycle",
             "notification_count",
+            "was_auto_closed",
             "parent",
             "priority",
             "tlp",
@@ -292,6 +293,7 @@ class CaseSerializer(
             "raw",
             "created_by",
             "notification_count",
+            "was_auto_closed",
             "blocked",
         ]
 

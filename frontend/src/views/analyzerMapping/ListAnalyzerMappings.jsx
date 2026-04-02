@@ -19,6 +19,7 @@ const ListAnalyzerMappings = () => {
   const [wordToSearch, setWordToSearch] = useState("");
 
   const [order, setOrder] = useState("date");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
@@ -41,7 +42,7 @@ const ListAnalyzerMappings = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [currentPage, order, wordToSearch]);
+  }, [currentPage, order, wordToSearch, refreshKey]);
 
   return (
     <React.Fragment>
@@ -75,7 +76,7 @@ const ListAnalyzerMappings = () => {
                 loading={loading}
                 order={order}
                 setOrder={setOrder}
-                setLoading={setLoading}
+                onDeleted={() => setRefreshKey((k) => k + 1)}
               />
             </Card.Body>
             <Card.Footer>

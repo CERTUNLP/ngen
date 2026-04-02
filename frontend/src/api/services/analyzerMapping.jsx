@@ -2,10 +2,18 @@ import apiInstance from "../api";
 import { COMPONENT_URL, PAGE } from "../../config/constant";
 import setAlert from "../../utils/setAlert";
 
+const sameAnalyzerRef = (a, b) => (a || null) === (b || null);
+
+const isSameMappingTuple = (existing, data) => (
+  existing.mapping_from === data.mapping_from
+  && existing.mapping_to === data.mapping_to
+  && sameAnalyzerRef(existing.analyzer, data.analyzer)
+);
+
 
 const getAllAnalyzerMappings = () => {
   return apiInstance
-    .get(COMPONENT_URL.analyzerMapping)
+    .get(COMPONENT_URL.analyzerMapping + "?page_size=1000")
     .then((response) => {
       return response.data;
     })
@@ -33,10 +41,11 @@ const postAnalyzerMapping = (data) => {
   const messageError = `Ya existe un mapeo con los mismos valores.`;
   const messageSuccess = `El mapeo ha sido creado correctamente.`;
 
-  const filters = `mapping_to__icontains=${data.mapping_to}&mapping_from__name__icontains=${data.mapping_from_name}&analyzer_type=${data.analyzer_type}`;
+  const filters = `mapping_to__icontains=${data.mapping_to}&mapping_from__name__icontains=${data.mapping_from_name}`;
   return getAnalyzerMappings(1, filters, "date")
     .then((response) => {
-      if (response.data.results.length > 0) {
+      const duplicates = response.data.results.filter((m) => isSameMappingTuple(m, data));
+      if (duplicates.length > 0) {
         setAlert(messageError, "error", "analyzermapping");
         return Promise.reject(new Error(messageError));
       }
@@ -45,7 +54,7 @@ const postAnalyzerMapping = (data) => {
         .post(COMPONENT_URL.analyzerMapping, {
           mapping_to: data.mapping_to,
           mapping_from: data.mapping_from,
-          analyzer_type: data.analyzer_type,
+          analyzer: data.analyzer,
         })
         .then((response) => {
           setAlert(messageSuccess, "success", "analyzermapping");
@@ -81,10 +90,13 @@ const putAnalyzerMapping = (url, data) => {
   const messageError = `Ya existe un mapeo con los mismos valores.`;
   const notFoundError = `El mapeo no se ha encontrado.`;
 
-  const filters = `mapping_to__icontains=${data.mapping_to}&mapping_from__name__icontains=${data.mapping_from_name}&analyzer_type=${data.analyzer_type}`;
+  const filters = `mapping_to__icontains=${data.mapping_to}&mapping_from__name__icontains=${data.mapping_from_name}`;
   return getAnalyzerMappings(1, filters, "date")
     .then((response) => {
-      if (response.data.results.length > 0) {
+      const duplicates = response.data.results.filter(
+        (m) => m.url !== url && isSameMappingTuple(m, data)
+      );
+      if (duplicates.length > 0) {
         setAlert(messageError, "error", "analyzermapping");
         return Promise.reject(new Error(messageError));
       }
@@ -93,7 +105,7 @@ const putAnalyzerMapping = (url, data) => {
         .put(url, {
           mapping_to: data.mapping_to,
           mapping_from: data.mapping_from,
-          analyzer_type: data.analyzer_type,
+          analyzer: data.analyzer,
         })
         .then((response) => {
           setAlert(messageSuccess, "success", "analyzermapping");

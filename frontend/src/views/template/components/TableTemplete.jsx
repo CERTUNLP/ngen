@@ -156,6 +156,14 @@ const TableTemplete = ({
                 letterSize={letterSize}
               />
               <Ordering
+                field="case_lifecycle"
+                label={t("ngen.lifecycle_one")}
+                order={order}
+                setOrder={setOrder}
+                setLoading={setLoading}
+                letterSize={letterSize}
+              />
+              <Ordering
                 field="case_state"
                 label={t("ngen.state_one")}
                 order={order}
@@ -215,6 +223,7 @@ const TableTemplete = ({
                       permissions="change_casetemplate"
                     />
                   </td>
+                  <td>{template.case_lifecycle ? template.case_lifecycle.charAt(0).toUpperCase() + template.case_lifecycle.slice(1).replace(/_/g, " ") : ""}</td>
                   <td><StateComponent state={template.case_state} /></td>
                   <td>{template.case_priority ? <PriorityComponent priority={template.case_priority} /> : t("ngen.template.from_event")}</td>
                   <td>{template.case_tlp ? <TlpComponent tlp={template.case_tlp} /> : t("ngen.template.from_event")}</td>
@@ -342,7 +351,7 @@ const TableTemplete = ({
                             <tr>
                               <td>{t("ngen.lifecycle_one")}</td>
                               <td>
-                                <Form.Control plaintext readOnly defaultValue={template.case_lifecycle} />
+                                <Form.Control plaintext readOnly value={template.case_lifecycle} />
                               </td>
                             </tr>
 

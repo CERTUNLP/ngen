@@ -223,6 +223,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "ngen.tasks.solve_cases",
         "schedule": crontab(minute="*/1"),
     },
+    "case_renotification": {
+        "task": "ngen.tasks.case_renotification",
+        "schedule": crontab(minute="*/1"),
+    },
     "retrieve_emails": {
         "task": "ngen.tasks.retrieve_emails",
         "schedule": crontab(minute="*/1"),

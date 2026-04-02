@@ -12,6 +12,8 @@ from django.db import transaction
 EMAIL_TEMPLATES = {
     "case_report": "reports/case_report.html",
     "case_closed_report": "reports/case_closed_report.html",
+    "case_auto_closed_report": "reports/case_auto_closed_report.html",
+    "case_renotification": "reports/case_renotification.html",
     "case_change_state": "reports/case_change_state.html",
     "case_assign": "reports/case_assign.html",
 }

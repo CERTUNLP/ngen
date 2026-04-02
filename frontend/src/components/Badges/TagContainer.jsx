@@ -1,14 +1,35 @@
 import React from "react";
-import TagItem from "./TagItem";
 import LetterFormat from "components/LetterFormat";
 import { getMinifiedTag } from "api/services/tags";
+
+let minifiedTagsCache = null;
+let minifiedTagsPromise = null;
+
+const getMinifiedTagCached = async () => {
+  if (minifiedTagsCache) {
+    return minifiedTagsCache;
+  }
+
+  if (!minifiedTagsPromise) {
+    minifiedTagsPromise = getMinifiedTag()
+      .then((response) => {
+        minifiedTagsCache = response;
+        return response;
+      })
+      .finally(() => {
+        minifiedTagsPromise = null;
+      });
+  }
+
+  return minifiedTagsPromise;
+};
 
 const TagContainer = ({ tags, maxWidth = "150px", justifyContent = "center" }) => {
   const [fetchedTags, setFetchedTags] = React.useState([]);
   const [tagsToDisplay, setTagsToDisplay] = React.useState([]);
 
   React.useEffect(() => {
-    getMinifiedTag()
+    getMinifiedTagCached()
       .then((response) => {
         setFetchedTags(response);
       })

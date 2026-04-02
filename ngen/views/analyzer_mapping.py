@@ -11,6 +11,6 @@ class AnalyzerMappingViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["mapping_to", "mapping_from__name", "analyzer_type"]
+    search_fields = ["mapping_to", "mapping_from__name", "analyzer__name", "analyzer__type"]
     filterset_class = AnalyzerMappingFilter
     serializer_class = serializers.AnalyzerMappingSerializer

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Card, Col, Collapse, Row } from "react-bootstrap";
+import React, { useEffect, useMemo, useState } from "react";
+import { Card, Col, Collapse, Form, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import TableTemplete from "./components/TableTemplete";
 import Search from "../../components/Search/Search";
@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedPriority } from "../../api/services/priorities";
 import { getMinifiedState } from "../../api/services/states";
+import Select from "react-select";
 
 const ListTemplete = () => {
   const [templete, setTemplete] = useState([]);
@@ -36,8 +37,16 @@ const ListTemplete = () => {
 
   const [taxonomyFilter, setTaxonomyFilter] = useState("");
   const [feedFilter, setFeedFilter] = useState("");
+  const [lifecycleFilter, setLifecycleFilter] = useState("");
   const [wordToSearch, setWordToSearch] = useState("");
   const [order, setOrder] = useState("event_feed__name");
+
+  const lifecycleOptions = useMemo(() => [
+    { value: "manual", label: "Manual" },
+    { value: "auto", label: "Auto" },
+    { value: "auto_open", label: "Auto open" },
+    { value: "auto_close", label: "Auto close" }
+  ], []);
 
   const [taxonomyNames, setTaxonomyNames] = useState({});
   const [feedNames, setFeedNames] = useState({});
@@ -105,7 +114,7 @@ const ListTemplete = () => {
       setFeeds(listFeeds);
     });
 
-    getTemplates(currentPage, taxonomyFilter + feedFilter + wordToSearch, order)
+    getTemplates(currentPage, taxonomyFilter + feedFilter + lifecycleFilter + wordToSearch, order)
       .then((response) => {
         setTemplete(response.data.results);
         setCountItems(response.data.count);
@@ -122,7 +131,7 @@ const ListTemplete = () => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, taxonomyFilter, feedFilter, wordToSearch, order, isModify]);
+  }, [currentPage, taxonomyFilter, feedFilter, lifecycleFilter, wordToSearch, order, isModify]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -168,6 +177,21 @@ const ListTemplete = () => {
                         itemFilterSetter={setTaxonomyFilter}
                         setLoading={setLoading}
                       />
+                    </Col>
+                    <Col sm={12} lg={4}>
+                      <Form.Group>
+                        <Form.Label />
+                        <Select
+                          options={lifecycleOptions}
+                          isClearable
+                          placeholder={`${t("ngen.filter_by")} ${t("ngen.lifecycle_one")}`}
+                          onChange={(e) => {
+                            setCurrentPage(1);
+                            setLoading(true);
+                            setLifecycleFilter(e ? `case_lifecycle=${e.value}&` : "");
+                          }}
+                        />
+                      </Form.Group>
                     </Col>
                   </Row>
                   <br />

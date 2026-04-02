@@ -23,6 +23,7 @@ from ngen.models import (
     Contact,
     Playbook,
     AnalyzerMapping,
+    Analyzer,
 )
 from ngen.models.common.mixins import AddressManager
 
@@ -268,6 +269,7 @@ class CaseFilter(BaseFilter):
             "parent": ["exact", "isnull"],
             "assigned": ["exact", "isnull"],
             "state": ["exact"],
+            "was_auto_closed": ["exact"],
         }
 
 
@@ -518,13 +520,23 @@ class NetworkEntityFilter(BaseFilter):
         }
 
 
+class AnalyzerFilter(BaseFilter):
+    """
+    Analyzer model filter.
+    """
+
+    class Meta:
+        model = Analyzer
+        fields = {
+            "name": ["icontains"],
+            "type": ["exact"],
+            "enabled": ["exact"],
+        }
+
+
 class AnalyzerMappingFilter(BaseFilter):
     """
     AnalyzerMapping model filter.
-    Allows to filter by:
-        - mapping_to (icontains)
-        - mapping_from__name (icontains)
-        - analyzer_type (exact)
     """
 
     class Meta:
@@ -532,5 +544,6 @@ class AnalyzerMappingFilter(BaseFilter):
         fields = {
             "mapping_to": ["icontains"],
             "mapping_from__name": ["icontains"],
-            "analyzer_type": ["exact"],
+            "analyzer__type": ["exact"],
+            "analyzer__name": ["icontains"],
         }

@@ -15,7 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.mail import DNS_NAME
 from django.db import models
-from django.db.models import Q
+from django.db.models import F, Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
 from django_lifecycle import (
@@ -114,6 +114,7 @@ class Case(
         choices=LIFECYCLE, default=LIFECYCLE.manual, max_length=20
     )
     notification_count = models.PositiveSmallIntegerField(default=0)
+    was_auto_closed = models.BooleanField(default=False)
     comments = GenericRelation(Comment)
     tags = TaggableManager(through="ngen.TaggedObject", blank=True)
 
@@ -289,7 +290,10 @@ class Case(
         elif self.state.solved:
             self.solve_date = timezone.now()
             if old.state.attended and not old.state.solved:
-                self.communicate_close()
+                if getattr(self, "_auto_closed", False):
+                    self.communicate_auto_close()
+                else:
+                    self.communicate_close()
         else:
             if (
                 old.state.attended != self.state.attended
@@ -343,6 +347,12 @@ class Case(
 
     def communicate_close(self):
         self.communicate_v2("case_closed_report")
+
+    def communicate_auto_close(self):
+        self.communicate_v2(
+            "case_auto_closed_report",
+            extra_params={"solve_time": self.priority.solve_time if self.priority else None},
+        )
 
     def communicate_open(self):
         self.communicate_v2("case_report")
@@ -437,6 +447,8 @@ class Case(
         template: str,
         events: Collection["Event"] = None,
         send_attachments: bool = True,
+        extra_params: dict = None,
+        intern_extra_params: dict = None,
     ):
         """
         Communicate V2
@@ -447,22 +459,26 @@ class Case(
 
         :param title: title of the email
         :param template: path of template to be rendered
+        :param extra_params: additional parameters to pass to the template
+        :param intern_extra_params: additional parameters passed only to the intern channel
         """
         if self._temp_events:
             self.events.add(*self._temp_events)
 
-        template_params = self.template_params
+        affected_params = {**self.template_params, **(extra_params or {})}
+        intern_params = {**affected_params, **(intern_extra_params or {})}
 
         # Communicates on the channels of each event of the case
         for event in events or self.events.all():
             self.communicate_affected(
-                event, template, template_params, send_attachments
+                event, template, affected_params, send_attachments
             )
 
         if config.CREATE_INTERNAL_COMMUNICATION_CHANNEL:
             # Communicates on the internal channel of the case
-            self.communicate_intern(template, template_params, send_attachments)
-        self.notification_count += 1
+            self.communicate_intern(template, intern_params, send_attachments)
+        self.__class__.objects.filter(pk=self.pk).update(notification_count=F("notification_count") + 1)
+        self.refresh_from_db(fields=["notification_count"])
 
     def get_team_and_assigned_contacts(self):
         """
