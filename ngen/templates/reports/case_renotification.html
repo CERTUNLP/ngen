@@ -1,0 +1,20 @@
+{% extends 'reports/case_base.html' %}
+{% load i18n %}
+{% language lang %}
+
+    {% block case_subtitle %}
+        <br>
+        <strong>
+            {% if notification_amount %}
+                {% blocktranslate with current=renotification_count total=notification_amount %}
+                    Renotification {{ current }} of {{ total }}
+                {% endblocktranslate %}
+            {% else %}
+                {% blocktranslate with current=renotification_count %}
+                    Renotification {{ current }}
+                {% endblocktranslate %}
+            {% endif %}
+        </strong>
+    {% endblock %}
+
+{% endlanguage %}

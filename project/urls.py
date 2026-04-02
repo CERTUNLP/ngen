@@ -150,6 +150,7 @@ router.register(r"tag", views.TagViewSet, basename="tag")
 
 router.register(r"eventanalysis", views.EventAnalysisViewSet, basename="eventanalysis")
 
+router.register(r"analyzer", views.AnalyzerViewSet, basename="analyzer")
 router.register(
     r"analyzermapping", views.AnalyzerMappingViewSet, basename="analyzermapping"
 )

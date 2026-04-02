@@ -1,0 +1,16 @@
+{% extends 'reports/case_closed_base.html' %}
+{% load i18n %}
+{% language lang %}
+
+    {% block case_subtitle %}
+        <br>
+        {% if solve_time %}
+            {% blocktranslate with deadline=solve_time %}
+                This case was automatically closed because the resolution deadline of {{ deadline }} was exceeded without a response.
+            {% endblocktranslate %}
+        {% else %}
+            {% translate 'This case was automatically closed because the resolution deadline was exceeded without a response.' %}
+        {% endif %}
+    {% endblock %}
+
+{% endlanguage %}

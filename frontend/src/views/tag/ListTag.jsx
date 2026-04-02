@@ -63,10 +63,11 @@ const ListTag = (props) => {
   }, [currentPage, wordToSearch, order, isModify, tagDeleted, tagUpdated, tagCreated]);
 
   const reloadPage = () => {
-    setTagCreated(!tagCreated);
-    setTagDeleted(!tagDeleted);
-    setTagUpdated(!tagUpdated);
-    setIsModify(!isModify);
+    setLoading(true);
+    setTagCreated((prev) => !prev);
+    setTagDeleted((prev) => !prev);
+    setTagUpdated((prev) => !prev);
+    setIsModify((prev) => !prev);
   };
 
   const ifConfirm = (response) => {
