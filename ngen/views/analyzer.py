@@ -40,5 +40,18 @@ class AnalyzerViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=False, url_path="vuln-choices", url_name="vuln_choices")
     def vuln_choices(self, request):
-        from ngen.analyzers.registry import get_vuln_choices
-        return Response(get_vuln_choices())
+        from ngen.analyzers.registry import get_vuln_choices, ADAPTER_REGISTRY
+        result = {}
+        for analyzer_type, adapter_class in ADAPTER_REGISTRY.items():
+            if hasattr(adapter_class, "get_vuln_choices"):
+                instance = models.Analyzer.objects.filter(type=analyzer_type, enabled=True).first()
+                if instance:
+                    try:
+                        result[analyzer_type] = instance.get_adapter().get_vuln_choices()
+                    except Exception:
+                        result[analyzer_type] = []
+                else:
+                    result[analyzer_type] = []
+            else:
+                result[analyzer_type] = getattr(adapter_class, "VULN_CHOICES", [])
+        return Response(result)

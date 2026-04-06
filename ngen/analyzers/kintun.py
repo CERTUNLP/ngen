@@ -8,45 +8,25 @@ from ngen.analyzers.base import BaseAnalyzerAdapter
 
 class KintunAdapter(BaseAnalyzerAdapter):
     TYPE = "kintun"
-    VULN_CHOICES = [
-        "amqp",
-        "blocklist",
-        "dnsrecursive",
-        "dnszonetransfer",
-        "general",
-        "heartbleed",
-        "httpgooglemalware",
-        "httpopenproxy",
-        "ldap",
-        "mysql",
-        "mongo",
-        "netbios",
-        "netbiossmb",
-        "ntpmonlist",
-        "ntpversion",
-        "openmqtt",
-        "openport",
-        "openportmap",
-        "openportmap2",
-        "openredis",
-        "postgresql",
-        "poodle",
-        "rdp",
-        "smtpopenrelay",
-        "snmp",
-        "snmpsysdescr",
-        "socksopenproxy",
-        "stun",
-        "telnet",
-        "ubiquiti",
-        "web",
-    ]
     CONFIG_FIELDS = {
         "host": {"required": True, "sensitive": False},
         "api_key": {"required": False, "sensitive": True},
         "basic_auth_username": {"required": False, "sensitive": False},
         "basic_auth_password": {"required": False, "sensitive": True},
     }
+
+    def get_vuln_choices(self):
+        try:
+            r = requests.get(
+                f"http://{self.config['host']}/api/vulns",
+                headers=self._headers(),
+                auth=self._auth(),
+                timeout=10,
+            )
+            r.raise_for_status()
+            return r.json()
+        except Exception as e:
+            return {"error": str(e)}
 
     def _base_url(self):
         return f"http://{self.config['host']}/api"

@@ -17,14 +17,11 @@ class AnalyzerMapping(AuditModelMixin, ValidationModelMixin):
     analyzer = models.ForeignKey(
         "ngen.Analyzer",
         related_name="mappings",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.PROTECT,
     )
 
     def __str__(self):
-        analyzer_name = self.analyzer.name if self.analyzer else "unassigned"
-        return f"Mapping {self.id} for Taxonomy {self.mapping_from.id} ({analyzer_name})"
+        return f"Mapping {self.id} for Taxonomy {self.mapping_from.id} ({self.analyzer.name})"
 
     class Meta:
         db_table = "analyzer_mapping"
