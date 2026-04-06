@@ -42,11 +42,11 @@ const ListTemplete = () => {
   const [order, setOrder] = useState("event_feed__name");
 
   const lifecycleOptions = useMemo(() => [
-    { value: "manual", label: "Manual" },
-    { value: "auto", label: "Auto" },
-    { value: "auto_open", label: "Auto open" },
-    { value: "auto_close", label: "Auto close" }
-  ], []);
+    { value: "manual", label: t("ngen.lifecycle.manual") },
+    { value: "auto", label: t("ngen.lifecycle.auto") },
+    { value: "auto_open", label: t("ngen.lifecycle.auto_open") },
+    { value: "auto_close", label: t("ngen.lifecycle.auto_close") },
+  ], [t]);
 
   const [taxonomyNames, setTaxonomyNames] = useState({});
   const [feedNames, setFeedNames] = useState({});

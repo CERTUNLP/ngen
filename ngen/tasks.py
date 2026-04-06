@@ -86,7 +86,7 @@ def case_renotification():
             solve_date__isnull=True,
             renotification__lte=timezone.now(),
             notification_count__gte=1,
-            notification_count__lte=F("priority__notification_amount"),
+            notification_count__lt=F("priority__notification_amount"),
         )
     )
     for case in cases:

@@ -1,9 +1,14 @@
+import logging
 import requests
 from time import sleep, time
 from requests.auth import HTTPBasicAuth
 from urllib.parse import urljoin
 
+from django.utils.translation import gettext_lazy as _
+
 from ngen.analyzers.base import BaseAnalyzerAdapter
+
+logger = logging.getLogger(__name__)
 
 
 class KintunAdapter(BaseAnalyzerAdapter):
@@ -25,8 +30,9 @@ class KintunAdapter(BaseAnalyzerAdapter):
             )
             r.raise_for_status()
             return r.json()
-        except Exception as e:
-            return {"error": str(e)}
+        except Exception as exc:
+            logger.warning("KintunAdapter.get_vuln_choices failed for host %s: %s", self.config.get("host"), exc)
+            return []
 
     def _base_url(self):
         return f"http://{self.config['host']}/api"
@@ -72,7 +78,7 @@ class KintunAdapter(BaseAnalyzerAdapter):
         if has_api_key or has_basic_auth:
             return None
 
-        return (
+        return _(
             "Kintun requires authentication: provide api_key "
             "or both basic_auth_username and basic_auth_password"
         )

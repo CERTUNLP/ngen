@@ -788,3 +788,15 @@ msgid ""
 msgstr ""
 "Permitir la creación automática de taxonomías y grupos por el slug al crear "
 "un evento"
+
+#: ngen/views/analyzer.py
+msgid "Analyzer is disabled"
+msgstr "El analizador está deshabilitado"
+
+#: ngen/views/analyzer.py
+msgid "Invalid analyzer configuration: %(detail)s"
+msgstr "Configuración de analizador inválida: %(detail)s"
+
+#: ngen/analyzers/kintun.py
+msgid "Kintun requires authentication: provide api_key or both basic_auth_username and basic_auth_password"
+msgstr "Kintun requiere autenticación: provea api_key o bien basic_auth_username y basic_auth_password"

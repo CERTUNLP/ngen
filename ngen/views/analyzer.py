@@ -1,4 +1,5 @@
 import django_filters
+from django.utils.translation import gettext_lazy as _
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -24,7 +25,7 @@ class AnalyzerViewSet(viewsets.ModelViewSet):
         analyzer = self.get_object()
         if not analyzer.enabled:
             return Response(
-                {"success": False, "message": "Analyzer is disabled"},
+                {"success": False, "message": _("Analyzer is disabled")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         try:
@@ -32,9 +33,9 @@ class AnalyzerViewSet(viewsets.ModelViewSet):
             result = adapter.test_connection()
             http_status = status.HTTP_200_OK if result.get("success") else status.HTTP_502_BAD_GATEWAY
             return Response(result, status=http_status)
-        except ValueError as e:
+        except ValueError as exc:
             return Response(
-                {"success": False, "message": "Invalid analyzer configuration"},
+                {"success": False, "message": _("Invalid analyzer configuration: %(detail)s") % {"detail": exc}},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
