@@ -20,6 +20,7 @@
   "cidr.domain.email": "CIDR, Domain or Email",
   "config": "Configuration",
   "crud.add": "Add",
+  "crud.copy": "Copy",
   "crud.check": "Check",
   "crud.delete": "Delete",
   "crud.detail": "Detail",

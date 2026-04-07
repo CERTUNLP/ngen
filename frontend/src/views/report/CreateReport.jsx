@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Spinner } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 import { postReport } from "../../api/services/reports";
 import FormReport from "./components/FormReport";
 import Alert from "../../components/Alert/Alert";
@@ -7,14 +8,17 @@ import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import { useTranslation } from "react-i18next";
 
 const CreateReport = () => {
+  const location = useLocation();
+  const copyFrom = location.state?.copyFrom;
+
   const [body, setBody] = useState({
-    problem: "",
-    derived_problem: "", //required
-    verification: "", //required
-    recommendations: "", //required
-    more_information: "", //required
-    lang: "",
-    taxonomy: "-1" //required
+    problem: copyFrom?.problem ?? "",
+    derived_problem: copyFrom?.derived_problem ?? "",
+    verification: copyFrom?.verification ?? "",
+    recommendations: copyFrom?.recommendations ?? "",
+    more_information: copyFrom?.more_information ?? "",
+    lang: copyFrom?.lang ?? "",
+    taxonomy: copyFrom?.taxonomy ?? "-1"
   });
   const [taxonomies, setTaxonomies] = useState([]);
   const [loading, setLoading] = useState(true);
