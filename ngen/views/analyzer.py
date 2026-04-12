@@ -3,9 +3,12 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+import logging
 
 from ngen import models, serializers
 from ngen.filters import AnalyzerFilter
+
+logger = logging.getLogger(__name__)
 
 
 class AnalyzerViewSet(viewsets.ModelViewSet):
@@ -34,8 +37,9 @@ class AnalyzerViewSet(viewsets.ModelViewSet):
             http_status = status.HTTP_200_OK if result.get("success") else status.HTTP_502_BAD_GATEWAY
             return Response(result, status=http_status)
         except ValueError as exc:
+            logger.exception("Invalid analyzer configuration during test_connection (id=%s).", analyzer.id)
             return Response(
-                {"success": False, "message": _("Invalid analyzer configuration: %(detail)s") % {"detail": exc}},
+                {"success": False, "message": _("Invalid analyzer configuration.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
