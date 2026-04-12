@@ -14,9 +14,9 @@ const lookup = (value) => {
     });
 };
 
-const getAddressInfo = (ip_or_domain, { with_contacts = true, with_networks = false, with_entity = false, with_events = false, with_cases = false } = {}) => {
+const getAddressInfo = (ip_or_domain, { with_contacts = true, with_networks = false, with_entity = false, with_events = false } = {}) => {
   return apiInstance
-    .post(COMPONENT_URL.addressinfo, { ip_or_domain, with_contacts, with_networks, with_entity, with_events, with_cases })
+    .post(COMPONENT_URL.addressinfo, { ip_or_domain, with_contacts, with_networks, with_entity, with_events })
     .then((response) => {
       return response.data;
     })

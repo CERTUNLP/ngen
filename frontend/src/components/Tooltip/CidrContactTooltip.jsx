@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Badge, OverlayTrigger, Popover, Spinner } from "react-bootstrap";
 import { getAddressInfo } from "api/services/tools";
 import { useTranslation } from "react-i18next";
@@ -8,20 +8,29 @@ const CidrContactTooltip = ({ address_value }) => {
   const [contacts, setContacts] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetched, setFetched] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setContacts(null);
+    setLoading(false);
+    setFetched(false);
+    setHasError(false);
+  }, [address_value]);
 
   const fetchContacts = () => {
-    if (fetched || loading) return;
+    if ((fetched && !hasError) || loading) return;
     setLoading(true);
+    setHasError(false);
     getAddressInfo(address_value, { with_contacts: true })
       .then((data) => {
         setContacts(data?.data?.contacts || []);
+        setFetched(true);
       })
       .catch(() => {
-        setContacts([]);
+        setHasError(true);
       })
       .finally(() => {
         setLoading(false);
-        setFetched(true);
       });
   };
 
@@ -41,6 +50,10 @@ const CidrContactTooltip = ({ address_value }) => {
           <div className="text-center">
             <Spinner animation="border" size="sm" />
           </div>
+        ) : hasError ? (
+          <span className="text-danger" style={{ fontSize: "0.85em" }}>
+            {t("ngen.contactcheck.error")}
+          </span>
         ) : contacts && contacts.length > 0 ? (
           contacts.map((c, idx) => (
             <div key={idx} className="mb-1">
@@ -69,7 +82,12 @@ const CidrContactTooltip = ({ address_value }) => {
       overlay={popover}
       onToggle={(show) => { if (show) fetchContacts(); }}
     >
-      <span style={{ cursor: "default", textDecoration: "underline dotted" }}>
+      <span
+        tabIndex={0}
+        role="button"
+        aria-label={`${t("ngen.contact_other")}: ${address_value}`}
+        style={{ cursor: "default", textDecoration: "underline dotted" }}
+      >
         {address_value}
       </span>
     </OverlayTrigger>
