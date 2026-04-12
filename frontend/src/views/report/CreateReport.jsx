@@ -17,8 +17,8 @@ const CreateReport = () => {
     verification: copyFrom?.verification ?? "",
     recommendations: copyFrom?.recommendations ?? "",
     more_information: copyFrom?.more_information ?? "",
-    lang: copyFrom?.lang ?? "",
-    taxonomy: copyFrom?.taxonomy ?? "-1"
+    lang: copyFrom ? "" : "",
+    taxonomy: copyFrom ? "-1" : "-1"
   });
   const [taxonomies, setTaxonomies] = useState([]);
   const [loading, setLoading] = useState(true);
