@@ -50,7 +50,6 @@ const ListCase = ({ routeParams }) => {
 
   const [states, setStates] = useState([]);
   const [stateFilter, setStateFilter] = useState("");
-  const [valueStateFilter, setValueStateFilter] = useState(null);
 
   //url by name
   const [priorityNames, setPriorityNames] = useState({});
