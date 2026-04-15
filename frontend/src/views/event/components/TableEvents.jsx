@@ -20,6 +20,7 @@ import {
 import TlpComponent from "../../tanstackquery/TlpComponent";
 import TaxonomyComponent from "../../tanstackquery/TaxonomyComponent";
 import FeedComponent from "views/tanstackquery/FeedComponent";
+import CidrContactTooltip from "components/Tooltip/CidrContactTooltip";
 const TableEvents = ({
   events,
   loading,
@@ -285,7 +286,9 @@ const TableEvents = ({
                       <UuidField value={event.uuid} fulltext={showFullUuid} />
                     </td>
                   )}
-                  <td>{event.address_value}</td>
+                  <td>
+                    <CidrContactTooltip address_value={event.address_value} />
+                  </td>
                   {!disableTlp && (
                     <td>
                     <TlpComponent tlp={event?.tlp}></TlpComponent>
