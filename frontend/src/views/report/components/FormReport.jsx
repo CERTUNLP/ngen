@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import SelectComponent from "../../../components/Select/SelectComponent";
 import { useTranslation } from "react-i18next";
 import CrudButton from "components/Button/CrudButton";
@@ -7,6 +7,7 @@ import CrudButton from "components/Button/CrudButton";
 const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
   const [selectTaxonomy, setSelectTaxonomy] = useState();
   const [selectLanguage, setSelectLanguage] = useState();
+  const [showPreview, setShowPreview] = useState(false);
   const { t } = useTranslation();
 
   const textareaRefs = {
@@ -292,7 +293,10 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
           />
         </Col>
       </Row>
-
+      <Button variant="outline-secondary" className="me-2" onClick={() => setShowPreview(true)}>
+        <i className="fas fa-eye me-1" />
+        {t("w.preview")}
+      </Button>
       {body.problem !== "" && body.lang !== "" && body.taxonomy !== "-1" ? (
         <Button variant="primary" onClick={createOrEdit}>
           {t("button.save")}&nbsp;
@@ -305,6 +309,52 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
         </>
       )}
       <CrudButton type="cancel" />
+
+      <Modal size="lg" show={showPreview} onHide={() => setShowPreview(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{t("w.preview")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ backgroundColor: "#f8f9fa", padding: "2rem" }}>
+          {body.problem && (
+            <section className="mb-4">
+              <h5>{t("w.issue")}</h5>
+              <div dangerouslySetInnerHTML={{ __html: body.problem }} />
+            </section>
+          )}
+          {body.derived_problem && (
+            <section className="mb-4">
+              <h5>{t("w.problem.derived")}</h5>
+              <div dangerouslySetInnerHTML={{ __html: body.derived_problem }} />
+            </section>
+          )}
+          {body.verification && (
+            <section className="mb-4">
+              <h5>{t("w.verification")}</h5>
+              <div dangerouslySetInnerHTML={{ __html: body.verification }} />
+            </section>
+          )}
+          {body.recommendations && (
+            <section className="mb-4">
+              <h5>{t("w.recommendation.other")}</h5>
+              <div dangerouslySetInnerHTML={{ __html: body.recommendations }} />
+            </section>
+          )}
+          {body.more_information && (
+            <section className="mb-4">
+              <h5>{t("w.info")}</h5>
+              <div dangerouslySetInnerHTML={{ __html: body.more_information }} />
+            </section>
+          )}
+          {!body.problem && !body.derived_problem && !body.verification && !body.recommendations && !body.more_information && (
+            <p className="text-muted text-center">{t("w.no.content")}</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPreview(false)}>
+            {t("w.close")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Form>
   );
 };
