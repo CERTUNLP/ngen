@@ -1,21 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPage }) => {
   const [search, setSearch] = useState("");
   const { t } = useTranslation();
-
-  useEffect(() => {
-    if (!wordToSearch) {
-      setSearch("");
-      return;
-    }
-
-    if (wordToSearch.startsWith("search=")) {
-      const value = wordToSearch.replace(/^search=/, "").replace(/&$/, "");
-      setSearch(value);
-    }
-  }, [wordToSearch]);
 
   const searcher = (e) => {
     setSearch(e.target.value);

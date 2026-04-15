@@ -9,7 +9,7 @@ import FilterSelect from "../../components/Filter/FilterSelect";
 import FilterSelectWithDefault from "../../components/Filter/FilterSelectWithDefault";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
-import FilterToolbar from "../../components/Button/FilterToolbar";
+import ButtonFilter from "../../components/Button/ButtonFilter";
 import { patchCase } from "../../api/services/cases";
 //filters
 import { getEvents, mergeEvent } from "../../api/services/events";
@@ -73,15 +73,9 @@ const ListEvent = ({ routeParams }) => {
     { value: "true", label: t("w.not_assigned") },
     { value: "false", label: t("w.assigned") }
   ];
-    const defaultParentIsNullOption = { value: "true", label: t("w.not_assigned") };
   const [caseIsNull, setCaseIsNull] = useState("");
-  const [valueCaseIsNull, setValueCaseIsNull] = useState(null);
   const [parentIsNull, setParentIsNull] = useState("");
-  const [valueParentIsNull, setValueParentIsNull] = useState(defaultParentIsNullOption);
-  const [valueTlpFilter, setValueTlpFilter] = useState(null);
-  const [valueTaxonomyFilter, setValueTaxonomyFilter] = useState(null);
-  const [valueFeedFilter, setValueFeedFilter] = useState(null);
-  const [valuePriorityFilter, setValuePriorityFilter] = useState(null);
+  const [valueParentIsNull, setValueParentIsNull] = useState({ value: "true", label: t("w.not_assigned") });
   //add to cases
   const [openCases] = useState(true);
 
@@ -92,7 +86,7 @@ const ListEvent = ({ routeParams }) => {
   const [showModalListCase, setShowModalListCase] = useState(false);
 
   const caseItem = {
-    lifecycle: "manual", //required
+    lifecycle: "auto", //required
     priority: "", //required
     tlp: "", //required
     state: "", //required
@@ -230,32 +224,7 @@ const ListEvent = ({ routeParams }) => {
   }
 
   const reloadPage = () => {
-    setLoading(true);
-    setRefresh((prev) => !prev);
-  };
-
-  const clearFilters = () => {
-    setLoading(true);
-    setWordToSearch("");
-    setTaxonomyFilter("");
-    setValueTaxonomyFilter(null);
-    setTlpFilter("");
-    setValueTlpFilter(null);
-    setFeedFilter("");
-    setValueFeedFilter(null);
-    setCaseIsNull("");
-    setValueCaseIsNull(null);
-    setParentIsNull("");
-    setValueParentIsNull(defaultParentIsNullOption);
-    setPriorityFilter("");
-    setValuePriorityFilter(null);
-    setStarDate("");
-    setEndDate("");
-    setStarDateFilter("");
-    setEndDateFilter("");
-    setFilterDate(false);
-    setCurrentPage(1);
-    setRefresh((prev) => !prev);
+    setRefresh(!refresh);
   };
 
   const mergeConfirm = () => {
@@ -399,8 +368,8 @@ const ListEvent = ({ routeParams }) => {
       <Card>
         <Card.Header>
           <Row>
-            <Col sm="auto">
-              <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
+            <Col sm={1} lg={1}>
+              <ButtonFilter open={open} setOpen={setOpen} />
             </Col>
             <Col sm={8} lg={4}>
               <Search
@@ -440,6 +409,19 @@ const ListEvent = ({ routeParams }) => {
                   </Badge>
                 </Button>
               </PermissionCheck>
+              <Button size="lm" variant="outline-primary" onClick={() => reloadPage()}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-arrow-clockwise"
+                  viewBox="0 0 16 16"
+                >
+                  <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+                </svg>
+              </Button>
             </Col>
           </Row>
           <Collapse in={open}>
@@ -479,8 +461,6 @@ const ListEvent = ({ routeParams }) => {
                     partOfTheUrl="tlp"
                     itemFilter={tlpFilter}
                     itemFilterSetter={setTlpFilter}
-                    value={valueTlpFilter}
-                    setValue={setValueTlpFilter}
                     setLoading={setLoading}
                     setCurrentPage={setCurrentPage}
                   />
@@ -492,8 +472,6 @@ const ListEvent = ({ routeParams }) => {
                     partOfTheUrl="taxonomy"
                     itemFilter={taxonomyFilter}
                     itemFilterSetter={setTaxonomyFilter}
-                    value={valueTaxonomyFilter}
-                    setValue={setValueTaxonomyFilter}
                     setLoading={setLoading}
                     setCurrentPage={setCurrentPage}
                   />
@@ -505,8 +483,6 @@ const ListEvent = ({ routeParams }) => {
                     partOfTheUrl="feed"
                     itemFilter={feedFilter}
                     itemFilterSetter={setFeedFilter}
-                    value={valueFeedFilter}
-                    setValue={setValueFeedFilter}
                     setLoading={setLoading}
                     setCurrentPage={setCurrentPage}
                   />
@@ -519,8 +495,6 @@ const ListEvent = ({ routeParams }) => {
                     partOfTheUrl="case__isnull"
                     setFilter={setCaseIsNull}
                     currentFilter={caseIsNull}
-                    value={valueCaseIsNull}
-                    setValue={setValueCaseIsNull}
                     setLoading={setLoading}
                     placeholder={t("ngen.filter_by") + " " + t("ngen.case_one")}
                     setCurrentPage={setCurrentPage}
@@ -546,8 +520,6 @@ const ListEvent = ({ routeParams }) => {
                     partOfTheUrl="priority"
                     itemFilter={priorityFilter}
                     itemFilterSetter={setPriorityFilter}
-                    value={valuePriorityFilter}
-                    setValue={setValuePriorityFilter}
                     setLoading={setLoading}
                     setCurrentPage={setCurrentPage}
                   />

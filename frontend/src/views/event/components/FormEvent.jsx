@@ -42,7 +42,6 @@ const FormEvent = (props) => {
   const [simulationResult, setSimulationResult] = useState({});
   const [showSimulationResultMergeModal, setShowSimulationResultMergeModal] = useState(false);
   const [showSimulationResultTemplateModal, setShowSimulationResultTemplateModal] = useState(false);
-  const [showNotesPreview, setShowNotesPreview] = useState(false);
 
   //modal create case
   const [showModalCase, setShowModalCase] = useState(false);
@@ -542,28 +541,15 @@ const FormEvent = (props) => {
                 />
               </Col>
             </Row>
-            <Form.Group controlId="formGridNotes">
-              <div className="d-flex align-items-center gap-2">
-                <Form.Label className="mb-0">{t("notes")}</Form.Label>
-                <Button
-                  variant="outline-secondary"
-                  size="sm"
-                  disabled={!props.body.notes}
-                  onClick={() => setShowNotesPreview(true)}
-                >
-                  <i className="fas fa-eye me-1" />
-                  {t("w.preview")}
-                </Button>
-              </div>
+            <Form.Group controlId="formGridAddress1">
+              <Form.Label>{t("notes")}</Form.Label>
               <Form.Control
-                as="textarea"
                 placeholder={t("ngen.notes.placeholder")}
-                value={props.body.notes || ""}
+                maxLength="150"
+                value={props.body.notes}
                 onChange={(e) => completeField(e)}
                 name="notes"
-                className="mt-1"
               />
-              <span style={{ color: "gray", fontSize: "0.8em" }}>{t("w.text.as.html")}</span>
             </Form.Group>
             <p />
           </Form>
@@ -911,21 +897,6 @@ const FormEvent = (props) => {
         }
         <CrudButton type="cancel" />
       </div>
-
-      <Modal size="lg" show={showNotesPreview} onHide={() => setShowNotesPreview(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{t("notes")} — {t("w.preview")}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body style={{ backgroundColor: "#f8f9fa", padding: "2rem" }}>
-          <div dangerouslySetInnerHTML={{ __html: props.body.notes || "" }} />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowNotesPreview(false)}>
-            {t("w.close")}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
     </div>
   );
 };
