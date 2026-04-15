@@ -110,6 +110,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                   <td>
                     <CrudButton type="read" onClick={() => showModalReport(report)} />
                     <CrudButton type="edit" to={`/reports/edit/${itemNumber}`} checkPermRoute />
+                    <CrudButton type="copy" to="/reports/create" state={{ copyFrom: report }} checkPermRoute />
                     <CrudButton type="delete" onClick={() => modalDelete(report.url)} permissions="delete_report" />
                   </td>
                 </tr>
