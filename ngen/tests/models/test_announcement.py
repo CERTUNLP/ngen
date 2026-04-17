@@ -1,7 +1,8 @@
+from gettext import translation
+
 from constance.test import override_config
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
-from django.test import override_settings
+from django.test import TestCase, override_settings
 from django.utils.translation import gettext_lazy
 from django.core import mail
 from unittest.mock import patch
@@ -969,9 +970,11 @@ class AnnouncementTestCase(TestCase):
 
     @patch("django.core.mail.backends.smtp.EmailBackend")
     @use_test_email_env()
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
     @override_config(CASE_REPORT_NEW_CASES=True)
     @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="red")
+    @override_config(TEAM_NAME="TEAM")
     @override_config(NGEN_LANG="en")
     def test_summary_emailbackend(self, mock_backend):
         """
@@ -979,6 +982,11 @@ class AnnouncementTestCase(TestCase):
 
         Checks directly the content of the email sent, as well as the subject and the recipient.
         """
+        from django.utils import translation
+
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+
         from django.core.mail import get_connection
 
         mock_backend.return_value = get_connection(
