@@ -4,9 +4,9 @@ from constance.test import override_config
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.utils.translation import gettext_lazy
+from django.utils import timezone
 from django.core import mail
 from unittest.mock import patch
-from datetime import datetime
 
 from ngen import tasks
 from ngen.models import (
@@ -1047,8 +1047,6 @@ class AnnouncementTestCase(TestCase):
 
         self.assertIn("Solved cases: 1", email.body)
 
-        print("Email body: ", email.body)
-
         ev1_id = str(event1.uuid).split("-")[0]
         ev2_id = str(event2.uuid).split("-")[0]
 
@@ -1068,17 +1066,15 @@ class AnnouncementTestCase(TestCase):
 
         self.assertIn("Solved cases: 1", email.body)
 
-        print("Email body: ", email.body)
-
         ev1_id = str(event1.uuid).split("-")[0]
         ev2_id = str(event2.uuid).split("-")[0]
 
         # ev1_id and ev2_id should appear just once in the email body, as well as the notes of each event.
         self.assertEqual(email.body.count(ev1_id), 1)
         self.assertEqual(email.body.count(ev2_id), 1)
-        # filemname example events_20260417_163913_18b445.zip
+        # filename example events_20260417_163913_18b445.zip
         attachment_name = email.attachments[0][0]
-        now = datetime.now().strftime("%Y%m%d")
+        now = timezone.now().strftime("%Y%m%d")
 
         self.assertTrue(attachment_name.startswith(f"events_{now}_"))
         self.assertTrue(attachment_name.endswith(".zip"))
