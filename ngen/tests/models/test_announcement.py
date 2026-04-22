@@ -1,9 +1,14 @@
+from gettext import translation
+
 from constance.test import override_config
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
-from django.test import override_settings
+from django.test import TestCase, override_settings
 from django.utils.translation import gettext_lazy
+from django.utils import timezone
+from django.core import mail
+from unittest.mock import patch
 
+from ngen import tasks
 from ngen.models import (
     Evidence,
     ContentType,
@@ -962,3 +967,114 @@ class AnnouncementTestCase(TestCase):
             "team@ngen.com",
             intern_channel_2.get_last_message().recipients[0]["email"],
         )
+
+    @patch("django.core.mail.backends.smtp.EmailBackend")
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
+    @override_config(CASE_REPORT_NEW_CASES=True)
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="red")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(NGEN_LANG="en")
+    def test_summary_emailbackend(self, mock_backend):
+        """
+        Send summary email with the correct information.
+
+        Checks directly the content of the email sent, as well as the subject and the recipient.
+        """
+        from django.utils import translation
+
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+
+        from django.core.mail import get_connection
+
+        mock_backend.return_value = get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
+
+        # Create first event and assign to case
+        event1 = Event.objects.create(
+            domain="info.unlp.edu.ar",
+            taxonomy=Taxonomy.objects.get(slug="botnet"),
+            feed=Feed.objects.get(slug="csirtamericas"),
+            tlp=Tlp.objects.get(slug="green"),
+            reporter=User.objects.get(username="ngen"),
+            notes="event1 notes",
+            priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True,
+        )
+        event1.save()
+        case = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=Tlp.objects.get(slug="green"),
+            priority=Priority.objects.get(slug="high"),
+        )
+        case.save()
+
+        # Assign event to case
+        event1.case = case
+        event1.save()
+
+        # Create second event and assign to case
+        event2 = Event.objects.create(
+            domain="info.unlp.edu.ar",
+            taxonomy=Taxonomy.objects.get(slug="botnet"),
+            feed=Feed.objects.get(slug="csirtamericas"),
+            tlp=Tlp.objects.get(slug="green"),
+            reporter=User.objects.get(username="ngen"),
+            notes="event2 notes",
+            priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True,
+        )
+        event2.case = case
+        event2.save()
+        case.save()
+
+        # Close case
+        case.state = State.objects.get(slug="closed")
+        case.save()
+
+        # basic contact summary test
+        tasks.contact_summary.delay(contact_usernames=["soporte@cert.unlp.edu.ar"])
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        email = mail.outbox[0]
+
+        self.assertEqual(email.subject, "[TEAM][TLP:RED] Summary")
+        self.assertEqual(email.to, ["soporte@cert.unlp.edu.ar"])
+
+        self.assertIn("Solved cases: 1", email.body)
+
+        ev1_id = str(event1.uuid).split("-")[0]
+        ev2_id = str(event2.uuid).split("-")[0]
+
+        # ev1_id and ev2_id should appear just once in the email body, as well as the notes of each event.
+        self.assertEqual(email.body.count(ev1_id), 1)
+        self.assertEqual(email.body.count(ev2_id), 1)
+
+        # export summary test
+        tasks.export_events_for_email_task.delay("soporte@cert.unlp.edu.ar")
+
+        self.assertEqual(len(mail.outbox), 2)
+
+        email = mail.outbox[1]
+
+        self.assertEqual(email.subject, "[TEAM][TLP:RED] Full Summary")
+        self.assertEqual(email.to, ["soporte@cert.unlp.edu.ar"])
+
+        self.assertIn("Solved cases: 1", email.body)
+
+        ev1_id = str(event1.uuid).split("-")[0]
+        ev2_id = str(event2.uuid).split("-")[0]
+
+        # ev1_id and ev2_id should appear just once in the email body, as well as the notes of each event.
+        self.assertEqual(email.body.count(ev1_id), 1)
+        self.assertEqual(email.body.count(ev2_id), 1)
+        # filename example events_20260417_163913_18b445.zip
+        attachment_name = email.attachments[0][0]
+        now = timezone.now().strftime("%Y%m%d")
+
+        self.assertTrue(attachment_name.startswith(f"events_{now}_"))
+        self.assertTrue(attachment_name.endswith(".zip"))

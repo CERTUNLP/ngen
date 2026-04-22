@@ -142,6 +142,7 @@ def contact_summary(
             )
             .prefetch_related("events")
             .order_by("priority__severity")
+            .distinct()
         )
         list_open_cases = [
             {"case": case, "events": case.events.filter(network__contacts=contact)}
@@ -149,11 +150,15 @@ def contact_summary(
         ]
 
         # Get all closed cases for the contact of last week
-        closed_cases = ngen.models.Case.objects.filter(
-            state__solved=True,
-            events__network__contacts=contact,
-            solve_date__gte=timezone.now() - timedeltavalue,
-        ).prefetch_related("events")
+        closed_cases = (
+            ngen.models.Case.objects.filter(
+                state__solved=True,
+                events__network__contacts=contact,
+                solve_date__gte=timezone.now() - timedeltavalue,
+            )
+            .prefetch_related("events")
+            .distinct()
+        )
 
         list_closed_cases = [
             {"case": case, "events": case.events.filter(network__contacts=contact)}
@@ -289,9 +294,13 @@ def export_events_for_email_task(email, days=14):
         timedeltavalue = timezone.timedelta(days=days)
 
         # Open cases
-        open_cases = ngen.models.Case.objects.filter(
-            state__attended=True, events__network__contacts=contact
-        ).prefetch_related("events")
+        open_cases = (
+            ngen.models.Case.objects.filter(
+                state__attended=True, events__network__contacts=contact
+            )
+            .prefetch_related("events")
+            .distinct()
+        )
 
         list_open_cases = [
             {"case": case, "events": case.events.filter(network__contacts=contact)}
@@ -305,11 +314,15 @@ def export_events_for_email_task(email, days=14):
         exported_data = ngen.models.Event.export_events_to_zip(events_to_export)
 
         # Closed cases
-        closed_cases = ngen.models.Case.objects.filter(
-            state__solved=True,
-            events__network__contacts=contact,
-            solve_date__gte=timezone.now() - timedeltavalue,
-        ).prefetch_related("events")
+        closed_cases = (
+            ngen.models.Case.objects.filter(
+                state__solved=True,
+                events__network__contacts=contact,
+                solve_date__gte=timezone.now() - timedeltavalue,
+            )
+            .prefetch_related("events")
+            .distinct()
+        )
 
         list_closed_cases = [
             {"case": case, "events": case.events.filter(network__contacts=contact)}
