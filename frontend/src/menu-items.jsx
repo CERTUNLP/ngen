@@ -220,6 +220,14 @@ const menuItems = {
               breadcrumbs: true
             },
             {
+              id: "analyzer",
+              title: "menu.analyzers",
+              type: "item",
+              url: "/analyzers",
+              icon: "",
+              breadcrumbs: true
+            },
+            {
               id: "analyzerMapping",
               title: "menu.analyzermappings",
               type: "item",

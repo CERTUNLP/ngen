@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Dropdown } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import TableRetests from "./TableRetests";
 import { getRetests, postRetest } from "../../../api/services/eventAnalysis";
@@ -14,6 +14,7 @@ const SmallRetestTable = ({ retests, eventId, eventUrl, taxonomyUrl }) => {
   const [alertMessage, setAlertMessage] = useState(""); 
   const [alertType, setAlertType] = useState("success"); 
   const [hasAnalyzerMapping, setHasAnalyzerMapping] = useState(true);
+  const [analyzerMappingOptions, setAnalyzerMappingOptions] = useState([]);
   const [isRefreshDisabled, setIsRefreshDisabled] = useState(false);
 
   useEffect(() => {
@@ -28,10 +29,11 @@ const SmallRetestTable = ({ retests, eventId, eventUrl, taxonomyUrl }) => {
     const checkAnalyzerMapping = async () => {
       try {
         const mappings = await getAllAnalyzerMappings();
-        const isMapped = mappings.results.some(
-          (mapping) => mapping.mapping_from === taxonomyUrl
+        const availableMappings = (mappings.results || []).filter(
+          (mapping) => mapping.mapping_from === taxonomyUrl && mapping.analyzer
         );
-        setHasAnalyzerMapping(isMapped);
+        setAnalyzerMappingOptions(availableMappings);
+        setHasAnalyzerMapping(availableMappings.length > 0);
       } catch (error) {
         console.error("Error checking analyzer mappings:", error);
         setHasAnalyzerMapping(false);
@@ -44,9 +46,9 @@ const SmallRetestTable = ({ retests, eventId, eventUrl, taxonomyUrl }) => {
   }, [taxonomyUrl]);
 
 
-  const handleRetest = async () => {
+  const handleRetest = async (mappingUrl) => {
     try {
-      const response = await postRetest(eventId);
+      const response = await postRetest(eventId, mappingUrl);
       if (response) {
         setAlertMessage(t("ngen.retest.success"));
         setAlertType("success");
@@ -114,16 +116,28 @@ const SmallRetestTable = ({ retests, eventId, eventUrl, taxonomyUrl }) => {
                 >
                   <i className="fa fa-sync-alt"></i>
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline-dark"
-                  className="rounded-circle ms-3"
-                  onClick={handleRetest}
-                  title={t("ngen.retest.create")}
-                  disabled={isRetestInProgress}
-                >
-                  <i className="fa fa-tools"></i>
-                </Button>
+                <Dropdown className="ms-3">
+                  <Dropdown.Toggle
+                    size="sm"
+                    variant="outline-dark"
+                    className="rounded-circle"
+                    title={t("ngen.retest.create")}
+                    disabled={isRetestInProgress || analyzerMappingOptions.length === 0}
+                  >
+                    <i className="fa fa-tools"></i>
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    {analyzerMappingOptions.map((mapping) => (
+                      <Dropdown.Item
+                        key={mapping.url}
+                        onClick={() => handleRetest(mapping.url)}
+                      >
+                        {mapping.analyzer_name || t("ngen.analyzer.one")}
+                        {mapping.mapping_to ? ` (${mapping.mapping_to})` : ""}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
               </>
             )}
           </div>

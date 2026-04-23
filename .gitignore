@@ -147,3 +147,6 @@ dmypy.json
 /docker/data_postgres/
 /docker/data_media/
 /docker/data_static/
+
+# Claude
+CLAUDE.md

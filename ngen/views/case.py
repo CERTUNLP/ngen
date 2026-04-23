@@ -137,9 +137,27 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
     )
     def retest_event(self, request, pk=None):
         """
-        Retests events with Kintun API `/event/<pk>/retest/`.
+        Retests events with selected analyzer mapping `/event/<pk>/retest/`.
         """
         event = self.get_object()
+        analyzer_mapping_ref = request.data.get("analyzer_mapping")
+
+        analyzer_mapping_id = None
+        if analyzer_mapping_ref:
+            if isinstance(analyzer_mapping_ref, int):
+                analyzer_mapping_id = analyzer_mapping_ref
+            elif isinstance(analyzer_mapping_ref, str):
+                # Accept either an id string ("12") or mapping URL (".../analyzermapping/12/").
+                parts = [p for p in analyzer_mapping_ref.rstrip("/").split("/") if p]
+                last_part = parts[-1] if parts else ""
+                if last_part.isdigit():
+                    analyzer_mapping_id = int(last_part)
+
+            if analyzer_mapping_id is None:
+                return Response(
+                    {"message": gettext_lazy("Invalid analyzer mapping reference")},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         if models.EventAnalysis.objects.filter(
             event=event, result="in_progress"
@@ -153,7 +171,10 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        retest_event_kintun.delay(event_id=event.id)
+        retest_event_kintun.delay(
+            event_id=event.id,
+            analyzer_mapping_id=analyzer_mapping_id,
+        )
         return Response(
             {"message": gettext_lazy(f"Task retest event for {event.pk} launched")},
             status=status.HTTP_200_OK,

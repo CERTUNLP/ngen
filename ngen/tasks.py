@@ -355,46 +355,75 @@ def export_events_for_email_task(email, days=14):
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
-def retest_event_kintun(event_id):
+def retest_event_kintun(event_id, analyzer_mapping_id=None):
     """
-    Tarea de Celery para retestear un evento utilizando Kintun.
+    Tarea de Celery para retestear un evento usando el adaptador del analizador configurado.
     """
+    event_analysis = None
     try:
         event = ngen.models.Event.objects.get(pk=event_id)
-        analyzer_mapping = ngen.models.AnalyzerMapping.objects.get(
-            mapping_from=event.taxonomy
+        if analyzer_mapping_id:
+            analyzer_mapping = (
+                ngen.models.AnalyzerMapping.objects.filter(
+                    pk=analyzer_mapping_id,
+                    mapping_from=event.taxonomy,
+                )
+                .select_related("analyzer")
+                .first()
+            )
+        else:
+            analyzer_mapping = (
+                ngen.models.AnalyzerMapping.objects.filter(
+                    mapping_from=event.taxonomy
+                )
+                .select_related("analyzer")
+                .first()
+            )
+
+        if not analyzer_mapping:
+            return {"error": "No analyzer mapping found for this taxonomy"}
+
+        if not analyzer_mapping.analyzer:
+            return {"error": "AnalyzerMapping has no analyzer assigned"}
+
+        analyzer = analyzer_mapping.analyzer
+        if not analyzer.enabled:
+            return {"error": f"Analyzer '{analyzer.name}' is disabled"}
+
+        event_analysis = ngen.models.EventAnalysis.objects.create(
+            date=timezone.now(),
+            analyzer_type=analyzer.name,
+            vulnerable=False,
+            result="in_progress",
+            target=event.address_value,
+            scan_type="in_progress",
+            analyzer_url="in_progress",
+            event=event,
         )
-        mapping_to = analyzer_mapping.mapping_to
-        analyzer_type = analyzer_mapping.analyzer_type
-        analysis_data = {
-            "date": timezone.now(),
-            "analyzer_type": analyzer_type,
-            "vulnerable": False,
-            "result": "in_progress",
-            "target": event.address_value,
-            "scan_type": "in_progress",
-            "analyzer_url": "in_progress",
-            "event": event,
-        }
-        event_analysis = ngen.models.EventAnalysis.objects.create(**analysis_data)
 
-        kintun_data = kintun.retest_event_kintun(event, mapping_to)
+        adapter = analyzer.get_adapter()
+        result = adapter.run_on_event(event, analyzer_mapping.mapping_to)
 
-        event_analysis.vulnerable = kintun_data.get("vulnerable", False)
-        event_analysis.result = kintun_data.get("evidence", "")
-        event_analysis.scan_type = kintun_data.get("vuln_type", "")
-        event_analysis.analyzer_url = kintun_data.get("_id", "")
+        if "error" in result:
+            event_analysis.result = result["error"]
+            event_analysis.save()
+            return result
+
+        event_analysis.vulnerable = result.get("vulnerable", False)
+        event_analysis.result = result.get("evidence", "")
+        event_analysis.scan_type = result.get("vuln_type", "")
+        event_analysis.analyzer_url = result.get("url", "")
 
         event_analysis.save()
 
-        return kintun_data
+        return result
     except Exception as e:
-        try:
-            event_analysis.delete()
-        except Exception as delete_error:
-            logger.error(
-                f"Original error: {str(e)}, Deletion error: {str(delete_error)}"
-            )
+        logger.error(f"Error in retest_event_kintun: {str(e)}")
+        if event_analysis:
+            try:
+                event_analysis.delete()
+            except Exception as delete_error:
+                logger.error(f"Deletion error: {str(delete_error)}")
         return {"error": "An error occurred while processing the event."}
 
 
