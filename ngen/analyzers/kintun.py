@@ -20,14 +20,41 @@ class KintunAdapter(BaseAnalyzerAdapter):
         "basic_auth_password": {"required": False, "sensitive": True},
     }
 
+    @staticmethod
+    def _follow_redirect_get(response, headers, auth):
+        if response.status_code in (301, 302, 307, 308):
+            location = response.headers.get("Location")
+            if location:
+                redirect_url = urljoin(response.url, location)
+                origin_host = urlparse(response.url).netloc
+                redirect_host = urlparse(redirect_url).netloc
+                if redirect_host != origin_host:
+                    raise ValueError(
+                        f"Redirect to a different host rejected: {redirect_host!r} != {origin_host!r}"
+                    )
+                redirected = requests.get(
+                    redirect_url,
+                    headers=headers,
+                    auth=auth,
+                    timeout=10,
+                    allow_redirects=False,
+                )
+                redirected.raise_for_status()
+                return redirected
+        return response
+
     def get_vuln_choices(self):
         try:
+            headers = self._headers()
+            auth = self._auth()
             r = requests.get(
                 f"https://{self.config['host']}/api/vulns",
-                headers=self._headers(),
-                auth=self._auth(),
+                headers=headers,
+                auth=auth,
                 timeout=10,
+                allow_redirects=False,
             )
+            r = self._follow_redirect_get(r, headers, auth)
             r.raise_for_status()
             return r.json()
         except Exception as exc:
