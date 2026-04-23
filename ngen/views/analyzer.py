@@ -49,7 +49,7 @@ class AnalyzerViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=False, url_path="vuln-choices", url_name="vuln_choices")
     def vuln_choices(self, request):
-        from ngen.analyzers.registry import get_vuln_choices, ADAPTER_REGISTRY
+        from ngen.analyzers.registry import ADAPTER_REGISTRY
         result = {}
         for analyzer_type, adapter_class in ADAPTER_REGISTRY.items():
             if hasattr(adapter_class, "get_vuln_choices"):

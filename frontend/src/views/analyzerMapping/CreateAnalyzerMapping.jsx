@@ -88,7 +88,7 @@ const CreateAnalyzerMapping = () => {
                       options={analyzerOptions}
                       value={selectedAnalyzer}
                       placeholder={t("ngen.analyzer_mapping.analyzer_type")}
-                      required={false}
+                      required={true}
                     />
                   </Col>
                   <Col sm={12} lg={4}>

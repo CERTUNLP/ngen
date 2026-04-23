@@ -24,7 +24,7 @@ class Analyzer(AuditModelMixin, ValidationModelMixin):
         if self.type and self.type not in ADAPTER_REGISTRY:
             valid = ", ".join(ADAPTER_REGISTRY.keys())
             raise ValidationError(
-                {"type": gettext_lazy(f"Invalid type. Valid choices: {valid}")}
+                {"type": gettext_lazy("Invalid type. Valid choices: %(valid)s") % {"valid": valid}}
             )
         super().clean_fields(exclude=exclude)
 
@@ -36,7 +36,7 @@ class Analyzer(AuditModelMixin, ValidationModelMixin):
             instance = adapter_class(self)
             errors = instance.validate_config()
             if errors:
-                raise ValidationError({"config": list(errors.values())})
+                raise ValidationError(errors)
 
     def get_adapter(self):
         from ngen.analyzers.registry import get_adapter

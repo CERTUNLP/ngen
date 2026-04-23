@@ -158,7 +158,7 @@ class KintunAdapter(BaseAnalyzerAdapter):
             poll_interval = POLL_INTERVAL_MIN
 
             response = requests.get(
-                scan_url, headers=self._headers(), auth=self._auth(), timeout=10
+                scan_url, headers=self._headers(), auth=self._auth(), timeout=10, allow_redirects=False
             )
 
             while True:
@@ -218,7 +218,7 @@ class KintunAdapter(BaseAnalyzerAdapter):
                 headers=self._headers(),
                 auth=self._auth(),
                 timeout=5,
-                allow_redirects=True,
+                allow_redirects=False,
             )
             if r.status_code < 300:
                 return {"success": True, "message": "Connection successful"}

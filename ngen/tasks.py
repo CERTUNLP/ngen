@@ -418,12 +418,12 @@ def retest_event_kintun(event_id, analyzer_mapping_id=None):
 
         return result
     except Exception as e:
-        logger.error(f"Error in retest_event_kintun: {str(e)}")
+        logger.exception(f"Error in retest_event_kintun: {str(e)}")
         if event_analysis:
             try:
                 event_analysis.delete()
             except Exception as delete_error:
-                logger.error(f"Deletion error: {str(delete_error)}")
+                logger.exception(f"Deletion error: {str(delete_error)}")
         return {"error": "An error occurred while processing the event."}
 
 
