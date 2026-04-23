@@ -48,7 +48,7 @@ const FormAnalyzer = ({
     if (!isEdit) {
       setConfig({});
     }
-  }, [analyzerType]);
+  }, [analyzerType, isEdit, setConfig]);
 
   const schema = CONFIG_SCHEMAS[analyzerType] || {};
 
