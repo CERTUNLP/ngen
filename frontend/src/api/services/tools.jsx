@@ -14,8 +14,19 @@ const lookup = (value) => {
     });
 };
 
+const getAddressInfo = (ip_or_domain, { with_contacts = true, with_networks = false, with_entity = false, with_events = false } = {}) => {
+  return apiInstance
+    .post(COMPONENT_URL.addressinfo, { ip_or_domain, with_contacts, with_networks, with_entity, with_events })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
+};
+
 const getTask = (url) => {
   return apiInstance.get(url);
 };
 
-export { lookup, getTask };
+export { lookup, getAddressInfo, getTask };

@@ -83,6 +83,13 @@ const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissi
       onClick: () => navigate(-1),
       text: text ? text : t("button.cancel")
     },
+    copy: {
+      class: text ? "text-capitalize" : "btn-icon btn-rounded",
+      variant: "outline-secondary",
+      title: t("crud.copy"),
+      icon: "fas fa-copy",
+      text: text ? text : ""
+    },
     goto: {
       class: "btn-icon",
       variant: "outline-primary border-transparent",

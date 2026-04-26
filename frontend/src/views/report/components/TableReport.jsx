@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import { Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "components/Button/CrudButton";
 import Alert from "components/Alert/Alert";
 import CallBackendByName from "components/CallBackendByName";
@@ -15,6 +15,8 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
   const [id, setId] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [previewReport, setPreviewReport] = useState({});
+  const [showPreview, setShowPreview] = useState(false);
   const { t } = useTranslation();
 
   const [deleteUrl, setDeleteUrl] = useState();
@@ -109,7 +111,16 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
 
                   <td>
                     <CrudButton type="read" onClick={() => showModalReport(report)} />
+                    <Button
+                      variant="outline-info"
+                      className="btn-icon btn-rounded"
+                      title={t("w.preview")}
+                      onClick={() => { setPreviewReport(report); setShowPreview(true); }}
+                    >
+                      <i className="fas fa-eye" />
+                    </Button>
                     <CrudButton type="edit" to={`/reports/edit/${itemNumber}`} checkPermRoute />
+                    <CrudButton type="copy" to="/reports/create" state={{ copyFrom: report }} checkPermRoute />
                     <CrudButton type="delete" onClick={() => modalDelete(report.url)} permissions="delete_report" />
                   </td>
                 </tr>
@@ -137,6 +148,14 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                         <span className="d-block m-t-5">{t("ngen.report.detail")}</span>
                       </Col>
                       <Col sm={12} lg={4}>
+                        <Button
+                          variant="outline-info"
+                          className="btn-icon btn-rounded me-1"
+                          title={t("w.preview")}
+                          onClick={() => { setPreviewReport(report); setShowPreview(true); }}
+                        >
+                          <i className="fas fa-eye" />
+                        </Button>
                         <CrudButton type="edit" to={`/reports/edit/${id}`} checkPermRoute />
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                       </Col>
@@ -207,6 +226,52 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
           </Modal.Body>
         </Modal>
       </ul>
+
+      <Modal size="lg" show={showPreview} onHide={() => setShowPreview(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{t("w.preview")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ backgroundColor: "#f8f9fa", padding: "2rem" }}>
+          {previewReport.problem && (
+            <section className="mb-4">
+              <h5>{t("w.issue")}</h5>
+              <div dangerouslySetInnerHTML={{ __html: previewReport.problem }} />
+            </section>
+          )}
+          {previewReport.derived_problem && (
+            <section className="mb-4">
+              <h5>{t("w.problem.derived")}</h5>
+              <div dangerouslySetInnerHTML={{ __html: previewReport.derived_problem }} />
+            </section>
+          )}
+          {previewReport.verification && (
+            <section className="mb-4">
+              <h5>{t("w.verification")}</h5>
+              <div dangerouslySetInnerHTML={{ __html: previewReport.verification }} />
+            </section>
+          )}
+          {previewReport.recommendations && (
+            <section className="mb-4">
+              <h5>{t("w.recommendation.other")}</h5>
+              <div dangerouslySetInnerHTML={{ __html: previewReport.recommendations }} />
+            </section>
+          )}
+          {previewReport.more_information && (
+            <section className="mb-4">
+              <h5>{t("w.info")}</h5>
+              <div dangerouslySetInnerHTML={{ __html: previewReport.more_information }} />
+            </section>
+          )}
+          {!previewReport.problem && !previewReport.derived_problem && !previewReport.verification && !previewReport.recommendations && !previewReport.more_information && (
+            <p className="text-muted text-center">{t("w.no.content")}</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPreview(false)}>
+            {t("w.close")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

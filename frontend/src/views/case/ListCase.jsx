@@ -11,8 +11,9 @@ import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
 import Alert from "../../components/Alert/Alert";
-import ButtonFilter from "../../components/Button/ButtonFilter";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
+import FilterSelect from "../../components/Filter/FilterSelect";
 import { useTranslation } from "react-i18next";
 import PermissionCheck from "../../components/Auth/PermissionCheck";
 
@@ -41,9 +42,11 @@ const ListCase = ({ routeParams }) => {
 
   const [priorities, setPriorities] = useState([]);
   const [priorityFilter, setPriorityFilter] = useState("");
+  const [valuePriorityFilter, setValuePriorityFilter] = useState(null);
 
   const [tlpFilter, setTlpFilter] = useState("");
   const [tlps, setTlps] = useState([]);
+  const [valueTlpFilter, setValueTlpFilter] = useState(null);
 
   const [states, setStates] = useState([]);
   const [stateFilter, setStateFilter] = useState("");
@@ -156,7 +159,21 @@ const ListCase = ({ routeParams }) => {
   };
 
   const reloadPage = () => {
-    setRefresh(!refresh);
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setPriorityFilter("");
+    setValuePriorityFilter(null);
+    setTlpFilter("");
+    setValueTlpFilter(null);
+    setStateFilter("");
+    setValueStateFilter(null);
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
   };
 
   return (
@@ -167,8 +184,8 @@ const ListCase = ({ routeParams }) => {
           <Card>
             <Card.Header>
               <Row>
-                <Col sm={1} lg={1}>
-                  <ButtonFilter open={open} setOpen={setOpen} />
+                <Col sm="auto">
+                  <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
                 <Col sm={1} lg={6}>
                   <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
@@ -190,20 +207,6 @@ const ListCase = ({ routeParams }) => {
                       <Badge className="badge mr-1" bg={selectedCases.length > 0 ? "primary" : "secondary"}>{selectedCases.length}</Badge>
                     </Button>
                   </PermissionCheck>
-
-                  <Button size="lm" variant="outline-primary" onClick={() => reloadPage()}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-arrow-clockwise"
-                      viewBox="0 0 16 16"
-                    >
-                      <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
-                      <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
-                    </svg>
-                  </Button>
                 </Col>
               </Row>
               <Row></Row>
@@ -218,6 +221,8 @@ const ListCase = ({ routeParams }) => {
                         partOfTheUrl="priority"
                         itemFilter={priorityFilter}
                         itemFilterSetter={setPriorityFilter}
+                        value={valuePriorityFilter}
+                        setValue={setValuePriorityFilter}
                         setLoading={setLoading}
                         setCurrentPage={setCurrentPage}
                       />
@@ -229,6 +234,8 @@ const ListCase = ({ routeParams }) => {
                         partOfTheUrl="tlp"
                         itemFilter={tlpFilter}
                         itemFilterSetter={setTlpFilter}
+                        value={valueTlpFilter}
+                        setValue={setValueTlpFilter}
                         setLoading={setLoading}
                         setCurrentPage={setCurrentPage}
                       />
