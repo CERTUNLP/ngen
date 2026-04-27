@@ -15,6 +15,8 @@ class KintunAdapter(BaseAnalyzerAdapter):
     TYPE = "kintun"
     CONFIG_FIELDS = {
         "host": {"required": True, "sensitive": False},
+        "port": {"required": False, "sensitive": False, "type": "number"},
+        "ssl": {"required": False, "sensitive": False, "type": "boolean"},
         "api_key": {"required": False, "sensitive": True},
         "basic_auth_username": {"required": False, "sensitive": False},
         "basic_auth_password": {"required": False, "sensitive": True},
@@ -43,12 +45,19 @@ class KintunAdapter(BaseAnalyzerAdapter):
                 return redirected
         return response
 
+    def _base_url(self):
+        host = self.config["host"]
+        port = self.config.get("port")
+        scheme = "https" if self.config.get("ssl", True) else "http"
+        authority = f"{host}:{port}" if port else host
+        return f"{scheme}://{authority}/api"
+
     def get_vuln_choices(self):
         try:
             headers = self._headers()
             auth = self._auth()
             r = requests.get(
-                f"https://{self.config['host']}/api/vulns",
+                self._base_url() + "/vulns",
                 headers=headers,
                 auth=auth,
                 timeout=10,
@@ -60,9 +69,6 @@ class KintunAdapter(BaseAnalyzerAdapter):
         except Exception as exc:
             logger.warning("KintunAdapter.get_vuln_choices failed for host %s: %s", self.config.get("host"), exc)
             return []
-
-    def _base_url(self):
-        return f"https://{self.config['host']}/api"
 
     @staticmethod
     def _follow_redirect_post(response, headers, auth, payload):

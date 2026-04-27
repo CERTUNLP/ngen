@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { getAnalyzer, putAnalyzer } from "../../api/services/analyzer";
 import FormAnalyzer from "./components/FormAnalyzer";
 import { COMPONENT_URL } from "config/constant";
-import { SENSITIVE_PLACEHOLDER } from "./components/FormAnalyzer";
 
 const EditAnalyzer = () => {
   const { id } = useParams();
@@ -36,13 +35,7 @@ const EditAnalyzer = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Build config: skip sensitive fields that still hold the placeholder
-    const safeConfig = {};
-    Object.entries(config).forEach(([k, v]) => {
-      if (v !== SENSITIVE_PLACEHOLDER) safeConfig[k] = v;
-    });
-
-    putAnalyzer(analyzerUrl, { name, type: analyzerType, enabled, description, config: safeConfig })
+    putAnalyzer(analyzerUrl, { name, type: analyzerType, enabled, description, config })
       .then(() => {
         window.location.href = "/analyzers";
       })

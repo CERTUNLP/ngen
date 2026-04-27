@@ -83,6 +83,35 @@ class AnalyzerTest(TestCase):
         with self.assertRaises(ValueError):
             analyzer.get_adapter()
 
+    # --- port / ssl en config → _base_url ---
+
+    def _make_kintun_adapter(self, extra_config=None):
+        from ngen.analyzers.kintun import KintunAdapter
+
+        config = {"host": "kintun.example.com", **(extra_config or {})}
+        analyzer = Analyzer(name="url-test", type="kintun", config=config)
+        return KintunAdapter(analyzer)
+
+    def test_base_url_https_no_port(self):
+        adapter = self._make_kintun_adapter({"ssl": True})
+        self.assertEqual(adapter._base_url(), "https://kintun.example.com/api")
+
+    def test_base_url_http_no_port(self):
+        adapter = self._make_kintun_adapter({"ssl": False})
+        self.assertEqual(adapter._base_url(), "http://kintun.example.com/api")
+
+    def test_base_url_https_with_port(self):
+        adapter = self._make_kintun_adapter({"ssl": True, "port": 8443})
+        self.assertEqual(adapter._base_url(), "https://kintun.example.com:8443/api")
+
+    def test_base_url_http_with_port(self):
+        adapter = self._make_kintun_adapter({"ssl": False, "port": 8080})
+        self.assertEqual(adapter._base_url(), "http://kintun.example.com:8080/api")
+
+    def test_base_url_defaults_to_https(self):
+        adapter = self._make_kintun_adapter()
+        self.assertEqual(adapter._base_url(), "https://kintun.example.com/api")
+
 
 class AnalyzerMappingTest(TestCase):
     """
