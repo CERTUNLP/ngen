@@ -1035,12 +1035,15 @@ class Evidence(AuditModelMixin, ValidationModelMixin):
     def save(self, *args, **kwargs):
         """
         Set assigned_name, size, extension, mime and original_filename fields.
+        Also notify when a new evidence is added.
         assigned_name:
             1. strip the assigned_name removing leading and trailing whitespaces
             2. split the assigned_name by '.' and get the first part
             3. remove any non-word characters [^a-zA-Z0-9_]
             4. replace '_' with '-'
         """
+        is_new = self.pk is None
+
         if self.assigned_name:
             self.assigned_name = re.sub(
                 r"[\W]+", "-", self.assigned_name.strip().split(".")[0]
@@ -1049,7 +1052,25 @@ class Evidence(AuditModelMixin, ValidationModelMixin):
         self.size = self.file.size
         self.extension = Path(self.file.name).suffix
         self.mime = get_mime_type(self.file.open("rb"))
+
         super().save(*args, **kwargs)
+
+        # Post creation notification logic
+        if is_new:
+            related_obj = self.get_related()
+
+            # If the evidence was uploaded to an Event that has an associated Case
+            if isinstance(related_obj, Event) and related_obj.case:
+                # Passing send_attachments=True if we want the email to include the new file
+                related_obj.case.communicate_v2(
+                    "new_evidence_added_to_event", events=[related_obj]
+                )
+
+            # If the evidence was uploaded directly to the Case (not through an Event)
+            elif isinstance(related_obj, Case):
+                related_obj.communicate_v2(
+                    "new_evidence_added_to_case", send_attachments=True
+                )
 
 
 class CaseTemplate(AuditModelMixin, AddressModelMixin, ValidationModelMixin):

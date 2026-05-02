@@ -1,6 +1,10 @@
 from datetime import timedelta
 
 from django.urls import reverse
+from django.test import override_settings
+from django.core.files.uploadedfile import SimpleUploadedFile
+from ngen.models.email_message import EmailMessage
+from ngen.models.state import State
 from rest_framework import status
 from rest_framework_simplejwt.tokens import Token
 
@@ -16,6 +20,8 @@ from ngen.models import (
     Artifact,
 )
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
+from ngen.tests.test_helpers import use_test_email_env
+from constance.test import override_config
 
 
 class MyToken(Token):
@@ -122,7 +128,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             "cidr": "2.2.2.2",
             # 'domain': 'bbb',
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -138,7 +144,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             # 'cidr': '2.2.2.2',
             "domain": "info.unlp.edu.ar",
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -154,7 +160,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             # 'cidr': '2.2.2.2',
             "domain": "info.unlp.edu.ar",
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -174,7 +180,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             "cidr": "2.2.2.2",
             # 'domain': 'info.unlp.edu.ar',
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -194,7 +200,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             # 'cidr': '2.2.2.2',
             "domain": "info.unlp.edu.ar",
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": "critical",
             "tlp": "amber",
             "taxonomy": "phishing",
@@ -211,7 +217,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             "cidr": "2.2.2.2",
             "domain": "info.unlp.edu.ar",
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -227,7 +233,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             # 'cidr': '',
             # 'domain': 'info.unlp.edu.ar',
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -243,7 +249,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             "cidr": "",
             # 'domain': 'info.unlp.edu.ar',
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -259,7 +265,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             # 'cidr': '',
             "domain": "",
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -275,7 +281,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             "cidr": "",
             "domain": "",
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -291,7 +297,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             "cidr": "0.0.0.0/0",
             "domain": "",
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -307,7 +313,7 @@ class TestEvent(APITestCaseWithLogin):
         json_data = {
             "cidr": "0.0.0.0/0",
             "domain": "*",
-            "notes": "estas son notas",
+            "notes": "these are notes",
             "priority": self.priority_url,
             "tlp": self.tlp_url,
             "taxonomy": self.taxonomy_url,
@@ -488,3 +494,128 @@ class TestEvent(APITestCaseWithLogin):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         with self.assertRaises(Case.DoesNotExist):
             Case.objects.get(pk=event_pk)
+
+    @use_test_email_env()
+    @override_config(CASE_REPORT_NEW_CASES=True)
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_event_post_with_evidence(self):
+        """
+        This will test successful Event POST with an evidence file attached
+        """
+        initial_count = EmailMessage.objects.count()
+
+        # Create the new evidence file to upload
+        evidence_file = SimpleUploadedFile(
+            "file.txt", b"file_content", content_type="text/plain"
+        )
+
+        json_data = {
+            "address_value": "1.11.13.14",
+            "notes": "test",
+            "priority": self.priority_url,
+            "tlp": self.tlp_url,
+            "taxonomy": self.taxonomy_url,
+            "feed": self.feed_url,
+            "avoid_auto_merge": "false",
+            "evidence": evidence_file,  # Pass the simulated file
+        }
+
+        # Using format='multipart' is required so DRF handles form-data correctly
+        response = self.client.post(self.url_list, data=json_data, format="multipart")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Validate that the event was created
+        created_event = Event.objects.last()
+        self.assertIsNotNone(created_event)
+
+        self.assertEqual(EmailMessage.objects.count(), initial_count)
+        # NOTE: Depending on how your model stores evidence
+        # (e.g., a FileField on Event or a related model), you can add an assertion here.
+        # For example: self.assertTrue(created_event.evidences.exists())
+
+    @use_test_email_env()
+    @override_config(CASE_REPORT_NEW_CASES=True)
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_event_put_add_evidence(self):
+        """
+        This will test successful Event PUT adding an extra evidence file
+        """
+        initial_count = EmailMessage.objects.count()
+
+        # Create the new evidence file to upload
+        new_evidence_file = SimpleUploadedFile(
+            "file2.txt", b"file_content2", content_type="text/plain"
+        )
+        ef1_sha1 = "2196496b4e89e354291719e76978ac7540d7adf5"
+
+        # Prepare the payload used to create the initial event
+        json_data = {
+            "date": "2026-04-28T13:43",
+            "priority": self.priority_url,
+            "tlp": self.tlp_url,
+            "taxonomy": self.taxonomy_url,
+            "feed": self.feed_url,
+            "address_value": "test.com",
+            "avoid_auto_merge": "true",
+            "evidence": new_evidence_file,
+        }
+
+        # Create the initial event using multipart form data
+        response = self.client.post(self.url_list, data=json_data, format="multipart")
+        event_uuid = response.data["uuid"]
+        event_id = response.data["url"].split("/")[-2]
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        self.assertEqual(EmailMessage.objects.count(), initial_count)
+
+        # Create a case and assign the event to it
+        self.case = Case.objects.create(
+            priority=self.priority,
+            tlp=self.tlp,
+            state=State.objects.get(name="Open"),
+        )
+        self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
+
+        event = Event.objects.get(pk=event_id)
+        event.case = self.case
+        event.save()
+
+        self.assertEqual(EmailMessage.objects.count(), initial_count + 3)
+        last_email = EmailMessage.objects.last()
+        self.assertEqual(len(last_email.attachments), 1)
+        first_attachment = EmailMessage.objects.last().attachments[0]
+        self.assertIn(ef1_sha1, first_attachment["name"])
+
+        # Add a new evidence file to the event
+        another_evidence_file = SimpleUploadedFile(
+            "file3.txt", b"file_content3", content_type="text/plain"
+        )
+        ef2_sha1 = "676640c7903a09368d69757973d15848930c64a1"
+        json_data_update = {
+            "date": "2026-04-28T13:43",
+            "priority": self.priority_url,
+            "tlp": self.tlp_url,
+            "taxonomy": self.taxonomy_url,
+            "feed": self.feed_url,
+            "address_value": "test.com",
+            "avoid_auto_merge": "true",
+            "evidence": another_evidence_file,
+        }
+        response_update = self.client.put(
+            self.url_detail(event_id), data=json_data_update, format="multipart"
+        )
+        self.assertEqual(response_update.status_code, status.HTTP_200_OK)
+
+        # Verify that an email was sent after adding the new evidence and that it includes the attachment
+        self.assertEqual(EmailMessage.objects.count(), initial_count + 5)
+
+        last_email = EmailMessage.objects.last()
+        self.assertEqual(len(last_email.attachments), 2)
+        second_attachment = last_email.attachments[1]
+        first_attachment = EmailMessage.objects.last().attachments[0]
+        self.assertIn(ef1_sha1, first_attachment["name"])
+        self.assertIn(ef2_sha1, second_attachment["name"])
+        self.assertIn(event_uuid, first_attachment["name"])
+        self.assertIn(event_uuid, second_attachment["name"])
