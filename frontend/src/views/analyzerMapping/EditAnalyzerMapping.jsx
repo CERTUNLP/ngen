@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row, Spinner } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import { getAllAnalyzers, getVulnChoices } from "../../api/services/analyzer";
 import { getAnalyzerMapping, putAnalyzerMapping } from "../../api/services/analyzerMapping";
 import SelectLabel from "../../components/Select/SelectLabel";
 import { useTranslation } from "react-i18next";
@@ -12,11 +13,14 @@ const EditAnalyzerMapping = () => {
   const { id } = useParams();
   const [mappingFrom, setMappingFrom] = useState("");
   const [mappingTo, setMappingTo] = useState("");
-  const [analyzerType, setAnalyzerType] = useState("");
+  const [analyzer, setAnalyzer] = useState("");
   const [taxonomies, setTaxonomies] = useState([]);
+  const [analyzerOptions, setAnalyzerOptions] = useState([]);
   const [selectedMappingFrom, setSelectedMappingFrom] = useState(null);
+  const [selectedAnalyzer, setSelectedAnalyzer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
+  const [vulnChoices, setVulnChoices] = useState({});
   const { t } = useTranslation();
 
 
@@ -32,6 +36,21 @@ const EditAnalyzerMapping = () => {
       .catch((error) => {
         console.log("Error fetching taxonomies:", error);
       });
+
+    getAllAnalyzers()
+      .then((analyzers) => {
+        const options = analyzers
+          .filter((a) => a.enabled)
+          .map((a) => ({ value: a.url, label: a.name, type: a.type }));
+        setAnalyzerOptions(options);
+      })
+      .catch((error) => {
+        console.error("Error fetching analyzers:", error);
+      });
+
+    getVulnChoices()
+      .then((choices) => setVulnChoices(choices))
+      .catch((error) => console.error("Error fetching vuln choices:", error));
   }, []);
 
 
@@ -40,11 +59,18 @@ const EditAnalyzerMapping = () => {
       .then((response) => {
         setMappingFrom(response.data.mapping_from);
         setMappingTo(response.data.mapping_to);
-        setAnalyzerType(response.data.analyzer_type);
+        setAnalyzer(response.data.analyzer || "");
         setSelectedMappingFrom({
           value: response.data.mapping_from,
           label: response.data.mapping_from_name,
         });
+        if (response.data.analyzer) {
+          setSelectedAnalyzer({
+            value: response.data.analyzer,
+            label: response.data.analyzer_name,
+            type: response.data.analyzer_type,
+          });
+        }
       })
       .catch((error) => {
         console.log("Error fetching analyzer mapping:", error);
@@ -61,7 +87,7 @@ const EditAnalyzerMapping = () => {
       mapping_from: mappingFrom,
       mapping_from_name: selectedMappingFrom.label,
       mapping_to: mappingTo,
-      analyzer_type: analyzerType,
+      analyzer: analyzer || null,
     };
 
     putAnalyzerMapping(COMPONENT_URL.analyzerMapping + id + "/", data)
@@ -97,7 +123,17 @@ const EditAnalyzerMapping = () => {
             <Card.Body>
               <Form>
                 <Row>
-                  <Col sm={12} lg={6}>
+                  <Col sm={12} lg={4}>
+                    <SelectLabel
+                      set={setAnalyzer}
+                      setSelect={setSelectedAnalyzer}
+                      options={analyzerOptions}
+                      value={selectedAnalyzer}
+                      placeholder={t("ngen.analyzer_mapping.analyzer_type")}
+                      required={true}
+                    />
+                  </Col>
+                  <Col sm={12} lg={4}>
                     <SelectLabel
                       set={setMappingFrom}
                       setSelect={setSelectedMappingFrom}
@@ -107,43 +143,41 @@ const EditAnalyzerMapping = () => {
                       required={true}
                     />
                   </Col>
-                  <Col sm={12} lg={6}>
+                  <Col sm={12} lg={4}>
                     <Form.Group>
                       <Form.Label>
                         {t("ngen.analyzer_mapping.mapping_to")} <b style={{ color: "red" }}>*</b>
                       </Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={mappingTo}
-                        onChange={(e) => setMappingTo(e.target.value)}
-                        isInvalid={mappingTo === ""}
-                      />
+                      {(() => {
+                        const choices = vulnChoices[selectedAnalyzer?.type] || [];
+                        return choices.length > 0 ? (
+                          <Form.Select
+                            value={mappingTo}
+                            onChange={(e) => setMappingTo(e.target.value)}
+                            isInvalid={mappingTo === ""}
+                          >
+                            <option value="">{t("ngen.analyzer_mapping.mapping_to_select")}</option>
+                            {choices.map((v) => (
+                              <option key={v} value={v}>{v}</option>
+                            ))}
+                          </Form.Select>
+                        ) : (
+                          <Form.Control
+                            type="text"
+                            value={mappingTo}
+                            onChange={(e) => setMappingTo(e.target.value)}
+                            isInvalid={mappingTo === ""}
+                          />
+                        );
+                      })()}
                       {mappingTo === "" && (
                         <div className="invalid-feedback">{t("ngen.analyzer_mapping.mapping_to") + " invalid"}</div>
                       )}
                     </Form.Group>
                   </Col>
                 </Row>
-                <Row>
-                  <Col sm={12} lg={6}>
-                    <Form.Group>
-                      <Form.Label>
-                        {t("ngen.analyzer_mapping.analyzer_type")} <b style={{ color: "red" }}>*</b>
-                      </Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={analyzerType}
-                        onChange={(e) => setAnalyzerType(e.target.value)}
-                        isInvalid={analyzerType === ""}
-                      />
-                      {analyzerType === "" && (
-                        <div className="invalid-feedback">{t("ngen.analyzer_mapping.analyzer_type") + " invalid"}</div>
-                      )}
-                    </Form.Group>
-                  </Col>
-                </Row>
                 <Form.Group as={Col}>
-                  {mappingFrom && mappingTo && analyzerType ? (
+                  {mappingFrom && mappingTo ? (
                     <Button variant="primary" onClick={editAnalyzerMapping}>
                       {t("button.save")}
                     </Button>

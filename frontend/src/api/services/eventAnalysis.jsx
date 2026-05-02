@@ -8,9 +8,9 @@ const getRetests = (eventUrl, suppressAlert) => {
   const messageError = i18next.t("ngen.retest.refresh.error");
 
   return apiInstance
-    .get(COMPONENT_URL.eventAnalysis)
+    .get(COMPONENT_URL.eventAnalysis + "?page_size=1000&ordering=-date")
     .then((response) => {
-      const filteredResults = response.data.results.filter(item => item.event === eventUrl);
+      const filteredResults = response.data.results.filter((item) => item.event === eventUrl);
       if (!suppressAlert) {
         setAlert(messageSuccess, "success", "retest");
       }
@@ -24,11 +24,13 @@ const getRetests = (eventUrl, suppressAlert) => {
     });
 };
 
-const postRetest = (eventId) => {
+const postRetest = (eventId, analyzerMapping = null) => {
   const messageSuccess = i18next.t("ngen.retest.success");
   const messageError = i18next.t("ngen.retest.error");
   return apiInstance
-    .post(`${COMPONENT_URL.event}${eventId}/retest/`, {})
+    .post(`${COMPONENT_URL.event}${eventId}/retest/`, {
+      analyzer_mapping: analyzerMapping,
+    })
     .then((response) => {
       setAlert(messageSuccess, "success", "retest");
       return response;

@@ -165,6 +165,30 @@ const routes = [
   },
   {
     exact: "true",
+    path: "/analyzers",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_analyzer"],
+    element: lazy(() => import("./views/analyzer/ListAnalyzers"))
+  },
+  {
+    exact: "true",
+    path: "/analyzers/create",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["add_analyzer"],
+    element: lazy(() => import("./views/analyzer/CreateAnalyzer"))
+  },
+  {
+    exact: "true",
+    path: "/analyzers/edit/:id",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["change_analyzer"],
+    element: lazy(() => import("./views/analyzer/EditAnalyzer"))
+  },
+  {
+    exact: "true",
     path: "/analyzermappings",
     layout: AdminLayout,
     guard: PermissionGuard,
