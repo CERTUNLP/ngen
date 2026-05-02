@@ -35,7 +35,7 @@ const FormLookup = () => {
       .catch((error) => {
         console.error(error);
         setTaskStatus("FAILURE");
-        setTaskResult(t("lookup.error.start"));
+        setTaskResult(t("ngen.lookup.error.start"));
       })
       .finally(() => {
         setLoading(false);
@@ -56,7 +56,7 @@ const FormLookup = () => {
             setTaskResult(data.result);
             clearInterval(pollingRef.current);
           } else if (data.status === "FAILURE") {
-            setTaskResult(t("lookup.error.run"));
+            setTaskResult(t("ngen.lookup.error.run"));
             clearInterval(pollingRef.current);
           } else if (data.status === "PENDING") {
             // Do nothing, just keep polling
@@ -65,7 +65,7 @@ const FormLookup = () => {
         .catch((error) => {
           console.error(error);
           setTaskStatus("FAILURE");
-          setTaskResult(t("lookup.error.fetch"));
+          setTaskResult(t("ngen.lookup.error.fetch"));
           clearInterval(pollingRef.current);
         });
     }, 2000);

@@ -46,7 +46,7 @@ function ButtonView({ taxonomy }) {
                   <Row>
                     <Col>
                       <Card.Title as="h5">{t("ngen.taxonomy_one")}</Card.Title>
-                      <span className="d-block m-t-5">{t("ngen.taxonomy_detail")}</span>
+                      <span className="d-block m-t-5">{t("ngen.taxonomy.detail")}</span>
                     </Col>
                     <Col sm={12} lg={2}>
                       <Link to="./taxonomy/edit" state={taxonomy}>
