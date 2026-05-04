@@ -25,6 +25,27 @@ const ModalListCase = (props) => {
   const [valueStateFilter, setValueStateFilter] = useState(null);
 
   useEffect(() => {
+    if (!props.showModalListCase) {
+      setValuePriorityFilter(null);
+      setValueTlpFilter(null);
+      setValueStateFilter(null);
+      return;
+    }
+
+    if (!props.priorityFilter) {
+      setValuePriorityFilter(null);
+    }
+
+    if (!props.tlpFilter) {
+      setValueTlpFilter(null);
+    }
+
+    if (!props.stateFilter) {
+      setValueStateFilter(null);
+    }
+  }, [props.showModalListCase, props.priorityFilter, props.tlpFilter, props.stateFilter]);
+
+  useEffect(() => {
     getCases(props.currentPage, props.stateFilter + props.tlpFilter + props.priorityFilter + props.wordToSearch, order, props.asNetworkAdmin)
       .then((response) => {
         setCases(response.data.results);
