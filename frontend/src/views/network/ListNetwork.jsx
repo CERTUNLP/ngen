@@ -38,6 +38,8 @@ const ListNetwork = ({ routeParams }) => {
   const [subnetOfFilter, setSubnetOfFilter] = useState("");
   const [supernetOfFilter, setSupernetOfFilter] = useState("");
   const [entitiesFilter, setEntitiesFilter] = useState("");
+  const [valueEntityFilter, setValueEntityFilter] = useState(null);
+  const [valueTypeFilter, setValueTypeFilter] = useState(null);
   const [order, setOrder] = useState("network_entity__name");
   const [filterChanged, setFilterChanged] = useState(false);
 
@@ -133,6 +135,8 @@ const ListNetwork = ({ routeParams }) => {
                         partOfTheUrl="network_entity"
                         itemFilter={entitiesFilter}
                         itemFilterSetter={setEntitiesFilter}
+                        value={valueEntityFilter}
+                        setValue={setValueEntityFilter}
                         setLoading={setLoading}
                         setCurrentPage={setCurrentPage}
                         label={t("ngen.entity")}
@@ -144,7 +148,10 @@ const ListNetwork = ({ routeParams }) => {
                         partOfTheUrl="type"
                         setFilter={setTypeFilter}
                         currentFilter={typeFilter}
+                        value={valueTypeFilter}
+                        setValue={setValueTypeFilter}
                         setLoading={setLoading}
+                        setCurrentPage={setCurrentPage}
                         placeholder={t("ngen.filter_by") + " " + t("ngen.type")}
                         label={t("ngen.type")}
                       />

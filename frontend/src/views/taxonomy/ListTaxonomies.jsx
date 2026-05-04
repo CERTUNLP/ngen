@@ -42,6 +42,14 @@ const ListTaxonomies = () => {
   const [reportsFilter, setReportsFilter] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
 
+  const [valueParentFilter, setValueParentFilter] = useState(null);
+  const [valueGroupFilter, setValueGroupFilter] = useState(null);
+  const [valueAliasFilter, setValueAliasFilter] = useState(null);
+  const [valueTypeFilter, setValueTypeFilter] = useState(null);
+  const [valueNeedsReviewFilter, setValueNeedsReviewFilter] = useState(null);
+  const [valueActiveFilter, setValueActiveFilter] = useState(null);
+  const [valueReportsFilter, setValueReportsFilter] = useState(null);
+
   const [order, setOrder] = useState("name");
 
   function updatePage(chosenPage) {
@@ -176,6 +184,8 @@ const ListTaxonomies = () => {
                         partOfTheUrl="parent"
                         itemFilter={parentFilter}
                         itemFilterSetter={setParentFilter}
+                        value={valueParentFilter}
+                        setValue={setValueParentFilter}
                         setLoading={setLoading}
                         setCurrentPage={setCurrentPage}
                       />
@@ -187,6 +197,8 @@ const ListTaxonomies = () => {
                         partOfTheUrl="group"
                         itemFilter={taxonomyGroupFilter}
                         itemFilterSetter={setTaxonomyGroupFilter}
+                        value={valueGroupFilter}
+                        setValue={setValueGroupFilter}
                         setLoading={setLoading}
                         setCurrentPage={setCurrentPage}
                       />
@@ -198,6 +210,8 @@ const ListTaxonomies = () => {
                         partOfTheUrl="alias_of"
                         itemFilter={aliasFilter}
                         itemFilterSetter={setAliasFilter}
+                        value={valueAliasFilter}
+                        setValue={setValueAliasFilter}
                         setLoading={setLoading}
                         setCurrentPage={setCurrentPage}
                       />
@@ -211,7 +225,10 @@ const ListTaxonomies = () => {
                         partOfTheUrl="type"
                         setFilter={setTypeFilter}
                         currentFilter={typeFilter}
+                        value={valueTypeFilter}
+                        setValue={setValueTypeFilter}
                         setLoading={setLoading}
+                        setCurrentPage={setCurrentPage}
                         placeholder={t("ngen.filter_by") + " " + t("ngen.type")}
                       />
                     </Col>
@@ -222,7 +239,10 @@ const ListTaxonomies = () => {
                         partOfTheUrl="needs_review"
                         setFilter={setNeedsReviewFilter}
                         currentFilter={needsReviewFilter}
+                        value={valueNeedsReviewFilter}
+                        setValue={setValueNeedsReviewFilter}
                         setLoading={setLoading}
+                        setCurrentPage={setCurrentPage}
                         placeholder={t("ngen.filter_by") + " " + t("ngen.taxonomy.needs_review")}
                       />
                     </Col>
@@ -233,7 +253,10 @@ const ListTaxonomies = () => {
                         partOfTheUrl="active"
                         setFilter={setActiveFilter}
                         currentFilter={activeFilter}
+                        value={valueActiveFilter}
+                        setValue={setValueActiveFilter}
                         setLoading={setLoading}
+                        setCurrentPage={setCurrentPage}
                         placeholder={t("ngen.filter_by") + " " + t("w.active")}
                       />
                     </Col>
@@ -247,7 +270,10 @@ const ListTaxonomies = () => {
                         partOfTheUrl="reports__isnull"
                         setFilter={setReportsFilter}
                         currentFilter={reportsFilter}
+                        value={valueReportsFilter}
+                        setValue={setValueReportsFilter}
                         setLoading={setLoading}
+                        setCurrentPage={setCurrentPage}
                         placeholder={t("ngen.filter_by") + " " + t("ngen.report_other")}
                       />
                     </Col>
