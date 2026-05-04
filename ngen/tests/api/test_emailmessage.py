@@ -153,7 +153,8 @@ class TestEmailMessage(APITestCaseWithLogin):
             "body": "Test body",
         }
 
-        response = self.client.post(self.url_send_email, data=json_data)
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(self.url_send_email, data=json_data)
 
         response_messages = self.get_messages_from_response(response)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -175,7 +176,8 @@ class TestEmailMessage(APITestCaseWithLogin):
             "body": "Test body",
         }
 
-        response = self.client.post(self.url_send_email, data=json_data)
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(self.url_send_email, data=json_data)
 
         response_messages = self.get_messages_from_response(response)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -199,11 +201,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "body": "Respondiendo al primer email",
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         response_messages = self.get_messages_from_response(response)
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -228,11 +231,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "body": "Test body",
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         response_messages = self.get_messages_from_response(response)
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -254,11 +258,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "body": "Test body",
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         response_messages = self.get_messages_from_response(response)
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -281,11 +286,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "in_reply_to": 9999,
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         response_messages = self.get_messages_from_response(response)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -306,11 +312,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "body": "Test body",
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 200)
 
@@ -331,11 +338,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "body": "Test body",
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
@@ -362,11 +370,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "body": "Test body",
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
@@ -414,11 +423,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "in_reply_to": email_message.id,
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
@@ -492,11 +502,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "in_reply_to": email_messages[1].id,
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
@@ -539,11 +550,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "template_params": {"param1": "value1", "param2": "value2"},
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
@@ -570,11 +582,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             "body": "Test body",
         }
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
@@ -611,11 +624,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             {"name": "victim2", "email": "victim2@organization2.com"},
         ]
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
@@ -672,11 +686,12 @@ class TestEmailMessage(APITestCaseWithLogin):
             {"name": "Another Recipient", "email": "another_recipient@org.com"},
         ]
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
@@ -715,11 +730,12 @@ class TestEmailMessage(APITestCaseWithLogin):
 
         initial_count = EmailMessage.objects.count()
 
-        response = self.client.post(
-            self.url_send_email,
-            data=json.dumps(json_data),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_send_email,
+                data=json.dumps(json_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EmailMessage.objects.count(), initial_count + 1)
