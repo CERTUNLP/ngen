@@ -20,6 +20,10 @@ const ModalListCase = (props) => {
 
   const [disabledPagination, setDisabledPagination] = useState(true);
 
+  const [valuePriorityFilter, setValuePriorityFilter] = useState(null);
+  const [valueTlpFilter, setValueTlpFilter] = useState(null);
+  const [valueStateFilter, setValueStateFilter] = useState(null);
+
   useEffect(() => {
     getCases(props.currentPage, props.stateFilter + props.tlpFilter + props.priorityFilter + props.wordToSearch, order, props.asNetworkAdmin)
       .then((response) => {
@@ -76,6 +80,8 @@ const ModalListCase = (props) => {
               partOfTheUrl="priority"
               itemFilter={props.priorityFilter}
               itemFilterSetter={props.setPriorityFilter}
+              value={valuePriorityFilter}
+              setValue={setValuePriorityFilter}
               setLoading={setLoading}
               setCurrentPage={props.setCurrentPage}
             />
@@ -87,6 +93,8 @@ const ModalListCase = (props) => {
               partOfTheUrl="tlp"
               itemFilter={props.tlpFilter}
               itemFilterSetter={props.setTlpFilter}
+              value={valueTlpFilter}
+              setValue={setValueTlpFilter}
               setLoading={setLoading}
               setCurrentPage={props.setCurrentPage}
             />
@@ -98,6 +106,8 @@ const ModalListCase = (props) => {
               partOfTheUrl="state"
               itemFilter={props.stateFilter}
               itemFilterSetter={props.setStateFilter}
+              value={valueStateFilter}
+              setValue={setValueStateFilter}
               setLoading={setLoading}
               setCurrentPage={props.setCurrentPage}
             />

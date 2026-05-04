@@ -37,6 +37,8 @@ const ListTemplete = () => {
   const [taxonomyFilter, setTaxonomyFilter] = useState("");
   const [feedFilter, setFeedFilter] = useState("");
   const [wordToSearch, setWordToSearch] = useState("");
+  const [valueFeedFilter, setValueFeedFilter] = useState(null);
+  const [valueTaxonomyFilter, setValueTaxonomyFilter] = useState(null);
   const [order, setOrder] = useState("event_feed__name");
 
   const [taxonomyNames, setTaxonomyNames] = useState({});
@@ -156,7 +158,10 @@ const ListTemplete = () => {
                         partOfTheUrl="event_feed"
                         itemFilter={feedFilter}
                         itemFilterSetter={setFeedFilter}
+                        value={valueFeedFilter}
+                        setValue={setValueFeedFilter}
                         setLoading={setLoading}
+                        setCurrentPage={setCurrentPage}
                       />
                     </Col>
                     <Col sm={12} lg={4}>
@@ -166,7 +171,10 @@ const ListTemplete = () => {
                         partOfTheUrl="event_taxonomy"
                         itemFilter={taxonomyFilter}
                         itemFilterSetter={setTaxonomyFilter}
+                        value={valueTaxonomyFilter}
+                        setValue={setValueTaxonomyFilter}
                         setLoading={setLoading}
+                        setCurrentPage={setCurrentPage}
                       />
                     </Col>
                   </Row>
