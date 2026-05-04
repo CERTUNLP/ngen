@@ -441,7 +441,7 @@ def async_send_email(self, email_message_id: int):
         email_message = ngen.models.EmailMessage.objects.get(id=email_message_id)
     except ngen.models.EmailMessage.DoesNotExist as e:
         if self.request.retries == self.max_retries:
-            logger.error(f"EmailMessage {email_message_id} not found after {self.max_retries} retries.")
+            logger.exception(f"EmailMessage {email_message_id} not found after {self.max_retries} retries.")
             return {"status": "error", "message": f"Email {email_message_id} not found"}
 
         exponential_backoff = (self.request.retries + 1) ** 2
@@ -494,6 +494,7 @@ def async_send_email(self, email_message_id: int):
         return {"status": "success", "message": f"Email {email_message_id} sent"}
     except Exception as e:
         email_message.send_attempt_failed = True
+        logger.exception(f"Error sending email {email_message_id}: {str(e)}")
         raise e
     finally:
         email_message.save()
