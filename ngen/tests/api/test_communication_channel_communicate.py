@@ -82,9 +82,10 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
         ]
         params = {"subject": "Test Subject", "body": "Test Body"}
 
-        response = self.client.post(
-            self.url_communicate(self.communication_channel.id), data=params
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_communicate(self.communication_channel.id), data=params
+            )
 
         self.communication_channel.refresh_from_db()
         created_email_message = EmailMessage.objects.get(id=response.data["id"])
@@ -155,9 +156,10 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
         ]
         params = {"body": "Test Body"}
 
-        response = self.client.post(
-            self.url_communicate(self.communication_channel.id), data=params
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_communicate(self.communication_channel.id), data=params
+            )
 
         self.communication_channel.refresh_from_db()
         created_email_message = EmailMessage.objects.get(id=response.data["id"])
@@ -202,11 +204,12 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
             "body": "Test Body",
         }
 
-        response = self.client.post(
-            self.url_communicate(self.communication_channel.id),
-            data=json.dumps(params),
-            content_type="application/json",
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_communicate(self.communication_channel.id),
+                data=json.dumps(params),
+                content_type="application/json",
+            )
 
         self.communication_channel.refresh_from_db()
         created_email_message = EmailMessage.objects.get(id=response.data["id"])
@@ -239,9 +242,11 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
 
         params = {"subject": "Test Subject"}
 
-        response = self.client.post(
-            self.url_communicate(self.communication_channel.id), data=params
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_communicate(self.communication_channel.id),
+                data=params
+            )
 
         response_messages = self.get_messages_from_response(response)
 
