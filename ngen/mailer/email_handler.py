@@ -14,6 +14,8 @@ EMAIL_TEMPLATES = {
     "case_closed_report": "reports/case_closed_report.html",
     "case_change_state": "reports/case_change_state.html",
     "case_assign": "reports/case_assign.html",
+    "new_evidence_added_to_event": "reports/new_evidence_added_to_event.html",
+    "new_evidence_added_to_case": "reports/new_evidence_added_to_case.html",
 }
 
 
@@ -174,7 +176,7 @@ class EmailHandler:
             raise ValueError("Send email failed. Neither Body nor Template provided.")
 
         if template and template not in EMAIL_TEMPLATES:
-            raise ValueError("Send email failed. Invalid template")
+            raise ValueError(f"Send email failed. Invalid template: '{template}'.")
 
         rendered_template = {}
         if template:
@@ -222,6 +224,7 @@ class EmailHandler:
                 attachments=attachments if attachments else [],
             )
 
-            async_send_email.delay(email_message.id)
+            email_id = email_message.id
+            transaction.on_commit(lambda: async_send_email.delay(email_id))
 
         return email_message

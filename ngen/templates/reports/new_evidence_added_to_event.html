@@ -1,0 +1,20 @@
+{% extends "reports/content_base.html" %}
+{% load i18n %}
+{% language lang %}
+    {% block content_header %}
+        <h4>
+            {% translate 'New evidence added to event' %}
+        </h4>
+    {% endblock %}
+
+    {% block content_body %}
+        <p class="lead">
+            {% blocktranslate trimmed with id=case.uuid %}
+                A new evidence has been added to the event {{ id }}
+            {% endblocktranslate %}
+        </p>
+        {% for event in events %}
+            {% include "reports/event_detail.html" with event=event %}
+        {% endfor %}
+    {% endblock %}
+{% endlanguage %}

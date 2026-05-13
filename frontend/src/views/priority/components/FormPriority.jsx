@@ -180,7 +180,7 @@ const FormPriority = ({ body, setBody, createPriority }) => {
           </Col>
         </Row>
         <Row>
-          <Form.Label>{t("time.to.solve")} </Form.Label>
+          <Form.Label>{t("time.to.solver")} </Form.Label>
           <Col>
             <Form.Group controlId="formGridAddress1">
               {t("date.days")}&nbsp;

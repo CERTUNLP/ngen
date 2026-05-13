@@ -100,6 +100,7 @@ export const COMPONENT_URL = {
   configPublic: "ngenconfig/",
   tag: "tag/",
   eventAnalysis: "eventanalysis/",
+  analyzer: "analyzer/",
   analyzerMapping: "analyzermapping/",
   version: "version/",
   lookup: "lookup/",

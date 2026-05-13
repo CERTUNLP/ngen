@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { getTaxonomy } from "../../../api/services/taxonomies";
 import { deleteAnalyzerMapping, getAnalyzerMapping } from "../../../api/services/analyzerMapping";
 
-const TableAnalyzerMapping = ({ list, loading, order, setOrder, setLoading }) => {
+const TableAnalyzerMapping = ({ list, loading, order, setOrder, onDeleted }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const [selectedMapping, setSelectedMapping] = useState(null);
@@ -60,8 +60,8 @@ const TableAnalyzerMapping = ({ list, loading, order, setOrder, setLoading }) =>
   const deleteMapping = (url) => {
     deleteAnalyzerMapping(url, selectedMapping?.mapping_from_name, selectedMapping?.mapping_to, selectedMapping?.analyzer_type)
       .then(() => {
-        setLoading(true);
         setModalDelete(false);
+        onDeleted();
       })
       .catch((error) => {
         console.error("Error deleting analyzer mapping:", error);
@@ -88,7 +88,7 @@ const TableAnalyzerMapping = ({ list, loading, order, setOrder, setLoading }) =>
               <tr key={index}>
                 <td>{taxonomyNames[mapping.mapping_from]}</td>
                 <td>{mapping.mapping_to}</td>
-                <td>{mapping.analyzer_type}</td>
+                <td>{mapping.analyzer_name || "-"}</td>
                 <td>
                   <DateShowField value={mapping.created} />
                 </td>
@@ -132,7 +132,7 @@ const TableAnalyzerMapping = ({ list, loading, order, setOrder, setLoading }) =>
                       </tr>
                       <tr>
                         <td>{t("ngen.analyzer_mapping.analyzer_type")}</td>
-                        <td>{selectedMapping?.analyzer_type}</td>
+                        <td>{selectedMapping?.analyzer_name || "-"}</td>
                       </tr>
                       <tr>
                         <td>{t("ngen.date.created")}</td>

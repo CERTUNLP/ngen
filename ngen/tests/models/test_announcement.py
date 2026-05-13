@@ -634,13 +634,15 @@ class AnnouncementTestCase(TestCase):
 
         # Assert email was sent in intern channel
         self.assertIsNotNone(intern_channel)
-        self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("open", intern_channel.get_last_message().body.lower())
+        self.assertEqual(len(intern_channel.get_messages()), 2)
+        self.assertIn("open", intern_channel.get_messages()[0].body.lower())
+        self.assertIn("team", intern_channel.get_messages()[1].body.lower())
 
         # Assert email was sent in affected channel
         self.assertIsNotNone(affected_channel)
-        self.assertEqual(len(affected_channel.get_messages()), 1)
-        self.assertIn("open", affected_channel.get_last_message().body.lower())
+        self.assertEqual(len(affected_channel.get_messages()), 2)
+        self.assertIn("open", affected_channel.get_messages()[0].body.lower())
+        self.assertIn("team", affected_channel.get_messages()[1].body.lower())
 
         expected_evidence_name = (
             f"Event({self.event.uuid})_{self.event.created.date()}_{evidence.filename}"
@@ -714,13 +716,15 @@ class AnnouncementTestCase(TestCase):
 
         # Assert email was sent in intern channel
         self.assertIsNotNone(intern_channel)
-        self.assertEqual(len(intern_channel.get_messages()), 1)
-        self.assertIn("open", intern_channel.get_last_message().body.lower())
+        self.assertEqual(len(intern_channel.get_messages()), 2)
+        self.assertIn("open", intern_channel.get_messages()[0].body.lower())
+        self.assertIn("team", intern_channel.get_messages()[1].body.lower())
 
         # Assert email was sent in affected channel
         self.assertIsNotNone(affected_channel)
-        self.assertEqual(len(affected_channel.get_messages()), 1)
-        self.assertIn("open", affected_channel.get_last_message().body.lower())
+        self.assertEqual(len(affected_channel.get_messages()), 2)
+        self.assertIn("open", affected_channel.get_messages()[0].body.lower())
+        self.assertIn("team", affected_channel.get_messages()[1].body.lower())
 
         expected_evidence_name = f"Event({self.event.uuid})_{self.event.created.date()}_EjemploEvidenciá-test-1_{evidence.filename}"
 

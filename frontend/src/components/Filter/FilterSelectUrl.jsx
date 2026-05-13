@@ -31,8 +31,7 @@ const FilterSelectUrl = ({
     if (itemFilter !== `${partOfTheUrl}=${itemNumber}&`) {
       setLoading(true);
     }
-    if (value) {
-      //esto porque tengo que ver todos los filtros y agregarles el value y setValue esto solo esta en el listado de eventos por modal
+    if (setValue) {
       setValue(item);
     }
   };

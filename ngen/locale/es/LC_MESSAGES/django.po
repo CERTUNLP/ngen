@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-18 12:00+0000\n"
+"POT-Creation-Date: 2026-04-28 18:16+0000\n"
 "PO-Revision-Date: 2024-09-10 10:30+0000\n"
 "Last-Translator: Mateo Durante <mdurante@cert.unlp.edu.ar>\n"
 "Language-Team: en/es <soporte@cert.unlp.edu.ar>\n"
@@ -64,23 +64,23 @@ msgstr ""
 "Indica si esta relación fue creada automáticamente y será eliminada si se "
 "modifica el objeto relacionado."
 
-#: ngen/models/case.py:53 project/settings.py:256
+#: ngen/models/case.py:55 project/settings.py:256
 msgid "Manual"
 msgstr "Manual"
 
-#: ngen/models/case.py:54 project/settings.py:257
+#: ngen/models/case.py:56 project/settings.py:257
 msgid "Auto"
 msgstr "Automático"
 
-#: ngen/models/case.py:55 project/settings.py:258
+#: ngen/models/case.py:57 project/settings.py:258
 msgid "Auto open"
 msgstr "Apertura automática"
 
-#: ngen/models/case.py:56 project/settings.py:259
+#: ngen/models/case.py:58 project/settings.py:259
 msgid "Auto close"
 msgstr "Cierre automático"
 
-#: ngen/models/case.py:274
+#: ngen/models/case.py:276
 #, python-format
 msgid ""
 "It's not possible to change the state %s to %s. The new possible states are "
@@ -88,7 +88,17 @@ msgid ""
 msgstr ""
 "No es posible cambiar el estado %s a %s. Los nuevos estados posibles son %s."
 
-#: ngen/models/case.py:698
+#: ngen/models/case.py:633
+msgid ""
+"If true, this event will not be automatically merged with other events even "
+"if they have the same taxonomy, feed, cidr and domain. Can be merged "
+"manually with any event."
+msgstr ""
+"Si es verdadero, este evento no se fusionará automáticamente con otros eventos "
+"incluso si tienen la misma taxonomía, feed, cidr y dominio. Puede fusionarse "
+"manualmente con cualquier evento."
+
+#: ngen/models/case.py:809
 msgid "Date cannot be in the future"
 msgstr "La fecha no puede estar en el futuro"
 
@@ -96,23 +106,23 @@ msgstr "La fecha no puede estar en el futuro"
 msgid "Parent can't be a descendant of the instance."
 msgstr "El padre no puede ser un descendiente de la instancia."
 
-#: ngen/models/common/mixins.py:178
+#: ngen/models/common/mixins.py:182
 msgid "The parent must not be the same instance."
 msgstr "El padre no debe ser la misma instancia."
 
-#: ngen/models/common/mixins.py:182
+#: ngen/models/common/mixins.py:186
 msgid "The parent is not mergeable or is blocked."
 msgstr "El padre no es fusionable o está bloqueado."
 
-#: ngen/models/common/mixins.py:186
+#: ngen/models/common/mixins.py:190
 msgid "The child is not mergeable or is blocked."
 msgstr "El hijo no es fusionable o está bloqueado."
 
-#: ngen/models/common/mixins.py:216
+#: ngen/models/common/mixins.py:220
 msgid "Parent of merged instances can't be modified"
 msgstr "Las instancias fusionadas no pueden ser modificadas."
 
-#: ngen/models/common/mixins.py:242
+#: ngen/models/common/mixins.py:246
 #, python-brace-format
 msgid ""
 "Merged instances can't be modified: {self}, {self.parent}, {self.children}"
@@ -120,12 +130,12 @@ msgstr ""
 "Las instancias fusionadas no pueden ser modificadas: {self}, {self.parent}, "
 "{self.children}."
 
-#: ngen/models/common/mixins.py:256
+#: ngen/models/common/mixins.py:260
 #, python-brace-format
 msgid "{attr} of blocked instances can't be modified"
 msgstr "{attr} de las instancias bloqueadas no puede ser modificado"
 
-#: ngen/models/common/mixins.py:465
+#: ngen/models/common/mixins.py:468
 msgid "Address must be either a CIDR or a domain"
 msgstr "La dirección debe ser un CIDR o un dominio"
 
@@ -226,7 +236,7 @@ msgstr "Una taxonomía interna con padre no puede tener alias"
 msgid "Internal taxonomy alias cannot have parent"
 msgstr "Un alias de taxonomía interna no puede tener padre"
 
-#: ngen/serializers/case.py:160
+#: ngen/serializers/case.py:162
 #, python-format
 msgid "%s of merged events can't be modified"
 msgstr "%s de los eventos fusionados no pueden ser modificados"
@@ -299,7 +309,7 @@ msgid "A new event has been added to the case %(id)s"
 msgstr "Se ha agregado un nuevo evento al caso %(id)s"
 
 #: ngen/templates/reports/case_change_state.html:7
-#: ngen/tests/models/test_announcement.py:525
+#: ngen/tests/models/test_announcement.py:530
 msgid "Case status updated"
 msgstr "Estado del caso actualizado"
 
@@ -342,8 +352,8 @@ msgid ""
 "We are reviewing our records to ensure we have your most up-to-date "
 "information."
 msgstr ""
-"Estamos revisando nuestros registros para asegurarnos de tener su información "
-"más actualizada."
+"Estamos revisando nuestros registros para asegurarnos de tener su "
+"información más actualizada."
 
 #: ngen/templates/reports/contact_check.html:22
 #: ngen/templates/reports/contact_check_submitted.html:35
@@ -419,8 +429,8 @@ msgid ""
 "<strong>Note:</strong> If we don't receive your confirmation, we'll remove "
 "your details from our system."
 msgstr ""
-"<strong>Nota:</strong> Si no recibimos su confirmación, eliminaremos "
-"su información de nuestro sistema."
+"<strong>Nota:</strong> Si no recibimos su confirmación, eliminaremos su "
+"información de nuestro sistema."
 
 #: ngen/templates/reports/contact_check_submitted.html:8
 #, python-format
@@ -432,8 +442,8 @@ msgid ""
 "The following is a summary of the contact's submitted verification and "
 "associated information."
 msgstr ""
-"A continuación se muestra un resumen de la verificación enviada "
-"del contacto y la información asociada."
+"A continuación se muestra un resumen de la verificación enviada del contacto "
+"y la información asociada."
 
 #: ngen/templates/reports/contact_check_submitted.html:23
 msgid "Contact details:"
@@ -503,6 +513,22 @@ msgstr "Recomendaciones"
 msgid "For more information"
 msgstr "Para obtener más información"
 
+#: ngen/templates/reports/new_evidence_added_to_case.html:6
+msgid "New evidence added to case"
+msgstr "Nueva evidencia agregada al caso"
+
+#: ngen/templates/reports/new_evidence_added_to_case.html:12
+msgid "A new evidence has been added to the case %(id)s"
+msgstr "Se ha agregado nueva evidencia al caso %(id)s"
+
+#: ngen/templates/reports/new_evidence_added_to_event.html:6
+msgid "New evidence added to event"
+msgstr "Nueva evidencia agregada al evento"
+
+#: ngen/templates/reports/new_evidence_added_to_event.html:12
+msgid "A new evidence has been added to the event %(id)s"
+msgstr "Se ha agregado un nueva evidencia al evento %(id)s"
+
 #: ngen/templates/reports/summary_case_detail_closed.html:5
 msgid "Solved cases"
 msgstr "Casos resueltos"
@@ -548,8 +574,8 @@ msgid ""
 "If you would like to see more details, you can export the full report from: "
 "<a href=\"%(link)s\">%(link)s</a>"
 msgstr ""
-"Si desea ver más detalles, puede exportar el informe completo desde: "
-"<a href=\"%(link)s\">%(link)s</a>"
+"Si desea ver más detalles, puede exportar el informe completo desde: <a "
+"href=\"%(link)s\">%(link)s</a>"
 
 #: ngen/templates/reports/summary_contact.html:31
 msgid "Congratulation! You have <strong>0</strong> unsolved cases"
@@ -568,10 +594,11 @@ msgid "A retest is already in progress for this event."
 msgstr "Ya hay una nueva prueba en curso para este evento."
 
 #: ngen/views/case.py:158
+#, python-brace-format
 msgid "Task retest event for {event.pk} launched"
 msgstr "Tarea de nueva prueba del evento para {event.pk} lanzada"
 
-#: ngen/views/case.py:306
+#: ngen/views/case.py:425
 msgid "Task create cases for matching events launched"
 msgstr "Tarea de creación de casos para eventos coincidentes lanzada"
 
@@ -719,72 +746,111 @@ msgstr "Ciclo de vida predeterminado del caso"
 msgid "Send report on new cases"
 msgstr "Enviar informe sobre nuevos casos"
 
-#: project/settings.py:409
+#: project/settings.py:410
+msgid ""
+"Report events with external network to affected contact emails from RDAP, "
+"WHOIS, etc."
+msgstr ""
+"Reportar eventos con red externa a los correos electrónicos de contacto afectados "
+"de RDAP, WHOIS, etc."
+
+#: project/settings.py:418
+msgid "Create internal communication channel for each case automatically"
+msgstr "Crear un canal de comunicación interno para cada caso automáticamente"
+
+#: project/settings.py:429
+#, python-brace-format
+msgid ""
+"Case email subject template. Variables: {team_name}, {tlp}, {channel_type}, "
+"{uuid}, {short_uuid}. Double spaces and empty [] will be removed "
+"automatically."
+msgstr ""
+"Plantilla de asunto de correo electrónico del caso. Variables: {team_name}, "
+"{tlp}, {channel_type}, {uuid}, {short_uuid}. Los espacios dobles y los [] "
+"vacíos se eliminarán automáticamente."
+
+#: project/settings.py:436
 msgid "Default priority"
 msgstr "Prioridad predeterminada"
 
-#: project/settings.py:414
+#: project/settings.py:441
+msgid "Default TLP"
+msgstr "TLP por defecto"
+
+#: project/settings.py:446
 msgid "Allowed artifact types"
 msgstr "Tipos de artefactos permitidos"
 
-#: project/settings.py:419
+#: project/settings.py:451
 msgid "Save enrichment even if it fails"
 msgstr "Guardar enriquecimiento incluso si falla"
 
-#: project/settings.py:424
+#: project/settings.py:456
 msgid "Enrich artifacts from artifacts enrichmets"
 msgstr "Enriquecer los artefactos a partir de sus enriquecimientos"
 
-#: project/settings.py:429
+#: project/settings.py:461
 msgid "Cortex host domain:port"
 msgstr "Dominio del host de Cortex:puerto"
 
-#: project/settings.py:434
+#: project/settings.py:466
 msgid "Cortex admin apikey"
 msgstr "Clave API de administrador de Cortex"
 
-#: project/settings.py:439
+#: project/settings.py:471
 msgid "Kintun host domain:port"
 msgstr "Dominio del host de Kintun:puerto"
 
-#: project/settings.py:444
+#: project/settings.py:476
 msgid "Kintun admin apikey"
 msgstr "Clave API de administrador de Kintun"
 
-#: project/settings.py:449
+#: project/settings.py:481
 msgid "Default page size"
 msgstr "Tamaño de página predeterminado"
 
-#: project/settings.py:454
+#: project/settings.py:486
 msgid "Max page size (use with caution)"
 msgstr "Tamaño máximo de página (usar con precaución)"
 
-#: project/settings.py:459
+#: project/settings.py:491
 msgid "Auto merge events with same domain/cidr and traxonomy"
 msgstr "Fusión automática de eventos con el mismo dominio/cidr y taxonomía"
 
-#: project/settings.py:464
+#: project/settings.py:496
 msgid "Add `same feed` to the auto merge events condition"
 msgstr "Agregar `mismo feed` a la condición de fusión automática de eventos"
 
-#: project/settings.py:470
+#: project/settings.py:502
 msgid ""
 "Add an optional time window to the auto merge events condition (0 disabled)"
 msgstr ""
 "Agregar una ventana de tiempo opcional a la condición de fusión automática "
 "de eventos (0 deshabilitado)"
 
-#: project/settings.py:476
+#: project/settings.py:508
 msgid "Default TLP for summary"
 msgstr "TLP por defecto para el resumen"
 
-#: project/settings.py:480
+#: project/settings.py:512
 msgid "Full summary public report link"
 msgstr "Enlace al informe público de resumen completo"
 
-#: project/settings.py:486
+#: project/settings.py:518
 msgid ""
 "Allow auto creation of taxonomies and groups by the slug on event creation"
 msgstr ""
 "Permitir la creación automática de taxonomías y grupos por el slug al crear "
 "un evento"
+
+#: ngen/views/analyzer.py
+msgid "Analyzer is disabled"
+msgstr "El analizador está deshabilitado"
+
+#: ngen/views/analyzer.py
+msgid "Invalid analyzer configuration: %(detail)s"
+msgstr "Configuración de analizador inválida: %(detail)s"
+
+#: ngen/analyzers/kintun.py
+msgid "Kintun requires authentication: provide api_key or both basic_auth_username and basic_auth_password"
+msgstr "Kintun requiere autenticación: provea api_key o bien basic_auth_username y basic_auth_password" 
