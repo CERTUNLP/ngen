@@ -35,15 +35,15 @@ const Signin1 = () => {
         .then((res) => res.json())
         .then((data) => {
           data.forEach((item) => {
-            localStorage.setItem(item.key, item.value);
+            if (item.key === "OIDC_ENABLED" || item.key === "NGEN_LANG") {
+              localStorage.setItem(item.key, item.value);
+            }
           });
           const oidcItem = data.find((item) => item.key === "OIDC_ENABLED");
           if (oidcItem) {
             const enabled = oidcItem.value === true || oidcItem.value === "True" || oidcItem.value === "true";
             setOidcEnabled(enabled);
-            localStorage.setItem("OIDC_ENABLED", oidcItem.value);
           }
-          setShowAlert(true);
         })
         .catch((error) => {
           console.error("Error connecting to backend:", error);

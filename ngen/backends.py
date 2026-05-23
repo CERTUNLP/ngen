@@ -1,5 +1,9 @@
+from django.db import IntegrityError
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 from ngen.models import User
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class NgenOidcBackend(OIDCAuthenticationBackend):
@@ -48,8 +52,14 @@ class NgenOidcBackend(OIDCAuthenticationBackend):
 
         updated = False
         if email and user.email != email:
-            user.email = email
-            updated = True
+            if User.objects.filter(email=email).exclude(pk=user.pk).exists():
+                logger.warning(
+                    "Skipping email update for user %s: %s already taken",
+                    user.pk, email,
+                )
+            else:
+                user.email = email
+                updated = True
         if first_name and user.first_name != first_name:
             user.first_name = first_name
             updated = True
@@ -58,7 +68,10 @@ class NgenOidcBackend(OIDCAuthenticationBackend):
             updated = True
 
         if updated:
-            user.save()
+            try:
+                user.save()
+            except IntegrityError:
+                logger.exception("Failed to update user %s", user.pk)
 
         return user
 
@@ -79,6 +92,9 @@ class NgenOidcBackend(OIDCAuthenticationBackend):
 
         if users:
             user = users[0]
+            if not user.is_active:
+                logger.warning("SSO login attempt for inactive user %s", user.pk)
+                return None
             user = self.update_user(user, claims)
         elif config.OIDC_CREATE_USER:
             user = self.create_user(claims)

@@ -1,11 +1,13 @@
 import json
+import logging
+import secrets
 import urllib.parse
-from urllib.parse import urlencode
 
 import jwt as pyjwt
 import requests
 from constance import config
 from django.contrib.auth import login as auth_login
+from django.core.cache import cache
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -13,6 +15,27 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+
+logger = logging.getLogger(__name__)
+
+SSO_STATE_TIMEOUT = 600
+
+
+def _get_allowed_hosts():
+    from django.conf import settings
+
+    hosts = set(settings.ALLOWED_HOSTS)
+    frontend_url = config.OIDC_REDIRECT_URL
+    if frontend_url:
+        parsed = urllib.parse.urlparse(frontend_url)
+        if parsed.hostname:
+            hosts.add(parsed.hostname)
+    return list(hosts)
+
+
+def _is_safe_redirect(url):
+    allowed = _get_allowed_hosts()
+    return url_has_allowed_host_and_scheme(url, allowed_hosts=allowed if allowed else None)
 
 
 class SsoLoginView(APIView):
@@ -25,15 +48,23 @@ class SsoLoginView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        state = secrets.token_urlsafe(32)
+        next_url = request.GET.get("next", config.OIDC_REDIRECT_URL)
+
+        if not _is_safe_redirect(next_url):
+            next_url = config.OIDC_REDIRECT_URL
+
+        cache.set(f"sso_state_{state}", next_url, timeout=SSO_STATE_TIMEOUT)
+
         redirect_uri = request.build_absolute_uri(reverse("sso-callback"))
         params = {
             "response_type": "code",
             "client_id": config.OIDC_RP_CLIENT_ID,
             "redirect_uri": redirect_uri,
             "scope": config.OIDC_RP_SCOPES,
-            "state": request.GET.get("next", config.OIDC_REDIRECT_URL),
+            "state": state,
         }
-        auth_url = f"{config.OIDC_OP_AUTHORIZATION_ENDPOINT}?{urlencode(params)}"
+        auth_url = f"{config.OIDC_OP_AUTHORIZATION_ENDPOINT}?{urllib.parse.urlencode(params)}"
         return HttpResponseRedirect(auth_url)
 
 
@@ -66,17 +97,33 @@ class SsoCallbackView(APIView):
     def _verify_id_token(self, id_token, jwks_data):
         unverified_header = pyjwt.get_unverified_header(id_token)
         kid = unverified_header.get("kid")
+        alg = unverified_header.get("alg", "")
 
         signing_key = None
-        for key_data in jwks_data.get("keys", []):
-            if key_data.get("kid") == kid:
-                signing_key = pyjwt.algorithms.RSAAlgorithm.from_jwk(
-                    json.dumps(key_data)
-                )
+
+        if alg and alg.startswith("HS"):
+            signing_key = config.OIDC_RP_CLIENT_SECRET
+        elif jwks_data:
+            for key_data in jwks_data.get("keys", []):
+                kty = key_data.get("kty", "")
+                if kid and key_data.get("kid") != kid:
+                    continue
+                if kty in ("RSA",):
+                    signing_key = pyjwt.algorithms.RSAAlgorithm.from_jwk(
+                        json.dumps(key_data)
+                    )
+                elif kty in ("EC",):
+                    signing_key = pyjwt.algorithms.ECAlgorithm.from_jwk(
+                        json.dumps(key_data)
+                    )
+                elif kty in ("OKP",):
+                    signing_key = pyjwt.algorithms.OKPAlgorithm.from_jwk(
+                        json.dumps(key_data)
+                    )
                 break
 
         if signing_key is None:
-            raise ValueError(f"No matching JWK found for kid: {kid}")
+            raise ValueError("Invalid token signing key")
 
         return pyjwt.decode(
             id_token,
@@ -94,13 +141,28 @@ class SsoCallbackView(APIView):
             )
 
         code = request.GET.get("code")
-        state = request.GET.get("state", config.OIDC_REDIRECT_URL)
+        state = request.GET.get("state", "")
 
         if not code:
             return JsonResponse(
                 {"error": "Authorization code not provided"},
                 status=400,
             )
+
+        if not state:
+            return JsonResponse(
+                {"error": "Missing state parameter"},
+                status=400,
+            )
+
+        next_url = cache.get(f"sso_state_{state}")
+        if next_url is None:
+            logger.warning("SSO callback with invalid or expired state")
+            return JsonResponse(
+                {"error": "Invalid or expired state parameter"},
+                status=400,
+            )
+        cache.delete(f"sso_state_{state}")
 
         try:
             redirect_uri = request.build_absolute_uri(reverse("sso-callback"))
@@ -110,7 +172,7 @@ class SsoCallbackView(APIView):
 
             if not id_token:
                 return JsonResponse(
-                    {"error": "No ID token received from provider"},
+                    {"error": "Authentication failed"},
                     status=400,
                 )
 
@@ -120,7 +182,7 @@ class SsoCallbackView(APIView):
             email = claims.get("email", "")
             if not email:
                 return JsonResponse(
-                    {"error": "Email claim missing in ID token"},
+                    {"error": "Authentication failed"},
                     status=400,
                 )
 
@@ -136,7 +198,7 @@ class SsoCallbackView(APIView):
 
             if not user:
                 return JsonResponse(
-                    {"error": "Could not authenticate user"},
+                    {"error": "Authentication failed"},
                     status=400,
                 )
 
@@ -186,11 +248,6 @@ class SsoCallbackView(APIView):
             encoded_token = urllib.parse.quote(access_jwt)
 
             frontend_url = config.OIDC_REDIRECT_URL.rstrip("/")
-            next_url = (
-                state
-                if url_has_allowed_host_and_scheme(state, allowed_hosts=None)
-                else frontend_url
-            )
 
             redirect_url = (
                 f"{frontend_url}/sso-callback"
@@ -209,13 +266,15 @@ class SsoCallbackView(APIView):
             )
             return response
 
-        except requests.RequestException as e:
+        except requests.RequestException:
+            logger.exception("SSO provider connection failed")
             return JsonResponse(
-                {"error": f"Failed to connect to OIDC provider: {str(e)}"},
+                {"error": "Authentication service unavailable"},
                 status=502,
             )
-        except Exception as e:
+        except Exception:
+            logger.exception("SSO authentication failed")
             return JsonResponse(
-                {"error": f"SSO authentication failed: {str(e)}"},
+                {"error": "Authentication failed"},
                 status=500,
             )
