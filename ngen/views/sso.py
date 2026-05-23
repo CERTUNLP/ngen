@@ -106,7 +106,7 @@ class SsoCallbackView(APIView):
             )
             userinfo_response.raise_for_status()
             data = userinfo_response.json()
-            logger.warning("SSO: UserInfo fetched, keys=%s", list(data.keys()))
+            logger.debug("SSO: UserInfo fetched, keys=%s", list(data.keys()))
             return data
         except Exception as e:
             logger.warning("SSO: UserInfo fetch failed: %s", e)
@@ -197,14 +197,14 @@ class SsoCallbackView(APIView):
 
             jwks_data = self._get_jwks()
             claims = self._verify_id_token(id_token, jwks_data)
-            logger.warning("SSO: ID token claims keys=%s", list(claims.keys()))
+            logger.debug("SSO: ID token claims keys=%s", list(claims.keys()))
 
             userinfo = self._get_userinfo(token_data.get("access_token", ""))
             if userinfo:
                 claims = {**claims, **userinfo}
-                logger.warning("SSO: merged claims keys=%s", list(claims.keys()))
+                logger.debug("SSO: merged claims keys=%s", list(claims.keys()))
             else:
-                logger.warning("SSO: no userinfo data returned")
+                logger.debug("SSO: no userinfo data returned")
 
             from ngen.backends import NgenOidcBackend
 
@@ -271,7 +271,14 @@ class SsoCallbackView(APIView):
                 timeout=120,
             )
 
-            frontend_url = config.OIDC_REDIRECT_URL.rstrip("/")
+            frontend_url = config.OIDC_REDIRECT_URL or ""
+            if not frontend_url:
+                logger.error("SSO: OIDC_REDIRECT_URL is not configured")
+                return JsonResponse(
+                    {"error": "SSO misconfigured"},
+                    status=500,
+                )
+            frontend_url = frontend_url.rstrip("/")
 
             redirect_url = (
                 f"{frontend_url}/sso-callback"

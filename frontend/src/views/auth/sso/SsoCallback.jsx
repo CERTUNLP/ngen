@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { LOGIN } from "../../../store/actions";
+import { COMPONENT_URL } from "../../../config/constant";
 import store from "../../../store";
 import Loader from "../../../components/Loader/Loader";
 
@@ -20,7 +21,7 @@ const SsoCallback = () => {
 
     const apiServer = localStorage.getItem("API_SERVER") || "";
 
-    fetch(apiServer + "sso/exchange/", {
+    fetch(apiServer + COMPONENT_URL.ssoExchange, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: exchangeCode })
