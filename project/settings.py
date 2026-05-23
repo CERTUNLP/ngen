@@ -579,6 +579,26 @@ CONSTANCE_CONFIG = {
         gettext_lazy("URL to redirect after SSO login (frontend)"),
         str,
     ),
+    "OIDC_EMAIL_CLAIM": (
+        os.environ.get("OIDC_EMAIL_CLAIM", "email"),
+        gettext_lazy("OIDC claim name for email"),
+        str,
+    ),
+    "OIDC_USERNAME_CLAIM": (
+        os.environ.get("OIDC_USERNAME_CLAIM", "preferred_username"),
+        gettext_lazy("OIDC claim name for username"),
+        str,
+    ),
+    "OIDC_FIRST_NAME_CLAIM": (
+        os.environ.get("OIDC_FIRST_NAME_CLAIM", "given_name"),
+        gettext_lazy("OIDC claim name for first name"),
+        str,
+    ),
+    "OIDC_LAST_NAME_CLAIM": (
+        os.environ.get("OIDC_LAST_NAME_CLAIM", "family_name"),
+        gettext_lazy("OIDC claim name for last name"),
+        str,
+    ),
 }
 CONSTANCE_CONFIG_PASSWORDS = ["CORTEX_APIKEY", "KINTUN_APIKEY", "EMAIL_PASSWORD", "OIDC_RP_CLIENT_SECRET"]
 

@@ -94,6 +94,24 @@ class SsoCallbackView(APIView):
         jwks_response.raise_for_status()
         return jwks_response.json()
 
+    def _get_userinfo(self, access_token):
+        if not config.OIDC_OP_USER_ENDPOINT:
+            logger.warning("SSO: OIDC_OP_USER_ENDPOINT not configured, skipping UserInfo")
+            return {}
+        try:
+            userinfo_response = requests.get(
+                config.OIDC_OP_USER_ENDPOINT,
+                headers={"Authorization": f"Bearer {access_token}"},
+                timeout=30,
+            )
+            userinfo_response.raise_for_status()
+            data = userinfo_response.json()
+            logger.warning("SSO: UserInfo fetched, keys=%s", list(data.keys()))
+            return data
+        except Exception as e:
+            logger.warning("SSO: UserInfo fetch failed: %s", e)
+            return {}
+
     def _verify_id_token(self, id_token, jwks_data):
         unverified_header = pyjwt.get_unverified_header(id_token)
         kid = unverified_header.get("kid")
@@ -120,10 +138,11 @@ class SsoCallbackView(APIView):
                     signing_key = pyjwt.algorithms.OKPAlgorithm.from_jwk(
                         json.dumps(key_data)
                     )
-                break
+                if signing_key is not None:
+                    break
 
         if signing_key is None:
-            raise ValueError("Invalid token signing key")
+            raise pyjwt.InvalidKeyError("Invalid token signing key")
 
         return pyjwt.decode(
             id_token,
@@ -178,13 +197,14 @@ class SsoCallbackView(APIView):
 
             jwks_data = self._get_jwks()
             claims = self._verify_id_token(id_token, jwks_data)
+            logger.warning("SSO: ID token claims keys=%s", list(claims.keys()))
 
-            email = claims.get("email", "")
-            if not email:
-                return JsonResponse(
-                    {"error": "Authentication failed"},
-                    status=400,
-                )
+            userinfo = self._get_userinfo(token_data.get("access_token", ""))
+            if userinfo:
+                claims = {**claims, **userinfo}
+                logger.warning("SSO: merged claims keys=%s", list(claims.keys()))
+            else:
+                logger.warning("SSO: no userinfo data returned")
 
             from ngen.backends import NgenOidcBackend
 
@@ -198,8 +218,8 @@ class SsoCallbackView(APIView):
 
             if not user:
                 return JsonResponse(
-                    {"error": "Authentication failed"},
-                    status=400,
+                    {"error": "User not found or not authorized"},
+                    status=401,
                 )
 
             auth_login(request, user, backend="ngen.backends.NgenOidcBackend")
@@ -244,15 +264,18 @@ class SsoCallbackView(APIView):
                 "permissions": perms,
             }
 
-            encoded_user = urllib.parse.quote(json.dumps(user_data))
-            encoded_token = urllib.parse.quote(access_jwt)
+            exchange_code = secrets.token_urlsafe(32)
+            cache.set(
+                f"sso_exchange_{exchange_code}",
+                {"access_token": access_jwt, "user_data": user_data},
+                timeout=120,
+            )
 
             frontend_url = config.OIDC_REDIRECT_URL.rstrip("/")
 
             redirect_url = (
                 f"{frontend_url}/sso-callback"
-                f"?access={encoded_token}"
-                f"&user={encoded_user}"
+                f"?code={exchange_code}"
                 f"&next={urllib.parse.quote(next_url)}"
             )
 
@@ -266,6 +289,21 @@ class SsoCallbackView(APIView):
             )
             return response
 
+        except pyjwt.ExpiredSignatureError:
+            logger.warning("SSO token expired")
+            return JsonResponse({"error": "Token expired"}, status=401)
+        except pyjwt.InvalidAudienceError:
+            logger.warning("SSO token audience mismatch")
+            return JsonResponse({"error": "Token audience mismatch"}, status=401)
+        except pyjwt.InvalidSignatureError:
+            logger.warning("SSO token signature invalid")
+            return JsonResponse({"error": "Token signature invalid"}, status=401)
+        except (pyjwt.PyJWTError, ValueError) as e:
+            logger.warning("SSO token verification failed: %s", e)
+            return JsonResponse(
+                {"error": "Token verification failed"},
+                status=401,
+            )
         except requests.RequestException:
             logger.exception("SSO provider connection failed")
             return JsonResponse(
@@ -278,3 +316,25 @@ class SsoCallbackView(APIView):
                 {"error": "Authentication failed"},
                 status=500,
             )
+
+
+class SsoExchangeView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        if not config.OIDC_ENABLED:
+            return Response(
+                {"error": "SSO is not enabled"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        exchange_code = request.data.get("code", "")
+        if not exchange_code:
+            return JsonResponse({"error": "Missing exchange code"}, status=400)
+
+        data = cache.get(f"sso_exchange_{exchange_code}")
+        if not data:
+            return JsonResponse({"error": "Invalid or expired exchange code"}, status=400)
+
+        cache.delete(f"sso_exchange_{exchange_code}")
+        return JsonResponse(data)

@@ -273,6 +273,11 @@ urlpatterns = [
         views.SsoCallbackView.as_view(),
         name="sso-callback",
     ),
+    path(
+        "api/sso/exchange/",
+        views.SsoExchangeView.as_view(),
+        name="sso-exchange",
+    ),
 ]
 
 if not settings.ELASTIC_ENABLED:

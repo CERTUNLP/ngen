@@ -65,6 +65,7 @@ export const COMPONENT_URL = {
   login: "ctoken/",
   loginFrontend: "login/",
   ssoLogin: "sso/login/",
+  ssoExchange: "sso/exchange/",
   searchCase: "search/case/",
   logout: "ctoken/logout/",
   logoutFrontend: "logout/",

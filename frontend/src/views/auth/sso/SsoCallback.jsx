@@ -10,21 +10,34 @@ const SsoCallback = () => {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const accessToken = searchParams.get("access");
-    const userParam = searchParams.get("user");
+    const exchangeCode = searchParams.get("code");
     const nextUrl = searchParams.get("next") || "/home";
 
-    if (accessToken && userParam) {
-      try {
-        const user = JSON.parse(decodeURIComponent(userParam));
-        const decoded = jwtDecode(accessToken);
+    if (!exchangeCode) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    const apiServer = localStorage.getItem("API_SERVER") || "";
+
+    fetch(apiServer + "sso/exchange/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: exchangeCode })
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Exchange failed");
+        return res.json();
+      })
+      .then((data) => {
+        const decoded = jwtDecode(data.access_token);
         const { dispatch } = store;
 
         dispatch({
           type: LOGIN,
           payload: {
-            user: user,
-            token: accessToken,
+            user: data.user_data,
+            token: data.access_token,
             iat: decoded.iat,
             exp: decoded.exp,
             user_id: decoded.user_id
@@ -32,13 +45,11 @@ const SsoCallback = () => {
         });
 
         navigate(nextUrl, { replace: true });
-      } catch (error) {
-        console.error("SSO callback error:", error);
+      })
+      .catch((error) => {
+        console.error("SSO exchange error:", error);
         navigate("/login", { replace: true });
-      }
-    } else {
-      navigate("/login", { replace: true });
-    }
+      });
   }, [searchParams, navigate]);
 
   return <Loader />;

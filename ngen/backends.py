@@ -1,7 +1,9 @@
+import logging
+
+from constance import config
 from django.db import IntegrityError
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 from ngen.models import User
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +16,13 @@ class NgenOidcBackend(OIDCAuthenticationBackend):
             return None
 
     def create_user(self, claims):
-        email = claims.get("email", "")
-        username = claims.get("preferred_username", email)
+        email_claim = config.OIDC_EMAIL_CLAIM or "email"
+        username_claim = config.OIDC_USERNAME_CLAIM or "preferred_username"
+        first_name_claim = config.OIDC_FIRST_NAME_CLAIM or "given_name"
+        last_name_claim = config.OIDC_LAST_NAME_CLAIM or "family_name"
+
+        email = claims.get(email_claim, "")
+        username = claims.get(username_claim, email)
 
         if not username:
             username = email.split("@")[0] if "@" in email else email
@@ -29,15 +36,16 @@ class NgenOidcBackend(OIDCAuthenticationBackend):
         user = User.objects.create_user(
             username=username,
             email=email,
-            first_name=claims.get("given_name", ""),
-            last_name=claims.get("family_name", ""),
+            first_name=claims.get(first_name_claim, ""),
+            last_name=claims.get(last_name_claim, ""),
         )
         user.set_unusable_password()
         user.save()
         return user
 
     def filter_users_by_claims(self, claims):
-        email = claims.get("email")
+        email_claim = config.OIDC_EMAIL_CLAIM or "email"
+        email = claims.get(email_claim)
         if not email:
             return User.objects.none()
         user = self.get_user_by_email(email)
@@ -46,9 +54,13 @@ class NgenOidcBackend(OIDCAuthenticationBackend):
         return User.objects.none()
 
     def update_user(self, user, claims):
-        email = claims.get("email", "")
-        first_name = claims.get("given_name", "")
-        last_name = claims.get("family_name", "")
+        email_claim = config.OIDC_EMAIL_CLAIM or "email"
+        first_name_claim = config.OIDC_FIRST_NAME_CLAIM or "given_name"
+        last_name_claim = config.OIDC_LAST_NAME_CLAIM or "family_name"
+
+        email = claims.get(email_claim, "")
+        first_name = claims.get(first_name_claim, "")
+        last_name = claims.get(last_name_claim, "")
 
         updated = False
         if email and user.email != email:
@@ -76,15 +88,23 @@ class NgenOidcBackend(OIDCAuthenticationBackend):
         return user
 
     def verify_claims(self, claims):
-        return "email" in claims
+        email_claim = config.OIDC_EMAIL_CLAIM or "email"
+        email = claims.get(email_claim)
+        if not email:
+            return False
+        email_verified = claims.get("email_verified")
+        if email_verified is False:
+            return False
+        return True
 
     def authenticate(self, request, claims=None, id_token=None, access_token=None):
-        from constance import config
-
-        if not claims or not self.verify_claims(claims):
+        if not claims:
+            return None
+        if not self.verify_claims(claims):
             return None
 
-        email = claims.get("email")
+        email_claim = config.OIDC_EMAIL_CLAIM or "email"
+        email = claims.get(email_claim)
         if not email:
             return None
 
