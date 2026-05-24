@@ -12,10 +12,10 @@ import { getGroup } from "../../../api/services/groups";
 import { getPermission } from "../../../api/services/permissions";
 import { getPriority } from "../../../api/services/priorities";
 import { useTranslation } from "react-i18next";
-import YesNoField from "components/Field/YesNoField";
 import { userIsSuperuser, userIsStaff } from "utils/permissions";
 import LetterFormat from "components/LetterFormat";
 import UserComponent from "views/tanstackquery/UserComponent";
+import BadgeNetworkLabelContact from "views/network/components/BadgeNetworkLabelContact";
 
 
 function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, setIsModify }) {
@@ -158,7 +158,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
               <th style={letterSize}>{t("w.active")}</th>
               <th style={letterSize}>{t("ngen.user.is.superuser")}</th>
               <th style={letterSize}>{t("ngen.user.is.staff")}</th>
-              <th style={letterSize}>{t("ngen.user.is.network_admin")}</th>
+              <th style={letterSize} title={t("ngen.user.is.network_admin.help")}>{t("ngen.contact_other")}</th>
               <th style={letterSize}>{t("session.last")}</th>
               <th style={letterSize}>{t("ngen.options")}</th>
             </tr>
@@ -198,7 +198,13 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
                     />
                   </td>
                   <td>
-                    <YesNoField value={user.is_network_admin} />
+                    {user.contacts?.length > 0 ? (
+                      user.contacts.map((contactUrl, index) => (
+                        <BadgeNetworkLabelContact url={contactUrl} key={index} />
+                      ))
+                    ) : (
+                      <span className="text-muted">—</span>
+                    )}
                   </td>
                   <td>{user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}</td>
                   <td>
@@ -336,11 +342,17 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
                             ) : (
                               <></>
                             )}
-                            {user.is_network_admin !== undefined ? (
+                            {user.contacts !== undefined ? (
                               <tr>
-                                <td> {t("ngen.user.is.network_admin")}</td>
+                                <td> {t("ngen.contact_other")}</td>
                                 <td>
-                                  <YesNoField value={user.is_network_admin} />
+                                  {user.contacts?.length > 0 ? (
+                                    user.contacts.map((contactUrl, index) => (
+                                      <BadgeNetworkLabelContact url={contactUrl} key={index} />
+                                    ))
+                                  ) : (
+                                    <span className="text-muted">—</span>
+                                  )}
                                 </td>
                               </tr>
                             ) : (
