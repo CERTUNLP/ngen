@@ -93,6 +93,7 @@ const EditUser = () => {
             passwordRequired={false}
             isEdit={true}
           />
+        </Card.Body>
       </Card>
     </>
   );
