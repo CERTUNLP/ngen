@@ -23,7 +23,7 @@ from ngen.permissions import (
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = models.User.objects.all().order_by("id")
+    queryset = models.User.objects.prefetch_related("contacts").all().order_by("id")
     filter_backends = [
         filters.SearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,

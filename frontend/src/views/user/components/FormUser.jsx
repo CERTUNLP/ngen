@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { validateSpaces } from "../../../utils/validators";
 import {
   validateName,
   validatePassword,
+  getPasswordErrors,
   validateSelect,
   validateUnrequiredInput,
   validateUserMail,
@@ -15,8 +16,9 @@ import SelectComponent from "../../../components/Select/SelectComponent";
 import { useTranslation } from "react-i18next";
 import DualListBox from "react-dual-listbox";
 import CrudButton from "components/Button/CrudButton";
+import { userIsSuperuser, userIsStaff } from "utils/permissions";
 
-const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequired }) => {
+const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequired, isEdit }) => {
   const [selectPriority, setSelectPriority] = useState();
   const [optionGroups, setOptionGroups] = useState([]);
   const [optionPermissions, setOptionPermissions] = useState([]);
@@ -41,6 +43,16 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
       setOptionGroups(response.map((item) => ({ label: item.name, value: item.url })));
     });
   }, []);
+
+  const passwordErrors = useMemo(() => {
+    if (!body.password) return [];
+    return getPasswordErrors(body.password, {
+      username: body.username || "",
+      email: body.email || "",
+      first_name: body.first_name || "",
+      last_name: body.last_name || "",
+    });
+  }, [body.password, body.username, body.email, body.first_name, body.last_name]);
 
   if (loading) {
     return (
@@ -72,6 +84,7 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
       [event.target.name]: event.target.value
     });
   };
+
   const completeField1 = (nameField, event, setOption) => {
     if (event) {
       setBody({
@@ -165,6 +178,53 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
           </Form.Group>
         </Col>
       </Row>
+      <Row className="mb-3">
+        <Col sm={12} lg={4}>
+          <Form.Group>
+            <Form.Label>{t("w.active")}</Form.Label>
+            <div style={{ transform: "scale(1.4)", transformOrigin: "left center" }}>
+              <Form.Check
+                type="switch"
+                id="switch-active"
+                checked={body.is_active}
+                onChange={(e) => setBody({ ...body, is_active: e.target.checked })}
+              />
+            </div>
+          </Form.Group>
+        </Col>
+        {isEdit && (
+          <>
+            <Col sm={12} lg={4}>
+              <Form.Group>
+                <Form.Label>{t("ngen.user.is.superuser")}</Form.Label>
+                <div style={{ transform: "scale(1.4)", transformOrigin: "left center" }}>
+                  <Form.Check
+                    type="switch"
+                    id="switch-superuser"
+                    checked={body.is_superuser || false}
+                    disabled={!userIsSuperuser()}
+                    onChange={(e) => setBody({ ...body, is_superuser: e.target.checked })}
+                  />
+                </div>
+              </Form.Group>
+            </Col>
+            <Col sm={12} lg={4}>
+              <Form.Group>
+                <Form.Label>{t("ngen.user.is.staff")}</Form.Label>
+                <div style={{ transform: "scale(1.4)", transformOrigin: "left center" }}>
+                  <Form.Check
+                    type="switch"
+                    id="switch-staff"
+                    checked={body.is_staff || false}
+                    disabled={!userIsSuperuser() && !userIsStaff()}
+                    onChange={(e) => setBody({ ...body, is_staff: e.target.checked })}
+                  />
+                </div>
+              </Form.Group>
+            </Col>
+          </>
+        )}
+      </Row>
       <Row>
         <Col sm={12} lg={6}>
           <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -175,8 +235,16 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
               type="password"
               placeholder={passwordRequired ? t("ngen.password.placeholder") : "********"}
               name="password"
+              isInvalid={body.password && passwordErrors.length > 0}
               onChange={(e) => fieldPassword(e)}
             />
+            {body.password && passwordErrors.length > 0 && (
+              <div className="invalid-feedback d-block">
+                {passwordErrors.map((key) => (
+                  <div key={key}>{t(key)}</div>
+                ))}
+              </div>
+            )}
           </Form.Group>
           <Form.Text className="text-muted">
             {t("ngen.password.legend1")}

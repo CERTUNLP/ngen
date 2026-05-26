@@ -12,6 +12,7 @@ import FormGetName from "components/Form/FormGetName";
 import DateShowField from "components/Field/DateShowField";
 import PermissionCheck from "components/Auth/PermissionCheck";
 import PriorityComponent from "views/tanstackquery/PriorityComponent";
+import BadgeUserLabel from "views/user/components/BadgeUserLabel";
 
 const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder, basePath = "" }) => {
   const [contact, setContact] = useState("");
@@ -160,6 +161,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                 letterSize={letterSize}
               />
             </PermissionCheck>
+            <th style={letterSize}>{t("ngen.user")}</th>
             <th>{t("ngen.action_one")}</th>
           </tr>
         </thead>
@@ -178,10 +180,17 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                   <PriorityComponent priority={contact.priority} />
                 </td>
                 <PermissionCheck permissions={["view_contactcheck","add_contactcheck"]}>
-                  <td>
-                    <ContactCheckButton url={contact.last_check} contact_url={contact.url} />
-                    </td>
+                <td>
+                  <ContactCheckButton url={contact.last_check} contact_url={contact.url} />
+                </td>
                 </PermissionCheck>
+                <td>
+                  {contact.user ? (
+                    <BadgeUserLabel url={contact.user} />
+                  ) : (
+                    <span className="text-muted">—</span>
+                  )}
+                </td>
                 <td>
                   <CrudButton type="read" onClick={() => showContact(contact.url)} />
                   <CrudButton

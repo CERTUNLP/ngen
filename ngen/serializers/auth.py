@@ -51,6 +51,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     history = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True, required=False)
+    contacts = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name="contact-detail",
+    )
 
     class Meta:
         model = User
@@ -66,6 +71,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             "password",
             "is_staff",
             "is_network_admin",
+            "contacts",
             "is_active",
             "date_joined",
             "created",
