@@ -519,8 +519,88 @@ CONSTANCE_CONFIG = {
         ),
         bool,
     ),
+    "OIDC_ENABLED": (
+        os.environ.get("OIDC_ENABLED", "false").lower() in VALUES_TRUE,
+        gettext_lazy("Enable OpenID Connect Single Sign-On (requires server restart)"),
+        bool,
+    ),
+    "OIDC_RP_CLIENT_ID": (
+        os.environ.get("OIDC_RP_CLIENT_ID", ""),
+        gettext_lazy("OIDC Relying Party Client ID"),
+        str,
+    ),
+    "OIDC_RP_CLIENT_SECRET": (
+        os.environ.get("OIDC_RP_CLIENT_SECRET", ""),
+        gettext_lazy("OIDC Relying Party Client Secret"),
+        str,
+    ),
+    "OIDC_OP_AUTHORIZATION_ENDPOINT": (
+        os.environ.get("OIDC_OP_AUTHORIZATION_ENDPOINT", ""),
+        gettext_lazy("OIDC Provider Authorization Endpoint"),
+        str,
+    ),
+    "OIDC_OP_TOKEN_ENDPOINT": (
+        os.environ.get("OIDC_OP_TOKEN_ENDPOINT", ""),
+        gettext_lazy("OIDC Provider Token Endpoint"),
+        str,
+    ),
+    "OIDC_OP_USER_ENDPOINT": (
+        os.environ.get("OIDC_OP_USER_ENDPOINT", ""),
+        gettext_lazy("OIDC Provider UserInfo Endpoint"),
+        str,
+    ),
+    "OIDC_OP_JWKS_ENDPOINT": (
+        os.environ.get("OIDC_OP_JWKS_ENDPOINT", ""),
+        gettext_lazy("OIDC Provider JWKS Endpoint"),
+        str,
+    ),
+    "OIDC_OP_LOGOUT_ENDPOINT": (
+        os.environ.get("OIDC_OP_LOGOUT_ENDPOINT", ""),
+        gettext_lazy("OIDC Provider Logout Endpoint"),
+        str,
+    ),
+    "OIDC_RP_SIGN_ALGO": (
+        os.environ.get("OIDC_RP_SIGN_ALGO", "RS256"),
+        gettext_lazy("OIDC RP Signing Algorithm (e.g. RS256, HS256)"),
+        str,
+    ),
+    "OIDC_RP_SCOPES": (
+        os.environ.get("OIDC_RP_SCOPES", "openid email profile"),
+        gettext_lazy("OIDC Scopes (space-separated)"),
+        str,
+    ),
+    "OIDC_CREATE_USER": (
+        os.environ.get("OIDC_CREATE_USER", "true").lower() in VALUES_TRUE,
+        gettext_lazy("Automatically create users on first SSO login"),
+        bool,
+    ),
+    "OIDC_REDIRECT_URL": (
+        os.environ.get("OIDC_REDIRECT_URL", os.environ.get("FRONTEND_PUBLIC_URL", "http://localhost:3000")),
+        gettext_lazy("URL to redirect after SSO login (frontend)"),
+        str,
+    ),
+    "OIDC_EMAIL_CLAIM": (
+        os.environ.get("OIDC_EMAIL_CLAIM", "email"),
+        gettext_lazy("OIDC claim name for email"),
+        str,
+    ),
+    "OIDC_USERNAME_CLAIM": (
+        os.environ.get("OIDC_USERNAME_CLAIM", "preferred_username"),
+        gettext_lazy("OIDC claim name for username"),
+        str,
+    ),
+    "OIDC_FIRST_NAME_CLAIM": (
+        os.environ.get("OIDC_FIRST_NAME_CLAIM", "given_name"),
+        gettext_lazy("OIDC claim name for first name"),
+        str,
+    ),
+    "OIDC_LAST_NAME_CLAIM": (
+        os.environ.get("OIDC_LAST_NAME_CLAIM", "family_name"),
+        gettext_lazy("OIDC claim name for last name"),
+        str,
+    ),
 }
-CONSTANCE_CONFIG_PASSWORDS = ["CORTEX_APIKEY", "KINTUN_APIKEY", "EMAIL_PASSWORD"]
+CONSTANCE_CONFIG_PASSWORDS = ["CORTEX_APIKEY", "KINTUN_APIKEY", "EMAIL_PASSWORD", "OIDC_RP_CLIENT_SECRET"]
 
 os.makedirs(os.path.join(MEDIA_ROOT, CONSTANCE_FILE_ROOT), exist_ok=True)
 LOGO_PATH = os.path.join(f"{MEDIA_ROOT}", CONSTANCE_CONFIG["TEAM_LOGO"][0])
@@ -537,6 +617,39 @@ if not os.path.exists(LOGO_WIDE_PATH) and os.path.exists(origin_path):
     shutil.copy(origin_path, LOGO_WIDE_PATH)
 
 AUTH_USER_MODEL = "ngen.User"
+
+# OIDC / SSO Configuration
+OIDC_ENABLED = os.environ.get("OIDC_ENABLED", "false").lower() in VALUES_TRUE
+OIDC_RP_CLIENT_ID = os.environ.get("OIDC_RP_CLIENT_ID", "")
+OIDC_RP_CLIENT_SECRET = os.environ.get("OIDC_RP_CLIENT_SECRET", "")
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ.get("OIDC_OP_AUTHORIZATION_ENDPOINT", "")
+OIDC_OP_TOKEN_ENDPOINT = os.environ.get("OIDC_OP_TOKEN_ENDPOINT", "")
+OIDC_OP_USER_ENDPOINT = os.environ.get("OIDC_OP_USER_ENDPOINT", "")
+OIDC_OP_JWKS_ENDPOINT = os.environ.get("OIDC_OP_JWKS_ENDPOINT", "")
+OIDC_OP_LOGOUT_ENDPOINT = os.environ.get("OIDC_OP_LOGOUT_ENDPOINT", "")
+OIDC_RP_SIGN_ALGO = os.environ.get("OIDC_RP_SIGN_ALGO", "RS256")
+OIDC_RP_SCOPES = os.environ.get("OIDC_RP_SCOPES", "openid email profile")
+OIDC_CREATE_USER = os.environ.get("OIDC_CREATE_USER", "true").lower() in VALUES_TRUE
+OIDC_STORE_ACCESS_TOKEN = True
+OIDC_STORE_ID_TOKEN = True
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = int(
+    os.environ.get("OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS", 3600)
+)
+OIDC_USERNAME_ALGO = os.environ.get("OIDC_USERNAME_ALGO", "generate")
+OIDC_EMAIL_CLAIM = os.environ.get("OIDC_EMAIL_CLAIM", "email")
+OIDC_USERNAME_CLAIM = os.environ.get("OIDC_USERNAME_CLAIM", "preferred_username")
+OIDC_FIRST_NAME_CLAIM = os.environ.get("OIDC_FIRST_NAME_CLAIM", "given_name")
+OIDC_LAST_NAME_CLAIM = os.environ.get("OIDC_LAST_NAME_CLAIM", "family_name")
+OIDC_REDIRECT_URL = os.environ.get(
+    "OIDC_REDIRECT_URL",
+    os.environ.get("FRONTEND_PUBLIC_URL", "http://localhost:3000"),
+)
+if OIDC_ENABLED:
+    INSTALLED_APPS += ["mozilla_django_oidc"]
+    AUTHENTICATION_BACKENDS = [
+        "ngen.backends.NgenOidcBackend",
+        "django.contrib.auth.backends.ModelBackend",
+    ]
 
 BLEACH_ALLOWED_TAGS = [
     "p",

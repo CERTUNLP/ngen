@@ -172,6 +172,7 @@ class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
         "PAGE_SIZE",
         "JWT_ACCESS_TOKEN_LIFETIME",
         "JWT_REFRESH_TOKEN_LIFETIME",
+        "OIDC_ENABLED",
     ]
 
     def get_queryset(self):

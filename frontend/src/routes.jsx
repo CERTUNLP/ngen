@@ -66,6 +66,11 @@ const routes = [
   },
   {
     exact: "true",
+    path: "/sso-callback",
+    element: lazy(() => import("./views/auth/sso/SsoCallback"))
+  },
+  {
+    exact: "true",
     path: "/contactcheck/validate/:uuid",
     layout: PublicLayout,
     element: lazy(() => import("./views/contact/ContactCheckForm"))
