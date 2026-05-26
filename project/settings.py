@@ -342,7 +342,11 @@ CONSTANCE_CONFIG = {
         str,
     ),
     "EMAIL_HOST": (os.environ.get("EMAIL_HOST"), "Email host", str),
-    "EMAIL_PORT": (int(os.environ.get("EMAIL_PORT", 25)), "Email port to send emails", int),
+    "EMAIL_PORT": (
+        int(os.environ.get("EMAIL_PORT", 25)),
+        "Email port to send emails",
+        int,
+    ),
     "EMAIL_USE_TLS": (
         os.environ.get("EMAIL_USE_TLS", "false").lower() in VALUES_TRUE,
         "Email use TLS to send emails",
@@ -617,11 +621,6 @@ CONSTANCE_CONFIG = {
         gettext_lazy("Required Keycloak group for SSO login (empty = no restriction)"),
         str,
     ),
-    "OIDC_LAST_NAME_CLAIM2222222": (
-        os.environ.get("OIDC_LAST_NAME_CLAIM", "family_name"),
-        gettext_lazy("OIDC claim name for last name"),
-        str,
-    ),
     "OIDC_ENABLED": (
         os.environ.get("OIDC_ENABLED", "false").lower() in VALUES_TRUE,
         gettext_lazy("Enable OpenID Connect Single Sign-On (requires server restart)"),
@@ -678,7 +677,10 @@ CONSTANCE_CONFIG = {
         bool,
     ),
     "OIDC_REDIRECT_URL": (
-        os.environ.get("OIDC_REDIRECT_URL", os.environ.get("FRONTEND_PUBLIC_URL", "http://localhost:3000")),
+        os.environ.get(
+            "OIDC_REDIRECT_URL",
+            os.environ.get("FRONTEND_PUBLIC_URL", "http://localhost:3000"),
+        ),
         gettext_lazy("URL to redirect after SSO login (frontend)"),
         str,
     ),
@@ -703,7 +705,12 @@ CONSTANCE_CONFIG = {
         str,
     ),
 }
-CONSTANCE_CONFIG_PASSWORDS = ["CORTEX_APIKEY", "KINTUN_APIKEY", "EMAIL_PASSWORD", "OIDC_RP_CLIENT_SECRET"]
+CONSTANCE_CONFIG_PASSWORDS = [
+    "CORTEX_APIKEY",
+    "KINTUN_APIKEY",
+    "EMAIL_PASSWORD",
+    "OIDC_RP_CLIENT_SECRET",
+]
 
 CONSTANCE_GROUPS = {
     "TEAM_NAME": "Team / General",
