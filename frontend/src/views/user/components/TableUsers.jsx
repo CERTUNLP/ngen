@@ -350,9 +350,12 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
                                 <td> {t("ngen.contact_other")}</td>
                                 <td>
                                   {user.contacts?.length > 0 ? (
-                                    user.contacts.map((contactUrl, index) => (
-                                      <BadgeNetworkLabelContact url={contactUrl} key={index} />
+                                    user.contacts.map((contactUrl) => (
+                                      <BadgeNetworkLabelContact url={contactUrl} key={contactUrl} />
                                     ))
+                                  ) : (
+                                    <span className="text-muted">—</span>
+                                  )}
                                   ) : (
                                     <span className="text-muted">—</span>
                                   )}
