@@ -25,14 +25,3 @@ const BadgeUserLabel = ({ url }) => {
 };
 
 export default BadgeUserLabel;
-
-  if (!username) return null;
-
-  return (
-    <Badge pill bg="info" className="mr-1">
-      {username}
-    </Badge>
-  );
-};
-
-export default BadgeUserLabel;

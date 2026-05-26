@@ -205,9 +205,6 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
                     ) : (
                       <span className="text-muted">—</span>
                     )}
-                    ) : (
-                      <span className="text-muted">—</span>
-                    )}
                   </td>
                   <td>{user.last_login ? user.last_login.slice(0, 10) + " " + user.last_login.slice(11, 19) : "No inicio sesion"}</td>
                   <td>
@@ -353,9 +350,6 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
                                     user.contacts.map((contactUrl) => (
                                       <BadgeNetworkLabelContact url={contactUrl} key={contactUrl} />
                                     ))
-                                  ) : (
-                                    <span className="text-muted">—</span>
-                                  )}
                                   ) : (
                                     <span className="text-muted">—</span>
                                   )}
