@@ -223,7 +223,7 @@ const EditSetting = () => {
                   }}
                   title={setting.default?.toString() || ""}
                 >
-                  default: {setting.default?.toString() || ""}
+                  {t("settings.default.label")} {setting.default?.toString() || ""}
                 </small>
               </td>
               <td className="align-middle">
@@ -259,7 +259,7 @@ const EditSetting = () => {
                         variant={isDirty ? "outline-warning" : "outline-secondary"}
                         disabled={!isDirty}
                         onClick={() => rollbackField(setting.url)}
-                        title="Undo"
+                        title={t("settings.undo")}
                       >
                         <i className="feather icon-rotate-ccw" />
                       </Button>
@@ -321,7 +321,7 @@ const EditSetting = () => {
                       </InputGroup.Text>
                       <Form.Control
                         type="text"
-                        placeholder="Filter..."
+                        placeholder={t("settings.filter.placeholder")}
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                         className="shadow-none"
@@ -360,7 +360,7 @@ const EditSetting = () => {
               <Col md={10}>
                 {filteredGroups.order.length === 0 ? (
                   <p className="text-muted text-center my-5">
-                    {filter.trim() ? "No settings match your filter" : "No settings found"}
+                    {filter.trim() ? t("settings.filter.no_results") : t("settings.filter.empty")}
                   </p>
                 ) : (
                   filteredGroups.order.map((groupName) => (

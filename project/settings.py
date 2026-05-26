@@ -330,7 +330,7 @@ CONSTANCE_CONFIG = {
     "TEAM_EMAIL_PRIORITY": (
         os.environ.get("TEAM_EMAIL_PRIORITY"),
         gettext_lazy(
-            "CSIRT team email default priority (Critical is the lowest and will only receive critical emails, Very low is the highest and will receive all emails) priority_field"
+            "CSIRT team email default priority (Critical is the lowest and will only receive critical emails, Very low is the highest and will receive all emails)"
         ),
         "priority_field",
     ),
@@ -342,7 +342,7 @@ CONSTANCE_CONFIG = {
         str,
     ),
     "EMAIL_HOST": (os.environ.get("EMAIL_HOST"), "Email host", str),
-    "EMAIL_PORT": (int(os.environ.get("EMAIL_PORT")), "Email port to send emails", int),
+    "EMAIL_PORT": (int(os.environ.get("EMAIL_PORT", 25)), "Email port to send emails", int),
     "EMAIL_USE_TLS": (
         os.environ.get("EMAIL_USE_TLS", "false").lower() in VALUES_TRUE,
         "Email use TLS to send emails",
