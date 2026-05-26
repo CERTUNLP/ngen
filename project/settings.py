@@ -276,23 +276,49 @@ CONSTANCE_ADDITIONAL_FIELDS = {
     ],
 }
 CONSTANCE_CONFIG = {
+    # ── Team / General ──────────────────────────────────────────
+    "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name", str),
+    "TEAM_URL": (os.environ.get("TEAM_URL"), gettext_lazy("CSIRT site url"), str),
+    "TEAM_LOGO_URL": (
+        os.environ.get("TEAM_LOGO_URL", ""),
+        gettext_lazy(
+            "Team logo url for emails. Overrides the saved logo. Useful to access the logo from a public url"
+        ),
+        str,
+    ),
+    "TEAM_LOGO": (
+        os.path.join(CONSTANCE_FILE_ROOT, "teamlogo.png"),
+        gettext_lazy(
+            "Team logo will be saved at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo.png and generated image of 200x50 pixels max for email logo at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo_200_50.png"
+        ),
+        "image_field",
+    ),
     "FRONTEND_PUBLIC_URL": (
         os.environ.get("FRONTEND_PUBLIC_URL"),
         gettext_lazy("Public URL for the frontend"),
     ),
+    "PAGE_SIZE": (
+        int(os.environ.get("PAGE_SIZE", 10)),
+        gettext_lazy("Default page size"),
+        int,
+    ),
+    "PAGE_SIZE_MAX": (
+        int(os.environ.get("PAGE_SIZE_MAX", 100)),
+        gettext_lazy("Max page size (use with caution)"),
+        int,
+    ),
+    "NGEN_LANG": (os.environ.get("NGEN_LANG"), gettext_lazy("NGEN default language")),
+    "NGEN_LANG_EXTERNAL": (
+        os.environ.get("NGEN_LANG_EXTERNAL"),
+        gettext_lazy("NGEN language for external reports"),
+    ),
+    # ── Email ───────────────────────────────────────────────────
     "TEAM_EMAIL": (
         os.environ.get("TEAM_EMAIL"),
         gettext_lazy(
             "CSIRT team email. This is an email to receive notifications and reports from ngen to the team"
         ),
         str,
-    ),
-    "TEAM_EMAIL_PRIORITY": (
-        os.environ.get("TEAM_EMAIL_PRIORITY"),
-        gettext_lazy(
-            "CSIRT team email default priority (Critical is the lowest and will only recieve critical emails, Very low is the highest and will recieve all emails) priority_field"
-        ),
-        "priority_field",
     ),
     "TEAM_ABUSE": (
         os.environ.get("TEAM_ABUSE"),
@@ -301,29 +327,26 @@ CONSTANCE_CONFIG = {
         ),
         str,
     ),
-    "TEAM_URL": (os.environ.get("TEAM_URL"), gettext_lazy("CSIRT site url"), str),
-    "TEAM_LOGO": (
-        os.path.join(CONSTANCE_FILE_ROOT, "teamlogo.png"),
+    "TEAM_EMAIL_PRIORITY": (
+        os.environ.get("TEAM_EMAIL_PRIORITY"),
         gettext_lazy(
-            "Team logo will be saved at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo.png and generated image of 200x50 pixels max for email logo at /api/media/{CONSTANCE_FILE_ROOT}/teamlogo_200_50.png"
+            "CSIRT team email default priority (Critical is the lowest and will only receive critical emails, Very low is the highest and will receive all emails)"
         ),
-        "image_field",
+        "priority_field",
     ),
-    "TEAM_LOGO_URL": (
-        os.environ.get("TEAM_LOGO_URL", ""),
-        gettext_lazy(
-            "Team logo url for emails. Overrides the saved logo. Usefull to access the logo from a public url"
-        ),
-        str,
-    ),
-    "TEAM_NAME": (os.environ.get("TEAM_NAME"), "CSIRT name", str),
-    "EMAIL_HOST": (os.environ.get("EMAIL_HOST"), "Email host", str),
     "EMAIL_SENDER": (
         os.environ.get("EMAIL_SENDER"),
         gettext_lazy(
             "SMTP sender email address. This is the email that will be used to send emails from ngen"
         ),
         str,
+    ),
+    "EMAIL_HOST": (os.environ.get("EMAIL_HOST"), "Email host", str),
+    "EMAIL_PORT": (int(os.environ.get("EMAIL_PORT", 25)), "Email port to send emails", int),
+    "EMAIL_USE_TLS": (
+        os.environ.get("EMAIL_USE_TLS", "false").lower() in VALUES_TRUE,
+        "Email use TLS to send emails",
+        bool,
     ),
     "EMAIL_USERNAME": (
         os.environ.get("EMAIL_USERNAME"),
@@ -333,16 +356,43 @@ CONSTANCE_CONFIG = {
         os.environ.get("EMAIL_PASSWORD"),
         "Email password to fetch (required) and send emails (optional)",
     ),
-    "EMAIL_PORT": (int(os.environ.get("EMAIL_PORT")), "Email port to send emails", int),
-    "EMAIL_USE_TLS": (
-        os.environ.get("EMAIL_USE_TLS", "false").lower() in VALUES_TRUE,
-        "Email use TLS to send emails",
+    # ── Cases ───────────────────────────────────────────────────
+    "CASE_DEFAULT_LIFECYCLE": (
+        os.environ.get("CASE_DEFAULT_LIFECYCLE", "manual"),
+        gettext_lazy("Case default lifecycle"),
+        "case_lifecycle",
+    ),
+    "CASE_REPORT_NEW_CASES": (
+        os.environ.get("CASE_REPORT_NEW_CASES", "false").lower() in VALUES_TRUE,
+        gettext_lazy("Send report on new cases"),
         bool,
     ),
-    "NGEN_LANG": (os.environ.get("NGEN_LANG"), gettext_lazy("NGEN default language")),
-    "NGEN_LANG_EXTERNAL": (
-        os.environ.get("NGEN_LANG_EXTERNAL"),
-        gettext_lazy("NGEN language for external reports"),
+    "CASE_EMAIL_SUBJECT_TEMPLATE": (
+        os.environ.get(
+            "CASE_EMAIL_SUBJECT_TEMPLATE",
+            "[{team_name}][TLP:{tlp}][{channel_type}] Case ID: {uuid}",
+        ),
+        mark_safe(
+            gettext_lazy(
+                "Case email subject template. Variables: {team_name}, {tlp}, {channel_type}, {uuid}, {short_uuid}. Double spaces and empty [] will be removed automatically."
+            )
+        ),
+        str,
+    ),
+    "CREATE_INTERNAL_COMMUNICATION_CHANNEL": (
+        os.environ.get("CREATE_INTERNAL_COMMUNICATION_CHANNEL", "true").lower()
+        in VALUES_TRUE,
+        gettext_lazy(
+            "Create internal communication channel for each case automatically"
+        ),
+        bool,
+    ),
+    "REPORT_EXTERNAL_CONTACTS": (
+        os.environ.get("REPORT_EXTERNAL_CONTACTS", "false").lower() in VALUES_TRUE,
+        gettext_lazy(
+            "Report events with external network to affected contact emails from RDAP, WHOIS, etc."
+        ),
+        bool,
     ),
     "ALLOWED_FIELDS_MERGED_CASE": (
         os.environ.get("ALLOWED_FIELDS_MERGED_CASE"),
@@ -379,6 +429,30 @@ CONSTANCE_CONFIG = {
         ),
         bool,
     ),
+    # ── Events ──────────────────────────────────────────────────
+    "AUTO_MERGE_EVENTS": (
+        os.environ.get("AUTO_MERGE_EVENTS", "true").lower() in VALUES_TRUE,
+        gettext_lazy("Auto merge events with same domain/cidr and taxonomy"),
+        bool,
+    ),
+    "AUTO_MERGE_BY_FEED": (
+        os.environ.get("AUTO_MERGE_BY_FEED", "false").lower() in VALUES_TRUE,
+        gettext_lazy("Add `same feed` to the auto merge events condition"),
+        bool,
+    ),
+    "AUTO_MERGE_TIME_WINDOW_MINUTES": (
+        int(os.environ.get("AUTO_MERGE_TIME_WINDOW_MINUTES", 0)),
+        gettext_lazy(
+            "Add an optional time window to the auto merge events condition (0 disabled)"
+        ),
+        int,
+    ),
+    # ── Priorities / TLP ────────────────────────────────────────
+    "PRIORITY_DEFAULT": (
+        os.environ.get("PRIORITY_DEFAULT", "Medium"),
+        gettext_lazy("Default priority"),
+        "priority_field",
+    ),
     "PRIORITY_ATTEND_TIME_DEFAULT": (
         int(os.environ.get("PRIORITY_ATTEND_TIME_DEFAULT", 10080)),
         gettext_lazy("Priority default attend time in minutes"),
@@ -389,58 +463,21 @@ CONSTANCE_CONFIG = {
         gettext_lazy("Priority default solve time in minutes"),
         int,
     ),
-    "CONTACT_CHECK_MAX_TIME": (
-        int(os.environ.get("CONTACT_CHECK_MAX_TIME", 0)),
-        gettext_lazy("Max time for contact checks in seconds"),
-        int,
-    ),
-    "CASE_DEFAULT_LIFECYCLE": (
-        os.environ.get("CASE_DEFAULT_LIFECYCLE", "manual"),
-        gettext_lazy("Case default lifecycle"),
-        "case_lifecycle",
-    ),
-    "CASE_REPORT_NEW_CASES": (
-        os.environ.get("CASE_REPORT_NEW_CASES", "false").lower() in VALUES_TRUE,
-        gettext_lazy("Send report on new cases"),
-        bool,
-    ),
-    "REPORT_EXTERNAL_CONTACTS": (
-        os.environ.get("REPORT_EXTERNAL_CONTACTS", "false").lower() in VALUES_TRUE,
-        gettext_lazy(
-            "Report events with external network to affected contact emails from RDAP, WHOIS, etc."
-        ),
-        bool,
-    ),
-    "CREATE_INTERNAL_COMMUNICATION_CHANNEL": (
-        os.environ.get("CREATE_INTERNAL_COMMUNICATION_CHANNEL", "true").lower()
-        in VALUES_TRUE,
-        gettext_lazy(
-            "Create internal communication channel for each case automatically"
-        ),
-        bool,
-    ),
-    "CASE_EMAIL_SUBJECT_TEMPLATE": (
-        os.environ.get(
-            "CASE_EMAIL_SUBJECT_TEMPLATE",
-            "[{team_name}][TLP:{tlp}][{channel_type}] Case ID: {uuid}",
-        ),
-        mark_safe(
-            gettext_lazy(
-                "Case email subject template. Variables: {team_name}, {tlp}, {channel_type}, {uuid}, {short_uuid}. Double spaces and empty [] will be removed automatically."
-            )
-        ),
-        str,
-    ),
-    "PRIORITY_DEFAULT": (
-        os.environ.get("PRIORITY_DEFAULT", "Medium"),
-        gettext_lazy("Default priority"),
-        "priority_field",
-    ),
     "TLP_DEFAULT": (
         os.environ.get("TLP_DEFAULT", "Red"),
         gettext_lazy("Default TLP"),
         "tlp_field",
     ),
+    "SUMMARY_TLP": (
+        os.environ.get("SUMMARY_TLP", "red"),
+        gettext_lazy("Default TLP for summary"),
+    ),
+    "FULL_SUMMARY_REPORT_LINK": (
+        os.environ.get("FULL_SUMMARY_REPORT_LINK", ""),
+        gettext_lazy("Full summary public report link"),
+        str,
+    ),
+    # ── Artifacts ───────────────────────────────────────────────
     "ALLOWED_ARTIFACTS_TYPES": (
         os.environ.get("ALLOWED_ARTIFACTS_TYPES"),
         gettext_lazy("Allowed artifact types"),
@@ -453,9 +490,24 @@ CONSTANCE_CONFIG = {
     ),
     "ARTIFACT_RECURSIVE_ENRICHMENT": (
         os.environ.get("ARTIFACT_RECURSIVE_ENRICHMENT", "false").lower() in VALUES_TRUE,
-        gettext_lazy("Enrich artifacts from artifacts enrichmets"),
+        gettext_lazy("Enrich artifacts from artifacts enrichments"),
         bool,
     ),
+    # ── Taxonomies ──────────────────────────────────────────────
+    "TAXONOMY_ALLOW_AUTO_CREATE": (
+        os.environ.get("TAXONOMY_ALLOW_AUTO_CREATE", "true").lower() in VALUES_TRUE,
+        gettext_lazy(
+            "Allow auto creation of taxonomies and groups by the slug on event creation"
+        ),
+        bool,
+    ),
+    # ── Contact ─────────────────────────────────────────────────
+    "CONTACT_CHECK_MAX_TIME": (
+        int(os.environ.get("CONTACT_CHECK_MAX_TIME", 0)),
+        gettext_lazy("Max time for contact checks in seconds"),
+        int,
+    ),
+    # ── Integrations ────────────────────────────────────────────
     "CORTEX_HOST": (
         os.environ.get("CORTEX_HOST"),
         gettext_lazy("Cortex host domain:port"),
@@ -476,48 +528,94 @@ CONSTANCE_CONFIG = {
         gettext_lazy("Kintun admin apikey"),
         str,
     ),
-    "PAGE_SIZE": (
-        int(os.environ.get("PAGE_SIZE", 10)),
-        gettext_lazy("Default page size"),
-        int,
-    ),
-    "PAGE_SIZE_MAX": (
-        int(os.environ.get("PAGE_SIZE_MAX", 100)),
-        gettext_lazy("Max page size (use with caution)"),
-        int,
-    ),
-    "AUTO_MERGE_EVENTS": (
-        os.environ.get("AUTO_MERGE_EVENTS", "true").lower() in VALUES_TRUE,
-        gettext_lazy("Auto merge events with same domain/cidr and traxonomy"),
+    # ── SSO / OIDC ──────────────────────────────────────────────
+    "OIDC_ENABLED": (
+        os.environ.get("OIDC_ENABLED", "false").lower() in VALUES_TRUE,
+        gettext_lazy("Enable OpenID Connect Single Sign-On (requires server restart)"),
         bool,
     ),
-    "AUTO_MERGE_BY_FEED": (
-        os.environ.get("AUTO_MERGE_BY_FEED", "false").lower() in VALUES_TRUE,
-        gettext_lazy("Add `same feed` to the auto merge events condition"),
-        bool,
-    ),
-    "AUTO_MERGE_TIME_WINDOW_MINUTES": (
-        int(os.environ.get("AUTO_MERGE_TIME_WINDOW_MINUTES", 0)),
-        gettext_lazy(
-            "Add an optional time window to the auto merge events condition (0 disabled)"
-        ),
-        int,
-    ),
-    "SUMMARY_TLP": (
-        os.environ.get("SUMMARY_TLP", "red"),
-        gettext_lazy("Default TLP for summary"),
-    ),
-    "FULL_SUMMARY_REPORT_LINK": (
-        os.environ.get("FULL_SUMMARY_REPORT_LINK", ""),
-        gettext_lazy("Full summary public report link"),
+    "OIDC_RP_CLIENT_ID": (
+        os.environ.get("OIDC_RP_CLIENT_ID", ""),
+        gettext_lazy("OIDC Relying Party Client ID"),
         str,
     ),
-    "TAXONOMY_ALLOW_AUTO_CREATE": (
-        os.environ.get("TAXONOMY_ALLOW_AUTO_CREATE", "true").lower() in VALUES_TRUE,
-        gettext_lazy(
-            "Allow auto creation of taxonomies and groups by the slug on event creation"
-        ),
+    "OIDC_RP_CLIENT_SECRET": (
+        os.environ.get("OIDC_RP_CLIENT_SECRET", ""),
+        gettext_lazy("OIDC Relying Party Client Secret"),
+        str,
+    ),
+    "OIDC_OP_AUTHORIZATION_ENDPOINT": (
+        os.environ.get("OIDC_OP_AUTHORIZATION_ENDPOINT", ""),
+        gettext_lazy("OIDC Provider Authorization Endpoint"),
+        str,
+    ),
+    "OIDC_OP_TOKEN_ENDPOINT": (
+        os.environ.get("OIDC_OP_TOKEN_ENDPOINT", ""),
+        gettext_lazy("OIDC Provider Token Endpoint"),
+        str,
+    ),
+    "OIDC_OP_USER_ENDPOINT": (
+        os.environ.get("OIDC_OP_USER_ENDPOINT", ""),
+        gettext_lazy("OIDC Provider UserInfo Endpoint"),
+        str,
+    ),
+    "OIDC_OP_JWKS_ENDPOINT": (
+        os.environ.get("OIDC_OP_JWKS_ENDPOINT", ""),
+        gettext_lazy("OIDC Provider JWKS Endpoint"),
+        str,
+    ),
+    "OIDC_OP_LOGOUT_ENDPOINT": (
+        os.environ.get("OIDC_OP_LOGOUT_ENDPOINT", ""),
+        gettext_lazy("OIDC Provider Logout Endpoint"),
+        str,
+    ),
+    "OIDC_RP_SIGN_ALGO": (
+        os.environ.get("OIDC_RP_SIGN_ALGO", "RS256"),
+        gettext_lazy("OIDC RP Signing Algorithm (e.g. RS256, HS256)"),
+        str,
+    ),
+    "OIDC_RP_SCOPES": (
+        os.environ.get("OIDC_RP_SCOPES", "openid email profile"),
+        gettext_lazy("OIDC Scopes (space-separated)"),
+        str,
+    ),
+    "OIDC_CREATE_USER": (
+        os.environ.get("OIDC_CREATE_USER", "true").lower() in VALUES_TRUE,
+        gettext_lazy("Automatically create users on first SSO login"),
         bool,
+    ),
+    "OIDC_REDIRECT_URL": (
+        os.environ.get(
+            "OIDC_REDIRECT_URL",
+            os.environ.get("FRONTEND_PUBLIC_URL", "http://localhost:3000"),
+        ),
+        gettext_lazy("URL to redirect after SSO login (frontend)"),
+        str,
+    ),
+    "OIDC_EMAIL_CLAIM": (
+        os.environ.get("OIDC_EMAIL_CLAIM", "email"),
+        gettext_lazy("OIDC claim name for email"),
+        str,
+    ),
+    "OIDC_USERNAME_CLAIM": (
+        os.environ.get("OIDC_USERNAME_CLAIM", "preferred_username"),
+        gettext_lazy("OIDC claim name for username"),
+        str,
+    ),
+    "OIDC_FIRST_NAME_CLAIM": (
+        os.environ.get("OIDC_FIRST_NAME_CLAIM", "given_name"),
+        gettext_lazy("OIDC claim name for first name"),
+        str,
+    ),
+    "OIDC_LAST_NAME_CLAIM": (
+        os.environ.get("OIDC_LAST_NAME_CLAIM", "family_name"),
+        gettext_lazy("OIDC claim name for last name"),
+        str,
+    ),
+    "OIDC_LAST_NAME_CLAIM2222222": (
+        os.environ.get("OIDC_LAST_NAME_CLAIM", "family_name"),
+        gettext_lazy("OIDC claim name for last name"),
+        str,
     ),
     "OIDC_ENABLED": (
         os.environ.get("OIDC_ENABLED", "false").lower() in VALUES_TRUE,
@@ -601,6 +699,71 @@ CONSTANCE_CONFIG = {
     ),
 }
 CONSTANCE_CONFIG_PASSWORDS = ["CORTEX_APIKEY", "KINTUN_APIKEY", "EMAIL_PASSWORD", "OIDC_RP_CLIENT_SECRET"]
+
+CONSTANCE_GROUPS = {
+    "TEAM_NAME": "Team / General",
+    "TEAM_URL": "Team / General",
+    "TEAM_LOGO_URL": "Team / General",
+    "TEAM_LOGO": "Team / General",
+    "FRONTEND_PUBLIC_URL": "Team / General",
+    "PAGE_SIZE": "Team / General",
+    "PAGE_SIZE_MAX": "Team / General",
+    "NGEN_LANG": "Team / General",
+    "NGEN_LANG_EXTERNAL": "Team / General",
+    "TEAM_EMAIL": "Email",
+    "TEAM_ABUSE": "Email",
+    "TEAM_EMAIL_PRIORITY": "Email",
+    "EMAIL_SENDER": "Email",
+    "EMAIL_HOST": "Email",
+    "EMAIL_PORT": "Email",
+    "EMAIL_USE_TLS": "Email",
+    "EMAIL_USERNAME": "Email",
+    "EMAIL_PASSWORD": "Email",
+    "CASE_DEFAULT_LIFECYCLE": "Cases",
+    "CASE_REPORT_NEW_CASES": "Cases",
+    "CASE_EMAIL_SUBJECT_TEMPLATE": "Cases",
+    "CREATE_INTERNAL_COMMUNICATION_CHANNEL": "Cases",
+    "REPORT_EXTERNAL_CONTACTS": "Cases",
+    "ALLOWED_FIELDS_MERGED_CASE": "Cases",
+    "ALLOWED_FIELDS_MERGED_EVENT": "Cases",
+    "BLOCKED_FIELDS_CASE": "Cases",
+    "BLOCKED_FIELDS_EVENT": "Cases",
+    "BLOCKED_FIELDS_EXCEPTION": "Cases",
+    "AUTO_MERGE_EVENTS": "Events",
+    "AUTO_MERGE_BY_FEED": "Events",
+    "AUTO_MERGE_TIME_WINDOW_MINUTES": "Events",
+    "PRIORITY_DEFAULT": "Priorities / TLP",
+    "PRIORITY_ATTEND_TIME_DEFAULT": "Priorities / TLP",
+    "PRIORITY_SOLVE_TIME_DEFAULT": "Priorities / TLP",
+    "TLP_DEFAULT": "Priorities / TLP",
+    "SUMMARY_TLP": "Priorities / TLP",
+    "FULL_SUMMARY_REPORT_LINK": "Priorities / TLP",
+    "ALLOWED_ARTIFACTS_TYPES": "Artifacts",
+    "ARTIFACT_SAVE_ENRICHMENT_FAILURE": "Artifacts",
+    "ARTIFACT_RECURSIVE_ENRICHMENT": "Artifacts",
+    "TAXONOMY_ALLOW_AUTO_CREATE": "Taxonomies",
+    "CONTACT_CHECK_MAX_TIME": "Contact",
+    "CORTEX_HOST": "Integrations",
+    "CORTEX_APIKEY": "Integrations",
+    "KINTUN_HOST": "Integrations",
+    "KINTUN_APIKEY": "Integrations",
+    "OIDC_ENABLED": "SSO / OIDC",
+    "OIDC_RP_CLIENT_ID": "SSO / OIDC",
+    "OIDC_RP_CLIENT_SECRET": "SSO / OIDC",
+    "OIDC_OP_AUTHORIZATION_ENDPOINT": "SSO / OIDC",
+    "OIDC_OP_TOKEN_ENDPOINT": "SSO / OIDC",
+    "OIDC_OP_USER_ENDPOINT": "SSO / OIDC",
+    "OIDC_OP_JWKS_ENDPOINT": "SSO / OIDC",
+    "OIDC_OP_LOGOUT_ENDPOINT": "SSO / OIDC",
+    "OIDC_RP_SIGN_ALGO": "SSO / OIDC",
+    "OIDC_RP_SCOPES": "SSO / OIDC",
+    "OIDC_CREATE_USER": "SSO / OIDC",
+    "OIDC_REDIRECT_URL": "SSO / OIDC",
+    "OIDC_EMAIL_CLAIM": "SSO / OIDC",
+    "OIDC_USERNAME_CLAIM": "SSO / OIDC",
+    "OIDC_FIRST_NAME_CLAIM": "SSO / OIDC",
+    "OIDC_LAST_NAME_CLAIM": "SSO / OIDC",
+}
 
 os.makedirs(os.path.join(MEDIA_ROOT, CONSTANCE_FILE_ROOT), exist_ok=True)
 LOGO_PATH = os.path.join(f"{MEDIA_ROOT}", CONSTANCE_CONFIG["TEAM_LOGO"][0])

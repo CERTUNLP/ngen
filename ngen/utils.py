@@ -24,10 +24,10 @@ def get_settings():
             ),
             "value_type": type(default).__name__,
             "editable": True,
+            "group": project_settings.CONSTANCE_GROUPS.get(key, "Other"),
         }
         setting_list.append(data)
 
-    # append static settings
     for key, value in project_settings.ENVIRON_CONFIG.items():
         if key not in settings.CONFIG:
             data = {
@@ -37,10 +37,10 @@ def get_settings():
                 "value": value,
                 "value_type": type(value).__name__,
                 "editable": False,
+                "group": "Environment / Static",
             }
             setting_list.append(data)
 
-    setting_list = sorted(setting_list, key=lambda x: x["key"])
     return setting_list
 
 

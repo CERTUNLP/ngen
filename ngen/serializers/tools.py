@@ -43,6 +43,7 @@ class ConstanceSerializer(serializers.Serializer):
     value_type = serializers.SerializerMethodField()
     value = ConstanceValueField()
     editable = serializers.BooleanField(default=True)
+    group = serializers.CharField(default="", read_only=True)
     settings = None
 
     def get_settings(self):
