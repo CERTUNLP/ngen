@@ -155,7 +155,8 @@ const EditSetting = () => {
   };
 
   const uploadHandler = (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files?.[0];
+    if (!file) return;
     uploadTeamLogo(file);
   };
 
@@ -232,7 +233,7 @@ const EditSetting = () => {
                     <Form.Control
                       name="value"
                       value={setting.value?.toString() || ""}
-                      maxLength="150"
+                      maxLength="500"
                       placeholder={t("w.issue.placeholder")}
                       onChange={(e) => completeField(e, setting.group, setting.url)}
                     />
