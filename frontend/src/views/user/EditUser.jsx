@@ -61,6 +61,8 @@ const EditUser = () => {
       user.email,
       user.priority,
       user.is_active,
+      user.is_superuser,
+      user.is_staff,
       user.groups,
       user.user_permissions,
       user.password
@@ -89,6 +91,7 @@ const EditUser = () => {
             createUser={editUser}
             loading={loading}
             passwordRequired={false}
+            isEdit={true}
           />
         </Card.Body>
       </Card>

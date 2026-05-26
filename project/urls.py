@@ -263,6 +263,21 @@ urlpatterns = [
         views.VersionView.as_view(),
         name="version",
     ),
+    path(
+        "api/sso/login/",
+        views.SsoLoginView.as_view(),
+        name="sso-login",
+    ),
+    path(
+        "api/sso/callback/",
+        views.SsoCallbackView.as_view(),
+        name="sso-callback",
+    ),
+    path(
+        "api/sso/exchange/",
+        views.SsoExchangeView.as_view(),
+        name="sso-exchange",
+    ),
 ]
 
 if not settings.ELASTIC_ENABLED:

@@ -55,6 +55,10 @@ cortex4py==2.1.0
     # via -r requirements.in
 cron-descriptor==1.4.0
     # via django-celery-beat
+cryptography==44.0.2
+    # via
+    #   josepy
+    #   mozilla-django-oidc
 decorator==5.1.1
     # via validators
 django==4.2.26
@@ -163,8 +167,12 @@ jsonschema==4.18.4
     # via drf-spectacular
 jsonschema-specifications==2023.7.1
     # via jsonschema
+josepy==2.2.0
+    # via mozilla-django-oidc
 kombu==5.3.1
     # via celery
+mozilla-django-oidc==4.0.1
+    # via -r requirements.in
 netaddr==0.8.0
     # via django-netfields
 packaging==23.1
