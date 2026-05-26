@@ -1,18 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Badge } from "react-bootstrap";
-import apiInstance from "../../../api/api";
+import { useQuery } from "@tanstack/react-query";
+import { getQueryUser } from "api/services/users";
 
 const BadgeUserLabel = ({ url }) => {
-  const [username, setUsername] = useState("");
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["userKey"],
+    queryFn: getQueryUser,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
-  useEffect(() => {
-    apiInstance
-      .get(url)
-      .then((response) => {
-        setUsername(response.data.username);
-      })
-      .catch(() => {});
-  }, [url]);
+  if (!url || isLoading || error) return null;
+
+  const user = data?.[url];
+  if (!user?.username) return null;
+
+  return (
+    <Badge pill bg="info" className="mr-1">
+      {user.username}
+    </Badge>
+  );
+};
+
+export default BadgeUserLabel;
 
   if (!username) return null;
 
