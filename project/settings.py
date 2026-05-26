@@ -612,6 +612,11 @@ CONSTANCE_CONFIG = {
         gettext_lazy("OIDC claim name for last name"),
         str,
     ),
+    "OIDC_REQUIRED_GROUP": (
+        os.environ.get("OIDC_REQUIRED_GROUP", ""),
+        gettext_lazy("Required Keycloak group for SSO login (empty = no restriction)"),
+        str,
+    ),
     "OIDC_LAST_NAME_CLAIM2222222": (
         os.environ.get("OIDC_LAST_NAME_CLAIM", "family_name"),
         gettext_lazy("OIDC claim name for last name"),

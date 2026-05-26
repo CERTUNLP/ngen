@@ -95,6 +95,20 @@ class NgenOidcBackend(OIDCAuthenticationBackend):
         email_verified = claims.get("email_verified")
         if email_verified is False:
             return False
+
+        # Check required group membership
+        required_group = getattr(config, "OIDC_REQUIRED_GROUP", "")
+        if required_group:
+            groups = claims.get("groups", [])
+            # Keycloak includes groups as "/group-name" or "group-name"
+            normalized_groups = [g.lstrip("/") for g in groups]
+            if required_group not in normalized_groups:
+                logger.warning(
+                    "SSO login denied: user %s not in required group '%s' (groups: %s)",
+                    email, required_group, normalized_groups,
+                )
+                return False
+
         return True
 
     def authenticate(self, request, claims=None, id_token=None, access_token=None):
