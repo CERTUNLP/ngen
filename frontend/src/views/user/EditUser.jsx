@@ -91,8 +91,8 @@ const EditUser = () => {
             createUser={editUser}
             loading={loading}
             passwordRequired={false}
+            isEdit={true}
           />
-        </Card.Body>
       </Card>
     </>
   );

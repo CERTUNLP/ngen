@@ -16,8 +16,9 @@ import SelectComponent from "../../../components/Select/SelectComponent";
 import { useTranslation } from "react-i18next";
 import DualListBox from "react-dual-listbox";
 import CrudButton from "components/Button/CrudButton";
+import { userIsSuperuser, userIsStaff } from "utils/permissions";
 
-const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequired }) => {
+const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequired, isEdit }) => {
   const [selectPriority, setSelectPriority] = useState();
   const [optionGroups, setOptionGroups] = useState([]);
   const [optionPermissions, setOptionPermissions] = useState([]);
@@ -191,32 +192,38 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
             </div>
           </Form.Group>
         </Col>
-        <Col sm={12} lg={4}>
-          <Form.Group>
-            <Form.Label>{t("ngen.user.is.superuser")}</Form.Label>
-            <div style={{ transform: "scale(1.4)", transformOrigin: "left center" }}>
-              <Form.Check
-                type="switch"
-                id="switch-superuser"
-                checked={body.is_superuser || false}
-                onChange={(e) => setBody({ ...body, is_superuser: e.target.checked })}
-              />
-            </div>
-          </Form.Group>
-        </Col>
-        <Col sm={12} lg={4}>
-          <Form.Group>
-            <Form.Label>{t("ngen.user.is.staff")}</Form.Label>
-            <div style={{ transform: "scale(1.4)", transformOrigin: "left center" }}>
-              <Form.Check
-                type="switch"
-                id="switch-staff"
-                checked={body.is_staff || false}
-                onChange={(e) => setBody({ ...body, is_staff: e.target.checked })}
-              />
-            </div>
-          </Form.Group>
-        </Col>
+        {isEdit && (
+          <>
+            <Col sm={12} lg={4}>
+              <Form.Group>
+                <Form.Label>{t("ngen.user.is.superuser")}</Form.Label>
+                <div style={{ transform: "scale(1.4)", transformOrigin: "left center" }}>
+                  <Form.Check
+                    type="switch"
+                    id="switch-superuser"
+                    checked={body.is_superuser || false}
+                    disabled={!userIsSuperuser()}
+                    onChange={(e) => setBody({ ...body, is_superuser: e.target.checked })}
+                  />
+                </div>
+              </Form.Group>
+            </Col>
+            <Col sm={12} lg={4}>
+              <Form.Group>
+                <Form.Label>{t("ngen.user.is.staff")}</Form.Label>
+                <div style={{ transform: "scale(1.4)", transformOrigin: "left center" }}>
+                  <Form.Check
+                    type="switch"
+                    id="switch-staff"
+                    checked={body.is_staff || false}
+                    disabled={!userIsSuperuser() && !userIsStaff()}
+                    onChange={(e) => setBody({ ...body, is_staff: e.target.checked })}
+                  />
+                </div>
+              </Form.Group>
+            </Col>
+          </>
+        )}
       </Row>
       <Row>
         <Col sm={12} lg={6}>
