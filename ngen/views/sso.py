@@ -5,7 +5,7 @@ import urllib.parse
 
 import jwt as pyjwt
 import requests
-from constance import config
+from django.conf import settings
 from django.contrib.auth import login as auth_login
 from django.core.cache import cache
 from django.http import HttpResponseRedirect, JsonResponse
@@ -25,7 +25,7 @@ def _get_allowed_hosts():
     from django.conf import settings
 
     hosts = set(settings.ALLOWED_HOSTS)
-    frontend_url = config.OIDC_REDIRECT_URL
+    frontend_url = settings.OIDC_REDIRECT_URL
     if frontend_url:
         parsed = urllib.parse.urlparse(frontend_url)
         if parsed.hostname:
@@ -42,29 +42,29 @@ class SsoLoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        if not config.OIDC_ENABLED:
+        if not settings.OIDC_ENABLED:
             return Response(
                 {"error": "SSO is not enabled"},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
         state = secrets.token_urlsafe(32)
-        next_url = request.GET.get("next", config.OIDC_REDIRECT_URL)
+        next_url = request.GET.get("next", settings.OIDC_REDIRECT_URL)
 
         if not _is_safe_redirect(next_url):
-            next_url = config.OIDC_REDIRECT_URL
+            next_url = settings.OIDC_REDIRECT_URL
 
         cache.set(f"sso_state_{state}", next_url, timeout=SSO_STATE_TIMEOUT)
 
         redirect_uri = request.build_absolute_uri(reverse("sso-callback"))
         params = {
             "response_type": "code",
-            "client_id": config.OIDC_RP_CLIENT_ID,
+            "client_id": settings.OIDC_RP_CLIENT_ID,
             "redirect_uri": redirect_uri,
-            "scope": config.OIDC_RP_SCOPES,
+            "scope": settings.OIDC_RP_SCOPES,
             "state": state,
         }
-        auth_url = f"{config.OIDC_OP_AUTHORIZATION_ENDPOINT}?{urllib.parse.urlencode(params)}"
+        auth_url = f"{settings.OIDC_OP_AUTHORIZATION_ENDPOINT}?{urllib.parse.urlencode(params)}"
         return HttpResponseRedirect(auth_url)
 
 
@@ -73,13 +73,13 @@ class SsoCallbackView(APIView):
 
     def _exchange_code(self, code, redirect_uri):
         token_response = requests.post(
-            config.OIDC_OP_TOKEN_ENDPOINT,
+            settings.OIDC_OP_TOKEN_ENDPOINT,
             data={
                 "grant_type": "authorization_code",
                 "code": code,
                 "redirect_uri": redirect_uri,
-                "client_id": config.OIDC_RP_CLIENT_ID,
-                "client_secret": config.OIDC_RP_CLIENT_SECRET,
+                "client_id": settings.OIDC_RP_CLIENT_ID,
+                "client_secret": settings.OIDC_RP_CLIENT_SECRET,
             },
             timeout=30,
         )
@@ -88,19 +88,19 @@ class SsoCallbackView(APIView):
 
     def _get_jwks(self):
         jwks_response = requests.get(
-            config.OIDC_OP_JWKS_ENDPOINT,
+            settings.OIDC_OP_JWKS_ENDPOINT,
             timeout=30,
         )
         jwks_response.raise_for_status()
         return jwks_response.json()
 
     def _get_userinfo(self, access_token):
-        if not config.OIDC_OP_USER_ENDPOINT:
+        if not settings.OIDC_OP_USER_ENDPOINT:
             logger.warning("SSO: OIDC_OP_USER_ENDPOINT not configured, skipping UserInfo")
             return {}
         try:
             userinfo_response = requests.get(
-                config.OIDC_OP_USER_ENDPOINT,
+                settings.OIDC_OP_USER_ENDPOINT,
                 headers={"Authorization": f"Bearer {access_token}"},
                 timeout=30,
             )
@@ -120,7 +120,7 @@ class SsoCallbackView(APIView):
         signing_key = None
 
         if alg and alg.startswith("HS"):
-            signing_key = config.OIDC_RP_CLIENT_SECRET
+            signing_key = settings.OIDC_RP_CLIENT_SECRET
         elif jwks_data:
             for key_data in jwks_data.get("keys", []):
                 kty = key_data.get("kty", "")
@@ -147,13 +147,13 @@ class SsoCallbackView(APIView):
         return pyjwt.decode(
             id_token,
             signing_key,
-            algorithms=[config.OIDC_RP_SIGN_ALGO],
-            audience=config.OIDC_RP_CLIENT_ID,
+            algorithms=[settings.OIDC_RP_SIGN_ALGO],
+            audience=settings.OIDC_RP_CLIENT_ID,
             options={"verify_exp": True},
         )
 
     def get(self, request):
-        if not config.OIDC_ENABLED:
+        if not settings.OIDC_ENABLED:
             return Response(
                 {"error": "SSO is not enabled"},
                 status=status.HTTP_404_NOT_FOUND,
@@ -271,7 +271,7 @@ class SsoCallbackView(APIView):
                 timeout=120,
             )
 
-            frontend_url = config.OIDC_REDIRECT_URL or ""
+            frontend_url = settings.OIDC_REDIRECT_URL or ""
             if not frontend_url:
                 logger.error("SSO: OIDC_REDIRECT_URL is not configured")
                 return JsonResponse(
@@ -330,7 +330,7 @@ class SsoExchangeView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        if not config.OIDC_ENABLED:
+        if not settings.OIDC_ENABLED:
             return Response(
                 {"error": "SSO is not enabled"},
                 status=status.HTTP_404_NOT_FOUND,
