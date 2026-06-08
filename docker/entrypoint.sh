@@ -1,8 +1,7 @@
 #!/bin/sh
 
 if [ "$DJANGO_DEBUG" = "True" ]; then
-    find . -name "*.mo" -delete
-    python manage.py compilemessages -l es -i venv
+    python manage.py compilemessages -l es -i venv -i node_modules -i .git -i mediafiles
 fi
 python manage.py migrate --noinput
 python manage.py collectstatic -c --noinput
