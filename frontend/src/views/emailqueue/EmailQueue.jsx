@@ -90,12 +90,13 @@ const EmailQueue = () => {
 
   const handleToggleAutoSend = () => {
     const newValue = !stats.auto_send;
+    setStats((prev) => ({ ...prev, auto_send: newValue }));
     patchSetting(
       `${COMPONENT_URL.constance}EMAIL_AUTO_SEND/`,
       "EMAIL_AUTO_SEND",
       newValue
-    ).then(() => {
-      setStats((prev) => ({ ...prev, auto_send: newValue }));
+    ).catch(() => {
+      setStats((prev) => ({ ...prev, auto_send: !newValue }));
     });
   };
 
@@ -152,7 +153,7 @@ const EmailQueue = () => {
                   <Form.Check
                     type="switch"
                     id="auto-send-toggle"
-                    checked={stats.auto_send}
+                    checked={!!stats.auto_send}
                     onChange={handleToggleAutoSend}
                     label={
                       <small className="text-nowrap">

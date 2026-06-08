@@ -61,12 +61,11 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         pending = models.EmailMessage.objects.filter(
             sent=False, dispatched=False, send_attempt_failed=False
         )
-        count = pending.count()
-        for email_message in pending:
-            async_send_email.delay(email_message.id)
-            email_message.dispatched = True
+        ids = list(pending.values_list("id", flat=True))
+        for email_id in ids:
+            async_send_email.delay(email_id)
         pending.update(dispatched=True)
-        return Response({"status": "dispatched", "count": count})
+        return Response({"status": "dispatched", "count": len(ids)})
 
     @action(detail=True, methods=["post"], url_path="resend")
     def resend(self, request, pk=None):

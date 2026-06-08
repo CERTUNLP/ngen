@@ -25,9 +25,11 @@ class Communication:
         subject,
         content: dict,
         recipients: dict[str, list],
-        attachments: list[dict] = [],
-        extra_headers: dict = {},
+        attachments: list[dict] = None,
+        extra_headers: dict = None,
     ):
+        attachments = attachments or []
+        extra_headers = extra_headers or {}
         if not recipients.get("to") and not recipients.get("cc") and not recipients.get("bcc"):
             return
 
@@ -83,7 +85,7 @@ class Communication:
             )
             makedirs(attachments_dir, exist_ok=True)
             for att in attachments:
-                filename = att.get("name", "attachment")
+                filename = path.basename(att.get("name", "attachment"))
                 filepath = path.join(attachments_dir, filename)
                 with open(filepath, "wb") as dest:
                     copyfileobj(att["file"], dest)
