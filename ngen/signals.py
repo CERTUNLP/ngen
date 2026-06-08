@@ -28,7 +28,7 @@ def config_updated_handler(sender, key, old_value, new_value, **kwargs):
     """
     Callback function for Constance config update
     """
-    if new_value:
+    if new_value is not None:
         cache.set(f"constance:{key}", new_value)
 
     if (

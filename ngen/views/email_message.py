@@ -27,7 +27,7 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         filters.OrderingFilter,
     ]
     filterset_class = EmailMessageFilter
-    search_fields = ["subject", "recipients__email", "senders__email"]
+    search_fields = ["subject"]
     ordering_fields = ["id", "created", "modified", "date", "subject"]
     serializer_class = serializers.EmailMessageSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -107,10 +107,13 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         return Response({
             "pending": models.EmailMessage.objects.filter(
-                sent=False, send_attempt_failed=False
+                sent=False, dispatched=False, send_attempt_failed=False
             ).count(),
             "sent_today": models.EmailMessage.objects.filter(
                 sent=True, date__gte=today
+            ).count(),
+            "sent_total": models.EmailMessage.objects.filter(
+                sent=True
             ).count(),
             "failed": models.EmailMessage.objects.filter(
                 send_attempt_failed=True

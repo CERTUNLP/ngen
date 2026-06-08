@@ -9,15 +9,16 @@ import DetailModalEmailQueue from "./DetailModalEmailQueue";
 import AdvancedPagination from "components/Pagination/AdvancedPagination";
 import Alert from "components/Alert/Alert";
 
-const STATUS_TABS = [
-  { key: "all", label: "All", filter: "", statKey: "total" },
-  { key: "pending", label: "Pending", filter: "sent=false&send_attempt_failed=false", statKey: "pending" },
-  { key: "sent", label: "Sent", filter: "sent=true", statKey: "sent_today" },
-  { key: "failed", label: "Failed", filter: "send_attempt_failed=true", statKey: "failed" },
+const getStatusTabs = (t) => [
+  { key: "all", label: t("ngen.email_queue.tab_all"), filter: "", statKey: "total" },
+  { key: "pending", label: t("ngen.email_queue.pending"), filter: "sent=false&send_attempt_failed=false", statKey: "pending" },
+  { key: "sent", label: t("ngen.email_queue.sent"), filter: "sent=true", statKey: "sent_total" },
+  { key: "failed", label: t("ngen.email_queue.failed"), filter: "send_attempt_failed=true", statKey: "failed" },
 ];
 
 const EmailQueue = () => {
   const { t } = useTranslation();
+  const STATUS_TABS = getStatusTabs(t);
   const [activeTab, setActiveTab] = useState("pending");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ const EmailQueue = () => {
   const [order, setOrder] = useState("-created");
   const [refresh, setRefresh] = useState(false);
 
-  const tab = STATUS_TABS.find((t) => t.key === activeTab) || STATUS_TABS[0];
+  const tab = STATUS_TABS.find((ti) => ti.key === activeTab) || STATUS_TABS[0];
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
@@ -128,19 +129,19 @@ const EmailQueue = () => {
               <Row className="align-items-center">
                 <Col sm="auto">
                   <ButtonGroup size="sm" className="me-2">
-                    {STATUS_TABS.map((t) => (
+                    {STATUS_TABS.map((ti) => (
                       <Button
-                        key={t.key}
-                        variant={activeTab === t.key ? "primary" : "outline-primary"}
+                        key={ti.key}
+                        variant={activeTab === ti.key ? "primary" : "outline-primary"}
                         onClick={() => {
-                          setActiveTab(t.key);
+                          setActiveTab(ti.key);
                           setCurrentPage(1);
                         }}
                       >
-                        {t.label}
-                        {stats[t.statKey] !== undefined && (
+                        {ti.label}
+                        {stats[ti.statKey] !== undefined && (
                           <Badge bg="light" text="dark" className="ms-1">
-                            {stats[t.statKey]}
+                            {stats[ti.statKey]}
                           </Badge>
                         )}
                       </Button>

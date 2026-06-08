@@ -292,6 +292,7 @@
   "ngen.lookup.network": "Red",
   "ngen.lookup.ngen_info": "Información de Ngen",
   "ngen.lookup.no_summary": "No hay resumen disponible.",
+  "ngen.email_queue.tab_all": "Todos",
   "ngen.email_queue.title": "Cola de Correo",
   "ngen.email_queue.pending": "Pendientes",
   "ngen.email_queue.failed": "Fallidos",

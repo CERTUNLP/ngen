@@ -98,7 +98,7 @@ const DetailModalEmailQueue = ({ message, onClose }) => {
           ref={iframeRef}
           srcDoc={htmlContent}
           title={t("ngen.email_queue.body_html")}
-          sandbox="allow-same-origin allow-popups"
+          sandbox="allow-same-origin"
           style={{ width: "100%", height: iframeHeight, border: "1px solid #dee2e6", borderRadius: 4 }}
         />
       </Modal.Body>

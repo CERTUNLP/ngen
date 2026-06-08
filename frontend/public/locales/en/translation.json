@@ -292,6 +292,7 @@
   "ngen.lookup.network": "Network",
   "ngen.lookup.ngen_info": "Ngen Information",
   "ngen.lookup.no_summary": "No summary available.",
+  "ngen.email_queue.tab_all": "All",
   "ngen.email_queue.title": "Email Queue",
   "ngen.email_queue.pending": "Pending",
   "ngen.email_queue.failed": "Failed",
