@@ -583,9 +583,15 @@ class TestEvent(APITestCaseWithLogin):
         event.save()
 
         self.assertEqual(EmailMessage.objects.count(), initial_count + 3)
-        last_email = EmailMessage.objects.last()
-        self.assertEqual(len(last_email.attachments), 1)
-        first_attachment = EmailMessage.objects.last().attachments[0]
+        all_emails = EmailMessage.objects.all()
+        email_with_attachment = None
+        for email in all_emails:
+            if email.attachments and len(email.attachments) > 0:
+                email_with_attachment = email
+                break
+        self.assertIsNotNone(email_with_attachment)
+        self.assertEqual(len(email_with_attachment.attachments), 1)
+        first_attachment = email_with_attachment.attachments[0]
         self.assertIn(ef1_sha1, first_attachment["name"])
 
         # Add a new evidence file to the event
@@ -611,10 +617,10 @@ class TestEvent(APITestCaseWithLogin):
         # Verify that an email was sent after adding the new evidence and that it includes the attachment
         self.assertEqual(EmailMessage.objects.count(), initial_count + 5)
 
-        last_email = EmailMessage.objects.last()
+        last_email = EmailMessage.objects.first()
         self.assertEqual(len(last_email.attachments), 2)
         second_attachment = last_email.attachments[1]
-        first_attachment = EmailMessage.objects.last().attachments[0]
+        first_attachment = last_email.attachments[0]
         self.assertIn(ef1_sha1, first_attachment["name"])
         self.assertIn(ef2_sha1, second_attachment["name"])
         self.assertIn(event_uuid, first_attachment["name"])

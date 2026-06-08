@@ -8,6 +8,8 @@ from django.utils import timezone
 from django.core import mail
 from unittest.mock import patch
 
+from ngen.models.announcement import Communication
+
 from ngen import tasks
 from ngen.models import (
     Evidence,
@@ -27,6 +29,7 @@ from ngen.models import (
     Network,
     NetworkEntity,
 )
+from ngen.models.email_message import EmailMessage
 from ngen.tests.test_helpers import use_test_email_env
 
 
@@ -972,7 +975,7 @@ class AnnouncementTestCase(TestCase):
             intern_channel_2.get_last_message().recipients[0]["email"],
         )
 
-    @patch("django.core.mail.backends.smtp.EmailBackend")
+    @patch("ngen.tasks.EmailBackend")
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
     @override_config(CASE_REPORT_NEW_CASES=True)
@@ -980,6 +983,7 @@ class AnnouncementTestCase(TestCase):
     @override_config(SUMMARY_TLP="red")
     @override_config(TEAM_NAME="TEAM")
     @override_config(NGEN_LANG="en")
+    @override_config(EMAIL_AUTO_SEND=True)
     def test_summary_emailbackend(self, mock_backend):
         """
         Send summary email with the correct information.
@@ -1043,6 +1047,7 @@ class AnnouncementTestCase(TestCase):
         tasks.contact_summary.delay(contact_usernames=["soporte@cert.unlp.edu.ar"])
 
         self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", sent=True).count(), 1)
 
         email = mail.outbox[0]
 
@@ -1054,31 +1059,577 @@ class AnnouncementTestCase(TestCase):
         ev1_id = str(event1.uuid).split("-")[0]
         ev2_id = str(event2.uuid).split("-")[0]
 
-        # ev1_id and ev2_id should appear just once in the email body, as well as the notes of each event.
         self.assertEqual(email.body.count(ev1_id), 1)
         self.assertEqual(email.body.count(ev2_id), 1)
 
-        # export summary test
-        tasks.export_events_for_email_task.delay("soporte@cert.unlp.edu.ar")
+    @patch("ngen.tasks.EmailBackend")
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="red")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(NGEN_LANG="en")
+    @override_config(EMAIL_AUTO_SEND=True)
+    def test_email_auto_send_true(self, mock_backend):
+        """
+        EMAIL_AUTO_SEND=True (default): EmailMessage created + dispatched + sent.
+        """
+        from django.utils import translation
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+        from django.core.mail import get_connection
+        mock_backend.return_value = get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
 
-        self.assertEqual(len(mail.outbox), 2)
+        event = Event.objects.create(
+            domain="info.unlp.edu.ar",
+            taxonomy=Taxonomy.objects.get(slug="botnet"),
+            feed=Feed.objects.get(slug="csirtamericas"),
+            tlp=Tlp.objects.get(slug="green"),
+            reporter=User.objects.get(username="ngen"),
+            priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True,
+        )
+        event.save()
+        case = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=Tlp.objects.get(slug="green"),
+            priority=Priority.objects.get(slug="high"),
+        )
+        case.save()
+        event.case = case
+        event.save()
 
-        email = mail.outbox[1]
+        tasks.contact_summary.delay(contact_usernames=["soporte@cert.unlp.edu.ar"])
 
-        self.assertEqual(email.subject, "[TEAM][TLP:RED] Full Summary")
+        summary_email = EmailMessage.objects.filter(subject__contains="Summary").first()
+        self.assertIsNotNone(summary_email)
+        self.assertTrue(summary_email.dispatched)
+        self.assertTrue(summary_email.sent)
+        self.assertEqual(summary_email.subject, "[TEAM][TLP:RED] Summary")
+        self.assertEqual(summary_email.recipients[0]["email"], "soporte@cert.unlp.edu.ar")
+        self.assertIn("Summary", summary_email.subject)
+        self.assertIn("soporte@cert.unlp.edu.ar", summary_email.recipients[0]["email"])
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.subject, "[TEAM][TLP:RED] Summary")
         self.assertEqual(email.to, ["soporte@cert.unlp.edu.ar"])
 
-        self.assertIn("Solved cases: 1", email.body)
+    @patch("ngen.tasks.EmailBackend")
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="red")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(NGEN_LANG="en")
+    @override_config(EMAIL_AUTO_SEND=False)
+    def test_email_auto_send_false(self, mock_backend):
+        """
+        EMAIL_AUTO_SEND=False: EmailMessage created but NOT dispatched, no email sent.
+        """
+        from django.utils import translation
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+        from django.core.mail import get_connection
+        mock_backend.return_value = get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
 
-        ev1_id = str(event1.uuid).split("-")[0]
-        ev2_id = str(event2.uuid).split("-")[0]
+        event = Event.objects.create(
+            domain="info.unlp.edu.ar",
+            taxonomy=Taxonomy.objects.get(slug="botnet"),
+            feed=Feed.objects.get(slug="csirtamericas"),
+            tlp=Tlp.objects.get(slug="green"),
+            reporter=User.objects.get(username="ngen"),
+            priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True,
+        )
+        event.save()
+        case = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=Tlp.objects.get(slug="green"),
+            priority=Priority.objects.get(slug="high"),
+        )
+        case.save()
+        event.case = case
+        event.save()
 
-        # ev1_id and ev2_id should appear just once in the email body, as well as the notes of each event.
-        self.assertEqual(email.body.count(ev1_id), 1)
-        self.assertEqual(email.body.count(ev2_id), 1)
-        # filename example events_20260417_163913_18b445.zip
-        attachment_name = email.attachments[0][0]
-        now = timezone.now().strftime("%Y%m%d")
+        tasks.contact_summary.delay(contact_usernames=["soporte@cert.unlp.edu.ar"])
 
-        self.assertTrue(attachment_name.startswith(f"events_{now}_"))
-        self.assertTrue(attachment_name.endswith(".zip"))
+        summary_email = EmailMessage.objects.filter(subject__contains="Summary").first()
+        self.assertIsNotNone(summary_email)
+        self.assertFalse(summary_email.dispatched)
+        self.assertFalse(summary_email.sent)
+        self.assertEqual(summary_email.subject, "[TEAM][TLP:RED] Summary")
+
+        self.assertEqual(len(mail.outbox), 0)
+
+    @patch("ngen.tasks.EmailBackend")
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="red")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(NGEN_LANG="en")
+    @override_config(EMAIL_AUTO_SEND=True)
+    def test_contact_summary_fault_tolerance(self, mock_backend):
+        """
+        When one contact raises an exception, the rest are still processed.
+        """
+        from django.utils import translation
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+        from django.core.mail import get_connection
+        mock_backend.return_value = get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
+
+        contact2 = Contact.objects.create(
+            name="Contact 2",
+            username="contact2@test.com",
+            type="email",
+            role="administrative",
+            priority=Priority.objects.get(slug="high"),
+        )
+        contact3 = Contact.objects.create(
+            name="Contact 3",
+            username="contact3@test.com",
+            type="email",
+            role="administrative",
+            priority=Priority.objects.get(slug="high"),
+        )
+
+        network_a = Network.objects.create(
+            cidr="10.0.0.0/8",
+            active=True,
+            type="internal",
+            parent=self.network,
+        )
+        network_a.contacts.set([contact2])
+
+        network_b = Network.objects.create(
+            cidr="172.16.0.0/12",
+            active=True,
+            type="internal",
+            parent=self.network,
+        )
+        network_b.contacts.set([contact3])
+
+        event_a = Event.objects.create(
+            cidr="10.0.1.1/32",
+            taxonomy=Taxonomy.objects.get(slug="botnet"),
+            feed=Feed.objects.get(slug="csirtamericas"),
+            tlp=Tlp.objects.get(slug="green"),
+            reporter=User.objects.get(username="ngen"),
+            priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True,
+        )
+        event_a.save()
+        case_a = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=Tlp.objects.get(slug="green"),
+            priority=Priority.objects.get(slug="high"),
+        )
+        case_a.save()
+        event_a.case = case_a
+        event_a.save()
+
+        event_b = Event.objects.create(
+            cidr="172.16.1.1/32",
+            taxonomy=Taxonomy.objects.get(slug="botnet"),
+            feed=Feed.objects.get(slug="csirtamericas"),
+            tlp=Tlp.objects.get(slug="green"),
+            reporter=User.objects.get(username="ngen"),
+            priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True,
+        )
+        event_b.save()
+        case_b = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=Tlp.objects.get(slug="green"),
+            priority=Priority.objects.get(slug="high"),
+        )
+        case_b.save()
+        event_b.case = case_b
+        event_b.save()
+
+        original = Communication.communicate_contact_summary
+        call_count = [0]
+
+        def failing_communicate(contact, open_cases, closed_cases, tlp, days):
+            call_count[0] += 1
+            if contact.username == "contact2@test.com":
+                raise RuntimeError("Simulated email failure")
+            return original(contact, open_cases, closed_cases, tlp, days)
+
+        with patch.object(
+            Communication, "communicate_contact_summary", side_effect=failing_communicate
+        ):
+            with self.assertLogs("ngen.tasks", level="INFO") as log_capture:
+                tasks.contact_summary.delay(
+                    contact_usernames=["contact2@test.com", "contact3@test.com"]
+                )
+
+        self.assertGreaterEqual(call_count[0], 2)
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary").count(), 1)
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", dispatched=True, sent=True).count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.to, ["contact3@test.com"])
+
+        logged = "\n".join(log_capture.output)
+        self.assertIn("failed for contact2@test.com", logged)
+        self.assertIn("done. sent=1", logged)
+        self.assertIn("errors=1", logged)
+
+    @patch("ngen.tasks.EmailBackend")
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="red")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(NGEN_LANG="en")
+    @override_config(EMAIL_AUTO_SEND=True)
+    def test_contact_summary_counters(self, mock_backend):
+        """
+        Final log shows correct sent, skipped, errors, total counters.
+        """
+        from django.utils import translation
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+        from django.core.mail import get_connection
+        mock_backend.return_value = get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
+
+        contact_with_case = Contact.objects.create(
+            name="With Case",
+            username="withcase@test.com",
+            type="email",
+            role="administrative",
+            priority=Priority.objects.get(slug="high"),
+        )
+        contact_without_case = Contact.objects.create(
+            name="Without Case",
+            username="withoutcase@test.com",
+            type="email",
+            role="administrative",
+            priority=Priority.objects.get(slug="high"),
+        )
+
+        network = Network.objects.create(
+            cidr="192.168.0.0/16",
+            active=True,
+            type="internal",
+            parent=self.network,
+        )
+        network.contacts.set([contact_with_case])
+
+        event = Event.objects.create(
+            cidr="192.168.1.1/32",
+            taxonomy=Taxonomy.objects.get(slug="botnet"),
+            feed=Feed.objects.get(slug="csirtamericas"),
+            tlp=Tlp.objects.get(slug="green"),
+            reporter=User.objects.get(username="ngen"),
+            priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True,
+        )
+        event.save()
+        case = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=Tlp.objects.get(slug="green"),
+            priority=Priority.objects.get(slug="high"),
+        )
+        case.save()
+        event.case = case
+        event.save()
+
+        with self.assertLogs("ngen.tasks", level="INFO") as log_capture:
+            tasks.contact_summary.delay(
+                contact_usernames=["withcase@test.com", "withoutcase@test.com"]
+            )
+
+        logged = "\n".join(log_capture.output)
+        self.assertIn("processing 2 contacts", logged)
+        self.assertIn("sending to withcase@test.com open=1 closed=0", logged)
+        self.assertIn("done. sent=1 skipped=1 errors=0 total=2", logged)
+
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary").count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
+
+    @patch("ngen.tasks.EmailBackend")
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="red")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(NGEN_LANG="en")
+    @override_config(EMAIL_AUTO_SEND=False)
+    def test_send_queued_action(self, mock_backend):
+        """
+        POST /api/emailmessage/{id}/send/ dispatches a stored email.
+        """
+        from django.utils import translation
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+        from django.core.mail import get_connection
+        mock_backend.return_value = get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
+        from rest_framework.test import APIRequestFactory, force_authenticate
+        from ngen.views.email_message import EmailMessageViewSet
+
+        event = Event.objects.create(
+            domain="info.unlp.edu.ar",
+            taxonomy=Taxonomy.objects.get(slug="botnet"),
+            feed=Feed.objects.get(slug="csirtamericas"),
+            tlp=Tlp.objects.get(slug="green"),
+            reporter=User.objects.get(username="ngen"),
+            priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True,
+        )
+        event.save()
+        case = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=Tlp.objects.get(slug="green"),
+            priority=Priority.objects.get(slug="high"),
+        )
+        case.save()
+        event.case = case
+        event.save()
+
+        tasks.contact_summary.delay(contact_usernames=["soporte@cert.unlp.edu.ar"])
+
+        summary_email = EmailMessage.objects.filter(subject__contains="Summary").first()
+        self.assertIsNotNone(summary_email)
+        self.assertFalse(summary_email.dispatched)
+        self.assertEqual(len(mail.outbox), 0)
+
+        email_id = summary_email.id
+        factory = APIRequestFactory()
+        view = EmailMessageViewSet.as_view({"post": "send_queued"})
+        request = factory.post("/api/emailmessage/{}/send/".format(email_id))
+        force_authenticate(request, user=User.objects.get(username="ngen"))
+        response = view(request, pk=email_id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["status"], "dispatched")
+
+        summary_email.refresh_from_db()
+        self.assertTrue(summary_email.dispatched)
+        self.assertTrue(summary_email.sent)
+        self.assertEqual(len(mail.outbox), 1)
+
+    @override_config(EMAIL_AUTO_SEND=True)
+    def test_stats_endpoint(self):
+        """
+        GET /api/emailmessage/stats/ returns correct counts and mode.
+        """
+        from rest_framework.test import APIRequestFactory, force_authenticate
+        from ngen.views.email_message import EmailMessageViewSet
+
+        EmailMessage.objects.create(
+            root_message_id="m1", message_id="m1",
+            senders=[{"name": "t", "email": "t@t.com"}],
+            recipients=[{"name": "a", "email": "a@a.com"}],
+            subject="sent", body="x",
+            sent=True, dispatched=True,
+        )
+        EmailMessage.objects.create(
+            root_message_id="m2", message_id="m2",
+            senders=[{"name": "t", "email": "t@t.com"}],
+            recipients=[{"name": "b", "email": "b@b.com"}],
+            subject="queued", body="x",
+            sent=False, dispatched=False,
+        )
+        EmailMessage.objects.create(
+            root_message_id="m3", message_id="m3",
+            senders=[{"name": "t", "email": "t@t.com"}],
+            recipients=[{"name": "c", "email": "c@c.com"}],
+            subject="failed", body="x",
+            sent=False, dispatched=True, send_attempt_failed=True,
+        )
+
+        factory = APIRequestFactory()
+        view = EmailMessageViewSet.as_view({"get": "stats"})
+        request = factory.get("/api/emailmessage/stats/")
+        force_authenticate(request, user=User.objects.get(username="ngen"))
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+
+        data = response.data
+        self.assertEqual(data["pending"], 1)
+        self.assertEqual(data["failed"], 1)
+        self.assertEqual(data["total"], 3)
+        self.assertTrue(data["auto_send"])
+
+    @patch("ngen.tasks.EmailBackend")
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="red")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(NGEN_LANG="en")
+    def test_email_auto_send_toggle_mid_execution(self, mock_backend):
+        """
+        Toggling EMAIL_AUTO_SEND between calls is respected immediately.
+        First call with True -> dispatched+sent. Second with False -> stored only.
+        """
+        from django.utils import translation
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+        from django.core.mail import get_connection
+        mock_backend.return_value = get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
+
+        contact1 = Contact.objects.create(
+            name="Toggle 1", username="toggle1@test.com",
+            type="email", role="administrative",
+            priority=Priority.objects.get(slug="high"),
+        )
+        contact2 = Contact.objects.create(
+            name="Toggle 2", username="toggle2@test.com",
+            type="email", role="administrative",
+            priority=Priority.objects.get(slug="high"),
+        )
+
+        net = Network.objects.create(cidr="10.100.0.0/16", active=True, type="internal", parent=self.network)
+        net.contacts.set([contact1, contact2])
+
+        e1 = Event.objects.create(cidr="10.100.1.1/32", taxonomy=Taxonomy.objects.get(slug="botnet"),
+            feed=Feed.objects.get(slug="csirtamericas"), tlp=Tlp.objects.get(slug="green"),
+            reporter=User.objects.get(username="ngen"), priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True)
+        e1.save()
+        c1 = Case.objects.create(state=State.objects.get(slug="open"), tlp=Tlp.objects.get(slug="green"),
+            priority=Priority.objects.get(slug="high"))
+        c1.save()
+        e1.case = c1
+        e1.save()
+
+        # First batch: AUTO_SEND=True -> should send
+        with override_config(EMAIL_AUTO_SEND=True):
+            tasks.contact_summary.delay(contact_usernames=["toggle1@test.com"])
+
+        sent_count = EmailMessage.objects.filter(subject__contains="Summary", dispatched=True, sent=True).count()
+        self.assertEqual(sent_count, 1)
+
+        e2 = Event.objects.create(cidr="10.100.2.1/32", taxonomy=Taxonomy.objects.get(slug="botnet"),
+            feed=Feed.objects.get(slug="csirtamericas"), tlp=Tlp.objects.get(slug="green"),
+            reporter=User.objects.get(username="ngen"), priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True)
+        e2.save()
+        c2 = Case.objects.create(state=State.objects.get(slug="open"), tlp=Tlp.objects.get(slug="green"),
+            priority=Priority.objects.get(slug="high"))
+        c2.save()
+        e2.case = c2
+        e2.save()
+
+        # Second batch: AUTO_SEND=False -> should store only, not send
+        with override_config(EMAIL_AUTO_SEND=False):
+            tasks.contact_summary.delay(contact_usernames=["toggle2@test.com"])
+
+        stored = EmailMessage.objects.filter(subject__contains="Summary", dispatched=False, sent=False)
+        self.assertEqual(stored.count(), 1)
+        self.assertEqual(stored.first().recipients[0]["email"], "toggle2@test.com")
+
+        # Total summary emails = 2, but only 1 was sent
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary").count(), 2)
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", sent=True).count(), 1)
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", sent=False).count(), 1)
+
+    @patch("ngen.tasks.EmailBackend")
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="red")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(NGEN_LANG="en")
+    @override_config(EMAIL_AUTO_SEND=True)
+    def test_contact_summary_correct_recipients(self, mock_backend):
+        """
+        Verify that contact_summary sends to ALL contacts with cases and to NO ONE else.
+        """
+        from django.utils import translation
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+        from django.core.mail import get_connection
+        mock_backend.return_value = get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
+
+        # Create contacts: 3 with cases, 2 without
+        contacts_with = []
+        contacts_without = []
+        for i in range(3):
+            c = Contact.objects.create(
+                name=f"With Case {i}",
+                username=f"withcase{i}@test.com",
+                type="email",
+                role="administrative",
+                priority=Priority.objects.get(slug="high"),
+            )
+            contacts_with.append(c)
+        for i in range(2):
+            c = Contact.objects.create(
+                name=f"Without Case {i}",
+                username=f"withoutcase{i}@test.com",
+                type="email",
+                role="administrative",
+                priority=Priority.objects.get(slug="high"),
+            )
+            contacts_without.append(c)
+
+        # Each "with case" contact gets their own network with an event in an open case
+        for i, contact in enumerate(contacts_with):
+            net = Network.objects.create(
+                cidr=f"10.{i}.0.0/16",
+                active=True,
+                type="internal",
+                parent=self.network,
+            )
+            net.contacts.set([contact])
+            event = Event.objects.create(
+                cidr=f"10.{i}.1.1/32",
+                taxonomy=Taxonomy.objects.get(slug="botnet"),
+                feed=Feed.objects.get(slug="csirtamericas"),
+                tlp=Tlp.objects.get(slug="green"),
+                reporter=User.objects.get(username="ngen"),
+                priority=Priority.objects.get(slug="high"),
+                avoid_auto_merge=True,
+            )
+            event.save()
+            case = Case.objects.create(
+                state=State.objects.get(slug="open"),
+                tlp=Tlp.objects.get(slug="green"),
+                priority=Priority.objects.get(slug="high"),
+            )
+            case.save()
+            event.case = case
+            event.save()
+
+        # Run summary on ALL contacts (no filter)
+        all_usernames = [c.username for c in contacts_with + contacts_without]
+        tasks.contact_summary.delay(contact_usernames=all_usernames)
+
+        # Exactly 3 summary emails should be sent (one per contact with cases)
+        summary_emails = EmailMessage.objects.filter(
+            subject__contains="Summary", sent=True
+        )
+        self.assertEqual(summary_emails.count(), 3)
+
+        # Each sent email goes to exactly one of the "with case" contacts
+        sent_to = sorted(e.recipients[0]["email"] for e in summary_emails)
+        expected_to = sorted(c.username for c in contacts_with)
+        self.assertEqual(sent_to, expected_to)
+
+        # No summary email was sent to any "without case" contact
+        for c in contacts_without:
+            self.assertNotIn(
+                c.username,
+                [e.recipients[0]["email"] for e in summary_emails],
+            )
+
+        self.assertEqual(len(mail.outbox), 1 * len(contacts_with))

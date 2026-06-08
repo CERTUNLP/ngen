@@ -134,45 +134,79 @@ def contact_summary(
                 f"No interval found for the periodic task 'ngen.tasks.contact_summary'. Using default value: {default_value} days."
             )
 
+    total_contacts = contacts.count()
+    sent_count = 0
+    skipped_count = 0
+    error_count = 0
+    logger.info(
+        "contact_summary: processing %s contacts, days=%s, tlp=%s",
+        total_contacts,
+        int(timedeltavalue.total_seconds() / 86400),
+        tlp_obj.name.upper() if tlp_obj else "none",
+    )
+
     for contact in contacts:
-        # Get all open cases for the contact
-        open_cases = (
-            ngen.models.Case.objects.filter(
-                state__attended=True, events__network__contacts=contact
+        try:
+            # Get all open cases for the contact
+            open_cases = (
+                ngen.models.Case.objects.filter(
+                    state__attended=True, events__network__contacts=contact
+                )
+                .prefetch_related("events")
+                .order_by("priority__severity")
+                .distinct()
             )
-            .prefetch_related("events")
-            .order_by("priority__severity")
-            .distinct()
-        )
-        list_open_cases = [
-            {"case": case, "events": case.events.filter(network__contacts=contact)}
-            for case in open_cases
-        ]
+            list_open_cases = [
+                {"case": case, "events": case.events.filter(network__contacts=contact)}
+                for case in open_cases
+            ]
 
-        # Get all closed cases for the contact of last week
-        closed_cases = (
-            ngen.models.Case.objects.filter(
-                state__solved=True,
-                events__network__contacts=contact,
-                solve_date__gte=timezone.now() - timedeltavalue,
+            # Get all closed cases for the contact of last week
+            closed_cases = (
+                ngen.models.Case.objects.filter(
+                    state__solved=True,
+                    events__network__contacts=contact,
+                    solve_date__gte=timezone.now() - timedeltavalue,
+                )
+                .prefetch_related("events")
+                .distinct()
             )
-            .prefetch_related("events")
-            .distinct()
-        )
 
-        list_closed_cases = [
-            {"case": case, "events": case.events.filter(network__contacts=contact)}
-            for case in closed_cases
-        ]
+            list_closed_cases = [
+                {"case": case, "events": case.events.filter(network__contacts=contact)}
+                for case in closed_cases
+            ]
 
-        if open_cases or closed_cases:
-            Communication.communicate_contact_summary(
-                contact,
-                list_open_cases,
-                list_closed_cases,
-                tlp_obj,
-                days=int(timedeltavalue.total_seconds() / 86400),
+            if open_cases or closed_cases:
+                logger.info(
+                    "contact_summary: sending to %s open=%s closed=%s",
+                    contact.username,
+                    len(list_open_cases),
+                    len(list_closed_cases),
+                )
+                Communication.communicate_contact_summary(
+                    contact,
+                    list_open_cases,
+                    list_closed_cases,
+                    tlp_obj,
+                    days=int(timedeltavalue.total_seconds() / 86400),
+                )
+                sent_count += 1
+            else:
+                skipped_count += 1
+        except Exception:
+            logger.exception(
+                "contact_summary: failed for %s", contact.username
             )
+            error_count += 1
+
+    logger.info(
+        "contact_summary: done. sent=%s skipped=%s errors=%s total=%s",
+        sent_count,
+        skipped_count,
+        error_count,
+        total_contacts,
+    )
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)

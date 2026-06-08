@@ -481,6 +481,15 @@ CONSTANCE_CONFIG = {
         gettext_lazy("Full summary public report link"),
         str,
     ),
+    "EMAIL_AUTO_SEND": (
+        os.environ.get("EMAIL_AUTO_SEND", "true").lower() in VALUES_TRUE,
+        gettext_lazy(
+            "If true, emails are automatically dispatched to Celery for sending. "
+            "If false, emails are stored in the queue and must be sent manually "
+            "from the Email Queue page."
+        ),
+        bool,
+    ),
     # ── Artifacts ───────────────────────────────────────────────
     "ALLOWED_ARTIFACTS_TYPES": (
         os.environ.get("ALLOWED_ARTIFACTS_TYPES"),
@@ -577,6 +586,7 @@ CONSTANCE_GROUPS = {
     "TLP_DEFAULT": "Priorities / TLP",
     "SUMMARY_TLP": "Priorities / TLP",
     "FULL_SUMMARY_REPORT_LINK": "Priorities / TLP",
+    "EMAIL_AUTO_SEND": "Email",
     "ALLOWED_ARTIFACTS_TYPES": "Artifacts",
     "ARTIFACT_SAVE_ENRICHMENT_FAILURE": "Artifacts",
     "ARTIFACT_RECURSIVE_ENRICHMENT": "Artifacts",

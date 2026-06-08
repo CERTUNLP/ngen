@@ -706,6 +706,13 @@ const routes = [
     element: lazy(() => import("./views/home/About.jsx")),
   },
   {
+    exact: "true",
+    path: "/email-queue",
+    layout: AdminLayout,
+    guard: AuthGuard,
+    element: lazy(() => import("./views/emailqueue/EmailQueue.jsx")),
+  },
+  {
     path: "*",
     exact: "true",
     element: () => <Navigate to={BASE_URL} />

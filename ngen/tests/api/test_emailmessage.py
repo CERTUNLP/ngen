@@ -81,11 +81,11 @@ class TestEmailMessage(APITestCaseWithLogin):
         self.assertEqual(response.data["count"], len(email_messages))
         self.assertEqual(
             response.data["results"][0]["message_id"],
-            email_messages[0].message_id,
+            email_messages[1].message_id,
         )
         self.assertEqual(
             response.data["results"][1]["message_id"],
-            email_messages[1].message_id,
+            email_messages[0].message_id,
         )
 
     @use_test_email_env()

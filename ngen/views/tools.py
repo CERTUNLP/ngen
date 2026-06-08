@@ -357,6 +357,26 @@ class VersionView(APIView):
         branch = settings.APP_BRANCH
         build_file = settings.APP_BUILD_FILE
         mode = "development" if settings.DEBUG else "production"
+
+        from ngen.models.email_message import EmailMessage as EmailMessageModel
+        from django.utils import timezone
+        from constance import config as constance_config
+
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        email_queue = {
+            "pending": EmailMessageModel.objects.filter(
+                sent=False, send_attempt_failed=False
+            ).count(),
+            "sent_today": EmailMessageModel.objects.filter(
+                sent=True, date__gte=today
+            ).count(),
+            "failed": EmailMessageModel.objects.filter(
+                send_attempt_failed=True
+            ).count(),
+            "total": EmailMessageModel.objects.count(),
+            "auto_send": constance_config.EMAIL_AUTO_SEND,
+        }
+
         return Response(
             {
                 "version": version,
@@ -364,6 +384,7 @@ class VersionView(APIView):
                 "branch": branch,
                 "build_file": build_file,
                 "environment": mode,
+                "email_queue": email_queue,
             },
             status=status.HTTP_200_OK,
         )
