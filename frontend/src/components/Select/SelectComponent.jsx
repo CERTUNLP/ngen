@@ -9,6 +9,7 @@ const SelectComponent = ({ controlId, label, options, nameField, value, onChange
         {label} {required ? <b style={{ color: "red" }}>*</b> : ""}
       </Form.Label>
       <Select
+        classNamePrefix="react-select"
         options={options}
         value={value}
         isClearable

@@ -240,13 +240,13 @@ const ContactCheckButton = ({ url, contact_url }) => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            background: "#fff",
-            border: "1px solid #ccc",
+            background: "var(--bs-body-bg)",
+            border: "1px solid var(--bs-border-color)",
             borderRadius: 8,
             padding: 24,
             zIndex: 10000,
             minWidth: 300,
-            boxShadow: "0 2px 16px rgba(0,0,0,0.2)"
+            boxShadow: "0 2px 16px rgba(0,0,0,0.5)"
           }}
         >
           <h5>{t("ngen.contactcheck.resend_title")}</h5>
@@ -268,13 +268,13 @@ const ContactCheckButton = ({ url, contact_url }) => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            background: "#fff",
-            border: "1px solid #ccc",
+            background: "var(--bs-body-bg)",
+            border: "1px solid var(--bs-border-color)",
             borderRadius: 8,
             padding: 24,
             zIndex: 10000,
             minWidth: 300,
-            boxShadow: "0 2px 16px rgba(0,0,0,0.2)"
+            boxShadow: "0 2px 16px rgba(0,0,0,0.5)"
           }}
         >
           <h5>{t("ngen.contactcheck.set_confirmed_title")}</h5>

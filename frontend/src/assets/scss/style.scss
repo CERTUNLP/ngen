@@ -56,3 +56,6 @@ File: style.css
 
 // Custom
 @use 'partials/custom' as *;
+
+// Dark mode
+@use 'partials/dark-mode' as *;

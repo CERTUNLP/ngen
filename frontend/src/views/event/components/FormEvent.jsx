@@ -916,7 +916,7 @@ const FormEvent = (props) => {
         <Modal.Header closeButton>
           <Modal.Title>{t("notes")} — {t("w.preview")}</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ backgroundColor: "#f8f9fa", padding: "2rem" }}>
+        <Modal.Body style={{ backgroundColor: "var(--bs-body-bg)", padding: "2rem" }}>
           <div dangerouslySetInnerHTML={{ __html: props.body.notes || "" }} />
         </Modal.Body>
         <Modal.Footer>

@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useRef } from "react";
 
 import Navigation from "./Navigation";
 import NavBar from "./NavBar";
+import NavRight from "./NavBar/NavRight";
 import Breadcrumb from "./Breadcrumb";
 
 import useWindowSize from "../../hooks/useWindowSize";
@@ -45,7 +46,9 @@ const AdminLayout = ({ children }) => {
   let common = (
     <React.Fragment>
       <Navigation />
-      <NavBar />
+      <NavBar>
+        <Breadcrumb />
+      </NavBar>
     </React.Fragment>
   );
 
@@ -55,7 +58,12 @@ const AdminLayout = ({ children }) => {
         <div className={mainClass.join(" ")}>
           <div className="pcoded-content">
             <div className="pcoded-inner-content">
-              <Breadcrumb />
+              <div className="mobile-toolbar d-lg-none">
+                <div className="mobile-breadcrumb">
+                  <Breadcrumb />
+                </div>
+                <NavRight />
+              </div>
               {children}
             </div>
           </div>

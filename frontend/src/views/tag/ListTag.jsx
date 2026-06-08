@@ -6,7 +6,6 @@ import Search from "components/Search/Search";
 import { useTranslation } from "react-i18next";
 import { getTags, deleteTag } from "api/services/tags";
 import CreateTagModal from "./components/CreateTagModal";
-import PermissionCheck from "components/Auth/PermissionCheck";
 import ModalConfirm from "components/Modal/ModalConfirm";
 
 const ListTag = (props) => {
@@ -102,20 +101,17 @@ const ListTag = (props) => {
                   <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
                 </svg>
               </Button>
-              <PermissionCheck optionalPermissions={["create_tag", "create_tag_network_admin"]}>
-                <Button
-                  size="lm"
-                  variant="outline-dark"
-                  onClick={() => {
-                    setValue("");
-                    setColorTag("#563d7c");
-                    setIsUpdate(false);
-                    setModalCreate(true);
-                  }}
-                >
-                  {t("button.create")} {t("ngen.tag_one")}
-                </Button>
-              </PermissionCheck>
+              <CrudButton
+                type="create"
+                name={t("ngen.tag_one")}
+                onClick={() => {
+                  setValue("");
+                  setColorTag("#563d7c");
+                  setIsUpdate(false);
+                  setModalCreate(true);
+                }}
+                optionalPermissions={["create_tag", "create_tag_network_admin"]}
+              />
             </Col>
           </Row>
         </Card.Header>

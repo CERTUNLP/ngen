@@ -1,10 +1,10 @@
 import React from "react";
 
 const Ordering = ({ field, label, order, setOrder, setLoading, letterSize = "" }) => {
-  const getIconColor = (field) => (order === field || order === `-${field}` ? "red" : "black");
+  const isActive = order === field || order === `-${field}`;
 
   const getIcon = (field) =>
-    order === field || order === `-${field}`
+    isActive
       ? order.startsWith("-")
         ? "fa fa-sort-alpha-up"
         : "fa fa-sort-alpha-down"
@@ -23,14 +23,7 @@ const Ordering = ({ field, label, order, setOrder, setLoading, letterSize = "" }
     <th style={letterSize}>
       {label}
       <span
-        className={getIcon(field)}
-        style={{
-          marginLeft: "8px",
-          color: getIconColor(field),
-          cursor: "pointer",
-          fontSize: "inherit",
-          verticalAlign: "middle"
-        }}
+        className={`${getIcon(field)} sort-icon${isActive ? " sort-icon-active" : ""}`}
         onClick={() => orderBy(field_order)}
       ></span>
     </th>

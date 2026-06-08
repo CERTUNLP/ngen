@@ -38,7 +38,7 @@ const SelectTag = ({ value, onChange, options }) => {
       color: getTextColorBasedOnBackground(state.data.color),
       ':hover': {
         backgroundColor: '#f0f0f0',
-        color: 'black',
+        color: 'var(--bs-body-color)',
       },
     }),
 
@@ -46,7 +46,8 @@ const SelectTag = ({ value, onChange, options }) => {
 
 
   return (
-    <Select 
+    <Select
+      classNamePrefix="react-select"
       placeholder={t("ngen.tag_other")}
       closeMenuOnSelect={false}
       components={animatedComponents}

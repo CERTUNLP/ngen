@@ -20,6 +20,7 @@ const SelectLabel = ({ set, setSelect, options, value, placeholder, required, di
         {placeholder} {required ? <b style={{ color: "red" }}>*</b> : ""}
       </Form.Label>
       <Select
+        classNamePrefix="react-select"
         options={options}
         value={value}
         isClearable

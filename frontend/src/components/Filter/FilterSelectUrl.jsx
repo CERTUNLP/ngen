@@ -40,6 +40,7 @@ const FilterSelectUrl = ({
     <Form.Group>
       <Form.Label>{label}</Form.Label>
       <Select
+        classNamePrefix="react-select"
         options={options}
         isClearable
         placeholder={`${t("ngen.filter_by")} ${itemName}`}

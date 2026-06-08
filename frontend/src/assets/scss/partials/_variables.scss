@@ -100,7 +100,8 @@ $alert-bg-level: -10 !default;
 $alert-border-level: -9 !default;
 $alert-color-level: 6 !default;
 
-:root {
+:root,
+[data-bs-theme="light"] {
   --bs-body-color: #888;
 }
 

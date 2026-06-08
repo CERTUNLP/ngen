@@ -6,6 +6,7 @@ import React from "react";
 import { createRoot } from "react-dom/client"; // Nueva forma de renderizado con React 18+
 import { Provider } from "react-redux"; // Para integrar Redux
 import { ConfigProvider } from "./contexts/ConfigContext"; // Proveedor de configuración personalizada
+import { ThemeProvider } from "./contexts/ThemeContext"; // Proveedor de tema oscuro/claro
 import { PersistGate } from "redux-persist/integration/react"; // Persistencia de estado con Redux Persist
 import "./index.scss"; // Estilos globales
 import App from "./App"; // Componente principal de la aplicación
@@ -44,10 +45,12 @@ const initializeApp = async () => {
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
           <ConfigProvider>
-            <PersistGate loading={null} persistor={persist}>
-              <App />
-              <ToastContainer />
-            </PersistGate>
+            <ThemeProvider>
+              <PersistGate loading={null} persistor={persist}>
+                <App />
+                <ToastContainer />
+              </PersistGate>
+            </ThemeProvider>
           </ConfigProvider>
         </Provider>
         {isDev && <ReactQueryDevtools initialIsOpen={false} />}

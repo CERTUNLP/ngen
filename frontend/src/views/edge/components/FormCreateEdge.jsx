@@ -54,6 +54,7 @@ const FormCreateEdge = ({ body, setBody, selectChild, setSelectChild, childernes
                 <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Select
+                classNamePrefix="react-select"
                 value={selectChild}
                 isClearable
                 defaultValue={body.child}

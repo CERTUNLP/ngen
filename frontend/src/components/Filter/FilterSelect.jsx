@@ -32,7 +32,7 @@ const FilterSelect = ({
   return (
     <Form.Group>
       <Form.Label>{label}</Form.Label>
-      <Select options={options} isClearable placeholder={placeholder} onChange={applyFilter} value={value} />
+      <Select classNamePrefix="react-select" options={options} isClearable placeholder={placeholder} onChange={applyFilter} value={value} />
     </Form.Group>
   );
 };
