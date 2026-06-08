@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 
@@ -13,6 +14,8 @@ from rest_framework.authtoken.models import Token
 
 from ngen.models import ArtifactRelation
 
+logger = logging.getLogger(__name__)
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -21,12 +24,11 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 
 @receiver(config_updated)
-def config_updated(sender, key, old_value, new_value, **kwargs):
+def config_updated_handler(sender, key, old_value, new_value, **kwargs):
     """
     Callback function for Constance config update
     """
-    if new_value:
-        # Update the cache with the new value
+    if new_value is not None:
         cache.set(f"constance:{key}", new_value)
 
     if (
@@ -34,7 +36,6 @@ def config_updated(sender, key, old_value, new_value, **kwargs):
         and new_value
         and new_value != settings.CONSTANCE_CONFIG["TEAM_LOGO"][0]
     ):
-        # Save the new logo to the media folder
         new_file = os.path.join(settings.MEDIA_ROOT, new_value)
 
         if os.path.exists(new_file):
@@ -52,11 +53,13 @@ def config_updated(sender, key, old_value, new_value, **kwargs):
         key in ["EMAIL_HOST", "EMAIL_PORT", "EMAIL_USERNAME", "EMAIL_PASSWORD"]
         and new_value
     ):
-        # Reenable periodic task to check for new emails
-        task = PeriodicTask.objects.filter(name="retrieve_emails").first()
-        if task:
-            task.enabled = True
-            task.save()
+        try:
+            task = PeriodicTask.objects.filter(name="retrieve_emails").first()
+            if task:
+                task.enabled = True
+                task.save()
+        except Exception:
+            logger.debug("Could not re-enable retrieve_emails periodic task", exc_info=True)
 
 
 @receiver(post_delete, sender=ArtifactRelation)

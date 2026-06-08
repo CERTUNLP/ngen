@@ -11,7 +11,8 @@ from django.conf import settings
 
 class EmailMessage(AuditModelMixin):
     """
-    EmailMessage model
+    EmailMessage model — persistence layer for all outgoing emails.
+    Celery is the actual queue; EmailMessage is the audit log.
     """
 
     root_message_id = models.CharField(max_length=255)
@@ -29,9 +30,14 @@ class EmailMessage(AuditModelMixin):
     attachments = models.JSONField(default=list, blank=True)
     sent = models.BooleanField(default=False)
     send_attempt_failed = models.BooleanField(default=False)
+    dispatched = models.BooleanField(
+        default=False,
+        help_text="True if async_send_email.delay() was called. False means stored for manual sending.",
+    )
 
     class Meta:
         db_table = "email_message"
+        ordering = ["-created"]
 
     @classmethod
     def generate_message_id(cls, domain: str):

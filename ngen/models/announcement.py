@@ -1,7 +1,6 @@
 import re
 import logging
 from collections import defaultdict
-from django.core.mail import EmailMultiAlternatives, get_connection
 from django.db import models
 from django.template.loader import get_template
 from django.utils.html import strip_tags
@@ -26,39 +25,102 @@ class Communication:
         subject,
         content: dict,
         recipients: dict[str, list],
-        attachments: list[dict] = [],
-        extra_headers: dict = {},
+        attachments: list[dict] = None,
+        extra_headers: dict = None,
     ):
-        if recipients["to"]:
-            connection = get_connection(
-                backend="django.core.mail.backends.smtp.EmailBackend",
-                host=config.EMAIL_HOST,
-                port=config.EMAIL_PORT,
-                username=config.EMAIL_USERNAME,
-                password=config.EMAIL_PASSWORD,
-                use_tls=config.EMAIL_USE_TLS,
+        attachments = attachments or []
+        extra_headers = extra_headers or {}
+        if not recipients.get("to") and not recipients.get("cc") and not recipients.get("bcc"):
+            return
+
+        email_message = Communication._build_email_message(
+            subject, content, recipients, attachments
+        )
+
+        if config.EMAIL_AUTO_SEND:
+            Communication._dispatch_to_celery(email_message)
+        else:
+            logger.info(
+                "Email id=%s stored (EMAIL_AUTO_SEND=false) subject='%s' to=%s",
+                email_message.id,
+                subject,
+                recipients.get("to", []),
             )
 
-            email = EmailMultiAlternatives(
-                subject=subject,
-                body=content["text"],
-                from_email=recipients["from"],
-                to=recipients["to"],
-                cc=recipients.get("cc", []),
-                bcc=recipients.get("bcc", []),
-                headers=extra_headers,
-                connection=connection,
+    @staticmethod
+    def _build_email_message(subject, content, recipients, attachments):
+        from ngen.models.email_message import EmailMessage as EmailMessageModel
+        from django.conf import settings
+        from os import path, makedirs
+        from shutil import copyfileobj
+
+        message_id = EmailMessageModel.generate_message_id(
+            domain=config.EMAIL_SENDER.split("@")[1] if config.EMAIL_SENDER and "@" in config.EMAIL_SENDER else "localhost"
+        )
+
+        def _format_recipients(email_list):
+            formatted = []
+            if not email_list:
+                return formatted
+            for email in email_list:
+                if isinstance(email, str):
+                    formatted.append({"name": email.split("@")[0], "email": email})
+                elif isinstance(email, dict):
+                    formatted.append(email)
+            return formatted
+
+        sender_name = config.EMAIL_USERNAME or config.EMAIL_SENDER.split("@")[0] if config.EMAIL_SENDER else ""
+        senders = [{"name": sender_name, "email": config.EMAIL_SENDER}]
+
+        email_recipients = _format_recipients(recipients.get("to", []))
+        email_cc = _format_recipients(recipients.get("cc", []))
+        email_bcc = _format_recipients(recipients.get("bcc", []))
+
+        saved_attachments = []
+        if attachments:
+            attachments_dir = path.join(
+                settings.MEDIA_ROOT,
+                settings.EMAIL_ATTACHMENTS_FILE_ROOT,
+                message_id,
             )
+            makedirs(attachments_dir, exist_ok=True)
+            for att in attachments:
+                filename = path.basename(att.get("name", "attachment"))
+                filepath = path.join(attachments_dir, filename)
+                with open(filepath, "wb") as dest:
+                    copyfileobj(att["file"], dest)
+                saved_attachments.append({
+                    "name": filename,
+                    "file": path.join(settings.EMAIL_ATTACHMENTS_FILE_ROOT, message_id, filename),
+                })
 
-            email.attach_alternative(content["html"], "text/html")
+        return EmailMessageModel.objects.create(
+            root_message_id=message_id,
+            message_id=message_id,
+            senders=senders,
+            recipients=email_recipients + email_cc,
+            bcc_recipients=email_bcc,
+            subject=subject,
+            body=content.get("text", ""),
+            body_html=content.get("html", ""),
+            template=content.get("template", None),
+            attachments=saved_attachments,
+        )
 
-            for attachment in attachments:
-                try:
-                    email.attach(attachment["name"], attachment["file"].read())
-                except Exception as e:
-                    logger.error(f"Error attaching file: {e}")
-            print(f"Sending email to {recipients['to']}")
-            email.send(fail_silently=False)
+    @staticmethod
+    def _dispatch_to_celery(email_message):
+        from ngen.tasks import async_send_email
+
+        async_send_email.delay(email_message.id)
+        email_message.dispatched = True
+        email_message.save(update_fields=["dispatched"])
+
+        logger.info(
+            "Dispatched email id=%s subject='%s' to=%s",
+            email_message.id,
+            email_message.subject,
+            [r["email"] for r in email_message.recipients],
+        )
 
     @staticmethod
     def render_template(
@@ -84,7 +146,6 @@ class Communication:
         return content
 
     def communicate(self, title: str, template: str, **kwargs):
-        # DEPRECATED: Use send_mail instead
         return self.send_mail(
             self.subject(title),
             self.render_template(template, extra_params=self.template_params),

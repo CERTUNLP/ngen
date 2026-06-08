@@ -279,6 +279,15 @@ const menuItems = {
               classes: "",
               icon: "",
               breadcrumbs: true
+            },
+            {
+              id: "emailqueue",
+              title: "menu.email_queue",
+              type: "item",
+              url: "/email-queue",
+              classes: "",
+              icon: "",
+              breadcrumbs: true
             }
           ]
         }

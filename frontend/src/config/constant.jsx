@@ -106,5 +106,6 @@ export const COMPONENT_URL = {
   analyzerMapping: "analyzermapping/",
   version: "version/",
   lookup: "lookup/",
-  addressinfo: "addressinfo/"
+  addressinfo: "addressinfo/",
+  emailmessage: "emailmessage/",
 };
