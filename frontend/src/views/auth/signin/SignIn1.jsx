@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Card } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
@@ -10,12 +10,15 @@ import RestLogin from "./RestLogin";
 
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "../../../config/constant";
+import { ThemeContext } from "../../../contexts/ThemeContext";
 
 const Signin1 = () => {
   const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
   const [signup, setSignup] = useState(false);
   const [oidcEnabled, setOidcEnabled] = useState(false);
+
+  const { isDark } = useContext(ThemeContext);
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -77,7 +80,7 @@ const Signin1 = () => {
             <Card.Body>
               <div className="mb-4">
                 <img
-                  src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv.png"}
+                  src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv" + (isDark ? "_light" : "") + ".png"}
                   alt="NGEN"
                   className="logo"
                   id="teamlogo_login"

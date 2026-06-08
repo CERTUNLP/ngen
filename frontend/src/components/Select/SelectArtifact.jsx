@@ -11,6 +11,7 @@ const SelectTag = ({ value, onChange, options }) => {
 
   return (
     <Select
+      classNamePrefix="react-select"
       placeholder={t("ngen.artifact_other_select")}
       closeMenuOnSelect={false}
       components={animatedComponents}

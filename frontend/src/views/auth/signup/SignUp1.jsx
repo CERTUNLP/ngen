@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
@@ -6,9 +6,11 @@ import RestRegister from "./RestRegister";
 import Breadcrumb from "../../../layouts/AdminLayout/Breadcrumb";
 
 import { useTranslation } from "react-i18next";
+import { ThemeContext } from "../../../contexts/ThemeContext";
 
 const SignUp1 = () => {
   const { t } = useTranslation();
+  const { isDark } = useContext(ThemeContext);
 
   return (
     <React.Fragment>
@@ -26,7 +28,7 @@ const SignUp1 = () => {
               <Col>
                 <Card.Body className="text-center">
                   <div className="mb-4">
-                    <img src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv.png"} alt="NGEN" className="logo" id="teamlogo_login" />
+                    <img src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv" + (isDark ? "_light" : "") + ".png"} alt="NGEN" className="logo" id="teamlogo_login" />
                   </div>
 
                   <div className="mb-4">

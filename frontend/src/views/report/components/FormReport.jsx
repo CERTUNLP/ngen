@@ -149,12 +149,12 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
           <Form.Label>{t("w.preview.issue")}</Form.Label>
           <div
             style={{
-              backgroundColor: "white",
-              color: "black",
+              backgroundColor: "var(--bs-body-bg)",
+              color: "var(--bs-body-color)",
               maxHeight: maxHeights.problem, // Altura máxima igual a la altura actual del textarea
               overflowY: "auto",
               padding: "10px",
-              border: "1px solid #ccc",
+              border: "1px solid var(--bs-border-color)",
               borderRadius: "5px",
               marginBottom: "20px"
             }}
@@ -181,13 +181,13 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
           <Form.Label>{t("derived.issue.preview")}</Form.Label>
           <div
             style={{
-              backgroundColor: "white",
-              color: "black",
+              backgroundColor: "var(--bs-body-bg)",
+              color: "var(--bs-body-color)",
               maxHeight: maxHeights.derived_problem, // Altura máxima igual a la altura actual del textarea
               // maxHeight: "200px",
               overflowY: "auto",
               padding: "10px",
-              border: "1px solid #ccc",
+              border: "1px solid var(--bs-border-color)",
               borderRadius: "5px",
               marginBottom: "20px"
             }}
@@ -214,13 +214,13 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
           <Form.Label>{t("w.verification.preview")}</Form.Label>
           <div
             style={{
-              backgroundColor: "white",
-              color: "black",
+              backgroundColor: "var(--bs-body-bg)",
+              color: "var(--bs-body-color)",
               maxHeight: maxHeights.verification, // Altura máxima igual a la altura actual del textarea
               // maxHeight: "200px",
               overflowY: "auto",
               padding: "10px",
-              border: "1px solid #ccc",
+              border: "1px solid var(--bs-border-color)",
               borderRadius: "5px",
               marginBottom: "20px"
             }}
@@ -247,13 +247,13 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
           <Form.Label>{t("w.recommendation.preview")}</Form.Label>
           <div
             style={{
-              backgroundColor: "white",
-              color: "black",
+              backgroundColor: "var(--bs-body-bg)",
+              color: "var(--bs-body-color)",
               maxHeight: maxHeights.recommendations, // Altura máxima igual a la altura actual del textarea
               // maxHeight: "200px",
               overflowY: "auto",
               padding: "10px",
-              border: "1px solid #ccc",
+              border: "1px solid var(--bs-border-color)",
               borderRadius: "5px",
               marginBottom: "20px"
             }}
@@ -280,12 +280,12 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
           <Form.Label>{t("w.info")}</Form.Label>
           <div
             style={{
-              backgroundColor: "white",
-              color: "black",
+              backgroundColor: "var(--bs-body-bg)",
+              color: "var(--bs-body-color)",
               maxHeight: maxHeights.more_information, // Altura máxima igual a la altura actual del textarea
               overflowY: "auto",
               padding: "10px",
-              border: "1px solid #ccc",
+              border: "1px solid var(--bs-border-color)",
               borderRadius: "5px",
               marginBottom: "20px"
             }}
@@ -314,7 +314,7 @@ const FormReport = ({ body, setBody, taxonomies, createOrEdit }) => {
         <Modal.Header closeButton>
           <Modal.Title>{t("w.preview")}</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ backgroundColor: "#f8f9fa", padding: "2rem" }}>
+        <Modal.Body style={{ backgroundColor: "var(--bs-body-bg)", padding: "2rem" }}>
           {body.problem && (
             <section className="mb-4">
               <h5>{t("w.issue")}</h5>

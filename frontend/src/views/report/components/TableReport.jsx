@@ -231,7 +231,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
         <Modal.Header closeButton>
           <Modal.Title>{t("w.preview")}</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ backgroundColor: "#f8f9fa", padding: "2rem" }}>
+        <Modal.Body style={{ backgroundColor: "var(--bs-body-bg)", padding: "2rem" }}>
           {previewReport.problem && (
             <section className="mb-4">
               <h5>{t("w.issue")}</h5>

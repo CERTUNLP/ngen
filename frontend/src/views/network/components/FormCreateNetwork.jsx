@@ -195,6 +195,7 @@ const FormCreateNetwork = (props) => {
                 {t("ngen.contact_other")}
               </Form.Label>
               <Select
+                classNamePrefix="react-select"
                 value={contactsValueLabel}
                 placeholder={t("ngen.contact.select")}
                 closeMenuOnSelect={false}

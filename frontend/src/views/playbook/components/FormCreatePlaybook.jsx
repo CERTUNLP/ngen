@@ -62,6 +62,7 @@ const FormCreatePlaybook = (props) => {
                 {t("ngen.taxonomy_other")} <b style={{ color: "red" }}>*</b>
               </Form.Label>
               <Select
+                classNamePrefix="react-select"
                 value={taxonomiesDefaultValue}
                 placeholder={t("ngen.taxonomy.other.select")}
                 closeMenuOnSelect={false}

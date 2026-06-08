@@ -1,0 +1,738 @@
+// =======================================
+//     Dark mode overrides for Datta Able
+// =======================================
+@use '_variables' as *;
+
+[data-bs-theme="dark"] {
+  // =============================================
+  // 1. BODY & TYPOGRAPHY
+  // =============================================
+  body {
+    color: var(--bs-body-color);
+    background: var(--bs-body-bg);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--bs-heading-color);
+  }
+
+  // =============================================
+  // 2. CARDS
+  // =============================================
+  .card {
+    --bs-card-title-color: var(--bs-heading-color);
+  }
+
+  .card .card-header {
+    border-bottom-color: var(--bs-border-color);
+  }
+
+  .card .card-header h5 {
+    color: var(--bs-heading-color);
+  }
+
+  .card .card-header .card-header-right .btn.dropdown-toggle {
+    color: var(--bs-body-color);
+  }
+
+  .card .card-footer {
+    border-top-color: var(--bs-border-color);
+  }
+
+  .card.card-load .card-loader {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+
+  // =============================================
+  // 3. FORMS & INPUTS
+  // =============================================
+  .custom-select,
+  .form-control {
+    background: var(--bs-form-control-bg);
+    color: var(--bs-body-color);
+    border-color: var(--bs-border-color);
+  }
+
+  .custom-select:focus,
+  .form-control:focus {
+    background: var(--bs-form-control-bg);
+  }
+
+  .input-group {
+    background: var(--bs-form-control-bg);
+  }
+
+  // =============================================
+  // 4. TABLES
+  // =============================================
+  .table {
+    color: var(--bs-body-color);
+  }
+
+  .table td,
+  .table th {
+    border-top-color: var(--bs-border-color);
+  }
+
+  .table thead th {
+    border-bottom-color: var(--bs-border-color);
+  }
+
+  .table tbody + tbody {
+    border-top-color: var(--bs-border-color);
+  }
+
+  .table-bordered {
+    border-color: var(--bs-border-color);
+  }
+
+  .table-bordered td,
+  .table-bordered th {
+    border-color: var(--bs-border-color);
+  }
+
+  .table-hover tbody tr:hover {
+    color: var(--bs-body-color);
+    background: var(--bs-tertiary-bg);
+  }
+
+  .table-hover tbody tr:hover > * {
+    --bs-table-color-state: var(--bs-body-color);
+  }
+
+  .table-hover > tbody > tr:hover > * {
+    --bs-table-bg-state: var(--bs-tertiary-bg);
+  }
+
+  // =============================================
+  // 5. DROPDOWNS
+  // =============================================
+  .dropdown-menu.show:before {
+    color: var(--bs-dropdown-bg);
+    text-shadow: 0 -2px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .dropdown-menu > li > a {
+    color: var(--bs-dropdown-link-color);
+  }
+
+  // =============================================
+  // 6. HEADER (desktop: light by default, needs dark)
+  // =============================================
+  .pcoded-header {
+    color: var(--bs-body-color);
+  }
+
+  .pcoded-header .input-group .input-group-text,
+  .pcoded-header a,
+  .pcoded-header .btn,
+  .pcoded-header.dropdown-toggle {
+    color: var(--bs-body-color);
+
+    &:hover {
+      color: var(--bs-primary, #04a9f5);
+    }
+  }
+
+  .pcoded-header .main-search.open .input-group {
+    background: var(--bs-form-control-bg);
+    border-color: var(--bs-border-color);
+  }
+
+  .pcoded-header .mobile-menu span {
+    background-color: var(--bs-body-color);
+  }
+
+  .pcoded-header .mobile-menu span::after,
+  .pcoded-header .mobile-menu span::before {
+    background-color: var(--bs-body-color);
+  }
+
+  .pcoded-header .mobile-menu.on span {
+    background-color: transparent;
+  }
+
+  .header-breadcrumb .breadcrumb-item a {
+    color: var(--bs-body-color);
+  }
+
+  .mobile-toolbar {
+    background: var(--bs-dark-bg-subtle);
+
+    .breadcrumb-item a {
+      color: var(--bs-body-color);
+    }
+  }
+
+  header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed {
+    background: var(--bs-body-bg);
+  }
+
+  header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed .b-brand .b-title {
+    color: var(--bs-body-color);
+  }
+
+  header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed .mobile-menu span,
+  header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed .mobile-menu span::after,
+  header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed .mobile-menu span::before {
+    background-color: var(--bs-body-color);
+  }
+
+  header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed .mobile-menu.on span {
+    background-color: transparent;
+  }
+
+  // =============================================
+  // 7. BREADCRUMBS & PAGINATION
+  // =============================================
+  .breadcrumb {
+    background-color: transparent;
+  }
+
+  .breadcrumb-item.active {
+    color: var(--bs-body-color);
+  }
+
+  .page-header-title + .breadcrumb > .breadcrumb-item a {
+    color: var(--bs-secondary-color);
+  }
+
+  .page-header-title + .breadcrumb > .breadcrumb-item:last-child a {
+    color: var(--bs-body-color);
+  }
+
+  // =============================================
+  // 8. TABS & PILLS
+  // =============================================
+  .nav-pills {
+    background-color: var(--bs-body-bg);
+  }
+
+  .nav-tabs .nav-link {
+    color: var(--bs-body-color);
+  }
+
+  .nav-tabs .nav-item.show .nav-link,
+  .nav-tabs .nav-link.active {
+    color: var(--bs-heading-color);
+  }
+
+  .tab-content {
+    background: var(--bs-body-bg);
+  }
+
+  // =============================================
+  // 9. PROGRESS BARS
+  // =============================================
+  .progress {
+    background-color: var(--bs-tertiary-bg);
+  }
+
+  // =============================================
+  // 10. CODE & BLOCKQUOTE
+  // =============================================
+  .highlight {
+    background-color: var(--bs-dark-bg-subtle);
+  }
+
+  .highlight pre code {
+    color: var(--bs-body-color);
+  }
+
+  .blockquote {
+    border-left-color: var(--bs-border-color);
+  }
+
+  // =============================================
+  // 11. AUTH PAGES
+  // =============================================
+  .auth-wrapper a,
+  .auth-wrapper p > a {
+    color: var(--bs-body-color);
+  }
+
+  // =============================================
+  // 12. NOTIFICATIONS & PROFILE DROPDOWN
+  // =============================================
+  .pcoded-header .dropdown .notification .noti-head {
+    border-bottom-color: var(--bs-border-color);
+  }
+
+  .pcoded-header .dropdown .notification .noti-body li.notification p strong {
+    color: var(--bs-heading-color);
+  }
+
+  .pcoded-header .dropdown .notification .noti-footer {
+    border-top-color: var(--bs-border-color);
+  }
+
+  .pcoded-header .dropdown .profile-notification .pro-body li a {
+    color: var(--bs-dropdown-link-color);
+  }
+
+  // =============================================
+  // 13. LAYOUT CONTAINERS
+  // =============================================
+  .pcoded-main-container {
+    background: var(--bs-body-bg);
+  }
+
+  #nav-ps-next-bottom {
+    background: var(--bs-dark-bg-subtle);
+    box-shadow: inset 0 7px 4px -7px var(--bs-dark-bg-subtle),
+      0 0 0 0px var(--bs-dark-bg-subtle);
+  }
+
+  // =============================================
+  // 14. SIDEBAR / MENU (darker than body for contrast)
+  // =============================================
+  .pcoded-navbar {
+    background: #1b1d21;
+    color: #a9b7d0;
+    box-shadow: 1px 0 20px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  .pcoded-navbar a {
+    color: #a9b7d0;
+  }
+
+  .pcoded-navbar .pcoded-submenu {
+    background: #202326;
+  }
+
+  .pcoded-navbar .pcoded-menu-caption {
+    color: #8a95a5;
+  }
+
+  .pcoded-navbar .pcoded-inner-navbar > li.active > a {
+    background: #2a2d33;
+    color: #fff;
+  }
+
+  .pcoded-navbar .pcoded-inner-navbar > li.active:after {
+    background-color: #1dc4e9;
+  }
+
+  .pcoded-navbar .pcoded-inner-navbar li > a.active,
+  .pcoded-navbar .pcoded-inner-navbar li > a:focus,
+  .pcoded-navbar .pcoded-inner-navbar li > a:hover {
+    color: #1dc4e9;
+  }
+
+  .pcoded-navbar .pcoded-inner-navbar li > a .pcoded-submenu > li.active > a:before {
+    background: #1dc4e9;
+  }
+
+  .pcoded-navbar .mobile-menu span {
+    background-color: #a9b7d0;
+  }
+
+  .pcoded-navbar .mobile-menu span::after,
+  .pcoded-navbar .mobile-menu span::before {
+    background-color: #a9b7d0;
+  }
+
+  .pcoded-navbar .mobile-menu.on span {
+    background-color: transparent;
+  }
+
+  // collapsed sidebar brand bg
+  .pcoded-navbar.navbar-collapsed .header-logo {
+    background: #1b1d21;
+  }
+
+  // sidebar scrollbar
+  .ps__thumb-y {
+    background: #2e3238 !important;
+  }
+
+  .ps__rail-y:hover > .ps__thumb-y,
+  .ps__rail-y:focus > .ps__thumb-y,
+  .ps__rail-y.ps--clicking .ps__thumb-y {
+    background: #3a3e44 !important;
+  }
+
+  // sidebar brand/logo area
+  .navbar-brand {
+    background: #1b1d21;
+  }
+
+  // =============================================
+  // 14. BUTTONS (theme variants with white active state)
+  // =============================================
+  .btn-theme,
+  a.btn-theme {
+    &.active {
+      background-image: var(--bs-dark-bg-subtle) !important;
+      color: var(--bs-body-color);
+      border-color: var(--bs-border-color);
+    }
+  }
+
+  .btn-outline-theme {
+    background-image: var(--bs-dark-bg-subtle) !important;
+    color: var(--bs-body-color);
+    border-color: var(--bs-border-color);
+
+    &:active,
+    &:focus,
+    &:not(:disabled):not(.disabled):active {
+      background-image: var(--bs-dark-bg-subtle);
+      color: var(--bs-body-color);
+      border-color: var(--bs-border-color);
+    }
+
+    &.active {
+      background: $theme-color !important;
+      color: #fff;
+    }
+  }
+
+  .btn-theme2 {
+    &.active {
+      background-image: var(--bs-dark-bg-subtle) !important;
+      color: var(--bs-body-color);
+      border-color: var(--bs-border-color);
+    }
+  }
+
+  .btn-outline-theme2 {
+    background-image: var(--bs-dark-bg-subtle) !important;
+    color: var(--bs-body-color);
+    border-color: var(--bs-border-color);
+
+    &:active,
+    &:focus,
+    &:not(:disabled):not(.disabled):active {
+      background-image: var(--bs-dark-bg-subtle);
+      color: var(--bs-body-color);
+      border-color: var(--bs-border-color);
+    }
+
+    &.active {
+      background: $theme-color2 !important;
+      color: #fff;
+    }
+  }
+
+  // =============================================
+  // 15. REACT-SELECT (dropdowns, multiselect, etc.)
+  // =============================================
+  .react-select__control {
+    background-color: var(--bs-form-control-bg);
+    border-color: var(--bs-border-color);
+
+    &--is-focused,
+    &--menu-is-open {
+      border-color: var(--bs-primary, #04a9f5);
+      box-shadow: 0 0 0 1px var(--bs-primary, #04a9f5);
+    }
+
+    &--is-disabled {
+      background-color: var(--bs-dark-bg-subtle);
+      opacity: 0.6;
+    }
+  }
+
+  .react-select__single-value {
+    color: var(--bs-body-color);
+  }
+
+  .react-select__input-container {
+    color: var(--bs-body-color);
+  }
+
+  .react-select__placeholder {
+    color: var(--bs-secondary-color);
+  }
+
+  .react-select__menu {
+    background-color: var(--bs-dropdown-bg);
+    border: 1px solid var(--bs-border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  .react-select__menu-list {
+    background-color: var(--bs-dropdown-bg);
+    padding: 4px 0;
+  }
+
+  .react-select__option {
+    background-color: #1e1f22;
+    color: var(--bs-dropdown-link-color);
+    cursor: pointer;
+
+    &--is-focused {
+      background-color: var(--bs-tertiary-bg);
+    }
+
+    &--is-selected {
+      background-color: var(--bs-primary, #04a9f5);
+      color: #fff;
+    }
+
+    &:active {
+      background-color: var(--bs-tertiary-bg);
+    }
+  }
+
+  .react-select__multi-value {
+    background-color: var(--bs-tertiary-bg);
+  }
+
+  .react-select__multi-value__label {
+    color: var(--bs-body-color);
+  }
+
+  .react-select__multi-value__remove {
+    color: var(--bs-secondary-color);
+
+    &:hover {
+      background-color: var(--bs-danger, #f44236);
+      color: #fff;
+    }
+  }
+
+  .react-select__indicator-separator {
+    background-color: var(--bs-border-color);
+  }
+
+  .react-select__dropdown-indicator {
+    color: var(--bs-secondary-color);
+  }
+
+  .react-select__clear-indicator {
+    color: var(--bs-secondary-color);
+
+    &:hover {
+      color: var(--bs-danger, #f44236);
+    }
+  }
+
+  .react-select__group-heading {
+    color: var(--bs-secondary-color);
+  }
+
+  .react-select__loading-indicator {
+    color: var(--bs-secondary-color);
+  }
+
+  // =============================================
+  // 16. FILE UPLOAD COMPONENTS
+  // =============================================
+  .file-card {
+    border-color: var(--bs-border-color) !important;
+    background-color: var(--bs-dark-bg-subtle) !important;
+  }
+
+  .dropzone {
+    border-color: var(--bs-border-color) !important;
+    background-color: var(--bs-dark-bg-subtle) !important;
+  }
+
+  .file-item {
+    background-color: var(--bs-dark-bg-subtle) !important;
+  }
+
+  .file-meta {
+    color: var(--bs-secondary-color) !important;
+  }
+
+  // =============================================
+  // 18. PAGINATION COMPONENT
+  // =============================================
+  .pagination-container {
+    a {
+      color: var(--bs-body-color);
+      border-color: var(--bs-border-color);
+
+      &:hover:not(.active) {
+        background-color: var(--bs-tertiary-bg);
+      }
+    }
+  }
+
+  // =============================================
+  // 19. FORM PLACEHOLDERS & VALIDATION
+  // =============================================
+  .custom-select::-moz-placeholder,
+  .form-control::-moz-placeholder,
+  .custom-select:-ms-input-placeholder,
+  .form-control:-ms-input-placeholder,
+  .custom-select::-webkit-input-placeholder,
+  .form-control::-webkit-input-placeholder {
+    color: var(--bs-secondary-color);
+    opacity: 0.7;
+  }
+
+  .tt-menu {
+    background-color: var(--bs-dropdown-bg);
+    border-color: var(--bs-border-color);
+  }
+
+  .was-validated .form-control:invalid ~ .invalid-feedback {
+    background: var(--bs-dark-bg-subtle);
+  }
+
+  // =============================================
+  // 20. CODE, WIDGET & MISC
+  // =============================================
+  .card .card-block code,
+  .card .card-body code {
+    background-color: var(--bs-dark-bg-subtle);
+  }
+
+  .fa-border {
+    border-color: var(--bs-border-color);
+  }
+
+  .pcoded-navbar .pcoded-badge {
+    color: #fff;
+  }
+
+  .row-false-positive {
+    &,
+    td,
+    span {
+      color: var(--bs-secondary-color) !important;
+    }
+
+    i {
+      color: var(--bs-secondary-color) !important;
+    }
+
+    button {
+      color: var(--bs-secondary-color) !important;
+      border-color: var(--bs-border-color) !important;
+    }
+  }
+
+  // =============================================
+  // 21. CHAT PANEL
+  // =============================================
+  .header-chat,
+  .header-user-list {
+    background-color: var(--bs-body-bg);
+  }
+
+  .header-chat .h-list-header {
+    border-bottom-color: var(--bs-border-color);
+  }
+
+  .h-list-body .userlist-box:after {
+    background: var(--bs-border-color);
+  }
+
+  .header-chat .h-list-footer .input-group {
+    background: var(--bs-form-control-bg);
+  }
+
+  .h-list-body .chat-messages .chat-menu-reply > div p {
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+  }
+
+  .h-list-body .chat-messages .chat-menu-reply > div:before {
+    color: var(--bs-tertiary-bg);
+  }
+
+  .h-list-body .chat-messages .chat-menu-content > div p {
+    color: #fff;
+  }
+
+  // =============================================
+  // 22. TOAST NOTIFICATIONS (react-toastify)
+  // =============================================
+  .Toastify__toast {
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+  }
+
+  .Toastify__toast--success {
+    background: var(--bs-dark-bg-subtle);
+    border-left: 4px solid var(--bs-success, #1de9b6);
+  }
+
+  .Toastify__toast--error {
+    background: var(--bs-dark-bg-subtle);
+    border-left: 4px solid var(--bs-danger, #f44236);
+  }
+
+  .Toastify__toast--warning {
+    background: var(--bs-dark-bg-subtle);
+    border-left: 4px solid var(--bs-warning, #f4c22b);
+  }
+
+  .Toastify__toast--info {
+    background: var(--bs-dark-bg-subtle);
+    border-left: 4px solid var(--bs-info, #17a2b8);
+  }
+
+  .Toastify__toast-body {
+    color: var(--bs-body-color);
+  }
+
+  .Toastify__close-button {
+    color: var(--bs-body-color);
+    opacity: 0.7;
+
+    &:hover {
+      color: var(--bs-body-color);
+      opacity: 1;
+    }
+  }
+
+  .Toastify__progress-bar {
+    opacity: 0.5;
+  }
+
+  // =============================================
+  // 23. TLP BADGES (white backgrounds in light mode)
+  // =============================================
+  .tlp-red,
+  .tlp-grey,
+  .custom-badge-gray {
+    background-color: transparent !important;
+  }
+
+  // =============================================
+  // 24. MOBILE RESPONSIVE
+  // =============================================
+  @media only screen and (max-width: 991px) {
+    .pcoded-header {
+      background: var(--bs-dark-bg-subtle);
+      color: #fff;
+
+      > .collapse.show {
+        background: var(--bs-dark-bg-subtle);
+      }
+
+      .mob-toggler {
+        color: #fff;
+      }
+    }
+
+    header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed {
+      background: var(--bs-dark-bg-subtle);
+    }
+
+    header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed .b-brand .b-title {
+      color: #fff;
+    }
+
+    header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed .mobile-menu span,
+    header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed .mobile-menu span::after,
+    header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed .mobile-menu span::before {
+      background-color: #fff;
+    }
+
+    header.navbar.pcoded-header.navbar-expand-lg.header-default.headerpos-fixed .mobile-menu.on span {
+      background-color: transparent;
+    }
+  }
+}

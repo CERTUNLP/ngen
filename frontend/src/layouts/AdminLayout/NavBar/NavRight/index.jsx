@@ -1,178 +1,94 @@
-import React, { useState } from "react";
-import avatar2 from "../../../../assets/images/user/avatar-2.jpg";
-import avatar3 from "../../../../assets/images/user/avatar-3.jpg";
-import avatar4 from "../../../../assets/images/user/avatar-4.jpg";
+import React, { useContext } from "react";
+import { Dropdown } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import i18n from "i18next";
+import { ThemeContext } from "../../../../contexts/ThemeContext";
+
+const CURRENT_LANG = (i18n.language || localStorage.getItem("NGEN_LANG") || "en").substring(0, 2);
 
 const NavRight = () => {
-  const [listOpen, setListOpen] = useState(false);
+  const { t } = useTranslation();
+  const { isDark, toggleTheme } = useContext(ThemeContext);
+  const user = useSelector((state) => state.account?.user);
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const lang = i18n.language?.substring(0, 2) || CURRENT_LANG;
 
-  const notiData = [
-    {
-      name: "Joseph William",
-      image: avatar2,
-      details: "Purchase New Theme and make payment",
-      activity: "30 min"
-    },
-    {
-      name: "Sara Soudein",
-      image: avatar3,
-      details: "currently login",
-      activity: "30 min"
-    },
-    {
-      name: "Suzen",
-      image: avatar4,
-      details: "Purchase New Theme and make payment",
-      activity: "yesterday"
-    }
-  ];
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem("NGEN_LANG", lng);
+  };
+
+  const displayName = user?.username || user?.first_name || "";
 
   return (
-    <React.Fragment>
-      {/*<ListGroup as="ul" bsPrefix=" " className="navbar-nav ml-auto"*/}
-      {/*           id="navbar-right">*/}
-      {/*  <ListGroup.Item as="li" bsPrefix=" ">*/}
-      {/*    <Dropdown align="end">*/}
-      {/*      <Dropdown.Toggle as={Link} variant="link" to="#"*/}
-      {/*                       id="dropdown-basic">*/}
-      {/*        <i className="feather icon-bell icon"/>*/}
-      {/*      </Dropdown.Toggle>*/}
-      {/*      <Dropdown.Menu align="end"*/}
-      {/*                     className="notification notification-scroll">*/}
-      {/*        <div className="noti-head">*/}
-      {/*          <h6 className="d-inline-block m-b-0">Notifications</h6>*/}
-      {/*          <div className="float-end">*/}
-      {/*            <Link to="#" className="me-2">*/}
-      {/*              mark as read*/}
-      {/*            </Link>*/}
-      {/*            <Link to="#">clear all</Link>*/}
-      {/*          </div>*/}
-      {/*        </div>*/}
-      {/*        <PerfectScrollbar>*/}
-      {/*          <ListGroup as="ul" bsPrefix=" " variant="flush"*/}
-      {/*                     className="noti-body">*/}
-      {/*            <ListGroup.Item as="li" bsPrefix=" " className="n-title">*/}
-      {/*              <p className="m-b-0">NEW</p>*/}
-      {/*            </ListGroup.Item>*/}
-      {/*            <ListGroup.Item as="li" bsPrefix=" " className="notification">*/}
-      {/*              <Card*/}
-      {/*                className="d-flex align-items-center shadow-none mb-0 p-0"*/}
-      {/*                style={{ flexDirection: 'row', backgroundColor: 'unset' }}*/}
-      {/*              >*/}
-      {/*                <img className="img-radius" src={avatar1}*/}
-      {/*                     alt="Generic placeholder"/>*/}
-      {/*                <Card.Body className="p-0">*/}
-      {/*                  <p>*/}
-      {/*                    <strong>John Doe</strong>*/}
-      {/*                    <span className="n-time text-muted">*/}
-      {/*                      <i className="icon feather icon-clock me-2"/>*/}
-      {/*                      30 min*/}
-      {/*                    </span>*/}
-      {/*                  </p>*/}
-      {/*                  <p>New ticket Added</p>*/}
-      {/*                </Card.Body>*/}
-      {/*              </Card>*/}
-      {/*            </ListGroup.Item>*/}
-      {/*            <ListGroup.Item as="li" bsPrefix=" " className="n-title">*/}
-      {/*              <p className="m-b-0">EARLIER</p>*/}
-      {/*            </ListGroup.Item>*/}
-      {/*            {notiData.map((data, index) => {*/}
-      {/*              return (*/}
-      {/*                <ListGroup.Item key={index} as="li" bsPrefix=" "*/}
-      {/*                                className="notification">*/}
-      {/*                  <Card*/}
-      {/*                    className="d-flex align-items-center shadow-none mb-0 p-0"*/}
-      {/*                    style={{*/}
-      {/*                      flexDirection: 'row',*/}
-      {/*                      backgroundColor: 'unset',*/}
-      {/*                    }}*/}
-      {/*                  >*/}
-      {/*                    <img className="img-radius" src={data.image}*/}
-      {/*                         alt="Generic placeholder"/>*/}
-      {/*                    <Card.Body className="p-0">*/}
-      {/*                      <p>*/}
-      {/*                        <strong>{data.name}</strong>*/}
-      {/*                        <span className="n-time text-muted">*/}
-      {/*                          <i className="icon feather icon-clock me-2"/>*/}
-      {/*                          {data.activity}*/}
-      {/*                        </span>*/}
-      {/*                      </p>*/}
-      {/*                      <p>{data.details}</p>*/}
-      {/*                    </Card.Body>*/}
-      {/*                  </Card>*/}
-      {/*                </ListGroup.Item>*/}
-      {/*              )*/}
-      {/*            })}*/}
-      {/*          </ListGroup>*/}
-      {/*        </PerfectScrollbar>*/}
-      {/*        <div className="noti-footer">*/}
-      {/*          <Link to="#">show all</Link>*/}
-      {/*        </div>*/}
-      {/*      </Dropdown.Menu>*/}
-      {/*    </Dropdown>*/}
-      {/*  </ListGroup.Item>*/}
-      {/*  <ListGroup.Item as="li" bsPrefix=" ">*/}
-      {/*    <Dropdown>*/}
-      {/*      <Dropdown.Toggle as={Link} variant="link" to="#"*/}
-      {/*                       className="displayChatbox"*/}
-      {/*                       onClick={() => setListOpen(true)}>*/}
-      {/*        <i className="icon feather icon-mail"/>*/}
-      {/*      </Dropdown.Toggle>*/}
-      {/*    </Dropdown>*/}
-      {/*  </ListGroup.Item>*/}
-      {/*  <ListGroup.Item as="li" bsPrefix=" ">*/}
-      {/*    <Dropdown align={'end'} className="drp-user">*/}
-      {/*      <Dropdown.Toggle as={Link} variant="link" to="#"*/}
-      {/*                       id="dropdown-basic">*/}
-      {/*        <i className="icon feather icon-settings"/>*/}
-      {/*      </Dropdown.Toggle>*/}
-      {/*      <Dropdown.Menu align="end" className="profile-notification">*/}
-      {/*        <div className="pro-head">*/}
-      {/*          <img src={avatar1} className="img-radius" alt="User Profile"/>*/}
-      {/*          <span>John Doe</span>*/}
-      {/*          <Link to="#" className="dud-logout" title="Logout">*/}
-      {/*            <i className="feather icon-log-out"/>*/}
-      {/*          </Link>*/}
-      {/*        </div>*/}
-      {/*        <ListGroup as="ul" bsPrefix=" " variant="flush"*/}
-      {/*                   className="pro-body">*/}
-      {/*          <ListGroup.Item as="li" bsPrefix=" ">*/}
-      {/*            <Link to="#" className="dropdown-item">*/}
-      {/*              <i className="feather icon-settings"/> Settings*/}
-      {/*            </Link>*/}
-      {/*          </ListGroup.Item>*/}
-      {/*          <ListGroup.Item as="li" bsPrefix=" ">*/}
-      {/*            <Link to="#" className="dropdown-item">*/}
-      {/*              <i className="feather icon-user"/> Profile*/}
-      {/*            </Link>*/}
-      {/*          </ListGroup.Item>*/}
-      {/*          <ListGroup.Item as="li" bsPrefix=" ">*/}
-      {/*            <Link to="#" className="dropdown-item">*/}
-      {/*              <i className="feather icon-mail"/> My Messages*/}
-      {/*            </Link>*/}
-      {/*          </ListGroup.Item>*/}
-      {/*          <ListGroup.Item as="li" bsPrefix=" ">*/}
-      {/*            <Link to="#" className="dropdown-item">*/}
-      {/*              <i className="feather icon-lock"/> Lock Screen*/}
-      {/*            </Link>*/}
-      {/*          </ListGroup.Item>*/}
-      {/*        </ListGroup>*/}
-      {/*        <ListGroup.Item as="li" bsPrefix=" ">*/}
-      {/*          <Link to="#" className="dropdown-item">*/}
-      {/*            <i className="feather icon-user"/> Mi perfil*/}
-      {/*          </Link>*/}
-      {/*        </ListGroup.Item>*/}
-      {/*        <ListGroup.Item as="li" bsPrefix=" ">*/}
-      {/*          <Link to="#" className="dropdown-item" onClick={handleLogout}>*/}
-      {/*            <i className="feather icon-log-out"/> Logout*/}
-      {/*          </Link>*/}
-      {/*        </ListGroup.Item>*/}
-      {/*      </Dropdown.Menu>*/}
-      {/*    </Dropdown>*/}
-      {/*  </ListGroup.Item>*/}
-      {/*</ListGroup>*/}
-      {/*<ChatList listOpen={listOpen} closed={() => setListOpen(false)}/>*/}
-    </React.Fragment>
+    <ul className="navbar-nav ms-auto">
+      <Dropdown as="li" className="nav-item" align="end">
+        <Dropdown.Toggle as="button" className="nav-link user-dropdown-toggle btn btn-link">
+          <i className="feather icon-user" />
+          <span className="user-name">{displayName}</span>
+        </Dropdown.Toggle>
+        <Dropdown.Menu className="user-panel-menu">
+          <div className="user-info-header">
+            <div className="user-avatar">
+              <i className="feather icon-user" />
+            </div>
+            <div>
+              <strong>{user?.first_name ? `${user.first_name} ${user.last_name || ""}` : displayName}</strong>
+              {user?.username && user?.first_name && <small className="d-block">@{user.username}</small>}
+            </div>
+          </div>
+
+          <Dropdown.Divider />
+
+          <Dropdown.Item as="button" className="pref-item" onClick={toggleTheme}>
+            <i className={isDark ? "feather icon-sun" : "feather icon-moon"} />
+            <span>{t("ngen.dark_mode")}</span>
+            <span className="ms-auto">
+              <i className={isDark ? "fas fa-toggle-on text-primary" : "fas fa-toggle-off text-muted"} />
+            </span>
+          </Dropdown.Item>
+
+          {["en", "es"].map((lng) => (
+            <Dropdown.Item
+              key={lng}
+              as="button"
+              className={`pref-item${lang === lng ? " active-lang" : ""}`}
+              onClick={() => changeLanguage(lng)}
+            >
+              <i className="feather icon-globe" />
+              <span>{lng.toUpperCase()}</span>
+              {lang === lng && <i className="fas fa-check ms-auto text-success" />}
+            </Dropdown.Item>
+          ))}
+
+          <Dropdown.Item as="div" className="pref-item">
+            <i className="feather icon-clock" />
+            <span>{tz}</span>
+          </Dropdown.Item>
+
+          <Dropdown.Divider />
+
+          <Dropdown.Item as={Link} to="/profile" className="pref-item">
+            <i className="feather icon-user" />
+            <span>{t("ngen.user.profile")}</span>
+          </Dropdown.Item>
+
+          <Dropdown.Item
+            as={Link}
+            to="/logout/"
+            className="pref-item"
+            onClick={() => {
+              localStorage.removeItem("ngen-account");
+            }}
+          >
+            <i className="feather icon-log-out" />
+            <span>{t("button.logout")}</span>
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    </ul>
   );
 };
 
