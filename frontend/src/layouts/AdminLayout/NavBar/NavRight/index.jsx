@@ -25,7 +25,7 @@ const NavRight = () => {
   return (
     <ul className="navbar-nav ms-auto">
       <Dropdown as="li" className="nav-item" align="end">
-        <Dropdown.Toggle as="a" className="nav-link user-dropdown-toggle">
+        <Dropdown.Toggle as="button" className="nav-link user-dropdown-toggle btn btn-link">
           <i className="feather icon-user" />
           <span className="user-name">{displayName}</span>
         </Dropdown.Toggle>
@@ -42,7 +42,7 @@ const NavRight = () => {
 
           <Dropdown.Divider />
 
-          <Dropdown.Item as="div" className="pref-item" onClick={toggleTheme}>
+          <Dropdown.Item as="button" className="pref-item" onClick={toggleTheme}>
             <i className={isDark ? "feather icon-sun" : "feather icon-moon"} />
             <span>{t("ngen.dark_mode")}</span>
             <span className="ms-auto">
@@ -53,7 +53,7 @@ const NavRight = () => {
           {["en", "es"].map((lng) => (
             <Dropdown.Item
               key={lng}
-              as="div"
+              as="button"
               className={`pref-item${lang === lng ? " active-lang" : ""}`}
               onClick={() => changeLanguage(lng)}
             >

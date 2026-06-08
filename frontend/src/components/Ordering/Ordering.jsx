@@ -24,6 +24,9 @@ const Ordering = ({ field, label, order, setOrder, setLoading, letterSize = "" }
       {label}
       <span
         className={`${getIcon(field)} sort-icon${isActive ? " sort-icon-active" : ""}`}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); orderBy(field_order); } }}
         onClick={() => orderBy(field_order)}
       ></span>
     </th>

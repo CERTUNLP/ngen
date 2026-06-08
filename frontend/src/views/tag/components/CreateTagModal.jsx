@@ -8,7 +8,9 @@ const CreateTagModal = ({ show, onHide, value, setValue, colorTag, setColorTag, 
   return (
     <Modal size="lg" show={show} onHide={onHide} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>
-        <Modal.Title>{isUpdate ? t("crud.edit") + " " + t("ngen.tag_one") : t("crud.add") + " " + t("ngen.tag_one")}</Modal.Title>
+        <Modal.Title id="contained-modal-title-vcenter">
+          {isUpdate ? t("crud.edit") + " " + t("ngen.tag_one") : t("crud.add") + " " + t("ngen.tag_one")}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Row>

@@ -37,7 +37,7 @@ const SelectTag = ({ value, onChange, options }) => {
       ...style,
       color: getTextColorBasedOnBackground(state.data.color),
       ':hover': {
-        backgroundColor: '#f0f0f0',
+        backgroundColor: 'var(--bs-tertiary-bg)',
         color: 'var(--bs-body-color)',
       },
     }),
