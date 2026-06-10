@@ -1,4 +1,5 @@
 import django_filters
+import logging
 from rest_framework import permissions, filters, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -7,6 +8,8 @@ from constance import config
 from ngen import models, serializers
 from ngen.mailer.email_handler import EmailHandler
 from ngen.tasks import async_send_email
+
+logger = logging.getLogger(__name__)
 
 
 class EmailMessageFilter(django_filters.FilterSet):
@@ -39,10 +42,12 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         """
         email_message = self.get_object()
         if email_message.sent:
+            logger.warning("EmailQueue.send: id=%s already sent, skipping", email_message.id)
             return Response(
                 {"error": "Email already sent"}, status=status.HTTP_400_BAD_REQUEST
             )
         if email_message.dispatched:
+            logger.warning("EmailQueue.send: id=%s already dispatched, skipping", email_message.id)
             return Response(
                 {"error": "Email already dispatched to Celery"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -50,6 +55,13 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         async_send_email.delay(email_message.id)
         email_message.dispatched = True
         email_message.save(update_fields=["dispatched"])
+        logger.info(
+            "EmailQueue.send: dispatched id=%s subject='%s' to=%s user=%s",
+            email_message.id,
+            email_message.subject,
+            [r["email"] for r in email_message.recipients],
+            request.user,
+        )
         return Response({"status": "dispatched", "id": email_message.id})
 
     @action(detail=False, methods=["post"], url_path="send_all_pending")
@@ -65,6 +77,12 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         for email_id in ids:
             async_send_email.delay(email_id)
         pending.update(dispatched=True)
+        logger.info(
+            "EmailQueue.send_all_pending: dispatched %s emails ids=%s user=%s",
+            len(ids),
+            ids,
+            request.user,
+        )
         return Response({"status": "dispatched", "count": len(ids)})
 
     @action(detail=True, methods=["post"], url_path="resend")
@@ -89,10 +107,17 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
             template=original.template,
             attachments=original.attachments,
         )
-        if config.EMAIL_AUTO_SEND:
-            async_send_email.delay(cloned.id)
-            cloned.dispatched = True
-            cloned.save(update_fields=["dispatched"])
+        async_send_email.delay(cloned.id)
+        cloned.dispatched = True
+        cloned.save(update_fields=["dispatched"])
+        logger.info(
+            "EmailQueue.resend: cloned original_id=%s -> new_id=%s subject='%s' to=%s user=%s",
+            original.id,
+            cloned.id,
+            cloned.subject,
+            [r["email"] for r in cloned.recipients],
+            request.user,
+        )
         return Response(
             {"status": "cloned", "id": cloned.id, "original_id": original.id},
             status=status.HTTP_201_CREATED,

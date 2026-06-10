@@ -360,6 +360,26 @@ CONSTANCE_CONFIG = {
         os.environ.get("EMAIL_PASSWORD"),
         "Email password to fetch (required) and send emails (optional)",
     ),
+    "EMAIL_USE_SSL": (
+        os.environ.get("EMAIL_USE_SSL", "false").lower() in VALUES_TRUE,
+        "Email use SSL (port 465) to send emails",
+        bool,
+    ),
+    "EMAIL_TIMEOUT": (
+        int(os.environ.get("EMAIL_TIMEOUT", 30)),
+        "Email SMTP connection timeout in seconds",
+        int,
+    ),
+    "EMAIL_IMAP_PORT": (
+        int(os.environ.get("EMAIL_IMAP_PORT", 993)),
+        "Email IMAP port for fetching emails",
+        int,
+    ),
+    "EMAIL_IMAP_USE_SSL": (
+        os.environ.get("EMAIL_IMAP_USE_SSL", "true").lower() in VALUES_TRUE,
+        "Email IMAP use SSL for fetching emails",
+        bool,
+    ),
     # ── Cases ───────────────────────────────────────────────────
     "CASE_DEFAULT_LIFECYCLE": (
         os.environ.get("CASE_DEFAULT_LIFECYCLE", "manual"),
@@ -567,6 +587,10 @@ CONSTANCE_GROUPS = {
     "EMAIL_USE_TLS": "Email",
     "EMAIL_USERNAME": "Email",
     "EMAIL_PASSWORD": "Email",
+    "EMAIL_USE_SSL": "Email",
+    "EMAIL_TIMEOUT": "Email",
+    "EMAIL_IMAP_PORT": "Email",
+    "EMAIL_IMAP_USE_SSL": "Email",
     "CASE_DEFAULT_LIFECYCLE": "Cases",
     "CASE_REPORT_NEW_CASES": "Cases",
     "CASE_EMAIL_SUBJECT_TEMPLATE": "Cases",

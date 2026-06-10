@@ -212,9 +212,7 @@ def contact_summary(
             else:
                 skipped_count += 1
         except Exception:
-            logger.exception(
-                "contact_summary: failed for %s", contact.username
-            )
+            logger.exception("contact_summary: failed for %s", contact.username)
             error_count += 1
 
     logger.info(
@@ -440,9 +438,7 @@ def retest_event_kintun(event_id, analyzer_mapping_id=None):
             )
         else:
             analyzer_mapping = (
-                ngen.models.AnalyzerMapping.objects.filter(
-                    mapping_from=event.taxonomy
-                )
+                ngen.models.AnalyzerMapping.objects.filter(mapping_from=event.taxonomy)
                 .select_related("analyzer")
                 .first()
             )
@@ -502,28 +498,77 @@ def async_send_email(self, email_message_id: int):
     :param int email_message_id: Email message id to send
     """
     if not email_message_id:
+        logger.error("async_send_email: no email_message_id provided")
         return {"status": "error", "message": "Email message id not provided"}
+
+    logger.info(
+        "async_send_email: task started for id=%s (retry %s/%s)",
+        email_message_id,
+        self.request.retries,
+        self.max_retries,
+    )
 
     try:
         email_message = ngen.models.EmailMessage.objects.get(id=email_message_id)
     except ngen.models.EmailMessage.DoesNotExist as e:
         if self.request.retries == self.max_retries:
-            logger.exception(f"EmailMessage {email_message_id} not found after {self.max_retries} retries.")
+            logger.exception(
+                "async_send_email: id=%s not found after %s retries",
+                email_message_id,
+                self.max_retries,
+            )
             return {"status": "error", "message": f"Email {email_message_id} not found"}
 
         exponential_backoff = (self.request.retries + 1) ** 2
+        logger.warning(
+            "async_send_email: id=%s not found (DB not yet committed?), retrying in %ss (attempt %s/%s)",
+            email_message_id,
+            exponential_backoff,
+            self.request.retries + 1,
+            self.max_retries,
+        )
         self.retry(exc=e, countdown=exponential_backoff)
+
+    logger.info(
+        "async_send_email: id=%s subject='%s' to=%s bcc=%s attachments=%s",
+        email_message.id,
+        email_message.subject,
+        [r["email"] for r in email_message.recipients],
+        [r["email"] for r in email_message.bcc_recipients],
+        len(email_message.attachments),
+    )
 
     mail_conf = {
         "host": config.EMAIL_HOST,
         "port": config.EMAIL_PORT or 587,
         "use_tls": config.EMAIL_USE_TLS,
+        "use_ssl": config.EMAIL_USE_SSL,
+        "timeout": config.EMAIL_TIMEOUT or 30,
         "fail_silently": False,
     }
 
     if config.EMAIL_USERNAME and config.EMAIL_PASSWORD:
         mail_conf["username"] = config.EMAIL_USERNAME
         mail_conf["password"] = config.EMAIL_PASSWORD
+        logger.debug(
+            "async_send_email: id=%s using SMTP auth with username='%s'",
+            email_message_id,
+            config.EMAIL_USERNAME,
+        )
+    else:
+        logger.debug(
+            "async_send_email: id=%s no SMTP auth configured", email_message_id
+        )
+
+    logger.debug(
+        "async_send_email: id=%s connecting to %s:%s (tls=%s, ssl=%s, timeout=%s)",
+        email_message_id,
+        mail_conf["host"],
+        mail_conf["port"],
+        mail_conf["use_tls"],
+        mail_conf["use_ssl"],
+        mail_conf["timeout"],
+    )
 
     try:
         email_connection = EmailBackend(**mail_conf)
@@ -554,17 +599,40 @@ def async_send_email(self, email_message_id: int):
             with open(path.join(settings.MEDIA_ROOT, attachment["file"]), "rb") as file:
                 email.attach(attachment["name"], file.read())
 
+        logger.info("async_send_email: id=%s sending via SMTP...", email_message_id)
         email.send(fail_silently=False)
 
         email_message.sent = True
         email_message.date = timezone.now()
+        logger.info(
+            "async_send_email: id=%s SENT successfully subject='%s' to=%s",
+            email_message_id,
+            email_message.subject,
+            [r["email"] for r in email_message.recipients],
+        )
         return {"status": "success", "message": f"Email {email_message_id} sent"}
     except Exception as e:
         email_message.send_attempt_failed = True
-        logger.exception(f"Error sending email {email_message_id}: {str(e)}")
+        logger.exception(
+            "async_send_email: id=%s FAILED subject='%s' to=%s error=%s",
+            email_message_id,
+            email_message.subject,
+            (
+                [r["email"] for r in email_message.recipients]
+                if email_message.recipients
+                else []
+            ),
+            e,
+        )
         raise e
     finally:
         email_message.save()
+        logger.debug(
+            "async_send_email: id=%s saved (sent=%s, failed=%s)",
+            email_message_id,
+            email_message.sent,
+            email_message.send_attempt_failed,
+        )
 
 
 @shared_task
@@ -576,6 +644,8 @@ def retrieve_emails():
     host = config.EMAIL_HOST
     username = config.EMAIL_USERNAME
     password = config.EMAIL_PASSWORD
+    imap_port = config.EMAIL_IMAP_PORT
+    imap_ssl = config.EMAIL_IMAP_USE_SSL
 
     if not host or not username or not password:
         deactivated = ""
@@ -588,19 +658,42 @@ def retrieve_emails():
             f"{deactivated}Email configuration not set. EMAIL_HOST: '{host}', EMAIL_USERNAME: '{username}', EMAIL_PASSWORD: ????"
         )
 
+    logger.info(
+        "retrieve_emails: connecting to %s:%s (ssl=%s, username=%s)",
+        host, imap_port, imap_ssl, username,
+    )
+
     email_client = None
     try:
-        email_client = EmailClient(host=host, username=username, password=password)
+        email_client = EmailClient(
+            host=host,
+            username=username,
+            password=password,
+            port=imap_port,
+            ssl=imap_ssl,
+        )
         unread_emails = email_client.fetch_unread_emails()
+        logger.info("retrieve_emails: fetched %s unread emails", len(unread_emails))
 
         if unread_emails:
             email_messages = email_client.map_emails(unread_emails)
             created_messages = ngen.models.EmailMessage.objects.bulk_create(
                 email_messages
             )
+            logger.info(
+                "retrieve_emails: stored %s new emails, subjects=%s",
+                len(created_messages),
+                [m.subject for m in created_messages],
+            )
 
             if len(created_messages) == len(unread_emails):
                 email_client.mark_emails_as_read(unread_emails)
+                logger.debug("retrieve_emails: marked %s emails as read", len(unread_emails))
+            else:
+                logger.warning(
+                    "retrieve_emails: stored %s/%s emails, skipping mark_as_read",
+                    len(created_messages), len(unread_emails),
+                )
 
         return {
             "status": "success",
@@ -608,13 +701,21 @@ def retrieve_emails():
         }
 
     except ConnectionRefusedError:
+        logger.exception("retrieve_emails: connection refused host=%s:%s", host, imap_port)
         raise TaskFailure(
             f"Connection refused: Server '{host}' with username '{username}' and password *****"
+        )
+
+    except TimeoutError:
+        logger.exception("retrieve_emails: connection timed out host=%s:%s", host, imap_port)
+        raise TaskFailure(
+            f"Connection timed out: Server '{host}' with username '{username}' and password *****"
         )
 
     finally:
         if email_client:
             email_client.logout()
+            logger.debug("retrieve_emails: logged out")
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)

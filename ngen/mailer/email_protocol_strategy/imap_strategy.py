@@ -9,13 +9,18 @@ class IMAPStrategy(EmailProtocolStrategy):
     IMAP email protocol strategy, using Imbox library
     """
 
-    def __init__(self, host, username, password, port=993):
+    def __init__(self, host, username, password, port=993, ssl=True):
         super().__init__(host, username, password, port)
+        self.ssl = ssl
         self.client = None
 
     def login(self):
         self.client = Imbox(
-            self.host, username=self.username, password=self.password, port=self.port
+            self.host,
+            username=self.username,
+            password=self.password,
+            port=self.port,
+            ssl=self.ssl,
         )
 
     def logout(self):

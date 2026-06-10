@@ -1,4 +1,5 @@
 import re
+import logging
 from typing import Optional, Union, List, Dict
 from constance import config
 
@@ -7,6 +8,8 @@ from ngen.tasks import async_send_email
 from ngen.utils import clean_list
 from ngen.models.announcement import Communication
 from django.db import transaction
+
+logger = logging.getLogger(__name__)
 
 
 EMAIL_TEMPLATES = {
@@ -202,6 +205,9 @@ class EmailHandler:
             if not subject.startswith("Re: "):
                 subject = f"Re: {subject}"
 
+        to_emails = [r["email"] for r in recipients]
+        bcc_emails = [r["email"] for r in bcc_recipients]
+
         with transaction.atomic():
             email_message = EmailMessageModel.objects.create(
                 root_message_id=(
@@ -224,7 +230,31 @@ class EmailHandler:
                 attachments=attachments if attachments else [],
             )
 
+            logger.info(
+                "EmailHandler: created id=%s subject='%s' to=%s bcc=%s template=%s reply_to=%s",
+                email_message.id,
+                subject,
+                to_emails,
+                bcc_emails,
+                template,
+                in_reply_to.id if in_reply_to else None,
+            )
+
             email_id = email_message.id
-            transaction.on_commit(lambda: async_send_email.delay(email_id))
+            transaction.on_commit(
+                lambda: (
+                    logger.info(
+                        "EmailHandler: dispatching id=%s to Celery (on_commit)", email_id
+                    ),
+                    async_send_email.delay(email_id),
+                )
+            )
+
+        logger.info(
+            "EmailHandler: committed id=%s subject='%s' to=%s",
+            email_message.id,
+            subject,
+            to_emails,
+        )
 
         return email_message

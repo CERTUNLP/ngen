@@ -27,11 +27,12 @@ class EmailClient:
         username: str,
         password: str,
         port: int = 993,
+        ssl: bool = True,
         protocol: EmailProtocolStrategy = IMAPStrategy,
     ):
 
         self.protocol = protocol(
-            host=host, username=username, password=password, port=port
+            host=host, username=username, password=password, port=port, ssl=ssl
         )
 
         self.login()

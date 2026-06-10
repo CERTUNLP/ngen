@@ -31,6 +31,9 @@ class Communication:
         attachments = attachments or []
         extra_headers = extra_headers or {}
         if not recipients.get("to") and not recipients.get("cc") and not recipients.get("bcc"):
+            logger.warning(
+                "Communication.send_mail: skipped (no recipients) subject='%s'", subject
+            )
             return
 
         email_message = Communication._build_email_message(
@@ -41,7 +44,7 @@ class Communication:
             Communication._dispatch_to_celery(email_message)
         else:
             logger.info(
-                "Email id=%s stored (EMAIL_AUTO_SEND=false) subject='%s' to=%s",
+                "Communication.send_mail: stored id=%s (EMAIL_AUTO_SEND=false) subject='%s' to=%s",
                 email_message.id,
                 subject,
                 recipients.get("to", []),
@@ -94,7 +97,7 @@ class Communication:
                     "file": path.join(settings.EMAIL_ATTACHMENTS_FILE_ROOT, message_id, filename),
                 })
 
-        return EmailMessageModel.objects.create(
+        email_message = EmailMessageModel.objects.create(
             root_message_id=message_id,
             message_id=message_id,
             senders=senders,
@@ -107,6 +110,18 @@ class Communication:
             attachments=saved_attachments,
         )
 
+        logger.info(
+            "Communication._build_email_message: created id=%s subject='%s' to=%s cc=%s bcc=%s attachments=%s",
+            email_message.id,
+            subject,
+            [r["email"] for r in email_recipients],
+            [r["email"] for r in email_cc],
+            [r["email"] for r in email_bcc],
+            len(saved_attachments),
+        )
+
+        return email_message
+
     @staticmethod
     def _dispatch_to_celery(email_message):
         from ngen.tasks import async_send_email
@@ -116,7 +131,7 @@ class Communication:
         email_message.save(update_fields=["dispatched"])
 
         logger.info(
-            "Dispatched email id=%s subject='%s' to=%s",
+            "Communication._dispatch_to_celery: dispatched id=%s subject='%s' to=%s",
             email_message.id,
             email_message.subject,
             [r["email"] for r in email_message.recipients],
