@@ -4,7 +4,7 @@ import logging
 from os import path
 from celery import shared_task
 from django_celery_beat.models import PeriodicTask
-from django.db.models import F, DateTimeField, ExpressionWrapper, DurationField
+from django.db.models import F, Min, DateTimeField, ExpressionWrapper, DurationField
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
@@ -153,7 +153,15 @@ def contact_summary(
                     state__attended=True, events__network__contacts=contact
                 )
                 .prefetch_related("events")
-                .order_by("priority__severity")
+                .annotate(
+                    min_domain=Min("events__domain"),
+                    min_cidr=Min("events__cidr"),
+                )
+                .order_by(
+                    "priority__severity",
+                    F("min_domain").asc(nulls_last=True),
+                    F("min_cidr").asc(nulls_last=True),
+                )
                 .distinct()
             )
             list_open_cases = [
@@ -169,6 +177,15 @@ def contact_summary(
                     solve_date__gte=timezone.now() - timedeltavalue,
                 )
                 .prefetch_related("events")
+                .annotate(
+                    min_domain=Min("events__domain"),
+                    min_cidr=Min("events__cidr"),
+                )
+                .order_by(
+                    "priority__severity",
+                    F("min_domain").asc(nulls_last=True),
+                    F("min_cidr").asc(nulls_last=True),
+                )
                 .distinct()
             )
 
@@ -332,7 +349,15 @@ def export_events_for_email_task(email, days=14):
             ngen.models.Case.objects.filter(
                 state__attended=True, events__network__contacts=contact
             )
-            .prefetch_related("events")
+            .annotate(
+                min_domain=Min("events__domain"),
+                min_cidr=Min("events__cidr"),
+            )
+            .order_by(
+                "priority__severity",
+                F("min_domain").asc(nulls_last=True),
+                F("min_cidr").asc(nulls_last=True),
+            )
             .distinct()
         )
 
@@ -354,7 +379,15 @@ def export_events_for_email_task(email, days=14):
                 events__network__contacts=contact,
                 solve_date__gte=timezone.now() - timedeltavalue,
             )
-            .prefetch_related("events")
+            .annotate(
+                min_domain=Min("events__domain"),
+                min_cidr=Min("events__cidr"),
+            )
+            .order_by(
+                "priority__severity",
+                F("min_domain").asc(nulls_last=True),
+                F("min_cidr").asc(nulls_last=True),
+            )
             .distinct()
         )
 
