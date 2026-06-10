@@ -157,7 +157,11 @@ def contact_summary(
                     min_domain=Min("events__domain"),
                     min_cidr=Min("events__cidr"),
                 )
-                .order_by("priority__severity", "min_domain", "min_cidr")
+                .order_by(
+                    "priority__severity",
+                    F("min_domain").asc(nulls_last=True),
+                    F("min_cidr").asc(nulls_last=True),
+                )
                 .distinct()
             )
             list_open_cases = [
@@ -177,7 +181,11 @@ def contact_summary(
                     min_domain=Min("events__domain"),
                     min_cidr=Min("events__cidr"),
                 )
-                .order_by("priority__severity", "min_domain", "min_cidr")
+                .order_by(
+                    "priority__severity",
+                    F("min_domain").asc(nulls_last=True),
+                    F("min_cidr").asc(nulls_last=True),
+                )
                 .distinct()
             )
 
@@ -345,7 +353,11 @@ def export_events_for_email_task(email, days=14):
                 min_domain=Min("events__domain"),
                 min_cidr=Min("events__cidr"),
             )
-            .order_by("priority__severity", "min_domain", "min_cidr")
+            .order_by(
+                "priority__severity",
+                F("min_domain").asc(nulls_last=True),
+                F("min_cidr").asc(nulls_last=True),
+            )
             .distinct()
         )
 
@@ -371,7 +383,11 @@ def export_events_for_email_task(email, days=14):
                 min_domain=Min("events__domain"),
                 min_cidr=Min("events__cidr"),
             )
-            .order_by("priority__severity", "min_domain", "min_cidr")
+            .order_by(
+                "priority__severity",
+                F("min_domain").asc(nulls_last=True),
+                F("min_cidr").asc(nulls_last=True),
+            )
             .distinct()
         )
 

@@ -1647,7 +1647,7 @@ class AnnouncementTestCase(TestCase):
     def test_summary_open_cases_ordered_by_priority_then_address(self, mock_backend):
         """
         Open cases in the summary should be ordered by priority (severity asc)
-        first, then by address (alphabetically by address_value).
+        first, then by domain (alphabetically) and CIDR.
         """
         from django.utils import translation
 
@@ -1714,7 +1714,7 @@ class AnnouncementTestCase(TestCase):
         ev_b.case = case_b
         ev_b.save()
 
-        # Case C: High(2), domain host-c.example.com (same priority as B, lower domain)
+        # Case C: High(2), domain host-c.example.com (same priority as B, comes after B alphabetically)
         case_c = Case.objects.create(
             state=State.objects.get(slug="open"),
             tlp=tlp,
@@ -1784,7 +1784,7 @@ class AnnouncementTestCase(TestCase):
     ):
         """
         Closed cases in the summary should be ordered by priority (severity asc)
-        first, then by address (alphabetically).
+        first, then by domain (alphabetically) and CIDR.
         """
         from django.utils import translation
 
