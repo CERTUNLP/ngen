@@ -1,6 +1,7 @@
 # pylint: disable=broad-exception-caught
 
 import logging
+import traceback
 from os import path
 from celery import shared_task
 from django_celery_beat.models import PeriodicTask
@@ -543,7 +544,7 @@ def async_send_email(self, email_message_id: int):
         "port": config.EMAIL_PORT or 587,
         "use_tls": config.EMAIL_USE_TLS,
         "use_ssl": config.EMAIL_USE_SSL,
-        "timeout": config.EMAIL_TIMEOUT or 30,
+        "timeout": config.EMAIL_TIMEOUT or 120,
         "fail_silently": False,
     }
 
@@ -599,22 +600,36 @@ def async_send_email(self, email_message_id: int):
             with open(path.join(settings.MEDIA_ROOT, attachment["file"]), "rb") as file:
                 email.attach(attachment["name"], file.read())
 
-        logger.info("async_send_email: id=%s sending via SMTP...", email_message_id)
+        message_bytes = email.message().as_bytes()
+        email_size = len(message_bytes)
+        email_message.size = email_size
+
+        logger.info(
+            "async_send_email: id=%s sending via SMTP... (size=%s bytes, %.1f KB, timeout=%ss)",
+            email_message_id,
+            email_size,
+            email_size / 1024,
+            mail_conf["timeout"],
+        )
         email.send(fail_silently=False)
 
         email_message.sent = True
         email_message.date = timezone.now()
+        email_message.last_error = None
         logger.info(
-            "async_send_email: id=%s SENT successfully subject='%s' to=%s",
+            "async_send_email: id=%s SENT successfully subject='%s' to=%s (size=%s bytes)",
             email_message_id,
             email_message.subject,
             [r["email"] for r in email_message.recipients],
+            email_size,
         )
         return {"status": "success", "message": f"Email {email_message_id} sent"}
     except Exception as e:
+        tb = traceback.format_exc()
         email_message.send_attempt_failed = True
+        email_message.last_error = tb[:2000]
         logger.exception(
-            "async_send_email: id=%s FAILED subject='%s' to=%s error=%s",
+            "async_send_email: id=%s FAILED subject='%s' to=%s size=%s bytes timeout=%ss error=%s",
             email_message_id,
             email_message.subject,
             (
@@ -622,6 +637,8 @@ def async_send_email(self, email_message_id: int):
                 if email_message.recipients
                 else []
             ),
+            getattr(email_message, 'size', '?'),
+            mail_conf["timeout"],
             e,
         )
         raise e
@@ -660,7 +677,10 @@ def retrieve_emails():
 
     logger.info(
         "retrieve_emails: connecting to %s:%s (ssl=%s, username=%s)",
-        host, imap_port, imap_ssl, username,
+        host,
+        imap_port,
+        imap_ssl,
+        username,
     )
 
     email_client = None
@@ -688,11 +708,14 @@ def retrieve_emails():
 
             if len(created_messages) == len(unread_emails):
                 email_client.mark_emails_as_read(unread_emails)
-                logger.debug("retrieve_emails: marked %s emails as read", len(unread_emails))
+                logger.debug(
+                    "retrieve_emails: marked %s emails as read", len(unread_emails)
+                )
             else:
                 logger.warning(
                     "retrieve_emails: stored %s/%s emails, skipping mark_as_read",
-                    len(created_messages), len(unread_emails),
+                    len(created_messages),
+                    len(unread_emails),
                 )
 
         return {
@@ -701,16 +724,20 @@ def retrieve_emails():
         }
 
     except ConnectionRefusedError:
-        logger.exception("retrieve_emails: connection refused host=%s:%s", host, imap_port)
-        raise TaskFailure(
-            f"Connection refused: Server '{host}' with username '{username}' and password *****"
+        logger.exception(
+            "retrieve_emails: connection refused host=%s:%s", host, imap_port
         )
+        # raise TaskFailure(
+        #     f"Connection refused: Server '{host}' with username '{username}' and password *****"
+        # )
 
     except TimeoutError:
-        logger.exception("retrieve_emails: connection timed out host=%s:%s", host, imap_port)
-        raise TaskFailure(
-            f"Connection timed out: Server '{host}' with username '{username}' and password *****"
+        logger.exception(
+            "retrieve_emails: connection timed out host=%s:%s", host, imap_port
         )
+        # raise TaskFailure(
+        #     f"Connection timed out: Server '{host}' with username '{username}' and password *****"
+        # )
 
     finally:
         if email_client:

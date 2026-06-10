@@ -28,6 +28,8 @@ class EmailMessageSerializer(serializers.ModelSerializer):
             "sent",
             "send_attempt_failed",
             "dispatched",
+            "size",
+            "last_error",
             "attachment_count",
             "recipient_count",
         ]

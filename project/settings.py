@@ -366,7 +366,7 @@ CONSTANCE_CONFIG = {
         bool,
     ),
     "EMAIL_TIMEOUT": (
-        int(os.environ.get("EMAIL_TIMEOUT", 30)),
+        int(os.environ.get("EMAIL_TIMEOUT", 120)),
         "Email SMTP connection timeout in seconds",
         int,
     ),

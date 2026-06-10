@@ -34,6 +34,15 @@ class EmailMessage(AuditModelMixin):
         default=False,
         help_text="True if async_send_email.delay() was called. False means stored for manual sending.",
     )
+    size = models.PositiveIntegerField(
+        null=True,
+        help_text="Estimated size of the email message in bytes",
+    )
+    last_error = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Last error message if sending failed",
+    )
 
     class Meta:
         db_table = "email_message"
