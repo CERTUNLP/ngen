@@ -1636,7 +1636,7 @@ class AnnouncementTestCase(TestCase):
 
     # --------------- SUMMARY ORDERING TESTS -----------------
 
-    @patch("django.core.mail.backends.smtp.EmailBackend")
+    @patch("ngen.tasks.EmailBackend")
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
     @override_config(CASE_REPORT_NEW_CASES=True)
@@ -1665,18 +1665,27 @@ class AnnouncementTestCase(TestCase):
         tlp = Tlp.objects.get(slug="green")
         reporter = User.objects.get(username="ngen")
 
+        # Create network for the test domain
+        net = Network.objects.create(
+            domain="example.com",
+            active=True,
+            type="internal",
+            parent=self.network,
+        )
+        net.contacts.set([self.contact])
+
         # Create 4 cases with different priorities and addresses
         # Priority severities: Critical(1), High(2), Medium(3), Low(4)
-        # Domains used: host_a < host_b < host_c < host_d alphabetically
+        # Domains used: host-a < host-b < host-c < host-d alphabetically
 
-        # Case A: Medium(3), domain host_a.example.com
+        # Case A: Medium(3), domain host-a.example.com
         case_a = Case.objects.create(
             state=State.objects.get(slug="open"),
             tlp=tlp,
             priority=Priority.objects.get(slug="medium"),
         )
         ev_a = Event.objects.create(
-            domain="host_a.example.com",
+            domain="host-a.example.com",
             taxonomy=taxonomy,
             feed=feed,
             tlp=tlp,
@@ -1687,14 +1696,14 @@ class AnnouncementTestCase(TestCase):
         ev_a.case = case_a
         ev_a.save()
 
-        # Case B: High(2), domain host_b.example.com
+        # Case B: High(2), domain host-b.example.com
         case_b = Case.objects.create(
             state=State.objects.get(slug="open"),
             tlp=tlp,
             priority=Priority.objects.get(slug="high"),
         )
         ev_b = Event.objects.create(
-            domain="host_b.example.com",
+            domain="host-b.example.com",
             taxonomy=taxonomy,
             feed=feed,
             tlp=tlp,
@@ -1705,14 +1714,14 @@ class AnnouncementTestCase(TestCase):
         ev_b.case = case_b
         ev_b.save()
 
-        # Case C: High(2), domain host_c.example.com (same priority as B, lower domain)
+        # Case C: High(2), domain host-c.example.com (same priority as B, lower domain)
         case_c = Case.objects.create(
             state=State.objects.get(slug="open"),
             tlp=tlp,
             priority=Priority.objects.get(slug="high"),
         )
         ev_c = Event.objects.create(
-            domain="host_c.example.com",
+            domain="host-c.example.com",
             taxonomy=taxonomy,
             feed=feed,
             tlp=tlp,
@@ -1723,14 +1732,14 @@ class AnnouncementTestCase(TestCase):
         ev_c.case = case_c
         ev_c.save()
 
-        # Case D: Critical(1), domain host_d.example.com
+        # Case D: Critical(1), domain host-d.example.com
         case_d = Case.objects.create(
             state=State.objects.get(slug="open"),
             tlp=tlp,
             priority=Priority.objects.get(slug="critical"),
         )
         ev_d = Event.objects.create(
-            domain="host_d.example.com",
+            domain="host-d.example.com",
             taxonomy=taxonomy,
             feed=feed,
             tlp=tlp,
@@ -1756,13 +1765,13 @@ class AnnouncementTestCase(TestCase):
         pos_a, pos_b = body.index(id_a), body.index(id_b)
         pos_c, pos_d = body.index(id_c), body.index(id_d)
 
-        # Expected order by priority (severity asc): D(Critical=1), C(High=2), B(High=2), A(Medium=3)
-        # Within High: C (host_c.example.com) before B (host_b.example.com)
-        self.assertLess(pos_d, pos_c, "Critical should come before High")
-        self.assertLess(pos_c, pos_b, "Within High, lower domain should come first")
-        self.assertLess(pos_b, pos_a, "High should come before Medium")
+        # Expected order by priority (severity asc): D(Critical=1), B(High=2), C(High=2), A(Medium=3)
+        # Within High: B (host-b.example.com) before C (host-c.example.com)
+        self.assertLess(pos_d, pos_b, "Critical should come before High")
+        self.assertLess(pos_b, pos_c, "Within High, lower domain should come first")
+        self.assertLess(pos_c, pos_a, "High should come before Medium")
 
-    @patch("django.core.mail.backends.smtp.EmailBackend")
+    @patch("ngen.tasks.EmailBackend")
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
     @override_config(CASE_REPORT_NEW_CASES=True)
@@ -1793,6 +1802,15 @@ class AnnouncementTestCase(TestCase):
         tlp = Tlp.objects.get(slug="green")
         reporter = User.objects.get(username="ngen")
         closed_state = State.objects.get(slug="closed")
+
+        # Create network for the test domain
+        net = Network.objects.create(
+            domain="example.com",
+            active=True,
+            type="internal",
+            parent=self.network,
+        )
+        net.contacts.set([self.contact])
 
         # Case X: Low(4), address aaa.example.com
         case_x = Case.objects.create(
