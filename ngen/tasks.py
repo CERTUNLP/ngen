@@ -23,8 +23,6 @@ from ngen.services.contact_lookup import ContactLookupService
 logger = logging.getLogger(__name__)
 
 
-class TaskFailure(Exception):
-    pass
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
@@ -415,9 +413,8 @@ def export_events_for_email_task(email, days=14):
         return {"status": "success", "message": f"Cases exported and sent to {email}"}
 
     except Exception:
-        logger.exception(f"Task failed for {email}")
-        # raise to let celery handle retries if configured
-        raise
+        logger.exception("export_events_for_email_task: failed for %s", email)
+        return {"status": "error", "message": f"Task failed for {email}"}
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
@@ -625,9 +622,8 @@ def async_send_email(self, email_message_id: int):
         )
         return {"status": "success", "message": f"Email {email_message_id} sent"}
     except Exception as e:
-        tb = traceback.format_exc()
         email_message.send_attempt_failed = True
-        email_message.last_error = tb[:2000]
+        email_message.last_error = traceback.format_exc()[:2000]
         logger.exception(
             "async_send_email: id=%s FAILED subject='%s' to=%s size=%s bytes timeout=%ss error=%s",
             email_message_id,
@@ -641,7 +637,13 @@ def async_send_email(self, email_message_id: int):
             mail_conf["timeout"],
             e,
         )
-        raise e
+        if self.request.retries == self.max_retries:
+            return {
+                "status": "error",
+                "message": f"Email {email_message_id} failed after {self.max_retries} retries",
+            }
+        exponential_backoff = (self.request.retries + 1) ** 2
+        self.retry(exc=e, countdown=exponential_backoff)
     finally:
         email_message.save()
         logger.debug(
@@ -671,15 +673,23 @@ def retrieve_emails():
             task.enabled = False
             task.save()
             deactivated = "Task deactivated. "
-        raise TaskFailure(
-            f"{deactivated}Email configuration not set. EMAIL_HOST: '{host}', EMAIL_USERNAME: '{username}', EMAIL_PASSWORD: ????"
+        logger.exception(
+            "retrieve_emails: %sEmail configuration not set. EMAIL_HOST: '%s', EMAIL_USERNAME: '%s'",
+            deactivated,
+            host,
+            username,
         )
+        return {
+            "status": "error",
+            "message": f"{deactivated}Email configuration not set.",
+        }
 
     logger.info(
-        "retrieve_emails: connecting to %s:%s (ssl=%s, username=%s)",
+        "retrieve_emails: connecting to %s:%s (ssl=%s, timeout=%ss, username=%s)",
         host,
         imap_port,
         imap_ssl,
+        config.EMAIL_TIMEOUT,
         username,
     )
 
@@ -691,6 +701,7 @@ def retrieve_emails():
             password=password,
             port=imap_port,
             ssl=imap_ssl,
+            timeout=config.EMAIL_TIMEOUT,
         )
         unread_emails = email_client.fetch_unread_emails()
         logger.info("retrieve_emails: fetched %s unread emails", len(unread_emails))
@@ -724,20 +735,14 @@ def retrieve_emails():
         }
 
     except ConnectionRefusedError:
-        logger.exception(
+        logger.error(
             "retrieve_emails: connection refused host=%s:%s", host, imap_port
         )
-        # raise TaskFailure(
-        #     f"Connection refused: Server '{host}' with username '{username}' and password *****"
-        # )
 
     except TimeoutError:
-        logger.exception(
+        logger.error(
             "retrieve_emails: connection timed out host=%s:%s", host, imap_port
         )
-        # raise TaskFailure(
-        #     f"Connection timed out: Server '{host}' with username '{username}' and password *****"
-        # )
 
     finally:
         if email_client:
@@ -752,9 +757,13 @@ def send_contact_checks(contact_ids=None):
     """
 
     if not config.FRONTEND_PUBLIC_URL:
-        raise TaskFailure(
-            "Frontend public URL must be configured to send contact checks."
+        logger.exception(
+            "send_contact_checks: Frontend public URL must be configured to send contact checks."
         )
+        return {
+            "status": "error",
+            "message": "Frontend public URL must be configured to send contact checks.",
+        }
 
     # Obtener contactos
     contacts = (

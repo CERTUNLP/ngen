@@ -6,11 +6,12 @@ class EmailProtocolStrategy(ABC):
     Abstract class for email protocol strategy (IMAP, POP3)
     """
 
-    def __init__(self, host, username, password, port):
+    def __init__(self, host, username, password, port, timeout=None):
         self.host = host
         self.username = username
         self.password = password
         self.port = port
+        self.timeout = timeout
 
     @abstractmethod
     def login(self):

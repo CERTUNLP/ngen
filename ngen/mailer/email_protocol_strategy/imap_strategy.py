@@ -9,8 +9,8 @@ class IMAPStrategy(EmailProtocolStrategy):
     IMAP email protocol strategy, using Imbox library
     """
 
-    def __init__(self, host, username, password, port=993, ssl=True):
-        super().__init__(host, username, password, port)
+    def __init__(self, host, username, password, port=993, ssl=True, timeout=None):
+        super().__init__(host, username, password, port, timeout=timeout)
         self.ssl = ssl
         self.client = None
 
@@ -21,6 +21,7 @@ class IMAPStrategy(EmailProtocolStrategy):
             password=self.password,
             port=self.port,
             ssl=self.ssl,
+            timeout=self.timeout,
         )
 
     def logout(self):
