@@ -1633,3 +1633,241 @@ class AnnouncementTestCase(TestCase):
             )
 
         self.assertEqual(len(mail.outbox), 1 * len(contacts_with))
+
+    # --------------- SUMMARY ORDERING TESTS -----------------
+
+    @patch("django.core.mail.backends.smtp.EmailBackend")
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
+    @override_config(CASE_REPORT_NEW_CASES=True)
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="green")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(NGEN_LANG="en")
+    def test_summary_open_cases_ordered_by_priority_then_address(self, mock_backend):
+        """
+        Open cases in the summary should be ordered by priority (severity asc)
+        first, then by address (alphabetically by address_value).
+        """
+        from django.utils import translation
+
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+
+        from django.core.mail import get_connection
+
+        mock_backend.return_value = get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
+
+        feed = Feed.objects.get(slug="csirtamericas")
+        taxonomy = Taxonomy.objects.get(slug="botnet")
+        tlp = Tlp.objects.get(slug="green")
+        reporter = User.objects.get(username="ngen")
+
+        # Create 4 cases with different priorities and addresses
+        # Priority severities: Critical(1), High(2), Medium(3), Low(4)
+        # Domains used: host_a < host_b < host_c < host_d alphabetically
+
+        # Case A: Medium(3), domain host_a.example.com
+        case_a = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=tlp,
+            priority=Priority.objects.get(slug="medium"),
+        )
+        ev_a = Event.objects.create(
+            domain="host_a.example.com",
+            taxonomy=taxonomy,
+            feed=feed,
+            tlp=tlp,
+            reporter=reporter,
+            priority=Priority.objects.get(slug="medium"),
+            avoid_auto_merge=True,
+        )
+        ev_a.case = case_a
+        ev_a.save()
+
+        # Case B: High(2), domain host_b.example.com
+        case_b = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=tlp,
+            priority=Priority.objects.get(slug="high"),
+        )
+        ev_b = Event.objects.create(
+            domain="host_b.example.com",
+            taxonomy=taxonomy,
+            feed=feed,
+            tlp=tlp,
+            reporter=reporter,
+            priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True,
+        )
+        ev_b.case = case_b
+        ev_b.save()
+
+        # Case C: High(2), domain host_c.example.com (same priority as B, lower domain)
+        case_c = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=tlp,
+            priority=Priority.objects.get(slug="high"),
+        )
+        ev_c = Event.objects.create(
+            domain="host_c.example.com",
+            taxonomy=taxonomy,
+            feed=feed,
+            tlp=tlp,
+            reporter=reporter,
+            priority=Priority.objects.get(slug="high"),
+            avoid_auto_merge=True,
+        )
+        ev_c.case = case_c
+        ev_c.save()
+
+        # Case D: Critical(1), domain host_d.example.com
+        case_d = Case.objects.create(
+            state=State.objects.get(slug="open"),
+            tlp=tlp,
+            priority=Priority.objects.get(slug="critical"),
+        )
+        ev_d = Event.objects.create(
+            domain="host_d.example.com",
+            taxonomy=taxonomy,
+            feed=feed,
+            tlp=tlp,
+            reporter=reporter,
+            priority=Priority.objects.get(slug="critical"),
+            avoid_auto_merge=True,
+        )
+        ev_d.case = case_d
+        ev_d.save()
+
+        tasks.contact_summary.delay(contact_usernames=["soporte@cert.unlp.edu.ar"])
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+
+        id_a = str(case_a.uuid).split("-")[0]
+        id_b = str(case_b.uuid).split("-")[0]
+        id_c = str(case_c.uuid).split("-")[0]
+        id_d = str(case_d.uuid).split("-")[0]
+
+        body = email.body
+
+        pos_a, pos_b = body.index(id_a), body.index(id_b)
+        pos_c, pos_d = body.index(id_c), body.index(id_d)
+
+        # Expected order by priority (severity asc): D(Critical=1), C(High=2), B(High=2), A(Medium=3)
+        # Within High: C (host_c.example.com) before B (host_b.example.com)
+        self.assertLess(pos_d, pos_c, "Critical should come before High")
+        self.assertLess(pos_c, pos_b, "Within High, lower domain should come first")
+        self.assertLess(pos_b, pos_a, "High should come before Medium")
+
+    @patch("django.core.mail.backends.smtp.EmailBackend")
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True, LANGUAGE_CODE="en")
+    @override_config(CASE_REPORT_NEW_CASES=True)
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(SUMMARY_TLP="green")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(NGEN_LANG="en")
+    def test_summary_closed_cases_ordered_by_priority_then_address(
+        self, mock_backend
+    ):
+        """
+        Closed cases in the summary should be ordered by priority (severity asc)
+        first, then by address (alphabetically).
+        """
+        from django.utils import translation
+
+        translation.activate("en")
+        self.addCleanup(translation.deactivate)
+
+        from django.core.mail import get_connection
+
+        mock_backend.return_value = get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
+
+        feed = Feed.objects.get(slug="csirtamericas")
+        taxonomy = Taxonomy.objects.get(slug="botnet")
+        tlp = Tlp.objects.get(slug="green")
+        reporter = User.objects.get(username="ngen")
+        closed_state = State.objects.get(slug="closed")
+
+        # Case X: Low(4), address aaa.example.com
+        case_x = Case.objects.create(
+            state=closed_state,
+            tlp=tlp,
+            priority=Priority.objects.get(slug="low"),
+        )
+        ev_x = Event.objects.create(
+            domain="aaa.example.com",
+            taxonomy=taxonomy,
+            feed=feed,
+            tlp=tlp,
+            reporter=reporter,
+            priority=Priority.objects.get(slug="low"),
+            avoid_auto_merge=True,
+        )
+        ev_x.case = case_x
+        ev_x.save()
+
+        # Case Y: Medium(3), address zzz.example.com
+        case_y = Case.objects.create(
+            state=closed_state,
+            tlp=tlp,
+            priority=Priority.objects.get(slug="medium"),
+        )
+        ev_y = Event.objects.create(
+            domain="zzz.example.com",
+            taxonomy=taxonomy,
+            feed=feed,
+            tlp=tlp,
+            reporter=reporter,
+            priority=Priority.objects.get(slug="medium"),
+            avoid_auto_merge=True,
+        )
+        ev_y.case = case_y
+        ev_y.save()
+
+        # Case Z: Medium(3), address mmm.example.com (same priority as Y, lower address)
+        case_z = Case.objects.create(
+            state=closed_state,
+            tlp=tlp,
+            priority=Priority.objects.get(slug="medium"),
+        )
+        ev_z = Event.objects.create(
+            domain="mmm.example.com",
+            taxonomy=taxonomy,
+            feed=feed,
+            tlp=tlp,
+            reporter=reporter,
+            priority=Priority.objects.get(slug="medium"),
+            avoid_auto_merge=True,
+        )
+        ev_z.case = case_z
+        ev_z.save()
+
+        tasks.contact_summary.delay(contact_usernames=["soporte@cert.unlp.edu.ar"])
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+
+        id_x = str(case_x.uuid).split("-")[0]
+        id_y = str(case_y.uuid).split("-")[0]
+        id_z = str(case_z.uuid).split("-")[0]
+
+        body = email.body
+
+        # All three should appear
+        self.assertIn(id_x, body)
+        self.assertIn(id_y, body)
+        self.assertIn(id_z, body)
+
+        pos_x = body.index(id_x)
+        pos_y = body.index(id_y)
+        pos_z = body.index(id_z)
+
+        # Expected order by priority (severity asc): Z(Medium=3 mmm), Y(Medium=3 zzz), X(Low=4)
+        self.assertLess(pos_z, pos_y, "Within Medium, lower domain should come first")
+        self.assertLess(pos_y, pos_x, "Medium should come before Low")
