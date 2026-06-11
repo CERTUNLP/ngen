@@ -300,6 +300,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             response_messages["error"],
         )
 
+    @use_test_email_env()
     @patch("ngen.tasks.async_send_email.delay")
     def test_async_send_email_task_is_called(self, mocked_send_email_task):
         """
@@ -323,6 +324,7 @@ class TestEmailMessage(APITestCaseWithLogin):
 
         mocked_send_email_task.assert_called_once_with(response.data["id"])
 
+    @use_test_email_env()
     @use_incorrect_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_async_send_email_task_fails(self):

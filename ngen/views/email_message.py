@@ -32,13 +32,19 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
     filterset_class = EmailMessageFilter
     search_fields = ["subject"]
     ordering_fields = ["id", "created", "modified", "date", "subject"]
-    serializer_class = serializers.EmailMessageSerializer
+    serializer_class = serializers.EmailMessageListSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return serializers.EmailMessageListSerializer
+        return serializers.EmailMessageSerializer
 
     @action(detail=True, methods=["post"], url_path="send")
     def send_queued(self, request, pk=None):
         """
         Dispatch a stored email to Celery for sending.
+        Only pending emails (not sent, not dispatched, not failed).
         """
         email_message = self.get_object()
         if email_message.sent:
@@ -46,10 +52,15 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
             return Response(
                 {"error": "Email already sent"}, status=status.HTTP_400_BAD_REQUEST
             )
-        if email_message.dispatched:
-            logger.warning("EmailQueue.send: id=%s already dispatched, skipping", email_message.id)
+        if email_message.dispatched and not email_message.send_attempt_failed:
+            logger.warning(
+                "EmailQueue.send: id=%s stuck in limbo (dispatched but not sent/failed), re-dispatching",
+                email_message.id,
+            )
+        if email_message.send_attempt_failed:
+            logger.warning("EmailQueue.send: id=%s is failed, use retry instead", email_message.id)
             return Response(
-                {"error": "Email already dispatched to Celery"},
+                {"error": "Cannot send a failed email, use retry instead"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         async_send_email.delay(email_message.id)
@@ -71,7 +82,7 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         emails to Celery for sending.
         """
         pending = models.EmailMessage.objects.filter(
-            sent=False, dispatched=False, send_attempt_failed=False
+            sent=False, send_attempt_failed=False
         )
         ids = list(pending.values_list("id", flat=True))
         for email_id in ids:
@@ -88,9 +99,20 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="resend")
     def resend(self, request, pk=None):
         """
-        Clone the email as a new EmailMessage and dispatch it.
+        Clone a sent email and dispatch the clone.
+        Only sent emails can be resent.
         """
         original = self.get_object()
+        if not original.sent:
+            return Response(
+                {"error": "Only sent emails can be resent"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if original.send_attempt_failed:
+            return Response(
+                {"error": "Cannot resend a failed email, use retry instead"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         cloned = models.EmailMessage.objects.create(
             root_message_id=models.EmailMessage.generate_message_id(
                 domain=original.senders[0]["email"].split("@")[1] if original.senders and "@" in original.senders[0].get("email", "") else "localhost"
@@ -123,6 +145,90 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
         )
 
+    @action(detail=True, methods=["post"], url_path="discard")
+    def discard(self, request, pk=None):
+        """
+        Mark a pending email as failed with a user-provided reason.
+        """
+        email_message = self.get_object()
+        if email_message.sent:
+            return Response(
+                {"error": "Cannot discard an already sent email"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if email_message.send_attempt_failed:
+            return Response(
+                {"error": "Cannot discard an already failed email"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        reason = request.data.get("reason", "cancelado por usuario")
+        email_message.send_attempt_failed = True
+        email_message.last_error = reason
+        email_message.save(update_fields=["send_attempt_failed", "last_error"])
+        logger.info(
+            "EmailQueue.discard: id=%s marked as failed reason='%s' user=%s",
+            email_message.id,
+            reason,
+            request.user,
+        )
+        return Response({"status": "discarded", "id": email_message.id})
+
+    @action(detail=True, methods=["post"], url_path="retry")
+    def retry(self, request, pk=None):
+        """
+        Clone a failed email and dispatch the clone.
+        Marks the original as retried so it cannot be retried again.
+        """
+        original = self.get_object()
+        if not original.send_attempt_failed:
+            return Response(
+                {"error": "Only failed emails can be retried"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if original.retried:
+            return Response(
+                {"error": "This email was already retried"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        domain = (
+            original.senders[0]["email"].split("@")[1]
+            if original.senders and "@" in original.senders[0].get("email", "")
+            else "localhost"
+        )
+
+        cloned = models.EmailMessage.objects.create(
+            root_message_id=models.EmailMessage.generate_message_id(domain=domain),
+            message_id=models.EmailMessage.generate_message_id(domain=domain),
+            senders=original.senders,
+            recipients=original.recipients,
+            bcc_recipients=original.bcc_recipients,
+            subject=original.subject,
+            body=original.body,
+            body_html=original.body_html,
+            template=original.template,
+            attachments=original.attachments,
+        )
+
+        async_send_email.delay(cloned.id)
+        cloned.dispatched = True
+        cloned.save(update_fields=["dispatched"])
+
+        original.retried = True
+        original.save(update_fields=["retried"])
+
+        logger.info(
+            "EmailQueue.retry: original_id=%s cloned_id=%s subject='%s' user=%s",
+            original.id,
+            cloned.id,
+            cloned.subject,
+            request.user,
+        )
+        return Response(
+            {"status": "retried", "id": cloned.id, "original_id": original.id},
+            status=status.HTTP_201_CREATED,
+        )
+
     @action(detail=False, methods=["get"], url_path="stats")
     def stats(self, request):
         """
@@ -144,6 +250,24 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
             ).count(),
             "total": models.EmailMessage.objects.count(),
             "auto_send": config.EMAIL_AUTO_SEND,
+        })
+
+    @action(detail=True, methods=["get"], url_path="body")
+    def get_body(self, request, pk=None):
+        email_message = self.get_object()
+        return Response({
+            "id": email_message.id,
+            "body": email_message.body,
+            "body_html": email_message.body_html,
+        })
+
+    @action(detail=True, methods=["get"], url_path="failmsg")
+    def get_failmsg(self, request, pk=None):
+        email_message = self.get_object()
+        return Response({
+            "id": email_message.id,
+            "send_attempt_failed": email_message.send_attempt_failed,
+            "last_error": email_message.last_error,
         })
 
     @action(detail=False, methods=["post"], url_path="send_email")

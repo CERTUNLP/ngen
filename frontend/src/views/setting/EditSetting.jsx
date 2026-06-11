@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Button, Card, Col, Form, InputGroup, ListGroup, Row, Spinner, Table } from "react-bootstrap";
 import { getAllSetting, patchSetting, uploadTeamLogo } from "../../api/services/setting";
 import { useTranslation } from "react-i18next";
 import UploadButton from "components/Button/UploadButton";
 import PermissionCheck from "components/Auth/PermissionCheck";
+import { ThemeContext } from "contexts/ThemeContext";
 
 const ACCENT = "#04a9f5";
-const ACTIVE_BG = "#e8e9ed";
+const ACTIVE_BG_LIGHT = "#e8e9ed";
+const ACTIVE_BG_DARK = "#2c3035";
 
 const sidebarStyle = {
   position: "sticky",
@@ -35,6 +37,8 @@ const EditSetting = () => {
   const [originals, setOriginals] = useState({});
 
   const { t } = useTranslation();
+  const { isDark } = useContext(ThemeContext);
+  const activeBg = isDark ? ACTIVE_BG_DARK : ACTIVE_BG_LIGHT;
 
   useEffect(() => {
     getAllSetting()
@@ -346,7 +350,7 @@ const EditSetting = () => {
                           className="py-2 px-3 border-0"
                           style={{
                             fontSize: "0.88rem",
-                            backgroundColor: active ? ACTIVE_BG : undefined,
+                            backgroundColor: active ? activeBg : undefined,
                             fontWeight: active ? 500 : undefined
                           }}
                           onClick={() => scrollToGroup(groupName)}

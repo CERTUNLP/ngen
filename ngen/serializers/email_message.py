@@ -2,7 +2,7 @@ from ngen import models
 from rest_framework import serializers
 
 
-class EmailMessageSerializer(serializers.ModelSerializer):
+class EmailMessageListSerializer(serializers.ModelSerializer):
     attachment_count = serializers.SerializerMethodField()
     recipient_count = serializers.SerializerMethodField()
 
@@ -21,15 +21,13 @@ class EmailMessageSerializer(serializers.ModelSerializer):
             "bcc_recipients",
             "subject",
             "date",
-            "body",
-            "body_html",
             "template",
             "attachments",
             "sent",
             "send_attempt_failed",
             "dispatched",
             "size",
-            "last_error",
+            "retried",
             "attachment_count",
             "recipient_count",
         ]
@@ -39,3 +37,12 @@ class EmailMessageSerializer(serializers.ModelSerializer):
 
     def get_recipient_count(self, obj):
         return len(obj.recipients or [])
+
+
+class EmailMessageSerializer(EmailMessageListSerializer):
+    class Meta(EmailMessageListSerializer.Meta):
+        fields = EmailMessageListSerializer.Meta.fields + [
+            "body",
+            "body_html",
+            "last_error",
+        ]

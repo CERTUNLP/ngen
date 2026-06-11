@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, ButtonGroup, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { getEmailMessages, sendQueuedEmail, resendEmail, sendAllPending, getEmailQueueStats } from "api/services/emailqueue";
+import { getEmailMessages, sendQueuedEmail, resendEmail, sendAllPending, getEmailQueueStats, discardEmail, retryEmail } from "api/services/emailqueue";
 import { patchSetting } from "api/services/setting";
 import { COMPONENT_URL } from "config/constant";
 import TableEmailQueue from "./TableEmailQueue";
@@ -12,7 +12,7 @@ import Alert from "components/Alert/Alert";
 const getStatusTabs = (t) => [
   { key: "all", label: t("ngen.email_queue.tab_all"), filter: "", statKey: "total" },
   { key: "pending", label: t("ngen.email_queue.pending"), filter: "sent=false&send_attempt_failed=false", statKey: "pending" },
-  { key: "sent", label: t("ngen.email_queue.sent"), filter: "sent=true", statKey: "sent_total" },
+  { key: "sent", label: t("ngen.email_queue.sent"), filter: "sent=true&send_attempt_failed=false", statKey: "sent_total" },
   { key: "failed", label: t("ngen.email_queue.failed"), filter: "send_attempt_failed=true", statKey: "failed" },
 ];
 
@@ -27,6 +27,7 @@ const EmailQueue = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [confirmModal, setConfirmModal] = useState({ show: false, message: null, type: null });
   const [sendAllConfirm, setSendAllConfirm] = useState(false);
+  const [toggleConfirm, setToggleConfirm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [countItems, setCountItems] = useState(0);
   const [stats, setStats] = useState({});
@@ -40,6 +41,8 @@ const EmailQueue = () => {
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const refreshAll = () => setRefresh((prev) => !prev);
 
   useEffect(() => {
     getEmailQueueStats()
@@ -68,6 +71,30 @@ const EmailQueue = () => {
     setConfirmModal({ show: true, message: msg, type: "resend" });
   };
 
+  const handleDiscard = async (msg) => {
+    setSendingId(msg.id);
+    try {
+      await discardEmail(msg.id);
+      refreshAll();
+    } catch {
+      // errors handled by service
+    } finally {
+      setSendingId(null);
+    }
+  };
+
+  const handleRetry = async (msg) => {
+    setSendingId(msg.id);
+    try {
+      await retryEmail(msg.id);
+      refreshAll();
+    } catch {
+      // errors handled by service
+    } finally {
+      setSendingId(null);
+    }
+  };
+
   const handleConfirm = async () => {
     const { message, type } = confirmModal;
     setConfirmModal({ show: false, message: null, type: null });
@@ -80,7 +107,7 @@ const EmailQueue = () => {
       } else {
         await resendEmail(message.id);
       }
-      setRefresh((prev) => !prev);
+      refreshAll();
     } catch {
       // errors handled by service
     } finally {
@@ -89,22 +116,29 @@ const EmailQueue = () => {
   };
 
   const handleToggleAutoSend = () => {
+    setToggleConfirm(true);
+  };
+
+  const handleConfirmToggle = async () => {
+    setToggleConfirm(false);
     const newValue = !stats.auto_send;
     setStats((prev) => ({ ...prev, auto_send: newValue }));
-    patchSetting(
-      `${COMPONENT_URL.constance}EMAIL_AUTO_SEND/`,
-      "EMAIL_AUTO_SEND",
-      newValue
-    ).catch(() => {
+    try {
+      await patchSetting(
+        `${COMPONENT_URL.constance}EMAIL_AUTO_SEND/`,
+        "EMAIL_AUTO_SEND",
+        newValue
+      );
+    } catch {
       setStats((prev) => ({ ...prev, auto_send: !newValue }));
-    });
+    }
   };
 
   const handleSendAllPending = async () => {
     setSendAllConfirm(false);
     try {
       await sendAllPending();
-      setRefresh((prev) => !prev);
+      refreshAll();
     } catch {
       // errors handled by service
     }
@@ -128,6 +162,29 @@ const EmailQueue = () => {
           <Card>
             <Card.Header>
               <Row className="align-items-center">
+                <Col sm="auto">
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={refreshAll}
+                    aria-label={t("ngen.retest.refresh")}
+                    className="me-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-arrow-clockwise"
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+                      <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+                    </svg>
+                  </Button>
+                </Col>
                 <Col sm="auto">
                   <ButtonGroup size="sm" className="me-2">
                     {STATUS_TABS.map((ti) => (
@@ -175,28 +232,6 @@ const EmailQueue = () => {
                     {t("ngen.email_queue.send_all")}
                   </Button>
                 </Col>
-                <Col sm="auto" className="ms-auto">
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={() => setRefresh((prev) => !prev)}
-                    aria-label={t("ngen.retest.refresh")}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-arrow-clockwise"
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
-                      <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
-                    </svg>
-                  </Button>
-                </Col>
               </Row>
             </Card.Header>
             <Card.Body>
@@ -208,6 +243,8 @@ const EmailQueue = () => {
                 setOrder={setOrder}
                 onSendNow={handleSendNow}
                 onResend={handleResend}
+                onRetry={handleRetry}
+                onDiscard={handleDiscard}
                 onShowDetail={handleShowDetail}
               />
             </Card.Body>
@@ -244,6 +281,24 @@ const EmailQueue = () => {
             {t("ngen.accept")}
           </Button>
           <Button variant="outline-secondary" onClick={() => setSendAllConfirm(false)}>
+            {t("button.cancel")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={toggleConfirm} onHide={() => setToggleConfirm(false)} centered size="sm">
+        <Modal.Header closeButton>
+          <Modal.Title>{t("ngen.email_queue.auto_send")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {stats.auto_send
+            ? t("ngen.email_queue.confirm_auto_send_off")
+            : t("ngen.email_queue.confirm_auto_send_on")}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-primary" onClick={handleConfirmToggle}>
+            {t("ngen.accept")}
+          </Button>
+          <Button variant="outline-secondary" onClick={() => setToggleConfirm(false)}>
             {t("button.cancel")}
           </Button>
         </Modal.Footer>

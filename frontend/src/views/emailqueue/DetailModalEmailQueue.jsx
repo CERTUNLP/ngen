@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Modal, Button, Badge } from "react-bootstrap";
+import { Modal, Button, Badge, Row, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { getEmailBody, getEmailFailmsg } from "api/services/emailqueue";
 
 const bodyStatus = (message, t) => {
   if (message.send_attempt_failed) return { label: t("ngen.email_queue.failed"), bg: "danger" };
@@ -12,8 +13,31 @@ const DetailModalEmailQueue = ({ message, onClose }) => {
   const { t } = useTranslation();
   const iframeRef = useRef(null);
   const [iframeHeight, setIframeHeight] = useState(400);
+  const [bodyHtml, setBodyHtml] = useState(null);
+  const [bodyLoading, setBodyLoading] = useState(true);
+  const [failmsg, setFailmsg] = useState(null);
 
-  const htmlContent = message.body_html || message.body || "-";
+  useEffect(() => {
+    if (!message?.id) return;
+    setBodyLoading(true);
+    setBodyHtml(null);
+    setFailmsg(null);
+    Promise.all([
+      getEmailBody(message.id),
+      message.send_attempt_failed ? getEmailFailmsg(message.id) : Promise.resolve(null),
+    ])
+      .then(([bodyData, failData]) => {
+        setBodyHtml(bodyData.body_html || bodyData.body);
+        if (failData) setFailmsg(failData);
+      })
+      .catch(() => {
+        setBodyHtml(t("ngen.email_queue.no_body_detail") || "-");
+        if (message.send_attempt_failed) setFailmsg({ last_error: null });
+      })
+      .finally(() => setBodyLoading(false));
+  }, [message?.id]);
+
+  const htmlContent = bodyHtml || "-";
 
   useEffect(() => {
     if (!iframeRef.current) return;
@@ -92,15 +116,41 @@ const DetailModalEmailQueue = ({ message, onClose }) => {
           <dt className="col-sm-3">{t("ngen.email_queue.message_id")}</dt>
           <dd className="col-sm-9 text-break">{message.message_id || "-"}</dd>
         </dl>
+        {message.send_attempt_failed && failmsg && (
+          <dl className="row mb-1">
+            <dt className="col-sm-3 text-danger">{t("ngen.email_queue.last_error")}</dt>
+            <dd className="col-sm-9">
+              <pre className="text-danger bg-secondary bg-opacity-10 p-2 rounded mb-0" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: "0.8rem", maxHeight: 200, overflow: "auto" }}>
+                {failmsg.last_error || t("ngen.email_queue.no_error_detail")}
+              </pre>
+            </dd>
+          </dl>
+        )}
+        {message.size != null && (
+          <dl className="row mb-1">
+            <dt className="col-sm-3">{t("ngen.email_queue.size")}</dt>
+            <dd className="col-sm-9">
+              {message.size > 1024
+                ? `${(message.size / 1024).toFixed(1)} KB`
+                : `${message.size} B`}
+            </dd>
+          </dl>
+        )}
         <hr />
         <h6>{t("ngen.email_queue.body_html")}</h6>
-        <iframe
-          ref={iframeRef}
-          srcDoc={htmlContent}
-          title={t("ngen.email_queue.body_html")}
-          sandbox="allow-same-origin"
-          style={{ width: "100%", height: iframeHeight, border: "1px solid #dee2e6", borderRadius: 4 }}
-        />
+        {bodyLoading ? (
+          <Row className="justify-content-md-center py-4">
+            <Spinner animation="border" variant="primary" />
+          </Row>
+        ) : (
+          <iframe
+            ref={iframeRef}
+            srcDoc={htmlContent}
+            title={t("ngen.email_queue.body_html")}
+            sandbox="allow-same-origin"
+            style={{ width: "100%", height: iframeHeight, border: "1px solid #dee2e6", borderRadius: 4 }}
+          />
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>

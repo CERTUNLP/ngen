@@ -59,4 +59,50 @@ const getEmailQueueStats = async () => {
   }
 };
 
-export { getEmailMessages, sendQueuedEmail, resendEmail, sendAllPending, getEmailQueueStats };
+const discardEmail = async (id) => {
+  try {
+    const response = await apiInstance.post(`${COMPONENT_URL.emailmessage}${id}/discard/`, {
+      reason: "cancelado por usuario",
+    });
+    return response.data;
+  } catch (error) {
+    const message = error?.response?.data?.error || "Failed to discard email";
+    setAlert(message, "error");
+    throw error;
+  }
+};
+
+const retryEmail = async (id) => {
+  try {
+    const response = await apiInstance.post(`${COMPONENT_URL.emailmessage}${id}/retry/`);
+    return response.data;
+  } catch (error) {
+    const message = error?.response?.data?.error || "Failed to retry email";
+    setAlert(message, "error");
+    throw error;
+  }
+};
+
+const getEmailBody = async (id) => {
+  try {
+    const response = await apiInstance.get(`${COMPONENT_URL.emailmessage}${id}/body/`);
+    return response.data;
+  } catch (error) {
+    const message = error?.response?.data?.detail || "Failed to fetch email body";
+    setAlert(message, "error");
+    throw error;
+  }
+};
+
+const getEmailFailmsg = async (id) => {
+  try {
+    const response = await apiInstance.get(`${COMPONENT_URL.emailmessage}${id}/failmsg/`);
+    return response.data;
+  } catch (error) {
+    const message = error?.response?.data?.detail || "Failed to fetch error details";
+    setAlert(message, "error");
+    throw error;
+  }
+};
+
+export { getEmailMessages, sendQueuedEmail, resendEmail, sendAllPending, getEmailQueueStats, discardEmail, retryEmail, getEmailBody, getEmailFailmsg };

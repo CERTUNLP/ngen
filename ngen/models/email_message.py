@@ -43,6 +43,10 @@ class EmailMessage(AuditModelMixin):
         blank=True,
         help_text="Last error message if sending failed",
     )
+    retried = models.BooleanField(
+        default=False,
+        help_text="True if this failed email was already retried (cloned and dispatched)",
+    )
 
     class Meta:
         db_table = "email_message"

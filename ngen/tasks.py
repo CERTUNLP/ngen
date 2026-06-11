@@ -506,6 +506,7 @@ def async_send_email(self, email_message_id: int):
         self.max_retries,
     )
 
+    email_message = None
     try:
         email_message = ngen.models.EmailMessage.objects.get(id=email_message_id)
     except ngen.models.EmailMessage.DoesNotExist as e:
@@ -645,13 +646,14 @@ def async_send_email(self, email_message_id: int):
         exponential_backoff = (self.request.retries + 1) ** 2
         self.retry(exc=e, countdown=exponential_backoff)
     finally:
-        email_message.save()
-        logger.debug(
-            "async_send_email: id=%s saved (sent=%s, failed=%s)",
-            email_message_id,
-            email_message.sent,
-            email_message.send_attempt_failed,
-        )
+        if email_message is not None:
+            email_message.save()
+            logger.debug(
+                "async_send_email: id=%s saved (sent=%s, failed=%s)",
+                email_message_id,
+                email_message.sent,
+                email_message.send_attempt_failed,
+            )
 
 
 @shared_task

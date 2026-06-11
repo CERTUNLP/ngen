@@ -15,6 +15,7 @@ def use_test_email_env():
         @override_config(EMAIL_PASSWORD="password")
         @override_config(EMAIL_PORT="1025")
         @override_config(EMAIL_USE_TLS=False)
+        @override_config(EMAIL_AUTO_SEND=True)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 

@@ -241,14 +241,20 @@ class EmailHandler:
             )
 
             email_id = email_message.id
-            transaction.on_commit(
-                lambda: (
-                    logger.info(
-                        "EmailHandler: dispatching id=%s to Celery (on_commit)", email_id
-                    ),
-                    async_send_email.delay(email_id),
+
+            if config.EMAIL_AUTO_SEND:
+                email_message.dispatched = True
+                email_message.save(update_fields=["dispatched"])
+                transaction.on_commit(
+                    lambda: async_send_email.delay(email_id)
                 )
-            )
+            else:
+                logger.info(
+                    "EmailHandler: stored id=%s (EMAIL_AUTO_SEND=false) subject='%s' to=%s",
+                    email_message.id,
+                    subject,
+                    to_emails,
+                )
 
         logger.info(
             "EmailHandler: committed id=%s subject='%s' to=%s",
