@@ -125,6 +125,7 @@ const TableEmailQueue = ({
             <th>{t("ngen.email_queue.attachments")}</th>
             <th>{t("ngen.email_queue.status")}</th>
             <th>{t("ngen.email_queue.retries")}</th>
+            <th>{t("ngen.email_queue.size")}</th>
             <th>{t("ngen.email_queue.retry")}</th>
             <th>{t("ngen.options")}</th>
           </tr>
@@ -132,7 +133,7 @@ const TableEmailQueue = ({
         <tbody>
           {messages.length === 0 ? (
             <tr>
-              <td colSpan={10} className="text-muted py-4">
+              <td colSpan={11} className="text-muted py-4">
                 {t("w.no_data")}
               </td>
             </tr>
@@ -151,6 +152,13 @@ const TableEmailQueue = ({
                 <td>{msg.attachment_count ?? 0}</td>
                 <td>{statusBadge(msg, t, handleShowError)}</td>
                 <td>{msg.retry_count ?? 0}</td>
+                <td className="text-nowrap">
+                  {msg.size != null
+                    ? msg.size > 1024
+                      ? `${(msg.size / 1024).toFixed(0)} KB`
+                      : `${msg.size} B`
+                    : "-"}
+                </td>
                 <td>{retryColumn(msg, t, onRetry, sendingId)}</td>
                 <td className="text-nowrap">
                   <CrudButton type="read" name="" text={t("w.view")} onClick={() => onShowDetail(msg)} />

@@ -637,6 +637,15 @@ def async_send_email(self, email_message_id: int):
     except Exception as e:
         email_message.last_error = traceback.format_exc()[:2000]
         email_message.retry_count = self.request.retries + 1
+        email_message.save(update_fields=["last_error", "retry_count"])
+        email_message.refresh_from_db()
+
+        if email_message.status == ngen.models.EmailMessage.Status.CANCELLED:
+            logger.info(
+                "async_send_email: id=%s cancelled by user, skipping", email_message_id
+            )
+            return {"status": "skipped", "message": f"Email {email_message_id} was cancelled"}
+
         logger.exception(
             "async_send_email: id=%s FAILED subject='%s' to=%s size=%s bytes timeout=%ss retries=%s/%s error=%s",
             email_message_id,
@@ -691,15 +700,11 @@ def retrieve_emails():
             task.enabled = False
             task.save()
             deactivated = "Task deactivated. "
-        logger.exception(
-            "retrieve_emails: %sEmail configuration not set. EMAIL_HOST: '%s', EMAIL_USERNAME: '%s'",
-            deactivated,
-            host,
-            username,
-        )
+        msg = f"{deactivated}Email configuration not set."
+        logger.error(msg)
         return {
             "status": "error",
-            "message": f"{deactivated}Email configuration not set.",
+            "message": msg,
         }
 
     logger.info(
@@ -753,21 +758,19 @@ def retrieve_emails():
         }
 
     except ConnectionRefusedError:
-        logger.error(
-            "retrieve_emails: connection refused host=%s:%s", host, imap_port
-        )
+        msg = f"Connection refused to {host}:{imap_port}"
+        logger.error(msg)
         return {
             "status": "error",
-            "message": f"Connection refused to {host}:{imap_port}",
+            "message": msg,
         }
 
     except TimeoutError:
-        logger.error(
-            "retrieve_emails: connection timed out host=%s:%s", host, imap_port
-        )
+        msg = f"Connection timed out to {host}:{imap_port}"
+        logger.error(msg)
         return {
             "status": "error",
-            "message": f"Connection timed out to {host}:{imap_port}",
+            "message": msg,
         }
 
     finally:
