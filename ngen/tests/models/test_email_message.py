@@ -29,8 +29,7 @@ class EmailMessageTest(TestCase):
             recipients=[{"name": "Victim Name", "email": "victim@organization.com"}],
             date=timezone.now(),
             body="some body",
-            sent=True,
-            send_attempt_failed=False,
+            status="sent",
         )
         cls.email_message_2 = EmailMessage.objects.create(
             root_message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
@@ -42,8 +41,7 @@ class EmailMessageTest(TestCase):
             recipients=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
             date=timezone.now(),
             body="some body",
-            sent=True,
-            send_attempt_failed=False,
+            status="sent",
         )
         cls.email_message_3 = EmailMessage.objects.create(
             root_message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
@@ -58,8 +56,7 @@ class EmailMessageTest(TestCase):
             recipients=[{"name": "CERT User", "email": "test@cert.unlp.edu.ar"}],
             date=timezone.now(),
             body="some body",
-            sent=True,
-            send_attempt_failed=False,
+            status="sent",
         )
         cls.email_message_4 = EmailMessage.objects.create(
             root_message_id="<172654337907.81.3069486993773407245@cert.unlp.edu.ar>",
@@ -76,8 +73,7 @@ class EmailMessageTest(TestCase):
             ],
             date=timezone.now(),
             body="some body",
-            sent=True,
-            send_attempt_failed=False,
+            status="sent",
         )
 
     def test_email_message_creation(self):

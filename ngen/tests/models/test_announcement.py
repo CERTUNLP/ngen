@@ -1047,7 +1047,7 @@ class AnnouncementTestCase(TestCase):
         tasks.contact_summary.delay(contact_usernames=["soporte@cert.unlp.edu.ar"])
 
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", sent=True).count(), 1)
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", status="sent").count(), 1)
 
         email = mail.outbox[0]
 
@@ -1105,8 +1105,8 @@ class AnnouncementTestCase(TestCase):
 
         summary_email = EmailMessage.objects.filter(subject__contains="Summary").first()
         self.assertIsNotNone(summary_email)
-        self.assertTrue(summary_email.dispatched)
-        self.assertTrue(summary_email.sent)
+        self.assertEqual(summary_email.status, "sent")
+        self.assertEqual(summary_email.subject, "[TEAM][TLP:RED] Summary")
         self.assertEqual(summary_email.subject, "[TEAM][TLP:RED] Summary")
         self.assertEqual(summary_email.recipients[0]["email"], "soporte@cert.unlp.edu.ar")
         self.assertIn("Summary", summary_email.subject)
@@ -1160,8 +1160,7 @@ class AnnouncementTestCase(TestCase):
 
         summary_email = EmailMessage.objects.filter(subject__contains="Summary").first()
         self.assertIsNotNone(summary_email)
-        self.assertFalse(summary_email.dispatched)
-        self.assertFalse(summary_email.sent)
+        self.assertEqual(summary_email.status, "pending")
         self.assertEqual(summary_email.subject, "[TEAM][TLP:RED] Summary")
 
         self.assertEqual(len(mail.outbox), 0)
@@ -1274,7 +1273,7 @@ class AnnouncementTestCase(TestCase):
 
         self.assertGreaterEqual(call_count[0], 2)
         self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary").count(), 1)
-        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", dispatched=True, sent=True).count(), 1)
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", status="sent").count(), 1)
         self.assertEqual(len(mail.outbox), 1)
         email = mail.outbox[0]
         self.assertEqual(email.to, ["contact3@test.com"])
@@ -1404,7 +1403,7 @@ class AnnouncementTestCase(TestCase):
 
         summary_email = EmailMessage.objects.filter(subject__contains="Summary").first()
         self.assertIsNotNone(summary_email)
-        self.assertFalse(summary_email.dispatched)
+        self.assertEqual(summary_email.status, "pending")
         self.assertEqual(len(mail.outbox), 0)
 
         email_id = summary_email.id
@@ -1417,8 +1416,7 @@ class AnnouncementTestCase(TestCase):
         self.assertEqual(response.data["status"], "dispatched")
 
         summary_email.refresh_from_db()
-        self.assertTrue(summary_email.dispatched)
-        self.assertTrue(summary_email.sent)
+        self.assertEqual(summary_email.status, "sent")
         self.assertEqual(len(mail.outbox), 1)
 
     @override_config(EMAIL_AUTO_SEND=True)
@@ -1434,21 +1432,21 @@ class AnnouncementTestCase(TestCase):
             senders=[{"name": "t", "email": "t@t.com"}],
             recipients=[{"name": "a", "email": "a@a.com"}],
             subject="sent", body="x",
-            sent=True, dispatched=True,
+            status="sent",
         )
         EmailMessage.objects.create(
             root_message_id="m2", message_id="m2",
             senders=[{"name": "t", "email": "t@t.com"}],
             recipients=[{"name": "b", "email": "b@b.com"}],
             subject="queued", body="x",
-            sent=False, dispatched=False,
+            status="pending",
         )
         EmailMessage.objects.create(
             root_message_id="m3", message_id="m3",
             senders=[{"name": "t", "email": "t@t.com"}],
             recipients=[{"name": "c", "email": "c@c.com"}],
             subject="failed", body="x",
-            sent=False, dispatched=True, send_attempt_failed=True,
+            status="failed",
         )
 
         factory = APIRequestFactory()
@@ -1513,7 +1511,7 @@ class AnnouncementTestCase(TestCase):
         with override_config(EMAIL_AUTO_SEND=True):
             tasks.contact_summary.delay(contact_usernames=["toggle1@test.com"])
 
-        sent_count = EmailMessage.objects.filter(subject__contains="Summary", dispatched=True, sent=True).count()
+        sent_count = EmailMessage.objects.filter(subject__contains="Summary", status="sent").count()
         self.assertEqual(sent_count, 1)
 
         e2 = Event.objects.create(cidr="10.100.2.1/32", taxonomy=Taxonomy.objects.get(slug="botnet"),
@@ -1531,14 +1529,14 @@ class AnnouncementTestCase(TestCase):
         with override_config(EMAIL_AUTO_SEND=False):
             tasks.contact_summary.delay(contact_usernames=["toggle2@test.com"])
 
-        stored = EmailMessage.objects.filter(subject__contains="Summary", dispatched=False, sent=False)
+        stored = EmailMessage.objects.filter(subject__contains="Summary", status="pending")
         self.assertEqual(stored.count(), 1)
         self.assertEqual(stored.first().recipients[0]["email"], "toggle2@test.com")
 
         # Total summary emails = 2, but only 1 was sent
         self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary").count(), 2)
-        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", sent=True).count(), 1)
-        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", sent=False).count(), 1)
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", status="sent").count(), 1)
+        self.assertEqual(EmailMessage.objects.filter(subject__contains="Summary", status="pending").count(), 1)
 
     @patch("ngen.tasks.EmailBackend")
     @use_test_email_env()
@@ -1616,7 +1614,7 @@ class AnnouncementTestCase(TestCase):
 
         # Exactly 3 summary emails should be sent (one per contact with cases)
         summary_emails = EmailMessage.objects.filter(
-            subject__contains="Summary", sent=True
+            subject__contains="Summary", status="sent"
         )
         self.assertEqual(summary_emails.count(), 3)
 

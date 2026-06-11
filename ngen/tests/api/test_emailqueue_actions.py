@@ -19,6 +19,7 @@ def _make_email(**kwargs):
         "recipients": [{"name": "to", "email": "to@test.com"}],
         "subject": "Test",
         "body": "Body",
+        "status": "pending",
     }
     defaults.update(kwargs)
     if "root_message_id" in kwargs and "message_id" not in kwargs:
@@ -38,7 +39,7 @@ class TestSendQueuedEndpoint(APITestCaseWithLogin):
     @CELERY_EAGER
     @patch("ngen.views.email_message.async_send_email.delay")
     def test_send_queued_dispatches_and_returns_200(self, mock_delay):
-        msg = _make_email(dispatched=False, sent=False)
+        msg = _make_email(status="pending")
         response = self.client.post(f"{self.url_list}{msg.id}/send/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["status"], "dispatched")
@@ -47,20 +48,18 @@ class TestSendQueuedEndpoint(APITestCaseWithLogin):
     @use_test_email_env()
     @CELERY_EAGER
     def test_send_queued_rejects_already_sent(self):
-        msg = _make_email(dispatched=False, sent=True)
+        msg = _make_email(status="sent")
         response = self.client.post(f"{self.url_list}{msg.id}/send/")
         self.assertEqual(response.status_code, 400)
         self.assertIn("already sent", response.data["error"])
 
     @use_test_email_env()
     @CELERY_EAGER
-    @patch("ngen.views.email_message.async_send_email.delay")
-    def test_send_queued_allows_limbo_dispatched(self, mock_delay):
-        msg = _make_email(dispatched=True, sent=False)
+    def test_send_queued_rejects_dispatched(self):
+        msg = _make_email(status="sending")
         response = self.client.post(f"{self.url_list}{msg.id}/send/")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["status"], "dispatched")
-        mock_delay.assert_called_once_with(msg.id)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("already dispatched", response.data["error"])
 
 
 class TestSendAllPendingEndpoint(APITestCaseWithLogin):
@@ -75,9 +74,9 @@ class TestSendAllPendingEndpoint(APITestCaseWithLogin):
     @CELERY_EAGER
     @patch("ngen.views.email_message.async_send_email.delay")
     def test_send_all_pending_dispatches(self, mock_delay):
-        _make_email(dispatched=False, sent=False, send_attempt_failed=False,
+        _make_email(status="pending",
                     root_message_id="<a@t.com>", message_id="<a@t.com>")
-        _make_email(dispatched=False, sent=False, send_attempt_failed=False,
+        _make_email(status="pending",
                     root_message_id="<b@t.com>", message_id="<b@t.com>")
         response = self.client.post(f"{self.url_list}send_all_pending/")
         self.assertEqual(response.status_code, 200)
@@ -97,11 +96,11 @@ class TestSendAllPendingEndpoint(APITestCaseWithLogin):
     @CELERY_EAGER
     @patch("ngen.views.email_message.async_send_email.delay")
     def test_send_all_pending_skips_failed_and_sent(self, mock_delay):
-        _make_email(dispatched=False, sent=False, send_attempt_failed=False,
+        _make_email(status="pending",
                     root_message_id="<p@t.com>", message_id="<p@t.com>")
-        _make_email(dispatched=False, sent=False, send_attempt_failed=True,
+        _make_email(status="failed",
                     root_message_id="<f@t.com>", message_id="<f@t.com>")
-        _make_email(dispatched=False, sent=True, send_attempt_failed=False,
+        _make_email(status="sent",
                     root_message_id="<s@t.com>", message_id="<s@t.com>")
         response = self.client.post(f"{self.url_list}send_all_pending/")
         self.assertEqual(response.data["count"], 1)
@@ -110,14 +109,14 @@ class TestSendAllPendingEndpoint(APITestCaseWithLogin):
     @use_test_email_env()
     @CELERY_EAGER
     @patch("ngen.views.email_message.async_send_email.delay")
-    def test_send_all_pending_includes_limbo_emails(self, mock_delay):
-        _make_email(dispatched=False, sent=False, send_attempt_failed=False,
+    def test_send_all_pending_skips_dispatched(self, mock_delay):
+        _make_email(status="pending",
                     root_message_id="<p@t.com>", message_id="<p@t.com>")
-        _make_email(dispatched=True, sent=False, send_attempt_failed=False,
+        _make_email(status="sending",
                     root_message_id="<l@t.com>", message_id="<l@t.com>")
         response = self.client.post(f"{self.url_list}send_all_pending/")
-        self.assertEqual(response.data["count"], 2)
-        self.assertEqual(mock_delay.call_count, 2)
+        self.assertEqual(response.data["count"], 1)
+        mock_delay.assert_called_once()
 
 
 class TestResendEndpoint(APITestCaseWithLogin):
@@ -133,7 +132,7 @@ class TestResendEndpoint(APITestCaseWithLogin):
     @patch("ngen.views.email_message.async_send_email.delay")
     def test_resend_clones_and_dispatches_regardless_of_auto_send(self, mock_delay):
         original = _make_email(
-            sent=True, dispatched=True, send_attempt_failed=False,
+            status="sent",
             subject="Original", body_html="<p>html</p>",
             template="case_report", attachments=[],
             bcc_recipients=[{"name": "bcc", "email": "bcc@t.com"}],
@@ -151,7 +150,7 @@ class TestResendEndpoint(APITestCaseWithLogin):
         self.assertEqual(clone.body_html, "<p>html</p>")
         self.assertEqual(clone.template, "case_report")
         self.assertEqual(clone.bcc_recipients, [{"name": "bcc", "email": "bcc@t.com"}])
-        self.assertTrue(clone.dispatched)
+        self.assertIn(clone.status, ("sending", "retrying"))
 
 
 class TestDiscardEndpoint(APITestCaseWithLogin):
@@ -165,18 +164,18 @@ class TestDiscardEndpoint(APITestCaseWithLogin):
     @use_test_email_env()
     @CELERY_EAGER
     def test_discard_marks_as_failed_with_default_reason(self):
-        msg = _make_email(dispatched=False, sent=False, send_attempt_failed=False)
+        msg = _make_email(status="pending")
         response = self.client.post(f"{self.url_list}{msg.id}/discard/", {}, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["status"], "discarded")
         msg.refresh_from_db()
-        self.assertTrue(msg.send_attempt_failed)
+        self.assertEqual(msg.status, "cancelled")
         self.assertEqual(msg.last_error, "cancelado por usuario")
 
     @use_test_email_env()
     @CELERY_EAGER
     def test_discard_marks_as_failed_with_custom_reason(self):
-        msg = _make_email(dispatched=False, sent=False, send_attempt_failed=False)
+        msg = _make_email(status="pending")
         response = self.client.post(f"{self.url_list}{msg.id}/discard/", {"reason": "spam"}, format="json")
         self.assertEqual(response.status_code, 200)
         msg.refresh_from_db()
@@ -185,7 +184,7 @@ class TestDiscardEndpoint(APITestCaseWithLogin):
     @use_test_email_env()
     @CELERY_EAGER
     def test_discard_rejects_already_sent(self):
-        msg = _make_email(dispatched=True, sent=True, send_attempt_failed=False)
+        msg = _make_email(status="sent")
         response = self.client.post(f"{self.url_list}{msg.id}/discard/", {}, format="json")
         self.assertEqual(response.status_code, 400)
         self.assertIn("already sent", response.data["error"])
@@ -193,12 +192,12 @@ class TestDiscardEndpoint(APITestCaseWithLogin):
     @use_test_email_env()
     @CELERY_EAGER
     def test_discard_allows_limbo_dispatched(self):
-        msg = _make_email(dispatched=True, sent=False, send_attempt_failed=False)
+        msg = _make_email(status="sending")
         response = self.client.post(f"{self.url_list}{msg.id}/discard/", {}, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["status"], "discarded")
         msg.refresh_from_db()
-        self.assertTrue(msg.send_attempt_failed)
+        self.assertEqual(msg.status, "cancelled")
 
 
 class TestRetryEndpoint(APITestCaseWithLogin):
@@ -214,7 +213,7 @@ class TestRetryEndpoint(APITestCaseWithLogin):
     @patch("ngen.views.email_message.async_send_email.delay")
     def test_retry_clones_failed_and_dispatches(self, mock_delay):
         original = _make_email(
-            dispatched=True, sent=False, send_attempt_failed=True, retried=False,
+            status="failed", retried=False,
             subject="Failed email", last_error="SMTP timeout",
             body_html="<p>test</p>", template="case_closed_report",
             bcc_recipients=[{"name": "bcc", "email": "b@t.com"}],
@@ -227,8 +226,8 @@ class TestRetryEndpoint(APITestCaseWithLogin):
         clone = EmailMessage.objects.get(id=response.data["id"])
         self.assertEqual(clone.subject, "Failed email")
         self.assertEqual(clone.body_html, "<p>test</p>")
-        self.assertTrue(clone.dispatched)
-        self.assertFalse(clone.send_attempt_failed)
+        self.assertIn(clone.status, ("sending", "retrying"))
+        self.assertNotEqual(clone.status, "failed")
         original.refresh_from_db()
         self.assertTrue(original.retried)
         mock_delay.assert_called_once()
@@ -236,7 +235,7 @@ class TestRetryEndpoint(APITestCaseWithLogin):
     @use_test_email_env()
     @CELERY_EAGER
     def test_retry_rejects_non_failed(self):
-        msg = _make_email(dispatched=False, sent=True, send_attempt_failed=False)
+        msg = _make_email(status="sent")
         response = self.client.post(f"{self.url_list}{msg.id}/retry/")
         self.assertEqual(response.status_code, 400)
         self.assertIn("only failed", response.data["error"].lower() if isinstance(response.data.get("error"), str) else "")
@@ -244,7 +243,7 @@ class TestRetryEndpoint(APITestCaseWithLogin):
     @use_test_email_env()
     @CELERY_EAGER
     def test_retry_rejects_already_retried(self):
-        msg = _make_email(sent=False, send_attempt_failed=True, retried=True)
+        msg = _make_email(status="failed", retried=True)
         response = self.client.post(f"{self.url_list}{msg.id}/retry/")
         self.assertEqual(response.status_code, 400)
         self.assertIn("already retried", response.data["error"])
@@ -270,13 +269,13 @@ class TestStatsEndpoint(APITestCaseWithLogin):
 
     @use_test_email_env()
     def test_stats_with_mixed_states(self):
-        _make_email(sent=False, dispatched=False, send_attempt_failed=False,
+        _make_email(status="pending",
                     root_message_id="<p@t.com>", message_id="<p@t.com>")
-        _make_email(sent=False, dispatched=False, send_attempt_failed=False,
+        _make_email(status="pending",
                     root_message_id="<p2@t.com>", message_id="<p2@t.com>")
-        _make_email(sent=False, dispatched=False, send_attempt_failed=True,
+        _make_email(status="failed",
                     root_message_id="<f@t.com>", message_id="<f@t.com>")
-        _make_email(sent=True, dispatched=True, send_attempt_failed=False,
+        _make_email(status="sent",
                     root_message_id="<s@t.com>", message_id="<s@t.com>")
         response = self.client.get(f"{self.url_list}stats/")
         self.assertEqual(response.data["pending"], 2)
@@ -366,7 +365,7 @@ class TestRetrieveEmailsFullFlow(APITestCaseWithLogin):
             recipients=[{"name": "to", "email": "to@t.com"}],
             subject="Incoming",
             body="Body",
-            sent=True,
+            status="sent",
         )]
         mock_client_class.return_value = mock_client
 

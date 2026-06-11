@@ -243,8 +243,8 @@ class EmailHandler:
             email_id = email_message.id
 
             if config.EMAIL_AUTO_SEND:
-                email_message.dispatched = True
-                email_message.save(update_fields=["dispatched"])
+                email_message.status = EmailMessageModel.Status.SENDING
+                email_message.save(update_fields=["status"])
                 transaction.on_commit(
                     lambda: async_send_email.delay(email_id)
                 )

@@ -126,9 +126,9 @@ class Communication:
     def _dispatch_to_celery(email_message):
         from ngen.tasks import async_send_email
 
+        email_message.status = email_message.Status.SENDING
+        email_message.save(update_fields=["status"])
         async_send_email.delay(email_message.id)
-        email_message.dispatched = True
-        email_message.save(update_fields=["dispatched"])
 
         logger.info(
             "Communication._dispatch_to_celery: dispatched id=%s subject='%s' to=%s",

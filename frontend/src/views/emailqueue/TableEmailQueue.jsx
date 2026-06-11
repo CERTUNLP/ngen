@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getEmailFailmsg } from "api/services/emailqueue";
 
 const statusBadge = (message, t, onClickError) => {
-  if (message.send_attempt_failed) {
+  if (message.status === "failed") {
     return (
       <Badge
         bg="danger"
@@ -17,14 +17,33 @@ const statusBadge = (message, t, onClickError) => {
       </Badge>
     );
   }
-  if (message.sent) {
+  if (message.status === "sent") {
     return <Badge bg="success">{t("ngen.email_queue.sent")}</Badge>;
+  }
+  if (message.status === "sending" || message.status === "retrying") {
+    const title = message.retry_count > 0
+      ? t("ngen.email_queue.click_for_error")
+      : t("ngen.email_queue.dispatched");
+    return (
+      <Badge
+        bg="warning"
+        text="dark"
+        style={{ cursor: message.retry_count > 0 ? "pointer" : "default" }}
+        onClick={() => message.retry_count > 0 && onClickError && onClickError(message)}
+        title={title}
+      >
+        {t("ngen.email_queue.sending")}
+      </Badge>
+    );
+  }
+  if (message.status === "cancelled") {
+    return <Badge bg="secondary">{t("ngen.email_queue.cancelled")}</Badge>;
   }
   return <Badge bg="info">{t("ngen.email_queue.pending")}</Badge>;
 };
 
 const retryColumn = (msg, t, onRetry, sendingId) => {
-  if (!msg.send_attempt_failed) return <span className="text-muted">-</span>;
+  if (msg.status !== "failed") return <span className="text-muted">-</span>;
   if (msg.retried) {
     return (
       <span className="text-success" title={t("ngen.email_queue.already_retried")}>
@@ -50,6 +69,7 @@ const TableEmailQueue = ({
   onSendNow,
   onResend,
   onRetry,
+  onCancel,
   onDiscard,
   onShowDetail,
 }) => {
@@ -104,6 +124,7 @@ const TableEmailQueue = ({
             <th>{t("ngen.email_queue.template")}</th>
             <th>{t("ngen.email_queue.attachments")}</th>
             <th>{t("ngen.email_queue.status")}</th>
+            <th>{t("ngen.email_queue.retries")}</th>
             <th>{t("ngen.email_queue.retry")}</th>
             <th>{t("ngen.options")}</th>
           </tr>
@@ -111,7 +132,7 @@ const TableEmailQueue = ({
         <tbody>
           {messages.length === 0 ? (
             <tr>
-              <td colSpan={9} className="text-muted py-4">
+              <td colSpan={10} className="text-muted py-4">
                 {t("w.no_data")}
               </td>
             </tr>
@@ -129,39 +150,54 @@ const TableEmailQueue = ({
                 <td className="text-nowrap">{msg.template || "-"}</td>
                 <td>{msg.attachment_count ?? 0}</td>
                 <td>{statusBadge(msg, t, handleShowError)}</td>
+                <td>{msg.retry_count ?? 0}</td>
                 <td>{retryColumn(msg, t, onRetry, sendingId)}</td>
                 <td className="text-nowrap">
                   <CrudButton type="read" name="" text={t("w.view")} onClick={() => onShowDetail(msg)} />
-                  {!msg.send_attempt_failed && (
+                  {msg.status === "pending" && (
                     <>
-                      {!msg.sent && (
-                        <>
-                          <CrudButton
-                            type="check"
-                            name=""
-                            text={t("ngen.email_queue.send_now")}
-                            onClick={() => onSendNow(msg)}
-                            disabled={sendingId === msg.id}
-                          />
-                          <CrudButton
-                            type="delete"
-                            name=""
-                            text={t("ngen.email_queue.discard")}
-                            onClick={() => onDiscard(msg)}
-                            disabled={sendingId === msg.id}
-                          />
-                        </>
-                      )}
-                      {msg.sent && (
-                        <CrudButton
-                          type="create"
-                          name=""
-                          text={t("ngen.email_queue.resend")}
-                          onClick={() => onResend(msg)}
-                          disabled={sendingId === msg.id}
-                        />
-                      )}
+                      <CrudButton
+                        type="check"
+                        name=""
+                        text={t("ngen.email_queue.send_now")}
+                        onClick={() => onSendNow(msg)}
+                        disabled={sendingId === msg.id}
+                      />
+                      <CrudButton
+                        type="delete"
+                        name=""
+                        text={t("ngen.email_queue.discard")}
+                        onClick={() => onDiscard(msg)}
+                        disabled={sendingId === msg.id}
+                      />
                     </>
+                  )}
+                  {(msg.status === "sending" || msg.status === "retrying") && (
+                    <CrudButton
+                      type="delete"
+                      name=""
+                      text={t("ngen.email_queue.cancel")}
+                      onClick={() => onCancel(msg)}
+                      disabled={sendingId === msg.id}
+                    />
+                  )}
+                  {msg.status === "sent" && (
+                    <CrudButton
+                      type="create"
+                      name=""
+                      text={t("ngen.email_queue.resend")}
+                      onClick={() => onResend(msg)}
+                      disabled={sendingId === msg.id}
+                    />
+                  )}
+                  {msg.status === "cancelled" && (
+                    <CrudButton
+                      type="create"
+                      name=""
+                      text={t("ngen.email_queue.resend")}
+                      onClick={() => onResend(msg)}
+                      disabled={sendingId === msg.id}
+                    />
                   )}
                 </td>
               </tr>

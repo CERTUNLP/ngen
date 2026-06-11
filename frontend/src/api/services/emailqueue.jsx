@@ -83,6 +83,17 @@ const retryEmail = async (id) => {
   }
 };
 
+const cancelEmail = async (id) => {
+  try {
+    const response = await apiInstance.post(`${COMPONENT_URL.emailmessage}${id}/cancel/`);
+    return response.data;
+  } catch (error) {
+    const message = error?.response?.data?.error || "Failed to cancel email";
+    setAlert(message, "error");
+    throw error;
+  }
+};
+
 const getEmailBody = async (id) => {
   try {
     const response = await apiInstance.get(`${COMPONENT_URL.emailmessage}${id}/body/`);
@@ -105,4 +116,4 @@ const getEmailFailmsg = async (id) => {
   }
 };
 
-export { getEmailMessages, sendQueuedEmail, resendEmail, sendAllPending, getEmailQueueStats, discardEmail, retryEmail, getEmailBody, getEmailFailmsg };
+export { getEmailMessages, sendQueuedEmail, resendEmail, sendAllPending, getEmailQueueStats, discardEmail, retryEmail, cancelEmail, getEmailBody, getEmailFailmsg };

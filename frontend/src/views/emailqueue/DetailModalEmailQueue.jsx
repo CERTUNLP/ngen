@@ -1,16 +1,22 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useContext, useRef, useEffect, useState } from "react";
 import { Modal, Button, Badge, Row, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { getEmailBody, getEmailFailmsg } from "api/services/emailqueue";
+import { ThemeContext } from "contexts/ThemeContext";
 
 const bodyStatus = (message, t) => {
-  if (message.send_attempt_failed) return { label: t("ngen.email_queue.failed"), bg: "danger" };
-  if (message.sent) return { label: t("ngen.email_queue.sent"), bg: "success" };
+  if (message.status === "failed") return { label: t("ngen.email_queue.failed"), bg: "danger" };
+  if (message.status === "sent") return { label: t("ngen.email_queue.sent"), bg: "success" };
+  if (message.status === "cancelled") return { label: t("ngen.email_queue.cancelled"), bg: "secondary" };
+  if (message.status === "sending" || message.status === "retrying") {
+    return { label: t("ngen.email_queue.sending"), bg: "warning" };
+  }
   return { label: t("ngen.email_queue.pending"), bg: "info" };
 };
 
 const DetailModalEmailQueue = ({ message, onClose }) => {
   const { t } = useTranslation();
+  const { isDark } = useContext(ThemeContext);
   const iframeRef = useRef(null);
   const [iframeHeight, setIframeHeight] = useState(400);
   const [bodyHtml, setBodyHtml] = useState(null);
@@ -24,7 +30,9 @@ const DetailModalEmailQueue = ({ message, onClose }) => {
     setFailmsg(null);
     Promise.all([
       getEmailBody(message.id),
-      message.send_attempt_failed ? getEmailFailmsg(message.id) : Promise.resolve(null),
+      message.status === "failed" || message.status === "retrying"
+        ? getEmailFailmsg(message.id)
+        : Promise.resolve(null),
     ])
       .then(([bodyData, failData]) => {
         setBodyHtml(bodyData.body_html || bodyData.body);
@@ -32,7 +40,7 @@ const DetailModalEmailQueue = ({ message, onClose }) => {
       })
       .catch(() => {
         setBodyHtml(t("ngen.email_queue.no_body_detail") || "-");
-        if (message.send_attempt_failed) setFailmsg({ last_error: null });
+        if (message.status === "failed" || message.status === "retrying") setFailmsg({ last_error: null });
       })
       .finally(() => setBodyLoading(false));
   }, [message?.id]);
@@ -116,7 +124,7 @@ const DetailModalEmailQueue = ({ message, onClose }) => {
           <dt className="col-sm-3">{t("ngen.email_queue.message_id")}</dt>
           <dd className="col-sm-9 text-break">{message.message_id || "-"}</dd>
         </dl>
-        {message.send_attempt_failed && failmsg && (
+        {(message.status === "failed" || message.status === "retrying") && failmsg && (
           <dl className="row mb-1">
             <dt className="col-sm-3 text-danger">{t("ngen.email_queue.last_error")}</dt>
             <dd className="col-sm-9">

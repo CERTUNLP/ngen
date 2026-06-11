@@ -94,7 +94,7 @@ class EmailClient:
             date=email.parsed_date,
             subject=email.subject.strip().replace("\r", "").replace("\n", ""),
             body=email.body["plain"][0],
-            sent=True,
+            status=EmailMessage.Status.SENT,
         )
 
         attachments = []

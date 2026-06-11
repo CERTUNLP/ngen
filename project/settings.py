@@ -380,6 +380,11 @@ CONSTANCE_CONFIG = {
         "Email IMAP use SSL for fetching emails",
         bool,
     ),
+    "EMAIL_IMAP_TIMEOUT": (
+        int(os.environ.get("EMAIL_IMAP_TIMEOUT", 120)),
+        "Email IMAP connection timeout in seconds for fetching emails",
+        int,
+    ),
     # ── Cases ───────────────────────────────────────────────────
     "CASE_DEFAULT_LIFECYCLE": (
         os.environ.get("CASE_DEFAULT_LIFECYCLE", "manual"),
@@ -591,6 +596,7 @@ CONSTANCE_GROUPS = {
     "EMAIL_TIMEOUT": "Email",
     "EMAIL_IMAP_PORT": "Email",
     "EMAIL_IMAP_USE_SSL": "Email",
+    "EMAIL_IMAP_TIMEOUT": "Email",
     "CASE_DEFAULT_LIFECYCLE": "Cases",
     "CASE_REPORT_NEW_CASES": "Cases",
     "CASE_EMAIL_SUBJECT_TEMPLATE": "Cases",

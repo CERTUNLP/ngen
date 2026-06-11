@@ -110,7 +110,7 @@ class TestPathACommunicationSendMail(EmailAutoSendBase):
 
         email_msg = EmailMessage.objects.last()
         self.assertIsNotNone(email_msg)
-        self.assertTrue(email_msg.dispatched)
+        self.assertIn(email_msg.status, ("sending", "retrying", "sent"))
 
     @use_test_email_env()
     @CELERY_EAGER
@@ -126,8 +126,8 @@ class TestPathACommunicationSendMail(EmailAutoSendBase):
 
         email_msg = EmailMessage.objects.last()
         self.assertIsNotNone(email_msg)
-        self.assertFalse(email_msg.dispatched)
-        self.assertFalse(email_msg.sent)
+        self.assertEqual(email_msg.status, "pending")
+        self.assertNotEqual(email_msg.status, "sent")
 
     def test_no_recipients_skips_without_creating(self):
         """send_mail with no recipients returns without creating EmailMessage"""
@@ -204,8 +204,8 @@ class TestPathBEmailHandlerSendEmail(EmailAutoSendBase):
             )
 
         self.assertIsNotNone(email_msg)
-        self.assertFalse(email_msg.dispatched)
-        self.assertFalse(email_msg.sent)
+        self.assertEqual(email_msg.status, "pending")
+        self.assertNotEqual(email_msg.status, "sent")
 
     @patch("ngen.tasks.EmailBackend")
     @use_test_email_env()
@@ -242,41 +242,39 @@ class TestPathCViewSetActions(EmailAutoSendBase):
             recipients=[{"name": "to", "email": "to@test.com"}],
             subject="ViewSet test",
             body="Body",
-            dispatched=False,
-            sent=False,
+            status="pending",
         )
 
     @patch("ngen.tasks.async_send_email.delay")
     def test_send_endpoint_dispatches_regardless_of_auto_send(self, mock_delay):
         """send action always dispatches even with EMAIL_AUTO_SEND=false"""
         with override_config(EMAIL_AUTO_SEND=False):
-            # simulate ViewSet.send_queued: dispatch + set dispatched flag
+            # simulate ViewSet.send_queued: dispatch + set status
             tasks.async_send_email.delay(self.email_msg.id)
-            self.email_msg.dispatched = True
-            self.email_msg.save(update_fields=["dispatched"])
+            self.email_msg.status = "sending"
+            self.email_msg.save(update_fields=["status"])
 
         mock_delay.assert_called_once()
         self.email_msg.refresh_from_db()
-        self.assertTrue(self.email_msg.dispatched)
+        self.assertIn(self.email_msg.status, ("sending", "retrying"))
 
+    @patch("ngen.tasks.EmailBackend")
     @patch("ngen.tasks.async_send_email.delay")
-    def test_send_endpoint_skips_if_already_sent(self, mock_delay):
+    def test_send_endpoint_skips_if_already_sent(self, mock_delay, mock_backend):
         """send action rejects already-sent emails"""
-        self.email_msg.sent = True
+        self.email_msg.status = "sent"
         self.email_msg.save()
-        # The task itself doesn't check — the ViewSet.send_queued does
-        # Just verify the task runs without issues
         result = tasks.async_send_email(self.email_msg.id)
-        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["status"], "skipped")
 
     def test_discard_endpoint_marks_as_failed(self):
-        """discard sets send_attempt_failed=True and stores reason"""
-        self.email_msg.send_attempt_failed = True
+        """discard sets status=failed and stores reason"""
+        self.email_msg.status = "failed"
         self.email_msg.last_error = "cancelado por usuario"
-        self.email_msg.save(update_fields=["send_attempt_failed", "last_error"])
+        self.email_msg.save(update_fields=["status", "last_error"])
         self.email_msg.refresh_from_db()
 
-        self.assertTrue(self.email_msg.send_attempt_failed)
+        self.assertEqual(self.email_msg.status, "failed")
         self.assertEqual(self.email_msg.last_error, "cancelado por usuario")
 
     @patch("ngen.tasks.async_send_email.delay")
@@ -293,14 +291,14 @@ class TestPathCViewSetActions(EmailAutoSendBase):
                 subject=self.email_msg.subject,
                 body=self.email_msg.body,
             )
-            # simulate ViewSet.resend: dispatch + set dispatched flag
+            # simulate ViewSet.resend: dispatch + set status
             tasks.async_send_email.delay(cloned.id)
-            cloned.dispatched = True
-            cloned.save(update_fields=["dispatched"])
+            cloned.status = "sending"
+            cloned.save(update_fields=["status"])
 
         mock_delay.assert_called_once()
         cloned.refresh_from_db()
-        self.assertTrue(cloned.dispatched)
+        self.assertIn(cloned.status, ("sending", "retrying"))
 
 
 class TestFullFlowIntegration(EmailAutoSendBase):
@@ -318,7 +316,7 @@ class TestFullFlowIntegration(EmailAutoSendBase):
             "django.core.mail.backends.locmem.EmailBackend"
         )
 
-        initial_sent = EmailMessage.objects.filter(sent=True).count()
+        initial_sent = EmailMessage.objects.filter(status="sent").count()
         initial_total = EmailMessage.objects.count()
 
         contact = self._make_contact("fullflow@test.com")
@@ -335,12 +333,10 @@ class TestFullFlowIntegration(EmailAutoSendBase):
             body="Body",
         )
 
-        self.assertEqual(EmailMessage.objects.filter(sent=True).count(), initial_sent)
+        self.assertEqual(EmailMessage.objects.filter(status="sent").count(), initial_sent)
         self.assertGreater(EmailMessage.objects.count(), initial_total)
 
-        pending = EmailMessage.objects.filter(
-            sent=False, dispatched=False, send_attempt_failed=False
-        )
+        pending = EmailMessage.objects.filter(status="pending")
         self.assertGreater(pending.count(), 0)
 
     @patch("ngen.tasks.EmailBackend")
@@ -360,14 +356,14 @@ class TestFullFlowIntegration(EmailAutoSendBase):
             contact, [], [], tlp_obj, 7
         )
 
-        pending = EmailMessage.objects.filter(sent=False)
+        pending = EmailMessage.objects.exclude(status="sent")
         ids = list(pending.values_list("id", flat=True))
         self.assertGreater(len(ids), 0)
 
         for email_id in ids:
             tasks.async_send_email(email_id)
 
-        self.assertEqual(EmailMessage.objects.filter(sent=True).count(), len(ids))
+        self.assertEqual(EmailMessage.objects.filter(status="sent").count(), len(ids))
 
 
 class TestRetryEndpoint(EmailAutoSendBase):
@@ -383,10 +379,8 @@ class TestRetryEndpoint(EmailAutoSendBase):
             recipients=[{"name": "to", "email": "to@test.com"}],
             subject="Failed email",
             body="Body",
-            send_attempt_failed=True,
+            status="failed",
             last_error="SMTP error",
-            sent=False,
-            dispatched=True,
         )
 
     @patch("ngen.tasks.async_send_email.delay")
@@ -407,8 +401,8 @@ class TestRetryEndpoint(EmailAutoSendBase):
             )
 
             async_send_email.delay(clone.id)
-            clone.dispatched = True
-            clone.save(update_fields=["dispatched"])
+            clone.status = "sending"
+            clone.save(update_fields=["status"])
 
             self.failed_email.retried = True
             self.failed_email.save(update_fields=["retried"])
@@ -417,7 +411,7 @@ class TestRetryEndpoint(EmailAutoSendBase):
         self.failed_email.refresh_from_db()
         self.assertTrue(self.failed_email.retried)
         clone.refresh_from_db()
-        self.assertTrue(clone.dispatched)
+        self.assertIn(clone.status, ("sending", "retrying"))
 
     def test_retried_email_cannot_be_retried_again(self):
         """Once retried=True, can't retry again"""
@@ -425,17 +419,16 @@ class TestRetryEndpoint(EmailAutoSendBase):
         self.failed_email.save(update_fields=["retried"])
 
         self.assertTrue(self.failed_email.retried)
-        self.assertTrue(self.failed_email.send_attempt_failed)
+        self.assertEqual(self.failed_email.status, "failed")
 
     def test_sent_email_cannot_be_retried(self):
         """Only failed emails can be retried (not sent ones)"""
-        self.failed_email.send_attempt_failed = False
-        self.failed_email.sent = True
+        self.failed_email.status = "sent"
         self.failed_email.save()
         self.failed_email.refresh_from_db()
 
-        self.assertFalse(self.failed_email.send_attempt_failed)
-        self.assertTrue(self.failed_email.sent)
+        self.assertNotEqual(self.failed_email.status, "failed")
+        self.assertEqual(self.failed_email.status, "sent")
 
     def test_pending_email_cannot_be_retried(self):
         """Pending (non-failed) emails should use send_now, not retry"""
@@ -446,13 +439,11 @@ class TestRetryEndpoint(EmailAutoSendBase):
             recipients=[{"name": "to", "email": "to@test.com"}],
             subject="Pending",
             body="Body",
-            sent=False,
-            dispatched=False,
-            send_attempt_failed=False,
+            status="pending",
         )
 
-        self.assertFalse(pending.send_attempt_failed)
-        self.assertFalse(pending.sent)
+        self.assertNotEqual(pending.status, "failed")
+        self.assertNotEqual(pending.status, "sent")
 
     @patch("ngen.tasks.async_send_email.delay")
     @use_test_email_env()
@@ -470,17 +461,17 @@ class TestRetryEndpoint(EmailAutoSendBase):
             body=self.failed_email.body,
         )
         async_send_email.delay(clone1.id)
-        clone1.dispatched = True
-        clone1.save(update_fields=["dispatched"])
+        clone1.status = "sending"
+        clone1.save(update_fields=["status"])
         self.failed_email.retried = True
         self.failed_email.save(update_fields=["retried"])
 
         self.failed_email.refresh_from_db()
         self.assertTrue(self.failed_email.retried)
 
-        clone1.send_attempt_failed = True
+        clone1.status = "failed"
         clone1.last_error = "Clone also failed"
-        clone1.save(update_fields=["send_attempt_failed", "last_error"])
+        clone1.save(update_fields=["status", "last_error"])
 
         self.assertFalse(clone1.retried)
 
@@ -493,12 +484,12 @@ class TestRetryEndpoint(EmailAutoSendBase):
             body=clone1.body,
         )
         async_send_email.delay(clone2.id)
-        clone2.dispatched = True
-        clone2.save(update_fields=["dispatched"])
+        clone2.status = "sending"
+        clone2.save(update_fields=["status"])
         clone1.retried = True
         clone1.save(update_fields=["retried"])
 
         clone1.refresh_from_db()
         self.assertTrue(clone1.retried)
         clone2.refresh_from_db()
-        self.assertTrue(clone2.dispatched)
+        self.assertIn(clone2.status, ("sending", "retrying"))

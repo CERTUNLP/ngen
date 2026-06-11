@@ -15,6 +15,14 @@ class EmailMessage(AuditModelMixin):
     Celery is the actual queue; EmailMessage is the audit log.
     """
 
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        CANCELLED = "cancelled", "Cancelled"
+        SENDING = "sending", "Sending"
+        RETRYING = "retrying", "Retrying"
+        FAILED = "failed", "Failed"
+        SENT = "sent", "Sent"
+
     root_message_id = models.CharField(max_length=255)
     parent_message_id = models.CharField(null=True, max_length=255)
     message_id = models.CharField(max_length=255)
@@ -28,11 +36,11 @@ class EmailMessage(AuditModelMixin):
     body_html = models.TextField(null=True)
     template = models.CharField(max_length=255, null=True)
     attachments = models.JSONField(default=list, blank=True)
-    sent = models.BooleanField(default=False)
-    send_attempt_failed = models.BooleanField(default=False)
-    dispatched = models.BooleanField(
-        default=False,
-        help_text="True if async_send_email.delay() was called. False means stored for manual sending.",
+    status = models.CharField(
+        max_length=16,
+        choices=Status.choices,
+        default=Status.PENDING,
+        db_index=True,
     )
     size = models.PositiveIntegerField(
         null=True,
@@ -46,6 +54,10 @@ class EmailMessage(AuditModelMixin):
     retried = models.BooleanField(
         default=False,
         help_text="True if this failed email was already retried (cloned and dispatched)",
+    )
+    retry_count = models.PositiveIntegerField(
+        default=0,
+        help_text="Number of Celery retry attempts for this email",
     )
 
     class Meta:

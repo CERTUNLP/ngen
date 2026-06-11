@@ -308,14 +308,19 @@ class TestAsyncSendEmail(TasksTestCase):
 
         tasks.async_send_email(email_message.id)
         email_message.refresh_from_db()
-        self.assertTrue(email_message.send_attempt_failed)
+        self.assertNotEqual(email_message.status, "failed")
+        self.assertEqual(email_message.retry_count, 1)
         self.assertIsNotNone(email_message.last_error)
         mock_retry.assert_called_once()
 
 
 class TestRetrieveEmails(TasksTestCase):
     def test_no_config_returns_error(self):
-        with override_config(EMAIL_HOST=None):
+        with override_config(
+            EMAIL_HOST="",
+            EMAIL_USERNAME="",
+            EMAIL_PASSWORD="",
+        ):
             result = tasks.retrieve_emails()
             self.assertEqual(result["status"], "error")
 
@@ -324,14 +329,14 @@ class TestRetrieveEmails(TasksTestCase):
     def test_connection_refused_handled(self, mock_client):
         mock_client.side_effect = ConnectionRefusedError("refused")
         result = tasks.retrieve_emails()
-        self.assertIsNone(result)
+        self.assertEqual(result["status"], "error")
 
     @use_test_email_env()
     @patch("ngen.tasks.EmailClient")
     def test_timeout_handled(self, mock_client):
         mock_client.side_effect = TimeoutError("timed out")
         result = tasks.retrieve_emails()
-        self.assertIsNone(result)
+        self.assertEqual(result["status"], "error")
 
 
 class TestSendContactChecks(TasksTestCase):

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, ButtonGroup, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { getEmailMessages, sendQueuedEmail, resendEmail, sendAllPending, getEmailQueueStats, discardEmail, retryEmail } from "api/services/emailqueue";
+import { getEmailMessages, sendQueuedEmail, resendEmail, sendAllPending, getEmailQueueStats, discardEmail, retryEmail, cancelEmail } from "api/services/emailqueue";
 import { patchSetting } from "api/services/setting";
 import { COMPONENT_URL } from "config/constant";
 import TableEmailQueue from "./TableEmailQueue";
@@ -11,15 +11,17 @@ import Alert from "components/Alert/Alert";
 
 const getStatusTabs = (t) => [
   { key: "all", label: t("ngen.email_queue.tab_all"), filter: "", statKey: "total" },
-  { key: "pending", label: t("ngen.email_queue.pending"), filter: "sent=false&send_attempt_failed=false", statKey: "pending" },
-  { key: "sent", label: t("ngen.email_queue.sent"), filter: "sent=true&send_attempt_failed=false", statKey: "sent_total" },
-  { key: "failed", label: t("ngen.email_queue.failed"), filter: "send_attempt_failed=true", statKey: "failed" },
+  { key: "stored", label: t("ngen.email_queue.stored"), filter: "status=pending", statKey: "pending" },
+  { key: "dispatched", label: t("ngen.email_queue.dispatched"), filter: "status=sending&status=retrying", statKey: "dispatched" },
+  { key: "sent", label: t("ngen.email_queue.sent"), filter: "status=sent", statKey: "sent_total" },
+  { key: "failed", label: t("ngen.email_queue.failed"), filter: "status=failed", statKey: "failed" },
+  { key: "cancelled", label: t("ngen.email_queue.cancelled"), filter: "status=cancelled", statKey: "cancelled" },
 ];
 
 const EmailQueue = () => {
   const { t } = useTranslation();
   const STATUS_TABS = getStatusTabs(t);
-  const [activeTab, setActiveTab] = useState("pending");
+  const [activeTab, setActiveTab] = useState("stored");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sendingId, setSendingId] = useState(null);
@@ -87,6 +89,18 @@ const EmailQueue = () => {
     setSendingId(msg.id);
     try {
       await retryEmail(msg.id);
+      refreshAll();
+    } catch {
+      // errors handled by service
+    } finally {
+      setSendingId(null);
+    }
+  };
+
+  const handleCancel = async (msg) => {
+    setSendingId(msg.id);
+    try {
+      await cancelEmail(msg.id);
       refreshAll();
     } catch {
       // errors handled by service
@@ -244,6 +258,7 @@ const EmailQueue = () => {
                 onSendNow={handleSendNow}
                 onResend={handleResend}
                 onRetry={handleRetry}
+                onCancel={handleCancel}
                 onDiscard={handleDiscard}
                 onShowDetail={handleShowDetail}
               />

@@ -56,8 +56,7 @@ class TestEmailMessage(APITestCaseWithLogin):
                 ],
                 date=timezone.now(),
                 body="Test body",
-                sent=True,
-                send_attempt_failed=False,
+                status="sent",
             ),
             EmailMessage.objects.create(
                 root_message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
@@ -71,8 +70,7 @@ class TestEmailMessage(APITestCaseWithLogin):
                 ],
                 date=timezone.now(),
                 body="Test body",
-                sent=True,
-                send_attempt_failed=False,
+                status="sent",
             ),
         ]
 
@@ -105,8 +103,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             recipients=[{"name": "Victim Name", "email": "victim@organization.com"}],
             date=timezone.now(),
             body="Test body",
-            sent=True,
-            send_attempt_failed=False,
+            status="sent",
         )
 
         response = self.client.get(self.url_detail(email_message.pk))
@@ -130,8 +127,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             recipients=[{"name": "Victim Name", "email": "victim@organization.com"}],
             date=timezone.now(),
             body="Test body",
-            sent=True,
-            send_attempt_failed=False,
+            status="sent",
         )
 
         json_data = {"body": "New body"}
@@ -353,8 +349,7 @@ class TestEmailMessage(APITestCaseWithLogin):
         created_email_message = EmailMessage.objects.get(id=response.data["id"])
 
         self.assertEqual(created_email_message.subject, "Test Subject Fail Email")
-        self.assertEqual(created_email_message.sent, False)
-        self.assertEqual(created_email_message.send_attempt_failed, True)
+        self.assertEqual(created_email_message.status, "failed")
         self.assertEqual(created_email_message.date, None)
 
     @use_test_email_env()
@@ -391,7 +386,7 @@ class TestEmailMessage(APITestCaseWithLogin):
         )
         self.assertEqual(created_email_message.recipients, json_data["recipients"])
         self.assertEqual(created_email_message.body, json_data["body"])
-        self.assertEqual(created_email_message.sent, True)
+        self.assertEqual(created_email_message.status, "sent")
         self.assertIsNotNone(created_email_message.date)
 
     @use_test_email_env()
@@ -413,8 +408,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             ],
             date=timezone.now(),
             body="Test body",
-            sent=True,
-            send_attempt_failed=False,
+            status="sent",
         )
 
         initial_count = EmailMessage.objects.count()
@@ -443,7 +437,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             [{"name": self.app_email_username, "email": self.app_email_sender}],
         )
         self.assertEqual(created_email_message.recipients, email_message.senders)
-        self.assertEqual(created_email_message.sent, True)
+        self.assertEqual(created_email_message.status, "sent")
         self.assertIsNotNone(created_email_message.date)
         self.assertEqual(
             created_email_message.root_message_id, email_message.message_id
@@ -475,8 +469,7 @@ class TestEmailMessage(APITestCaseWithLogin):
                 ],
                 date=timezone.now(),
                 body="Test body",
-                sent=True,
-                send_attempt_failed=False,
+                status="sent",
             ),
             EmailMessage.objects.create(
                 root_message_id="<172654248025.81.10116784141945641235@cert.unlp.edu.ar>",
@@ -490,8 +483,7 @@ class TestEmailMessage(APITestCaseWithLogin):
                 ],
                 date=timezone.now(),
                 body="Test body",
-                sent=True,
-                send_attempt_failed=False,
+                status="sent",
             ),
         ]
 
@@ -522,7 +514,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             [{"name": self.app_email_username, "email": self.app_email_sender}],
         )
         self.assertEqual(created_email_message.recipients, email_messages[1].senders)
-        self.assertEqual(created_email_message.sent, True)
+        self.assertEqual(created_email_message.status, "sent")
         self.assertIsNotNone(created_email_message.date)
         self.assertEqual(
             created_email_message.root_message_id, email_messages[0].message_id
@@ -603,7 +595,7 @@ class TestEmailMessage(APITestCaseWithLogin):
         )
         self.assertEqual(created_email_message.recipients, json_data["recipients"])
         self.assertEqual(created_email_message.body, json_data["body"])
-        self.assertEqual(created_email_message.sent, True)
+        self.assertEqual(created_email_message.status, "sent")
         self.assertIsNotNone(created_email_message.date)
 
     @use_test_email_env()
@@ -645,7 +637,7 @@ class TestEmailMessage(APITestCaseWithLogin):
         )
         self.assertEqual(created_email_message.recipients, expected_recipients)
         self.assertEqual(created_email_message.body, json_data["body"])
-        self.assertEqual(created_email_message.sent, True)
+        self.assertEqual(created_email_message.status, "sent")
         self.assertIsNotNone(created_email_message.date)
 
     @use_test_email_env()
@@ -668,8 +660,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             ],
             date=timezone.now(),
             body="Test body",
-            sent=True,
-            send_attempt_failed=False,
+            status="sent",
         )
 
         initial_count = EmailMessage.objects.count()
@@ -706,7 +697,7 @@ class TestEmailMessage(APITestCaseWithLogin):
             [{"name": self.app_email_username, "email": self.app_email_sender}],
         )
         self.assertEqual(created_email_message.recipients, expected_recipients)
-        self.assertEqual(created_email_message.sent, True)
+        self.assertEqual(created_email_message.status, "sent")
         self.assertIsNotNone(created_email_message.date)
         self.assertEqual(
             created_email_message.root_message_id, email_message.message_id
@@ -749,5 +740,5 @@ class TestEmailMessage(APITestCaseWithLogin):
         )
         self.assertEqual(created_email_message.recipients, [])
         self.assertEqual(created_email_message.bcc_recipients, bcc_recipients)
-        self.assertEqual(created_email_message.sent, True)
+        self.assertEqual(created_email_message.status, "sent")
         self.assertIsNotNone(created_email_message.date)

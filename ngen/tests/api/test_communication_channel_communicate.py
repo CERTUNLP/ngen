@@ -96,7 +96,7 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
         self.assertEqual(created_email_message.recipients, expected_recipients)
         self.assertEqual(created_email_message.subject, params["subject"])
         self.assertEqual(created_email_message.body, params["body"])
-        self.assertEqual(created_email_message.sent, True)
+        self.assertEqual(created_email_message.status, "sent")
         self.assertIsNotNone(created_email_message.date)
         self.assertEqual(self.communication_channel.get_messages().count(), 1)
         self.assertEqual(
@@ -124,8 +124,7 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
             recipients=[{"name": self.contact.name, "email": self.contact.username}],
             date=timezone.now(),
             body="Test body",
-            sent=True,
-            send_attempt_failed=False,
+            status="sent",
         )
         EmailMessage.objects.create(
             root_message_id=root_message_id,
@@ -139,8 +138,7 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
             ],
             date=timezone.now(),
             body="Test body",
-            sent=True,
-            send_attempt_failed=False,
+            status="sent",
         )
 
         self.communication_channel.message_id = root_message_id
@@ -170,7 +168,7 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
         self.assertEqual(created_email_message.recipients, expected_recipients)
         self.assertEqual(created_email_message.subject, "Re: Test Subject")
         self.assertEqual(created_email_message.body, params["body"])
-        self.assertEqual(created_email_message.sent, True)
+        self.assertEqual(created_email_message.status, "sent")
         self.assertIsNotNone(created_email_message.date)
         self.assertEqual(self.communication_channel.get_messages().count(), 3)
         self.assertEqual(
@@ -221,7 +219,7 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
         self.assertEqual(created_email_message.bcc_recipients, expected_bcc_recipients)
         self.assertEqual(created_email_message.subject, params["subject"])
         self.assertEqual(created_email_message.body, params["body"])
-        self.assertEqual(created_email_message.sent, True)
+        self.assertEqual(created_email_message.status, "sent")
         self.assertIsNotNone(created_email_message.date)
         self.assertEqual(self.communication_channel.get_messages().count(), 1)
         self.assertEqual(

@@ -510,7 +510,7 @@ def async_send_email(self, email_message_id: int):
     try:
         email_message = ngen.models.EmailMessage.objects.get(id=email_message_id)
     except ngen.models.EmailMessage.DoesNotExist as e:
-        if self.request.retries == self.max_retries:
+        if self.request.retries >= self.max_retries:
             logger.exception(
                 "async_send_email: id=%s not found after %s retries",
                 email_message_id,
@@ -536,6 +536,17 @@ def async_send_email(self, email_message_id: int):
         [r["email"] for r in email_message.bcc_recipients],
         len(email_message.attachments),
     )
+
+    if email_message.status in (
+        ngen.models.EmailMessage.Status.CANCELLED,
+        ngen.models.EmailMessage.Status.SENT,
+    ):
+        logger.info(
+            "async_send_email: id=%s skipped (status=%s)",
+            email_message_id,
+            email_message.status,
+        )
+        return {"status": "skipped", "message": f"Email {email_message_id} was {email_message.status}"}
 
     mail_conf = {
         "host": config.EMAIL_HOST,
@@ -611,22 +622,23 @@ def async_send_email(self, email_message_id: int):
         )
         email.send(fail_silently=False)
 
-        email_message.sent = True
-        email_message.date = timezone.now()
+        email_message.status = ngen.models.EmailMessage.Status.SENT
         email_message.last_error = None
+        email_message.date = timezone.now()
         logger.info(
-            "async_send_email: id=%s SENT successfully subject='%s' to=%s (size=%s bytes)",
+            "async_send_email: id=%s SENT successfully subject='%s' to=%s (size=%s bytes, retries=%s)",
             email_message_id,
             email_message.subject,
             [r["email"] for r in email_message.recipients],
             email_size,
+            email_message.retry_count,
         )
         return {"status": "success", "message": f"Email {email_message_id} sent"}
     except Exception as e:
-        email_message.send_attempt_failed = True
         email_message.last_error = traceback.format_exc()[:2000]
+        email_message.retry_count = self.request.retries + 1
         logger.exception(
-            "async_send_email: id=%s FAILED subject='%s' to=%s size=%s bytes timeout=%ss error=%s",
+            "async_send_email: id=%s FAILED subject='%s' to=%s size=%s bytes timeout=%ss retries=%s/%s error=%s",
             email_message_id,
             email_message.subject,
             (
@@ -636,23 +648,27 @@ def async_send_email(self, email_message_id: int):
             ),
             getattr(email_message, 'size', '?'),
             mail_conf["timeout"],
+            email_message.retry_count,
+            self.max_retries,
             e,
         )
-        if self.request.retries == self.max_retries:
+        if self.request.retries >= self.max_retries:
+            email_message.status = ngen.models.EmailMessage.Status.FAILED
             return {
                 "status": "error",
                 "message": f"Email {email_message_id} failed after {self.max_retries} retries",
             }
+        email_message.status = ngen.models.EmailMessage.Status.RETRYING
         exponential_backoff = (self.request.retries + 1) ** 2
         self.retry(exc=e, countdown=exponential_backoff)
     finally:
         if email_message is not None:
             email_message.save()
             logger.debug(
-                "async_send_email: id=%s saved (sent=%s, failed=%s)",
+                "async_send_email: id=%s saved status=%s retry_count=%s",
                 email_message_id,
-                email_message.sent,
-                email_message.send_attempt_failed,
+                email_message.status,
+                email_message.retry_count,
             )
 
 
@@ -691,7 +707,7 @@ def retrieve_emails():
         host,
         imap_port,
         imap_ssl,
-        config.EMAIL_TIMEOUT,
+        config.EMAIL_IMAP_TIMEOUT,
         username,
     )
 
@@ -703,7 +719,7 @@ def retrieve_emails():
             password=password,
             port=imap_port,
             ssl=imap_ssl,
-            timeout=config.EMAIL_TIMEOUT,
+            timeout=config.EMAIL_IMAP_TIMEOUT,
         )
         unread_emails = email_client.fetch_unread_emails()
         logger.info("retrieve_emails: fetched %s unread emails", len(unread_emails))
@@ -740,11 +756,19 @@ def retrieve_emails():
         logger.error(
             "retrieve_emails: connection refused host=%s:%s", host, imap_port
         )
+        return {
+            "status": "error",
+            "message": f"Connection refused to {host}:{imap_port}",
+        }
 
     except TimeoutError:
         logger.error(
             "retrieve_emails: connection timed out host=%s:%s", host, imap_port
         )
+        return {
+            "status": "error",
+            "message": f"Connection timed out to {host}:{imap_port}",
+        }
 
     finally:
         if email_client:
