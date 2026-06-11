@@ -1,0 +1,34 @@
+services:
+  ngen-django:
+    volumes:
+      - django_mediafiles:/code/mediafiles
+      - django_staticfiles:/code/staticfiles
+
+  ngen-celery-worker:
+    volumes:
+      - django_mediafiles:/code/mediafiles
+      - django_staticfiles:/code/staticfiles
+
+  ngen-celery-beat:
+    volumes:
+      - django_mediafiles:/code/mediafiles
+      - django_staticfiles:/code/staticfiles
+
+  ngen-celery-flower:
+    volumes:
+      - django_mediafiles:/code/mediafiles
+      - django_staticfiles:/code/staticfiles
+
+  ngen-postgres:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  ngen-redis:
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
+  django_mediafiles:
+  django_staticfiles:

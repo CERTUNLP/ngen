@@ -2,6 +2,8 @@
 uml_full.png
 uml_simplified.png
 
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -150,3 +152,4 @@ dmypy.json
 
 # Claude
 CLAUDE.md
+.opencode
