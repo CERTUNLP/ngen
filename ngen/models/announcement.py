@@ -191,7 +191,7 @@ class Communication:
         raise NotImplementedError
 
     @staticmethod
-    def communicate_contact_summary(contact, open_cases, closed_cases, tlp, days):
+    def communicate_contact_summary(contact, open_cases, closed_cases, tlp, days, priorities=None):
         """
         Weekly cases summary communication
         """
@@ -201,18 +201,25 @@ class Communication:
             gettext("Summary"),
         )
         template = "reports/summary_contact.html"
+        extra_params = {
+            "contact": contact,
+            "open_cases": open_cases,
+            "closed_cases": closed_cases,
+            "tlp": tlp,
+            "days": days,
+            "full_summary_report_link": config.FULL_SUMMARY_REPORT_LINK,
+        }
+        if priorities:
+            from ngen.models.administration import Priority
+            priority_names = list(
+                Priority.objects.filter(slug__in=priorities).values_list("name", flat=True)
+            )
+            extra_params["priority_names"] = priority_names
         Communication.send_mail(
             subject,
             Communication.render_template(
                 template,
-                extra_params={
-                    "contact": contact,
-                    "open_cases": open_cases,
-                    "closed_cases": closed_cases,
-                    "tlp": tlp,
-                    "days": days,
-                    "full_summary_report_link": config.FULL_SUMMARY_REPORT_LINK,
-                },
+                extra_params=extra_params,
             ),
             {
                 "to": [contact.username],

@@ -1257,11 +1257,11 @@ class AnnouncementTestCase(TestCase):
         original = Communication.communicate_contact_summary
         call_count = [0]
 
-        def failing_communicate(contact, open_cases, closed_cases, tlp, days):
+        def failing_communicate(contact, open_cases, closed_cases, tlp, days, priorities=None):
             call_count[0] += 1
             if contact.username == "contact2@test.com":
                 raise RuntimeError("Simulated email failure")
-            return original(contact, open_cases, closed_cases, tlp, days)
+            return original(contact, open_cases, closed_cases, tlp, days, priorities=priorities)
 
         with patch.object(
             Communication, "communicate_contact_summary", side_effect=failing_communicate

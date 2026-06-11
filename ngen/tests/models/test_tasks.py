@@ -195,6 +195,58 @@ class TestContactSummary(TasksTestCase):
         self.assertIn("skipped=1", logged)
         self.assertIn("sent=0", logged)
 
+    @patch("ngen.tasks.EmailBackend")
+    @use_test_email_env()
+    @override_config(EMAIL_AUTO_SEND=True)
+    @override_config(SUMMARY_TLP="red")
+    @override_config(TEAM_NAME="TEAM")
+    @override_config(TEAM_EMAIL="team@ngen.com")
+    @override_config(NGEN_LANG="en")
+    @CELERY_EAGER
+    def test_contact_summary_filters_by_priority(self, mock_backend):
+        mock_backend.return_value = mail.get_connection(
+            "django.core.mail.backends.locmem.EmailBackend"
+        )
+
+        network_with_contact = Network.objects.get(pk=4)
+        contact = Contact.objects.get(pk=1)
+
+        high_priority = Priority.objects.get(slug="high")
+        low_priority = Priority.objects.get(slug="low")
+
+        event1 = Event.objects.create(
+            domain="a.unlp.edu.ar",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            network=network_with_contact,
+        )
+        case_high = self._create_case(priority=high_priority, lifecycle="manual")
+        case_high.events.add(event1)
+
+        event2 = Event.objects.create(
+            domain="b.unlp.edu.ar",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            network=network_with_contact,
+        )
+        case_low = self._create_case(priority=low_priority, lifecycle="manual")
+        case_low.events.add(event2)
+
+        tasks.contact_summary(
+            contact_usernames=[contact.username],
+            days=7,
+            priorities=["high"],
+        )
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertIn("Priority filter: High", email.body)
+        self.assertNotIn("Low", email.body)
+
 
 class TestCreateCasesForMatchingEvents(TasksTestCase):
     @CELERY_EAGER

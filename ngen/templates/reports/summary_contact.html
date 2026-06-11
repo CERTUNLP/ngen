@@ -14,6 +14,13 @@
                     Below are all your unsolved cases, along with a summary of your closed cases from the last {{ days }} days.
                 {% endblocktranslate %}
             </p>
+            {% if priority_names %}
+                <p>
+                    {% blocktranslate trimmed with priorities=priority_names|join:", " %}
+                        Priority filter: {{ priorities }}
+                    {% endblocktranslate %}
+                </p>
+            {% endif %}
             {% if full_summary_report_link %}
                 <p>
                     {% blocktranslate trimmed with link=full_summary_report_link %}

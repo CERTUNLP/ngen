@@ -90,7 +90,8 @@ def case_renotification():
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
 def contact_summary(
-    contact_ids=[], contact_usernames=[], tlp=None, days=None, contact_type="email"
+    contact_ids=[], contact_usernames=[], tlp=None, days=None, contact_type="email",
+    priorities=None,
 ):
     """
     Send summary of open cases to all network admins or specific contacts.
@@ -100,6 +101,7 @@ def contact_summary(
     :param str tlp: TLP (Traffic Light Protocol) level for the summary, defaults to config.SUMMARY_TLP.
     :param int days: Number of days to look back for closed cases, default is the period of the periodic task if exists or 14 days if not exists.
     :param str contact_type: Type of contact to filter by, defaults to "email".
+    :param list priorities: List of priority slugs to filter cases by. If empty or None, all priorities are included.
     """
     if contact_ids or contact_usernames:
         contacts = ngen.models.Contact.objects.filter(
@@ -163,6 +165,8 @@ def contact_summary(
                 )
                 .distinct()
             )
+            if priorities:
+                open_cases = open_cases.filter(priority__slug__in=priorities)
             list_open_cases = [
                 {"case": case, "events": case.events.filter(network__contacts=contact)}
                 for case in open_cases
@@ -187,6 +191,8 @@ def contact_summary(
                 )
                 .distinct()
             )
+            if priorities:
+                closed_cases = closed_cases.filter(priority__slug__in=priorities)
 
             list_closed_cases = [
                 {"case": case, "events": case.events.filter(network__contacts=contact)}
@@ -206,6 +212,7 @@ def contact_summary(
                     list_closed_cases,
                     tlp_obj,
                     days=int(timedeltavalue.total_seconds() / 86400),
+                    priorities=priorities,
                 )
                 sent_count += 1
             else:
