@@ -21,8 +21,9 @@ class IMAPStrategy(EmailProtocolStrategy):
             password=self.password,
             port=self.port,
             ssl=self.ssl,
-            timeout=self.timeout,
         )
+        if self.timeout is not None:
+            self.client.connection.socket().settimeout(self.timeout)
 
     def logout(self):
         if self.client:
