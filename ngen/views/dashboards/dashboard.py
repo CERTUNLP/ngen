@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 
 from ngen.views.dashboards.dashboard_presenter import (
     DashboardPresenter,
+    NetworkAdminDashboardPresenter,
 )
 from ngen.permissions import CustomApiViewPermission
 
@@ -20,9 +21,13 @@ class DashboardView(APIView):
 
     def _get_presenter(self, request):
         """
-        Get the presenter.
+        Get the presenter. Network admin users get a scoped presenter
+        that filters data to their associated contacts/networks.
         """
-        return DashboardPresenter(request)
+        user = request.user
+        if user.is_superuser or user.is_staff:
+            return DashboardPresenter(request)
+        return NetworkAdminDashboardPresenter(request)
 
     def get(self, request):
         """
