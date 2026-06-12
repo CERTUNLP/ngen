@@ -210,8 +210,6 @@ const ListCase = ({ routeParams }) => {
                   </PermissionCheck>
                 </Col>
               </Row>
-              <Row></Row>
-              <br />
               <Collapse in={open}>
                 <div id="example-collapse-text">
                   <Row>
@@ -255,7 +253,6 @@ const ListCase = ({ routeParams }) => {
                       />
                     </Col>
                   </Row>
-                  <br />
                 </div>
               </Collapse>
             </Card.Header>

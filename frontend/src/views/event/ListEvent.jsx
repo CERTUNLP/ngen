@@ -553,7 +553,6 @@ const ListEvent = ({ routeParams }) => {
                   />
                 </Col>
               </Row>
-              <br />
             </div>
           </Collapse>
         </Card.Header>

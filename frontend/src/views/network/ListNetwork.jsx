@@ -124,7 +124,6 @@ const ListNetwork = ({ routeParams }) => {
                   <CrudButton type="create" name={t("ngen.network_one")} to="/networks/create" checkPermRoute />
                 </Col>
               </Row>
-              <br />
               <Collapse in={open}>
                 <div id="example-collapse-text">
                   <Row>
@@ -183,7 +182,6 @@ const ListNetwork = ({ routeParams }) => {
                       />
                     </Col>
                   </Row>
-                  <br />
                 </div>
               </Collapse>
             </Card.Header>

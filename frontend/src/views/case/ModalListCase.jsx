@@ -92,7 +92,6 @@ const ModalListCase = (props) => {
             />
           </Col>
         </Row>
-        <br />
         <Row>
           <Col sm={4} lg={4}>
             <FilterSelectUrl

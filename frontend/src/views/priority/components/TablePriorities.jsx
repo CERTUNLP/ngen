@@ -58,7 +58,6 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
     <div>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} />
 
-      <ul className="list-group my-4">
         <Table responsive hover className="text-center">
           <thead>
             <tr>
@@ -188,7 +187,6 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
             />
           </tbody>
         </Table>
-      </ul>
     </div>
   );
 };

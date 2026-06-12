@@ -149,7 +149,6 @@ const ListTemplete = () => {
               </Row>
               <Collapse in={open}>
                 <div id="example-collapse-text">
-                  <br />
                   <Row>
                     <Col sm={12} lg={4}>
                       <FilterSelectUrl
@@ -178,7 +177,6 @@ const ListTemplete = () => {
                       />
                     </Col>
                   </Row>
-                  <br />
                 </div>
               </Collapse>
             </Card.Header>

@@ -73,6 +73,12 @@ label {
   margin-bottom: 0.5rem;
 }
 
+ol,
+ul,
+dl {
+  margin-bottom: 0;
+}
+
 .img-radius {
   border-radius: 50%;
 }
@@ -143,7 +149,7 @@ p.text-muted {
   .card-header {
     background-color: transparent;
     border-bottom: 1px solid #f1f1f1;
-    padding: 20px 20px 5px 25px;
+    padding: 10px 20px;
     position: relative;
 
     h5 {
@@ -223,13 +229,12 @@ p.text-muted {
   .card-footer {
     border-top: 1px solid #f1f1f1;
     background: transparent;
-    padding: 5px 25px 25px 25px;
+    padding: 10px 20px;
   }
 
   .card-block,
   .card-body {
-    // padding: 30px 25px;
-    padding: 5px 30px 5px 25px;
+    padding: 10px 20px;
   }
 
   &.card-load {
@@ -421,6 +426,12 @@ p.text-muted {
 
 .table {
   --bs-table-striped-bg: rgba(4, 169, 245, 0.05);
+  margin-bottom: 0;
+}
+
+.card-body .table {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .table-hover tbody tr:hover {

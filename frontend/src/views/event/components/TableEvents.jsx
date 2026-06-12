@@ -169,7 +169,6 @@ const TableEvents = ({
   
   return (
     <React.Fragment>
-      <ul className="list-group my-4">
         <Table responsive hover className="text-center">
           <thead>
             <tr>
@@ -397,7 +396,6 @@ const TableEvents = ({
             })}
           </tbody>
         </Table>
-      </ul>
       <ModalConfirm
         type="delete"
         component="Evento"

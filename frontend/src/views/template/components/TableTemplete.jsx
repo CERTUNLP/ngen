@@ -119,7 +119,6 @@ const TableTemplete = ({
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={resetShowAlert} component="template" />
 
-      <ul className="list-group my-4">
         <Table responsive hover className="text-center">
           <thead>
             <tr>
@@ -374,7 +373,6 @@ const TableTemplete = ({
             </Modal>
           </tbody>
         </Table>
-      </ul>
     </React.Fragment>
   );
 };

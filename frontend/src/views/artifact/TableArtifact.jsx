@@ -11,7 +11,6 @@ const TableArtifact = ({ artifact }) => {
     <div>
       <Card>
         <Card.Body>
-          <ul className="list-group my-4">
             <Table responsive hover>
               <thead>
                 <tr>
@@ -43,7 +42,6 @@ const TableArtifact = ({ artifact }) => {
                 })}
               </tbody>
             </Table>
-          </ul>
         </Card.Body>
       </Card>
     </div>

@@ -173,7 +173,6 @@ const ListTaxonomies = () => {
                   <CrudButton type="create" name={t("ngen.taxonomy_one")} to="/taxonomies/create" checkPermRoute />
                 </Col>
               </Row>
-              <br />
               <Collapse in={openFilter}>
                 <div id="example-collapse-text">
                   <Row>
@@ -217,7 +216,6 @@ const ListTaxonomies = () => {
                       />
                     </Col>
                   </Row>
-                  <br />
                   <Row>
                     <Col sm={4} lg={4}>
                       <FilterSelect
@@ -261,7 +259,6 @@ const ListTaxonomies = () => {
                       />
                     </Col>
                   </Row>
-                  <br />
                   <Row>
                     <Col sm={4} lg={4}>
                       <FilterSelect
