@@ -10,6 +10,8 @@ import { getUser } from "api/services/users";
 import { getTLPSpecific } from "api/services/tlp";
 import { getFeed } from "api/services/feeds";
 import { getEvent } from "api/services/events";
+import { getNetwork } from "api/services/networks";
+import { getContact } from "api/services/contacts";
 import SmallEventTable from "./components/SmallEventTable";
 import { getArtefact } from "api/services/artifact";
 import { getMinifiedTag } from "api/services/tags";
@@ -35,6 +37,8 @@ const ReadEvent = ({ routeParams }) => {
   const [children, setChildren] = useState([]);
   const [childrenEvidences, setChildrenEvidences] = useState([]);
   const [listTag, setListTag] = useState([]);
+  const [network, setNetwork] = useState(null);
+  const [contacts, setContacts] = useState([]);
   const { t } = useTranslation();
 
   // const storageEventUrl = (url) => {
@@ -70,6 +74,27 @@ const ReadEvent = ({ routeParams }) => {
         .catch((error) => console.log(error));
     }
   }, [id]);
+
+  useEffect(() => {
+    if (body.network) {
+      getNetwork(body.network)
+        .then((response) => {
+          const netData = response.data;
+          setNetwork(netData);
+          if (netData.contacts?.length > 0) {
+            Promise.all(netData.contacts.map((url) => getContact(url, true)))
+              .then((responses) => setContacts(responses.map((r) => r.data)))
+              .catch(() => setContacts([]));
+          } else {
+            setContacts([]);
+          }
+        })
+        .catch(() => { setNetwork(null); setContacts([]); });
+    } else {
+      setNetwork(null);
+      setContacts([]);
+    }
+  }, [body.network]);
 
   useEffect(() => {
     const fetchAllEvidences = async () => {
@@ -382,6 +407,81 @@ const ReadEvent = ({ routeParams }) => {
         )}
       </Card>
 
+      <PermissionCheck permissions={["view_network"]}>
+        {network && (
+          <Card>
+            <Card.Header>
+              <Card.Title as="h5">{t("ngen.network_one")}</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Row>
+                {network.cidr && (
+                  <>
+                    <Col sm={12} lg={2} className="align-self-center">
+                      <b>{t("ngen.cidr")}</b>
+                    </Col>
+                    <Col sm={12} lg={4} className="align-self-center">
+                      <Form.Control plaintext readOnly defaultValue={network.cidr} />
+                    </Col>
+                  </>
+                )}
+                {network.domain && (
+                  <>
+                    <Col sm={12} lg={2} className="align-self-center">
+                      <b>{t("ngen.domain")}</b>
+                    </Col>
+                    <Col sm={12} lg={4} className="align-self-center">
+                      <Form.Control plaintext readOnly defaultValue={network.domain} />
+                    </Col>
+                  </>
+                )}
+              </Row>
+              <p />
+              <Row>
+                <Col sm={12} lg={2} className="align-self-center">
+                  <b>{t("w.active")}</b>
+                </Col>
+                <Col sm={12} lg={4} className="align-self-center">
+                  {network.active !== undefined ? (network.active ? t("w.yes") : t("w.no")) : "-"}
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        )}
+      </PermissionCheck>
+
+      <PermissionCheck permissions={["view_contact"]}>
+        {contacts.length > 0 && (
+          <Card>
+            <Card.Header>
+              <Card.Title as="h5">{t("ngen.contact_other")} ({contacts.length})</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Table responsive hover size="sm">
+                <thead>
+                  <tr>
+                    <th>{t("ngen.name_one")}</th>
+                    <th>{t("ngen.contact_one")}</th>
+                    <th>{t("ngen.type")}</th>
+                    <th>{t("ngen.role_one")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contacts.map((c, index) => (
+                    <tr key={index}>
+                      <td><Form.Control plaintext readOnly defaultValue={c.name} /></td>
+                      <td><Form.Control plaintext readOnly defaultValue={c.username} /></td>
+                      <td><Form.Control plaintext readOnly defaultValue={c.type} /></td>
+                      <td><Form.Control plaintext readOnly defaultValue={t("ngen.role." + c.role)} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
+        )}
+      </PermissionCheck>
+
       <SmallCaseTable readCase={body.case} disableColumOption={true} basePath={basePath} hideCreateButton={true} hideLinkButton={true} />
 
       <Card>
@@ -427,14 +527,16 @@ const ReadEvent = ({ routeParams }) => {
         basePath={basePath}
       />
 
-      <Card>
-        <SmallRetestTable
-          retests={retests}
-          eventId={id.id}
-          eventUrl={eventItem?.url}
-          taxonomyUrl={eventItem?.taxonomy}
-        />
-      </Card>
+      <PermissionCheck permissions={["view_analyzermapping"]}>
+        <Card>
+          <SmallRetestTable
+            retests={retests}
+            eventId={id.id}
+            eventUrl={eventItem?.url}
+            taxonomyUrl={eventItem?.taxonomy}
+          />
+        </Card>
+      </PermissionCheck>
 
       <Card>
         <Card.Header>

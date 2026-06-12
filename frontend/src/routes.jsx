@@ -274,6 +274,14 @@ const routes = [
   },
   {
     exact: "true",
+    path: "/contacts/view/:id",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_contact"],
+    element: lazy(() => import("./views/contact/ViewContact"))
+  },
+  {
+    exact: "true",
     path: "/entities",
     layout: AdminLayout,
     guard: PermissionGuard,
@@ -319,6 +327,14 @@ const routes = [
     guard: PermissionGuard,
     permissions: ["change_network"],
     element: lazy(() => import("./views/network/EditNetwork"))
+  },
+  {
+    exact: "true",
+    path: "/networks/view/:id",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_network"],
+    element: lazy(() => import("./views/network/ViewNetwork"))
   },
   {
     exact: "true",

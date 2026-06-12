@@ -647,6 +647,7 @@
   "ngen.analyzer.test.fail": "Could not connect to analyzer",
   "w.total": "Total",
   "w.view": "View",
+  "w.link": "Link",
   "w.no_data": "No data available",
   "button.logout": "Logout",
   "ngen.dark_mode": "Dark mode"

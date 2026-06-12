@@ -647,6 +647,7 @@
   "ngen.analyzer.test.fail": "No se pudo conectar al analizador",
   "w.total": "Total",
   "w.view": "Ver",
+  "w.link": "Enlace",
   "w.no_data": "Sin datos disponibles",
   "button.logout": "Cerrar sesión",
   "ngen.dark_mode": "Modo oscuro"
