@@ -39,6 +39,9 @@
 
   .card {
     margin-bottom: 0;
+    .card-body {
+      padding: 10px 25px;
+    }
   }
 
   > div {
