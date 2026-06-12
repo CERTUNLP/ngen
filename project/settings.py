@@ -545,6 +545,15 @@ CONSTANCE_CONFIG = {
         gettext_lazy("Max time for contact checks in seconds"),
         int,
     ),
+    "AUTO_LINK_CONTACT_BY_EMAIL": (
+        os.environ.get("AUTO_LINK_CONTACT_BY_EMAIL", "false").lower() in VALUES_TRUE,
+        gettext_lazy(
+            "If true, when a new User is created (via SSO or any other means), "
+            "the system will automatically link any Contact whose username (email) "
+            "matches the User's email address."
+        ),
+        bool,
+    ),
     # ── Integrations ────────────────────────────────────────────
     "CORTEX_HOST": (
         os.environ.get("CORTEX_HOST"),
@@ -622,6 +631,7 @@ CONSTANCE_GROUPS = {
     "ARTIFACT_RECURSIVE_ENRICHMENT": "Artifacts",
     "TAXONOMY_ALLOW_AUTO_CREATE": "Taxonomies",
     "CONTACT_CHECK_MAX_TIME": "Contact",
+    "AUTO_LINK_CONTACT_BY_EMAIL": "Contact",
     "CORTEX_HOST": "Integrations",
     "CORTEX_APIKEY": "Integrations",
     "KINTUN_HOST": "Integrations",
@@ -902,6 +912,27 @@ ENVIRON_CONFIG = {
     "JWT_ACCESS_TOKEN_LIFETIME": SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
     "JWT_REFRESH_TOKEN_LIFETIME": SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"],
     "OIDC_ENABLED": OIDC_ENABLED,
+    "OIDC_RP_CLIENT_ID": OIDC_RP_CLIENT_ID,
+    "OIDC_RP_SIGN_ALGO": OIDC_RP_SIGN_ALGO,
+    "OIDC_RP_SCOPES": OIDC_RP_SCOPES,
+    "OIDC_OP_AUTHORIZATION_ENDPOINT": OIDC_OP_AUTHORIZATION_ENDPOINT,
+    "OIDC_OP_TOKEN_ENDPOINT": OIDC_OP_TOKEN_ENDPOINT,
+    "OIDC_OP_USER_ENDPOINT": OIDC_OP_USER_ENDPOINT,
+    "OIDC_OP_JWKS_ENDPOINT": OIDC_OP_JWKS_ENDPOINT,
+    "OIDC_OP_LOGOUT_ENDPOINT": OIDC_OP_LOGOUT_ENDPOINT,
+    "OIDC_CREATE_USER": OIDC_CREATE_USER,
+    "OIDC_REDIRECT_URL": OIDC_REDIRECT_URL,
+    "OIDC_EMAIL_CLAIM": OIDC_EMAIL_CLAIM,
+    "OIDC_USERNAME_CLAIM": OIDC_USERNAME_CLAIM,
+    "OIDC_FIRST_NAME_CLAIM": OIDC_FIRST_NAME_CLAIM,
+    "OIDC_LAST_NAME_CLAIM": OIDC_LAST_NAME_CLAIM,
+    "OIDC_REQUIRED_GROUP": OIDC_REQUIRED_GROUP,
+    "OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS": OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS,
+    "OIDC_USERNAME_ALGO": OIDC_USERNAME_ALGO,
+    "APP_VERSION_TAG": APP_VERSION_TAG,
+    "APP_COMMIT": APP_COMMIT,
+    "APP_BRANCH": APP_BRANCH,
+    "APP_BUILD_FILE": APP_BUILD_FILE,
 }
 
 SPECTACULAR_SETTINGS = {

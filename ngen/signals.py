@@ -23,6 +23,20 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def auto_link_contact_by_email(sender, instance=None, created=False, **kwargs):
+    from ngen.models.constituency import Contact
+
+    if not created or not config.AUTO_LINK_CONTACT_BY_EMAIL:
+        return
+
+    contacts = Contact.objects.filter(
+        username=instance.email, type=Contact.TYPE.email
+    )
+    for contact in contacts:
+        contact.users.add(instance)
+
+
 @receiver(config_updated)
 def config_updated_handler(sender, key, old_value, new_value, **kwargs):
     """
