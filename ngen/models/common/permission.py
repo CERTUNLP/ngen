@@ -49,4 +49,5 @@ class CustomPermissionSupport(models.Model):
             ("view_stringidentifier", "View StringIdentifier"),
             ("use_stringidentifier", "Use StringIdentifier"),
             ("view_dashboard_network_admin", "View Dashboard as network admin"),
+            ("view_about_page", "View About page"),
         )

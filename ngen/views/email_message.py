@@ -7,6 +7,7 @@ from django.utils import timezone
 from constance import config
 from ngen import models, serializers
 from ngen.mailer.email_handler import EmailHandler
+from ngen.permissions import CustomModelPermissions
 from ngen.tasks import async_send_email
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
     search_fields = ["subject"]
     ordering_fields = ["id", "created", "modified", "date", "subject"]
     serializer_class = serializers.EmailMessageListSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomModelPermissions]
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):

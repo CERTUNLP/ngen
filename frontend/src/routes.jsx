@@ -703,6 +703,7 @@ const routes = [
     path: "/about",
     layout: AdminLayout,
     guard: AuthGuard,
+    permissions: ["view_about_page"],
     element: lazy(() => import("./views/home/About.jsx")),
   },
   {
@@ -710,6 +711,7 @@ const routes = [
     path: "/email-queue",
     layout: AdminLayout,
     guard: AuthGuard,
+    permissions: ["view_emailmessage"],
     element: lazy(() => import("./views/emailqueue/EmailQueue.jsx")),
   },
   {

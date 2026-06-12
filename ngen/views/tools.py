@@ -349,7 +349,8 @@ class VersionView(APIView):
     View to return about the version of the application.
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_about_page"]
 
     def get(self, request):
         version = settings.APP_VERSION_TAG
