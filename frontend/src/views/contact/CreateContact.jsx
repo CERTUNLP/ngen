@@ -13,7 +13,7 @@ const CreateContact = () => {
   const [supportedKey, setSupportedKey] = useState(null);
   const [networks, setNetworks] = useState([]);
   const [selectType, setSelectType] = useState("");
-  const [user, setUser] = useState("");
+  const [users, setUsers] = useState([]);
   const { t } = useTranslation();
 
   //Alert
@@ -22,7 +22,7 @@ const CreateContact = () => {
   const createContact = () => {
     //refactorizar al FormCreateContact
 
-    postContact(supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority, user, networks)
+    postContact(supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority, users, networks)
       .then((response) => {
         window.location.href = "/contacts";
       })
@@ -51,8 +51,8 @@ const CreateContact = () => {
                 setRole={setSelectRol}
                 priority={supportedPriority}
                 setPriority={setSupportedPriority}
-                user={user}
-                setUser={setUser}
+                users={users}
+                setUsers={setUsers}
                 type={selectType}
                 setType={setSelectType}
                 contact={supportedContact}

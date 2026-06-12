@@ -80,7 +80,7 @@ class ContactSerializer(AuditSerializerMixin):
             "type",
             "role",
             "priority",
-            "user",
+            "users",
             "networks",
             "last_check",
         ]
@@ -88,7 +88,7 @@ class ContactSerializer(AuditSerializerMixin):
 
 class NetworkAdminContactSerializer(ContactSerializer):
     class Meta(ContactSerializer.Meta):
-        fields = [f for f in ContactSerializer.Meta.fields if f not in ["user"]]
+        fields = [f for f in ContactSerializer.Meta.fields if f not in ["users"]]
         extra_kwargs = {
             "url": {"view_name": "networkadmincontact-detail"},
         }

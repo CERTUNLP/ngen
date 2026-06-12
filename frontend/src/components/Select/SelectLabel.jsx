@@ -3,13 +3,17 @@ import { Form } from "react-bootstrap";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
 
-const SelectLabel = ({ set, setSelect, options, value, placeholder, required, disabled, legend }) => {
+const SelectLabel = ({ set, setSelect, options, value, placeholder, required, disabled, legend, isMulti }) => {
   const { t } = useTranslation();
   const handleChange = (e) => {
-    if (e) {
-      set(e.value);
+    if (isMulti) {
+      set(e ? e.map((opt) => opt.value) : []);
     } else {
-      set("");
+      if (e) {
+        set(e.value);
+      } else {
+        set("");
+      }
     }
     setSelect(e);
   };
@@ -23,6 +27,7 @@ const SelectLabel = ({ set, setSelect, options, value, placeholder, required, di
         classNamePrefix="react-select"
         options={options}
         value={value}
+        isMulti={isMulti}
         isClearable
         placeholder={`${t("w.select")} ${placeholder}`}
         onChange={handleChange}

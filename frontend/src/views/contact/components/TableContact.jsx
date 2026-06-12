@@ -185,8 +185,10 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                 </td>
                 </PermissionCheck>
                 <td>
-                  {contact.user ? (
-                    <BadgeUserLabel url={contact.user} />
+                  {contact.users?.length > 0 ? (
+                    contact.users.map((userUrl) => (
+                      <BadgeUserLabel key={userUrl} url={userUrl} />
+                    ))
                   ) : (
                     <span className="text-muted">—</span>
                   )}
@@ -252,11 +254,13 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                           <Form.Control plaintext readOnly defaultValue={contact.username} />
                         </td>
                       </tr>
-                      {contact.user ? (
+                      {contact.users?.length > 0 ? (
                         <tr>
                           <td>{t("ngen.user")}</td>
                           <td>
-                            <FormGetName form={true} get={getMinifiedUser} url={contact.user} key={1} field={"username"} getFromList />
+                            {contact.users.map((userUrl) => (
+                              <FormGetName key={userUrl} form={true} get={getMinifiedUser} url={userUrl} field={"username"} getFromList />
+                            ))}
                           </td>
                         </tr>
                       ) : (

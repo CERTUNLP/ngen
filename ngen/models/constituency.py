@@ -229,10 +229,8 @@ class Contact(AuditModelMixin, PriorityModelMixin, ValidationModelMixin):
         ("noc", gettext_lazy("NOC")),
     )
     role = models.CharField(choices=ROLE, default=ROLE.administrative, max_length=20)
-    user = models.ForeignKey(
+    users = models.ManyToManyField(
         "ngen.User",
-        models.SET_NULL,
-        null=True,
         blank=True,
         related_name="contacts",
     )

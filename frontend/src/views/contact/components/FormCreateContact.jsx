@@ -18,7 +18,7 @@ const FormCreateContact = (props) => {
   const [selectPriority, setSelectPriority] = useState("");
   const [selectRole, setSelectRole] = useState("");
   const [selectType, setSelectType] = useState("");
-  const [selectUser, setSelectUser] = useState("");
+  const [selectUsers, setSelectUsers] = useState([]);
 
   useEffect(() => {
     getMinifiedPriority()
@@ -66,12 +66,9 @@ const FormCreateContact = (props) => {
         }
       });
     }
-    if (userOptions.length > 0) {
-      userOptions.forEach((item) => {
-        if (item.value === props.user) {
-          setSelectUser({ label: item.label, value: item.value });
-        }
-      });
+    if (userOptions.length > 0 && props.users?.length > 0) {
+      const selected = userOptions.filter((item) => props.users.includes(item.value));
+      setSelectUsers(selected);
     }
   }, [props]);
 
@@ -196,11 +193,12 @@ const FormCreateContact = (props) => {
           <Col>
             <Col sm={12} lg={4}>
               <SelectLabel
-                set={props.setUser}
-                setSelect={setSelectUser}
+                set={props.setUsers}
+                setSelect={setSelectUsers}
                 options={userOptions}
-                value={selectUser ?? ""}
+                value={selectUsers ?? ""}
                 placeholder={t("ngen.user")}
+                isMulti={true}
               />
             </Col>
           </Col>

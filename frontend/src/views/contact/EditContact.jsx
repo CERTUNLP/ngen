@@ -19,7 +19,7 @@ const EditContact = () => {
   const [supportedContact, setSupportedContact] = useState("");
   const [supportedKey, setSupportedKey] = useState("");
   const [selectType, setSelectType] = useState("");
-  const [user, setUser] = useState("");
+  const [users, setUsers] = useState([]);
   const { id } = useParams();
 
   //Alert
@@ -45,7 +45,7 @@ const EditContact = () => {
       setSupportedContact(contact.username);
       setSupportedKey(contact.public_key);
       setSelectType(contact.type);
-      setUser(contact.user);
+      setUsers(contact.users || []);
     } else {
       const contactUrl = localStorage.getItem("contact");
       if (contactUrl) {
@@ -59,7 +59,7 @@ const EditContact = () => {
   }, [contact]);
 
   const editContact = () => {
-    patchContact(contact.url, supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority, user)
+    patchContact(contact.url, supportedName, supportedContact, supportedKey, selectType, selectRol, supportedPriority, users)
       .then((response) => {})
       .catch(() => {
         setShowAlert(true);
@@ -86,8 +86,8 @@ const EditContact = () => {
                 setRole={setSelectRol}
                 priority={supportedPriority}
                 setPriority={setSupportedPriority}
-                user={user}
-                setUser={setUser}
+                users={users}
+                setUsers={setUsers}
                 type={selectType}
                 setType={setSelectType}
                 contact={supportedContact}

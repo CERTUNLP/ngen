@@ -181,14 +181,14 @@ class NetworkAdminDashboardPresenter(DashboardPresenter):
 
     def get_events(self):
         return (
-            super().get_events().filter(network__contacts__user=self.get_current_user())
+            super().get_events().filter(network__contacts__users=self.get_current_user())
         )
 
     def get_cases(self):
         return (
             super()
             .get_cases()
-            .filter(events__network__contacts__user=self.get_current_user())
+            .filter(events__network__contacts__users=self.get_current_user())
         )
 
     def get_network_entities(self):
@@ -198,6 +198,6 @@ class NetworkAdminDashboardPresenter(DashboardPresenter):
         if not self.network_entities:
             self.network_entities = (
                 NetworkEntity.objects.prefetch_related("networks")
-                .filter(networks__contacts__user=self.get_current_user())
+                .filter(networks__contacts__users=self.get_current_user())
                 .distinct()
             )

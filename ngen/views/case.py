@@ -42,11 +42,11 @@ class NetworkAdminEvidenceViewSet(EvidenceViewSet):
         # Obtener el content type del modelo relacionado (Network en este caso)
         event_ct = ContentType.objects.get(model="event")
         case_ct = ContentType.objects.get(model="case")
-        events = models.Event.objects.filter(network__contacts__user=user).values_list(
+        events = models.Event.objects.filter(network__contacts__users=user).values_list(
             "id", flat=True
         )
         cases = models.Case.objects.filter(
-            events__network__contacts__user=user
+            events__network__contacts__users=user
         ).values_list("id", flat=True)
         return (
             queryset.filter(content_type=event_ct, object_id__in=events)
@@ -110,7 +110,7 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         user = request.user
         contact = None
         if not user.is_superuser:
-            contact = event.network.contacts.filter(user=user).first()
+            contact = event.network.contacts.filter(users=user).first()
 
             if not contact:
                 return Response(
@@ -315,7 +315,7 @@ class NetworkAdminEventViewSet(EventViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
-        return queryset.filter(network__contacts__user=user).distinct()
+        return queryset.filter(network__contacts__users=user).distinct()
 
 
 class CaseViewSet(BaseCommunicationChannelsViewSet):
@@ -359,7 +359,7 @@ class NetworkAdminCaseViewSet(CaseViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
-        return queryset.filter(events__network__contacts__user=user).distinct()
+        return queryset.filter(events__network__contacts__users=user).distinct()
 
 
 class CaseTemplateViewSet(viewsets.ModelViewSet):

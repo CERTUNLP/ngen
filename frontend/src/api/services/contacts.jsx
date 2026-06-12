@@ -52,7 +52,7 @@ const getAllContacts = (currentPage = 1, results = [], limit = 100) => {
     });
 };
 
-const postContact = (name, username, public_key, type, role, priority, user, networks) => {
+const postContact = (name, username, public_key, type, role, priority, users = [], networks = []) => {
   let messageSuccess = `El contacto ${name} se ha creado correctamente.`;
   let messageError = `El contacto ${name} no se ha creado. `;
   return apiInstance
@@ -63,7 +63,7 @@ const postContact = (name, username, public_key, type, role, priority, user, net
       type: type,
       role: role,
       priority: priority,
-      user: user,
+      users: users,
       networks: networks
     })
     .then((response) => {
@@ -84,7 +84,7 @@ const postContact = (name, username, public_key, type, role, priority, user, net
     });
 };
 
-const putContact = (url, name, username, public_key, type, role, priority, user) => {
+const putContact = (url, name, username, public_key, type, role, priority, users = []) => {
   let messageSuccess = `El contacto ${name} se ha editado correctamente.`;
   let messageError = `El contacto ${name} no se ha editado. `;
   return apiInstance
@@ -95,7 +95,7 @@ const putContact = (url, name, username, public_key, type, role, priority, user)
       type: type,
       role: role,
       priority: priority,
-      user: user
+      users: users
     })
     .then((response) => {
       setAlert(messageSuccess, "success", "contact");
@@ -109,7 +109,7 @@ const putContact = (url, name, username, public_key, type, role, priority, user)
     });
 };
 
-const patchContact = (url, name, username, public_key, type, role, priority, user) => {
+const patchContact = (url, name, username, public_key, type, role, priority, users = []) => {
   let messageSuccess = `El contacto ${name} se ha editado correctamente.`;
   let messageError = `El contacto ${name} no se ha editado. `;
   return apiInstance
@@ -120,7 +120,7 @@ const patchContact = (url, name, username, public_key, type, role, priority, use
       type: type,
       role: role,
       priority: priority,
-      user: user
+      users: users
     })
     .then((response) => {
       setAlert(messageSuccess, "success", "contact");

@@ -74,7 +74,7 @@ class NetworkAdminNetworkViewSet(NetworkViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
-        return queryset.filter(contacts__user=user).distinct()
+        return queryset.filter(contacts__users=user).distinct()
 
 
 class NetworkEntityViewSet(viewsets.ModelViewSet):
@@ -108,7 +108,7 @@ class NetworkAdminNetworkEntityViewSet(NetworkEntityViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
-        return queryset.filter(networks__contacts__user=user).distinct()
+        return queryset.filter(networks__contacts__users=user).distinct()
 
 
 class ContactViewSet(viewsets.ModelViewSet):
@@ -158,7 +158,7 @@ class NetworkAdminContactViewSet(ContactViewSet):
         user = self.request.user
         # user is contact.user or networks are in networks__contacts for user
         return queryset.filter(
-            models.Q(user=user) | models.Q(networks__contacts__user=user)
+            models.Q(users=user) | models.Q(networks__contacts__users=user)
         ).distinct()
 
 
