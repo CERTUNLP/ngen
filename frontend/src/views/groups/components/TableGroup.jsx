@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Modal, Row, Spinner, Table } from "react-bootstrap";
 import { deleteGroup, getGroup } from "api/services/groups";
-import { getPermission } from "api/services/permissions";
+import { getMinifiedPermissions } from "api/services/permissions";
 import CrudButton from "components/Button/CrudButton";
 import ModalConfirm from "components/Modal/ModalConfirm";
 import Alert from "components/Alert/Alert";
@@ -47,19 +47,18 @@ const TableGroup = ({ groups, loading, order, setOrder, setLoading, currentPage,
   };
 
   const showModalGroup = (groupItem) => {
-    getGroup(groupItem.url).then((response) => {
-      const g = response.data;
+    Promise.all([
+      getGroup(groupItem.url),
+      getMinifiedPermissions(),
+    ]).then(([groupResponse, permissions]) => {
+      const g = groupResponse.data;
       setGroup(g);
       if (g.permissions?.length > 0) {
-        Promise.all(g.permissions.map((url) => getPermission(url)))
-          .then((responses) => {
-            const names = {};
-            responses.forEach((r, i) => {
-              names[g.permissions[i]] = r.data.name;
-            });
-            setPermissionNames(names);
-          })
-          .catch(() => {});
+        const permDict = {};
+        permissions.forEach((p) => {
+          permDict[p.url] = p.name;
+        });
+        setPermissionNames(permDict);
       }
     });
     setModalShow(true);
