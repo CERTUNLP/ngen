@@ -365,16 +365,16 @@ class VersionView(APIView):
         today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         email_queue = {
             "pending": EmailMessageModel.objects.filter(
-                sent=False, dispatched=False, send_attempt_failed=False
+                status=EmailMessageModel.Status.PENDING
             ).count(),
             "sent_today": EmailMessageModel.objects.filter(
-                sent=True, date__gte=today
+                status=EmailMessageModel.Status.SENT, date__gte=today
             ).count(),
             "sent_total": EmailMessageModel.objects.filter(
-                sent=True
+                status=EmailMessageModel.Status.SENT
             ).count(),
             "failed": EmailMessageModel.objects.filter(
-                send_attempt_failed=True
+                status=EmailMessageModel.Status.FAILED
             ).count(),
             "total": EmailMessageModel.objects.count(),
             "auto_send": constance_config.EMAIL_AUTO_SEND,

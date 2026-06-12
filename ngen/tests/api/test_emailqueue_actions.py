@@ -59,7 +59,7 @@ class TestSendQueuedEndpoint(APITestCaseWithLogin):
         msg = _make_email(status="sending")
         response = self.client.post(f"{self.url_list}{msg.id}/send/")
         self.assertEqual(response.status_code, 400)
-        self.assertIn("already dispatched", response.data["error"])
+        self.assertIn("cannot be sent", response.data["error"])
 
 
 class TestSendAllPendingEndpoint(APITestCaseWithLogin):

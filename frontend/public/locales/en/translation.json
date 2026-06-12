@@ -327,6 +327,7 @@
   "ngen.email_queue.error_title": "Error Email #{{id}}",
   "ngen.email_queue.click_for_error": "Click to view error details",
   "ngen.email_queue.no_error_detail": "No error detail available.",
+  "ngen.email_queue.no_body_detail": "No body content available.",
   "ngen.email_queue.detail_title": "Email #{{id}}",
   "ngen.email_queue.from": "From",
   "ngen.email_queue.to": "To",

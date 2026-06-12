@@ -55,7 +55,7 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
                 email_message.status,
             )
             return Response(
-                {"error": "Email already dispatched to Celery"},
+                {"error": "Email cannot be sent in its current state"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         email_message.status = models.EmailMessage.Status.SENDING
