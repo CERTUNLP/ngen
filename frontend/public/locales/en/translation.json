@@ -543,6 +543,8 @@
   "w.entityByName": "by entity name",
   "w.error.unexpected": "An unexpected error has occurred",
   "w.groups": "Groups",
+  "w.group": "Group",
+  "menu.groups": "Groups",
   "w.inactive": "Inactive",
   "w.info": "More information",
   "w.info.placeholder": "Enter more information",

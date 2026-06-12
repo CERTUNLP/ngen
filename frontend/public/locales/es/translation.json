@@ -543,6 +543,8 @@
   "w.entityByName": "por nombre de la entidad",
   "w.error.unexpected": "Se ha producido un error inesperado",
   "w.groups": "Grupos",
+  "w.group": "Grupo",
+  "menu.groups": "Grupos",
   "w.inactive": "Inactivo",
   "w.info": "Más información",
   "w.info.placeholder": "Ingrese más información",

@@ -263,6 +263,24 @@ const menuItems = {
               breadcrumbs: true
             },
             {
+              id: "groups",
+              title: "menu.groups",
+              type: "item",
+              url: "/groups",
+              classes: "",
+              icon: "",
+              breadcrumbs: true
+            },
+            {
+              id: "emailqueue",
+              title: "menu.email_queue",
+              type: "item",
+              url: "/email-queue",
+              classes: "",
+              icon: "",
+              breadcrumbs: true
+            },
+            {
               id: "configuration",
               title: "menu.config",
               type: "item",
@@ -276,15 +294,6 @@ const menuItems = {
               title: "menu.about",
               type: "item",
               url: "/about",
-              classes: "",
-              icon: "",
-              breadcrumbs: true
-            },
-            {
-              id: "emailqueue",
-              title: "menu.email_queue",
-              type: "item",
-              url: "/email-queue",
               classes: "",
               icon: "",
               breadcrumbs: true

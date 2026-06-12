@@ -122,6 +122,30 @@ const routes = [
   },
   {
     exact: "true",
+    path: "/groups",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_group"],
+    element: lazy(() => import("./views/groups/ListGroup"))
+  },
+  {
+    exact: "true",
+    path: "/groups/create",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["add_group"],
+    element: lazy(() => import("./views/groups/CreateGroup"))
+  },
+  {
+    exact: "true",
+    path: "/groups/edit/:id",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["change_group"],
+    element: lazy(() => import("./views/groups/EditGroup"))
+  },
+  {
+    exact: "true",
     path: "/taxonomies",
     layout: AdminLayout,
     guard: PermissionGuard,
