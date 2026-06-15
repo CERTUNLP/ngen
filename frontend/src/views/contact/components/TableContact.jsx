@@ -13,6 +13,7 @@ import DateShowField from "components/Field/DateShowField";
 import PermissionCheck from "components/Auth/PermissionCheck";
 import PriorityComponent from "views/tanstackquery/PriorityComponent";
 import BadgeUserLabel from "views/user/components/BadgeUserLabel";
+import AuditModal from "views/audits/components/AuditModal";
 
 const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, order, setOrder, basePath = "" }) => {
   const [contact, setContact] = useState("");
@@ -26,6 +27,8 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
   const [modified, setModified] = useState("");
   const [type, setType] = useState("");
   const [role, setRole] = useState("");
+  const [showAudit, setShowAudit] = useState(false);
+  const [auditObjectId, setAuditObjectId] = useState(null);
   const { t } = useTranslation();
 
   if (loading) {
@@ -39,6 +42,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
   //Read Contact
   const showContact = (url) => {
     setId(url.split("/")[url.split("/").length - 2]);
+    setAuditObjectId(url.split("/").filter(Boolean).pop());
     setUrl(url);
     setContact("");
     getContact(url)
@@ -223,6 +227,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
                     </Col>
                     <Col sm={2} lg={2}>
                       <CrudButton type="edit" to={`${basePath}/contacts/edit/${id}`} checkPermRoute />
+                      <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
                       <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                     </Col>
                   </Row>
@@ -311,6 +316,7 @@ const TableContact = ({ setIsModify, list, loading, setLoading, currentPage, ord
           </Row>
         </Modal.Body>
       </Modal>
+      <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="contact" objectId={auditObjectId} />
       <ModalConfirm
         type="delete"
         component="Contacto"

@@ -1,6 +1,7 @@
 import os
 import time
 import random
+import django_filters
 from auditlog.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
@@ -40,10 +41,26 @@ class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [CustomModelPermissions]
 
 
+class AuditFilter(django_filters.FilterSet):
+    content_type__model = django_filters.CharFilter(method="filter_by_model")
+    object_id = django_filters.CharFilter()
+
+    class Meta:
+        model = LogEntry
+        fields = ["object_id"]
+
+    def filter_by_model(self, queryset, name, value):
+        return queryset.filter(content_type__model=value)
+
+
 class AuditViewSet(viewsets.ModelViewSet):
-    queryset = LogEntry.objects.all()
+    queryset = LogEntry.objects.select_related("content_type", "actor").all()
     serializer_class = serializers.AuditSerializer
     permission_classes = [CustomModelPermissions]
+    filterset_class = AuditFilter
+    search_fields = ["object_repr", "changes"]
+    ordering_fields = ["timestamp", "action"]
+    ordering = ["-timestamp"]
 
 
 class ConstanceViewSet(viewsets.ModelViewSet):

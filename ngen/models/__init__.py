@@ -23,3 +23,5 @@ from .event_analysis import *  # noqa: F401
 for model in apps.all_models["ngen"].values():
     if issubclass(model, AuditModelMixin):
         auditlog.register(model)
+
+auditlog.register(User, exclude_fields=["last_login"])

@@ -9,6 +9,7 @@ import ModalConfirm from "components/Modal/ModalConfirm";
 import Ordering from "components/Ordering/Ordering";
 import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
+import AuditModal from "views/audits/components/AuditModal";
 
 const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading }) => {
   const [report, setReport] = useState({});
@@ -17,6 +18,8 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
   const [showAlert, setShowAlert] = useState(false);
   const [previewReport, setPreviewReport] = useState({});
   const [showPreview, setShowPreview] = useState(false);
+  const [showAudit, setShowAudit] = useState(false);
+  const [auditObjectId, setAuditObjectId] = useState(null);
   const { t } = useTranslation();
 
   const [deleteUrl, setDeleteUrl] = useState();
@@ -46,6 +49,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
 
   const showModalReport = (report) => {
     setId(report.url.split("/")[report.url.split("/").length - 2]);
+    setAuditObjectId(report.url.split("/").filter(Boolean).pop());
     setReport(report);
     setModalShow(true);
   };
@@ -156,6 +160,7 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
                           <i className="fas fa-eye" />
                         </Button>
                         <CrudButton type="edit" to={`/reports/edit/${id}`} checkPermRoute />
+                        <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                       </Col>
                     </Row>
@@ -224,6 +229,8 @@ const TableReport = ({ list, loading, taxonomyNames, order, setOrder, setLoading
             </Row>
           </Modal.Body>
         </Modal>
+
+        <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="report" objectId={auditObjectId} />
 
       <Modal size="lg" show={showPreview} onHide={() => setShowPreview(false)} centered>
         <Modal.Header closeButton>

@@ -8,6 +8,7 @@ import ActiveButton from "../../../components/Button/ActiveButton";
 import DateShowField from "../../../components/Field/DateShowField";
 import CallBackendByName from "../../../components/CallBackendByName";
 import { useTranslation } from "react-i18next";
+import AuditModal from "views/audits/components/AuditModal";
 
 const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading, taxonomyGroups, minifiedTaxonomies }) => {
   const [modalDelete, setModalDelete] = useState(false);
@@ -17,6 +18,8 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
   const [taxonomy, setTaxonomy] = useState();
   const [modalShow, setModalShow] = useState(false);
   // const [active, setActive] = useState("");
+  const [showAudit, setShowAudit] = useState(false);
+  const [auditObjectId, setAuditObjectId] = useState(null);
   const { t } = useTranslation();
 
   if (loading) {
@@ -50,6 +53,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
   };
 
   const showTaxonomy = (url) => {
+    setAuditObjectId(url.split("/").filter(Boolean).pop());
     getTaxonomy(url)
       .then((response) => {
         setTaxonomy(response.data);
@@ -203,6 +207,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
                     </Col>
                     <Col sm={12} lg={2}>
                       <CrudButton type="edit" to={`/taxonomies/edit/${id}`} checkPermRoute />
+                      <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
                       <CloseButton aria-label={t("w.close")} onClick={handleClose} />
                     </Col>
                   </Row>
@@ -324,6 +329,7 @@ const TableTaxonomy = ({ setIsModify, list, loading, order, setOrder, setLoading
           </Row>
         </Modal.Body>
       </Modal>
+      <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="taxonomy" objectId={auditObjectId} />
 
       <ModalConfirm
         type="delete"

@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import PermissionCheck from "components/Auth/PermissionCheck";
 import { COMPONENT_URL } from "config/constant";
 import LetterFormat from "components/LetterFormat";
+import AuditModal from "views/audits/components/AuditModal";
 
 const ReadEvent = ({ routeParams }) => {
   const basePath = routeParams.basePath || "";
@@ -39,6 +40,7 @@ const ReadEvent = ({ routeParams }) => {
   const [listTag, setListTag] = useState([]);
   const [network, setNetwork] = useState(null);
   const [contacts, setContacts] = useState([]);
+  const [showAudit, setShowAudit] = useState(false);
   const { t } = useTranslation();
 
   // const storageEventUrl = (url) => {
@@ -245,7 +247,8 @@ const ReadEvent = ({ routeParams }) => {
           <h1 className="h3 mb-4 text-gray-800">{t("ngen.event_one")} {body.uuid}</h1>
         </Col>
         <Col className="text-right" style={{ textAlign: 'right' }}>
-          <CrudButton type="edit" to={`${basePath}/events/edit/${id.id}`} checkPermRoute />
+          <CrudButton type="edit" to={`${basePath}/events/edit/${id.id}`} checkPermRoute />{" "}
+          <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
         </Col>
       </Row>
       <Card>
@@ -583,6 +586,7 @@ const ReadEvent = ({ routeParams }) => {
       ) : (
         ""
       )}
+      <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="event" objectId={id.id} />
     </React.Fragment>
   );
 };

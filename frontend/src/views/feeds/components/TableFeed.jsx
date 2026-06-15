@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AuditModal from "views/audits/components/AuditModal";
 import { Badge, Button, Card, CloseButton, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import { deleteFeed, getFeed, putActivationStatus } from "api/services/feeds";
 import CrudButton from "components/Button/CrudButton";
@@ -19,6 +20,8 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage, s
   const [showState, setShowState] = useState(false);
   const [dataState, setDataState] = useState({});
   const [showAlert, setShowAlert] = useState(false);
+  const [showAudit, setShowAudit] = useState(false);
+  const [auditObjectId, setAuditObjectId] = useState(null);
   const { t } = useTranslation();
 
   if (loading) {
@@ -68,6 +71,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage, s
   };
 
   const showModalFeed = (feed) => {
+    setAuditObjectId(feed.url.split("/").filter(Boolean).pop());
     getFeed(feed.url).then((response) => {
       setId(response.data.url.split("/")[response.data.url.split("/").length - 2]);
       setFeed(response.data);
@@ -157,6 +161,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage, s
                       </Col>
                       <Col sm={12} lg={2}>
                         <CrudButton type="edit" to={`/feeds/edit/${id}`} checkPermRoute />
+                        <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
                         <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                       </Col>
                     </Row>
@@ -229,6 +234,7 @@ const TableFeed = ({ feeds, loading, order, setOrder, setLoading, currentPage, s
             </Row>
           </Modal.Body>
         </Modal>
+        <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="feed" objectId={auditObjectId} />
       </Card.Body>
     </div>
   );

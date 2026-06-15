@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CloseButton, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import CrudButton from "components/Button/CrudButton";
 import { Link } from "react-router-dom";
@@ -7,9 +7,12 @@ import BadgeNetworkLabelContact from "./BadgeNetworkLabelContact";
 import ActiveButton from "components/Button/ActiveButton";
 import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
+import AuditModal from "views/audits/components/AuditModal";
 
 const ModalDetailNetwork = (props) => {
   const { t } = useTranslation();
+  const [showAudit, setShowAudit] = useState(false);
+  const [auditObjectId, setAuditObjectId] = useState(null);
 
   return (
     <React.Fragment>
@@ -26,6 +29,7 @@ const ModalDetailNetwork = (props) => {
                     </Col>
                     <Col sm={12} lg={2}>
                       <CrudButton type="edit" to={`/networks/edit/${props.id}`} checkPermRoute />
+                      <CrudButton type="read" onClick={() => { setAuditObjectId(props.id); setShowAudit(true); }} permissions="view_logentry" />
                       <CloseButton aria-label={t("button.close")} onClick={props.onHide} />
                     </Col>
                   </Row>
@@ -115,6 +119,7 @@ const ModalDetailNetwork = (props) => {
           </Row>
         </Modal.Body>
       </Modal>
+      <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="network" objectId={auditObjectId} />
     </React.Fragment>
   );
 };

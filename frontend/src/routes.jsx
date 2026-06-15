@@ -562,6 +562,14 @@ const routes = [
   },
   {
     exact: "true",
+    path: "/audits",
+    layout: AdminLayout,
+    guard: PermissionGuard,
+    permissions: ["view_logentry"],
+    element: lazy(() => import("./views/audits/ListAudit"))
+  },
+  {
+    exact: "true",
     path: "/setting",
     layout: AdminLayout,
     guard: PermissionGuard,

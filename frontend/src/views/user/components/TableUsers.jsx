@@ -16,6 +16,7 @@ import { userIsSuperuser, userIsStaff } from "utils/permissions";
 import LetterFormat from "components/LetterFormat";
 import UserComponent from "views/tanstackquery/UserComponent";
 import BadgeNetworkLabelContact from "views/network/components/BadgeNetworkLabelContact";
+import AuditModal from "views/audits/components/AuditModal";
 
 
 function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, setIsModify }) {
@@ -32,6 +33,8 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
   const [dataIsSuperuser, setDataIsSuperuser] = useState({});
   const [dataIsStaff, setDataIsStaff] = useState({});
   const [showAlert, setShowAlert] = useState(false);
+  const [showAudit, setShowAudit] = useState(false);
+  const [auditObjectId, setAuditObjectId] = useState(null);
   const { t } = useTranslation();
 
   if (loading) {
@@ -64,6 +67,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
 
   const showModalUser = (user) => {
     setId(user.url.split("/")[user.url.split("/").length - 2]);
+    setAuditObjectId(user.url.split("/").filter(Boolean).pop());
     setUser(user);
     setModalShow(true);
   };
@@ -264,6 +268,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
                             <Link to={{ pathname: `/users/edit/${id}` }}>
                               <CrudButton type="edit" />
                             </Link>
+                            <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>
@@ -440,6 +445,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
                 </Row>
               </Modal.Body>
             </Modal>
+            <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="user" objectId={auditObjectId} />
           </tbody>
         </Table>
     </div>
