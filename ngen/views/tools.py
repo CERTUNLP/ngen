@@ -6,7 +6,7 @@ from auditlog.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.views.generic import TemplateView
-from rest_framework import permissions, status, viewsets, serializers
+from rest_framework import filters, permissions, status, viewsets, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
@@ -57,6 +57,11 @@ class AuditViewSet(viewsets.ModelViewSet):
     queryset = LogEntry.objects.select_related("content_type", "actor").all()
     serializer_class = serializers.AuditSerializer
     permission_classes = [CustomModelPermissions]
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
     filterset_class = AuditFilter
     search_fields = ["object_repr", "changes"]
     ordering_fields = ["timestamp", "action"]
