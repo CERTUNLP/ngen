@@ -14,6 +14,8 @@ from rest_framework.authtoken.models import Token
 
 from ngen.models import ArtifactRelation
 
+import json
+
 logger = logging.getLogger(__name__)
 
 
@@ -86,3 +88,20 @@ def artifactrelation_delete_callback(sender, **kwargs):
     )
     if count == 0:
         obj.artifact.delete()
+
+
+@receiver(post_save, sender="ngen.TaggedObject")
+def audit_taggedobject_change(sender, instance=None, created=False, **kwargs):
+    from auditlog.models import LogEntry
+
+    parent = instance.content_object
+    if parent is None:
+        return
+
+    tag_name = instance.tag.name if instance.tag else "unknown"
+    changes = {"tags": ["", f"{'added' if created else 'updated'}: {tag_name}"]}
+    LogEntry.objects.log_create(
+        instance=parent,
+        action=LogEntry.Action.UPDATE,
+        changes=json.dumps(changes),
+    )

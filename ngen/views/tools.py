@@ -49,8 +49,43 @@ class AuditFilter(django_filters.FilterSet):
         model = LogEntry
         fields = ["object_id"]
 
+    THROUGH_MODELS = {
+        "event": {
+            "todotask": ("event_id", "fk"),
+            "evidence": ("content_type", "gfk"),
+            "artifactrelation": ("content_type", "gfk"),
+            "taggedobject": ("content_type", "gfk"),
+        },
+        "case": {
+            "evidence": ("content_type", "gfk"),
+            "artifactrelation": ("content_type", "gfk"),
+            "taggedobject": ("content_type", "gfk"),
+        },
+    }
+
     def filter_by_model(self, queryset, name, value):
-        return queryset.filter(content_type__model=value)
+        from django.db.models import Q, Subquery
+
+        q = Q(content_type__model=value)
+        object_id = self.data.get("object_id")
+
+        if object_id and value in self.THROUGH_MODELS:
+            parent_ct = ContentType.objects.get(model=value)
+            for through_model, (field, rel_type) in self.THROUGH_MODELS[value].items():
+                ct = ContentType.objects.get(model=through_model)
+                th_cls = ct.model_class()
+                if rel_type == "fk":
+                    sub = th_cls.objects.filter(
+                        **{field: object_id}
+                    ).values("pk")
+                else:  # gfk
+                    sub = th_cls.objects.filter(
+                        content_type=parent_ct,
+                        object_id=object_id,
+                    ).values("pk")
+                q |= Q(content_type=ct, object_id__in=Subquery(sub))
+
+        return queryset.filter(q)
 
 
 class AuditViewSet(viewsets.ModelViewSet):

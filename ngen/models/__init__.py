@@ -25,3 +25,6 @@ for model in apps.all_models["ngen"].values():
         auditlog.register(model)
 
 auditlog.register(User, exclude_fields=["last_login"])
+
+from ngen.models.tag import TaggedObject
+auditlog.register(TaggedObject)
