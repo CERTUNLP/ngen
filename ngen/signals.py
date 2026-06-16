@@ -195,7 +195,7 @@ def _log_event_case_audit(case_id, event, action):
         return
 
     changes = {
-        "events": ["", f"{action} event #{event.pk} ({event.address_value or event.domain})"],
+        "events": ["", f"{action} [event]: #{event.pk} ({event.address_value or event.domain or 'no domain'})"],
     }
     LogEntry.objects.log_create(
         instance=case,

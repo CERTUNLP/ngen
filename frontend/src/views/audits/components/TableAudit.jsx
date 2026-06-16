@@ -31,6 +31,17 @@ const TableAudit = ({ audits, loading, order, setOrder, setLoading }) => {
         </>
       );
     }
+    const fkMatch = str.match(/^(\w+)\s+\[(\w+)\]:\s+#(\d+)(.*)$/);
+    if (fkMatch) {
+      const [, action, model, pk, rest] = fkMatch;
+      return (
+        <>
+          {action}{" "}
+          <Link to={`/${model}s/view/${pk}`}>#{pk}</Link>
+          {rest}
+        </>
+      );
+    }
     return str;
   };
 
