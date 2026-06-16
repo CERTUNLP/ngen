@@ -105,6 +105,32 @@ class TestAuditFilter(TestCase):
         self.assertEqual(filtered.qs.count(), 2)
 
 
+    def test_filter_by_action(self):
+        LogEntry.objects.create(content_type=self.ct_user, object_id="1", object_repr="A", action=0, changes={})
+        LogEntry.objects.create(content_type=self.ct_user, object_id="2", object_repr="B", action=1, changes={})
+        LogEntry.objects.create(content_type=self.ct_user, object_id="3", object_repr="C", action=2, changes={})
+
+        filtered = AuditFilter(
+            data={"action": 1},
+            queryset=LogEntry.objects.all(),
+        )
+        self.assertEqual(filtered.qs.count(), 1)
+        self.assertEqual(filtered.qs.first().object_repr, "B")
+
+    def test_filter_by_actor_username(self):
+        LogEntry.objects.create(content_type=self.ct_user, object_id="1", object_repr="A", action=0, changes={},
+            actor=self.user)
+        LogEntry.objects.create(content_type=self.ct_user, object_id="2", object_repr="B", action=0, changes={},
+            actor=None)
+
+        filtered = AuditFilter(
+            data={"actor__username": self.user.username},
+            queryset=LogEntry.objects.all(),
+        )
+        self.assertEqual(filtered.qs.count(), 1)
+        self.assertEqual(filtered.qs.first().object_repr, "A")
+
+
 class TestAuditFilterThroughModels(TestCase):
     fixtures = [
         "tests/priority.json",

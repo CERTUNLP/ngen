@@ -44,10 +44,20 @@ class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
 class AuditFilter(django_filters.FilterSet):
     content_type__model = django_filters.CharFilter(method="filter_by_model")
     object_id = django_filters.CharFilter()
+    action = django_filters.ChoiceFilter(
+        choices=[(0, "Create"), (1, "Update"), (2, "Delete")],
+    )
+    actor__username = django_filters.CharFilter(lookup_expr="icontains")
+    timestamp_after = django_filters.DateTimeFilter(
+        field_name="timestamp", lookup_expr="gte"
+    )
+    timestamp_before = django_filters.DateTimeFilter(
+        field_name="timestamp", lookup_expr="lte"
+    )
 
     class Meta:
         model = LogEntry
-        fields = ["object_id"]
+        fields = ["object_id", "action", "actor__username", "timestamp_after", "timestamp_before"]
 
     THROUGH_MODELS = {
         "event": {
