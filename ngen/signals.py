@@ -162,27 +162,31 @@ _event_old_case = {}
 
 @receiver(pre_save, sender="ngen.Event")
 def _store_event_old_case(sender, instance, **kwargs):
-    if instance.pk:
-        old = sender.objects.filter(pk=instance.pk).values_list("case_id", flat=True).first()
-        _event_old_case[instance.pk] = old
-    else:
-        _event_old_case[instance.pk] = None
+    try:
+        if instance.pk:
+            old = sender.objects.filter(pk=instance.pk).values_list("case_id", flat=True).first()
+            _event_old_case[instance.pk] = old
+        else:
+            _event_old_case[instance.pk] = None
+    except Exception:
+        logger.debug("_store_event_old_case: failed for event %s", instance.pk, exc_info=True)
 
 
 @receiver(post_save, sender="ngen.Event")
 def audit_event_case_link(sender, instance, created, **kwargs):
-    from auditlog.models import LogEntry
+    try:
+        old_case_id = _event_old_case.pop(instance.pk, None)
+        new_case_id = instance.case_id
 
-    old_case_id = _event_old_case.pop(instance.pk, None)
-    new_case_id = instance.case_id
-
-    if created and new_case_id:
-        _log_event_case_audit(new_case_id, instance, "added")
-    elif not created and old_case_id != new_case_id:
-        if old_case_id:
-            _log_event_case_audit(old_case_id, instance, "removed")
-        if new_case_id:
+        if created and new_case_id:
             _log_event_case_audit(new_case_id, instance, "added")
+        elif not created and old_case_id != new_case_id:
+            if old_case_id:
+                _log_event_case_audit(old_case_id, instance, "removed")
+            if new_case_id:
+                _log_event_case_audit(new_case_id, instance, "added")
+    except Exception:
+        logger.debug("audit_event_case_link: failed for event %s", instance.pk, exc_info=True)
 
 
 def _log_event_case_audit(case_id, event, action):

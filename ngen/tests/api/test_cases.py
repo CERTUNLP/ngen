@@ -127,7 +127,7 @@ class TestCase(APITestCaseWithLogin):
         This will test successful Case POST
         """
 
-        _ = Event.objects.create(
+        event = Event.objects.create(
             domain=self.domain,
             priority=self.priority,
             taxonomy=self.taxonomy,
@@ -135,7 +135,7 @@ class TestCase(APITestCaseWithLogin):
             tlp=self.tlp,
             reporter=self.user,
         )
-        event_url = self.base_url + reverse("event-detail", kwargs={"pk": 1})
+        event_url = self.base_url + reverse("event-detail", kwargs={"pk": event.pk})
 
         json_data = {
             "priority": self.priority_url,
