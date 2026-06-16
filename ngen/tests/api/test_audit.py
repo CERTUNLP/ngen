@@ -5,6 +5,7 @@ from auditlog.models import LogEntry
 
 from ngen.models import Priority, Tlp, Taxonomy, Feed, Network
 from ngen.models.case import Event, Case
+from ngen.models.constituency import Contact
 from ngen.models.state import State
 from ngen.views.tools import AuditFilter
 
@@ -178,3 +179,111 @@ class TestAuditFilterThroughModels(TestCase):
             tag_entries.count(), 1,
             f"Expected at least 1 'removed' entry, got {tag_entries.count()}"
         )
+
+
+class TestM2MAuditSignals(TestCase):
+    fixtures = [
+        "tests/priority.json",
+        "tests/tlp.json",
+        "tests/user.json",
+        "tests/state.json",
+        "tests/feed.json",
+        "tests/taxonomy.json",
+        "tests/network.json",
+        "tests/contact.json",
+        "tests/network_entity.json",
+        "tests/playbook.json",
+    ]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.priority = Priority.objects.get(slug="high")
+        cls.tlp = Tlp.objects.get(slug="green")
+        cls.taxonomy = Taxonomy.objects.get(pk=1)
+        cls.feed = Feed.objects.get(pk=1)
+        cls.network = Network.objects.get(pk=1)
+        cls.user = User.objects.first()
+        cls.contact = Contact.objects.first()
+
+    def test_network_contacts_add_creates_audit_entry(self):
+        ct = ContentType.objects.get_for_model(Network)
+        self.network.contacts.add(self.contact)
+        entries = LogEntry.objects.filter(
+            content_type=ct, object_id=str(self.network.pk),
+            changes__icontains="contacts"
+        )
+        self.assertGreaterEqual(entries.count(), 1)
+
+    def test_network_contacts_remove_creates_audit_entry(self):
+        self.network.contacts.add(self.contact)
+        ct = ContentType.objects.get_for_model(Network)
+        self.network.contacts.remove(self.contact)
+        entries = LogEntry.objects.filter(
+            content_type=ct, object_id=str(self.network.pk),
+            changes__icontains="remove"
+        )
+        self.assertGreaterEqual(entries.count(), 1)
+
+    def test_contact_users_add_creates_audit_entry(self):
+        ct = ContentType.objects.get_for_model(Contact)
+        self.contact.users.add(self.user)
+        entries = LogEntry.objects.filter(
+            content_type=ct, object_id=str(self.contact.pk),
+            changes__icontains="users"
+        )
+        self.assertGreaterEqual(entries.count(), 1)
+
+    def test_playbook_taxonomy_add_creates_audit_entry(self):
+        from ngen.models.taxonomy import Playbook
+        playbook = Playbook.objects.get(pk=1)
+        ct = ContentType.objects.get_for_model(Playbook)
+        playbook.taxonomy.add(self.taxonomy)
+        entries = LogEntry.objects.filter(
+            content_type=ct, object_id=str(playbook.pk),
+            changes__icontains="taxonomy"
+        )
+        self.assertGreaterEqual(entries.count(), 1)
+
+
+class TestCaseBasicAudit(TestCase):
+    fixtures = [
+        "tests/priority.json",
+        "tests/tlp.json",
+        "tests/user.json",
+        "tests/state.json",
+        "tests/feed.json",
+        "tests/taxonomy.json",
+        "tests/network.json",
+        "tests/contact.json",
+        "tests/network_entity.json",
+    ]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.priority = Priority.objects.get(slug="high")
+        cls.tlp = Tlp.objects.get(slug="green")
+        cls.state = State.objects.get(pk=1)
+
+    def test_case_creation_creates_audit_entry(self):
+        case = Case.objects.create(
+            state=self.state, tlp=self.tlp, priority=self.priority,
+        )
+        ct = ContentType.objects.get_for_model(Case)
+        entries = LogEntry.objects.filter(
+            content_type=ct, object_id=str(case.pk)
+        )
+        self.assertGreaterEqual(entries.count(), 1,
+            f"Expected at least 1 audit entry for case creation, got {entries.count()}")
+
+    def test_case_update_creates_audit_entry(self):
+        case = Case.objects.create(
+            state=self.state, tlp=self.tlp, priority=self.priority,
+        )
+        ct = ContentType.objects.get_for_model(Case)
+        case.priority = self.priority
+        case.save()
+        entries = LogEntry.objects.filter(
+            content_type=ct, object_id=str(case.pk)
+        )
+        self.assertGreaterEqual(entries.count(), 2,
+            f"Expected at least 2 entries (create + update), got {entries.count()}")

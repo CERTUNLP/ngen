@@ -6,7 +6,7 @@ from PIL import Image
 from constance import config
 from constance.signals import config_updated
 from django.conf import settings
-from django.db.models.signals import post_delete, post_save
+from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 from django_celery_beat.models import PeriodicTask
 from django.core.cache import cache
@@ -119,6 +119,37 @@ def audit_taggedobject_remove(sender, instance=None, **kwargs):
     changes = {"tags": ["", f"removed: {tag_name}"]}
     LogEntry.objects.log_create(
         instance=parent,
+        action=LogEntry.Action.UPDATE,
+        changes=json.dumps(changes),
+    )
+
+
+_m2m_field_map = {}
+
+def _get_m2m_field_map():
+    if not _m2m_field_map:
+        from ngen.models.constituency import Contact, Network
+        from ngen.models.taxonomy import Playbook
+        _m2m_field_map[Network.contacts.through] = "contacts"
+        _m2m_field_map[Contact.users.through] = "users"
+        _m2m_field_map[Playbook.taxonomy.through] = "taxonomy"
+    return _m2m_field_map
+
+
+@receiver(m2m_changed)
+def audit_m2m_changes(sender, instance, action, pk_set, **kwargs):
+    if action not in ("post_add", "post_remove", "post_clear"):
+        return
+
+    from auditlog.models import LogEntry
+
+    field_name = _get_m2m_field_map().get(sender)
+    if not field_name:
+        return
+
+    changes = {field_name: ["", f"{action}: {sorted(pk_set)}"]}
+    LogEntry.objects.log_create(
+        instance=instance,
         action=LogEntry.Action.UPDATE,
         changes=json.dumps(changes),
     )
