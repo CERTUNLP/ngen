@@ -13,6 +13,7 @@ const AuditModal = ({ show, onHide, modelName, objectId }) => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(1);
+  const [expanded, setExpanded] = useState({});
   const tableEndRef = useRef(null);
 
   useEffect(() => {
@@ -83,22 +84,29 @@ const AuditModal = ({ show, onHide, modelName, objectId }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {audits.map((a) => (
-                    <tr key={a.id}>
-                      <td className="text-nowrap">
-                        {a.timestamp?.slice(0, 16).replace("T", " ")}
-                      </td>
-                      <td>{a.actor?.username || "-"}</td>
-                      <td>
-                        <Badge bg={ACTION_BADGE[a.action] || "secondary"}>
-                          {t(ACTION_LABEL[a.action] || "w.unknown")}
-                        </Badge>
-                      </td>
-                      <td style={{ maxWidth: 300 }}>
-                        {renderChanges(a.changes)}
-                      </td>
-                    </tr>
-                  ))}
+                  {audits.map((a) => {
+                    const isExpanded = expanded[a.id || a.url];
+                    return (
+                      <tr
+                        key={a.id || a.url}
+                        onClick={() => setExpanded((prev) => ({ ...prev, [a.id || a.url]: !isExpanded }))}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <td className="text-nowrap">
+                          {a.timestamp?.slice(0, 16).replace("T", " ")}
+                        </td>
+                        <td>{a.actor?.username || "-"}</td>
+                        <td>
+                          <Badge bg={ACTION_BADGE[a.action] || "secondary"}>
+                            {t(ACTION_LABEL[a.action] || "w.unknown")}
+                          </Badge>
+                        </td>
+                        <td style={{ maxWidth: isExpanded ? "none" : 300, whiteSpace: isExpanded ? "normal" : "nowrap", overflow: isExpanded ? "visible" : "hidden", textOverflow: isExpanded ? "clip" : "ellipsis" }}>
+                          {renderChanges(a.changes)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </Table>
               {hasMore && (
