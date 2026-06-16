@@ -81,13 +81,13 @@ const TableAudit = ({ audits, loading, order, setOrder, setLoading }) => {
                 style={{ cursor: "pointer" }}
               >
                 <td className="text-nowrap">{a.timestamp?.slice(0, 16).replace("T", " ")}</td>
-                <td>{a.actor?.username || "-"}</td>
+                <td>{a.actor_username || "-"}</td>
                 <td>
                   <Badge bg={ACTION_BADGE[a.action] || "secondary"}>
                     {t(ACTION_LABEL[a.action] || "w.unknown")}
                   </Badge>
                 </td>
-                <td className="text-nowrap">{a.content_type?.model || "-"}</td>
+                <td className="text-nowrap">{a.content_type_model || "-"}</td>
                 <td className="text-start text-truncate" style={{ maxWidth: 200 }}>{a.object_repr || "-"}</td>
                 <td className="text-start" style={{ maxWidth: isExpanded ? "none" : 250, overflow: isExpanded ? "visible" : "hidden", textOverflow: isExpanded ? "clip" : "ellipsis", whiteSpace: isExpanded ? "normal" : "nowrap" }}>
                   {a.changes

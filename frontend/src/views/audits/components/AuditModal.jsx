@@ -129,7 +129,7 @@ const AuditModal = ({ show, onHide, modelName, objectId }) => {
                         <td className="text-nowrap">
                           {a.timestamp?.slice(0, 16).replace("T", " ")}
                         </td>
-                        <td>{a.actor?.username || "-"}</td>
+                        <td>{a.actor_username || "-"}</td>
                         <td>
                           <Badge bg={ACTION_BADGE[a.action] || "secondary"}>
                             {t(ACTION_LABEL[a.action] || "w.unknown")}

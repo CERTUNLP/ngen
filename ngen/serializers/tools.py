@@ -20,6 +20,8 @@ class ContentTypeSerializer(serializers.ModelSerializer):
 
 class AuditSerializer(AuditSerializerMixin):
     related = serializers.SerializerMethodField(read_only=True)
+    actor_username = serializers.SerializerMethodField(read_only=True)
+    content_type_model = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = LogEntry
@@ -33,6 +35,12 @@ class AuditSerializer(AuditSerializerMixin):
             )
         except ObjectDoesNotExist:
             return None
+
+    def get_actor_username(self, obj):
+        return obj.actor.username if obj.actor else None
+
+    def get_content_type_model(self, obj):
+        return obj.content_type.model if obj.content_type else None
 
 
 class ConstanceSerializer(serializers.Serializer):
