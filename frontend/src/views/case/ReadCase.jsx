@@ -511,7 +511,7 @@ const ReadCase = ({ routeParams, useLocalStorage=false }) => {
             </Row>
           </Modal.Body>
         </Modal>
-        <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="case" objectId={id.id} />
+        <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="case" objectId={id} />
       </React.Fragment>
     )
   );

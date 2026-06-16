@@ -117,7 +117,7 @@ const ViewNetwork = () => {
           </Card>
         )}
       </PermissionCheck>
-      <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="network" objectId={id.id} />
+      <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="network" objectId={id} />
     </React.Fragment>
   );
 };

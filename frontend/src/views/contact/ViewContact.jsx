@@ -76,7 +76,7 @@ const ViewContact = () => {
           )}
         </Card.Body>
       </Card>
-      <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="contact" objectId={id.id} />
+      <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="contact" objectId={id} />
     </React.Fragment>
   );
 };
