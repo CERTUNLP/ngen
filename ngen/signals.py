@@ -105,3 +105,20 @@ def audit_taggedobject_change(sender, instance=None, created=False, **kwargs):
         action=LogEntry.Action.UPDATE,
         changes=json.dumps(changes),
     )
+
+
+@receiver(post_delete, sender="ngen.TaggedObject")
+def audit_taggedobject_remove(sender, instance=None, **kwargs):
+    from auditlog.models import LogEntry
+
+    parent = instance.content_object
+    if parent is None:
+        return
+
+    tag_name = instance.tag.name if instance.tag else "unknown"
+    changes = {"tags": ["", f"removed: {tag_name}"]}
+    LogEntry.objects.log_create(
+        instance=parent,
+        action=LogEntry.Action.UPDATE,
+        changes=json.dumps(changes),
+    )

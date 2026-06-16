@@ -163,3 +163,18 @@ class TestAuditFilterThroughModels(TestCase):
             total, 2,
             f"Expected at least 2 entries via filter, got {total}"
         )
+
+    def test_tag_remove_creates_audit_entry_for_event(self):
+        event = self._create_event()
+        event.tags.add("test-tag")
+        event.tags.remove("test-tag")
+
+        ct_event = ContentType.objects.get_for_model(Event)
+        entries = LogEntry.objects.filter(
+            content_type=ct_event, object_id=str(event.pk)
+        )
+        tag_entries = entries.filter(changes__icontains="removed")
+        self.assertGreaterEqual(
+            tag_entries.count(), 1,
+            f"Expected at least 1 'removed' entry, got {tag_entries.count()}"
+        )
