@@ -126,6 +126,7 @@ class TestAuditFilterThroughModels(TestCase):
         cls.feed = Feed.objects.get(pk=1)
         cls.network = Network.objects.get(pk=1)
         cls.user = User.objects.first()
+        cls.state = State.objects.get(pk=1)
 
     def _create_event(self):
         return Event.objects.create(
@@ -179,6 +180,48 @@ class TestAuditFilterThroughModels(TestCase):
             tag_entries.count(), 1,
             f"Expected at least 1 'removed' entry, got {tag_entries.count()}"
         )
+
+    def test_event_case_link_creates_audit_on_both(self):
+        case = Case.objects.create(
+            state=self.state, tlp=self.tlp, priority=self.priority,
+        )
+        event = self._create_event()
+
+        ct_case = ContentType.objects.get_for_model(Case)
+        before = LogEntry.objects.filter(
+            content_type=ct_case, object_id=str(case.pk)
+        ).count()
+
+        event.case = case
+        event.save()
+
+        after = LogEntry.objects.filter(
+            content_type=ct_case, object_id=str(case.pk)
+        ).count()
+        self.assertGreater(after, before,
+            f"Expected new audit entry on Case after linking Event, got {before}->{after}")
+
+    def test_event_case_unlink_creates_audit_on_both(self):
+        case = Case.objects.create(
+            state=self.state, tlp=self.tlp, priority=self.priority,
+        )
+        event = self._create_event()
+        event.case = case
+        event.save()
+
+        ct_case = ContentType.objects.get_for_model(Case)
+        before = LogEntry.objects.filter(
+            content_type=ct_case, object_id=str(case.pk)
+        ).count()
+
+        event.case = None
+        event.save()
+
+        after = LogEntry.objects.filter(
+            content_type=ct_case, object_id=str(case.pk)
+        ).count()
+        self.assertGreater(after, before,
+            f"Expected new audit entry on Case after unlinking Event, got {before}->{after}")
 
 
 class TestM2MAuditSignals(TestCase):

@@ -6,7 +6,7 @@ from PIL import Image
 from constance import config
 from constance.signals import config_updated
 from django.conf import settings
-from django.db.models.signals import m2m_changed, post_delete, post_save
+from django.db.models.signals import m2m_changed, post_delete, post_save, pre_save
 from django.dispatch import receiver
 from django_celery_beat.models import PeriodicTask
 from django.core.cache import cache
@@ -152,6 +152,53 @@ def audit_m2m_changes(sender, instance, action, pk_set, **kwargs):
     changes = {field_name: ["", f"{action} [{related_model}]: {pks}"]}
     LogEntry.objects.log_create(
         instance=instance,
+        action=LogEntry.Action.UPDATE,
+        changes=json.dumps(changes),
+    )
+
+
+_event_old_case = {}
+
+
+@receiver(pre_save, sender="ngen.Event")
+def _store_event_old_case(sender, instance, **kwargs):
+    if instance.pk:
+        old = sender.objects.filter(pk=instance.pk).values_list("case_id", flat=True).first()
+        _event_old_case[instance.pk] = old
+    else:
+        _event_old_case[instance.pk] = None
+
+
+@receiver(post_save, sender="ngen.Event")
+def audit_event_case_link(sender, instance, created, **kwargs):
+    from auditlog.models import LogEntry
+
+    old_case_id = _event_old_case.pop(instance.pk, None)
+    new_case_id = instance.case_id
+
+    if created and new_case_id:
+        _log_event_case_audit(new_case_id, instance, "added")
+    elif not created and old_case_id != new_case_id:
+        if old_case_id:
+            _log_event_case_audit(old_case_id, instance, "removed")
+        if new_case_id:
+            _log_event_case_audit(new_case_id, instance, "added")
+
+
+def _log_event_case_audit(case_id, event, action):
+    from auditlog.models import LogEntry
+    from ngen.models.case import Case
+
+    try:
+        case = Case.objects.get(pk=case_id)
+    except Case.DoesNotExist:
+        return
+
+    changes = {
+        "events": ["", f"{action} event #{event.pk} ({event.address_value or event.domain})"],
+    }
+    LogEntry.objects.log_create(
+        instance=case,
         action=LogEntry.Action.UPDATE,
         changes=json.dumps(changes),
     )
