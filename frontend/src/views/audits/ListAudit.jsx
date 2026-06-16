@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Form, Row } from "react-bootstrap";
+import { Card, Col, Collapse, Form, Row } from "react-bootstrap";
 import { getAudits } from "../../api/services/audit";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableAudit from "./components/TableAudit";
 import Search from "../../components/Search/Search";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ACTION_OPTIONS = [
@@ -27,6 +28,7 @@ const ListAudit = () => {
   const [dateTo, setDateTo] = useState("");
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
+  const [open, setOpen] = useState(false);
   const { t } = useTranslation();
 
   function updatePage(chosenPage) {
@@ -57,14 +59,30 @@ const ListAudit = () => {
       .finally(() => setLoading(false));
   }, [currentPage, wordToSearch, actionFilter, actorFilter, typeFilter, dateFrom, dateTo, order]);
 
+  const clearFilters = () => {
+    setActionFilter("");
+    setActorFilter("");
+    setTypeFilter("");
+    setDateFrom("");
+    setDateTo("");
+    setCurrentPage(1);
+  };
+
+  const reloadPage = () => {
+    setCurrentPage(1);
+  };
+
   return (
     <React.Fragment>
       <Row>
         <Col>
           <Card>
             <Card.Header>
-              <Row className="g-2 align-items-end">
-                <Col sm={12} lg={3}>
+              <Row className="align-items-center g-2">
+                <Col sm="auto">
+                  <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
+                </Col>
+                <Col sm={12} lg={4}>
                   <Search
                     type={t("search.by.name.description")}
                     setWordToSearch={setWordToSearch}
@@ -73,47 +91,49 @@ const ListAudit = () => {
                     setCurrentPage={setCurrentPage}
                   />
                 </Col>
-                <Col sm={6} lg={2}>
-                  <Form.Group>
-                    <Form.Label className="small mb-0">{t("w.action")}</Form.Label>
-                    <Form.Select
-                      size="sm"
-                      value={actionFilter}
-                      onChange={(e) => { setActionFilter(e.target.value); setCurrentPage(1); }}
-                    >
-                      {ACTION_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-                <Col sm={6} lg={2}>
-                  <Form.Group>
-                    <Form.Label className="small mb-0">{t("reporter")}</Form.Label>
-                    <Form.Control
-                      size="sm"
-                      type="text"
-                      value={actorFilter}
-                      placeholder={t("reporter")}
-                      onChange={(e) => { setActorFilter(e.target.value); setCurrentPage(1); }}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col sm={6} lg={2}>
-                  <Form.Group>
-                    <Form.Label className="small mb-0">{t("ngen.type")}</Form.Label>
-                    <Form.Control
-                      size="sm"
-                      type="text"
-                      value={typeFilter}
-                      placeholder={t("ngen.type")}
-                      onChange={(e) => { setTypeFilter(e.target.value); setCurrentPage(1); }}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col sm={6} lg={3}>
-                  <Row className="g-1">
-                    <Col xs={6}>
+              </Row>
+              <Collapse in={open}>
+                <div id="example-collapse-text">
+                  <Row className="g-2 mt-2">
+                    <Col sm={6} lg={2}>
+                      <Form.Group>
+                        <Form.Label className="small mb-0">{t("w.action")}</Form.Label>
+                        <Form.Select
+                          size="sm"
+                          value={actionFilter}
+                          onChange={(e) => { setActionFilter(e.target.value); setCurrentPage(1); }}
+                        >
+                          {ACTION_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col sm={6} lg={2}>
+                      <Form.Group>
+                        <Form.Label className="small mb-0">{t("reporter")}</Form.Label>
+                        <Form.Control
+                          size="sm"
+                          type="text"
+                          value={actorFilter}
+                          placeholder={t("reporter")}
+                          onChange={(e) => { setActorFilter(e.target.value); setCurrentPage(1); }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col sm={6} lg={2}>
+                      <Form.Group>
+                        <Form.Label className="small mb-0">{t("ngen.type")}</Form.Label>
+                        <Form.Control
+                          size="sm"
+                          type="text"
+                          value={typeFilter}
+                          placeholder={t("ngen.type")}
+                          onChange={(e) => { setTypeFilter(e.target.value); setCurrentPage(1); }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col sm={6} lg={2}>
                       <Form.Group>
                         <Form.Label className="small mb-0">{t("date.condition_from")}</Form.Label>
                         <Form.Control
@@ -124,7 +144,7 @@ const ListAudit = () => {
                         />
                       </Form.Group>
                     </Col>
-                    <Col xs={6}>
+                    <Col sm={6} lg={2}>
                       <Form.Group>
                         <Form.Label className="small mb-0">{t("date.condition_to")}</Form.Label>
                         <Form.Control
@@ -136,8 +156,8 @@ const ListAudit = () => {
                       </Form.Group>
                     </Col>
                   </Row>
-                </Col>
-              </Row>
+                </div>
+              </Collapse>
             </Card.Header>
             <TableAudit
               audits={audits}
