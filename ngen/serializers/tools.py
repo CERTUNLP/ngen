@@ -3,6 +3,7 @@ from constance import config, settings
 from django.conf import settings as project_settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
+from django.urls.exceptions import NoReverseMatch
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -33,7 +34,7 @@ class AuditSerializer(AuditSerializerMixin):
             return GenericRelationField(read_only=True).generic_detail_link(
                 new_obj, self.context.get("request")
             )
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, NoReverseMatch):
             return None
 
     def get_actor_username(self, obj):
