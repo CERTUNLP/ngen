@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Collapse, Form, Row } from "react-bootstrap";
+import Select from "react-select";
 import { getAudits } from "../../api/services/audit";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableAudit from "./components/TableAudit";
@@ -118,20 +119,19 @@ const ListAudit = () => {
                     </Col>
                   </Row>
                   <Row>
-                    <Col sm={4} lg={4}>
-                      <Form.Group controlId="formGridAddress1">
-                        <Form.Label>{t("w.action")}</Form.Label>
-                        <Form.Select
-                          value={actionFilter}
-                          onChange={(e) => { setActionFilter(e.target.value); setCurrentPage(1); }}
-                          name="action"
-                        >
-                          {ACTION_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                          ))}
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
+                     <Col sm={4} lg={4}>
+                       <Form.Group controlId="formGridAddress1">
+                         <Form.Label>{t("w.action")}</Form.Label>
+                         <Select
+                           classNamePrefix="react-select"
+                           options={ACTION_OPTIONS.slice(1)}
+                           isClearable
+                           placeholder={`${t("ngen.filter_by")} ${t("w.action")}`}
+                           value={ACTION_OPTIONS.find((o) => o.value === actionFilter) || null}
+                           onChange={(e) => { setActionFilter(e?.value || ""); setCurrentPage(1); }}
+                         />
+                       </Form.Group>
+                     </Col>
                     <Col sm={4} lg={4}>
                       <Form.Group controlId="formGridAddress1">
                         <Form.Label>{t("reporter")}</Form.Label>
