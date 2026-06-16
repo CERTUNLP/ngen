@@ -68,21 +68,17 @@ const ListAudit = () => {
     setCurrentPage(1);
   };
 
-  const reloadPage = () => {
-    setCurrentPage(1);
-  };
-
   return (
     <React.Fragment>
       <Row>
         <Col>
           <Card>
             <Card.Header>
-              <Row className="align-items-center g-2">
+              <Row>
                 <Col sm="auto">
-                  <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
+                  <FilterToolbar open={open} setOpen={setOpen} onReload={() => setCurrentPage(1)} onClearFilters={clearFilters} />
                 </Col>
-                <Col sm={12} lg={4}>
+                <Col sm={8} lg={4}>
                   <Search
                     type={t("search.by.name.description")}
                     setWordToSearch={setWordToSearch}
@@ -94,14 +90,41 @@ const ListAudit = () => {
               </Row>
               <Collapse in={open}>
                 <div id="example-collapse-text">
-                  <Row className="g-2 mt-2">
-                    <Col sm={6} lg={2}>
-                      <Form.Group>
-                        <Form.Label className="small mb-0">{t("w.action")}</Form.Label>
+                  <Row>
+                    <Col sm={12} lg={6}>
+                      <Form.Group controlId="formGridAddress1">
+                        <Form.Label>{t("date.condition_from")}</Form.Label>
+                        <Form.Control
+                          type="date"
+                          maxLength="150"
+                          placeholder={t("date.condition_from")}
+                          value={dateFrom}
+                          onChange={(e) => { setDateFrom(e.target.value); setCurrentPage(1); }}
+                          name="date"
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col sm={12} lg={6}>
+                      <Form.Group controlId="formGridAddress1">
+                        <Form.Label>{t("date.condition_to")}</Form.Label>
+                        <Form.Control
+                          type="date"
+                          maxLength="150"
+                          value={dateTo}
+                          onChange={(e) => { setDateTo(e.target.value); setCurrentPage(1); }}
+                          name="date"
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col sm={4} lg={4}>
+                      <Form.Group controlId="formGridAddress1">
+                        <Form.Label>{t("w.action")}</Form.Label>
                         <Form.Select
-                          size="sm"
                           value={actionFilter}
                           onChange={(e) => { setActionFilter(e.target.value); setCurrentPage(1); }}
+                          name="action"
                         >
                           {ACTION_OPTIONS.map((opt) => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -109,49 +132,29 @@ const ListAudit = () => {
                         </Form.Select>
                       </Form.Group>
                     </Col>
-                    <Col sm={6} lg={2}>
-                      <Form.Group>
-                        <Form.Label className="small mb-0">{t("reporter")}</Form.Label>
+                    <Col sm={4} lg={4}>
+                      <Form.Group controlId="formGridAddress1">
+                        <Form.Label>{t("reporter")}</Form.Label>
                         <Form.Control
-                          size="sm"
                           type="text"
+                          maxLength="150"
                           value={actorFilter}
                           placeholder={t("reporter")}
                           onChange={(e) => { setActorFilter(e.target.value); setCurrentPage(1); }}
+                          name="reporter"
                         />
                       </Form.Group>
                     </Col>
-                    <Col sm={6} lg={2}>
-                      <Form.Group>
-                        <Form.Label className="small mb-0">{t("ngen.type")}</Form.Label>
+                    <Col sm={4} lg={4}>
+                      <Form.Group controlId="formGridAddress1">
+                        <Form.Label>{t("ngen.type")}</Form.Label>
                         <Form.Control
-                          size="sm"
                           type="text"
+                          maxLength="150"
                           value={typeFilter}
                           placeholder={t("ngen.type")}
                           onChange={(e) => { setTypeFilter(e.target.value); setCurrentPage(1); }}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col sm={6} lg={2}>
-                      <Form.Group>
-                        <Form.Label className="small mb-0">{t("date.condition_from")}</Form.Label>
-                        <Form.Control
-                          size="sm"
-                          type="datetime-local"
-                          value={dateFrom}
-                          onChange={(e) => { setDateFrom(e.target.value); setCurrentPage(1); }}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col sm={6} lg={2}>
-                      <Form.Group>
-                        <Form.Label className="small mb-0">{t("date.condition_to")}</Form.Label>
-                        <Form.Control
-                          size="sm"
-                          type="datetime-local"
-                          value={dateTo}
-                          onChange={(e) => { setDateTo(e.target.value); setCurrentPage(1); }}
+                          name="type"
                         />
                       </Form.Group>
                     </Col>
