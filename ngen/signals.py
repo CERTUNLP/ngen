@@ -130,9 +130,9 @@ def _get_m2m_field_map():
     if not _m2m_field_map:
         from ngen.models.constituency import Contact, Network
         from ngen.models.taxonomy import Playbook
-        _m2m_field_map[Network.contacts.through] = "contacts"
-        _m2m_field_map[Contact.users.through] = "users"
-        _m2m_field_map[Playbook.taxonomy.through] = "taxonomy"
+        _m2m_field_map[Network.contacts.through] = ("contacts", "contact")
+        _m2m_field_map[Contact.users.through] = ("users", "user")
+        _m2m_field_map[Playbook.taxonomy.through] = ("taxonomy", "taxonomy")
     return _m2m_field_map
 
 
@@ -143,11 +143,13 @@ def audit_m2m_changes(sender, instance, action, pk_set, **kwargs):
 
     from auditlog.models import LogEntry
 
-    field_name = _get_m2m_field_map().get(sender)
-    if not field_name:
+    info = _get_m2m_field_map().get(sender)
+    if not info:
         return
 
-    changes = {field_name: ["", f"{action}: {sorted(pk_set)}"]}
+    field_name, related_model = info
+    pks = sorted(pk_set)
+    changes = {field_name: ["", f"{action} [{related_model}]: {pks}"]}
     LogEntry.objects.log_create(
         instance=instance,
         action=LogEntry.Action.UPDATE,

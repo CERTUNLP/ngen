@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Badge, Row, Spinner, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import Ordering from "components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
 
@@ -10,6 +11,28 @@ const TableAudit = ({ audits, loading, order, setOrder, setLoading }) => {
   const { t } = useTranslation();
   const letterSize = {};
   const [expanded, setExpanded] = useState({});
+
+  const renderValue = (value) => {
+    if (!value) return String(value ?? "-");
+    const str = String(value);
+    const m2mMatch = str.match(/^(post_add|post_remove|post_clear)\s+\[(\w+)\]:\s*\[([^\]]+)\]$/);
+    if (m2mMatch) {
+      const [, action, model, pksStr] = m2mMatch;
+      const pks = pksStr.split(",").map((s) => s.trim()).filter(Boolean);
+      return (
+        <>
+          {action}{" "}
+          {pks.map((pk, i) => (
+            <React.Fragment key={pk}>
+              {i > 0 && ", "}
+              <Link to={`/${model}s/view/${pk}`}>{pk}</Link>
+            </React.Fragment>
+          ))}
+        </>
+      );
+    }
+    return str;
+  };
 
   if (loading) {
     return (
@@ -62,7 +85,12 @@ const TableAudit = ({ audits, loading, order, setOrder, setLoading }) => {
                           const parsed = typeof a.changes === "string" ? JSON.parse(a.changes) : a.changes;
                           if (parsed && typeof parsed === "object") {
                             return Object.entries(parsed).map(([k, v]) => (
-                              <div key={k}><strong>{k}</strong>: {String(v[0])} → {String(v[1])}</div>
+                              <div key={k}>
+                                <strong>{k}:</strong>{" "}
+                                <span className="text-muted">{renderValue(v[0])}</span>
+                                {" → "}
+                                <span>{renderValue(v[1])}</span>
+                              </div>
                             ));
                           }
                           return String(a.changes);

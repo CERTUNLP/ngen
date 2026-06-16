@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Badge, Button, Modal, Row, Spinner, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { getObjectAudits } from "api/services/audit";
 import { useTranslation } from "react-i18next";
 import PermissionCheck from "components/Auth/PermissionCheck";
@@ -49,14 +50,36 @@ const AuditModal = ({ show, onHide, modelName, objectId }) => {
       return Object.entries(parsed).map(([field, values]) => (
         <div key={field} className="text-start">
           <strong>{field}:</strong>{" "}
-          <span className="text-muted">{String(values[0] ?? "-")}</span>
+          <span className="text-muted">{renderValue(values[0])}</span>
           {" → "}
-          <span>{String(values[1] ?? "-")}</span>
+          <span>{renderValue(values[1])}</span>
         </div>
       ));
     } catch {
       return String(changes);
     }
+  };
+
+  const renderValue = (value) => {
+    if (!value) return String(value ?? "-");
+    const str = String(value);
+    const m2mMatch = str.match(/^(post_add|post_remove|post_clear)\s+\[(\w+)\]:\s*\[([^\]]+)\]$/);
+    if (m2mMatch) {
+      const [, action, model, pksStr] = m2mMatch;
+      const pks = pksStr.split(",").map((s) => s.trim()).filter(Boolean);
+      return (
+        <>
+          {action}{" "}
+          {pks.map((pk, i) => (
+            <React.Fragment key={pk}>
+              {i > 0 && ", "}
+              <Link to={`/${model}s/view/${pk}`}>{pk}</Link>
+            </React.Fragment>
+          ))}
+        </>
+      );
+    }
+    return str;
   };
 
   return (
