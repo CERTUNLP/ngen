@@ -57,6 +57,12 @@ class EventSerializer(
         queryset=models.User.objects.all(),
         view_name="user-detail",
     )
+    case = serializers.HyperlinkedRelatedField(
+        view_name="case-detail",
+        queryset=models.Case.objects.all(),
+        allow_null=True,
+        required=False,
+    )
     solved_marks = serializers.HyperlinkedRelatedField(
         many=True, read_only=True, view_name="solvedmark-detail"
     )
@@ -339,18 +345,27 @@ class CaseSerializer(
 
     def update(self, instance, validated_data):
         """
-        Update a case and add the events to the case.
-        This functions is used because updating the events collection is not triggered the signal/save method of the
-        event model.
-        We need to manually call the case_assign_communication method for each event.
+        Update a case and sync the events collection.
+        Unlinks events removed from the list and links newly added ones.
         """
         events = validated_data.pop("events", None)
+        request = self.context.get("request")
+        is_put = request and request.method == "PUT"
 
         case = super().update(instance, validated_data)
 
         if events is not None:
+            new_event_ids = {e.id for e in events}
+            for event in instance.events.exclude(id__in=new_event_ids):
+                event.case = None
+                event.save()
             for event in events:
-                event.case = case
+                if event.case_id != case.pk:
+                    event.case = case
+                    event.save()
+        elif is_put:
+            for event in instance.events.all():
+                event.case = None
                 event.save()
 
         return case

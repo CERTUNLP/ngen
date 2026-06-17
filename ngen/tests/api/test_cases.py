@@ -234,6 +234,69 @@ class TestCase(APITestCaseWithLogin):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_case_put_unlinks_removed_events(self):
+        case = Case.objects.create(
+            priority=self.priority, tlp=self.tlp,
+            casetemplate_creator=self.case_template, state=self.state,
+        )
+        event1 = Event.objects.create(
+            domain="a.test.com", priority=self.priority,
+            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            case=case,
+        )
+        event2 = Event.objects.create(
+            domain="b.test.com", priority=self.priority,
+            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            case=case,
+        )
+        event3 = Event.objects.create(
+            domain="c.test.com", priority=self.priority,
+            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            case=case,
+        )
+
+        event1_url = self.base_url + reverse("event-detail", kwargs={"pk": event1.pk})
+        event2_url = self.base_url + reverse("event-detail", kwargs={"pk": event2.pk})
+
+        json_data = {
+            "priority": self.priority_url, "tlp": self.tlp_url,
+            "state": self.state_url, "casetemplate_creator": self.case_template_url,
+            "events": [event1_url, event2_url],
+        }
+        response = self.client.put(self.url_detail(case.pk), data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        event3.refresh_from_db()
+        self.assertIsNone(event3.case)
+        event1.refresh_from_db()
+        self.assertEqual(event1.case, case)
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_case_put_empty_events_unlinks_all(self):
+        case = Case.objects.create(
+            priority=self.priority, tlp=self.tlp,
+            casetemplate_creator=self.case_template, state=self.state,
+        )
+        event = Event.objects.create(
+            domain="d.test.com", priority=self.priority,
+            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            case=case,
+        )
+
+        json_data = {
+            "priority": self.priority_url, "tlp": self.tlp_url,
+            "state": self.state_url, "casetemplate_creator": self.case_template_url,
+            "events": [],
+        }
+        response = self.client.put(self.url_detail(case.pk), data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        event.refresh_from_db()
+        self.assertIsNone(event.case)
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_delete(self):
         """
         This will test successful Case DELETE

@@ -398,6 +398,48 @@ class TestEvent(APITestCaseWithLogin):
         response = self.client.patch(self.url_detail(event.pk), data=json_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_event_put_without_case(self):
+        case = Case.objects.create(
+            priority=self.priority, tlp=self.tlp,
+            state=State.objects.get(pk=3),
+        )
+        event = Event.objects.create(
+            domain="unlink.test.com", priority=self.priority,
+            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            case=case,
+        )
+
+        json_data = {
+            "domain": "unlink.test.com", "notes": "unlinked",
+            "priority": self.priority_url, "tlp": self.tlp_url,
+            "taxonomy": self.taxonomy_url, "feed": self.feed_url,
+            "reporter": self.base_url + reverse("user-detail", kwargs={"pk": self.user.pk}),
+            "case": "",
+        }
+        response = self.client.put(self.url_detail(event.pk), data=json_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        event.refresh_from_db()
+        self.assertIsNone(event.case)
+
+    def test_event_patch_clear_case(self):
+        case = Case.objects.create(
+            priority=self.priority, tlp=self.tlp,
+            state=State.objects.get(pk=3),
+        )
+        event = Event.objects.create(
+            domain="patch-unlink.test.com", priority=self.priority,
+            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            case=case,
+        )
+
+        json_data = {"case": None}
+        response = self.client.patch(self.url_detail(event.pk), data=json_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        event.refresh_from_db()
+        self.assertIsNone(event.case)
+
     def test_event_put_same_automatic_artifact(self):
         """
         This will test successful Event PUT

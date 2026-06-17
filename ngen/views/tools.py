@@ -98,7 +98,7 @@ class AuditFilter(django_filters.FilterSet):
         return queryset.filter(q)
 
 
-class AuditViewSet(viewsets.ModelViewSet):
+class AuditViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = LogEntry.objects.select_related("content_type", "actor").all()
     serializer_class = serializers.AuditSerializer
     permission_classes = [CustomModelPermissions]

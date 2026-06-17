@@ -379,11 +379,9 @@ const FormCase = (props) => {
         form.append("evidence", evidences[index]);
       }
     }
-    if (events.length > 0) {
-      events.forEach((selectedEvent) => {
-        form.append("events", selectedEvent);
-      });
-    }
+    events.forEach((selectedEvent) => {
+      form.append("events", selectedEvent);
+    });
     if (comm !== null) {
       let array = comments;
       array.push(comm);

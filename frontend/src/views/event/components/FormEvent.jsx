@@ -453,6 +453,7 @@ const FormEvent = (props) => {
     setCaseToLink({});
     setSelectedCases([]);
     setCaseTable(undefined);
+    props.setBody({ ...props.body, case: "" });
   };
 
   return (

@@ -51,7 +51,7 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
       });
   };
   const showModalPriority = (priority) => {
-    setId(priority.url.split("/")[priority.data.url.split("/").length - 2]);
+    setId(priority.url.split("/").filter(Boolean).pop());
     setAuditObjectId(priority.url.split("/").filter(Boolean).pop());
     setPriority(priority);
     setModalShow(true);
