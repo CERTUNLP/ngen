@@ -8,6 +8,7 @@ import Alert from "components/Alert/Alert";
 import CallBackendByName from "components/CallBackendByName";
 import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
+import AuditModal from "views/audits/components/AuditModal";
 
 const TableStates = ({ states, callback, loading, currentPage, setIsModify }) => {
   const [deleteName, setDeleteName] = useState();
@@ -19,6 +20,8 @@ const TableStates = ({ states, callback, loading, currentPage, setIsModify }) =>
   const [state, setState] = useState({});
   const [modalShow, setModalShow] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [showAudit, setShowAudit] = useState(false);
+  const [auditObjectId, setAuditObjectId] = useState(null);
   const { t } = useTranslation();
 
   if (loading) {
@@ -73,6 +76,7 @@ const TableStates = ({ states, callback, loading, currentPage, setIsModify }) =>
   };
   const showModalState = (state) => {
     setId(state.url.split("/")[state.url.split("/").length - 2]);
+    setAuditObjectId(state.url.split("/").filter(Boolean).pop());
     setState(state);
     setModalShow(true);
   };
@@ -151,6 +155,7 @@ const TableStates = ({ states, callback, loading, currentPage, setIsModify }) =>
                           </Col>
                           <Col sm={12} lg={4}>
                             <CrudButton type="edit" to={`/states/edit/${id}`} checkPermRoute />
+                            <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>
@@ -220,6 +225,7 @@ const TableStates = ({ states, callback, loading, currentPage, setIsModify }) =>
                 </Row>
               </Modal.Body>
             </Modal>
+            <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="state" objectId={auditObjectId} />
           </tbody>
         </Table>
     </div>

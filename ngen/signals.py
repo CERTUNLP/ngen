@@ -6,13 +6,15 @@ from PIL import Image
 from constance import config
 from constance.signals import config_updated
 from django.conf import settings
-from django.db.models.signals import post_delete, post_save
+from django.db.models.signals import m2m_changed, post_delete, post_save, pre_save
 from django.dispatch import receiver
 from django_celery_beat.models import PeriodicTask
 from django.core.cache import cache
 from rest_framework.authtoken.models import Token
 
 from ngen.models import ArtifactRelation
+
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -86,3 +88,122 @@ def artifactrelation_delete_callback(sender, **kwargs):
     )
     if count == 0:
         obj.artifact.delete()
+
+
+@receiver(post_save, sender="ngen.TaggedObject")
+def audit_taggedobject_change(sender, instance=None, created=False, **kwargs):
+    from auditlog.models import LogEntry
+
+    parent = instance.content_object
+    if parent is None:
+        return
+
+    tag_name = instance.tag.name if instance.tag else "unknown"
+    changes = {"tags": ["", f"{'added' if created else 'updated'}: {tag_name}"]}
+    LogEntry.objects.log_create(
+        instance=parent,
+        action=LogEntry.Action.UPDATE,
+        changes=json.dumps(changes),
+    )
+
+
+@receiver(post_delete, sender="ngen.TaggedObject")
+def audit_taggedobject_remove(sender, instance=None, **kwargs):
+    from auditlog.models import LogEntry
+
+    parent = instance.content_object
+    if parent is None:
+        return
+
+    tag_name = instance.tag.name if instance.tag else "unknown"
+    changes = {"tags": ["", f"removed: {tag_name}"]}
+    LogEntry.objects.log_create(
+        instance=parent,
+        action=LogEntry.Action.UPDATE,
+        changes=json.dumps(changes),
+    )
+
+
+_m2m_field_map = {}
+
+def _get_m2m_field_map():
+    if not _m2m_field_map:
+        from ngen.models.constituency import Contact, Network
+        from ngen.models.taxonomy import Playbook
+        _m2m_field_map[Network.contacts.through] = ("contacts", "contact")
+        _m2m_field_map[Contact.users.through] = ("users", "user")
+        _m2m_field_map[Playbook.taxonomy.through] = ("taxonomy", "taxonomy")
+    return _m2m_field_map
+
+
+@receiver(m2m_changed)
+def audit_m2m_changes(sender, instance, action, pk_set, **kwargs):
+    if action not in ("post_add", "post_remove", "post_clear"):
+        return
+
+    from auditlog.models import LogEntry
+
+    info = _get_m2m_field_map().get(sender)
+    if not info:
+        return
+
+    field_name, related_model = info
+    if pk_set is not None:
+        pks = sorted(pk_set)
+    else:
+        pks = "(all)"
+    changes = {field_name: ["", f"{action} [{related_model}]: {pks}"]}
+    LogEntry.objects.log_create(
+        instance=instance,
+        action=LogEntry.Action.UPDATE,
+        changes=json.dumps(changes),
+    )
+
+
+
+@receiver(pre_save, sender="ngen.Event")
+def _store_event_old_case(sender, instance, **kwargs):
+    try:
+        if instance.pk:
+            old = sender.objects.filter(pk=instance.pk).values_list("case_id", flat=True).first()
+            instance._old_case_id = old
+        else:
+            instance._old_case_id = None
+    except Exception:
+        logger.debug("_store_event_old_case: failed for event %s", instance.pk, exc_info=True)
+
+
+@receiver(post_save, sender="ngen.Event")
+def audit_event_case_link(sender, instance, created, **kwargs):
+    try:
+        old_case_id = getattr(instance, "_old_case_id", None)
+        new_case_id = instance.case_id
+
+        if created and new_case_id:
+            _log_event_case_audit(new_case_id, instance, "added")
+        elif not created and old_case_id != new_case_id:
+            if old_case_id:
+                _log_event_case_audit(old_case_id, instance, "removed")
+            if new_case_id:
+                _log_event_case_audit(new_case_id, instance, "added")
+    except Exception:
+        logger.debug("audit_event_case_link: failed for event %s", instance.pk, exc_info=True)
+
+
+def _log_event_case_audit(case_id, event, action):
+    from auditlog.models import LogEntry
+    from ngen.models.case import Case
+
+    try:
+        case = Case.objects.get(pk=case_id)
+    except Case.DoesNotExist:
+        return
+
+    changes = {
+        "events": ["", f"{action} [event]: #{event.pk} ({event.address_value or event.domain or 'no domain'})"],
+    }
+    LogEntry.objects.log_create(
+        instance=case,
+        action=LogEntry.Action.UPDATE,
+        changes=json.dumps(changes),
+    )

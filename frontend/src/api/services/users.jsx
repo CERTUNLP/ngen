@@ -143,9 +143,7 @@ const isActive = (url, active) => {
     })
     .catch((error) => {
       if (error.message === "Cannot read properties of undefined (reading 'code')") {
-        //el backend o servidor no funciona
         messageError = !active ? `El usuario no pudo ser desactivado no pudo ser` : `El usuario no pudo ser activado no pudo ser`;
-        setAlert(messageError, "error");
       }
       setAlert(messageError, "error");
       return Promise.reject(error);
@@ -165,9 +163,7 @@ const isSuperuser = (url, superuser) => {
     })
     .catch((error) => {
       if (error.message === "Cannot read properties of undefined (reading 'code')") {
-        //el backend o servidor no funciona
         messageError = !superuser ? `El usuario no pudo ser desactivado no pudo ser` : `El usuario no pudo ser activado no pudo ser`;
-        setAlert(messageError, "error");
       }
       setAlert(messageError, "error");
       return Promise.reject(error);
@@ -187,9 +183,7 @@ const isStaff = (url, staff) => {
     })
     .catch((error) => {
       if (error.message === "Cannot read properties of undefined (reading 'code')") {
-        //el backend o servidor no funciona
         messageError = !staff ? `El usuario no pudo ser desactivado no pudo ser` : `El usuario no pudo ser activado no pudo ser`;
-        setAlert(messageError, "error");
       }
       setAlert(messageError, "error");
       return Promise.reject(error);

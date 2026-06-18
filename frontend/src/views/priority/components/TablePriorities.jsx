@@ -7,6 +7,7 @@ import Alert from "components/Alert/Alert";
 import Ordering from "components/Ordering/Ordering";
 import DateShowField from "components/Field/DateShowField";
 import { useTranslation } from "react-i18next";
+import AuditModal from "views/audits/components/AuditModal";
 
 const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, currentPage }) => {
   const [remove, setRemove] = useState(false);
@@ -16,6 +17,8 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
   const [priority, setPriority] = useState({});
   const [modalShow, setModalShow] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [showAudit, setShowAudit] = useState(false);
+  const [auditObjectId, setAuditObjectId] = useState(null);
   const { t } = useTranslation();
 
   const resetShowAlert = () => {
@@ -48,7 +51,8 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
       });
   };
   const showModalPriority = (priority) => {
-    setId(priority.url.split("/")[priority.data.url.split("/").length - 2]);
+    setId(priority.url.split("/").filter(Boolean).pop());
+    setAuditObjectId(priority.url.split("/").filter(Boolean).pop());
     setPriority(priority);
     setModalShow(true);
   };
@@ -116,6 +120,7 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
                           </Col>
                           <Col sm={12} lg={4}>
                             <CrudButton type="edit" to={`/priorities/edit/${id}`} checkPermRoute />
+                            <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
                             <CloseButton aria-label={t("w.close")} onClick={() => setModalShow(false)} />
                           </Col>
                         </Row>
@@ -177,6 +182,7 @@ const TablePriorities = ({ Priorities, loading, order, setOrder, setLoading, cur
                 </Row>
               </Modal.Body>
             </Modal>
+            <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="priority" objectId={auditObjectId} />
             <ModalConfirm
               type="delete"
               component={t("ngen.priority_one")}

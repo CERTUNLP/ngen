@@ -4,9 +4,11 @@ import { Card, Col, Form, Row } from "react-bootstrap";
 import CrudButton from "components/Button/CrudButton";
 import { getContact } from "api/services/contacts";
 import { useTranslation } from "react-i18next";
+import AuditModal from "views/audits/components/AuditModal";
 
 const ViewContact = () => {
   const [contact, setContact] = useState(null);
+  const [showAudit, setShowAudit] = useState(false);
   const { id } = useParams();
   const { t } = useTranslation();
 
@@ -34,6 +36,7 @@ const ViewContact = () => {
         </Col>
         <Col className="text-right" style={{ textAlign: "right" }}>
           <CrudButton type="edit" to={`/contacts/edit/${id}`} checkPermRoute />
+          <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
         </Col>
       </Row>
       <Card>
@@ -73,6 +76,7 @@ const ViewContact = () => {
           )}
         </Card.Body>
       </Card>
+      <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="contact" objectId={id} />
     </React.Fragment>
   );
 };

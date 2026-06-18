@@ -105,6 +105,7 @@ export const COMPONENT_URL = {
   analyzer: "analyzer/",
   analyzerMapping: "analyzermapping/",
   version: "version/",
+  audit: "audit/",
   lookup: "lookup/",
   addressinfo: "addressinfo/",
   emailmessage: "emailmessage/",

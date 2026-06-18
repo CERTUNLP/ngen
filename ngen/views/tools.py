@@ -1,11 +1,12 @@
 import os
 import time
 import random
+import django_filters
 from auditlog.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.views.generic import TemplateView
-from rest_framework import permissions, status, viewsets, serializers
+from rest_framework import filters, permissions, status, viewsets, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
@@ -40,10 +41,76 @@ class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [CustomModelPermissions]
 
 
-class AuditViewSet(viewsets.ModelViewSet):
-    queryset = LogEntry.objects.all()
+class AuditFilter(django_filters.FilterSet):
+    content_type__model = django_filters.CharFilter(method="filter_by_model")
+    object_id = django_filters.CharFilter()
+    action = django_filters.ChoiceFilter(
+        choices=[(0, "Create"), (1, "Update"), (2, "Delete")],
+    )
+    actor__username = django_filters.CharFilter(lookup_expr="icontains")
+    timestamp_after = django_filters.DateTimeFilter(
+        field_name="timestamp", lookup_expr="gte"
+    )
+    timestamp_before = django_filters.DateTimeFilter(
+        field_name="timestamp", lookup_expr="lte"
+    )
+
+    class Meta:
+        model = LogEntry
+        fields = ["object_id", "action", "actor__username", "timestamp_after", "timestamp_before"]
+
+    THROUGH_MODELS = {
+        "event": {
+            "todotask": ("event_id", "fk"),
+            "evidence": ("content_type", "gfk"),
+            "artifactrelation": ("content_type", "gfk"),
+            "taggedobject": ("content_type", "gfk"),
+        },
+        "case": {
+            "evidence": ("content_type", "gfk"),
+            "artifactrelation": ("content_type", "gfk"),
+            "taggedobject": ("content_type", "gfk"),
+        },
+    }
+
+    def filter_by_model(self, queryset, name, value):
+        from django.db.models import Q, Subquery
+
+        q = Q(content_type__model=value)
+        object_id = self.data.get("object_id")
+
+        if object_id and value in self.THROUGH_MODELS:
+            parent_ct = ContentType.objects.get(model=value)
+            for through_model, (field, rel_type) in self.THROUGH_MODELS[value].items():
+                ct = ContentType.objects.get(model=through_model)
+                th_cls = ct.model_class()
+                if rel_type == "fk":
+                    sub = th_cls.objects.filter(
+                        **{field: object_id}
+                    ).values("pk")
+                else:  # gfk
+                    sub = th_cls.objects.filter(
+                        content_type=parent_ct,
+                        object_id=object_id,
+                    ).values("pk")
+                q |= Q(content_type=ct, object_id__in=Subquery(sub))
+
+        return queryset.filter(q)
+
+
+class AuditViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = LogEntry.objects.select_related("content_type", "actor").all()
     serializer_class = serializers.AuditSerializer
     permission_classes = [CustomModelPermissions]
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_class = AuditFilter
+    search_fields = ["object_repr", "changes"]
+    ordering_fields = ["timestamp", "action"]
+    ordering = ["-timestamp"]
 
 
 class ConstanceViewSet(viewsets.ModelViewSet):

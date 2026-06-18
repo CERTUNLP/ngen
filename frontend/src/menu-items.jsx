@@ -290,6 +290,15 @@ const menuItems = {
               breadcrumbs: true
             },
             {
+              id: "audits",
+              title: "menu.audit",
+              type: "item",
+              url: "/audits",
+              classes: "",
+              icon: "",
+              breadcrumbs: true
+            },
+            {
               id: "about",
               title: "menu.about",
               type: "item",

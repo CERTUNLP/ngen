@@ -3,6 +3,7 @@ from constance import config, settings
 from django.conf import settings as project_settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
+from django.urls.exceptions import NoReverseMatch
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -20,6 +21,8 @@ class ContentTypeSerializer(serializers.ModelSerializer):
 
 class AuditSerializer(AuditSerializerMixin):
     related = serializers.SerializerMethodField(read_only=True)
+    actor_username = serializers.SerializerMethodField(read_only=True)
+    content_type_model = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = LogEntry
@@ -31,8 +34,14 @@ class AuditSerializer(AuditSerializerMixin):
             return GenericRelationField(read_only=True).generic_detail_link(
                 new_obj, self.context.get("request")
             )
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, NoReverseMatch):
             return None
+
+    def get_actor_username(self, obj):
+        return obj.actor.username if obj.actor else None
+
+    def get_content_type_model(self, obj):
+        return obj.content_type.model if obj.content_type else None
 
 
 class ConstanceSerializer(serializers.Serializer):

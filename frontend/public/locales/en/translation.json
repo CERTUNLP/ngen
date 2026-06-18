@@ -556,6 +556,7 @@
   "w.language.english": "English",
   "w.language.es": "Spanish",
   "w.language.spanish": "Spanish",
+  "w.load_more": "Load more",
   "w.loading": "Loading",
   "w.main": "Main",
   "w.modify": "Modify",
@@ -649,6 +650,11 @@
   "w.view": "View",
   "w.link": "Link",
   "w.no_data": "No data available",
+  "w.action": "Action",
+  "w.changes": "Changes",
+  "w.unknown": "Unknown",
+  "ngen.audit.title": "Audit History",
+  "menu.audit": "Audit Log",
   "button.logout": "Logout",
   "ngen.dark_mode": "Dark mode"
 }

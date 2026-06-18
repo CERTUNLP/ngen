@@ -6,10 +6,12 @@ import { getNetwork } from "api/services/networks";
 import { getContact } from "api/services/contacts";
 import PermissionCheck from "components/Auth/PermissionCheck";
 import { useTranslation } from "react-i18next";
+import AuditModal from "views/audits/components/AuditModal";
 
 const ViewNetwork = () => {
   const [network, setNetwork] = useState(null);
   const [contacts, setContacts] = useState([]);
+  const [showAudit, setShowAudit] = useState(false);
   const { id } = useParams();
   const { t } = useTranslation();
 
@@ -45,6 +47,7 @@ const ViewNetwork = () => {
         </Col>
         <Col className="text-right" style={{ textAlign: "right" }}>
           <CrudButton type="edit" to={`/networks/edit/${id}`} checkPermRoute />
+          <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
         </Col>
       </Row>
       <Card>
@@ -114,6 +117,7 @@ const ViewNetwork = () => {
           </Card>
         )}
       </PermissionCheck>
+      <AuditModal show={showAudit} onHide={() => setShowAudit(false)} modelName="network" objectId={id} />
     </React.Fragment>
   );
 };
