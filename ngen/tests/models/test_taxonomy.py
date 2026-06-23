@@ -57,7 +57,8 @@ class TaxonomyTestCase(TestCase):
             alias_of=cls.aNode_child2,
         )
         cls.setUpReports()
-    @classmethod 
+
+    @classmethod
     def setUpReports(cls):
         """
         Create example Taxonomy and Reports for testing.
@@ -244,6 +245,3 @@ class TaxonomyTestCase(TestCase):
         with self.assertRaises(ValidationError):
             alias = Taxonomy(name="Alias", alias_of=self.aNode_child3)
             alias.full_clean()
-
-        
-   

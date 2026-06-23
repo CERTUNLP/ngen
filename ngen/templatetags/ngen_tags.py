@@ -46,10 +46,9 @@ def encode_static(path, encoding="base64", file_type="image"):
 def get_encoded_logo():
     return encode_static(settings.LOGO_WIDE_PATH)
 
-  #nuevo cambio
 @register.simple_tag
 def get_matching_report(taxonomy, lang):
-     return taxonomy.get_matching_report(lang)
+    return taxonomy.get_matching_report(lang)
 
 def get_file_data(file_path):
     with open(file_path, "rb") as f:

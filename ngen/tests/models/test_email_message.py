@@ -143,25 +143,26 @@ class EmailMessageTest(TestCase):
         report = self.hijo.get_matching_report(lang="es")
         self.assertEqual(report[0], own_report)
 
-    def test_get_message_thread_by_ignores_invalid_messages(self):
+    def test_get_message_thread_by_ignores_different_root(self):
         """
-        Verifies that messages with None as root_message_id are not returned in threads.
+        Verifies that messages with a different root_message_id are not returned.
         """
-        bad_message = EmailMessage.objects.create(
-            root_message_id="testgetmessagethread@test.com",
+        other = EmailMessage.objects.create(
+            root_message_id="other@test.com",
             parent_message_id=None,
-            message_id="<bad@cert.unlp.edu.ar>",
+            message_id="<other@cert.unlp.edu.ar>",
             references=[],
-            subject="Broken",
+            subject="Other",
             senders=[],
             recipients=[],
             date=timezone.now(),
-            body="bad",
-            sent=False,
-            send_attempt_failed=True,
+            body="other",
+            status="pending",
         )
-        result = EmailMessage.get_message_thread_by("non-existent-id")
-        self.assertNotIn(bad_message, result)
+        result = EmailMessage.get_message_thread_by(
+            self.root_email_message.message_id
+        )
+        self.assertNotIn(other, result)
 
     def test_email_message_references_chain(self):
         """
@@ -180,12 +181,11 @@ class EmailMessageTest(TestCase):
         result = EmailMessage.get_message_thread_by("non-existent-id")
         self.assertEqual(result.count(), 0)
 
-    def test_email_message_sent_flags(self):
+    def test_email_message_status(self):
         """
-        Tests the sent and send_attempt_failed flags are correctly set on creation.
+        Tests the status field is correctly set on creation.
         """
-        self.assertTrue(self.root_email_message.sent)
-        self.assertFalse(self.root_email_message.send_attempt_failed)
+        self.assertEqual(self.root_email_message.status, "sent")
 
     def test_message_thread_ordering(self):
         """
