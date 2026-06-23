@@ -133,6 +133,7 @@ class EventSerializer(
 
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
+        extra_kwargs["date"] = {"allow_null": True, "required": False}
         action = self.context["view"].action
         if action in ["update", "partial_update", "retrieve"]:
             if self.instance and self.instance.is_parent():

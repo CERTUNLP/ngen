@@ -45,7 +45,7 @@ const EditEvent = ({ routeParams }) => {
       getEvent(COMPONENT_URL.event + id + "/")
         .then((response) => {
           response.data.case = response.data.case ? response.data.case : "";
-          response.data.date = response.data.date.substring(0, 16);
+          response.data.date = response.data.date ? response.data.date.substring(0, 16) : null;
           setBody(response.data);
         })
         .catch((error) => console.log(error));
@@ -174,7 +174,9 @@ const EditEvent = ({ routeParams }) => {
       }
       //console.log(fecha.toISOString())//YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
 
-      formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
+      if (body.date) {
+        formDataEvent.append("date", body.date);
+      }
       //f.append("date", fecha.toISOString())
       formDataEvent.append("priority", body.priority);
       formDataEvent.append("tlp", body.tlp);
@@ -235,7 +237,9 @@ const EditEvent = ({ routeParams }) => {
       }
       //console.log(fecha.toISOString())//YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
 
-      formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
+      if (body.date) {
+        formDataEvent.append("date", body.date);
+      }
       //f.append("date", fecha.toISOString())
       formDataEvent.append("priority", body.priority);
       formDataEvent.append("tlp", body.tlp);

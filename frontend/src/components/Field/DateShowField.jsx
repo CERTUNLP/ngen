@@ -57,6 +57,11 @@ const DateShowField = ({ value, year = true, time = true, seconds = false, asFor
   };
 
   useEffect(() => {
+    if (!value) {
+      setDate("--");
+      setTitle("--");
+      return;
+    }
     let d = new Date(value);
     setDate(d.toLocaleDateString(options["locale"], options));
     setTitle(`${d.toLocaleDateString(optionsFullLocal["locale"], optionsFullLocal)}\n${d.toLocaleDateString(optionsFull["locale"], optionsFull)}`);

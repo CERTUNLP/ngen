@@ -37,6 +37,7 @@
   "date.limit.response": "Response deadline",
   "date.minutes": "Minute/s",
   "date.one": "Date",
+  "date.optional": "optional",
   "date.other": "Dates",
   "derived.issue.preview": "Preview of derived issue",
   "editTransition": "Edit transition",

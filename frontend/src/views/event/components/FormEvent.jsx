@@ -28,7 +28,13 @@ import { useTranslation } from "react-i18next";
 import Modal from "react-bootstrap/Modal";
 
 const FormEvent = (props) => {
-  const [date, setDate] = useState(props.body.date ? props.body.date.substring(0, 16) : getCurrentDateTime());
+  const [date, setDate] = useState(
+    props.body.date
+      ? props.body.date.substring(0, 16)
+      : props.body.date === null
+        ? ""
+        : getCurrentDateTime()
+  );
   const [artifactsValueLabel, setArtifactsValueLabel] = useState([]);
   const [modalCreate, setModalCreate] = useState(false);
   const [typeArtifact, setTypeArtifact] = useState("0");
@@ -470,21 +476,21 @@ const FormEvent = (props) => {
                 <Form.Group controlId="formGridAddress1">
                   <Form.Label>
                     {t("date.one")}
-                    <b style={{ color: "red" }}>*</b>
+                    <i className="text-muted ms-1" style={{ fontSize: "0.85rem" }}>({t("date.optional")})</i>
                   </Form.Label>
                   <Form.Control
                     type="datetime-local"
                     maxLength="150"
-                    max={getCurrentDateTime()}
                     value={date}
-                    isInvalid={new Date(date) > new Date(getCurrentDateTime())}
+                    isInvalid={date && new Date(date) > new Date(getCurrentDateTime())}
                     onChange={(e) => {
-                      completeField(e);
-                      setDate(e.target.value);
+                      const val = e.target.value;
+                      completeField({ target: { name: "date", value: val || null } });
+                      setDate(val);
                     }}
                     name="date"
                   />
-                  {new Date(date) > new Date(getCurrentDateTime()) ? <div className="invalid-feedback">{t("date.invalid")}</div> : ""}
+                  {date && new Date(date) > new Date(getCurrentDateTime()) ? <div className="invalid-feedback">{t("date.invalid")}</div> : ""}
                 </Form.Group>
               </Col>
               <Col sm={12} lg={4}>

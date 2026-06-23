@@ -592,7 +592,7 @@ class Event(
     # TaggedItemMixin,
 ):
     tlp = models.ForeignKey("ngen.Tlp", models.PROTECT)
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(null=True, blank=True, default=None)
 
     network = models.ForeignKey(
         "ngen.Network",

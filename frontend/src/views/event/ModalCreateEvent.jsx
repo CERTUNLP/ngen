@@ -140,7 +140,9 @@ const ModalCreateEvent = ({
 
   const createEvent = () => {
     const formDataEvent = new FormData();
-    formDataEvent.append("date", body.date); // tengo que hacer esto porque solo me acepta este formato, ver a futuro
+    if (body.date) {
+      formDataEvent.append("date", body.date);
+    }
     formDataEvent.append("priority", body.priority);
     formDataEvent.append("tlp", body.tlp);
     formDataEvent.append("taxonomy", body.taxonomy);
