@@ -71,6 +71,16 @@ class Taxonomy(AuditModelMixin, TreeModelMixin, SlugModelMixin, ValidationModelM
     def get_ancestors_reports(self, flat=True):
         reports = self.get_ancestors_related(lambda obj: obj.reports.all())
         return [report for report_list in reports for report in report_list]
+    def get_matching_report(self, lang):
+        """
+        Get the first report matching the given language for this taxonomy.
+        If no report is found for this taxonomy, it searches ancestor taxonomies.
+        """
+        rep = self.reports.filter(lang=lang)
+        if rep.exists():
+            return rep[:1]
+        else:
+            return [r for r in self.get_ancestors_reports() if r.lang == lang][:1]
 
     class Meta:
         db_table = "taxonomy"
