@@ -111,6 +111,7 @@
   "ngen.case.close.warning": "This case has {{count}} associated events. Closing it will affect all of them.",
   "ngen.case.close.no_transition": "No transition available to close the case from its current state.",
   "ngen.case.close.already_closed": "The case is already closed.",
+  "ngen.case.close.error": "An error occurred while closing the case.",
   "ngen.case.create": "Create case",
   "ngen.case.error": "Unable to retrieve cases information",
   "ngen.case.info.error": "Unable to retrieve case information",

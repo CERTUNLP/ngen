@@ -17,6 +17,7 @@ import EventComponent from "views/tanstackquery/EventComponent";
 import TaxonomyComponent from "views/tanstackquery/TaxonomyComponent";
 import { getState } from "api/services/states";
 import apiInstance from "api/api";
+import setAlert from "utils/setAlert";
 
 
 
@@ -107,7 +108,7 @@ const TableCase = ({
       const stateData = stateResponse.data;
 
       if (stateData.solved) {
-        alert(t("ngen.case.close.already_closed"));
+        setAlert(t("ngen.case.close.already_closed"), "error", "case");
         return;
       }
 
@@ -121,7 +122,7 @@ const TableCase = ({
       }
 
       if (!targetStateUrl) {
-        alert(t("ngen.case.close.no_transition"));
+        setAlert(t("ngen.case.close.no_transition"), "error", "case");
         return;
       }
 
@@ -139,6 +140,8 @@ const TableCase = ({
   };
 
   const handleCloseCaseConfirm = () => {
+    if (!closeCaseInfo || closingCase) return;
+    setClosingCase(true);
     patchCaseState(closeCaseInfo.caseUrl, closeCaseInfo.targetStateUrl)
       .then((response) => {
         setIfModify(response);
@@ -147,6 +150,13 @@ const TableCase = ({
       })
       .catch((error) => {
         console.error(error);
+        const msg = error.response?.data?.detail
+          || error.response?.data?.state?.[0]
+          || t("ngen.case.close.error");
+        setAlert(msg, "error", "case");
+      })
+      .finally(() => {
+        setClosingCase(false);
       });
   };
 
@@ -408,9 +418,11 @@ const TableCase = ({
                     ))}
                   {!disableCloseCase && (
                     <Button
+                      type="button"
                       className="btn-icon btn-rounded"
                       variant="outline-success"
                       title={t("ngen.case.close")}
+                      aria-label={t("ngen.case.close")}
                       disabled={closingCase || solvedCases.has(caseItem.url)}
                       onClick={() => handleCloseCaseClick(caseItem)}
                     >
@@ -444,10 +456,10 @@ const TableCase = ({
           <p>{t("ngen.case.close.confirm")}</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={() => setShowCloseCaseModal(false)}>
+          <Button variant="outline-secondary" onClick={() => setShowCloseCaseModal(false)} disabled={closingCase}>
             {t("ngen.cancel")}
           </Button>
-          <Button variant="outline-danger" onClick={handleCloseCaseConfirm}>
+          <Button variant="outline-danger" onClick={handleCloseCaseConfirm} disabled={closingCase}>
             {t("ngen.case.close")}
           </Button>
         </Modal.Footer>
