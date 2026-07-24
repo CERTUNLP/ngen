@@ -44,6 +44,7 @@ class CustomPermissionSupport(models.Model):
             ("view_minified_permission", "View Minified Permission"),
             ("view_minified_group", "View Minified Group"),
             ("view_minified_tag", "View Minified Tag"),
+            ("view_minified_analyzer", "View Minified Analyzer"),
             ("view_userprofile", "View UserProfile"),
             ("change_userprofile", "Change UserProfile"),
             ("view_stringidentifier", "View StringIdentifier"),

@@ -27,3 +27,9 @@ class AnalyzerSerializer(AuditSerializerMixin):
             raise serializers.ValidationError({"config": errors})
 
         return attrs
+
+
+class AnalyzerMinifiedSerializer(AuditSerializerMixin):
+    class Meta:
+        model = models.Analyzer
+        fields = ["url", "name", "type", "enabled"]

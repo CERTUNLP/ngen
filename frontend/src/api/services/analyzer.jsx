@@ -85,4 +85,14 @@ const getVulnChoices = () => {
     .catch((error) => Promise.reject(error));
 };
 
-export { getAllAnalyzers, getAnalyzers, getAnalyzer, postAnalyzer, putAnalyzer, deleteAnalyzer, testAnalyzerConnection, getVulnChoices };
+const getMinifiedAnalyzer = () => {
+  return apiInstance
+    .get(COMPONENT_URL.analyzerMinifiedList)
+    .then((response) => response.data)
+    .catch((error) => {
+      setAlert("No se pudo recuperar la lista de analizadores", "error", "analyzer");
+      return Promise.reject(error);
+    });
+};
+
+export { getAllAnalyzers, getAnalyzers, getAnalyzer, postAnalyzer, putAnalyzer, deleteAnalyzer, testAnalyzerConnection, getVulnChoices, getMinifiedAnalyzer };

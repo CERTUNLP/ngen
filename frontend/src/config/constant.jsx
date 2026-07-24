@@ -98,6 +98,7 @@ export const COMPONENT_URL = {
   caseMinifiedList: "/minified/case/",
   artifactMinifiedList: "minified/artifact/",
   tagMinifiedList: "minified/tag/",
+  analyzerMinifiedList: "minified/analyzer/",
   group: "groups/",
   configPublic: "ngenconfig/",
   tag: "tag/",
