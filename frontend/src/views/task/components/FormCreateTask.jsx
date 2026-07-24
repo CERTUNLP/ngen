@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import { getAllPriorities } from '../../../api/services/priorities';
+import { getMinifiedPriority } from '../../../api/services/priorities';
 import { validateAlphanumeric, validateSpace } from '../../../utils/validators';
 import { validateTaskDescription, validateTaskName, validateUnrequiredInput } from '../../../utils/validators/tasks';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,7 @@ const FormCreateTask = (props) => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    getAllPriorities()
+    getMinifiedPriority()
       .then((response) => {
         setPriorityOption(response);
       })
