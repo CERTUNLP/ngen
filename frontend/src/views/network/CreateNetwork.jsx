@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
-import { getAllContacts } from "../../api/services/contacts";
+import { getMinifiedContact } from "../../api/services/contacts";
 import { postNetwork } from "../../api/services/networks";
 import FormCreateNetwork from "./components/FormCreateNetwork";
 import Alert from "../../components/Alert/Alert";
@@ -26,7 +26,7 @@ const CreateNetwork = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-    getAllContacts()
+    getMinifiedContact()
       .then((response) => {
         let listContact = response.map((contactsItem) => {
           return {

@@ -2,13 +2,13 @@ import logging
 
 import django_filters
 from django.utils.translation import gettext_lazy as _
-from rest_framework import viewsets, filters, status
+from rest_framework import viewsets, filters, status, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ngen import models, serializers
 from ngen.filters import AnalyzerFilter
-from ngen.permissions import CustomModelPermissions
+from ngen.permissions import CustomModelPermissions, CustomApiViewPermission
 
 
 logger = logging.getLogger(__name__)
@@ -64,3 +64,11 @@ class AnalyzerViewSet(viewsets.ModelViewSet):
             else:
                 result[analyzer_type] = getattr(adapter_class, "VULN_CHOICES", [])
         return Response(result)
+
+
+class AnalyzerMinifiedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = models.Analyzer.objects.all()
+    serializer_class = serializers.AnalyzerMinifiedSerializer
+    pagination_class = None
+    permission_classes = [CustomApiViewPermission]
+    required_permissions = ["ngen.view_minified_analyzer"]

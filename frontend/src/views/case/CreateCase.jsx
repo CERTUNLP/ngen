@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import FormCase from "./components/FormCase";
-import { getAllStates } from "../../api/services/states";
+import { getMinifiedState } from "../../api/services/states";
 import { getMinifiedTag } from "../../api/services/tags";
 import { useTranslation } from "react-i18next";
 
@@ -27,15 +27,14 @@ const CreateCase = ({ routeParams }) => {
   };
 
   useEffect(() => {
-    getAllStates()
+    getMinifiedState()
       .then((response) => {
         let listStates = [];
         let dicState = {};
         response.forEach((stateItem) => {
           listStates.push({
             value: stateItem.url,
-            label: stateItem.name,
-            childrenUrl: stateItem.children
+            label: stateItem.name
           });
           dicState[stateItem.url] = stateItem.name;
         });

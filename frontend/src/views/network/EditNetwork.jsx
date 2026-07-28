@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { Card, Col, Row } from "react-bootstrap";
-import { getAllContacts } from "../../api/services/contacts";
+import { getMinifiedContact } from "../../api/services/contacts";
 import { putNetwork, getNetwork } from "../../api/services/networks";
 import FormCreateNetwork from "./components/FormCreateNetwork";
 import Alert from "../../components/Alert/Alert";
@@ -58,7 +58,7 @@ const EditNetwork = () => {
 
   useEffect(() => {
     //multiselect all options
-    getAllContacts()
+    getMinifiedContact()
       .then((response) => {
         let listContact = response.map((contactsItem) => {
           return {

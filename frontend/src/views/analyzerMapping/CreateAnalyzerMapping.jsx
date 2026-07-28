@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
-import { getAllAnalyzers, getVulnChoices } from "../../api/services/analyzer";
+import { getMinifiedAnalyzer, getVulnChoices } from "../../api/services/analyzer";
 import { postAnalyzerMapping } from "../../api/services/analyzerMapping";
 import SelectLabel from "../../components/Select/SelectLabel";
 import { useTranslation } from "react-i18next";
@@ -32,7 +32,7 @@ const CreateAnalyzerMapping = () => {
         console.error("Error fetching taxonomies:", error);
       });
 
-    getAllAnalyzers()
+    getMinifiedAnalyzer()
       .then((analyzers) => {
         const options = analyzers
           .filter((a) => a.enabled)

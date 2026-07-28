@@ -3,7 +3,7 @@ import { Card, CloseButton, Col, Collapse, Modal, Row, Table, Spinner } from "re
 import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import FormCreateEdge from "./components/FormCreateEdge";
-import { getAllStates, getState } from "../../api/services/states";
+import { getMinifiedState, getState } from "../../api/services/states";
 import { getAllEdges, postEdge } from "../../api/services/edges";
 import RowEdge from "./components/RowEdge";
 import Alert from "../../components/Alert/Alert";
@@ -59,7 +59,7 @@ const ListEdge = (props) => {
         });
     }
 
-    getAllStates()
+    getMinifiedState()
       .then((response) => {
         var listChildren = [];
         var listStates = [];
