@@ -79,6 +79,9 @@ class TodoTaskSerializer(AuditSerializerMixin):
         model = models.TodoTask
         fields = "__all__"
         read_only_fields = ["completed_date", "task", "event"]
+        # The router registers this viewset as 'todo', so the default view name
+        # derived from the model ('todotask-detail') does not exist.
+        extra_kwargs = {"url": {"view_name": "todo-detail"}}
 
 
 class TaxonomyMinifiedSerializer(serializers.ModelSerializer):

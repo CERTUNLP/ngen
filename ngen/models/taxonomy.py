@@ -221,7 +221,7 @@ class Task(AuditModelMixin, PriorityModelMixin, ValidationModelMixin):
     playbook = models.ForeignKey(
         "ngen.Playbook", on_delete=models.CASCADE, related_name="tasks"
     )
-    description = models.TextField(null=True)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -239,16 +239,24 @@ class TodoTask(AuditModelMixin, ValidationModelMixin):
         "ngen.Event", on_delete=models.CASCADE, related_name="todos"
     )
     completed = models.BooleanField(default=False)
-    completed_date = models.DateTimeField(null=True)
-    note = models.TextField(null=True)
+    completed_date = models.DateTimeField(null=True, blank=True)
+    note = models.TextField(null=True, blank=True)
     assigned_to = models.ForeignKey(
-        "ngen.User", null=True, related_name="assigned_tasks", on_delete=models.PROTECT
+        "ngen.User",
+        null=True,
+        blank=True,
+        related_name="assigned_tasks",
+        on_delete=models.PROTECT,
     )
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         if self.completed:
-            self.completed_date = timezone.now()
-        super().save()
+            # Keep the original completion date on later updates
+            if not self.completed_date:
+                self.completed_date = timezone.now()
+        else:
+            self.completed_date = None
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = "todo_task"

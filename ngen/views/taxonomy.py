@@ -2,7 +2,7 @@ import django_filters
 from rest_framework import filters, viewsets, mixins
 
 from ngen import models, serializers
-from ngen.filters import TaxonomyFilter, PlaybookFilter
+from ngen.filters import TaxonomyFilter, PlaybookFilter, TodoTaskFilter
 from ngen.permissions import CustomApiViewPermission, CustomModelPermissions
 
 
@@ -93,15 +93,18 @@ class TodoTaskViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["note", "assigned_to__username"]
+    filterset_class = TodoTaskFilter
+    search_fields = ["note", "assigned_to__username", "task__name"]
     ordering_fields = [
         "id",
         "created",
         "modified",
         "completed",
+        "completed_date",
         "assigned_to",
         "note",
-        "reports",
+        "task",
+        "task__priority__severity",
     ]
     serializer_class = serializers.TodoTaskSerializer
     permission_classes = [CustomModelPermissions]
