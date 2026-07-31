@@ -25,6 +25,7 @@ import PermissionCheck from "components/Auth/PermissionCheck";
 import { COMPONENT_URL } from "config/constant";
 import LetterFormat from "components/LetterFormat";
 import AuditModal from "views/audits/components/AuditModal";
+import DateShowField from "components/Field/DateShowField";
 
 const ReadEvent = ({ routeParams }) => {
   const basePath = routeParams.basePath || "";
@@ -558,21 +559,13 @@ const ReadEvent = ({ routeParams }) => {
               <tr>
                 <td>{t("ngen.date.created")}</td>
                 <td>
-                  <Form.Control
-                    plaintext
-                    readOnly
-                    defaultValue={body.created !== undefined ? body.created.slice(0, 10) + " " + body.date.slice(11, 19) : ""}
-                  />
+                  <DateShowField value={body.created} asFormControl />
                 </td>
               </tr>
               <tr>
                 <td>{t("ngen.date.modified")}</td>
                 <td>
-                  <Form.Control
-                    plaintext
-                    readOnly
-                    defaultValue={body.modified !== undefined ? body.modified.slice(0, 10) + " " + body.date.slice(11, 19) : ""}
-                  />
+                  <DateShowField value={body.modified} asFormControl />
                 </td>
               </tr>
             </tbody>
