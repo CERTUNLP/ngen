@@ -17,6 +17,7 @@ import { getArtefact } from "api/services/artifact";
 import { getMinifiedTag } from "api/services/tags";
 import SmallCaseTable from "../case/components/SmallCaseTable";
 import SmallRetestTable from "./components/SmallRetestTable";
+import SmallTodoTable from "./components/SmallTodoTable";
 import { getEvidence } from "../../api/services/evidences";
 import { getRetests } from "../../api/services/eventAnalysis";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
@@ -530,6 +531,10 @@ const ReadEvent = ({ routeParams }) => {
         title={t("ngen.children")}
         basePath={basePath}
       />
+
+      <PermissionCheck permissions={["view_todotask"]}>
+        <SmallTodoTable eventId={id.id} />
+      </PermissionCheck>
 
       <PermissionCheck permissions={["view_analyzermapping"]}>
         <Card>

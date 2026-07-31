@@ -14,6 +14,8 @@ import { getMinifiedArtifact } from "api/services/artifact";
 import { getMinifiedTag } from "api/services/tags";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "config/constant";
+import PermissionCheck from "components/Auth/PermissionCheck";
+import SmallTodoTable from "./components/SmallTodoTable";
 
 const EditEvent = ({ routeParams }) => {
   //const [date, setDate] = useState(caseItem.date  != null ? caseItem.date.substring(0,16) : '') //required
@@ -326,6 +328,9 @@ const EditEvent = ({ routeParams }) => {
           userNames={userNames}
           asNetworkAdmin={routeParams.asNetworkAdmin}
         />
+        <PermissionCheck permissions={["view_todotask"]}>
+          <SmallTodoTable eventId={id} editable={true} />
+        </PermissionCheck>
       </div>
     )
   );
