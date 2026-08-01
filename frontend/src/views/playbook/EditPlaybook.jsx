@@ -15,8 +15,9 @@ const EditPlaybook = () => {
   const { t } = useTranslation();
 
   const [url, setUrl] = useState();
-  const [name, setName] = useState();
-  const [taxonomy, setTaxonomy] = useState();
+  // Empty, not undefined: the form fields must be controlled from the first render
+  const [name, setName] = useState("");
+  const [taxonomy, setTaxonomy] = useState([]);
 
   //Dropdown
   const [allTaxonomies, setAllTaxonomies] = useState([]);
@@ -35,11 +36,9 @@ const EditPlaybook = () => {
   }, [id]);
 
   useEffect(() => {
-    if (playbook) {
-      setUrl(playbook.url);
-      setName(playbook.name);
-      setTaxonomy(playbook.taxonomy);
-    }
+    setUrl(playbook.url);
+    setName(playbook.name ?? "");
+    setTaxonomy(playbook.taxonomy ?? []);
   }, [playbook]);
 
   useEffect(() => {
@@ -49,7 +48,7 @@ const EditPlaybook = () => {
         let listAllTaxonomies = response.map((taxonomyItem) => {
           return {
             value: taxonomyItem.url,
-            label: taxonomyItem.name + " (" + labelTaxonomy[taxonomyItem.type] + ")"
+            label: taxonomyItem.name + " (" + t("ngen." + taxonomyItem.type) + ")"
           };
         });
         setAllTaxonomies(listAllTaxonomies);
@@ -58,11 +57,6 @@ const EditPlaybook = () => {
         console.log(error);
       });
   }, []);
-
-  const labelTaxonomy = {
-    vulnerability: "Vulnerabilidad",
-    incident: "Incidente"
-  };
 
   const editPlaybook = () => {
     putPlaybook(url, name, taxonomy)

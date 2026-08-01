@@ -87,7 +87,9 @@ class TodoTaskSerializer(AuditSerializerMixin):
 class TaxonomyMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Taxonomy
-        fields = ["url", "name", "group"]
+        # 'type' tells apart incident from vulnerability taxonomies on the
+        # selects that offer them
+        fields = ["url", "name", "group", "type"]
 
 
 class TaxonomyGroupMinifiedSerializer(serializers.ModelSerializer):

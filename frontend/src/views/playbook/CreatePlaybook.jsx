@@ -28,7 +28,7 @@ const CreatePlaybook = () => {
       response.map((taxonomyItem) => {
         listTaxonomies.push({
           value: taxonomyItem.url,
-          label: taxonomyItem.name + " (" + labelTaxonomy[taxonomyItem.type] + ")"
+          label: taxonomyItem.name + " (" + t("ngen." + taxonomyItem.type) + ")"
         });
       });
       setAllTaxonomies(listTaxonomies);
@@ -54,11 +54,6 @@ const CreatePlaybook = () => {
       .finally(() => {
         setShowAlert(true);
       });
-  };
-
-  const labelTaxonomy = {
-    vulnerability: "Vulnerabilidad",
-    incident: "Incidente"
   };
 
   return (

@@ -35,6 +35,11 @@ const ListTask = (props) => {
   }
 
   useEffect(() => {
+    // The parent view loads the playbook asynchronously, so on the first
+    // renders there is still no url to ask for
+    if (!props.urlPlaybook) {
+      return;
+    }
     getPlaybook(props.urlPlaybook)
       .then((response) => {
         setPlaybook(response.data);
@@ -74,7 +79,13 @@ const ListTask = (props) => {
                   <span className="d-block m-t-5">{t("ngen.tasks.list")}</span>
                 </Col>
                 <Col sm={12} lg={3}>
-                  <CrudButton type="create" name={t("ngen.task")} onClick={() => setModalCreate(true)} permissions="add_task" disabled={!props.sectionAddTask} />
+                  <CrudButton
+                    type="create"
+                    name={t("ngen.task")}
+                    onClick={() => setModalCreate(true)}
+                    permissions="add_task"
+                    disabled={!props.sectionAddTask}
+                  />
                 </Col>
               </Row>
             </Card.Header>
@@ -97,6 +108,7 @@ const ListTask = (props) => {
                         tasks.map((urlTask, index) => {
                           return (
                             <RowTask
+                              key={urlTask}
                               url={urlTask}
                               id={index + 1}
                               taskDeleted={taskDeleted}
