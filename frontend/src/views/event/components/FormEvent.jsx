@@ -17,6 +17,8 @@ import SelectArtifact from "components/Select/SelectArtifact";
 import { getCase } from "api/services/cases";
 import SmallCaseTable from "views/case/components/SmallCaseTable";
 import EvidenceCard from "components/UploadFiles/EvidenceCard";
+import PermissionCheck from "components/Auth/PermissionCheck";
+import SmallTodoTable from "./SmallTodoTable";
 import TlpComponent from "views/tanstackquery/TlpComponent";
 import TaxonomyComponent from "views/tanstackquery/TaxonomyComponent";
 import FeedComponent from "views/tanstackquery/FeedComponent";
@@ -673,6 +675,11 @@ const FormEvent = (props) => {
           updateCase={props.updateEvidence}
         />
       )}
+
+      {/* Only on edition, an event being created has no todos yet */}
+      <PermissionCheck permissions={["view_todotask"]}>
+        <SmallTodoTable eventId={props.eventId} editable={true} />
+      </PermissionCheck>
 
       <Card>
         <Card.Header>

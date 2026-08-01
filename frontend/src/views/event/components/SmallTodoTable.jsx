@@ -9,6 +9,17 @@ import setAlert from "utils/setAlert";
 import { currentUserHasPermissions } from "utils/permissions";
 import TableTodos from "./TableTodos";
 
+const savedValues = (todo) => ({
+  completed: todo.completed,
+  note: todo.note ?? "",
+  assigned_to: todo.assigned_to ?? null
+});
+
+const isModified = (todo) => {
+  const current = savedValues(todo);
+  return current.completed !== todo.saved.completed || current.note !== todo.saved.note || current.assigned_to !== todo.saved.assigned_to;
+};
+
 /**
  * Playbook todos of an event, ordered as the playbook orders its tasks. Read
  * only by default, editable on the event edit view: every todo can be
@@ -30,21 +41,25 @@ const SmallTodoTable = ({ eventId, editable = false }) => {
       return Promise.resolve();
     }
     setIsLoading(true);
-    return getTodosByEvent(eventId)
-      .then((results) =>
-        // Each todo only holds the url of its task, the task itself has the
-        // name, description and priority to show
-        Promise.all(
-          results.map((todo) =>
-            getTask(todo.task)
-              .then((response) => ({ ...todo, task_detail: response.data }))
-              .catch(() => ({ ...todo, task_detail: null }))
+    return (
+      getTodosByEvent(eventId)
+        .then((results) =>
+          // Each todo only holds the url of its task, the task itself has the
+          // name, description and priority to show
+          Promise.all(
+            results.map((todo) =>
+              getTask(todo.task)
+                .then((response) => ({ ...todo, task_detail: response.data }))
+                .catch(() => ({ ...todo, task_detail: null }))
+            )
           )
         )
-      )
-      .then((results) => setTodos(results))
-      .catch(() => setTodos([]))
-      .finally(() => setIsLoading(false));
+        // The saved values are kept to tell apart the todos really modified from
+        // the ones edited back to what they already were
+        .then((results) => setTodos(results.map((todo) => ({ ...todo, saved: savedValues(todo) }))))
+        .catch(() => setTodos([]))
+        .finally(() => setIsLoading(false))
+    );
   }, [eventId]);
 
   useEffect(() => {
@@ -65,10 +80,10 @@ const SmallTodoTable = ({ eventId, editable = false }) => {
   }, [canEdit]);
 
   const handleChange = (url, field, value) => {
-    setTodos((current) => current.map((todo) => (todo.url === url ? { ...todo, [field]: value, modified_locally: true } : todo)));
+    setTodos((current) => current.map((todo) => (todo.url === url ? { ...todo, [field]: value } : todo)));
   };
 
-  const modifiedTodos = todos.filter((todo) => todo.modified_locally);
+  const modifiedTodos = todos.filter(isModified);
 
   const handleSave = () => {
     setIsSaving(true);
@@ -145,7 +160,13 @@ const SmallTodoTable = ({ eventId, editable = false }) => {
         />
       </Card.Header>
       <Card.Body>
-        <TableTodos todos={todos} editable={canEdit} userOptions={userOptions} onChange={handleChange} disabled={isSaving} />
+        <TableTodos
+          todos={todos.map((todo) => ({ ...todo, modified_locally: isModified(todo) }))}
+          editable={canEdit}
+          userOptions={userOptions}
+          onChange={handleChange}
+          disabled={isSaving}
+        />
       </Card.Body>
     </Card>
   );
