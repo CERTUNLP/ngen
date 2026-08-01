@@ -122,6 +122,55 @@ class PlaybookTestCase(TestCase):
             Task.objects.filter(todos__event=event), [self.other_task]
         )
 
+    def test_import_playbook_tasks_assigns_the_missing_ones(self):
+        """
+        Test that a playbook written after the event reaches it when its tasks
+        are imported
+        """
+        event = self._create_event(taxonomy=Taxonomy.objects.get(slug="malware"))
+        self.assertEqual(event.todos.count(), 0)
+
+        playbook = Playbook.objects.create(name="Malware playbook")
+        playbook.taxonomy.set([event.taxonomy])
+        task = Task.objects.create(
+            name="Isolate the host", playbook=playbook, priority=self.priority
+        )
+
+        self.assertEqual(event.import_playbook_tasks(), 1)
+        self.assertQuerysetEqual(Task.objects.filter(todos__event=event), [task])
+
+    def test_import_playbook_tasks_does_not_duplicate(self):
+        """
+        Test that importing twice does not assign the same task again
+        """
+        event = self._create_event()
+        self.assertEqual(event.todos.count(), 2)
+
+        self.assertEqual(event.import_playbook_tasks(), 0)
+        self.assertEqual(event.todos.count(), 2)
+
+    def test_import_playbook_tasks_keeps_the_work_already_done(self):
+        """
+        Test that importing does not touch the todos already completed
+        """
+        event = self._create_event()
+        todo = event.todos.get(task=self.task_1)
+        todo.completed = True
+        todo.note = "Already done"
+        todo.save()
+
+        new_task = Task.objects.create(
+            name="Close the case", playbook=self.playbook, priority=self.priority
+        )
+
+        self.assertEqual(event.import_playbook_tasks(), 1)
+
+        todo.refresh_from_db()
+        self.assertTrue(todo.completed)
+        self.assertEqual(todo.note, "Already done")
+        self.assertIsNotNone(todo.completed_date)
+        self.assertTrue(event.todos.filter(task=new_task).exists())
+
     def test_todo_completion_sets_completed_date(self):
         """
         Test that completing a todo sets its completed date

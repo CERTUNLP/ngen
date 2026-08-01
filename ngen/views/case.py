@@ -91,7 +91,27 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         "mark_solved": "ngen.can_mark_event_as_solved",
         "retest_event": "ngen.can_retest_event",
         "simulate_event": "ngen.add_event",  # use create event permission for simulate action
+        "import_playbook_tasks": "ngen.add_todotask",
     }
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="importplaybooktasks",
+        url_name="import_playbook_tasks",
+        permission_classes=[ActionPermission],
+    )
+    def import_playbook_tasks(self, request, pk=None):
+        """
+        Assigns the tasks of the playbooks of the taxonomy that the event does
+        not have yet `/event/<pk>/importplaybooktasks/`. Playbooks only reach an
+        event when it is created or when its taxonomy changes, so this is how a
+        playbook written afterwards gets to the events already open.
+        """
+        event = self.get_object()
+        imported = event.import_playbook_tasks()
+
+        return Response({"imported": imported}, status=status.HTTP_200_OK)
 
     @action(
         detail=False,

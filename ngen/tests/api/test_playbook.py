@@ -2,6 +2,7 @@
 Django Playbook, Task and TodoTask API tests.
 """
 
+from django.contrib.auth.models import Permission
 from django.urls import reverse
 from rest_framework import status
 
@@ -326,6 +327,52 @@ class PlaybookAPITestCase(APITestCaseWithLogin):
         todo.refresh_from_db()
         self.assertEqual(todo.event, event)
         self.assertEqual(todo.task, self.task_1)
+
+    def test_event_import_playbook_tasks(self):
+        """
+        This will test the action that assigns the tasks of the playbooks of the
+        taxonomy that the event does not have yet
+        """
+        event = self._create_event(taxonomy=self.other_taxonomy)
+        self.assertEqual(event.todos.count(), 0)
+
+        # A playbook written after the event
+        playbook = Playbook.objects.create(name="Copyright playbook")
+        playbook.taxonomy.set([self.other_taxonomy])
+        task = Task.objects.create(
+            name="Check the complaint", playbook=playbook, priority=self.priority
+        )
+
+        url = reverse("event-import_playbook_tasks", kwargs={"pk": event.pk})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["imported"], 1)
+        self.assertQuerysetEqual(Task.objects.filter(todos__event=event), [task])
+
+        # Importing again assigns nothing
+        response = self.client.post(url)
+        self.assertEqual(response.data["imported"], 0)
+        self.assertEqual(event.todos.count(), 1)
+
+    def test_event_import_playbook_tasks_needs_permission(self):
+        """
+        This will test that importing the tasks of a playbook needs add_todotask
+        """
+        event = self._create_event()
+        user = User.objects.create(
+            username="without_permissions", password="test", priority=self.priority
+        )
+        user.user_permissions.set(
+            Permission.objects.filter(codename__in=["view_event", "view_todotask"])
+        )
+        self.client.force_authenticate(user=user)
+
+        response = self.client.post(
+            reverse("event-import_playbook_tasks", kwargs={"pk": event.pk})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_todo_delete(self):
         """

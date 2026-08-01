@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import PermissionCheck from "components/Auth/PermissionCheck";
 import CrudButton from "components/Button/CrudButton";
-import { getTodosByEvent, patchTodo } from "api/services/todos";
+import { getTodosByEvent, importPlaybookTasks, patchTodo } from "api/services/todos";
 import { getTask } from "api/services/tasks";
 import { getMinifiedUser } from "api/services/users";
 import setAlert from "utils/setAlert";
@@ -44,11 +44,13 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
   const [userOptions, setUserOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const canEdit = currentUserHasPermissions(["change_todotask"]);
   // Resolving a user url to its name needs its own permission, both to offer
   // the select and to show the assigned user: without it the cell would only
   // offer an empty select and ask the api for users it cannot read
   const canListUsers = currentUserHasPermissions(["view_minified_user"]);
+  const canImport = currentUserHasPermissions(["add_todotask"]);
   const canAssign = canEdit && canListUsers && userOptions !== null;
 
   const fetchTodos = useCallback(() => {
@@ -131,6 +133,21 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
   // saving the event never leaves them silently behind
   useImperativeHandle(ref, () => ({ savePending, hasPendingChanges: () => modifiedTodos.length > 0 }), [savePending, modifiedTodos.length]);
 
+  // A playbook written after the event does not reach it on its own
+  const importTasks = () => {
+    setIsImporting(true);
+    importPlaybookTasks(eventId)
+      .then((response) => {
+        const imported = response.data.imported;
+        setAlert(imported > 0 ? t("ngen.todo.import.success", { count: imported }) : t("ngen.todo.import.none"), "success", "todo");
+        return fetchTodos();
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => setIsImporting(false));
+  };
+
   const discardChanges = () => {
     setTodos((current) => current.map((todo) => ({ ...todo, ...todo.saved })));
   };
@@ -183,6 +200,13 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
               <Link to="/playbooks">{t("ngen.todo.none.link")}</Link>
             </PermissionCheck>
           </p>
+          {canImport ? (
+            <Button className="text-capitalize mt-3" variant="outline-primary" disabled={isImporting} onClick={importTasks}>
+              <i className="fa fa-download" /> {t("ngen.todo.import")}
+            </Button>
+          ) : (
+            ""
+          )}
         </Card.Body>
       </Card>
     );
@@ -229,7 +253,22 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
           ) : (
             ""
           )}
-          {isSaving ? <Spinner animation="border" size="sm" className="ms-2" /> : ""}
+          {canImport ? (
+            <span className="ms-3">
+              <Button
+                className="text-capitalize"
+                variant="outline-primary"
+                title={t("ngen.todo.import.hint")}
+                disabled={isImporting || isSaving}
+                onClick={importTasks}
+              >
+                <i className="fa fa-download" /> {t("ngen.todo.import")}
+              </Button>
+            </span>
+          ) : (
+            ""
+          )}
+          {isSaving || isImporting ? <Spinner animation="border" size="sm" className="ms-2" /> : ""}
         </div>
         <ProgressBar
           className="mt-2"

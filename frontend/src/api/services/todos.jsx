@@ -46,4 +46,18 @@ const patchTodo = (url, body) => {
     });
 };
 
-export { getTodosByEvent, getTodo, patchTodo };
+// Playbooks only reach an event when it is created or when its taxonomy
+// changes, so a playbook written afterwards needs its tasks imported
+const importPlaybookTasks = (eventId) => {
+  return apiInstance
+    .post(`${COMPONENT_URL.event}${eventId}/importplaybooktasks/`)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      setAlert(i18next.t("ngen.todo.import.error"), "error", "todo");
+      return Promise.reject(error);
+    });
+};
+
+export { getTodosByEvent, getTodo, patchTodo, importPlaybookTasks };
