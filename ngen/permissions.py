@@ -110,9 +110,10 @@ class ActionPermission(BasePermission):
     """
 
     def has_permission(self, request, view):
-        # Obtains the required permission from action_permissions attribute of the view
+        # Obtains the required permission from action_permissions attribute of the
+        # view, which is keyed by action name and not by http method
         required_permission = getattr(view, "action_permissions", {}).get(
-            request.method
+            getattr(view, "action", None)
         )
 
         # If there is no permission defined, allow access
