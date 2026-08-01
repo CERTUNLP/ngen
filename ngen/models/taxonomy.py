@@ -71,6 +71,7 @@ class Taxonomy(AuditModelMixin, TreeModelMixin, SlugModelMixin, ValidationModelM
     def get_ancestors_reports(self, flat=True):
         reports = self.get_ancestors_related(lambda obj: obj.reports.all())
         return [report for report_list in reports for report in report_list]
+
     def get_matching_report(self, lang):
         """
         Get the first report matching the given language for this taxonomy.
@@ -222,13 +223,53 @@ class Task(AuditModelMixin, PriorityModelMixin, ValidationModelMixin):
         "ngen.Playbook", on_delete=models.CASCADE, related_name="tasks"
     )
     description = models.TextField(null=True, blank=True)
+    order = models.PositiveIntegerField(
+        default=0,
+        help_text=gettext_lazy(
+            "Position of the task within its playbook. A playbook is a procedure, "
+            "so its tasks are followed in this order and not by priority."
+        ),
+    )
 
     def __str__(self):
         return self.name
 
     class Meta:
         db_table = "task"
-        ordering = ["priority__severity"]
+        ordering = ["order", "id"]
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.order:
+            self.order = self.next_order(self.playbook)
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def next_order(playbook):
+        """
+        Position after the last task of the playbook, so a new task is added at
+        the end of the procedure
+        """
+        last = playbook.tasks.order_by("-order").first()
+        return last.order + 1 if last else 1
+
+    def move(self, up: bool):
+        """
+        Swap the position with the neighbour task of the playbook, which is how
+        the steps of a procedure are reordered. Returns whether it moved.
+        """
+        tasks = list(self.playbook.tasks.all())
+        target = tasks.index(self) + (-1 if up else 1)
+        if target < 0 or target >= len(tasks):
+            return False
+
+        neighbour = tasks[target]
+        self.order, neighbour.order = neighbour.order, self.order
+        # Tasks sharing a position would not move by swapping alone
+        if self.order == neighbour.order:
+            self.order = max(self.order - 1, 0) if up else self.order + 1
+        neighbour.save()
+        self.save()
+        return True
 
 
 class TodoTask(AuditModelMixin, ValidationModelMixin):
@@ -260,5 +301,6 @@ class TodoTask(AuditModelMixin, ValidationModelMixin):
 
     class Meta:
         db_table = "todo_task"
-        ordering = ["task__playbook"]
+        # Grouped by playbook and following the order of its procedure
+        ordering = ["task__playbook", "task__order", "task_id"]
         unique_together = ["task", "event"]

@@ -122,6 +122,73 @@ class PlaybookTestCase(TestCase):
             Task.objects.filter(todos__event=event), [self.other_task]
         )
 
+    def test_task_order_is_assigned_on_creation(self):
+        """
+        Test that a new task is added at the end of the procedure
+        """
+        self.assertEqual([self.task_1.order, self.task_2.order], [1, 2])
+
+        task = Task.objects.create(
+            name="Close the case", playbook=self.playbook, priority=self.priority
+        )
+
+        self.assertEqual(task.order, 3)
+        self.assertQuerysetEqual(
+            self.playbook.tasks.all(), [self.task_1, self.task_2, task]
+        )
+
+    def test_playbook_tasks_follow_their_order_and_not_their_priority(self):
+        """
+        Test that the tasks of a playbook are a procedure: their order is the
+        one given to them, whatever their priority is
+        """
+        self.task_2.priority = Priority.objects.get(slug="low")
+        self.task_2.save()
+        self.assertGreater(self.task_2.priority.severity, self.task_1.priority.severity)
+
+        # The least severe task still goes first once moved there
+        self.task_2.move(up=True)
+
+        self.assertQuerysetEqual(self.playbook.tasks.all(), [self.task_2, self.task_1])
+
+    def test_task_move(self):
+        """
+        Test moving a task within its playbook
+        """
+        task_3 = Task.objects.create(
+            name="Close the case", playbook=self.playbook, priority=self.priority
+        )
+
+        self.assertTrue(task_3.move(up=True))
+        self.assertQuerysetEqual(
+            self.playbook.tasks.all(), [self.task_1, task_3, self.task_2]
+        )
+
+        self.assertTrue(task_3.move(up=False))
+        self.assertQuerysetEqual(
+            self.playbook.tasks.all(), [self.task_1, self.task_2, task_3]
+        )
+
+    def test_task_move_out_of_the_playbook_does_nothing(self):
+        """
+        Test that the first task cannot be moved up nor the last one down
+        """
+        self.assertFalse(self.task_1.move(up=True))
+        self.assertFalse(self.task_2.move(up=False))
+        self.assertQuerysetEqual(self.playbook.tasks.all(), [self.task_1, self.task_2])
+
+    def test_todos_follow_the_order_of_the_tasks(self):
+        """
+        Test that the todos of an event are listed following the procedure of
+        the playbook they come from
+        """
+        event = self._create_event()
+        self.task_2.move(up=True)
+
+        self.assertQuerysetEqual(
+            [todo.task for todo in event.todos.all()], [self.task_2, self.task_1]
+        )
+
     def test_import_playbook_tasks_assigns_the_missing_ones(self):
         """
         Test that a playbook written after the event reaches it when its tasks

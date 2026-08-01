@@ -111,6 +111,8 @@ const ListTask = (props) => {
                               key={urlTask}
                               url={urlTask}
                               id={index + 1}
+                              isFirst={index === 0}
+                              isLast={index === tasks.length - 1}
                               taskDeleted={taskDeleted}
                               setTaskDeleted={setTaskDeleted}
                               taskUpdated={taskUpdated}

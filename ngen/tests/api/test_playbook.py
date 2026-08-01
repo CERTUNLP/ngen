@@ -328,6 +328,52 @@ class PlaybookAPITestCase(APITestCaseWithLogin):
         self.assertEqual(todo.event, event)
         self.assertEqual(todo.task, self.task_1)
 
+    def test_task_move(self):
+        """
+        This will test the action that moves a task within its playbook
+        """
+        url = reverse("task-move", kwargs={"pk": self.task_2.pk})
+
+        response = self.client.post(url, data={"direction": "up"}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["moved"])
+        self.assertQuerysetEqual(self.playbook.tasks.all(), [self.task_2, self.task_1])
+
+        # The first one cannot go further up
+        response = self.client.post(url, data={"direction": "up"}, format="json")
+        self.assertFalse(response.data["moved"])
+
+    def test_task_move_needs_a_direction(self):
+        """
+        This will test that the move action rejects an unknown direction
+        """
+        response = self.client.post(
+            reverse("task-move", kwargs={"pk": self.task_1.pk}),
+            data={"direction": "sideways"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_task_move_needs_permission(self):
+        """
+        This will test that moving a task needs change_task
+        """
+        user = User.objects.create(
+            username="without_permissions", password="test", priority=self.priority
+        )
+        user.user_permissions.set(Permission.objects.filter(codename="view_task"))
+        self.client.force_authenticate(user=user)
+
+        response = self.client.post(
+            reverse("task-move", kwargs={"pk": self.task_1.pk}),
+            data={"direction": "up"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_event_import_playbook_tasks(self):
         """
         This will test the action that assigns the tasks of the playbooks of the
