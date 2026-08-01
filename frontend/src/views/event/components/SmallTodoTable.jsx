@@ -1,6 +1,8 @@
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { Badge, Button, Card, ProgressBar, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import PermissionCheck from "components/Auth/PermissionCheck";
 import CrudButton from "components/Button/CrudButton";
 import { getTodosByEvent, patchTodo } from "api/services/todos";
 import { getTask } from "api/services/tasks";
@@ -22,8 +24,9 @@ const isModified = (todo) => {
 
 /**
  * Playbook todos of an event, ordered as the playbook orders its tasks. Every
- * todo can be completed, annotated and assigned to a user.
- * The card is not rendered when the taxonomy of the event has no playbook.
+ * todo can be completed, annotated and assigned to a user. When the taxonomy of
+ * the event has no playbook the card says so instead of hiding, so that a
+ * missing playbook does not look like a card that failed to load.
  *
  * Todos are their own resource with their own permissions: editing them needs
  * change_todotask and not the right to edit the event, so the card is editable
@@ -162,9 +165,27 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
     );
   }
 
-  // Events whose taxonomy has no playbook have nothing to show here
+  // Not having playbook tasks is worth saying: it means no playbook covers the
+  // taxonomy of the event, which is not the same as the card failing to load.
+  // Kept quiet, like the retests card does when there is no analyzer mapping
   if (todos.length === 0) {
-    return null;
+    return (
+      <Card>
+        <Card.Header>
+          <Card.Title as="h5" className="mb-0">
+            {t("ngen.todo_other")}
+          </Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <p className="text-muted mb-0">
+            {t("ngen.todo.none")}. {t("ngen.todo.none.hint")}{" "}
+            <PermissionCheck permissions={["view_playbook"]}>
+              <Link to="/playbooks">{t("ngen.todo.none.link")}</Link>
+            </PermissionCheck>
+          </p>
+        </Card.Body>
+      </Card>
+    );
   }
 
   return (
