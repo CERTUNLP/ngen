@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import CrudButton from "components/Button/CrudButton";
 import SelectComponent from "components/Select/SelectComponent";
@@ -30,6 +30,8 @@ import { useTranslation } from "react-i18next";
 import Modal from "react-bootstrap/Modal";
 
 const FormEvent = (props) => {
+  // Lets the save button of the form flush the pending playbook todos too
+  const todosRef = useRef(null);
   const [date, setDate] = useState(
     props.body.date
       ? props.body.date.substring(0, 16)
@@ -464,6 +466,12 @@ const FormEvent = (props) => {
     props.setBody({ ...props.body, case: "" });
   };
 
+  const saveEventAndTodos = () => {
+    // The todos are their own resource: they are saved first so that saving the
+    // event never leaves the edits of the card silently behind
+    Promise.resolve(todosRef.current?.savePending()).finally(() => props.createEvent());
+  };
+
   return (
     <div>
       <Card>
@@ -676,10 +684,13 @@ const FormEvent = (props) => {
         />
       )}
 
-      {/* Only on edition, an event being created has no todos yet */}
-      <PermissionCheck permissions={["view_todotask"]}>
-        <SmallTodoTable eventId={props.eventId} editable={true} />
-      </PermissionCheck>
+      {/* Only on edition, an event being created has no todos yet. Network
+          admins are left out, as they are on the event detail */}
+      {!props.asNetworkAdmin && (
+        <PermissionCheck permissions={["view_todotask"]}>
+          <SmallTodoTable ref={todosRef} eventId={props.eventId} />
+        </PermissionCheck>
+      )}
 
       <Card>
         <Card.Header>
@@ -918,7 +929,7 @@ const FormEvent = (props) => {
 
       <div className="button-container">
         {filledFields() && !showErrorMessage ? (
-          <Button variant="success" onClick={props.createEvent}>
+          <Button variant="success" onClick={saveEventAndTodos}>
             {t("button.save")}
           </Button>
         ):(<Button variant="secondary" disabled>{t("button.save")}</Button>)

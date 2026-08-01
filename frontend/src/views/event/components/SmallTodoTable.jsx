@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Badge, Card, ProgressBar, Spinner } from "react-bootstrap";
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
+import { Badge, Button, Card, ProgressBar, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import CrudButton from "components/Button/CrudButton";
 import { getTodosByEvent, patchTodo } from "api/services/todos";
@@ -21,20 +21,26 @@ const isModified = (todo) => {
 };
 
 /**
- * Playbook todos of an event, ordered as the playbook orders its tasks. Read
- * only by default, editable on the event edit view: every todo can be
- * completed, annotated and assigned to a user.
+ * Playbook todos of an event, ordered as the playbook orders its tasks. Every
+ * todo can be completed, annotated and assigned to a user.
  * The card is not rendered when the taxonomy of the event has no playbook.
+ *
+ * Todos are their own resource with their own permissions: editing them needs
+ * change_todotask and not the right to edit the event, so the card is editable
+ * wherever it is shown. Roles like Incident Responder can complete the steps of
+ * a playbook without being able to edit events. Without change_todotask the
+ * card stays read only instead of offering fields that could never be saved.
+ *
+ * They are saved on their own, but the ref exposes savePending() for the event
+ * form to flush them with its own save.
  */
-const SmallTodoTable = ({ eventId, editable = false }) => {
+const SmallTodoTable = forwardRef(({ eventId }, ref) => {
   const { t } = useTranslation();
   const [todos, setTodos] = useState([]);
   const [userOptions, setUserOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  // Without change_todotask the card stays read only instead of offering
-  // fields that could never be saved
-  const canEdit = editable && currentUserHasPermissions(["change_todotask"]);
+  const canEdit = currentUserHasPermissions(["change_todotask"]);
 
   const fetchTodos = useCallback(() => {
     if (!eventId) {
@@ -85,10 +91,14 @@ const SmallTodoTable = ({ eventId, editable = false }) => {
 
   const modifiedTodos = todos.filter(isModified);
 
-  const handleSave = () => {
+  const savePending = useCallback(() => {
+    const pending = todos.filter(isModified);
+    if (pending.length === 0) {
+      return Promise.resolve();
+    }
     setIsSaving(true);
-    Promise.all(
-      modifiedTodos.map((todo) =>
+    return Promise.all(
+      pending.map((todo) =>
         patchTodo(todo.url, {
           completed: todo.completed,
           note: todo.note ? todo.note : null,
@@ -104,7 +114,29 @@ const SmallTodoTable = ({ eventId, editable = false }) => {
         console.log(error);
       })
       .finally(() => setIsSaving(false));
+  }, [todos, fetchTodos, t]);
+
+  // The save button of the event form flushes the pending todos too, so that
+  // saving the event never leaves them silently behind
+  useImperativeHandle(ref, () => ({ savePending, hasPendingChanges: () => modifiedTodos.length > 0 }), [savePending, modifiedTodos.length]);
+
+  const discardChanges = () => {
+    setTodos((current) => current.map((todo) => ({ ...todo, ...todo.saved })));
   };
+
+  // The router of the app cannot block in-app navigation, but leaving the page
+  // or reloading it with pending changes is warned about
+  useEffect(() => {
+    if (modifiedTodos.length === 0) {
+      return undefined;
+    }
+    const warn = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [modifiedTodos.length]);
 
   const completedCount = todos.filter((todo) => todo.completed).length;
 
@@ -130,13 +162,21 @@ const SmallTodoTable = ({ eventId, editable = false }) => {
   return (
     <Card>
       <Card.Header>
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center flex-wrap">
           <Card.Title as="h5" className="mb-0">
             {t("ngen.todo_other")}
           </Card.Title>
           <Badge bg="secondary" className="ms-3">
             {completedCount}/{todos.length}
           </Badge>
+          {modifiedTodos.length > 0 ? (
+            <Badge bg="warning" text="dark" className="ms-2">
+              <i className="fa fa-pen me-1" />
+              {modifiedTodos.length} {t("ngen.todo.pending")}
+            </Badge>
+          ) : (
+            ""
+          )}
           {canEdit ? (
             <span className="ms-3">
               <CrudButton
@@ -144,8 +184,18 @@ const SmallTodoTable = ({ eventId, editable = false }) => {
                 text={modifiedTodos.length > 0 ? `${t("crud.save")} (${modifiedTodos.length})` : t("crud.save")}
                 permissions="change_todotask"
                 disabled={isSaving || modifiedTodos.length === 0}
-                onClick={handleSave}
-              />
+                onClick={savePending}
+              />{" "}
+              {/* CrudButton has no discard type, and its 'cancel' one navigates back */}
+              <Button
+                className="text-capitalize"
+                variant="outline-secondary"
+                title={t("ngen.todo.discard")}
+                disabled={isSaving || modifiedTodos.length === 0}
+                onClick={discardChanges}
+              >
+                <i className="fa fa-undo" /> {t("ngen.todo.discard")}
+              </Button>
             </span>
           ) : (
             ""
@@ -170,6 +220,8 @@ const SmallTodoTable = ({ eventId, editable = false }) => {
       </Card.Body>
     </Card>
   );
-};
+});
+
+SmallTodoTable.displayName = "SmallTodoTable";
 
 export default SmallTodoTable;

@@ -532,9 +532,13 @@ const ReadEvent = ({ routeParams }) => {
         basePath={basePath}
       />
 
-      <PermissionCheck permissions={["view_todotask"]}>
-        <SmallTodoTable eventId={id.id} />
-      </PermissionCheck>
+      {/* Network admins do not get the todos of an event: the network admin
+          event serializer leaves them out and /api/todo/ is not scoped */}
+      {!basePath.includes("networkadmin") && (
+        <PermissionCheck permissions={["view_todotask"]}>
+          <SmallTodoTable eventId={id.id} />
+        </PermissionCheck>
+      )}
 
       <PermissionCheck permissions={["view_analyzermapping"]}>
         <Card>
