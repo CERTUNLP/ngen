@@ -58,6 +58,11 @@ const TableTodos = ({ todos, editable = false, canAssign = false, canListUsers =
                   isDisabled={disabled}
                   placeholder={t("ngen.todo.assigned_to.placeholder")}
                   onChange={(option) => onChange(todo.url, "assigned_to", option ? option.value : null)}
+                  // Table cells are overflow hidden, so the menu has to be drawn
+                  // out of the table or it shows up clipped to the row height
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{ menuPortal: (base) => ({ ...base, zIndex: 1056 }) }}
                 />
               ) : todo.assigned_to && canListUsers ? (
                 <UserComponent user={todo.assigned_to} />
