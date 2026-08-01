@@ -6,7 +6,7 @@ import DateShowField from "components/Field/DateShowField";
 import PriorityComponent from "views/tanstackquery/PriorityComponent";
 import UserComponent from "views/tanstackquery/UserComponent";
 
-const TableTodos = ({ todos, editable = false, userOptions = [], onChange, disabled = false }) => {
+const TableTodos = ({ todos, editable = false, canAssign = false, canListUsers = false, userOptions = [], onChange, disabled = false }) => {
   const { t } = useTranslation();
 
   return (
@@ -49,7 +49,7 @@ const TableTodos = ({ todos, editable = false, userOptions = [], onChange, disab
               )}
             </td>
             <td className="align-middle">
-              {editable ? (
+              {canAssign ? (
                 <Select
                   classNamePrefix="react-select"
                   options={userOptions}
@@ -59,7 +59,7 @@ const TableTodos = ({ todos, editable = false, userOptions = [], onChange, disab
                   placeholder={t("ngen.todo.assigned_to.placeholder")}
                   onChange={(option) => onChange(todo.url, "assigned_to", option ? option.value : null)}
                 />
-              ) : todo.assigned_to ? (
+              ) : todo.assigned_to && canListUsers ? (
                 <UserComponent user={todo.assigned_to} />
               ) : (
                 "-"

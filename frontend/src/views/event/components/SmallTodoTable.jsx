@@ -37,10 +37,16 @@ const isModified = (todo) => {
 const SmallTodoTable = forwardRef(({ eventId }, ref) => {
   const { t } = useTranslation();
   const [todos, setTodos] = useState([]);
+  // null means the list of users could not be retrieved
   const [userOptions, setUserOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const canEdit = currentUserHasPermissions(["change_todotask"]);
+  // Resolving a user url to its name needs its own permission, both to offer
+  // the select and to show the assigned user: without it the cell would only
+  // offer an empty select and ask the api for users it cannot read
+  const canListUsers = currentUserHasPermissions(["view_minified_user"]);
+  const canAssign = canEdit && canListUsers && userOptions !== null;
 
   const fetchTodos = useCallback(() => {
     if (!eventId) {
@@ -73,7 +79,8 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
   }, [fetchTodos]);
 
   useEffect(() => {
-    if (!canEdit) {
+    if (!canEdit || !canListUsers) {
+      setUserOptions(null);
       return;
     }
     getMinifiedUser()
@@ -81,9 +88,10 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
         setUserOptions(response.map((user) => ({ value: user.url, label: user.username })));
       })
       .catch((error) => {
+        setUserOptions(null);
         console.log(error);
       });
-  }, [canEdit]);
+  }, [canEdit, canListUsers]);
 
   const handleChange = (url, field, value) => {
     setTodos((current) => current.map((todo) => (todo.url === url ? { ...todo, [field]: value } : todo)));
@@ -213,7 +221,9 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
         <TableTodos
           todos={todos.map((todo) => ({ ...todo, modified_locally: isModified(todo) }))}
           editable={canEdit}
-          userOptions={userOptions}
+          canAssign={canAssign}
+          canListUsers={canListUsers}
+          userOptions={userOptions ?? []}
           onChange={handleChange}
           disabled={isSaving}
         />
