@@ -53,34 +53,41 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
   const canImport = currentUserHasPermissions(["add_todotask"]);
   const canAssign = canEdit && canListUsers && userOptions !== null;
 
-  const fetchTodos = useCallback(() => {
-    if (!eventId) {
-      return Promise.resolve();
-    }
-    setIsLoading(true);
-    return (
-      getTodosByEvent(eventId)
-        .then((results) =>
-          // Each todo only holds the url of its task, the task itself has the
-          // name, description and priority to show
-          Promise.all(
-            results.map((todo) =>
-              getTask(todo.task)
-                .then((response) => ({ ...todo, task_detail: response.data }))
-                .catch(() => ({ ...todo, task_detail: null }))
+  // Only the first load replaces the card with a spinner: refetching after
+  // saving or importing must not make the table blink away
+  const fetchTodos = useCallback(
+    ({ initial = false } = {}) => {
+      if (!eventId) {
+        return Promise.resolve();
+      }
+      if (initial) {
+        setIsLoading(true);
+      }
+      return (
+        getTodosByEvent(eventId)
+          .then((results) =>
+            // Each todo only holds the url of its task, the task itself has the
+            // name, description and priority to show
+            Promise.all(
+              results.map((todo) =>
+                getTask(todo.task)
+                  .then((response) => ({ ...todo, task_detail: response.data }))
+                  .catch(() => ({ ...todo, task_detail: null }))
+              )
             )
           )
-        )
-        // The saved values are kept to tell apart the todos really modified from
-        // the ones edited back to what they already were
-        .then((results) => setTodos(results.map((todo) => ({ ...todo, saved: savedValues(todo) }))))
-        .catch(() => setTodos([]))
-        .finally(() => setIsLoading(false))
-    );
-  }, [eventId]);
+          // The saved values are kept to tell apart the todos really modified from
+          // the ones edited back to what they already were
+          .then((results) => setTodos(results.map((todo) => ({ ...todo, saved: savedValues(todo) }))))
+          .catch(() => setTodos([]))
+          .finally(() => setIsLoading(false))
+      );
+    },
+    [eventId]
+  );
 
   useEffect(() => {
-    fetchTodos();
+    fetchTodos({ initial: true });
   }, [fetchTodos]);
 
   useEffect(() => {
@@ -131,7 +138,7 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
 
   // The save button of the event form flushes the pending todos too, so that
   // saving the event never leaves them silently behind
-  useImperativeHandle(ref, () => ({ savePending, hasPendingChanges: () => modifiedTodos.length > 0 }), [savePending, modifiedTodos.length]);
+  useImperativeHandle(ref, () => ({ savePending }), [savePending]);
 
   // A playbook written after the event does not reach it on its own
   const importTasks = () => {

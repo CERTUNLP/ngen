@@ -79,13 +79,7 @@ const ListTask = (props) => {
                   <span className="d-block m-t-5">{t("ngen.tasks.list")}</span>
                 </Col>
                 <Col sm={12} lg={3}>
-                  <CrudButton
-                    type="create"
-                    name={t("ngen.task")}
-                    onClick={() => setModalCreate(true)}
-                    permissions="add_task"
-                    disabled={!props.sectionAddTask}
-                  />
+                  <CrudButton type="create" name={t("ngen.task")} onClick={() => setModalCreate(true)} permissions="add_task" disabled={!props.sectionAddTask} />
                 </Col>
               </Row>
             </Card.Header>
