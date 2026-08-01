@@ -183,7 +183,7 @@ function TableUsers({ users, loading, order, setOrder, setLoading, currentPage, 
                     <ActiveButton
                       active={user.is_active}
                       onClick={() => showModalChangeState(user.url, user.username, user.is_active)}
-                      permissions="edit_user"
+                      permissions="change_user"
                     />
                   </td>
                   <td>

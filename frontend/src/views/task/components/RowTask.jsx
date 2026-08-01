@@ -82,7 +82,7 @@ const RowTask = (props) => {
         </td>
         <td>
           <CrudButton type="read" onClick={() => setModalShow(true)} />
-          <CrudButton type="edit" onClick={() => setModalEdit(true)} permissions="edit_task" />
+          <CrudButton type="edit" onClick={() => setModalEdit(true)} permissions="change_task" />
           <CrudButton type="delete" onClick={() => setModalDelete(true)} permissions="delete_task" />
         </td>
       </tr>

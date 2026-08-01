@@ -2559,6 +2559,11 @@
         "networkentity"
       ],
       [
+        "view_playbook",
+        "ngen",
+        "playbook"
+      ],
+      [
         "change_playbook",
         "ngen",
         "playbook"
@@ -2572,6 +2577,11 @@
         "change_report",
         "ngen",
         "report"
+      ],
+      [
+        "view_task",
+        "ngen",
+        "task"
       ],
       [
         "change_task",
@@ -2592,6 +2602,11 @@
         "change_tlp",
         "ngen",
         "tlp"
+      ],
+      [
+        "view_todotask",
+        "ngen",
+        "todotask"
       ],
       [
         "change_todotask",
