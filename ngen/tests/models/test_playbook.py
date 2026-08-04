@@ -169,6 +169,30 @@ class PlaybookTestCase(TestCase):
             self.playbook.tasks.all(), [self.task_1, self.task_2, task_3]
         )
 
+    def test_task_move_reads_the_positions_it_swaps(self):
+        """
+        Test that moving uses the positions stored at that moment and not the
+        ones the instance was read with, which is what makes concurrent moves
+        end up consistent
+        """
+        task_3 = Task.objects.create(
+            name="Close the case", playbook=self.playbook, priority=self.priority
+        )
+        stale = Task.objects.get(pk=task_3.pk)
+
+        # Someone else moves it while this instance holds the old position
+        task_3.move(up=True)
+        self.assertEqual(
+            list(self.playbook.tasks.all()), [self.task_1, task_3, self.task_2]
+        )
+
+        stale.move(up=True)
+
+        self.assertQuerysetEqual(
+            self.playbook.tasks.all(), [task_3, self.task_1, self.task_2]
+        )
+        self.assertEqual(len({task.order for task in self.playbook.tasks.all()}), 3)
+
     def test_task_move_out_of_the_playbook_does_nothing(self):
         """
         Test that the first task cannot be moved up nor the last one down

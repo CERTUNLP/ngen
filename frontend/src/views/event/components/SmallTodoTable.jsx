@@ -45,6 +45,8 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  // A failed load must not look like an event without playbook tasks
+  const [loadFailed, setLoadFailed] = useState(false);
   const canEdit = currentUserHasPermissions(["change_todotask"]);
   // Resolving a user url to its name needs its own permission, both to offer
   // the select and to show the assigned user: without it the cell would only
@@ -78,8 +80,14 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
           )
           // The saved values are kept to tell apart the todos really modified from
           // the ones edited back to what they already were
-          .then((results) => setTodos(results.map((todo) => ({ ...todo, saved: savedValues(todo) }))))
-          .catch(() => setTodos([]))
+          .then((results) => {
+            setTodos(results.map((todo) => ({ ...todo, saved: savedValues(todo) })));
+            setLoadFailed(false);
+          })
+          .catch(() => {
+            setTodos([]);
+            setLoadFailed(true);
+          })
           .finally(() => setIsLoading(false))
       );
     },
@@ -201,18 +209,24 @@ const SmallTodoTable = forwardRef(({ eventId }, ref) => {
           </Card.Title>
         </Card.Header>
         <Card.Body>
-          <p className="text-muted mb-0">
-            {t("ngen.todo.none")}. {t("ngen.todo.none.hint")}{" "}
-            <PermissionCheck permissions={["view_playbook"]}>
-              <Link to="/playbooks">{t("ngen.todo.none.link")}</Link>
-            </PermissionCheck>
-          </p>
-          {canImport ? (
-            <Button className="text-capitalize mt-3" variant="outline-primary" disabled={isImporting} onClick={importTasks}>
-              <i className="fa fa-download" /> {t("ngen.todo.import")}
-            </Button>
+          {loadFailed ? (
+            <p className="text-muted mb-0">{t("ngen.todo.get.error")}</p>
           ) : (
-            ""
+            <>
+              <p className="text-muted mb-0">
+                {t("ngen.todo.none")}. {t("ngen.todo.none.hint")}{" "}
+                <PermissionCheck permissions={["view_playbook"]}>
+                  <Link to="/playbooks">{t("ngen.todo.none.link")}</Link>
+                </PermissionCheck>
+              </p>
+              {canImport ? (
+                <Button className="text-capitalize mt-3" variant="outline-primary" disabled={isImporting} onClick={importTasks}>
+                  <i className="fa fa-download" /> {t("ngen.todo.import")}
+                </Button>
+              ) : (
+                ""
+              )}
+            </>
           )}
         </Card.Body>
       </Card>

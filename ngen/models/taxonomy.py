@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Value
 from django.db.models.functions import Replace
 from django.utils import timezone
@@ -255,19 +255,26 @@ class Task(AuditModelMixin, PriorityModelMixin, ValidationModelMixin):
         """
         Swap the position with the neighbour task of the playbook, which is how
         the steps of a procedure are reordered. Returns whether it moved.
+        Both positions are read and written inside a transaction that locks the
+        tasks of the playbook, so two moves at once cannot interleave.
         """
-        tasks = list(self.playbook.tasks.all())
-        target = tasks.index(self) + (-1 if up else 1)
-        if target < 0 or target >= len(tasks):
-            return False
+        with transaction.atomic():
+            tasks = list(self.playbook.tasks.select_for_update())
+            target = tasks.index(self) + (-1 if up else 1)
+            if target < 0 or target >= len(tasks):
+                return False
 
-        neighbour = tasks[target]
-        self.order, neighbour.order = neighbour.order, self.order
-        # Tasks sharing a position would not move by swapping alone
-        if self.order == neighbour.order:
-            self.order = max(self.order - 1, 0) if up else self.order + 1
-        neighbour.save()
-        self.save()
+            # The locked rows hold the positions to swap, which may have changed
+            # since this instance was read
+            current, neighbour = tasks[tasks.index(self)], tasks[target]
+            current.order, neighbour.order = neighbour.order, current.order
+            # Tasks sharing a position would not move by swapping alone
+            if current.order == neighbour.order:
+                current.order = max(current.order - 1, 0) if up else current.order + 1
+            neighbour.save()
+            current.save()
+
+        self.order = current.order
         return True
 
 

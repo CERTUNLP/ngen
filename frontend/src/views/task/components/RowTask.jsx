@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { deleteTask, getTask, moveTask } from "../../../api/services/tasks";
 import PriorityButton from "../../../components/Button/PriorityButton";
 import ModalDetailTask from "./ModalDetailTask";
@@ -7,7 +7,6 @@ import ModalConfirm from "../../../components/Modal/ModalConfirm";
 import CrudButton from "../../../components/Button/CrudButton";
 import ModalEditTask from "./ModalEditTask";
 import { useTranslation } from "react-i18next";
-import { Button } from "react-bootstrap";
 import PermissionCheck from "../../../components/Auth/PermissionCheck";
 
 const RowTask = (props) => {
