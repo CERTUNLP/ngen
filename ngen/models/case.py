@@ -780,13 +780,25 @@ class Event(
             if template:
                 self.case = template.create_case(events=[self])
 
+    def import_playbook_tasks(self):
+        """
+        Assign the tasks of the playbooks of its taxonomy that the event does not
+        have yet, which is what a playbook written after the event needs to reach
+        the events already open. Returns how many todos were created.
+        Nothing is deleted, so the work already done is never lost.
+        """
+        imported = 0
+        for playbook in self.taxonomy.playbooks.all():
+            for task in playbook.tasks.exclude(todos__event=self):
+                self.tasks.add(task)
+                imported += 1
+        return imported
+
     @hook(AFTER_CREATE)
     @hook(AFTER_UPDATE, when="taxonomy", has_changed=True)
     def taxonomy_assign(self):
         self.todos.exclude(task__playbook__in=self.taxonomy.playbooks.all()).delete()
-        for playbook in self.taxonomy.playbooks.all():
-            for task in playbook.tasks.all():
-                self.tasks.add(task)
+        self.import_playbook_tasks()
         # Update taxonomy of children
         for child in self.children.all():
             child.taxonomy = self.taxonomy

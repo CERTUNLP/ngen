@@ -1,6 +1,7 @@
 import apiInstance from "../api";
 import setAlert from "../../utils/setAlert";
 import { COMPONENT_URL, PAGE } from "../../config/constant";
+import i18next from "i18next";
 
 const getTasks = (currentPage) => {
   return apiInstance
@@ -103,4 +104,18 @@ const deleteTask = (url, name) => {
     });
 };
 
-export { getTasks, getAllTasks, getTask, postTask, putTask, deleteTask };
+// The order of the tasks is the order of the procedure, so it is moved one
+// position at a time instead of being derived from the priority
+const moveTask = (url, direction) => {
+  return apiInstance
+    .post(`${url}move/`, { direction: direction })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      setAlert(i18next.t("ngen.task.move.error"), "error", "playbook");
+      return Promise.reject(error);
+    });
+};
+
+export { getTasks, getAllTasks, getTask, postTask, putTask, deleteTask, moveTask };

@@ -22,6 +22,7 @@ from ngen.models import (
     Network,
     Contact,
     Playbook,
+    TodoTask,
     AnalyzerMapping,
     Analyzer,
 )
@@ -465,6 +466,28 @@ class PlaybookFilter(BaseFilter):
         fields = {
             "name": ["icontains"],
             "taxonomy": ["exact"],
+        }
+
+
+class TodoTaskFilter(BaseFilter):
+    """
+    TodoTask model filter.
+    Allows to filter by:
+        - event (exact)
+        - task (exact)
+        - task playbook (exact)
+        - completed (exact)
+        - assigned_to (exact)
+    """
+
+    class Meta:
+        model = TodoTask
+        fields = {
+            "event": ["exact"],
+            "task": ["exact"],
+            "task__playbook": ["exact"],
+            "completed": ["exact"],
+            "assigned_to": ["exact"],
         }
 
 

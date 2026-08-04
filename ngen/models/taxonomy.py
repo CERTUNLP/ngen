@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Value
 from django.db.models.functions import Replace
 from django.utils import timezone
@@ -221,14 +221,61 @@ class Task(AuditModelMixin, PriorityModelMixin, ValidationModelMixin):
     playbook = models.ForeignKey(
         "ngen.Playbook", on_delete=models.CASCADE, related_name="tasks"
     )
-    description = models.TextField(null=True)
+    description = models.TextField(null=True, blank=True)
+    order = models.PositiveIntegerField(
+        default=0,
+        help_text=gettext_lazy(
+            "Position of the task within its playbook. A playbook is a procedure, "
+            "so its tasks are followed in this order and not by priority."
+        ),
+    )
 
     def __str__(self):
         return self.name
 
     class Meta:
         db_table = "task"
-        ordering = ["priority__severity"]
+        ordering = ["order", "id"]
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.order:
+            self.order = self.next_order(self.playbook)
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def next_order(playbook):
+        """
+        Position after the last task of the playbook, so a new task is added at
+        the end of the procedure
+        """
+        last = playbook.tasks.order_by("-order").first()
+        return last.order + 1 if last else 1
+
+    def move(self, up: bool):
+        """
+        Swap the position with the neighbour task of the playbook, which is how
+        the steps of a procedure are reordered. Returns whether it moved.
+        Both positions are read and written inside a transaction that locks the
+        tasks of the playbook, so two moves at once cannot interleave.
+        """
+        with transaction.atomic():
+            tasks = list(self.playbook.tasks.select_for_update())
+            target = tasks.index(self) + (-1 if up else 1)
+            if target < 0 or target >= len(tasks):
+                return False
+
+            # The locked rows hold the positions to swap, which may have changed
+            # since this instance was read
+            current, neighbour = tasks[tasks.index(self)], tasks[target]
+            current.order, neighbour.order = neighbour.order, current.order
+            # Tasks sharing a position would not move by swapping alone
+            if current.order == neighbour.order:
+                current.order = max(current.order - 1, 0) if up else current.order + 1
+            neighbour.save()
+            current.save()
+
+        self.order = current.order
+        return True
 
 
 class TodoTask(AuditModelMixin, ValidationModelMixin):
@@ -239,18 +286,27 @@ class TodoTask(AuditModelMixin, ValidationModelMixin):
         "ngen.Event", on_delete=models.CASCADE, related_name="todos"
     )
     completed = models.BooleanField(default=False)
-    completed_date = models.DateTimeField(null=True)
-    note = models.TextField(null=True)
+    completed_date = models.DateTimeField(null=True, blank=True)
+    note = models.TextField(null=True, blank=True)
     assigned_to = models.ForeignKey(
-        "ngen.User", null=True, related_name="assigned_tasks", on_delete=models.PROTECT
+        "ngen.User",
+        null=True,
+        blank=True,
+        related_name="assigned_tasks",
+        on_delete=models.PROTECT,
     )
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         if self.completed:
-            self.completed_date = timezone.now()
-        super().save()
+            # Keep the original completion date on later updates
+            if not self.completed_date:
+                self.completed_date = timezone.now()
+        else:
+            self.completed_date = None
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = "todo_task"
-        ordering = ["task__playbook"]
+        # Grouped by playbook and following the order of its procedure
+        ordering = ["task__playbook", "task__order", "task_id"]
         unique_together = ["task", "event"]

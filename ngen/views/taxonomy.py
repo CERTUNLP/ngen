@@ -1,9 +1,15 @@
 import django_filters
-from rest_framework import filters, viewsets, mixins
+from rest_framework import filters, status, viewsets, mixins
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from ngen import models, serializers
-from ngen.filters import TaxonomyFilter, PlaybookFilter
-from ngen.permissions import CustomApiViewPermission, CustomModelPermissions
+from ngen.filters import TaxonomyFilter, PlaybookFilter, TodoTaskFilter
+from ngen.permissions import (
+    ActionPermission,
+    CustomApiViewPermission,
+    CustomModelPermissions,
+)
 
 
 class TaxonomyViewSet(viewsets.ModelViewSet):
@@ -81,9 +87,43 @@ class TaskViewSet(viewsets.ModelViewSet):
         filters.OrderingFilter,
     ]
     search_fields = ["name", "description"]
-    ordering_fields = ["id", "created", "modified", "name", "playbook", "priority"]
+    ordering_fields = [
+        "id",
+        "created",
+        "modified",
+        "name",
+        "playbook",
+        "priority",
+        "order",
+    ]
     serializer_class = serializers.TaskSerializer
     permission_classes = [CustomModelPermissions]
+
+    action_permissions = {"move_task": "ngen.change_task"}
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="move",
+        url_name="move",
+        permission_classes=[ActionPermission],
+    )
+    def move_task(self, request, pk=None):
+        """
+        Moves a task one position within its playbook `/task/<pk>/move/`,
+        with {"direction": "up"} or {"direction": "down"}.
+        """
+        direction = request.data.get("direction")
+        if direction not in ("up", "down"):
+            return Response(
+                {"detail": "direction must be 'up' or 'down'"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        task = self.get_object()
+        moved = task.move(up=direction == "up")
+
+        return Response({"moved": moved}, status=status.HTTP_200_OK)
 
 
 class TodoTaskViewSet(viewsets.ModelViewSet):
@@ -93,15 +133,19 @@ class TodoTaskViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["note", "assigned_to__username"]
+    filterset_class = TodoTaskFilter
+    search_fields = ["note", "assigned_to__username", "task__name"]
     ordering_fields = [
         "id",
         "created",
         "modified",
         "completed",
+        "completed_date",
         "assigned_to",
         "note",
-        "reports",
+        "task",
+        "task__order",
+        "task__priority__severity",
     ]
     serializer_class = serializers.TodoTaskSerializer
     permission_classes = [CustomModelPermissions]

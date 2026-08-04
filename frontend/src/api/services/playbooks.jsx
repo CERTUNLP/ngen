@@ -10,7 +10,7 @@ const getPlaybooks = (currentPage, filters, order) => {
       return response;
     })
     .catch((error) => {
-      let statusText = error.response.statusText;
+      let statusText = error.response?.statusText ?? error.message;
       messageError += statusText;
       setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
@@ -41,7 +41,7 @@ const getPlaybook = (url) => {
       return response;
     })
     .catch((error) => {
-      let statusText = error.response.statusText;
+      let statusText = error.response?.statusText ?? error.message;
       messageError += statusText;
       setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
@@ -61,7 +61,7 @@ const postPlaybook = (name, taxonomy) => {
       return response;
     })
     .catch((error) => {
-      let statusText = error.response.statusText;
+      let statusText = error.response?.statusText ?? error.message;
       messageError += statusText;
       setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
@@ -81,7 +81,7 @@ const putPlaybook = (url, name, taxonomy) => {
       return response;
     })
     .catch((error) => {
-      let statusText = error.response.statusText;
+      let statusText = error.response?.statusText ?? error.message;
       messageError += statusText;
       setAlert(messageError, "error", "playbook");
       return Promise.reject(error);
@@ -98,7 +98,7 @@ const deletePlaybook = (url, name) => {
       return response;
     })
     .catch((error) => {
-      let statusText = error.response.statusText;
+      let statusText = error.response?.statusText ?? error.message;
       messageError += statusText;
       setAlert(messageError, "error", "playbook");
       return Promise.reject(error);

@@ -325,6 +325,7 @@ const EditEvent = ({ routeParams }) => {
           setPriorityNames={setPriorityNames}
           userNames={userNames}
           asNetworkAdmin={routeParams.asNetworkAdmin}
+          eventId={id}
         />
       </div>
     )

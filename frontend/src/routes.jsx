@@ -461,7 +461,8 @@ const routes = [
     path: "/playbooks/edit/:id",
     layout: AdminLayout,
     guard: PermissionGuard,
-    permissions: ["change_playbook"],
+    // The view also reads the playbook and its tasks
+    permissions: ["change_playbook", "view_playbook", "view_task"],
     element: lazy(() => import("./views/playbook/EditPlaybook"))
   },
   {

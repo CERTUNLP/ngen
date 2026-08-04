@@ -35,6 +35,11 @@ const ListTask = (props) => {
   }
 
   useEffect(() => {
+    // The parent view loads the playbook asynchronously, so on the first
+    // renders there is still no url to ask for
+    if (!props.urlPlaybook) {
+      return;
+    }
     getPlaybook(props.urlPlaybook)
       .then((response) => {
         setPlaybook(response.data);
@@ -97,8 +102,11 @@ const ListTask = (props) => {
                         tasks.map((urlTask, index) => {
                           return (
                             <RowTask
+                              key={urlTask}
                               url={urlTask}
                               id={index + 1}
+                              isFirst={index === 0}
+                              isLast={index === tasks.length - 1}
                               taskDeleted={taskDeleted}
                               setTaskDeleted={setTaskDeleted}
                               taskUpdated={taskUpdated}

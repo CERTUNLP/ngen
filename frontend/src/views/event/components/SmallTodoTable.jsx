@@ -1,0 +1,318 @@
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
+import { Badge, Button, Card, ProgressBar, Spinner } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import PermissionCheck from "components/Auth/PermissionCheck";
+import CrudButton from "components/Button/CrudButton";
+import { getTodosByEvent, importPlaybookTasks, patchTodo } from "api/services/todos";
+import { getTask } from "api/services/tasks";
+import { getMinifiedUser } from "api/services/users";
+import setAlert from "utils/setAlert";
+import { currentUserHasPermissions } from "utils/permissions";
+import TableTodos from "./TableTodos";
+
+const savedValues = (todo) => ({
+  completed: todo.completed,
+  note: todo.note ?? "",
+  assigned_to: todo.assigned_to ?? null
+});
+
+const isModified = (todo) => {
+  const current = savedValues(todo);
+  return current.completed !== todo.saved.completed || current.note !== todo.saved.note || current.assigned_to !== todo.saved.assigned_to;
+};
+
+/**
+ * Playbook todos of an event, ordered as the playbook orders its tasks. Every
+ * todo can be completed, annotated and assigned to a user. When the taxonomy of
+ * the event has no playbook the card says so instead of hiding, so that a
+ * missing playbook does not look like a card that failed to load.
+ *
+ * Todos are their own resource with their own permissions: editing them needs
+ * change_todotask and not the right to edit the event, so the card is editable
+ * wherever it is shown. Roles like Incident Responder can complete the steps of
+ * a playbook without being able to edit events. Without change_todotask the
+ * card stays read only instead of offering fields that could never be saved.
+ *
+ * They are saved on their own, but the ref exposes savePending() for the event
+ * form to flush them with its own save.
+ */
+const SmallTodoTable = forwardRef(({ eventId }, ref) => {
+  const { t } = useTranslation();
+  const [todos, setTodos] = useState([]);
+  // null means the list of users could not be retrieved
+  const [userOptions, setUserOptions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  // A failed load must not look like an event without playbook tasks
+  const [loadFailed, setLoadFailed] = useState(false);
+  const canEdit = currentUserHasPermissions(["change_todotask"]);
+  // Resolving a user url to its name needs its own permission, both to offer
+  // the select and to show the assigned user: without it the cell would only
+  // offer an empty select and ask the api for users it cannot read
+  const canListUsers = currentUserHasPermissions(["view_minified_user"]);
+  const canImport = currentUserHasPermissions(["add_todotask"]);
+  const canAssign = canEdit && canListUsers && userOptions !== null;
+
+  // Only the first load replaces the card with a spinner: refetching after
+  // saving or importing must not make the table blink away
+  const fetchTodos = useCallback(
+    ({ initial = false } = {}) => {
+      if (!eventId) {
+        return Promise.resolve();
+      }
+      if (initial) {
+        setIsLoading(true);
+      }
+      return (
+        getTodosByEvent(eventId)
+          .then((results) =>
+            // Each todo only holds the url of its task, the task itself has the
+            // name, description and priority to show
+            Promise.all(
+              results.map((todo) =>
+                getTask(todo.task)
+                  .then((response) => ({ ...todo, task_detail: response.data }))
+                  .catch(() => ({ ...todo, task_detail: null }))
+              )
+            )
+          )
+          // The saved values are kept to tell apart the todos really modified from
+          // the ones edited back to what they already were
+          .then((results) => {
+            setTodos(results.map((todo) => ({ ...todo, saved: savedValues(todo) })));
+            setLoadFailed(false);
+          })
+          .catch(() => {
+            setTodos([]);
+            setLoadFailed(true);
+          })
+          .finally(() => setIsLoading(false))
+      );
+    },
+    [eventId]
+  );
+
+  useEffect(() => {
+    fetchTodos({ initial: true });
+  }, [fetchTodos]);
+
+  useEffect(() => {
+    if (!canEdit || !canListUsers) {
+      setUserOptions(null);
+      return;
+    }
+    getMinifiedUser()
+      .then((response) => {
+        setUserOptions(response.map((user) => ({ value: user.url, label: user.username })));
+      })
+      .catch((error) => {
+        setUserOptions(null);
+        console.log(error);
+      });
+  }, [canEdit, canListUsers]);
+
+  const handleChange = (url, field, value) => {
+    setTodos((current) => current.map((todo) => (todo.url === url ? { ...todo, [field]: value } : todo)));
+  };
+
+  const modifiedTodos = todos.filter(isModified);
+
+  const savePending = useCallback(() => {
+    const pending = todos.filter(isModified);
+    if (pending.length === 0) {
+      return Promise.resolve();
+    }
+    setIsSaving(true);
+    return Promise.all(
+      pending.map((todo) =>
+        patchTodo(todo.url, {
+          completed: todo.completed,
+          note: todo.note ? todo.note : null,
+          assigned_to: todo.assigned_to ? todo.assigned_to : null
+        })
+      )
+    )
+      .then(() => {
+        setAlert(t("ngen.todo.edit.success"), "success", "todo");
+        return fetchTodos();
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => setIsSaving(false));
+  }, [todos, fetchTodos, t]);
+
+  // The save button of the event form flushes the pending todos too, so that
+  // saving the event never leaves them silently behind
+  useImperativeHandle(ref, () => ({ savePending }), [savePending]);
+
+  // A playbook written after the event does not reach it on its own
+  const importTasks = () => {
+    setIsImporting(true);
+    importPlaybookTasks(eventId)
+      .then((response) => {
+        const imported = response.data.imported;
+        setAlert(imported > 0 ? t("ngen.todo.import.success", { count: imported }) : t("ngen.todo.import.none"), "success", "todo");
+        return fetchTodos();
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => setIsImporting(false));
+  };
+
+  const discardChanges = () => {
+    setTodos((current) => current.map((todo) => ({ ...todo, ...todo.saved })));
+  };
+
+  // The router of the app cannot block in-app navigation, but leaving the page
+  // or reloading it with pending changes is warned about
+  useEffect(() => {
+    if (modifiedTodos.length === 0) {
+      return undefined;
+    }
+    const warn = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [modifiedTodos.length]);
+
+  const completedCount = todos.filter((todo) => todo.completed).length;
+
+  if (!eventId) {
+    return null;
+  }
+
+  if (isLoading) {
+    return (
+      <Card>
+        <Card.Body>
+          <Spinner animation="border" size="sm" />
+        </Card.Body>
+      </Card>
+    );
+  }
+
+  // Not having playbook tasks is worth saying: it means no playbook covers the
+  // taxonomy of the event, which is not the same as the card failing to load.
+  // Kept quiet, like the retests card does when there is no analyzer mapping
+  if (todos.length === 0) {
+    return (
+      <Card>
+        <Card.Header>
+          <Card.Title as="h5" className="mb-0">
+            {t("ngen.todo_other")}
+          </Card.Title>
+        </Card.Header>
+        <Card.Body>
+          {loadFailed ? (
+            <p className="text-muted mb-0">{t("ngen.todo.get.error")}</p>
+          ) : (
+            <>
+              <p className="text-muted mb-0">
+                {t("ngen.todo.none")}. {t("ngen.todo.none.hint")}{" "}
+                <PermissionCheck permissions={["view_playbook"]}>
+                  <Link to="/playbooks">{t("ngen.todo.none.link")}</Link>
+                </PermissionCheck>
+              </p>
+              {canImport ? (
+                <Button className="text-capitalize mt-3" variant="outline-primary" disabled={isImporting} onClick={importTasks}>
+                  <i className="fa fa-download" /> {t("ngen.todo.import")}
+                </Button>
+              ) : (
+                ""
+              )}
+            </>
+          )}
+        </Card.Body>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <Card.Header>
+        <div className="d-flex align-items-center flex-wrap">
+          <Card.Title as="h5" className="mb-0">
+            {t("ngen.todo_other")}
+          </Card.Title>
+          <Badge bg="secondary" className="ms-3">
+            {completedCount}/{todos.length}
+          </Badge>
+          {modifiedTodos.length > 0 ? (
+            <Badge bg="warning" text="dark" className="ms-2">
+              <i className="fa fa-pen me-1" />
+              {modifiedTodos.length} {t("ngen.todo.pending")}
+            </Badge>
+          ) : (
+            ""
+          )}
+          {canEdit ? (
+            <span className="ms-3">
+              <CrudButton
+                type="save"
+                text={modifiedTodos.length > 0 ? `${t("crud.save")} (${modifiedTodos.length})` : t("crud.save")}
+                permissions="change_todotask"
+                disabled={isSaving || modifiedTodos.length === 0}
+                onClick={savePending}
+              />{" "}
+              {/* CrudButton has no discard type, and its 'cancel' one navigates back */}
+              <Button
+                className="text-capitalize"
+                variant="outline-secondary"
+                title={t("ngen.todo.discard")}
+                disabled={isSaving || modifiedTodos.length === 0}
+                onClick={discardChanges}
+              >
+                <i className="fa fa-undo" /> {t("ngen.todo.discard")}
+              </Button>
+            </span>
+          ) : (
+            ""
+          )}
+          {canImport ? (
+            <span className="ms-3">
+              <Button
+                className="text-capitalize"
+                variant="outline-primary"
+                title={t("ngen.todo.import.hint")}
+                disabled={isImporting || isSaving}
+                onClick={importTasks}
+              >
+                <i className="fa fa-download" /> {t("ngen.todo.import")}
+              </Button>
+            </span>
+          ) : (
+            ""
+          )}
+          {isSaving || isImporting ? <Spinner animation="border" size="sm" className="ms-2" /> : ""}
+        </div>
+        <ProgressBar
+          className="mt-2"
+          style={{ height: "0.35rem" }}
+          now={(completedCount * 100) / todos.length}
+          aria-label={t("ngen.todo_other")}
+        />
+      </Card.Header>
+      <Card.Body>
+        <TableTodos
+          todos={todos.map((todo) => ({ ...todo, modified_locally: isModified(todo) }))}
+          editable={canEdit}
+          canAssign={canAssign}
+          canListUsers={canListUsers}
+          userOptions={userOptions ?? []}
+          onChange={handleChange}
+          disabled={isSaving}
+        />
+      </Card.Body>
+    </Card>
+  );
+});
+
+SmallTodoTable.displayName = "SmallTodoTable";
+
+export default SmallTodoTable;

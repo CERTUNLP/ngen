@@ -17,6 +17,7 @@ import { getArtefact } from "api/services/artifact";
 import { getMinifiedTag } from "api/services/tags";
 import SmallCaseTable from "../case/components/SmallCaseTable";
 import SmallRetestTable from "./components/SmallRetestTable";
+import SmallTodoTable from "./components/SmallTodoTable";
 import { getEvidence } from "../../api/services/evidences";
 import { getRetests } from "../../api/services/eventAnalysis";
 import EvidenceCard from "../../components/UploadFiles/EvidenceCard";
@@ -25,6 +26,7 @@ import PermissionCheck from "components/Auth/PermissionCheck";
 import { COMPONENT_URL } from "config/constant";
 import LetterFormat from "components/LetterFormat";
 import AuditModal from "views/audits/components/AuditModal";
+import DateShowField from "components/Field/DateShowField";
 
 const ReadEvent = ({ routeParams }) => {
   const basePath = routeParams.basePath || "";
@@ -530,6 +532,14 @@ const ReadEvent = ({ routeParams }) => {
         basePath={basePath}
       />
 
+      {/* Network admins do not get the todos of an event: the network admin
+          event serializer leaves them out and /api/todo/ is not scoped */}
+      {!basePath.includes("networkadmin") && (
+        <PermissionCheck permissions={["view_todotask"]}>
+          <SmallTodoTable eventId={id.id} />
+        </PermissionCheck>
+      )}
+
       <PermissionCheck permissions={["view_analyzermapping"]}>
         <Card>
           <SmallRetestTable
@@ -558,21 +568,13 @@ const ReadEvent = ({ routeParams }) => {
               <tr>
                 <td>{t("ngen.date.created")}</td>
                 <td>
-                  <Form.Control
-                    plaintext
-                    readOnly
-                    defaultValue={body.created !== undefined ? body.created.slice(0, 10) + " " + body.date.slice(11, 19) : ""}
-                  />
+                  <DateShowField value={body.created} asFormControl />
                 </td>
               </tr>
               <tr>
                 <td>{t("ngen.date.modified")}</td>
                 <td>
-                  <Form.Control
-                    plaintext
-                    readOnly
-                    defaultValue={body.modified !== undefined ? body.modified.slice(0, 10) + " " + body.date.slice(11, 19) : ""}
-                  />
+                  <DateShowField value={body.modified} asFormControl />
                 </td>
               </tr>
             </tbody>

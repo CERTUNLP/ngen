@@ -91,6 +91,19 @@ class TaxonomyAPITestCase(APITestCaseWithLogin):
         taxonomy.refresh_from_db()
         self.assertEqual(taxonomy.name, "Updated Name")
 
+    def test_minified_taxonomy_exposes_type(self):
+        """
+        Test that the minified taxonomies expose their type, which the selects
+        that offer them show to tell incidents from vulnerabilities
+        """
+        taxonomy = Taxonomy.objects.create(type="vulnerability", name="Minified")
+
+        response = self.client.get(reverse("minified-taxonomy-list"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        minified = next(item for item in response.data if item["name"] == taxonomy.name)
+        self.assertEqual(minified["type"], "vulnerability")
+
     def test_delete_taxonomy(self):
         """
         Test that taxonomies are being deleted correctly
