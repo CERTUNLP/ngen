@@ -20,6 +20,7 @@ from ngen.models import (
     Artifact,
 )
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
+from ngen.tests.api.tag_behaviour_test_mixin import TagBehaviourTestMixin
 from ngen.tests.test_helpers import use_test_email_env
 from constance.test import override_config
 
@@ -29,7 +30,7 @@ class MyToken(Token):
     lifetime = timedelta(days=1)
 
 
-class TestEvent(APITestCaseWithLogin):
+class TestEvent(TagBehaviourTestMixin, APITestCaseWithLogin):
     """
     This will handle Event testcases
     """
@@ -72,6 +73,43 @@ class TestEvent(APITestCaseWithLogin):
         cls.feed = Feed.objects.get(slug="csirtamericas")
         cls.tlp = Tlp.objects.get(slug="green")
         cls.user = User.objects.get(username="ngen")
+
+    # Tags, shared with every other resource that has them
+
+    def create_tagged_object(self, tags):
+        event = Event.objects.create(
+            domain="tagged.test.com",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            priority=self.priority,
+        )
+        event.tags.set(tags)
+        return event
+
+    def tagged_object_url(self, obj):
+        return self.url_detail(obj.pk)
+
+    def create_data(self):
+        return {
+            "domain": "tag-create.test.com",
+            "priority": self.priority_url,
+            "tlp": self.tlp_url,
+            "taxonomy": self.taxonomy_url,
+            "feed": self.feed_url,
+        }
+
+    def full_update_data(self, obj):
+        return {
+            **self.create_data(),
+            "domain": obj.domain,
+            "reporter": self.base_url
+            + reverse("user-detail", kwargs={"pk": self.user.pk}),
+        }
+
+    def partial_update_data(self, obj):
+        return {"notes": "touched by a partial update"}
 
     def test_event_get_list(self):
         """

@@ -297,6 +297,10 @@ const FormCase = (props) => {
       });
   }, [props.allStates]);
 
+  // The api gives the tags as their names and the select gives them as objects,
+  // so the state holds one or the other depending on whether it was touched
+  const tagName = (tag) => (typeof tag === "string" ? tag : tag?.name);
+
   const selectTag = (items) => {
     setTags(items);
     setTagsValueLabel(items);
@@ -390,8 +394,12 @@ const FormCase = (props) => {
     }
     if (tags.length > 0) {
       tags.forEach((tag) => {
-        form.append("tags", tag.name);
+        form.append("tags", tagName(tag));
       });
+    } else {
+      // A form field with no value is simply not sent, and a field that is not
+      // sent is left untouched, so removing every tag has to be said out loud
+      form.append("tags", "[]");
     }
 
     putCase(url, form)
@@ -444,7 +452,7 @@ const FormCase = (props) => {
     }
     if (tags.length > 0) {
       tags.forEach((tag) => {
-        form.append("tags", tag.name);
+        form.append("tags", tagName(tag));
       });
     }
 

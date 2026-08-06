@@ -17,10 +17,11 @@ from ngen.models import (
     NetworkEntity,
 )
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
+from ngen.tests.api.tag_behaviour_test_mixin import TagBehaviourTestMixin
 from ngen.tests.test_helpers import use_test_email_env
 
 
-class TestCase(APITestCaseWithLogin):
+class TestCase(TagBehaviourTestMixin, APITestCaseWithLogin):
     """
     This will handle Case testcases
     """
@@ -36,6 +37,7 @@ class TestCase(APITestCaseWithLogin):
         "tests/case_template.json",
         "tests/user.json",
         "tests/network_entity.json",
+        "tests/edge.json",
     ]
 
     @classmethod
@@ -76,6 +78,41 @@ class TestCase(APITestCaseWithLogin):
             network_entity=cls.network_entity,
         )
         cls.network.contacts.set([cls.contact])
+
+    # Tags, shared with every other resource that has them
+
+    def create_tagged_object(self, tags):
+        case = Case.objects.create(
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
+        )
+        case.tags.set(tags)
+        return case
+
+    def tagged_object_url(self, obj):
+        return self.url_detail(obj.pk)
+
+    def create_data(self):
+        return {
+            "priority": self.priority_url,
+            "tlp": self.tlp_url,
+            "state": self.state_url,
+            "casetemplate_creator": self.case_template_url,
+        }
+
+    def full_update_data(self, obj):
+        return self.create_data()
+
+    def partial_update_data(self, obj):
+        """
+        Closing the case, which is the update the list view sends
+        """
+        solved = State.objects.filter(solved=True).first()
+        return {
+            "state": self.base_url + reverse("state-detail", kwargs={"pk": solved.pk})
+        }
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
@@ -236,22 +273,36 @@ class TestCase(APITestCaseWithLogin):
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_put_unlinks_removed_events(self):
         case = Case.objects.create(
-            priority=self.priority, tlp=self.tlp,
-            casetemplate_creator=self.case_template, state=self.state,
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
         )
         event1 = Event.objects.create(
-            domain="a.test.com", priority=self.priority,
-            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            domain="a.test.com",
+            priority=self.priority,
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
             case=case,
         )
         event2 = Event.objects.create(
-            domain="b.test.com", priority=self.priority,
-            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            domain="b.test.com",
+            priority=self.priority,
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
             case=case,
         )
         event3 = Event.objects.create(
-            domain="c.test.com", priority=self.priority,
-            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            domain="c.test.com",
+            priority=self.priority,
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
             case=case,
         )
 
@@ -259,8 +310,10 @@ class TestCase(APITestCaseWithLogin):
         event2_url = self.base_url + reverse("event-detail", kwargs={"pk": event2.pk})
 
         json_data = {
-            "priority": self.priority_url, "tlp": self.tlp_url,
-            "state": self.state_url, "casetemplate_creator": self.case_template_url,
+            "priority": self.priority_url,
+            "tlp": self.tlp_url,
+            "state": self.state_url,
+            "casetemplate_creator": self.case_template_url,
             "events": [event1_url, event2_url],
         }
         response = self.client.put(self.url_detail(case.pk), data=json_data)
@@ -275,18 +328,26 @@ class TestCase(APITestCaseWithLogin):
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_put_empty_events_unlinks_all(self):
         case = Case.objects.create(
-            priority=self.priority, tlp=self.tlp,
-            casetemplate_creator=self.case_template, state=self.state,
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
         )
         event = Event.objects.create(
-            domain="d.test.com", priority=self.priority,
-            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            domain="d.test.com",
+            priority=self.priority,
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
             case=case,
         )
 
         json_data = {
-            "priority": self.priority_url, "tlp": self.tlp_url,
-            "state": self.state_url, "casetemplate_creator": self.case_template_url,
+            "priority": self.priority_url,
+            "tlp": self.tlp_url,
+            "state": self.state_url,
+            "casetemplate_creator": self.case_template_url,
             "events": [],
         }
         response = self.client.put(self.url_detail(case.pk), data=json_data)

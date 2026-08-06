@@ -130,12 +130,14 @@ class TagSerializerMixin(TaggitSerializer):
     tags = NewTagListSerializerField(required=False, allow_null=True)
 
     def update(self, instance, validated_data):
-        tags = validated_data.pop("tags", [])
-        instance.tags.set(tags)
+        # Only when the request carries them: a partial update that does not
+        # mention the tags must leave them alone, and it used to wipe them
+        if "tags" in validated_data:
+            instance.tags.set(validated_data.pop("tags") or [])
         return super().update(instance, validated_data)
 
     def create(self, validated_data):
-        tags = validated_data.pop("tags", [])
+        tags = validated_data.pop("tags", None)
         instance = super().create(validated_data)
-        instance.tags.set(tags)
+        instance.tags.set(tags or [])
         return instance
