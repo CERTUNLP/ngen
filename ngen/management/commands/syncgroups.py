@@ -63,7 +63,13 @@ class Command(BaseCommand):
         for entry in entries:
             pending += self.sync_group(entry, dry_run=dry_run, prune=options["prune"])
 
-        self.report_unusable_permissions([entry["name"] for entry in entries])
+        if dry_run and pending:
+            # Reporting now would list problems the pending changes may fix
+            self.stdout.write(
+                "Apply the changes to see which permissions stay unusable."
+            )
+        else:
+            self.report_unusable_permissions([entry["name"] for entry in entries])
 
         if not pending:
             self.stdout.write(self.style.SUCCESS("Every group is already in sync."))
@@ -91,12 +97,23 @@ class Command(BaseCommand):
         except OSError as error:
             raise CommandError(f"Could not read {path}: {error}") from error
 
+        # Every permission at once: the shipped fixture holds hundreds of them
+        # and resolving one by one is one query each
+        known = {
+            (
+                permission.codename,
+                permission.content_type.app_label,
+                permission.content_type.model,
+            ): permission
+            for permission in Permission.objects.select_related("content_type")
+        }
+
         entries = []
         for obj in data:
             if obj.get("model") != "auth.group":
                 continue
             permissions, unknown = self.resolve_permissions(
-                obj["fields"].get("permissions", [])
+                obj["fields"].get("permissions", []), known
             )
             for codename in unknown:
                 self.stdout.write(
@@ -109,14 +126,10 @@ class Command(BaseCommand):
         return entries
 
     @staticmethod
-    def resolve_permissions(natural_keys):
+    def resolve_permissions(natural_keys, known):
         permissions, unknown = [], []
         for codename, app_label, model in natural_keys:
-            permission = Permission.objects.filter(
-                codename=codename,
-                content_type__app_label=app_label,
-                content_type__model=model,
-            ).first()
+            permission = known.get((codename, app_label, model))
             if permission:
                 permissions.append(permission)
             else:
@@ -138,7 +151,9 @@ class Command(BaseCommand):
             self.stdout.write(
                 f"  + would be created with {len(entry['permissions'])} permission(s)"
             )
-            return len(entry["permissions"])
+            # The group itself counts as a change, or a group defined with no
+            # permissions would be reported as nothing to do
+            return 1 + len(entry["permissions"])
 
         current = set(group.permissions.all())
         expected = set(entry["permissions"])
@@ -164,7 +179,7 @@ class Command(BaseCommand):
                 if to_remove:
                     group.permissions.remove(*to_remove)
 
-        return len(to_add) + len(to_remove)
+        return (1 if created else 0) + len(to_add) + len(to_remove)
 
     def report_unusable_permissions(self, group_names):
         """

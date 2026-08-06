@@ -155,6 +155,36 @@ class SyncGroupsCommandTestCase(TestCase):
             Group.objects.get(name="Brand new").permissions.all(), [self.view_playbook]
         )
 
+    def test_creating_a_group_counts_as_a_change(self):
+        """
+        Test that a group of the fixture that does not exist is pending even
+        when it defines no permissions, which --check has to catch
+        """
+        fixture = self.write_fixture({"Empty": []})
+
+        with self.assertRaises(SystemExit):
+            self.call(fixture, "--check")
+
+        output = self.call(fixture)
+
+        self.assertNotIn("already in sync", output)
+        self.assertTrue(Group.objects.filter(name="Empty").exists())
+
+    def test_does_not_report_what_the_pending_changes_would_fix(self):
+        """
+        Test that a dry run with something to apply does not list the
+        permissions that applying it may make usable
+        """
+        Group.objects.create(name="Responder").permissions.add(self.change_playbook)
+        fixture = self.write_fixture(
+            {"Responder": [self.change_playbook, self.view_playbook]}
+        )
+
+        output = self.call(fixture, "--dry-run")
+
+        self.assertNotIn("can write but not read", output)
+        self.assertIn("Apply the changes", output)
+
     def test_only_the_given_group(self):
         """
         Test that --group limits the reconciliation
