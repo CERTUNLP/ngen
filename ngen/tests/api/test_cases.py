@@ -36,6 +36,7 @@ class TestCase(APITestCaseWithLogin):
         "tests/case_template.json",
         "tests/user.json",
         "tests/network_entity.json",
+        "tests/edge.json",
     ]
 
     @classmethod
@@ -204,6 +205,67 @@ class TestCase(APITestCaseWithLogin):
         response = self.client.patch(self.url_detail(case.pk), data=json_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def _case_with_tags(self):
+        case = Case.objects.create(
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
+        )
+        case.tags.set(["urgent", "phishing"])
+        return case
+
+    def test_case_patch_keeps_the_tags(self):
+        """
+        This will test that a partial update that does not mention the tags
+        leaves them alone, which is what closing a case from the list does
+        """
+        case = self._case_with_tags()
+        closed = State.objects.filter(solved=True).first()
+
+        response = self.client.patch(
+            self.url_detail(case.pk),
+            data={
+                "state": self.base_url
+                + reverse("state-detail", kwargs={"pk": closed.pk})
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertCountEqual(response.data["tags"], ["urgent", "phishing"])
+        self.assertCountEqual(
+            case.tags.names(),
+            ["urgent", "phishing"],
+        )
+
+    def test_case_patch_changes_the_tags_when_they_are_sent(self):
+        """
+        This will test that the tags are still updated when the request carries
+        them
+        """
+        case = self._case_with_tags()
+
+        response = self.client.patch(
+            self.url_detail(case.pk), data={"tags": ["only-this-one"]}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertCountEqual(case.tags.names(), ["only-this-one"])
+
+    def test_case_patch_can_empty_the_tags(self):
+        """
+        This will test that asking for no tags does empty them, which is not
+        the same as not mentioning them
+        """
+        case = self._case_with_tags()
+
+        response = self.client.patch(
+            self.url_detail(case.pk), data={"tags": []}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(list(case.tags.names()), [])
+
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_put(self):
@@ -236,22 +298,36 @@ class TestCase(APITestCaseWithLogin):
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_put_unlinks_removed_events(self):
         case = Case.objects.create(
-            priority=self.priority, tlp=self.tlp,
-            casetemplate_creator=self.case_template, state=self.state,
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
         )
         event1 = Event.objects.create(
-            domain="a.test.com", priority=self.priority,
-            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            domain="a.test.com",
+            priority=self.priority,
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
             case=case,
         )
         event2 = Event.objects.create(
-            domain="b.test.com", priority=self.priority,
-            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            domain="b.test.com",
+            priority=self.priority,
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
             case=case,
         )
         event3 = Event.objects.create(
-            domain="c.test.com", priority=self.priority,
-            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            domain="c.test.com",
+            priority=self.priority,
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
             case=case,
         )
 
@@ -259,8 +335,10 @@ class TestCase(APITestCaseWithLogin):
         event2_url = self.base_url + reverse("event-detail", kwargs={"pk": event2.pk})
 
         json_data = {
-            "priority": self.priority_url, "tlp": self.tlp_url,
-            "state": self.state_url, "casetemplate_creator": self.case_template_url,
+            "priority": self.priority_url,
+            "tlp": self.tlp_url,
+            "state": self.state_url,
+            "casetemplate_creator": self.case_template_url,
             "events": [event1_url, event2_url],
         }
         response = self.client.put(self.url_detail(case.pk), data=json_data)
@@ -275,18 +353,26 @@ class TestCase(APITestCaseWithLogin):
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_put_empty_events_unlinks_all(self):
         case = Case.objects.create(
-            priority=self.priority, tlp=self.tlp,
-            casetemplate_creator=self.case_template, state=self.state,
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
         )
         event = Event.objects.create(
-            domain="d.test.com", priority=self.priority,
-            taxonomy=self.taxonomy, feed=self.feed, tlp=self.tlp, reporter=self.user,
+            domain="d.test.com",
+            priority=self.priority,
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
             case=case,
         )
 
         json_data = {
-            "priority": self.priority_url, "tlp": self.tlp_url,
-            "state": self.state_url, "casetemplate_creator": self.case_template_url,
+            "priority": self.priority_url,
+            "tlp": self.tlp_url,
+            "state": self.state_url,
+            "casetemplate_creator": self.case_template_url,
             "events": [],
         }
         response = self.client.put(self.url_detail(case.pk), data=json_data)
