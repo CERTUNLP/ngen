@@ -297,6 +297,10 @@ const FormCase = (props) => {
       });
   }, [props.allStates]);
 
+  // The api gives the tags as their names and the select gives them as objects,
+  // so the state holds one or the other depending on whether it was touched
+  const tagName = (tag) => (typeof tag === "string" ? tag : tag?.name);
+
   const selectTag = (items) => {
     setTags(items);
     setTagsValueLabel(items);
@@ -390,7 +394,7 @@ const FormCase = (props) => {
     }
     if (tags.length > 0) {
       tags.forEach((tag) => {
-        form.append("tags", tag.name);
+        form.append("tags", tagName(tag));
       });
     }
 
@@ -444,7 +448,7 @@ const FormCase = (props) => {
     }
     if (tags.length > 0) {
       tags.forEach((tag) => {
-        form.append("tags", tag.name);
+        form.append("tags", tagName(tag));
       });
     }
 
