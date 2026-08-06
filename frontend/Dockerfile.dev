@@ -8,8 +8,8 @@ WORKDIR /app
 ENV PATH=/app/node_modules/.bin:$PATH
 
 # install app dependencies
-COPY package.json ./
-RUN npm install --verbose
+COPY package.json package-lock.json ./
+RUN npm ci --verbose
 RUN mkdir node_modules/.cache && chmod -R 777 node_modules/.cache
 
 # add app
