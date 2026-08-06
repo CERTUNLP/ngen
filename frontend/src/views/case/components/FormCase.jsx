@@ -396,6 +396,10 @@ const FormCase = (props) => {
       tags.forEach((tag) => {
         form.append("tags", tagName(tag));
       });
+    } else {
+      // A form field with no value is simply not sent, and a field that is not
+      // sent is left untouched, so removing every tag has to be said out loud
+      form.append("tags", "[]");
     }
 
     putCase(url, form)

@@ -268,6 +268,52 @@ class TestCase(APITestCaseWithLogin):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_case_put_without_tags_keeps_them(self):
+        """
+        This will test that a full update that does not carry the tags leaves
+        them alone, the same as a partial one: a form field with no value is
+        not sent at all, so an absent field cannot mean 'delete them'
+        """
+        case = self._case_with_tags()
+
+        response = self.client.put(
+            self.url_detail(case.pk),
+            data={
+                "priority": self.priority_url,
+                "tlp": self.tlp_url,
+                "state": self.state_url,
+                "casetemplate_creator": self.case_template_url,
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertCountEqual(case.tags.names(), ["urgent", "phishing"])
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_case_put_can_empty_the_tags(self):
+        """
+        This will test the way the case form empties the tags: since an empty
+        list cannot be sent as form data, it sends an explicit empty one
+        """
+        case = self._case_with_tags()
+
+        response = self.client.put(
+            self.url_detail(case.pk),
+            data={
+                "priority": self.priority_url,
+                "tlp": self.tlp_url,
+                "state": self.state_url,
+                "casetemplate_creator": self.case_template_url,
+                "tags": "[]",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertEqual(list(case.tags.names()), [])
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_case_put(self):
         """
         This will test successful Case PUT
