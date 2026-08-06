@@ -17,10 +17,11 @@ from ngen.models import (
     NetworkEntity,
 )
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
+from ngen.tests.api.tag_behaviour_test_mixin import TagBehaviourTestMixin
 from ngen.tests.test_helpers import use_test_email_env
 
 
-class TestCase(APITestCaseWithLogin):
+class TestCase(TagBehaviourTestMixin, APITestCaseWithLogin):
     """
     This will handle Case testcases
     """
@@ -77,6 +78,41 @@ class TestCase(APITestCaseWithLogin):
             network_entity=cls.network_entity,
         )
         cls.network.contacts.set([cls.contact])
+
+    # Tags, shared with every other resource that has them
+
+    def create_tagged_object(self, tags):
+        case = Case.objects.create(
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
+        )
+        case.tags.set(tags)
+        return case
+
+    def tagged_object_url(self, obj):
+        return self.url_detail(obj.pk)
+
+    def create_data(self):
+        return {
+            "priority": self.priority_url,
+            "tlp": self.tlp_url,
+            "state": self.state_url,
+            "casetemplate_creator": self.case_template_url,
+        }
+
+    def full_update_data(self, obj):
+        return self.create_data()
+
+    def partial_update_data(self, obj):
+        """
+        Closing the case, which is the update the list view sends
+        """
+        solved = State.objects.filter(solved=True).first()
+        return {
+            "state": self.base_url + reverse("state-detail", kwargs={"pk": solved.pk})
+        }
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
@@ -204,113 +240,6 @@ class TestCase(APITestCaseWithLogin):
 
         response = self.client.patch(self.url_detail(case.pk), data=json_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def _case_with_tags(self):
-        case = Case.objects.create(
-            priority=self.priority,
-            tlp=self.tlp,
-            casetemplate_creator=self.case_template,
-            state=self.state,
-        )
-        case.tags.set(["urgent", "phishing"])
-        return case
-
-    def test_case_patch_keeps_the_tags(self):
-        """
-        This will test that a partial update that does not mention the tags
-        leaves them alone, which is what closing a case from the list does
-        """
-        case = self._case_with_tags()
-        closed = State.objects.filter(solved=True).first()
-
-        response = self.client.patch(
-            self.url_detail(case.pk),
-            data={
-                "state": self.base_url
-                + reverse("state-detail", kwargs={"pk": closed.pk})
-            },
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.assertCountEqual(response.data["tags"], ["urgent", "phishing"])
-        self.assertCountEqual(
-            case.tags.names(),
-            ["urgent", "phishing"],
-        )
-
-    def test_case_patch_changes_the_tags_when_they_are_sent(self):
-        """
-        This will test that the tags are still updated when the request carries
-        them
-        """
-        case = self._case_with_tags()
-
-        response = self.client.patch(
-            self.url_detail(case.pk), data={"tags": ["only-this-one"]}
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertCountEqual(case.tags.names(), ["only-this-one"])
-
-    def test_case_patch_can_empty_the_tags(self):
-        """
-        This will test that asking for no tags does empty them, which is not
-        the same as not mentioning them
-        """
-        case = self._case_with_tags()
-
-        response = self.client.patch(
-            self.url_detail(case.pk), data={"tags": []}, format="json"
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(list(case.tags.names()), [])
-
-    @use_test_email_env()
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    def test_case_put_without_tags_keeps_them(self):
-        """
-        This will test that a full update that does not carry the tags leaves
-        them alone, the same as a partial one: a form field with no value is
-        not sent at all, so an absent field cannot mean 'delete them'
-        """
-        case = self._case_with_tags()
-
-        response = self.client.put(
-            self.url_detail(case.pk),
-            data={
-                "priority": self.priority_url,
-                "tlp": self.tlp_url,
-                "state": self.state_url,
-                "casetemplate_creator": self.case_template_url,
-            },
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.assertCountEqual(case.tags.names(), ["urgent", "phishing"])
-
-    @use_test_email_env()
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    def test_case_put_can_empty_the_tags(self):
-        """
-        This will test the way the case form empties the tags: since an empty
-        list cannot be sent as form data, it sends an explicit empty one
-        """
-        case = self._case_with_tags()
-
-        response = self.client.put(
-            self.url_detail(case.pk),
-            data={
-                "priority": self.priority_url,
-                "tlp": self.tlp_url,
-                "state": self.state_url,
-                "casetemplate_creator": self.case_template_url,
-                "tags": "[]",
-            },
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.assertEqual(list(case.tags.names()), [])
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
