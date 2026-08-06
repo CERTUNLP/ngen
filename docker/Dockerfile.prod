@@ -1,5 +1,5 @@
 # Base stage for dependency installation
-FROM python:3.11-alpine3.20 AS base
+FROM python:3.11-alpine3.23 AS base
 
 ARG APP_VERSION_TAG
 ARG APP_COMMIT
@@ -31,7 +31,7 @@ COPY requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --prefix=/install -r /code/requirements.txt
 
 # Final image
-FROM python:3.11-alpine3.20
+FROM python:3.11-alpine3.23
 
 # Configure environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \

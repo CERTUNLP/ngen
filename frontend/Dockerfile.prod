@@ -1,5 +1,5 @@
 # pull official base image
-FROM node:18-alpine AS build
+FROM node:24-alpine AS build
 
 # set working directory
 WORKDIR /app
@@ -16,9 +16,9 @@ ENV VITE_APP_BUILD_FILE="prod"
 ENV PATH=/app/node_modules/.bin:$PATH
 
 # install app dependencies
-COPY package.json ./
+COPY package.json package-lock.json ./
 
-RUN npm install --verbose
+RUN npm ci --verbose
 
 # add app, PRODUCTION USES .env file!!
 COPY . ./
