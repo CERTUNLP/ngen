@@ -1,19 +1,87 @@
 import logging
 
 from django.conf import settings
+from django.contrib.auth.backends import ModelBackend
 from django.db import IntegrityError
+from django.db.models import Q
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 from ngen.models import User
+from ngen.services.login_attempts import LoginAttemptLimiter
 
 logger = logging.getLogger(__name__)
 
 
+class EmailOrUsernameModelBackend(ModelBackend):
+    """
+    The plain login accepts the username or the email, and neither of them by
+    case: the same account is reachable from the login page, the api, the admin
+    and the browsable api, which all go through django's authenticate().
+    """
+
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        if username is None:
+            username = kwargs.get(User.USERNAME_FIELD)
+        if username is None or password is None:
+            return None
+
+        user = self.get_user_by_identifier(username)
+        # The account is what is counted, not how it was named: otherwise the
+        # same account can be tried twice over, once by username and once by
+        # email. An identifier that reaches nobody is counted as itself
+        limiter = LoginAttemptLimiter(f"user:{user.pk}" if user else username, request)
+        if limiter.is_locked():
+            logger.warning("Login refused, too many failed attempts")
+            return None
+
+        if user is None:
+            # Same work as a real login, so that a wrong user and a wrong
+            # password do not take a different time to answer
+            User().set_password(password)
+            limiter.register_failure()
+            return None
+
+        if user.check_password(password) and self.user_can_authenticate(user):
+            limiter.reset()
+            return user
+
+        limiter.register_failure()
+        return None
+
+    def get_user_by_identifier(self, identifier):
+        """
+        The user whose username or email is the given one, or nothing if it
+        does not single one out
+        """
+        users = list(
+            User.objects.filter(
+                Q(username__iexact=identifier) | Q(email__iexact=identifier)
+            )[:3]
+        )
+        if len(users) == 1:
+            return users[0]
+        if not users:
+            return None
+
+        # Usernames are only unique as written, so an identifier can reach more
+        # than one account. The one that owns it as written wins, and anything
+        # still ambiguous is refused instead of guessed
+        exact = [user for user in users if user.username == identifier]
+        if len(exact) == 1:
+            return exact[0]
+        logger.warning("Login identifier matches %s users, refusing", len(users))
+        return None
+
+
 class NgenOidcBackend(OIDCAuthenticationBackend):
     def get_user_by_email(self, email):
-        try:
-            return User.objects.get(email=email)
-        except User.DoesNotExist:
-            return None
+        users = list(User.objects.filter(email__iexact=email)[:2])
+        if len(users) == 1:
+            return users[0]
+        if len(users) > 1:
+            # Cannot happen since the email is unique, but guessing which
+            # account an identity owns is not something to do by accident
+            logger.error("More than one user with the email %s, refusing", email)
+        return None
 
     def create_user(self, claims):
         email_claim = settings.OIDC_EMAIL_CLAIM or "email"
@@ -63,8 +131,8 @@ class NgenOidcBackend(OIDCAuthenticationBackend):
         last_name = claims.get(last_name_claim, "")
 
         updated = False
-        if email and user.email != email:
-            if User.objects.filter(email=email).exclude(pk=user.pk).exists():
+        if email and user.email.lower() != email.lower():
+            if User.objects.filter(email__iexact=email).exclude(pk=user.pk).exists():
                 logger.warning(
                     "Skipping email update for user %s: %s already taken",
                     user.pk, email,

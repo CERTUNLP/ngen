@@ -134,14 +134,16 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
         </Col>
         <Col sm={12} lg={5}>
           <Form.Group controlId="formGridEmail">
-            <Form.Label>{t("w.email")}</Form.Label>
+            <Form.Label>
+              {t("w.email")} <b style={{ color: "red" }}>*</b>
+            </Form.Label>
             <Form.Control
               placeholder={t("w.email.placeholder")}
               maxLength="100"
               value={body.email}
               name="email"
               onChange={(e) => completeField(e)}
-              isInvalid={validateUnrequiredInput(body.email) ? !validateUserMail(body.email) : false}
+              isInvalid={!validateUserMail(body.email)}
             />
             {validateUserMail(body.email) ? "" : <div className="invalid-feedback"> {t("w.email.validate")}</div>}
           </Form.Group>
@@ -303,6 +305,7 @@ const FormUser = ({ body, setBody, priorities, createUser, loading, passwordRequ
       {(body.password === "" || (body.password !== "" && validatePassword(body.password, body.passwordConfirmation))) &&
       body.username !== "" &&
       validateUserName(body.username) &&
+      validateUserMail(body.email) &&
       validateSelect(body.priority) ? (
         <>
           <Button variant="primary" onClick={createUser}>

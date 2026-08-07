@@ -53,7 +53,10 @@ class EventTest(TestCase):
         )
         cls.priority = Priority.objects.get(name="Medium", severity=3)
         cls.user = User.objects.create(
-            username="test", password="test", priority=cls.priority
+            username="test",
+            password="test",
+            email="test@ngen.test",
+            priority=cls.priority,
         )
         cls.playbook = Playbook.objects.create(
             name="Test playbook",

@@ -197,6 +197,8 @@ class ExportEventsViewSet(viewsets.ViewSet):
 
     # TODO: change to configurable permissions via constance or disable the endpoint
     permission_classes = [permissions.AllowAny]
+    # It sends an email without asking for credentials, so it cannot be free
+    throttle_scope = "export"
 
     @extend_schema(
         request=serializers.ExportEventsSerializer,  # lo que Swagger mostrará como body
@@ -240,6 +242,7 @@ class SettingsViewSet(viewsets.ReadOnlyModelViewSet):
         "JWT_ACCESS_TOKEN_LIFETIME",
         "JWT_REFRESH_TOKEN_LIFETIME",
         "OIDC_ENABLED",
+        "ALLOW_SIGNUP",
     ]
 
     def get_queryset(self):

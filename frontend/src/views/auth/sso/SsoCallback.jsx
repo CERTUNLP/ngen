@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { LOGIN } from "../../../store/actions";
 import { COMPONENT_URL } from "../../../config/constant";
@@ -8,11 +8,13 @@ import Loader from "../../../components/Loader/Loader";
 
 const SsoCallback = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const exchangeCode = searchParams.get("code");
-    const nextUrl = searchParams.get("next") || "/home";
+    // The api answers with the code in the fragment, which the browser keeps to
+    // itself: it never reaches a server log nor the referer of the page
+    const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const exchangeCode = fragment.get("code");
+    const nextUrl = fragment.get("next") || "/home";
 
     if (!exchangeCode) {
       navigate("/login", { replace: true });
@@ -51,7 +53,7 @@ const SsoCallback = () => {
         console.error("SSO exchange error:", error);
         navigate("/login", { replace: true });
       });
-  }, [searchParams, navigate]);
+  }, [navigate]);
 
   return <Loader />;
 };

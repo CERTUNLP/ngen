@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from ngen.models import User
+from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
 
 
 class TestLogin(APITestCase):
@@ -107,15 +108,221 @@ class TestLogin(APITestCase):
         response = self.client.post(self.url, data=post_data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # Not implemented yet
-    # def test_login_with_email(self):
-    #     '''
-    #     This will test login with email
-    #     '''
-    #     post_data = {
-    #         'username' : self.user_data.get('email'),
-    #         'password' : self.user_data.get('password')
-    #         }
+    def test_login_with_email(self):
+        """
+        This will test login with the email instead of the username
+        """
+        post_data = {
+            "username": self.user_data.get("email"),
+            "password": self.user_data.get("password"),
+        }
 
-    #     response = self.client.post(self.url, data=post_data)
-    #     self.assertEqual(response.status_code,status.HTTP_400_BAD_REQUEST)
+        response = self.client.post(self.url, data=post_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_login_with_email_in_another_case(self):
+        """
+        This will test that the case of the email does not matter, since it is
+        stored without it
+        """
+        post_data = {
+            "username": self.user_data.get("email").upper(),
+            "password": self.user_data.get("password"),
+        }
+
+        response = self.client.post(self.url, data=post_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_login_with_username_in_another_case(self):
+        """
+        This will test that the case of the username does not matter either
+        """
+        post_data = {
+            "username": self.user_data.get("username").upper(),
+            "password": self.user_data.get("password"),
+        }
+
+        response = self.client.post(self.url, data=post_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_login_with_email_and_wrong_password(self):
+        """
+        This will test that the email is not a way around the password
+        """
+        post_data = {
+            "username": self.user_data.get("email"),
+            "password": "wrongpassword",
+        }
+
+        response = self.client.post(self.url, data=post_data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_login_of_an_inactive_user(self):
+        """
+        This will test that an inactive user cannot login by email either
+        """
+        User.objects.filter(username=self.user_data["username"]).update(is_active=False)
+
+        for identifier in (self.user_data["username"], self.user_data["email"]):
+            with self.subTest(identifier=identifier):
+                response = self.client.post(
+                    self.url,
+                    data={
+                        "username": identifier,
+                        "password": self.user_data["password"],
+                    },
+                )
+                self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_login_of_a_user_created_by_sso(self):
+        """
+        This will test that a user with no usable password, which is how the
+        sso creates them, cannot login with the plain form
+        """
+        user = User.objects.create_user(
+            username="ssouser", email="ssouser@ngen.test", password="password"
+        )
+        user.set_unusable_password()
+        user.save()
+
+        response = self.client.post(
+            self.url, data={"username": "ssouser@ngen.test", "password": "password"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_login_of_a_username_that_is_the_email_of_someone_else(self):
+        """
+        This will test that the account that owns the identifier as its username
+        is the one that logs in, since usernames are only unique as written
+        """
+        owner = User.objects.create_user(
+            username="shared@ngen.test", email="owner@ngen.test", password="password"
+        )
+        User.objects.create_user(
+            username="other", email="shared@ngen.test", password="password"
+        )
+
+        response = self.client.post(
+            self.url, data={"username": "shared@ngen.test", "password": "password"}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["user"]["id"], owner.id)
+
+    def test_login_of_an_ambiguous_identifier(self):
+        """
+        This will test that an identifier reaching two accounts and owned by
+        neither is refused instead of guessed
+        """
+        User.objects.create_user(
+            username="Ambiguous", email="ambiguous1@ngen.test", password="password"
+        )
+        User.objects.create_user(
+            username="ambiguous", email="ambiguous2@ngen.test", password="password"
+        )
+
+        response = self.client.post(
+            self.url, data={"username": "AMBIGUOUS", "password": "password"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class TestUserEmail(APITestCaseWithLogin):
+    """
+    This will handle the email of a user being its identity: it is required and
+    no two users can share it
+    """
+
+    fixtures = [
+        "tests/priority.json",
+        "tests/user.json",
+    ]
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.url_list = reverse("user-list")
+        cls.url_detail = lambda pk: reverse("user-detail", kwargs={"pk": pk})
+        cls.base_url = "http://testserver"
+        cls.priority_url = cls.base_url + reverse("priority-detail", kwargs={"pk": 2})
+
+    def user_data(self, **overrides):
+        return {
+            "username": "newuser",
+            "email": "newuser@ngen.test",
+            "password": "Passw0rd!",
+            "priority": self.priority_url,
+            **overrides,
+        }
+
+    def test_user_cannot_be_created_without_an_email(self):
+        data = self.user_data()
+        del data["email"]
+
+        response = self.client.post(self.url_list, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("email", response.data)
+
+    def test_user_cannot_repeat_the_email_of_another_one(self):
+        existing = User.objects.get(username="ngen")
+
+        response = self.client.post(
+            self.url_list, data=self.user_data(email=existing.email)
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("email", response.data)
+
+    def test_user_cannot_repeat_the_email_of_another_one_in_another_case(self):
+        """
+        The email is stored without its case, so a different case is the same
+        email and has to be refused with a 400 instead of blowing up on the
+        unique index
+        """
+        existing = User.objects.get(username="ngen")
+
+        response = self.client.post(
+            self.url_list, data=self.user_data(email=existing.email.upper())
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("email", response.data)
+
+    def test_user_email_is_stored_without_its_case(self):
+        response = self.client.post(
+            self.url_list, data=self.user_data(email="Mixed.Case@Ngen.Test")
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        self.assertEqual(
+            User.objects.get(username="newuser").email, "mixed.case@ngen.test"
+        )
+
+    def test_user_cannot_be_updated_to_the_email_of_another_one(self):
+        user = User.objects.create_user(
+            username="other", email="other@ngen.test", password="password"
+        )
+        existing = User.objects.get(username="ngen")
+
+        response = self.client.patch(
+            self.url_detail(user.pk), data={"email": existing.email}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("email", response.data)
+
+    def test_user_keeps_its_own_email_on_an_update(self):
+        """
+        Its own email is not a duplicate of itself
+        """
+        user = User.objects.create_user(
+            username="other", email="other@ngen.test", password="password"
+        )
+
+        response = self.client.patch(
+            self.url_detail(user.pk),
+            data={"email": user.email, "first_name": "Other"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)

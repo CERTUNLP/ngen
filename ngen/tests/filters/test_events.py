@@ -48,7 +48,9 @@ class EventFilterTest(BaseFilterTest):
         cls.taxonomy_2 = Taxonomy.objects.get(slug="botnet")
         cls.taxonomy_3 = Taxonomy.objects.get(slug="botnet_attack_command")
         cls.user_1 = User.objects.get(username="ngen")
-        cls.user_2 = User.objects.create(username="ngen2", password="ngen2")
+        cls.user_2 = User.objects.create(
+            username="ngen2", password="ngen2", email="ngen2@ngen.test"
+        )
 
         cls.event_1 = Event.objects.create(  # matches with case template
             uuid="00000000-0000-0000-0000-000000000001",

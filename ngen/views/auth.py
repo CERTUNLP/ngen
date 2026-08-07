@@ -1,10 +1,12 @@
 import django_filters
+from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 from django.urls import reverse
 from rest_framework import permissions, filters, status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 from ngen import models, serializers
@@ -20,6 +22,24 @@ from ngen.permissions import (
     CustomModelPermissions,
     IsSelf,
 )
+
+
+def set_refresh_cookie(response, refresh_token):
+    """
+    The refresh token is handed over as a cookie the javascript cannot read, and
+    it is only ever sent by the frontend to the endpoint that refreshes it: it
+    is limited to that path, to that site and, outside of development, to https.
+    """
+    response.set_cookie(
+        "refresh_token",
+        refresh_token,
+        max_age=int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds()),
+        httponly=True,
+        secure=not settings.DEBUG,
+        samesite="Lax",
+        path=reverse("ctoken-refresh"),
+    )
+    return response
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -88,8 +108,15 @@ class RegisterViewSet(viewsets.ModelViewSet):
     http_method_names = ["post"]
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
+    throttle_scope = "register"
 
     def create(self, request, *args, **kwargs):
+        if not settings.ALLOW_SIGNUP:
+            return Response(
+                {"success": False, "msg": "Signup is disabled"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         serializer = self.get_serializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
@@ -103,6 +130,15 @@ class RegisterViewSet(viewsets.ModelViewSet):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class ObtainApiKeyView(ObtainAuthToken):
+    """
+    The api token is handed over for the same credentials as the login, so it is
+    worth the same and is limited the same
+    """
+
+    throttle_scope = "login"
 
 
 class LogoutView(APIView):
@@ -121,38 +157,27 @@ class LogoutView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_scope = "login"
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_scope = "login"
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get("refresh"):
-            cookie_max_age = 3600 * 24 * 14  # 14 days
-            response.set_cookie(
-                "refresh_token",
-                response.data["refresh"],
-                max_age=cookie_max_age,
-                httponly=True,
-                path=reverse("ctoken-refresh"),
-            )
+            set_refresh_cookie(response, response.data["refresh"])
             del response.data["refresh"]
         return super().finalize_response(request, response, *args, **kwargs)
 
 
 class CookieTokenRefreshView(TokenRefreshView):
     serializer_class = CookieTokenRefreshSerializer
+    throttle_scope = "login"
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get("refresh"):
-            cookie_max_age = 3600 * 24 * 14  # 14 days
-            response.set_cookie(
-                "refresh_token",
-                response.data["refresh"],
-                max_age=cookie_max_age,
-                httponly=True,
-                path=reverse("ctoken-refresh"),
-            )
+            set_refresh_cookie(response, response.data["refresh"])
             del response.data["refresh"]
         return super().finalize_response(request, response, *args, **kwargs)
 

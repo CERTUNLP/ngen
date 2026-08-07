@@ -59,7 +59,10 @@ class AnnouncementTestCase(TestCase):
         )
         cls.feed = Feed.objects.get(slug="shodan", name="Shodan")
         cls.user = User.objects.create(
-            username="test", password="test", priority=cls.priority
+            username="test",
+            password="test",
+            email="test@ngen.test",
+            priority=cls.priority,
         )
         cls.playbook = Playbook.objects.create(
             name="Test playbook",

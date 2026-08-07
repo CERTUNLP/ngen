@@ -26,7 +26,7 @@ const Signin1 = () => {
 
   useEffect(() => {
     const external = localStorage.getItem("API_SERVER");
-    setSignup(localStorage.getItem("enable_signup") === "true");
+    setSignup(localStorage.getItem("ALLOW_SIGNUP") === "True" || localStorage.getItem("ALLOW_SIGNUP") === "true");
 
     const cached = localStorage.getItem("OIDC_ENABLED");
     if (cached === "True" || cached === "true") {
@@ -38,10 +38,14 @@ const Signin1 = () => {
         .then((res) => res.json())
         .then((data) => {
           data.forEach((item) => {
-            if (item.key === "OIDC_ENABLED" || item.key === "NGEN_LANG") {
+            if (item.key === "OIDC_ENABLED" || item.key === "NGEN_LANG" || item.key === "ALLOW_SIGNUP") {
               localStorage.setItem(item.key, item.value);
             }
           });
+          const signupItem = data.find((item) => item.key === "ALLOW_SIGNUP");
+          if (signupItem) {
+            setSignup(signupItem.value === true || signupItem.value === "True" || signupItem.value === "true");
+          }
           const oidcItem = data.find((item) => item.key === "OIDC_ENABLED");
           if (oidcItem) {
             const enabled = oidcItem.value === true || oidcItem.value === "True" || oidcItem.value === "true";

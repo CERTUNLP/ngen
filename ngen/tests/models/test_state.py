@@ -25,9 +25,11 @@ class StateTestCase(TestCase):
             information="Test Information",
             description="Test Description",
         )
-        cls.user_creator = User.objects.create(username="creator", password="creator")
+        cls.user_creator = User.objects.create(
+            username="creator", password="creator", email="creator@ngen.test"
+        )
         cls.assigned_user = User.objects.create(
-            username="assigned", password="assigned"
+            username="assigned", password="assigned", email="assigned@ngen.test"
         )
         cls.state = State.objects.create(name="State")
         cls.first_state = State.objects.create(name="First State", active=True)

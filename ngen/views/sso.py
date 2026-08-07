@@ -1,3 +1,5 @@
+import base64
+import hashlib
 import json
 import logging
 import secrets
@@ -16,9 +18,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from ngen.views.auth import set_refresh_cookie
+
 logger = logging.getLogger(__name__)
 
 SSO_STATE_TIMEOUT = 600
+SSO_EXCHANGE_TIMEOUT = 60
+SSO_STATE_COOKIE = "sso_state"
 
 
 def _get_allowed_hosts():
@@ -33,6 +39,11 @@ def _get_allowed_hosts():
     return list(hosts)
 
 
+def _code_challenge(code_verifier):
+    digest = hashlib.sha256(code_verifier.encode("ascii")).digest()
+    return base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+
+
 def _is_safe_redirect(url):
     allowed = _get_allowed_hosts()
     return url_has_allowed_host_and_scheme(url, allowed_hosts=allowed if allowed else None)
@@ -40,6 +51,7 @@ def _is_safe_redirect(url):
 
 class SsoLoginView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_scope = "sso"
 
     def get(self, request):
         if not settings.OIDC_ENABLED:
@@ -49,12 +61,18 @@ class SsoLoginView(APIView):
             )
 
         state = secrets.token_urlsafe(32)
+        nonce = secrets.token_urlsafe(32)
+        code_verifier = secrets.token_urlsafe(64)
         next_url = request.GET.get("next", settings.OIDC_REDIRECT_URL)
 
         if not _is_safe_redirect(next_url):
             next_url = settings.OIDC_REDIRECT_URL
 
-        cache.set(f"sso_state_{state}", next_url, timeout=SSO_STATE_TIMEOUT)
+        cache.set(
+            f"sso_state_{state}",
+            {"next": next_url, "nonce": nonce, "code_verifier": code_verifier},
+            timeout=SSO_STATE_TIMEOUT,
+        )
 
         redirect_uri = request.build_absolute_uri(reverse("sso-callback"))
         params = {
@@ -63,24 +81,46 @@ class SsoLoginView(APIView):
             "redirect_uri": redirect_uri,
             "scope": settings.OIDC_RP_SCOPES,
             "state": state,
+            "nonce": nonce,
+            # The code is only worth something to whoever started the flow
+            "code_challenge": _code_challenge(code_verifier),
+            "code_challenge_method": "S256",
         }
         auth_url = f"{settings.OIDC_OP_AUTHORIZATION_ENDPOINT}?{urllib.parse.urlencode(params)}"
-        return HttpResponseRedirect(auth_url)
+
+        response = HttpResponseRedirect(auth_url)
+        # The callback has to be the browser that asked for the login, or an
+        # attacker can hand its own half finished login to somebody else and
+        # have them land inside its account
+        response.set_cookie(
+            SSO_STATE_COOKIE,
+            state,
+            max_age=SSO_STATE_TIMEOUT,
+            httponly=True,
+            secure=not settings.DEBUG,
+            samesite="Lax",
+            path=reverse("sso-callback"),
+        )
+        return response
 
 
 class SsoCallbackView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_scope = "sso"
 
-    def _exchange_code(self, code, redirect_uri):
+    def _exchange_code(self, code, redirect_uri, code_verifier=None):
+        data = {
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": redirect_uri,
+            "client_id": settings.OIDC_RP_CLIENT_ID,
+            "client_secret": settings.OIDC_RP_CLIENT_SECRET,
+        }
+        if code_verifier:
+            data["code_verifier"] = code_verifier
         token_response = requests.post(
             settings.OIDC_OP_TOKEN_ENDPOINT,
-            data={
-                "grant_type": "authorization_code",
-                "code": code,
-                "redirect_uri": redirect_uri,
-                "client_id": settings.OIDC_RP_CLIENT_ID,
-                "client_secret": settings.OIDC_RP_CLIENT_SECRET,
-            },
+            data=data,
             timeout=30,
         )
         token_response.raise_for_status()
@@ -174,19 +214,29 @@ class SsoCallbackView(APIView):
                 status=400,
             )
 
-        next_url = cache.get(f"sso_state_{state}")
-        if next_url is None:
+        if not secrets.compare_digest(state, request.COOKIES.get(SSO_STATE_COOKIE, "")):
+            logger.warning("SSO callback from a browser that did not start the login")
+            return JsonResponse(
+                {"error": "Invalid state parameter"},
+                status=400,
+            )
+
+        started = cache.get(f"sso_state_{state}")
+        if started is None:
             logger.warning("SSO callback with invalid or expired state")
             return JsonResponse(
                 {"error": "Invalid or expired state parameter"},
                 status=400,
             )
         cache.delete(f"sso_state_{state}")
+        next_url = started["next"]
 
         try:
             redirect_uri = request.build_absolute_uri(reverse("sso-callback"))
 
-            token_data = self._exchange_code(code, redirect_uri)
+            token_data = self._exchange_code(
+                code, redirect_uri, started.get("code_verifier")
+            )
             id_token = token_data.get("id_token", "")
 
             if not id_token:
@@ -198,6 +248,14 @@ class SsoCallbackView(APIView):
             jwks_data = self._get_jwks()
             claims = self._verify_id_token(id_token, jwks_data)
             logger.debug("SSO: ID token claims keys=%s", list(claims.keys()))
+
+            # The token has to be the answer to this login and not one replayed
+            # from another
+            if not secrets.compare_digest(
+                str(claims.get("nonce", "")), started["nonce"]
+            ):
+                logger.warning("SSO id token does not answer this login")
+                return JsonResponse({"error": "Invalid nonce"}, status=401)
 
             userinfo = self._get_userinfo(token_data.get("access_token", ""))
             if userinfo:
@@ -268,7 +326,7 @@ class SsoCallbackView(APIView):
             cache.set(
                 f"sso_exchange_{exchange_code}",
                 {"access_token": access_jwt, "user_data": user_data},
-                timeout=120,
+                timeout=SSO_EXCHANGE_TIMEOUT,
             )
 
             frontend_url = settings.OIDC_REDIRECT_URL or ""
@@ -280,20 +338,19 @@ class SsoCallbackView(APIView):
                 )
             frontend_url = frontend_url.rstrip("/")
 
+            # In the fragment and not in the query, so that the code that is
+            # worth a session does not end up in the browser history, in the
+            # logs of the frontend or in the referer of whatever it loads
             redirect_url = (
                 f"{frontend_url}/sso-callback"
-                f"?code={exchange_code}"
+                f"#code={exchange_code}"
                 f"&next={urllib.parse.quote(next_url)}"
             )
 
-            response = HttpResponseRedirect(redirect_url)
-            response.set_cookie(
-                "refresh_token",
-                str(refresh),
-                max_age=3600 * 24 * 14,
-                httponly=True,
-                path=reverse("ctoken-refresh"),
+            response = set_refresh_cookie(
+                HttpResponseRedirect(redirect_url), str(refresh)
             )
+            response.delete_cookie(SSO_STATE_COOKIE, path=reverse("sso-callback"))
             return response
 
         except pyjwt.ExpiredSignatureError:
@@ -328,6 +385,7 @@ class SsoCallbackView(APIView):
 class SsoExchangeView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
+    throttle_scope = "sso"
 
     def post(self, request):
         if not settings.OIDC_ENABLED:

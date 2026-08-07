@@ -54,7 +54,10 @@ class TasksTestCase(TestCase):
         )
         cls.feed = Feed.objects.get(slug="shodan", name="Shodan")
         cls.user = User.objects.create(
-            username="test", password="test", priority=cls.priority
+            username="test",
+            password="test",
+            email="test@ngen.test",
+            priority=cls.priority,
         )
         cls.contact = Contact.objects.get(pk=1)
         cls.network_entity = NetworkEntity.objects.get(pk=1)

@@ -361,7 +361,10 @@ class PlaybookAPITestCase(APITestCaseWithLogin):
         This will test that moving a task needs change_task
         """
         user = User.objects.create(
-            username="without_permissions", password="test", priority=self.priority
+            username="without_permissions",
+            password="test",
+            email="without_permissions@ngen.test",
+            priority=self.priority,
         )
         user.user_permissions.set(Permission.objects.filter(codename="view_task"))
         self.client.force_authenticate(user=user)
@@ -407,7 +410,10 @@ class PlaybookAPITestCase(APITestCaseWithLogin):
         """
         event = self._create_event()
         user = User.objects.create(
-            username="without_permissions", password="test", priority=self.priority
+            username="without_permissions",
+            password="test",
+            email="without_permissions@ngen.test",
+            priority=self.priority,
         )
         user.user_permissions.set(
             Permission.objects.filter(codename__in=["view_event", "view_todotask"])

@@ -23,7 +23,6 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
-from rest_framework.authtoken import views as authtokenviews
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
@@ -191,7 +190,7 @@ urlpatterns = [
     path("api/token/", views.CustomTokenObtainPairView.as_view(), name="token-create"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token-verify"),
-    path("api/token/simple/", authtokenviews.obtain_auth_token, name="token-simple"),
+    path("api/token/simple/", views.ObtainApiKeyView.as_view(), name="token-simple"),
     path("api/", include("rest_framework.urls", namespace="rest_framework")),
     path("api/logout/", views.LogoutView.as_view(), name="logout"),
     path(
