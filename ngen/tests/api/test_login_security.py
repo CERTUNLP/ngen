@@ -152,3 +152,157 @@ class TestSignup(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("password", response.data)
         self.assertFalse(User.objects.filter(username="newcomer").exists())
+
+
+class TestRefreshCookie(APITestCase):
+    """
+    This will handle the cookie that holds the refresh token, which is the one
+    thing of the login that the browser keeps
+    """
+
+    fixtures = [
+        "tests/priority.json",
+        "tests/user.json",
+    ]
+
+    def setUp(self):
+        cache.clear()
+
+    @override_settings(DEBUG=False)
+    def test_the_refresh_cookie_is_not_handed_over_in_the_open(self):
+        response = self.client.post(
+            reverse("ctoken-create"), data={"username": "ngen", "password": "ngen"}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        cookie = response.cookies["refresh_token"]
+        self.assertTrue(cookie["httponly"])
+        self.assertTrue(cookie["secure"])
+        self.assertEqual(cookie["samesite"], "Lax")
+        self.assertEqual(cookie["path"], reverse("ctoken-refresh"))
+
+    @override_settings(DEBUG=False)
+    def test_the_refresh_cookie_does_not_outlive_its_token(self):
+        response = self.client.post(
+            reverse("ctoken-create"), data={"username": "ngen", "password": "ngen"}
+        )
+
+        from django.conf import settings
+
+        self.assertEqual(
+            int(response.cookies["refresh_token"]["max-age"]),
+            int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds()),
+        )
+
+    def test_the_refresh_token_is_not_in_the_body(self):
+        response = self.client.post(
+            reverse("ctoken-create"), data={"username": "ngen", "password": "ngen"}
+        )
+
+        self.assertNotIn("refresh", response.data)
+
+
+@override_settings(
+    OIDC_ENABLED=True,
+    OIDC_RP_CLIENT_ID="ngen",
+    OIDC_RP_CLIENT_SECRET="secret",
+    OIDC_OP_AUTHORIZATION_ENDPOINT="https://sso.test/auth",
+    OIDC_REDIRECT_URL="http://testserver",
+)
+class TestSsoFlow(APITestCase):
+    """
+    This will handle the login of the sso being the one that was started by this
+    browser and answered by the provider for it
+    """
+
+    fixtures = [
+        "tests/priority.json",
+        "tests/user.json",
+    ]
+
+    def setUp(self):
+        cache.clear()
+        self.url_login = reverse("sso-login")
+        self.url_callback = reverse("sso-callback")
+
+    def start(self):
+        response = self.client.get(self.url_login)
+        query = response.url.split("?", 1)[1]
+        from urllib.parse import parse_qs
+
+        return response, {k: v[0] for k, v in parse_qs(query).items()}
+
+    def test_the_authorization_request_asks_for_a_code_only_this_login_can_use(self):
+        response, params = self.start()
+
+        self.assertEqual(params["code_challenge_method"], "S256")
+        self.assertTrue(params["code_challenge"])
+        self.assertTrue(params["nonce"])
+        self.assertEqual(response.cookies["sso_state"].value, params["state"])
+        self.assertTrue(response.cookies["sso_state"]["httponly"])
+
+    def test_a_callback_from_another_browser_is_refused(self):
+        """
+        An attacker can start a login and hand the finished callback to someone
+        else, who would land inside the attacker's account
+        """
+        _, params = self.start()
+        self.client.cookies.pop("sso_state")
+
+        response = self.client.get(
+            self.url_callback, {"code": "whatever", "state": params["state"]}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_a_state_that_was_never_started_is_refused(self):
+        self.client.cookies["sso_state"] = "made-up"
+
+        response = self.client.get(
+            self.url_callback, {"code": "whatever", "state": "made-up"}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @patch("ngen.views.sso.SsoCallbackView._verify_id_token")
+    @patch("ngen.views.sso.SsoCallbackView._get_jwks", return_value={})
+    @patch("ngen.views.sso.SsoCallbackView._get_userinfo", return_value={})
+    @patch("ngen.views.sso.SsoCallbackView._exchange_code")
+    def test_a_token_that_answers_another_login_is_refused(
+        self, exchange, userinfo, jwks, verify
+    ):
+        _, params = self.start()
+        exchange.return_value = {"id_token": "token", "access_token": "access"}
+        verify.return_value = {"email": "ngen@ngen.com", "nonce": "another-login"}
+
+        response = self.client.get(
+            self.url_callback, {"code": "whatever", "state": params["state"]}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    @patch("ngen.views.sso.SsoCallbackView._verify_id_token")
+    @patch("ngen.views.sso.SsoCallbackView._get_jwks", return_value={})
+    @patch("ngen.views.sso.SsoCallbackView._get_userinfo", return_value={})
+    @patch("ngen.views.sso.SsoCallbackView._exchange_code")
+    def test_the_code_of_the_login_is_given_back_in_the_fragment(
+        self, exchange, userinfo, jwks, verify
+    ):
+        """
+        A query string ends up in the history of the browser and in the referer
+        of whatever the page loads, and this code is worth a session
+        """
+        _, params = self.start()
+        code_verifier = cache.get(f"sso_state_{params['state']}")["code_verifier"]
+        exchange.return_value = {"id_token": "token", "access_token": "access"}
+        verify.return_value = {"email": "ngen@ngen.com", "nonce": params["nonce"]}
+
+        response = self.client.get(
+            self.url_callback, {"code": "whatever", "state": params["state"]}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        self.assertIn("#code=", response.url)
+        self.assertNotIn("?code=", response.url)
+        # And the code was exchanged with the proof that this login started it
+        self.assertEqual(exchange.call_args.args[2], code_verifier)

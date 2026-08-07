@@ -24,6 +24,24 @@ from ngen.permissions import (
 )
 
 
+def set_refresh_cookie(response, refresh_token):
+    """
+    The refresh token is handed over as a cookie the javascript cannot read, and
+    it is only ever sent by the frontend to the endpoint that refreshes it: it
+    is limited to that path, to that site and, outside of development, to https.
+    """
+    response.set_cookie(
+        "refresh_token",
+        refresh_token,
+        max_age=int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds()),
+        httponly=True,
+        secure=not settings.DEBUG,
+        samesite="Lax",
+        path=reverse("ctoken-refresh"),
+    )
+    return response
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.prefetch_related("contacts").all().order_by("id")
     filter_backends = [
@@ -148,14 +166,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get("refresh"):
-            cookie_max_age = 3600 * 24 * 14  # 14 days
-            response.set_cookie(
-                "refresh_token",
-                response.data["refresh"],
-                max_age=cookie_max_age,
-                httponly=True,
-                path=reverse("ctoken-refresh"),
-            )
+            set_refresh_cookie(response, response.data["refresh"])
             del response.data["refresh"]
         return super().finalize_response(request, response, *args, **kwargs)
 
@@ -166,14 +177,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get("refresh"):
-            cookie_max_age = 3600 * 24 * 14  # 14 days
-            response.set_cookie(
-                "refresh_token",
-                response.data["refresh"],
-                max_age=cookie_max_age,
-                httponly=True,
-                path=reverse("ctoken-refresh"),
-            )
+            set_refresh_cookie(response, response.data["refresh"])
             del response.data["refresh"]
         return super().finalize_response(request, response, *args, **kwargs)
 
