@@ -692,7 +692,7 @@ OIDC_USERNAME_ALGO = os.environ.get("OIDC_USERNAME_ALGO", "generate")
 INSTALLED_APPS += ["mozilla_django_oidc"]
 AUTHENTICATION_BACKENDS = [
     "ngen.backends.NgenOidcBackend",
-    "django.contrib.auth.backends.ModelBackend",
+    "ngen.backends.EmailOrUsernameModelBackend",
 ]
 
 BLEACH_ALLOWED_TAGS = [

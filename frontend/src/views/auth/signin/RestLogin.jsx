@@ -14,7 +14,7 @@ const RestLogin = ({ className, ...rest }) => {
   const { dispatch } = store;
 
   const validationMessages = {
-    un: t("validation.username"),
+    un: t("validation.username_or_email"),
     pw: t("validation.password")
   };
 
@@ -45,8 +45,8 @@ const RestLogin = ({ className, ...rest }) => {
               <input
                 className="form-control"
                 error={touched.username && errors.username}
-                label="Username"
-                placeholder={t("ngen.user.username")}
+                label="Username or email"
+                placeholder={t("ngen.user.username_or_email")}
                 name="username"
                 onBlur={handleBlur}
                 onChange={handleChange}
