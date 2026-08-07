@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 import shutil
 import re
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -163,6 +164,26 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "ngen.exceptions.django_error_handler",
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+# Without this django keeps the cache inside each process, and the sso login,
+# the login attempt counters and the throttling all lean on it being shared:
+# with more than one worker the callback of a login can land on a process that
+# never saw its state, and a counter is only worth what one worker saw
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.environ.get("DJANGO_CACHE_URL", "redis://ngen-redis:6379/3"),
+    }
+}
+
+# The suite counts on the cache being its own and on nothing being refused for
+# asking too often: the limits are what a couple of tests set for themselves
+TESTING = "test" in sys.argv
+if TESTING:
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+    REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
+        scope: "1000/min" for scope in REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
