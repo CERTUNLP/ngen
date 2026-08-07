@@ -61,10 +61,14 @@ class EmailOrUsernameModelBackend(ModelBackend):
 
 class NgenOidcBackend(OIDCAuthenticationBackend):
     def get_user_by_email(self, email):
-        try:
-            return User.objects.get(email=email)
-        except User.DoesNotExist:
-            return None
+        users = list(User.objects.filter(email__iexact=email)[:2])
+        if len(users) == 1:
+            return users[0]
+        if len(users) > 1:
+            # Cannot happen since the email is unique, but guessing which
+            # account an identity owns is not something to do by accident
+            logger.error("More than one user with the email %s, refusing", email)
+        return None
 
     def create_user(self, claims):
         email_claim = settings.OIDC_EMAIL_CLAIM or "email"
@@ -114,8 +118,8 @@ class NgenOidcBackend(OIDCAuthenticationBackend):
         last_name = claims.get(last_name_claim, "")
 
         updated = False
-        if email and user.email != email:
-            if User.objects.filter(email=email).exclude(pk=user.pk).exists():
+        if email and user.email.lower() != email.lower():
+            if User.objects.filter(email__iexact=email).exclude(pk=user.pk).exists():
                 logger.warning(
                     "Skipping email update for user %s: %s already taken",
                     user.pk, email,
