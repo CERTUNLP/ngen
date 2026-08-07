@@ -36,7 +36,10 @@ class ConstituencyTest(TestCase):
         )
         cls.priority = Priority.objects.get(name="Medium", severity=3)
         cls.user = User.objects.create(
-            username="test", password="test", priority=cls.priority
+            username="test",
+            password="test",
+            email="test@ngen.test",
+            priority=cls.priority,
         )
         cls.example_entity = NetworkEntity.objects.create(name="Example Entity")
         cls.default_ipv4 = Network.objects.create(cidr="0.0.0.0/0")

@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
+from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
@@ -39,18 +40,28 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "password", "email", "is_active"]
 
     def create(self, validated_data):
+        # Without the case, which is how the login and the sso link read it
+        if User.objects.filter(email__iexact=validated_data["email"]).exists():
+            raise ValidationError({"success": False, "msg": "Email already taken"})
 
-        try:
-            User.objects.get(email=validated_data["email"])
-        except ObjectDoesNotExist:
-            return User.objects.create_user(**validated_data)
-
-        raise ValidationError({"success": False, "msg": "Email already taken"})
+        return User.objects.create_user(**validated_data)
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     history = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True, required=False)
+    # The unique validator the model gives is written as an exact match, and
+    # the email is stored without its case, so it would let a duplicate in
+    email = serializers.EmailField(
+        required=True,
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                lookup="iexact",
+                message="user with this email address already exists.",
+            )
+        ],
+    )
     contacts = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,

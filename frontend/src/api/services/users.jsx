@@ -58,6 +58,14 @@ const getAllUsers = (currentPage = 1, results = [], limit = 100) => {
     });
 };
 
+// What the api rejected the user for, since a duplicated email or username is
+// something the administrator can only fix if it is told apart from the rest
+const rejectedBecause = (error) => {
+  const data = error?.response?.data;
+  if (!data || typeof data !== "object") return "";
+  return Object.values(data).flat().join(" ");
+};
+
 const postUser = (username, first_name, last_name, email, priority, is_active, password, groups, user_permissions) => {
   let messageSuccess = `El usuario ${username} se pudo crear correctamente`;
   let messageError = `El usuario ${username} no se pudo crear`;
@@ -81,6 +89,10 @@ const postUser = (username, first_name, last_name, email, priority, is_active, p
     .catch((error) => {
       console.log(error);
       if (error.response.status === 400) {
+        const reason = rejectedBecause(error);
+        if (reason) {
+          messageError += `: ${reason}`;
+        }
         //se informa que existe el username con ese nombre
         if (error.response.data.username === "A user with that username already exists.") {
           messageError = `El usuario ${username} se pudo crear correctamente porque ya existe en el sistema`;
@@ -117,6 +129,10 @@ const putUser = (url, username, first_name, last_name, email, priority, is_activ
     })
     .catch((error) => {
       if (error.response.status === 400) {
+        const reason = rejectedBecause(error);
+        if (reason) {
+          messageError += `: ${reason}`;
+        }
         //se informa que existe el username con ese nombre
         if (error.response.data.username === "A user with that username already exists.") {
           messageError = `El usuario ${username} se pudo edita correctamente porque ya existe en el sistema`;

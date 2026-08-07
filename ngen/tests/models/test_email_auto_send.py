@@ -52,7 +52,10 @@ class EmailAutoSendBase(TestCase):
         )
         cls.feed = Feed.objects.get(slug="shodan", name="Shodan")
         cls.user = User.objects.create(
-            username="testauto", password="test", priority=cls.priority
+            username="testauto",
+            password="test",
+            email="testauto@ngen.test",
+            priority=cls.priority,
         )
         cls.network = Network.objects.get(pk=1)
         cls.network_entity = NetworkEntity.objects.get(pk=1)
