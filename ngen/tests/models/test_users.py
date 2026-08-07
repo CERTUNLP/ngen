@@ -80,13 +80,25 @@ class UserEmailMigrationTest(TestCase):
         The number is random, so the variation it lands on has to be checked
         against the ones already given out
         """
+        taken = {"one@ngen.test", "one1@ngen.test"}
+
+        result = migration._free_email("one@ngen.test", taken)
+
+        self.assertNotIn(result, {"one@ngen.test", "one1@ngen.test"})
+        self.assertIn(result, taken)
+
+    def test_a_rewritten_email_is_found_even_if_every_number_is_taken(self):
+        """
+        Drawing a number can only be tried so many times: after that it counts,
+        which always ends
+        """
         taken = {"one@ngen.test"} | {
-            f"one{number}@ngen.test" for number in range(1000, 9999)
+            f"one{number}@ngen.test" for number in range(1000, 10000)
         }
 
         result = migration._free_email("one@ngen.test", taken)
 
-        self.assertEqual(result, "one9999@ngen.test")
+        self.assertEqual(result, "one1@ngen.test")
 
     def test_a_user_without_an_email_gets_a_placeholder(self):
         user = User(pk=7, username="someone")

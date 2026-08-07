@@ -45,7 +45,7 @@ const RestLogin = ({ className, ...rest }) => {
               <input
                 className="form-control"
                 error={touched.username && errors.username}
-                label="Username or email"
+                aria-label={t("ngen.user.username_or_email")}
                 placeholder={t("ngen.user.username_or_email")}
                 name="username"
                 onBlur={handleBlur}
@@ -59,7 +59,7 @@ const RestLogin = ({ className, ...rest }) => {
               <input
                 className="form-control"
                 error={touched.password && errors.password}
-                label="Password"
+                aria-label={t("ngen.password")}
                 placeholder={t("ngen.password")}
                 name="password"
                 onBlur={handleBlur}

@@ -12,11 +12,29 @@ def _free_email(candidate, taken):
     """
     A variation of the email that no other user has, keeping its domain
     """
+    if candidate not in taken:
+        taken.add(candidate)
+        return candidate
+
     local, _, domain = candidate.partition("@")
-    while candidate in taken:
-        candidate = f"{local}{random.randint(1000, 9999)}@{domain}"
-    taken.add(candidate)
-    return candidate
+
+    # A random number first, so that the rewritten addresses do not spell out
+    # how many accounts were sharing one
+    for _ in range(10):
+        variation = f"{local}{random.randint(1000, 9999)}@{domain}"
+        if variation not in taken:
+            taken.add(variation)
+            return variation
+
+    # And a plain count after that, which always ends: there are only so many
+    # addresses taken, so one of these is free
+    number = 1
+    while True:
+        variation = f"{local}{number}@{domain}"
+        if variation not in taken:
+            taken.add(variation)
+            return variation
+        number += 1
 
 
 def _placeholder_email(user):
