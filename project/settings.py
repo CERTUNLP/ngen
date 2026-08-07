@@ -163,6 +163,15 @@ REST_FRAMEWORK = {
     ),
     "EXCEPTION_HANDLER": "ngen.exceptions.django_error_handler",
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
+    # Only the endpoints that carry a throttle_scope are limited: the ones that
+    # can be reached without credentials and cost something to answer
+    "DEFAULT_THROTTLE_RATES": {
+        "login": os.environ.get("NGEN_THROTTLE_LOGIN", "20/min"),
+        "register": os.environ.get("NGEN_THROTTLE_REGISTER", "5/hour"),
+        "sso": os.environ.get("NGEN_THROTTLE_SSO", "30/min"),
+        "export": os.environ.get("NGEN_THROTTLE_EXPORT", "5/hour"),
+    },
 }
 
 # Without this django keeps the cache inside each process, and the sso login,
@@ -184,6 +193,20 @@ if TESTING:
     REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
         scope: "1000/min" for scope in REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]
     }
+
+# A login is refused after this many failures from the same address on the same
+# account, which is what makes guessing passwords cost something. Counted in the
+# cache, so it covers every way in: the api, the admin and the browsable api
+LOGIN_MAX_ATTEMPTS = int(os.environ.get("NGEN_LOGIN_MAX_ATTEMPTS", 10))
+LOGIN_ATTEMPTS_TIMEOUT = int(os.environ.get("NGEN_LOGIN_ATTEMPTS_TIMEOUT", 300))
+# Only when a reverse proxy that rewrites it is in front, since a client can
+# write this header itself and would get a counter of its own on every request
+LOGIN_TRUST_FORWARDED_FOR = (
+    os.environ.get("NGEN_LOGIN_TRUST_FORWARDED_FOR", "false").lower() in VALUES_TRUE
+)
+
+# Creating an account without being logged in is off unless it is asked for
+ALLOW_SIGNUP = os.environ.get("NGEN_ALLOW_SIGNUP", "false").lower() in VALUES_TRUE
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -778,7 +801,10 @@ if frontend_urls:
     CORS_ALLOWED_ORIGINS = frontend_urls.split(",")
 else:
     CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
+# The refresh token travels as a cookie, so an origin that is allowed to send it
+# has to be one that was named: answering any origin with credentials hands the
+# session to whoever asks. Naming the frontend is what turns the cookie flow on
+CORS_ALLOW_CREDENTIALS = bool(frontend_urls)
 CSRF_TRUSTED_ORIGINS = [
     v
     for v in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", frontend_urls).split(",")
@@ -932,6 +958,7 @@ ENVIRON_CONFIG = {
     ),
     "JWT_ACCESS_TOKEN_LIFETIME": SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
     "JWT_REFRESH_TOKEN_LIFETIME": SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"],
+    "ALLOW_SIGNUP": ALLOW_SIGNUP,
     "OIDC_ENABLED": OIDC_ENABLED,
     "OIDC_RP_CLIENT_ID": OIDC_RP_CLIENT_ID,
     "OIDC_RP_SIGN_ALGO": OIDC_RP_SIGN_ALGO,

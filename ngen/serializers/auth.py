@@ -31,13 +31,17 @@ def password_validation(password):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(min_length=4, max_length=128, write_only=True)
+    password = serializers.CharField(max_length=128, write_only=True)
     username = serializers.CharField(max_length=255, required=True)
     email = serializers.EmailField(required=True)
 
     class Meta:
         model = User
         fields = ["id", "username", "password", "email", "is_active"]
+
+    def validate_password(self, value):
+        # The same policy the users page asks for: signing up was a way around it
+        return password_validation(value)
 
     def create(self, validated_data):
         # Without the case, which is how the login and the sso link read it

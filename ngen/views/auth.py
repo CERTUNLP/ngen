@@ -1,10 +1,12 @@
 import django_filters
+from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 from django.urls import reverse
 from rest_framework import permissions, filters, status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 from ngen import models, serializers
@@ -88,8 +90,15 @@ class RegisterViewSet(viewsets.ModelViewSet):
     http_method_names = ["post"]
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
+    throttle_scope = "register"
 
     def create(self, request, *args, **kwargs):
+        if not settings.ALLOW_SIGNUP:
+            return Response(
+                {"success": False, "msg": "Signup is disabled"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         serializer = self.get_serializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
@@ -103,6 +112,15 @@ class RegisterViewSet(viewsets.ModelViewSet):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class ObtainApiKeyView(ObtainAuthToken):
+    """
+    The api token is handed over for the same credentials as the login, so it is
+    worth the same and is limited the same
+    """
+
+    throttle_scope = "login"
 
 
 class LogoutView(APIView):
@@ -121,10 +139,12 @@ class LogoutView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_scope = "login"
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_scope = "login"
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get("refresh"):
@@ -142,6 +162,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 class CookieTokenRefreshView(TokenRefreshView):
     serializer_class = CookieTokenRefreshSerializer
+    throttle_scope = "login"
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get("refresh"):

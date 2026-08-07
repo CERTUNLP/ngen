@@ -6,6 +6,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 from ngen.models import User
+from ngen.services.login_attempts import LoginAttemptLimiter
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +25,26 @@ class EmailOrUsernameModelBackend(ModelBackend):
             return None
 
         user = self.get_user_by_identifier(username)
+        # The account is what is counted, not how it was named: otherwise the
+        # same account can be tried twice over, once by username and once by
+        # email. An identifier that reaches nobody is counted as itself
+        limiter = LoginAttemptLimiter(f"user:{user.pk}" if user else username, request)
+        if limiter.is_locked():
+            logger.warning("Login refused, too many failed attempts")
+            return None
+
         if user is None:
             # Same work as a real login, so that a wrong user and a wrong
             # password do not take a different time to answer
             User().set_password(password)
+            limiter.register_failure()
             return None
 
         if user.check_password(password) and self.user_can_authenticate(user):
+            limiter.reset()
             return user
+
+        limiter.register_failure()
         return None
 
     def get_user_by_identifier(self, identifier):
