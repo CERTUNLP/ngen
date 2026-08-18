@@ -38,9 +38,23 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
     action();
   };
 
+  const clearSearch = () => {
+    setSearch("");
+    setWordToSearch("");
+    if (setCurrentPage) {
+      setCurrentPage(1);
+    }
+    setLoading(true);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="input-group">
       <input value={search} onChange={searcher} type="text" id="m-search" className="form-control" placeholder={text} />
+      {search && (
+        <button type="button" className="search-clear-btn btn" onClick={clearSearch} aria-label={t("search.clear")}>
+          <i className="feather icon-x" />
+        </button>
+      )}
       <button type="submit" className="search-btn btn btn-primary">
         <i className="feather icon-search " />
       </button>

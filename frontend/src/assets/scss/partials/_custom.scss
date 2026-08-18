@@ -368,3 +368,16 @@
     margin: 2px 0;
   }
 }
+
+.search-clear-btn {
+  display: flex;
+  align-items: center;
+  border-color: var(--bs-border-color);
+  background: transparent;
+  color: var(--bs-secondary-color);
+
+  &:hover {
+    color: var(--bs-body-color);
+    background: var(--bs-tertiary-bg);
+  }
+}

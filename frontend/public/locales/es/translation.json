@@ -538,6 +538,7 @@
   "search.by.name.description": "por nombre o descripción",
   "search.by.name.user.email": "por nombre, nombre de usuario o correo electrónico",
   "search.bycode": "por código",
+  "search.clear": "Borrar búsqueda",
   "search.taxonomy_feed_affectedresource": "por taxonomía, feed o recurso afectado",
   "selectOption": "Seleccione una opción",
   "session.last": "Último inicio de sesión",

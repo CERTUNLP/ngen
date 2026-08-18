@@ -538,6 +538,7 @@
   "search.by.name.description": "by name or description",
   "search.by.name.user.email": "by name, username or email",
   "search.bycode": "by code",
+  "search.clear": "Clear search",
   "search.taxonomy_feed_affectedresource": "by taxonomy, feed or affected resource",
   "selectOption": "Select an option",
   "session.last": "Last login",
