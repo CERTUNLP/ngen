@@ -50,6 +50,8 @@
   "filter.cidr_domain": "cidr or domain",
   "info.related": "Related information",
   "login.do_not_have_an_account": "Don't have an account?",
+  "login.or": "or",
+  "login.sso": "Login with SSO",
   "menu.about": "About",
   "menu.analyzermappings": "Analyzer Mappings",
   "menu.cases": "Cases",

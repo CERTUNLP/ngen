@@ -50,6 +50,8 @@
   "filter.cidr_domain": "CIDR o dominio",
   "info.related": "Información relacionada",
   "login.do_not_have_an_account": "¿No tienes una cuenta?",
+  "login.or": "o",
+  "login.sso": "Ingresar con SSO",
   "menu.about": "Acerca de",
   "menu.analyzermappings": "Mapeo de Analizadores",
   "menu.cases": "Casos",

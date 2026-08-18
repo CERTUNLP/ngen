@@ -102,11 +102,11 @@ const Signin1 = () => {
                     variant="outline-primary"
                     onClick={handleSsoLogin}
                   >
-                    {t("login.sso") || "Login with SSO"}
+                    {t("login.sso")}
                   </Button>
                   <div className="d-flex align-items-center my-3">
                     <hr className="flex-grow-1" />
-                    <span className="mx-2 text-muted">or</span>
+                    <span className="mx-2 text-muted">{t("login.or")}</span>
                     <hr className="flex-grow-1" />
                   </div>
                 </div>
