@@ -39,12 +39,18 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
           login(values.username, values.password);
         }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => {
+          const validationMessages = [
+            ...(touched.username && errors.username ? [errors.username] : []),
+            ...(touched.password && errors.password ? [errors.password] : [])
+          ];
+
+          return (
           <form noValidate onSubmit={handleSubmit} className={className} {...rest}>
             <div className="form-group mb-3">
               <input
-                className="form-control"
-                error={touched.username && errors.username}
+                className={"form-control" + (touched.username && errors.username ? " is-invalid" : "")}
+                aria-invalid={!!(touched.username && errors.username)}
                 aria-label={t("ngen.user.username_or_email")}
                 placeholder={t("ngen.user.username_or_email")}
                 name="username"
@@ -53,12 +59,11 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
                 type="text"
                 value={values.username}
               />
-              {touched.username && errors.username && <small className="text-danger form-text">{errors.username}</small>}
             </div>
             <div className="form-group mb-4">
               <input
-                className="form-control"
-                error={touched.password && errors.password}
+                className={"form-control" + (touched.password && errors.password ? " is-invalid" : "")}
+                aria-invalid={!!(touched.password && errors.password)}
                 aria-label={t("ngen.password")}
                 placeholder={t("ngen.password")}
                 name="password"
@@ -67,7 +72,6 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
                 type="password"
                 value={values.password}
               />
-              {touched.password && errors.password && <small className="text-danger form-text">{errors.password}</small>}
             </div>
 
             <Row>
@@ -84,6 +88,17 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
                       </Button>
                     </span>
                   </OverlayTrigger>
+                ) : validationMessages.length > 0 ? (
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip id="login-validation-tooltip">{validationMessages.join(" ")}</Tooltip>}
+                  >
+                    <span className="d-block w-100">
+                      <Button className="btn-block" color="primary" disabled={isSubmitting} size="large" type="submit" variant="primary">
+                        {t("button.login")}
+                      </Button>
+                    </span>
+                  </OverlayTrigger>
                 ) : (
                   <Button className="btn-block" color="primary" disabled={isSubmitting} size="large" type="submit" variant="primary">
                     {t("button.login")}
@@ -92,7 +107,8 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
               </Col>
             </Row>
           </form>
-        )}
+          );
+        }}
       </Formik>
     </React.Fragment>
   );
