@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import { Button, Card } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
 import Alert from "./../../../components/Alert/Alert";
@@ -13,20 +13,23 @@ import { COMPONENT_URL } from "../../../config/constant";
 import { ThemeContext } from "../../../contexts/ThemeContext";
 import useBackendHealth from "../../../hooks/useBackendHealth";
 
-const ConnectionIndicator = React.forwardRef(({ children, ...props }, ref) => (
-  <span ref={ref} {...props}>
-    {children}
-  </span>
-));
-
 const Signin1 = () => {
   const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
   const [signup, setSignup] = useState(false);
   const [oidcEnabled, setOidcEnabled] = useState(false);
   const connected = useBackendHealth();
+  const [logoVersion, setLogoVersion] = useState(0);
+  const prevConnected = useRef(connected);
 
   const { isDark } = useContext(ThemeContext);
+
+  useEffect(() => {
+    if (connected && !prevConnected.current) {
+      setLogoVersion((version) => version + 1);
+    }
+    prevConnected.current = connected;
+  }, [connected]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -92,7 +95,7 @@ const Signin1 = () => {
             <Card.Body>
               <div className="mb-4">
                 <img
-                  src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv" + (isDark ? "_light" : "") + ".png"}
+                  src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv" + (isDark ? "_light" : "") + ".png?t=" + logoVersion}
                   alt="NGEN"
                   className="logo"
                   id="teamlogo_login"
@@ -101,22 +104,6 @@ const Signin1 = () => {
 
               <div className="mb-4 d-flex align-items-center justify-content-center gap-2">
                 <i className="feather icon-unlock auth-icon" />
-                <OverlayTrigger
-                  placement="top"
-                  overlay={
-                    <Tooltip id="connection-status-tooltip">
-                      {connected ? t("ngen.connection.connected") : t("ngen.connection.disconnected")}
-                    </Tooltip>
-                  }
-                >
-                  <ConnectionIndicator
-                    className="connection-status"
-                    role="img"
-                    aria-label={connected ? t("ngen.connection.connected") : t("ngen.connection.disconnected")}
-                  >
-                    <i className={connected ? "feather icon-check-circle text-success" : "feather icon-zap text-danger"} />
-                  </ConnectionIndicator>
-                </OverlayTrigger>
               </div>
 
               {oidcEnabled && (
