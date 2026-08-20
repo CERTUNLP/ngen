@@ -395,7 +395,9 @@ const ListEvent = ({ routeParams }) => {
   };
   return (
     <React.Fragment>
-      <Card>
+      <Row>
+        <Col>
+          <Card>
         <Card.Header>
           <ListViewHeader
             open={open}
@@ -677,7 +679,9 @@ const ListEvent = ({ routeParams }) => {
           asNetworkAdmin={routeParams.asNetworkAdmin}
         />
         <ModalReadCase modalShowCase={modalShowCase} returnToListOfCases={returnToListOfCases} linkCaseToEvent={linkCaseToEvent} />
-      </Card>
+        </Card>
+      </Col>
+    </Row>
     </React.Fragment>
   );
 };

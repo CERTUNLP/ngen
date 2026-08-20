@@ -63,8 +63,9 @@ const ListPriorities = () => {
   };
 
   return (
-    <div>
-      <Card>
+    <Row>
+      <Col>
+        <Card>
         <Card.Header>
           <ListViewHeader
             searchType={t("search.by.name")}
@@ -104,7 +105,8 @@ const ListPriorities = () => {
           </Row>
         </Card.Footer>
       </Card>
-    </div>
+      </Col>
+    </Row>
   );
 };
 

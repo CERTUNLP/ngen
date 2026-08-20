@@ -69,8 +69,9 @@ const ListReport = () => {
   }, [currentPage, wordToSearch, order, refresh]);
 
   return (
-    <div>
-      <Card>
+    <Row>
+      <Col>
+        <Card>
         <Card.Header>
           <ListViewHeader
             searchType=".."
@@ -110,7 +111,8 @@ const ListReport = () => {
           </Row>
         </Card.Footer>
       </Card>
-    </div>
+      </Col>
+    </Row>
   );
 };
 

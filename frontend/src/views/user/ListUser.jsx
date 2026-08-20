@@ -71,8 +71,9 @@ function ListUser() {
   }
 
   return (
-    <div>
-      <Card>
+    <Row>
+      <Col>
+        <Card>
         <Card.Header>
           <ListViewHeader
             searchType={t("search.by.name.user.email")}
@@ -113,7 +114,8 @@ function ListUser() {
           </Row>
         </Card.Footer>
       </Card>
-    </div>
+      </Col>
+    </Row>
   );
 }
 

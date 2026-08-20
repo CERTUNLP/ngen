@@ -82,7 +82,9 @@ const ListTag = (props) => {
 
   return (
     <React.Fragment>
-      <Card>
+      <Row>
+        <Col>
+          <Card>
         <Card.Header>
           <ListViewHeader
             searchType={t("ngen.tag_one")}
@@ -198,7 +200,9 @@ const ListTag = (props) => {
             reloadPage();
           });
         }}
-      />
+        />
+      </Col>
+      </Row>
     </React.Fragment>
   );
 };

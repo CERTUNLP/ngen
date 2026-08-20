@@ -60,8 +60,9 @@ const ListState = () => {
   }, [currentPage, wordToSearch, order, isModify, refresh]);
 
   return (
-    <div>
-      <Card>
+    <Row>
+      <Col>
+        <Card>
         <Card.Header>
           <ListViewHeader
             searchType={t("ngen.state_one")}
@@ -94,7 +95,8 @@ const ListState = () => {
           </Row>
         </Card.Footer>
       </Card>
-    </div>
+      </Col>
+    </Row>
   );
 };
 

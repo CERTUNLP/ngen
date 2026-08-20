@@ -66,7 +66,7 @@ const listTaxonomyGroups = () => {
   return (
     <React.Fragment>
       <Row>
-        <Col sm="auto">
+        <Col>
           <Card>
             <Card.Header>
               <ListViewHeader
