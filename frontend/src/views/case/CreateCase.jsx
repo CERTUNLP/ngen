@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Col, Row } from "react-bootstrap";
 import FormCase from "./components/FormCase";
 import { getMinifiedState } from "../../api/services/states";
 import { getMinifiedTag } from "../../api/services/tags";
@@ -61,7 +62,9 @@ const CreateCase = ({ routeParams }) => {
 
   return (
     <React.Fragment>
-      <FormCase
+      <Row>
+        <Col>
+          <FormCase
         caseItem={caseItem}
         allStates={allStates}
         edit={false}
@@ -73,7 +76,9 @@ const CreateCase = ({ routeParams }) => {
 
         buttonsModalColum={true}
         asNetworkAdmin={routeParams.asNetworkAdmin}
-      />
+          />
+        </Col>
+      </Row>
     </React.Fragment>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Col, Row } from "react-bootstrap";
 import FormState from "./components/FormState";
 import Alert from "../../components/Alert/Alert";
 import { postState, putState } from "../../api/services/states";
@@ -62,10 +63,12 @@ const AddState = () => {
   };
 
   return (
-    <div>
-      <FormState body={body} setBody={setBody} createState={!sectionAddEdge ? createState : editState} type={t("w.add")} />
-      <ListEdge url={url} sectionAddEdge={sectionAddEdge} setShowAlert={setShowAlert} />
-    </div>
+    <Row>
+      <Col>
+        <FormState body={body} setBody={setBody} createState={!sectionAddEdge ? createState : editState} type={t("w.add")} />
+        <ListEdge url={url} sectionAddEdge={sectionAddEdge} setShowAlert={setShowAlert} />
+      </Col>
+    </Row>
   );
 };
 

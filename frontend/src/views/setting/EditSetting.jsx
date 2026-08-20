@@ -305,8 +305,9 @@ const EditSetting = () => {
   );
 
   return (
-    <div>
-      <Card>
+    <Row>
+      <Col>
+        <Card>
         <Card.Header>
           <Card.Title as="h5">{t("systemConfig")}</Card.Title>
         </Card.Header>
@@ -388,8 +389,9 @@ const EditSetting = () => {
             </Row>
           )}
         </Card.Body>
-      </Card>
-    </div>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

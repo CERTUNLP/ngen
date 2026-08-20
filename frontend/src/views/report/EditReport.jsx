@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Spinner } from "react-bootstrap";
+import { Card, Col, Row, Spinner } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import FormReport from "./components/FormReport";
 import { putReport, getReport } from "../../api/services/reports";
@@ -62,8 +62,9 @@ const EditReport = () => {
   };
 
   return (
-    <div>
-      <Card>
+    <Row>
+      <Col>
+        <Card>
         <Card.Header>
           <Card.Title as="h5">{t("ngen.report.edit")}</Card.Title>
         </Card.Header>
@@ -71,8 +72,9 @@ const EditReport = () => {
           {loading && <Spinner animation="border" variant="primary" />}
           <FormReport body={body} setBody={setBody} taxonomies={taxonomies} createOrEdit={editReport} />
         </Card.Body>
-      </Card>
-    </div>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

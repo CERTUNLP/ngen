@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Col, Row } from "react-bootstrap";
 import FormEvent from "./components/FormEvent";
 import { postEvent, simulateEvent } from "../../api/services/events";
 import { getMinifiedTlp } from "../../api/services/tlp";
@@ -223,8 +224,9 @@ const CreateEvent = ({ routeParams }) => {
 
   return (
     body && (
-      <div>
-        <FormEvent
+      <Row>
+        <Col>
+          <FormEvent
           createEvent={createEvent}
           simulateEvent={() => {return createEvent({simulate: true})}}
           setBody={setBody}
@@ -245,7 +247,8 @@ const CreateEvent = ({ routeParams }) => {
           userNames={userNames}
           asNetworkAdmin={routeParams.asNetworkAdmin}
         />
-      </div>
+        </Col>
+      </Row>
     )
   );
 };

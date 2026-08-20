@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, FormControl, Alert, Card } from "react-bootstrap";
+import { Button, FormControl, Alert, Card, Col, Row } from "react-bootstrap";
 import apiInstance from "api/api";
 import { validateEmail } from "utils/validators";
 import { useTranslation } from "react-i18next";
@@ -38,7 +38,9 @@ const ExportEventsForm = () => {
   };
 
   return (
-    <Card>
+    <Row>
+      <Col>
+        <Card>
       <Card.Header>
         <Card.Title as="h5">{t("ngen.export_events")}</Card.Title>
         <span className="d-block m-t-5">{t("ngen.export_events.description")}</span>
@@ -67,7 +69,9 @@ const ExportEventsForm = () => {
           </form>
         )}
       </Card.Body>
-    </Card>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import { useLocation, useParams } from "react-router-dom";
 import Alert from "components/Alert/Alert";
 import FormLookup from "views/tools/lookup/FormLookup";
@@ -10,18 +10,20 @@ const ShowLookup = () => {
     const { t } = useTranslation();
 
     return (
-      <>
-        <Card>
-          <Card.Header>
-            <Card.Title as="h5">
-            {t("ngen.lookup")}
-          </Card.Title>
-        </Card.Header>
-        <Card.Body>
-          <FormLookup />
-        </Card.Body>
-      </Card>
-    </>
+      <Row>
+        <Col>
+          <Card>
+            <Card.Header>
+              <Card.Title as="h5">
+                {t("ngen.lookup")}
+              </Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <FormLookup />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
   );
 };
 

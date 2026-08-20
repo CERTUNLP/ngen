@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Col, Row } from "react-bootstrap";
 import FormState from "./components/FormState";
 import { putState, getState, getMinifiedState } from "../../api/services/states";
 import ListEdge from "../edge/ListEdge";
@@ -68,10 +69,12 @@ const EditState = () => {
       });
   };
   return (
-    <div>
-      <FormState body={body} setBody={setBody} createState={editState} childernes={states} type={t("w.edit")} loading={loading} />
-      <ListEdge url={body.url} sectionAddEdge={sectionAddEdge} setShowAlert={setShowAlert} loading={loading} />
-    </div>
+    <Row>
+      <Col>
+        <FormState body={body} setBody={setBody} createState={editState} childernes={states} type={t("w.edit")} loading={loading} />
+        <ListEdge url={body.url} sectionAddEdge={sectionAddEdge} setShowAlert={setShowAlert} loading={loading} />
+      </Col>
+    </Row>
   );
 };
 export default EditState;

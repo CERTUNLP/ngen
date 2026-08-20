@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import { postUser } from "../../api/services/users";
 import { getMinifiedPriority } from "../../api/services/priorities";
 import Alert from "../../components/Alert/Alert";
@@ -70,8 +70,9 @@ const AddUser = () => {
       });
   };
   return (
-    <>
-      <Card>
+    <Row>
+      <Col>
+        <Card>
         <Card.Header>
           <Card.Title as="h5">
             {t("w.add")} {t("ngen.user")}
@@ -87,8 +88,9 @@ const AddUser = () => {
             passwordRequired={true}
           />
         </Card.Body>
-      </Card>
-    </>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 
