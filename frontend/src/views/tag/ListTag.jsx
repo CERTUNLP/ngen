@@ -86,7 +86,7 @@ const ListTag = (props) => {
       <Card>
         <Card.Header>
           <Row>
-            <Col sm={12} lg={9}>
+            <Col>
               <Search
                 type={t("ngen.tag_one")}
                 setWordToSearch={setWordToSearch}
@@ -95,7 +95,7 @@ const ListTag = (props) => {
                 setCurrentPage={setCurrentPage}
               />
             </Col>
-            <Col>
+            <Col sm="auto" className="d-flex gap-1">
               <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
               <CrudButton
                 type="create"

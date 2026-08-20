@@ -79,7 +79,7 @@ const ListAudit = () => {
                 <Col sm="auto">
                   <FilterToolbar open={open} setOpen={setOpen} onReload={() => setCurrentPage(1)} onClearFilters={clearFilters} />
                 </Col>
-                <Col sm={8} lg={4}>
+                <Col>
                   <Search
                     type={t("search.by.name.description")}
                     setWordToSearch={setWordToSearch}

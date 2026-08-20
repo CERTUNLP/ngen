@@ -77,10 +77,10 @@ const ListReport = () => {
             <Col sm="auto">
               <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
             </Col>
-            <Col sm={12} lg={8}>
+            <Col sm="auto">
               <Search type=".." setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
             </Col>
-            <Col sm={12} lg={3}>
+            <Col>
               <CrudButton type="create" name={t("ngen.report")} to="/reports/create" checkPermRoute />
             </Col>
           </Row>

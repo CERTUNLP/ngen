@@ -72,17 +72,17 @@ const ListPlaybook = () => {
   return (
     <React.Fragment>
       <Row>
-        <Col>
+        <Col sm="auto">
           <Card>
             <Card.Header>
               <Row>
                 <Col sm="auto">
                   <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
-                <Col sm={12} lg={8}>
+                <Col>
                   <Search type="playbook" setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
                 </Col>
-                <Col sm={3} lg={3}>
+                <Col>
                   <CrudButton type="create" name="Playbook" to="/playbooks/create" checkPermRoute />
                 </Col>
               </Row>

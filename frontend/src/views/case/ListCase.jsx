@@ -188,10 +188,10 @@ const ListCase = ({ routeParams }) => {
                 <Col sm="auto">
                   <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
-                <Col sm={1} lg={6}>
+                <Col>
                   <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
                 </Col>
-                <Col>
+                <Col sm="auto" className="d-flex gap-1">
                   <CrudButton type="create" name={t("ngen.case_one")} to={basePath + "/cases/create"} checkPermRoute />
 
                   <PermissionCheck optionalPermissions={["change_case", "change_case_network_admin"]}>

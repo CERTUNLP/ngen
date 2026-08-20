@@ -83,14 +83,14 @@ const ListContact = ({ routeParams }) => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="contact" />
       <Row>
-        <Col>
+        <Col sm="auto">
           <Card>
             <Card.Header>
               <Row>
                 <Col sm="auto">
                   <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
-                <Col sm={12} lg={8}>
+                <Col>
                   <Search
                     type={t("w.entityByName")}
                     setWordToSearch={setWordToSearch}
@@ -99,7 +99,7 @@ const ListContact = ({ routeParams }) => {
                     setCurrentPage={setCurrentPage}
                   />
                 </Col>
-                <Col sm={3} lg={3}>
+                <Col>
                   <CrudButton type="create" name={t("ngen.contact_one")} to="/contacts/create" checkPermRoute />
                 </Col>
               </Row>

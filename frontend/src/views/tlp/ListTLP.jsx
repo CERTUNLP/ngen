@@ -65,7 +65,7 @@ const ListTLP = () => {
                 <Col sm="auto">
                   <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
-                <Col sm={12} lg={8}>
+                <Col>
                   <div className="input-group">
                     <Search
                       type={t("search.bycode")}

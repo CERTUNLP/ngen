@@ -67,14 +67,14 @@ const listTaxonomyGroups = () => {
   return (
     <React.Fragment>
       <Row>
-        <Col>
+        <Col sm="auto">
           <Card>
             <Card.Header>
               <Row>
                 <Col sm="auto">
                   <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
-                <Col sm={12} lg={8}>
+                <Col>
                   <Search
                     type={t("search.by.name")}
                     setWordToSearch={setWordToSearch}
@@ -84,7 +84,7 @@ const listTaxonomyGroups = () => {
                   />
                 </Col>
 
-                <Col sm={12} lg={3}>
+                <Col>
                   <CrudButton type="create" name={t("ngen.taxonomyGroup_one")} to="/taxonomyGroups/create" checkPermRoute />
                 </Col>
               </Row>

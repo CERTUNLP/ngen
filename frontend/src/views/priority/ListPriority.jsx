@@ -71,10 +71,10 @@ const ListPriorities = () => {
             <Col sm="auto">
               <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
             </Col>
-            <Col sm={12} lg={8}>
+            <Col sm="auto">
               <Search type={t("search.by.name")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
             </Col>
-            <Col sm={12} lg={3}>
+            <Col>
               <CrudButton type="create" name={t("ngen.priority_one")} to="/priorities/create" checkPermRoute />
             </Col>
           </Row>

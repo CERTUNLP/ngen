@@ -67,14 +67,14 @@ const ListFeed = () => {
   return (
     <React.Fragment>
       <Row>
-        <Col>
+        <Col sm="auto">
           <Card>
             <Card.Header>
               <Row>
                 <Col sm="auto">
                   <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
-                <Col sm={12} lg={8}>
+                <Col>
                   <Search
                     type={t("search.by.name.description")}
                     setWordToSearch={setWordToSearch}
@@ -83,7 +83,7 @@ const ListFeed = () => {
                     setCurrentPage={setCurrentPage}
                   />
                 </Col>
-                <Col sm={12} lg={3}>
+                <Col>
                   <CrudButton type="create" name={t("ngen.feed")} to="/feeds/create" checkPermRoute />
                 </Col>
               </Row>

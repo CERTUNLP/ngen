@@ -150,17 +150,17 @@ const ListTemplete = () => {
   return (
     <React.Fragment>
       <Row>
-        <Col>
+        <Col sm="auto">
           <Card>
             <Card.Header>
               <Row>
                 <Col sm="auto">
                   <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
-                <Col sm={12} lg={8}>
+                <Col>
                   <Search type={t("cidr.domain")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
                 </Col>
-                <Col sm={12} lg={3}>
+                <Col>
                   <CrudButton type="create" name={t("ngen.template")} to="/templates/create" checkPermRoute />
                 </Col>
               </Row>

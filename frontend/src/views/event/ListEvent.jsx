@@ -402,7 +402,7 @@ const ListEvent = ({ routeParams }) => {
             <Col sm="auto">
               <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
             </Col>
-            <Col sm={8} lg={4}>
+            <Col>
               <Search
                 type={t("search.taxonomy_feed_affectedresource")}
                 setWordToSearch={setWordToSearch}
@@ -411,7 +411,7 @@ const ListEvent = ({ routeParams }) => {
                 setCurrentPage={setCurrentPage}
               />
             </Col>
-            <Col>
+            <Col sm="auto" className="d-flex gap-1">
               <CrudButton type="create" to={basePath + "/events/create"} name={t("ngen.event_one")} checkPermRoute />
               <PermissionCheck optionalPermissions={["change_event", "change_event_network_admin"]}>
                 <Button
