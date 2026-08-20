@@ -72,21 +72,23 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
 
             <Row>
               <Col mt={2}>
-                <OverlayTrigger
-                  placement="top"
-                  overlay={
-                    <Tooltip id="login-button-tooltip">
-                      {connected ? t("ngen.connection.connected") : t("ngen.connection.disconnected")}
-                    </Tooltip>
-                  }
-                >
-                  <span className="d-block w-100">
-                    <Button className="btn-block" color="primary" disabled={isSubmitting || !connected} size="large" type="submit" variant="primary">
-                      {!connected && <i className="feather icon-zap text-danger me-2" aria-hidden="true" />}
-                      {t("button.login")}
-                    </Button>
-                  </span>
-                </OverlayTrigger>
+                {!connected ? (
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip id="login-button-tooltip">{t("ngen.connection.disconnected")}</Tooltip>}
+                  >
+                    <span className="d-block w-100">
+                      <Button className="btn-block" color="primary" disabled={isSubmitting || !connected} size="large" type="submit" variant="primary">
+                        <i className="feather icon-zap text-danger me-2" aria-hidden="true" />
+                        {t("button.login")}
+                      </Button>
+                    </span>
+                  </OverlayTrigger>
+                ) : (
+                  <Button className="btn-block" color="primary" disabled={isSubmitting} size="large" type="submit" variant="primary">
+                    {t("button.login")}
+                  </Button>
+                )}
               </Col>
             </Row>
           </form>
