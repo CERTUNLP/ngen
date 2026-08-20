@@ -39,6 +39,7 @@ export const CONFIG = {
 };
 
 export const COMPONENT_URL = {
+  health: "health/",
   tlp: "administration/tlp/",
   feed: "administration/feed/",
   priority: "administration/priority/",
