@@ -405,8 +405,3 @@
     }
   }
 }
-
-.search-input-wrapper:focus-within + .search-btn {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
-}
