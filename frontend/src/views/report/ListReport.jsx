@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { getReports } from "../../api/services/reports";
 import { Card, Col, Row } from "react-bootstrap";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import CrudButton from "../../components/Button/CrudButton";
 import TableReport from "./components/TableReport";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
-import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListReport = () => {
@@ -73,17 +72,17 @@ const ListReport = () => {
     <div>
       <Card>
         <Card.Header>
-          <Row>
-            <Col sm="auto">
-              <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
-            </Col>
-            <Col sm="auto">
-              <Search type=".." setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
-            </Col>
-            <Col>
-              <CrudButton type="create" name={t("ngen.report")} to="/reports/create" checkPermRoute />
-            </Col>
-          </Row>
+          <ListViewHeader
+            searchType=".."
+            wordToSearch={wordToSearch}
+            setWordToSearch={setWordToSearch}
+            setLoading={setLoading}
+            setCurrentPage={setCurrentPage}
+            onReload={reloadPage}
+            onClearFilters={clearFilters}
+          >
+            <CrudButton type="create" name={t("ngen.report")} to="/reports/create" checkPermRoute />
+          </ListViewHeader>
         </Card.Header>
         <Card.Body>
           <TableReport

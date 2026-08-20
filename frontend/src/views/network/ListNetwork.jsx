@@ -4,9 +4,8 @@ import CrudButton from "components/Button/CrudButton";
 import { getNetworks } from "api/services/networks";
 import { getMinifiedEntity } from "api/services/entities";
 import TableNetwork from "./components/TableNetwork";
-import Search from "components/Search/Search";
+import ListViewHeader from "components/ListViewHeader/ListViewHeader";
 import AdvancedPagination from "components/Pagination/AdvancedPagination";
-import FilterToolbar from "components/Button/FilterToolbar";
 import FilterSelectUrl from "components/Filter/FilterSelectUrl";
 import FilterSelect from "components/Filter/FilterSelect";
 import FilterInput from "components/Filter/FilterInput";
@@ -124,23 +123,19 @@ const ListNetwork = ({ routeParams }) => {
         <Col sm="auto">
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search
-                    type={t("filter.cidr_domain")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-                <Col>
-                  <CrudButton type="create" name={t("ngen.network_one")} to="/networks/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                open={open}
+                setOpen={setOpen}
+                searchType={t("filter.cidr_domain")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("ngen.network_one")} to="/networks/create" checkPermRoute />
+              </ListViewHeader>
               <Collapse in={open}>
                 <div id="example-collapse-text">
                   <Row>

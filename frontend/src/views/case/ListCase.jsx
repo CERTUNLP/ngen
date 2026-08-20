@@ -7,11 +7,10 @@ import { getMinifiedPriority } from "../../api/services/priorities";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedState } from "../../api/services/states";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
 import Alert from "../../components/Alert/Alert";
-import FilterToolbar from "../../components/Button/FilterToolbar";
 import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import FilterSelect from "../../components/Filter/FilterSelect";
 import { useTranslation } from "react-i18next";
@@ -184,14 +183,17 @@ const ListCase = ({ routeParams }) => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search type={t("ngen.case_one")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
-                </Col>
-                <Col sm="auto" className="d-flex gap-1">
+                <ListViewHeader
+                  open={open}
+                  setOpen={setOpen}
+                  searchType={t("ngen.case_one")}
+                  wordToSearch={wordToSearch}
+                  setWordToSearch={setWordToSearch}
+                  setLoading={setLoading}
+                  setCurrentPage={setCurrentPage}
+                  onReload={reloadPage}
+                  onClearFilters={clearFilters}
+                >
                   <CrudButton type="create" name={t("ngen.case_one")} to={basePath + "/cases/create"} checkPermRoute />
 
                   <PermissionCheck optionalPermissions={["change_case", "change_case_network_admin"]}>
@@ -208,8 +210,7 @@ const ListCase = ({ routeParams }) => {
                       <Badge className="badge mr-1" bg={selectedCases.length > 0 ? "primary" : "secondary"}>{selectedCases.length}</Badge>
                     </Button>
                   </PermissionCheck>
-                </Col>
-              </Row>
+                </ListViewHeader>
               <Collapse in={open}>
                 <div id="example-collapse-text">
                   <Row>

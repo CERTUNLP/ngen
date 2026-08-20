@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import TableContact from "./components/TableContact";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import CrudButton from "../../components/Button/CrudButton";
 import { getContacts } from "../../api/services/contacts";
-import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
-import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListContact = ({ routeParams }) => {
@@ -86,23 +85,17 @@ const ListContact = ({ routeParams }) => {
         <Col sm="auto">
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search
-                    type={t("w.entityByName")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-                <Col>
-                  <CrudButton type="create" name={t("ngen.contact_one")} to="/contacts/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("w.entityByName")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("ngen.contact_one")} to="/contacts/create" checkPermRoute />
+              </ListViewHeader>
             </Card.Header>
             <Card.Body>
               <TableContact

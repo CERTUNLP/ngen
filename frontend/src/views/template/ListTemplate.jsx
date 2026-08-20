@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Collapse, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import TableTemplete from "./components/TableTemplete";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { getTemplates } from "../../api/services/templates";
 import { getMinifiedFeed } from "../../api/services/feeds";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
-import FilterToolbar from "../../components/Button/FilterToolbar";
 import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import { useTranslation } from "react-i18next";
 import { getMinifiedTlp } from "../../api/services/tlp";
@@ -153,17 +152,19 @@ const ListTemplete = () => {
         <Col sm="auto">
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search type={t("cidr.domain")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
-                </Col>
-                <Col>
-                  <CrudButton type="create" name={t("ngen.template")} to="/templates/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                open={open}
+                setOpen={setOpen}
+                searchType={t("cidr.domain")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("ngen.template")} to="/templates/create" checkPermRoute />
+              </ListViewHeader>
               <Collapse in={open}>
                 <div id="example-collapse-text">
                   <Row>

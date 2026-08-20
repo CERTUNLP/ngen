@@ -4,9 +4,8 @@ import { Link } from "react-router-dom";
 import CrudButton from "../../components/Button/CrudButton";
 import Alert from "../../components/Alert/Alert";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
-import Search from "../../components/Search/Search";
 import TableTaxonomyGroup from "./components/TableTaxonomyGroup";
-import FilterToolbar from "../../components/Button/FilterToolbar";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { useTranslation } from "react-i18next";
 import { getMinifiedTaxonomyGroups, getTaxonomyGroups } from "../../api/services/taxonomyGroups";
 
@@ -70,24 +69,17 @@ const listTaxonomyGroups = () => {
         <Col sm="auto">
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search
-                    type={t("search.by.name")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-
-                <Col>
-                  <CrudButton type="create" name={t("ngen.taxonomyGroup_one")} to="/taxonomyGroups/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("search.by.name")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("ngen.taxonomyGroup_one")} to="/taxonomyGroups/create" checkPermRoute />
+              </ListViewHeader>
             </Card.Header>
             <Card.Body>
               <TableTaxonomyGroup

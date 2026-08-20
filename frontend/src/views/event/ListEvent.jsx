@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Card, Col, Collapse, Form, Modal, Row } from "react-bootstrap";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import CrudButton from "../../components/Button/CrudButton";
 import TableEvents from "./components/TableEvents";
 //filters
@@ -9,7 +9,6 @@ import FilterSelect from "../../components/Filter/FilterSelect";
 import FilterSelectWithDefault from "../../components/Filter/FilterSelectWithDefault";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
-import FilterToolbar from "../../components/Button/FilterToolbar";
 import { patchCase } from "../../api/services/cases";
 //filters
 import { getEvents, mergeEvent } from "../../api/services/events";
@@ -398,20 +397,17 @@ const ListEvent = ({ routeParams }) => {
     <React.Fragment>
       <Card>
         <Card.Header>
-          <Row>
-            <Col sm="auto">
-              <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
-            </Col>
-            <Col>
-              <Search
-                type={t("search.taxonomy_feed_affectedresource")}
-                setWordToSearch={setWordToSearch}
-                wordToSearch={wordToSearch}
-                setLoading={setLoading}
-                setCurrentPage={setCurrentPage}
-              />
-            </Col>
-            <Col sm="auto" className="d-flex gap-1">
+          <ListViewHeader
+            open={open}
+            setOpen={setOpen}
+            searchType={t("search.taxonomy_feed_affectedresource")}
+              wordToSearch={wordToSearch}
+              setWordToSearch={setWordToSearch}
+              setLoading={setLoading}
+              setCurrentPage={setCurrentPage}
+              onReload={reloadPage}
+              onClearFilters={clearFilters}
+            >
               <CrudButton type="create" to={basePath + "/events/create"} name={t("ngen.event_one")} checkPermRoute />
               <PermissionCheck optionalPermissions={["change_event", "change_event_network_admin"]}>
                 <Button
@@ -440,8 +436,7 @@ const ListEvent = ({ routeParams }) => {
                   </Badge>
                 </Button>
               </PermissionCheck>
-            </Col>
-          </Row>
+            </ListViewHeader>
           <Collapse in={open}>
             <div id="example-collapse-text">
               <Row>

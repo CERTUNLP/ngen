@@ -4,9 +4,8 @@ import CrudButton from "../../components/Button/CrudButton";
 import Alert from "../../components/Alert/Alert";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import { getMinifiedTaxonomy, getTaxonomies } from "../../api/services/taxonomies";
-import Search from "../../components/Search/Search";
 import TableTaxonomy from "./components/TableTaxonomy";
-import FilterToolbar from "../../components/Button/FilterToolbar";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import FilterSelect from "../../components/Filter/FilterSelect";
 import { useTranslation } from "react-i18next";
@@ -183,23 +182,19 @@ const ListTaxonomies = () => {
         <Col sm="auto">
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar open={openFilter} setOpen={setOpenFilter} onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search
-                    type={t("search.by.name")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-                <Col>
-                  <CrudButton type="create" name={t("ngen.taxonomy_one")} to="/taxonomies/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                open={openFilter}
+                setOpen={setOpenFilter}
+                searchType={t("search.by.name")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("ngen.taxonomy_one")} to="/taxonomies/create" checkPermRoute />
+              </ListViewHeader>
               <Collapse in={openFilter}>
                 <div id="example-collapse-text">
                   <Row>

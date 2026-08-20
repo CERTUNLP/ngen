@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
-import Search from "../../components/Search/Search";
 import TableAnalyzerMapping from "./components/TableAnalyzerMapping";
-import FilterToolbar from "../../components/Button/FilterToolbar";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { useTranslation } from "react-i18next";
 import { getAnalyzerMappings } from "../../api/services/analyzerMapping";
 
@@ -64,28 +63,22 @@ const ListAnalyzerMappings = () => {
         <Col sm="auto">
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search
-                    type={t("search.by.name")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-                <Col>
-                  <CrudButton
-                    type="create"
-                    name={t("ngen.analyzer_mapping")}
-                    to="/analyzermappings/create"
-                    checkPermRoute
-                  />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("search.by.name")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton
+                  type="create"
+                  name={t("ngen.analyzer_mapping")}
+                  to="/analyzermappings/create"
+                  checkPermRoute
+                />
+              </ListViewHeader>
             </Card.Header>
             <Card.Body>
               <TableAnalyzerMapping

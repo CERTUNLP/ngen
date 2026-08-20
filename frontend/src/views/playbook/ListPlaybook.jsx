@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import TablePlaybook from "./components/TablePlaybook";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { getPlaybooks } from "../../api/services/playbooks";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
-import FilterToolbar from "../../components/Button/FilterToolbar";
 
 const ListPlaybook = () => {
   const [playbook, setPlaybook] = useState("");
@@ -75,17 +74,17 @@ const ListPlaybook = () => {
         <Col sm="auto">
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search type="playbook" setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
-                </Col>
-                <Col>
-                  <CrudButton type="create" name="Playbook" to="/playbooks/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType="playbook"
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name="Playbook" to="/playbooks/create" checkPermRoute />
+              </ListViewHeader>
             </Card.Header>
             <Card.Body>
               <TablePlaybook setIsModify={setIsModify} list={playbook} loading={loading} taxonomyNames={taxonomyNames} />

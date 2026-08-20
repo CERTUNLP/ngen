@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
 import { getTLP } from "../../api/services/tlp";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import Ordering from "../../components/Ordering/Ordering";
-import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListTLP = () => {
@@ -61,21 +60,14 @@ const ListTLP = () => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <div className="input-group">
-                    <Search
-                      type={t("search.bycode")}
-                      setWordToSearch={setWordToSearch}
-                      wordToSearch={wordToSearch}
-                      setLoading={setLoading}
-                    />
-                  </div>
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("search.bycode")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              />
             </Card.Header>
             <Card.Body>
               <Table responsive hover className="text-center">

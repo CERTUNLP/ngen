@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
 import CrudButton from "components/Button/CrudButton";
 import AdvancedPagination from "components/Pagination/AdvancedPagination";
-import Search from "components/Search/Search";
 import { useTranslation } from "react-i18next";
 import { getTags, deleteTag } from "api/services/tags";
-import FilterToolbar from "components/Button/FilterToolbar";
+import ListViewHeader from "components/ListViewHeader/ListViewHeader";
 import CreateTagModal from "./components/CreateTagModal";
 import ModalConfirm from "components/Modal/ModalConfirm";
 
@@ -85,19 +84,16 @@ const ListTag = (props) => {
     <React.Fragment>
       <Card>
         <Card.Header>
-          <Row>
-            <Col>
-              <Search
-                type={t("ngen.tag_one")}
-                setWordToSearch={setWordToSearch}
-                wordToSearch={wordToSearch}
-                setLoading={setLoading}
-                setCurrentPage={setCurrentPage}
-              />
-            </Col>
-            <Col sm="auto" className="d-flex gap-1">
-              <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
-              <CrudButton
+          <ListViewHeader
+            searchType={t("ngen.tag_one")}
+            wordToSearch={wordToSearch}
+            setWordToSearch={setWordToSearch}
+            setLoading={setLoading}
+            setCurrentPage={setCurrentPage}
+            onReload={reloadPage}
+            onClearFilters={clearFilters}
+          >
+            <CrudButton
                 type="create"
                 name={t("ngen.tag_one")}
                 onClick={() => {
@@ -108,8 +104,7 @@ const ListTag = (props) => {
                 }}
                 optionalPermissions={["create_tag", "create_tag_network_admin"]}
               />
-            </Col>
-          </Row>
+          </ListViewHeader>
         </Card.Header>
         <Card.Body>
           <Table responsive hover className="text-center">

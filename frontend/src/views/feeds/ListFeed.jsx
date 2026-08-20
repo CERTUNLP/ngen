@@ -4,8 +4,7 @@ import { getFeeds } from "../../api/services/feeds";
 import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableFeed from "./components/TableFeed";
-import Search from "../../components/Search/Search";
-import FilterToolbar from "../../components/Button/FilterToolbar";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { useTranslation } from "react-i18next";
 
 const ListFeed = () => {
@@ -70,23 +69,17 @@ const ListFeed = () => {
         <Col sm="auto">
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search
-                    type={t("search.by.name.description")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-                <Col>
-                  <CrudButton type="create" name={t("ngen.feed")} to="/feeds/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("search.by.name.description")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("ngen.feed")} to="/feeds/create" checkPermRoute />
+              </ListViewHeader>
             </Card.Header>
             <TableFeed
               feeds={feeds}

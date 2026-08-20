@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import TableUsers from "./components/TableUsers";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import CrudButton from "../../components/Button/CrudButton";
 import { getUsers } from "../../api/services/users";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
-import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 function ListUser() {
@@ -75,24 +74,17 @@ function ListUser() {
     <div>
       <Card>
         <Card.Header>
-          <Row>
-            <Col sm="auto">
-              <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
-            </Col>
-            <Col sm="auto">
-              <Search
-                type={t("search.by.name.user.email")}
-                setWordToSearch={setWordToSearch}
-                wordToSearch={wordToSearch}
-                setLoading={setLoading}
-                setCurrentPage={setCurrentPage}
-              />
-            </Col>
-            <Col>
-              <CrudButton type="create" name={t("ngen.user")} to="/users/create" checkPermRoute />
-            </Col>
-          </Row>
-          <Row></Row>
+          <ListViewHeader
+            searchType={t("search.by.name.user.email")}
+            wordToSearch={wordToSearch}
+            setWordToSearch={setWordToSearch}
+            setLoading={setLoading}
+            setCurrentPage={setCurrentPage}
+            onReload={reloadPage}
+            onClearFilters={clearFilters}
+          >
+            <CrudButton type="create" name={t("ngen.user")} to="/users/create" checkPermRoute />
+          </ListViewHeader>
         </Card.Header>
         <Card.Body>
           <TableUsers

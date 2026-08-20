@@ -4,8 +4,7 @@ import Select from "react-select";
 import { getAudits } from "../../api/services/audit";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableAudit from "./components/TableAudit";
-import Search from "../../components/Search/Search";
-import FilterToolbar from "../../components/Button/FilterToolbar";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { useTranslation } from "react-i18next";
 
 const ACTION_OPTIONS = [
@@ -75,20 +74,17 @@ const ListAudit = () => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar open={open} setOpen={setOpen} onReload={() => setCurrentPage(1)} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search
-                    type={t("search.by.name.description")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-              </Row>
+              <ListViewHeader
+                open={open}
+                setOpen={setOpen}
+                searchType={t("search.by.name.description")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={() => setCurrentPage(1)}
+                onClearFilters={clearFilters}
+              />
               <Collapse in={open}>
                 <div id="example-collapse-text">
                   <Row>

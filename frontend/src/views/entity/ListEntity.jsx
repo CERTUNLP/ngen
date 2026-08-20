@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import TableEntity from "./components/TableEntity";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { getEntities } from "../../api/services/entities";
-import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
-import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListEntity = ({ routeParams }) => {
@@ -71,23 +70,17 @@ const ListEntity = ({ routeParams }) => {
         <Col sm="auto">
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
-                </Col>
-                <Col>
-                  <Search
-                    type={t("w.entityByName")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-                <Col>
-                  <CrudButton type="create" name={t("ngen.entity")} to="/entities/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("w.entityByName")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("ngen.entity")} to="/entities/create" checkPermRoute />
+              </ListViewHeader>
             </Card.Header>
             <Card.Body>
               <TableEntity
