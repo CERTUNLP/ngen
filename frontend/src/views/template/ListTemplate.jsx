@@ -8,7 +8,7 @@ import { getMinifiedFeed } from "../../api/services/feeds";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
-import ButtonFilter from "../../components/Button/ButtonFilter";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import { useTranslation } from "react-i18next";
 import { getMinifiedTlp } from "../../api/services/tlp";
@@ -40,6 +40,7 @@ const ListTemplete = () => {
   const [valueFeedFilter, setValueFeedFilter] = useState(null);
   const [valueTaxonomyFilter, setValueTaxonomyFilter] = useState(null);
   const [order, setOrder] = useState("event_feed__name");
+  const [refresh, setRefresh] = useState(true);
 
   const [taxonomyNames, setTaxonomyNames] = useState({});
   const [feedNames, setFeedNames] = useState({});
@@ -50,6 +51,22 @@ const ListTemplete = () => {
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setTaxonomyFilter("");
+    setValueTaxonomyFilter(null);
+    setFeedFilter("");
+    setValueFeedFilter(null);
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getMinifiedTaxonomy().then((response) => {
@@ -124,7 +141,7 @@ const ListTemplete = () => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, taxonomyFilter, feedFilter, wordToSearch, order, isModify]);
+  }, [currentPage, taxonomyFilter, feedFilter, wordToSearch, order, isModify, refresh]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -137,8 +154,8 @@ const ListTemplete = () => {
           <Card>
             <Card.Header>
               <Row>
-                <Col sm={1} lg={1}>
-                  <ButtonFilter open={open} setOpen={setOpen} />
+                <Col sm="auto">
+                  <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
                 <Col sm={12} lg={8}>
                   <Search type={t("cidr.domain")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />

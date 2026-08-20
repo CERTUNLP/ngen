@@ -6,6 +6,7 @@ import Search from "../../components/Search/Search";
 import { getPlaybooks } from "../../api/services/playbooks";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 
 const ListPlaybook = () => {
   const [playbook, setPlaybook] = useState("");
@@ -22,10 +23,23 @@ const ListPlaybook = () => {
 
   const [wordToSearch, setWordToSearch] = useState("");
   const [order] = useState("");
+  const [refresh, setRefresh] = useState(true);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getPlaybooks(currentPage, wordToSearch, order)
@@ -53,7 +67,7 @@ const ListPlaybook = () => {
       });
       setTaxonomyNames(dicTaxonomy);
     });
-  }, [countItems, currentPage, isModify, wordToSearch]);
+  }, [countItems, currentPage, isModify, wordToSearch, refresh]);
 
   return (
     <React.Fragment>
@@ -62,7 +76,10 @@ const ListPlaybook = () => {
           <Card>
             <Card.Header>
               <Row>
-                <Col>
+                <Col sm="auto">
+                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
+                </Col>
+                <Col sm={12} lg={8}>
                   <Search type="playbook" setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
                 </Col>
                 <Col sm={3} lg={3}>

@@ -5,6 +5,7 @@ import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableGroup from "./components/TableGroup";
 import Search from "../../components/Search/Search";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListGroup = () => {
@@ -17,11 +18,24 @@ const ListGroup = () => {
   const [wordToSearch, setWordToSearch] = useState("");
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
+  const [refresh, setRefresh] = useState(true);
   const { t } = useTranslation();
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getGroups(currentPage, wordToSearch, order)
@@ -39,7 +53,7 @@ const ListGroup = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [currentPage, wordToSearch, order, isModify]);
+  }, [currentPage, wordToSearch, order, isModify, refresh]);
 
   return (
     <React.Fragment>
@@ -48,7 +62,10 @@ const ListGroup = () => {
           <Card>
             <Card.Header>
               <Row>
-                <Col sm={12} lg={9}>
+                <Col sm="auto">
+                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
+                </Col>
+                <Col sm={12} lg={8}>
                   <Search
                     type={t("search.by.name.description")}
                     setWordToSearch={setWordToSearch}

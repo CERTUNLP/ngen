@@ -6,6 +6,7 @@ import CrudButton from "../../components/Button/CrudButton";
 import TableStates from "./components/TableStates";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListState = () => {
@@ -20,12 +21,25 @@ const ListState = () => {
 
   const [wordToSearch, setWordToSearch] = useState("");
   const [order] = useState("");
+  const [refresh, setRefresh] = useState(true);
 
   const [showAlert, setShowAlert] = useState(false);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getStates(currentPage, wordToSearch, order)
@@ -44,14 +58,17 @@ const ListState = () => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, wordToSearch, order, isModify]);
+  }, [currentPage, wordToSearch, order, isModify, refresh]);
 
   return (
     <div>
       <Card>
         <Card.Header>
           <Row>
-            <Col sm={12} lg={9}>
+            <Col sm="auto">
+              <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
+            </Col>
+            <Col sm={12} lg={8}>
               <Search
                 type={t("ngen.state_one")}
                 setWordToSearch={setWordToSearch}

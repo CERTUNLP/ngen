@@ -5,6 +5,7 @@ import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableFeed from "./components/TableFeed";
 import Search from "../../components/Search/Search";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListFeed = () => {
@@ -20,11 +21,24 @@ const ListFeed = () => {
 
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
+  const [refresh, setRefresh] = useState(true);
   const { t } = useTranslation();
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   //ORDER
 
@@ -48,7 +62,7 @@ const ListFeed = () => {
         setLoading(false);
         setShowAlert(true);
       });
-  }, [currentPage, wordToSearch, order, isModify]);
+  }, [currentPage, wordToSearch, order, isModify, refresh]);
 
   return (
     <React.Fragment>
@@ -57,7 +71,10 @@ const ListFeed = () => {
           <Card>
             <Card.Header>
               <Row>
-                <Col sm={12} lg={9}>
+                <Col sm="auto">
+                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
+                </Col>
+                <Col sm={12} lg={8}>
                   <Search
                     type={t("search.by.name.description")}
                     setWordToSearch={setWordToSearch}

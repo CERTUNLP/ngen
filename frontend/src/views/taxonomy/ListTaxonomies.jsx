@@ -6,7 +6,7 @@ import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import { getMinifiedTaxonomy, getTaxonomies } from "../../api/services/taxonomies";
 import Search from "../../components/Search/Search";
 import TableTaxonomy from "./components/TableTaxonomy";
-import ButtonFilter from "../../components/Button/ButtonFilter";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import FilterSelectUrl from "../../components/Filter/FilterSelectUrl";
 import FilterSelect from "../../components/Filter/FilterSelect";
 import { useTranslation } from "react-i18next";
@@ -51,10 +51,37 @@ const ListTaxonomies = () => {
   const [valueReportsFilter, setValueReportsFilter] = useState(null);
 
   const [order, setOrder] = useState("name");
+  const [refresh, setRefresh] = useState(true);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setParentFilter("");
+    setValueParentFilter(null);
+    setTaxonomyGroupFilter("");
+    setValueGroupFilter(null);
+    setAliasFilter("");
+    setValueAliasFilter(null);
+    setTypeFilter("");
+    setValueTypeFilter(null);
+    setNeedsReviewFilter("");
+    setValueNeedsReviewFilter(null);
+    setActiveFilter("");
+    setValueActiveFilter(null);
+    setReportsFilter("");
+    setValueReportsFilter(null);
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getMinifiedTaxonomy().then((response) => {
@@ -127,7 +154,7 @@ const ListTaxonomies = () => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, isModify, order, wordToSearch, parentFilter, taxonomyGroupFilter, aliasFilter, typeFilter, activeFilter, needsReviewFilter, reportsFilter]);
+  }, [currentPage, isModify, order, wordToSearch, parentFilter, taxonomyGroupFilter, aliasFilter, typeFilter, activeFilter, needsReviewFilter, reportsFilter, refresh]);
 
   const optionsTaxonomyType = [
     { value: "vulnerability", label: t("ngen.vulnerability") },
@@ -157,8 +184,8 @@ const ListTaxonomies = () => {
           <Card>
             <Card.Header>
               <Row>
-                <Col sm={1} lg={1}>
-                  <ButtonFilter open={openFilter} setOpen={setOpenFilter} />
+                <Col sm="auto">
+                  <FilterToolbar open={openFilter} setOpen={setOpenFilter} onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
                 <Col sm={12} lg={8}>
                   <Search

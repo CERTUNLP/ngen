@@ -6,6 +6,7 @@ import { getEntities } from "../../api/services/entities";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListEntity = ({ routeParams }) => {
@@ -25,11 +26,24 @@ const ListEntity = ({ routeParams }) => {
 
   const [wordToSearch, setWordToSearch] = useState("");
   const [order, setOrder] = useState("name");
+  const [refresh, setRefresh] = useState(true);
   const { t } = useTranslation();
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getEntities(currentPage, wordToSearch, order, routeParams.asNetworkAdmin)
@@ -49,7 +63,7 @@ const ListEntity = ({ routeParams }) => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, isModify, wordToSearch, order]);
+  }, [currentPage, isModify, wordToSearch, order, refresh]);
 
   return (
     <React.Fragment>
@@ -58,7 +72,10 @@ const ListEntity = ({ routeParams }) => {
           <Card>
             <Card.Header>
               <Row>
-                <Col sm={12} lg={9}>
+                <Col sm="auto">
+                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
+                </Col>
+                <Col sm={12} lg={8}>
                   <Search
                     type={t("w.entityByName")}
                     setWordToSearch={setWordToSearch}

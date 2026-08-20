@@ -6,7 +6,7 @@ import { getMinifiedEntity } from "api/services/entities";
 import TableNetwork from "./components/TableNetwork";
 import Search from "components/Search/Search";
 import AdvancedPagination from "components/Pagination/AdvancedPagination";
-import ButtonFilter from "components/Button/ButtonFilter";
+import FilterToolbar from "components/Button/FilterToolbar";
 import FilterSelectUrl from "components/Filter/FilterSelectUrl";
 import FilterSelect from "components/Filter/FilterSelect";
 import FilterInput from "components/Filter/FilterInput";
@@ -53,6 +53,23 @@ const ListNetwork = ({ routeParams }) => {
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setFilterChanged((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setEntitiesFilter("");
+    setValueEntityFilter(null);
+    setTypeFilter("");
+    setValueTypeFilter(null);
+    setSubnetOfFilter("");
+    setSupernetOfFilter("");
+    setCurrentPage(1);
+  };
 
   //Hay que ver si mejora el redimiento
   useEffect(() => {
@@ -108,8 +125,8 @@ const ListNetwork = ({ routeParams }) => {
           <Card>
             <Card.Header>
               <Row>
-                <Col sm={1} lg={1}>
-                  <ButtonFilter open={open} setOpen={setOpen} />
+                <Col sm="auto">
+                  <FilterToolbar open={open} setOpen={setOpen} onReload={reloadPage} onClearFilters={clearFilters} />
                 </Col>
                 <Col sm={12} lg={8}>
                   <Search

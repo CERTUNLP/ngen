@@ -6,6 +6,7 @@ import { getContacts } from "../../api/services/contacts";
 import Search from "../../components/Search/Search";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListContact = ({ routeParams }) => {
@@ -27,10 +28,23 @@ const ListContact = ({ routeParams }) => {
   const [wordToSearch, setWordToSearch] = useState("");
 
   const [order, setOrder] = useState("name");
+  const [refresh, setRefresh] = useState(true);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     setCurrentPage(currentPage); //?
@@ -52,7 +66,7 @@ const ListContact = ({ routeParams }) => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, isModify, wordToSearch, order]);
+  }, [currentPage, isModify, wordToSearch, order, refresh]);
 
   // ------- SEARCH --------
   //filtro
@@ -73,7 +87,10 @@ const ListContact = ({ routeParams }) => {
           <Card>
             <Card.Header>
               <Row>
-                <Col>
+                <Col sm="auto">
+                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
+                </Col>
+                <Col sm={12} lg={8}>
                   <Search
                     type={t("w.entityByName")}
                     setWordToSearch={setWordToSearch}

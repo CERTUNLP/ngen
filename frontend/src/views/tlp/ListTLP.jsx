@@ -4,6 +4,7 @@ import Alert from "../../components/Alert/Alert";
 import { getTLP } from "../../api/services/tlp";
 import Search from "../../components/Search/Search";
 import Ordering from "../../components/Ordering/Ordering";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListTLP = () => {
@@ -14,6 +15,18 @@ const ListTLP = () => {
   const [wordToSearch, setWordToSearch] = useState("");
 
   const [order, setOrder] = useState("");
+  const [refresh, setRefresh] = useState(true);
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setRefresh((prev) => !prev);
+  };
 
   const textareaStyle = {
     resize: "none",
@@ -34,7 +47,7 @@ const ListTLP = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [wordToSearch, order]);
+  }, [wordToSearch, order, refresh]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -49,7 +62,10 @@ const ListTLP = () => {
           <Card>
             <Card.Header>
               <Row>
-                <Col>
+                <Col sm="auto">
+                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
+                </Col>
+                <Col sm={12} lg={8}>
                   <div className="input-group">
                     <Search
                       type={t("search.bycode")}

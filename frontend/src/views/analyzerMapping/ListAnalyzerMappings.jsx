@@ -4,6 +4,7 @@ import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Search from "../../components/Search/Search";
 import TableAnalyzerMapping from "./components/TableAnalyzerMapping";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 import { getAnalyzerMappings } from "../../api/services/analyzerMapping";
 
@@ -20,10 +21,23 @@ const ListAnalyzerMappings = () => {
 
   const [order, setOrder] = useState("date");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [refresh, setRefresh] = useState(true);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -42,7 +56,7 @@ const ListAnalyzerMappings = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [currentPage, order, wordToSearch, refreshKey]);
+  }, [currentPage, order, wordToSearch, refreshKey, refresh]);
 
   return (
     <React.Fragment>
@@ -51,7 +65,10 @@ const ListAnalyzerMappings = () => {
           <Card>
             <Card.Header>
               <Row>
-                <Col sm={12} lg={9}>
+                <Col sm="auto">
+                  <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
+                </Col>
+                <Col sm={12} lg={8}>
                   <Search
                     type={t("search.by.name")}
                     setWordToSearch={setWordToSearch}

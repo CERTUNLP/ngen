@@ -6,6 +6,7 @@ import CrudButton from "../../components/Button/CrudButton";
 import { getPriorities } from "../../api/services/priorities";
 import TablePriorities from "./components/TablePriorities";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 const ListPriorities = () => {
@@ -20,10 +21,23 @@ const ListPriorities = () => {
   const { t } = useTranslation();
 
   const [order, setOrder] = useState("name");
+  const [refresh, setRefresh] = useState(true);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getPriorities(currentPage, wordToSearch, order)
@@ -43,7 +57,7 @@ const ListPriorities = () => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, wordToSearch, order]);
+  }, [currentPage, wordToSearch, order, refresh]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -54,7 +68,10 @@ const ListPriorities = () => {
       <Card>
         <Card.Header>
           <Row>
-            <Col sm={12} lg={9}>
+            <Col sm="auto">
+              <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
+            </Col>
+            <Col sm={12} lg={8}>
               <Search type={t("search.by.name")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
             </Col>
             <Col sm={12} lg={3}>

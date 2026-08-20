@@ -8,7 +8,7 @@ const FilterToolbar = ({ open, setOpen, onReload, onClearFilters }) => {
 
   return (
     <div className="d-flex gap-1">
-      <ButtonFilter open={open} setOpen={setOpen} />
+      {setOpen && <ButtonFilter open={open} setOpen={setOpen} />}
       {onClearFilters && (
         <Button size="lm" variant="outline-secondary" onClick={onClearFilters}>
           {t("button.clear_filters")}

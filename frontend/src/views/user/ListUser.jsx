@@ -6,6 +6,7 @@ import CrudButton from "../../components/Button/CrudButton";
 import { getUsers } from "../../api/services/users";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import Alert from "../../components/Alert/Alert";
+import FilterToolbar from "../../components/Button/FilterToolbar";
 import { useTranslation } from "react-i18next";
 
 function ListUser() {
@@ -25,10 +26,23 @@ function ListUser() {
 
   const [wordToSearch, setWordToSearch] = useState("");
   const [order, setOrder] = useState("");
+  const [refresh, setRefresh] = useState(true);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -51,7 +65,7 @@ function ListUser() {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, wordToSearch, order, isModify]);
+  }, [currentPage, wordToSearch, order, isModify, refresh]);
 
   if (error) {
     return <p>{t("user.error.fetch")}</p>;
@@ -62,6 +76,9 @@ function ListUser() {
       <Card>
         <Card.Header>
           <Row>
+            <Col sm="auto">
+              <FilterToolbar onReload={reloadPage} onClearFilters={clearFilters} />
+            </Col>
             <Col sm={12} lg={8}>
               <Search
                 type={t("search.by.name.user.email")}
