@@ -133,6 +133,8 @@
   "ngen.color": "Color",
   "ngen.color.validate": "Enter a color",
   "ngen.comments": "Comments",
+  "ngen.connection.connected": "Connected to server",
+  "ngen.connection.disconnected": "No connection to server",
   "ngen.contact.create": "Create contact",
   "ngen.contact.detail": "Contact detail",
   "ngen.contact.placeholder": "Contact type has not been selected",
