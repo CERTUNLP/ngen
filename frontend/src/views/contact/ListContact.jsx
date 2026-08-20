@@ -82,7 +82,7 @@ const ListContact = ({ routeParams }) => {
     <React.Fragment>
       <Alert showAlert={showAlert} resetShowAlert={() => setShowAlert(false)} component="contact" />
       <Row>
-        <Col sm="auto">
+        <Col>
           <Card>
             <Card.Header>
               <ListViewHeader
