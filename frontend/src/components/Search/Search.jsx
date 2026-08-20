@@ -40,11 +40,13 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
 
   const clearSearch = () => {
     setSearch("");
-    setWordToSearch("");
-    if (setCurrentPage) {
-      setCurrentPage(1);
+    if (wordToSearch) {
+      setWordToSearch("");
+      if (setCurrentPage) {
+        setCurrentPage(1);
+      }
+      setLoading(true);
     }
-    setLoading(true);
   };
 
   return (
