@@ -49,12 +49,14 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
 
   return (
     <form onSubmit={handleSubmit} className="input-group">
-      <input value={search} onChange={searcher} type="text" id="m-search" className="form-control" placeholder={text} />
-      {search && (
-        <button type="button" className="search-clear-btn btn" onClick={clearSearch} aria-label={t("search.clear")}>
-          <i className="feather icon-x" />
-        </button>
-      )}
+      <div className="search-input-wrapper">
+        <input value={search} onChange={searcher} type="text" id="m-search" className="form-control" placeholder={text} />
+        {search && (
+          <button type="button" className="search-clear-btn" onClick={clearSearch} aria-label={t("search.clear")}>
+            <i className="feather icon-x" />
+          </button>
+        )}
+      </div>
       <button type="submit" className="search-btn btn btn-primary">
         <i className="feather icon-search " />
       </button>
