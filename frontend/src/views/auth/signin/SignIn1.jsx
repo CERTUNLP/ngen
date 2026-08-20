@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
 import Alert from "./../../../components/Alert/Alert";
@@ -12,17 +12,51 @@ import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "../../../config/constant";
 import { ThemeContext } from "../../../contexts/ThemeContext";
 
+const ConnectionIndicator = React.forwardRef(({ children, ...props }, ref) => (
+  <span ref={ref} {...props}>
+    {children}
+  </span>
+));
+
 const Signin1 = () => {
   const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
   const [signup, setSignup] = useState(false);
   const [oidcEnabled, setOidcEnabled] = useState(false);
+  const [connected, setConnected] = useState(false);
 
   const { isDark } = useContext(ThemeContext);
 
   const resetShowAlert = () => {
     setShowAlert(false);
   };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const checkConnection = () => {
+      const external = localStorage.getItem("API_SERVER");
+      if (!external) {
+        if (mounted) setConnected(false);
+        return;
+      }
+      fetch(external + COMPONENT_URL.configPublic, { cache: "no-store" })
+        .then((res) => {
+          if (mounted) setConnected(res.ok);
+        })
+        .catch(() => {
+          if (mounted) setConnected(false);
+        });
+    };
+
+    checkConnection();
+    const interval = setInterval(checkConnection, 3000);
+
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const external = localStorage.getItem("API_SERVER");
@@ -80,8 +114,24 @@ const Signin1 = () => {
             <span className="r s" />
             <span className="r" />
           </div>
-          <Card className="borderless text-center">
+          <Card className="borderless text-center position-relative">
             <Card.Body>
+              <OverlayTrigger
+                placement="left"
+                overlay={
+                  <Tooltip id="connection-status-tooltip">
+                    {connected ? t("ngen.connection.connected") : t("ngen.connection.disconnected")}
+                  </Tooltip>
+                }
+              >
+                <ConnectionIndicator
+                  className="position-absolute top-0 end-0 m-3 connection-status"
+                  role="img"
+                  aria-label={connected ? t("ngen.connection.connected") : t("ngen.connection.disconnected")}
+                >
+                  <i className={connected ? "feather icon-check-circle text-success" : "feather icon-zap text-danger"} />
+                </ConnectionIndicator>
+              </OverlayTrigger>
               <div className="mb-4">
                 <img
                   src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv" + (isDark ? "_light" : "") + ".png"}
@@ -112,7 +162,7 @@ const Signin1 = () => {
                 </div>
               )}
 
-              <RestLogin />
+              <RestLogin connected={connected} />
 
               {signup && (
                 <>

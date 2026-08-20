@@ -8,7 +8,7 @@ import store from "./../../../store";
 import Alert from "./../../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
-const RestLogin = ({ className, ...rest }) => {
+const RestLogin = ({ className, connected = true, ...rest }) => {
   const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
   const { dispatch } = store;
@@ -72,7 +72,7 @@ const RestLogin = ({ className, ...rest }) => {
 
             <Row>
               <Col mt={2}>
-                <Button className="btn-block" color="primary" disabled={isSubmitting} size="large" type="submit" variant="primary">
+                <Button className="btn-block" color="primary" disabled={isSubmitting || !connected} size="large" type="submit" variant="primary">
                   {t("button.login")}
                 </Button>
               </Col>
