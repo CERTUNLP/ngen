@@ -114,24 +114,8 @@ const Signin1 = () => {
             <span className="r s" />
             <span className="r" />
           </div>
-          <Card className="borderless text-center position-relative">
+          <Card className="borderless text-center">
             <Card.Body>
-              <OverlayTrigger
-                placement="left"
-                overlay={
-                  <Tooltip id="connection-status-tooltip">
-                    {connected ? t("ngen.connection.connected") : t("ngen.connection.disconnected")}
-                  </Tooltip>
-                }
-              >
-                <ConnectionIndicator
-                  className="position-absolute top-0 end-0 m-3 connection-status"
-                  role="img"
-                  aria-label={connected ? t("ngen.connection.connected") : t("ngen.connection.disconnected")}
-                >
-                  <i className={connected ? "feather icon-check-circle text-success" : "feather icon-zap text-danger"} />
-                </ConnectionIndicator>
-              </OverlayTrigger>
               <div className="mb-4">
                 <img
                   src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv" + (isDark ? "_light" : "") + ".png"}
@@ -141,8 +125,24 @@ const Signin1 = () => {
                 />
               </div>
 
-              <div className="mb-4">
+              <div className="mb-4 d-flex align-items-center justify-content-center gap-2">
                 <i className="feather icon-unlock auth-icon" />
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <Tooltip id="connection-status-tooltip">
+                      {connected ? t("ngen.connection.connected") : t("ngen.connection.disconnected")}
+                    </Tooltip>
+                  }
+                >
+                  <ConnectionIndicator
+                    className="connection-status"
+                    role="img"
+                    aria-label={connected ? t("ngen.connection.connected") : t("ngen.connection.disconnected")}
+                  >
+                    <i className={connected ? "feather icon-check-circle text-success" : "feather icon-zap text-danger"} />
+                  </ConnectionIndicator>
+                </OverlayTrigger>
               </div>
 
               {oidcEnabled && (
