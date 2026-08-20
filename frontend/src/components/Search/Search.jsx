@@ -48,8 +48,8 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
   };
 
   return (
-    <form onSubmit={handleSubmit} className="input-group">
-      <div className="search-input-wrapper">
+    <form onSubmit={handleSubmit} className="search-input-group">
+      <div className="search-field">
         <input value={search} onChange={searcher} type="text" id="m-search" className="form-control" placeholder={text} />
         {search && (
           <button type="button" className="search-clear-btn" onClick={clearSearch} aria-label={t("search.clear")}>
