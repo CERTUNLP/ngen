@@ -164,6 +164,7 @@ if settings.ELASTIC_ENABLED:
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
+    path("api/health/", views.tools.HealthView.as_view(), name="health"),
     path("api/admin/", admin.site.urls),
     path("api/", include(router.urls)),
     # path(
