@@ -13,9 +13,17 @@
 <small class="lead"><strong>{% translate 'Affected resources' %}:</strong>
     {{ event.address }}</small>
 <br>
-<small class="lead"><strong>{% translate 'Event Date' %}:</strong>
-    {{ event.date | date:"Y-m-d H:i:s" }} UTC</small>
+{% if event.date or event.created %}
+<small class="lead"><strong>
+    {% if event.date %}
+    {% translate 'Event Date' %}:
+    {% else %}
+    {% translate 'Event creation date' %}:
+    {% endif %}
+</strong>
+    {{ event.date|default:event.created | date:"Y-m-d H:i:s" }} UTC</small>
 <br>
+{% endif %}
 {% if event.notes %}
 <small class="lead"><strong>{% translate 'Notes' %}:</strong>
     <div style="word-wrap: break-word;">{{ event.notes | render_report_content:event }}</div>

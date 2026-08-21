@@ -425,3 +425,17 @@ ul.sidebar li a h1, ul.sidebar li a h2, ul.sidebar li a h3, ul.sidebar li a h4, 
     background-color: #259152;
     color: white;
 }
+
+/* -------------------------------------
+        DARK MODE (keep original colors)
+------------------------------------- */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #ffffff !important;
+        color: #222222 !important;
+    }
+
+    .right-header h6 {
+        background-color: #000000 !important;
+    }
+}
