@@ -29,11 +29,17 @@ const ListAudit = () => {
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [open, setOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const { t } = useTranslation();
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
 
   const buildFilters = () => {
     const parts = [];
@@ -57,7 +63,7 @@ const ListAudit = () => {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [currentPage, wordToSearch, actionFilter, actorFilter, typeFilter, dateFrom, dateTo, order]);
+  }, [currentPage, wordToSearch, actionFilter, actorFilter, typeFilter, dateFrom, dateTo, order, refresh]);
 
   const clearFilters = () => {
     setActionFilter("");
@@ -82,7 +88,7 @@ const ListAudit = () => {
                 setWordToSearch={setWordToSearch}
                 setLoading={setLoading}
                 setCurrentPage={setCurrentPage}
-                onReload={() => setCurrentPage(1)}
+                onReload={reloadPage}
                 onClearFilters={clearFilters}
               />
               <Collapse in={open}>

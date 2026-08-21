@@ -61,6 +61,12 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
       skipBlurApplyRef.current = false;
       return;
     }
+    const applied = wordToSearch.startsWith("search=")
+      ? wordToSearch.replace(/^search=/, "").replace(/&$/, "")
+      : "";
+    if (search === applied) {
+      return;
+    }
     action();
   };
 

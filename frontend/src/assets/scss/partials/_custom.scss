@@ -406,9 +406,9 @@
         color: var(--bs-body-color);
       }
 
-      &:focus {
-        outline: none;
-        box-shadow: none;
+      &:focus-visible {
+        outline: 2px solid var(--bs-primary, #04a9f5);
+        outline-offset: 2px;
       }
     }
   }
@@ -435,6 +435,6 @@
   padding: 0 5px;
 }
 
-.mb-3 {
+.auth-wrapper .mb-3 {
   margin-bottom: 0.5rem !important;
 }
