@@ -291,11 +291,15 @@ msgstr "Taxonomía"
 msgid "Affected resources"
 msgstr "Recursos afectados"
 
-#: ngen/templates/reports/basic_event_report.html:16
+#: ngen/templates/reports/basic_event_report.html:19
 msgid "Event Date"
 msgstr "Fecha del evento"
 
-#: ngen/templates/reports/basic_event_report.html:20
+#: ngen/templates/reports/basic_event_report.html:21
+msgid "Event creation date"
+msgstr "Fecha de creación del evento"
+
+#: ngen/templates/reports/basic_event_report.html:28
 msgid "Notes"
 msgstr "Notas"
 

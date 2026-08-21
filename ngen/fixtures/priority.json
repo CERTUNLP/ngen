@@ -11,7 +11,7 @@
       "attend_time": "00:00:00",
       "solve_time": "01:00:00",
       "notification_amount": 3,
-      "color": "#FFFFFF"
+      "color": "#FF0000"
     }
   },
   {
@@ -26,7 +26,7 @@
       "attend_time": "00:10:00",
       "solve_time": "04:00:00",
       "notification_amount": 3,
-      "color": "#FFFFFF"
+      "color": "#FF7E11"
     }
   },
   {
@@ -41,7 +41,7 @@
       "attend_time": "01:00:00",
       "solve_time": "08:00:00",
       "notification_amount": 3,
-      "color": "#FFFFFF"
+      "color": "#FFFF00"
     }
   },
   {
@@ -56,7 +56,7 @@
       "attend_time": "04:00:00",
       "solve_time": "2 00:00:00",
       "notification_amount": 3,
-      "color": "#FFFFFF"
+      "color": "#1EA00A"
     }
   },
   {
