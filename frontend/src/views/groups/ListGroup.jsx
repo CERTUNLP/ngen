@@ -4,7 +4,7 @@ import { getGroups } from "../../api/services/groups";
 import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableGroup from "./components/TableGroup";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { useTranslation } from "react-i18next";
 
 const ListGroup = () => {
@@ -17,11 +17,24 @@ const ListGroup = () => {
   const [wordToSearch, setWordToSearch] = useState("");
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
+  const [refresh, setRefresh] = useState(true);
   const { t } = useTranslation();
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getGroups(currentPage, wordToSearch, order)
@@ -39,7 +52,7 @@ const ListGroup = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [currentPage, wordToSearch, order, isModify]);
+  }, [currentPage, wordToSearch, order, isModify, refresh]);
 
   return (
     <React.Fragment>
@@ -47,20 +60,17 @@ const ListGroup = () => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm={12} lg={9}>
-                  <Search
-                    type={t("search.by.name.description")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-                <Col sm={12} lg={3}>
-                  <CrudButton type="create" name={t("w.groups")} to="/groups/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("search.by.name.description")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("w.groups")} to="/groups/create" checkPermRoute />
+              </ListViewHeader>
             </Card.Header>
             <TableGroup
               groups={groups}

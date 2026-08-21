@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import CrudButton from "../../components/Button/CrudButton";
 import Alert from "../../components/Alert/Alert";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
-import Search from "../../components/Search/Search";
 import TableTaxonomyGroup from "./components/TableTaxonomyGroup";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { useTranslation } from "react-i18next";
 import { getMinifiedTaxonomyGroups, getTaxonomyGroups } from "../../api/services/taxonomyGroups";
 
@@ -24,10 +24,23 @@ const listTaxonomyGroups = () => {
   const [wordToSearch, setWordToSearch] = useState("");
 
   const [order, setOrder] = useState("name");
+  const [refresh, setRefresh] = useState(true);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getTaxonomyGroups(currentPage, wordToSearch, order)
@@ -48,7 +61,7 @@ const listTaxonomyGroups = () => {
         setLoading(false);
       });
 
-  }, [currentPage, isModify, order, wordToSearch]);
+  }, [currentPage, isModify, order, wordToSearch, refresh]);
 
   return (
     <React.Fragment>
@@ -56,21 +69,17 @@ const listTaxonomyGroups = () => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm={12} lg={9}>
-                  <Search
-                    type={t("search.by.name")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-
-                <Col sm={12} lg={3}>
-                  <CrudButton type="create" name={t("ngen.taxonomyGroup_one")} to="/taxonomyGroups/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("search.by.name")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("ngen.taxonomyGroup_one")} to="/taxonomyGroups/create" checkPermRoute />
+              </ListViewHeader>
             </Card.Header>
             <Card.Body>
               <TableTaxonomyGroup

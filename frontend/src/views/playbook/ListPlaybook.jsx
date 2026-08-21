@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import TablePlaybook from "./components/TablePlaybook";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { getPlaybooks } from "../../api/services/playbooks";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
@@ -22,10 +22,23 @@ const ListPlaybook = () => {
 
   const [wordToSearch, setWordToSearch] = useState("");
   const [order] = useState("");
+  const [refresh, setRefresh] = useState(true);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getPlaybooks(currentPage, wordToSearch, order)
@@ -53,7 +66,7 @@ const ListPlaybook = () => {
       });
       setTaxonomyNames(dicTaxonomy);
     });
-  }, [countItems, currentPage, isModify, wordToSearch]);
+  }, [countItems, currentPage, isModify, wordToSearch, refresh]);
 
   return (
     <React.Fragment>
@@ -61,14 +74,17 @@ const ListPlaybook = () => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col>
-                  <Search type="playbook" setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
-                </Col>
-                <Col sm={3} lg={3}>
-                  <CrudButton type="create" name="Playbook" to="/playbooks/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType="playbook"
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name="Playbook" to="/playbooks/create" checkPermRoute />
+              </ListViewHeader>
             </Card.Header>
             <Card.Body>
               <TablePlaybook setIsModify={setIsModify} list={playbook} loading={loading} taxonomyNames={taxonomyNames} />

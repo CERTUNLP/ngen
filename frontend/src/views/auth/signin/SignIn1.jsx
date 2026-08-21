@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Button, Card } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
@@ -11,14 +11,25 @@ import RestLogin from "./RestLogin";
 import { useTranslation } from "react-i18next";
 import { COMPONENT_URL } from "../../../config/constant";
 import { ThemeContext } from "../../../contexts/ThemeContext";
+import useBackendHealth from "../../../hooks/useBackendHealth";
 
 const Signin1 = () => {
   const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
   const [signup, setSignup] = useState(false);
   const [oidcEnabled, setOidcEnabled] = useState(false);
+  const connected = useBackendHealth();
+  const [logoVersion, setLogoVersion] = useState(0);
+  const prevConnected = useRef(connected);
 
   const { isDark } = useContext(ThemeContext);
+
+  useEffect(() => {
+    if (connected && !prevConnected.current) {
+      setLogoVersion((version) => version + 1);
+    }
+    prevConnected.current = connected;
+  }, [connected]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -84,14 +95,14 @@ const Signin1 = () => {
             <Card.Body>
               <div className="mb-4">
                 <img
-                  src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv" + (isDark ? "_light" : "") + ".png"}
+                  src={localStorage.getItem("API_SERVER") + "static/img/ngenlogo_inv" + (isDark ? "_light" : "") + ".png?t=" + logoVersion}
                   alt="NGEN"
                   className="logo"
                   id="teamlogo_login"
                 />
               </div>
 
-              <div className="mb-4">
+              <div className="mb-4 d-flex align-items-center justify-content-center gap-2">
                 <i className="feather icon-unlock auth-icon" />
               </div>
 
@@ -102,17 +113,17 @@ const Signin1 = () => {
                     variant="outline-primary"
                     onClick={handleSsoLogin}
                   >
-                    {t("login.sso") || "Login with SSO"}
+                    {t("login.sso")}
                   </Button>
                   <div className="d-flex align-items-center my-3">
                     <hr className="flex-grow-1" />
-                    <span className="mx-2 text-muted">or</span>
+                    <span className="mx-2 text-muted">{t("login.or")}</span>
                     <hr className="flex-grow-1" />
                   </div>
                 </div>
               )}
 
-              <RestLogin />
+              <RestLogin connected={connected} />
 
               {signup && (
                 <>

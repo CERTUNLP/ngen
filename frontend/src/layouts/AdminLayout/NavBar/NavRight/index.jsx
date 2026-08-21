@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 import { ThemeContext } from "../../../../contexts/ThemeContext";
+import { logout } from "../../../../api/services/auth";
 
 const CURRENT_LANG = (i18n.language || localStorage.getItem("NGEN_LANG") || "en").substring(0, 2);
 
@@ -76,12 +77,9 @@ const NavRight = () => {
           </Dropdown.Item>
 
           <Dropdown.Item
-            as={Link}
-            to="/logout/"
+            as="button"
             className="pref-item"
-            onClick={() => {
-              localStorage.removeItem("ngen-account");
-            }}
+            onClick={() => logout()}
           >
             <i className="feather icon-log-out" />
             <span>{t("button.logout")}</span>

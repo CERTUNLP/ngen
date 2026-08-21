@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getStates } from "../../api/services/states";
 import { Card, Col, Row } from "react-bootstrap";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import CrudButton from "../../components/Button/CrudButton";
 import TableStates from "./components/TableStates";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
@@ -20,12 +20,25 @@ const ListState = () => {
 
   const [wordToSearch, setWordToSearch] = useState("");
   const [order] = useState("");
+  const [refresh, setRefresh] = useState(true);
 
   const [showAlert, setShowAlert] = useState(false);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getStates(currentPage, wordToSearch, order)
@@ -44,26 +57,24 @@ const ListState = () => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, wordToSearch, order, isModify]);
+  }, [currentPage, wordToSearch, order, isModify, refresh]);
 
   return (
-    <div>
-      <Card>
+    <Row>
+      <Col>
+        <Card>
         <Card.Header>
-          <Row>
-            <Col sm={12} lg={9}>
-              <Search
-                type={t("ngen.state_one")}
-                setWordToSearch={setWordToSearch}
-                wordToSearch={wordToSearch}
-                setLoading={setLoading}
-                setCurrentPage={setCurrentPage}
-              />
-            </Col>
-            <Col sm={12} lg={3}>
-              <CrudButton type="create" name={t("ngen.state_one")} to="/states/create" state={states} checkPermRoute />
-            </Col>
-          </Row>
+          <ListViewHeader
+            searchType={t("ngen.state_one")}
+            wordToSearch={wordToSearch}
+            setWordToSearch={setWordToSearch}
+            setLoading={setLoading}
+            setCurrentPage={setCurrentPage}
+            onReload={reloadPage}
+            onClearFilters={clearFilters}
+          >
+            <CrudButton type="create" name={t("ngen.state_one")} to="/states/create" state={states} checkPermRoute />
+          </ListViewHeader>
         </Card.Header>
         <Card.Body>
           <TableStates states={states} loading={loading} currentPage={currentPage} setIsModify={setIsModify} />
@@ -84,7 +95,8 @@ const ListState = () => {
           </Row>
         </Card.Footer>
       </Card>
-    </div>
+      </Col>
+    </Row>
   );
 };
 

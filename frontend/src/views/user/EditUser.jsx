@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import { getUser, putUser } from "../../api/services/users";
 import { useLocation, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
@@ -76,8 +76,9 @@ const EditUser = () => {
       });
   };
   return (
-    <>
-      <Card>
+    <Row>
+      <Col>
+        <Card>
         <Card.Header>
           <Card.Title as="h5">
             {t("w.edit")} {t("ngen.user")}
@@ -94,8 +95,9 @@ const EditUser = () => {
             isEdit={true}
           />
         </Card.Body>
-      </Card>
-    </>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

@@ -36,10 +36,18 @@ const initializeApp = async () => {
   try {
     // Cargar variables de entorno
     await loadEnv();
+  } catch (error) {
+    console.error("Error cargando el entorno:", error);
+  }
 
+  try {
     // Inicializar i18n
     await initializeI18n();
+  } catch (error) {
+    console.error("Error inicializando i18n:", error);
+  }
 
+  try {
     // Renderizar la aplicación
     const app = (
       <QueryClientProvider client={queryClient}>

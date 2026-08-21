@@ -4,8 +4,7 @@ import Select from "react-select";
 import { getAudits } from "../../api/services/audit";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableAudit from "./components/TableAudit";
-import Search from "../../components/Search/Search";
-import FilterToolbar from "../../components/Button/FilterToolbar";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { useTranslation } from "react-i18next";
 
 const ACTION_OPTIONS = [
@@ -30,11 +29,17 @@ const ListAudit = () => {
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [open, setOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const { t } = useTranslation();
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
 
   const buildFilters = () => {
     const parts = [];
@@ -58,7 +63,7 @@ const ListAudit = () => {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [currentPage, wordToSearch, actionFilter, actorFilter, typeFilter, dateFrom, dateTo, order]);
+  }, [currentPage, wordToSearch, actionFilter, actorFilter, typeFilter, dateFrom, dateTo, order, refresh]);
 
   const clearFilters = () => {
     setActionFilter("");
@@ -75,20 +80,17 @@ const ListAudit = () => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm="auto">
-                  <FilterToolbar open={open} setOpen={setOpen} onReload={() => setCurrentPage(1)} onClearFilters={clearFilters} />
-                </Col>
-                <Col sm={8} lg={4}>
-                  <Search
-                    type={t("search.by.name.description")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-              </Row>
+              <ListViewHeader
+                open={open}
+                setOpen={setOpen}
+                searchType={t("search.by.name.description")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              />
               <Collapse in={open}>
                 <div id="example-collapse-text">
                   <Row>

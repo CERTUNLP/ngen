@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
 import CrudButton from "components/Button/CrudButton";
 import AdvancedPagination from "components/Pagination/AdvancedPagination";
-import Search from "components/Search/Search";
 import { useTranslation } from "react-i18next";
 import { getTags, deleteTag } from "api/services/tags";
+import ListViewHeader from "components/ListViewHeader/ListViewHeader";
 import CreateTagModal from "./components/CreateTagModal";
 import ModalConfirm from "components/Modal/ModalConfirm";
 
@@ -68,6 +68,13 @@ const ListTag = (props) => {
     setIsModify(!isModify);
   };
 
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    reloadPage();
+  };
+
   const ifConfirm = (response) => {
     setModalCreate(false);
     reloadPage();
@@ -75,33 +82,20 @@ const ListTag = (props) => {
 
   return (
     <React.Fragment>
-      <Card>
+      <Row>
+        <Col>
+          <Card>
         <Card.Header>
-          <Row>
-            <Col>
-              <Search
-                type={t("ngen.tag_one")}
-                setWordToSearch={setWordToSearch}
-                wordToSearch={wordToSearch}
-                setLoading={setLoading}
-                setCurrentPage={setCurrentPage}
-              />
-            </Col>
-            <Col>
-              <Button size="lm" variant="outline-primary" onClick={() => reloadPage()}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-arrow-clockwise"
-                  viewBox="0 0 16 16"
-                >
-                  <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
-                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
-                </svg>
-              </Button>
-              <CrudButton
+          <ListViewHeader
+            searchType={t("ngen.tag_one")}
+            wordToSearch={wordToSearch}
+            setWordToSearch={setWordToSearch}
+            setLoading={setLoading}
+            setCurrentPage={setCurrentPage}
+            onReload={reloadPage}
+            onClearFilters={clearFilters}
+          >
+            <CrudButton
                 type="create"
                 name={t("ngen.tag_one")}
                 onClick={() => {
@@ -112,8 +106,7 @@ const ListTag = (props) => {
                 }}
                 optionalPermissions={["create_tag", "create_tag_network_admin"]}
               />
-            </Col>
-          </Row>
+          </ListViewHeader>
         </Card.Header>
         <Card.Body>
           <Table responsive hover className="text-center">
@@ -207,7 +200,9 @@ const ListTag = (props) => {
             reloadPage();
           });
         }}
-      />
+        />
+      </Col>
+      </Row>
     </React.Fragment>
   );
 };

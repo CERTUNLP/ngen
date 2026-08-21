@@ -4,9 +4,8 @@ import CrudButton from "components/Button/CrudButton";
 import { getNetworks } from "api/services/networks";
 import { getMinifiedEntity } from "api/services/entities";
 import TableNetwork from "./components/TableNetwork";
-import Search from "components/Search/Search";
+import ListViewHeader from "components/ListViewHeader/ListViewHeader";
 import AdvancedPagination from "components/Pagination/AdvancedPagination";
-import ButtonFilter from "components/Button/ButtonFilter";
 import FilterSelectUrl from "components/Filter/FilterSelectUrl";
 import FilterSelect from "components/Filter/FilterSelect";
 import FilterInput from "components/Filter/FilterInput";
@@ -53,6 +52,23 @@ const ListNetwork = ({ routeParams }) => {
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setFilterChanged((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setEntitiesFilter("");
+    setValueEntityFilter(null);
+    setTypeFilter("");
+    setValueTypeFilter(null);
+    setSubnetOfFilter("");
+    setSupernetOfFilter("");
+    setCurrentPage(1);
+  };
 
   //Hay que ver si mejora el redimiento
   useEffect(() => {
@@ -107,23 +123,19 @@ const ListNetwork = ({ routeParams }) => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm={1} lg={1}>
-                  <ButtonFilter open={open} setOpen={setOpen} />
-                </Col>
-                <Col sm={12} lg={8}>
-                  <Search
-                    type={t("filter.cidr_domain")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-                <Col sm={12} lg={3}>
-                  <CrudButton type="create" name={t("ngen.network_one")} to="/networks/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                open={open}
+                setOpen={setOpen}
+                searchType={t("filter.cidr_domain")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("ngen.network_one")} to="/networks/create" checkPermRoute />
+              </ListViewHeader>
               <Collapse in={open}>
                 <div id="example-collapse-text">
                   <Row>

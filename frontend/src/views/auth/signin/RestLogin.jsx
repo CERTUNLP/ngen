@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 import * as Yup from "yup";
 import { Formik } from "formik";
@@ -8,7 +8,7 @@ import store from "./../../../store";
 import Alert from "./../../../components/Alert/Alert";
 import { useTranslation } from "react-i18next";
 
-const RestLogin = ({ className, ...rest }) => {
+const RestLogin = ({ className, connected = true, ...rest }) => {
   const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
   const { dispatch } = store;
@@ -39,12 +39,13 @@ const RestLogin = ({ className, ...rest }) => {
           login(values.username, values.password);
         }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, submitCount, touched, values }) => {
+          return (
           <form noValidate onSubmit={handleSubmit} className={className} {...rest}>
-            <div className="form-group mb-3">
+            <div className="form-group mb-1">
               <input
-                className="form-control"
-                error={touched.username && errors.username}
+                className={"form-control" + (touched.username && errors.username ? " is-invalid" : "")}
+                aria-invalid={!!(touched.username && errors.username)}
                 aria-label={t("ngen.user.username_or_email")}
                 placeholder={t("ngen.user.username_or_email")}
                 name="username"
@@ -53,12 +54,14 @@ const RestLogin = ({ className, ...rest }) => {
                 type="text"
                 value={values.username}
               />
-              {touched.username && errors.username && <small className="text-danger form-text">{errors.username}</small>}
+              <div className="login-feedback">
+                {(touched.username || submitCount > 0) && errors.username ? errors.username : ""}
+              </div>
             </div>
-            <div className="form-group mb-4">
+            <div className="form-group mb-1">
               <input
-                className="form-control"
-                error={touched.password && errors.password}
+                className={"form-control" + (touched.password && errors.password ? " is-invalid" : "")}
+                aria-invalid={!!(touched.password && errors.password)}
                 aria-label={t("ngen.password")}
                 placeholder={t("ngen.password")}
                 name="password"
@@ -67,18 +70,20 @@ const RestLogin = ({ className, ...rest }) => {
                 type="password"
                 value={values.password}
               />
-              {touched.password && errors.password && <small className="text-danger form-text">{errors.password}</small>}
+              <div className="login-feedback">
+                {(touched.password || submitCount > 0) && errors.password ? errors.password : ""}
+              </div>
             </div>
 
-            <Row>
-              <Col mt={2}>
-                <Button className="btn-block" color="primary" disabled={isSubmitting} size="large" type="submit" variant="primary">
-                  {t("button.login")}
-                </Button>
-              </Col>
-            </Row>
+            <div className="mb-4">
+              <Button className="btn-block" color="primary" disabled={isSubmitting || !connected} size="large" type="submit" variant="primary">
+                {!connected && <i className="feather icon-zap text-danger me-2" aria-hidden="true" />}
+                {t("button.login")}
+              </Button>
+            </div>
           </form>
-        )}
+          );
+        }}
       </Formik>
     </React.Fragment>
   );

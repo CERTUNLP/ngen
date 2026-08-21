@@ -29,5 +29,12 @@ export const loadEnv = () => {
 
 const normalizeApiUrl = (host, port, path) => {
   let portValue = port || window.location.port;
-  return `${window.location.protocol}//${host || window.location.hostname}${portValue ? ":" + portValue : ""}${path || "/api/"}`;
+  let normalizedPath = path || "/api/";
+  if (!normalizedPath.startsWith("/")) {
+    normalizedPath = "/" + normalizedPath;
+  }
+  if (!normalizedPath.endsWith("/")) {
+    normalizedPath += "/";
+  }
+  return `${window.location.protocol}//${host || window.location.hostname}${portValue ? ":" + portValue : ""}${normalizedPath}`;
 };

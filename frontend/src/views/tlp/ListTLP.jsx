@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
 import { getTLP } from "../../api/services/tlp";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import Ordering from "../../components/Ordering/Ordering";
 import { useTranslation } from "react-i18next";
 
@@ -14,6 +14,18 @@ const ListTLP = () => {
   const [wordToSearch, setWordToSearch] = useState("");
 
   const [order, setOrder] = useState("");
+  const [refresh, setRefresh] = useState(true);
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setRefresh((prev) => !prev);
+  };
 
   const textareaStyle = {
     resize: "none",
@@ -34,7 +46,7 @@ const ListTLP = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [wordToSearch, order]);
+  }, [wordToSearch, order, refresh]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
@@ -48,18 +60,14 @@ const ListTLP = () => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col>
-                  <div className="input-group">
-                    <Search
-                      type={t("search.bycode")}
-                      setWordToSearch={setWordToSearch}
-                      wordToSearch={wordToSearch}
-                      setLoading={setLoading}
-                    />
-                  </div>
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("search.bycode")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              />
             </Card.Header>
             <Card.Body>
               <Table responsive hover className="text-center">

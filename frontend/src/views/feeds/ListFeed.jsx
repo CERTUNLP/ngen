@@ -4,7 +4,7 @@ import { getFeeds } from "../../api/services/feeds";
 import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import TableFeed from "./components/TableFeed";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { useTranslation } from "react-i18next";
 
 const ListFeed = () => {
@@ -20,11 +20,24 @@ const ListFeed = () => {
 
   const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
+  const [refresh, setRefresh] = useState(true);
   const { t } = useTranslation();
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   //ORDER
 
@@ -48,7 +61,7 @@ const ListFeed = () => {
         setLoading(false);
         setShowAlert(true);
       });
-  }, [currentPage, wordToSearch, order, isModify]);
+  }, [currentPage, wordToSearch, order, isModify, refresh]);
 
   return (
     <React.Fragment>
@@ -56,20 +69,17 @@ const ListFeed = () => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm={12} lg={9}>
-                  <Search
-                    type={t("search.by.name.description")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-                <Col sm={12} lg={3}>
-                  <CrudButton type="create" name={t("ngen.feed")} to="/feeds/create" checkPermRoute />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("search.by.name.description")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton type="create" name={t("ngen.feed")} to="/feeds/create" checkPermRoute />
+              </ListViewHeader>
             </Card.Header>
             <TableFeed
               feeds={feeds}

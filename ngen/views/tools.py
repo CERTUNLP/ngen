@@ -35,6 +35,17 @@ class DisabledView(APIView):
         return response
 
 
+class HealthView(APIView):
+    """Liveness endpoint used by the frontend connection indicator"""
+
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+    schema = None
+
+    def get(self, request):
+        return Response({"status": "ok"}, status=status.HTTP_200_OK)
+
+
 class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ContentType.objects.all()
     serializer_class = serializers.ContentTypeSerializer

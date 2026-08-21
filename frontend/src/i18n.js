@@ -10,7 +10,13 @@ const options = {
 };
 
 const initializeI18n = async () => {
-  const lang = await getSettingLanguage();
+  let lang;
+  try {
+    lang = await getSettingLanguage();
+  } catch (error) {
+    console.error("Error obteniendo el idioma del backend:", error);
+    lang = localStorage.getItem("NGEN_LANG") || "en";
+  }
 
   i18n
     .use(Backend)

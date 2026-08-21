@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import Alert from "../../components/Alert/Alert";
-import Search from "../../components/Search/Search";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import CrudButton from "../../components/Button/CrudButton";
 import { getPriorities } from "../../api/services/priorities";
 import TablePriorities from "./components/TablePriorities";
@@ -20,10 +20,23 @@ const ListPriorities = () => {
   const { t } = useTranslation();
 
   const [order, setOrder] = useState("name");
+  const [refresh, setRefresh] = useState(true);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     getPriorities(currentPage, wordToSearch, order)
@@ -43,24 +56,28 @@ const ListPriorities = () => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, wordToSearch, order]);
+  }, [currentPage, wordToSearch, order, refresh]);
 
   const resetShowAlert = () => {
     setShowAlert(false);
   };
 
   return (
-    <div>
-      <Card>
+    <Row>
+      <Col>
+        <Card>
         <Card.Header>
-          <Row>
-            <Col sm={12} lg={9}>
-              <Search type={t("search.by.name")} setWordToSearch={setWordToSearch} wordToSearch={wordToSearch} setLoading={setLoading} setCurrentPage={setCurrentPage} />
-            </Col>
-            <Col sm={12} lg={3}>
-              <CrudButton type="create" name={t("ngen.priority_one")} to="/priorities/create" checkPermRoute />
-            </Col>
-          </Row>
+          <ListViewHeader
+            searchType={t("search.by.name")}
+            wordToSearch={wordToSearch}
+            setWordToSearch={setWordToSearch}
+            setLoading={setLoading}
+            setCurrentPage={setCurrentPage}
+            onReload={reloadPage}
+            onClearFilters={clearFilters}
+          >
+            <CrudButton type="create" name={t("ngen.priority_one")} to="/priorities/create" checkPermRoute />
+          </ListViewHeader>
         </Card.Header>
         <Card.Body>
           <TablePriorities
@@ -88,7 +105,8 @@ const ListPriorities = () => {
           </Row>
         </Card.Footer>
       </Card>
-    </div>
+      </Col>
+    </Row>
   );
 };
 

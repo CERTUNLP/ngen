@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import CrudButton from "../../components/Button/CrudButton";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
-import Search from "../../components/Search/Search";
 import TableAnalyzerMapping from "./components/TableAnalyzerMapping";
+import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import { useTranslation } from "react-i18next";
 import { getAnalyzerMappings } from "../../api/services/analyzerMapping";
 
@@ -20,10 +20,23 @@ const ListAnalyzerMappings = () => {
 
   const [order, setOrder] = useState("date");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [refresh, setRefresh] = useState(true);
 
   function updatePage(chosenPage) {
     setCurrentPage(chosenPage);
   }
+
+  const reloadPage = () => {
+    setLoading(true);
+    setRefresh((prev) => !prev);
+  };
+
+  const clearFilters = () => {
+    setLoading(true);
+    setWordToSearch("");
+    setCurrentPage(1);
+    setRefresh((prev) => !prev);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -42,7 +55,7 @@ const ListAnalyzerMappings = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [currentPage, order, wordToSearch, refreshKey]);
+  }, [currentPage, order, wordToSearch, refreshKey, refresh]);
 
   return (
     <React.Fragment>
@@ -50,25 +63,22 @@ const ListAnalyzerMappings = () => {
         <Col>
           <Card>
             <Card.Header>
-              <Row>
-                <Col sm={12} lg={9}>
-                  <Search
-                    type={t("search.by.name")}
-                    setWordToSearch={setWordToSearch}
-                    wordToSearch={wordToSearch}
-                    setLoading={setLoading}
-                    setCurrentPage={setCurrentPage}
-                  />
-                </Col>
-                <Col sm={12} lg={3}>
-                  <CrudButton
-                    type="create"
-                    name={t("ngen.analyzer_mapping")}
-                    to="/analyzermappings/create"
-                    checkPermRoute
-                  />
-                </Col>
-              </Row>
+              <ListViewHeader
+                searchType={t("search.by.name")}
+                wordToSearch={wordToSearch}
+                setWordToSearch={setWordToSearch}
+                setLoading={setLoading}
+                setCurrentPage={setCurrentPage}
+                onReload={reloadPage}
+                onClearFilters={clearFilters}
+              >
+                <CrudButton
+                  type="create"
+                  name={t("ngen.analyzer_mapping")}
+                  to="/analyzermappings/create"
+                  checkPermRoute
+                />
+              </ListViewHeader>
             </Card.Header>
             <Card.Body>
               <TableAnalyzerMapping
