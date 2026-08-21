@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 import * as Yup from "yup";
 import { Formik } from "formik";
@@ -39,10 +39,10 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
           login(values.username, values.password);
         }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => {
+        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, submitCount, touched, values }) => {
           return (
           <form noValidate onSubmit={handleSubmit} className={className} {...rest}>
-            <div className="form-group mb-3">
+            <div className="form-group mb-1">
               <input
                 className={"form-control" + (touched.username && errors.username ? " is-invalid" : "")}
                 aria-invalid={!!(touched.username && errors.username)}
@@ -54,8 +54,11 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
                 type="text"
                 value={values.username}
               />
+              <div className="login-feedback">
+                {(touched.username || submitCount > 0) && errors.username ? errors.username : ""}
+              </div>
             </div>
-            <div className="form-group mb-4">
+            <div className="form-group mb-1">
               <input
                 className={"form-control" + (touched.password && errors.password ? " is-invalid" : "")}
                 aria-invalid={!!(touched.password && errors.password)}
@@ -67,16 +70,17 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
                 type="password"
                 value={values.password}
               />
+              <div className="login-feedback">
+                {(touched.password || submitCount > 0) && errors.password ? errors.password : ""}
+              </div>
             </div>
 
-            <Row>
-              <Col mt={2}>
-                <Button className="btn-block" color="primary" disabled={isSubmitting || !connected} size="large" type="submit" variant="primary">
-                  {!connected && <i className="feather icon-zap text-danger me-2" aria-hidden="true" />}
-                  {t("button.login")}
-                </Button>
-              </Col>
-            </Row>
+            <div className="mb-4">
+              <Button className="btn-block" color="primary" disabled={isSubmitting || !connected} size="large" type="submit" variant="primary">
+                {!connected && <i className="feather icon-zap text-danger me-2" aria-hidden="true" />}
+                {t("button.login")}
+              </Button>
+            </div>
           </form>
           );
         }}
