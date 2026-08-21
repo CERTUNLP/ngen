@@ -420,3 +420,8 @@
     border-left: none;
   }
 }
+
+[data-bs-theme="dark"] .form-control.is-invalid,
+[data-bs-theme="dark"] .form-control.is-invalid:focus {
+  border-color: var(--bs-form-invalid-border-color);
+}

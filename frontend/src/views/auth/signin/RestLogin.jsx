@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 
 import * as Yup from "yup";
 import { Formik } from "formik";
@@ -40,11 +40,6 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => {
-          const validationMessages = [
-            ...(touched.username && errors.username ? [errors.username] : []),
-            ...(touched.password && errors.password ? [errors.password] : [])
-          ];
-
           return (
           <form noValidate onSubmit={handleSubmit} className={className} {...rest}>
             <div className="form-group mb-3">
@@ -76,34 +71,10 @@ const RestLogin = ({ className, connected = true, ...rest }) => {
 
             <Row>
               <Col mt={2}>
-                {!connected ? (
-                  <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip id="login-button-tooltip">{t("ngen.connection.disconnected")}</Tooltip>}
-                  >
-                    <span className="d-block w-100">
-                      <Button className="btn-block" color="primary" disabled={isSubmitting || !connected} size="large" type="submit" variant="primary">
-                        <i className="feather icon-zap text-danger me-2" aria-hidden="true" />
-                        {t("button.login")}
-                      </Button>
-                    </span>
-                  </OverlayTrigger>
-                ) : validationMessages.length > 0 ? (
-                  <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip id="login-validation-tooltip">{validationMessages.join(" ")}</Tooltip>}
-                  >
-                    <span className="d-block w-100">
-                      <Button className="btn-block" color="primary" disabled={isSubmitting} size="large" type="submit" variant="primary">
-                        {t("button.login")}
-                      </Button>
-                    </span>
-                  </OverlayTrigger>
-                ) : (
-                  <Button className="btn-block" color="primary" disabled={isSubmitting} size="large" type="submit" variant="primary">
-                    {t("button.login")}
-                  </Button>
-                )}
+                <Button className="btn-block" color="primary" disabled={isSubmitting || !connected} size="large" type="submit" variant="primary">
+                  {!connected && <i className="feather icon-zap text-danger me-2" aria-hidden="true" />}
+                  {t("button.login")}
+                </Button>
               </Col>
             </Row>
           </form>
