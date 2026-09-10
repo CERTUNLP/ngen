@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import { Form, Row, Spinner, Table } from "react-bootstrap";
 import CrudButton from "components/Button/CrudButton";
-import { deleteCase, patchCaseState } from "api/services/cases";
+import { deleteCase } from "api/services/cases";
 import ModalConfirm from "components/Modal/ModalConfirm";
 import Ordering from "components/Ordering/Ordering";
 import LetterFormat from "components/LetterFormat";
@@ -15,9 +15,8 @@ import PriorityComponent from "../../tanstackquery/PriorityComponent";
 import StateComponent from "../../tanstackquery/StateComponent";
 import EventComponent from "views/tanstackquery/EventComponent";
 import TaxonomyComponent from "views/tanstackquery/TaxonomyComponent";
-import { getState } from "api/services/states";
+import CloseCaseButton from "./CloseCaseButton";
 import apiInstance from "api/api";
-import setAlert from "utils/setAlert";
 
 
 
@@ -66,9 +65,6 @@ const TableCase = ({
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [showFullUuid, setShowFullUuid] = useState(false);
   const [list, setList] = useState([]);
-  const [showCloseCaseModal, setShowCloseCaseModal] = useState(false);
-  const [closeCaseInfo, setCloseCaseInfo] = useState(null);
-  const [closingCase, setClosingCase] = useState(false);
   const [solvedCases, setSolvedCases] = useState(new Set());
 
   const { t } = useTranslation();
@@ -100,65 +96,6 @@ const TableCase = ({
       .catch(() => {});
     return () => { cancelled = true; };
   }, [cases]);
-
-  const handleCloseCaseClick = async (caseItem) => {
-    setClosingCase(true);
-    try {
-      const stateResponse = await getState(caseItem.state);
-      const stateData = stateResponse.data;
-
-      if (stateData.solved) {
-        setAlert(t("ngen.case.close.already_closed"), "error", "case");
-        return;
-      }
-
-      let targetStateUrl = null;
-      for (const childUrl of (stateData.children || [])) {
-        const childResponse = await getState(childUrl);
-        if (childResponse.data.solved) {
-          targetStateUrl = childResponse.data.url;
-          break;
-        }
-      }
-
-      if (!targetStateUrl) {
-        setAlert(t("ngen.case.close.no_transition"), "error", "case");
-        return;
-      }
-
-      setCloseCaseInfo({
-        caseUrl: caseItem.url,
-        eventCount: caseItem.events?.length ?? caseItem.events_count ?? 0,
-        targetStateUrl
-      });
-      setShowCloseCaseModal(true);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setClosingCase(false);
-    }
-  };
-
-  const handleCloseCaseConfirm = () => {
-    if (!closeCaseInfo || closingCase) return;
-    setClosingCase(true);
-    patchCaseState(closeCaseInfo.caseUrl, closeCaseInfo.targetStateUrl)
-      .then((response) => {
-        setIfModify(response);
-        setShowCloseCaseModal(false);
-        setCloseCaseInfo(null);
-      })
-      .catch((error) => {
-        console.error(error);
-        const msg = error.response?.data?.detail
-          || error.response?.data?.state?.[0]
-          || t("ngen.case.close.error");
-        setAlert(msg, "error", "case");
-      })
-      .finally(() => {
-        setClosingCase(false);
-      });
-  };
 
   const storageCaseUrl = (url) => {
     localStorage.removeItem("case");
@@ -417,17 +354,11 @@ const TableCase = ({
                       <CrudButton type="delete" onClick={() => Delete(caseItem.url)} permissions="delete_case" />
                     ))}
                   {!disableCloseCase && (
-                    <Button
-                      type="button"
-                      className="btn-icon btn-rounded"
-                      variant="outline-success"
-                      title={t("ngen.case.close")}
-                      aria-label={t("ngen.case.close")}
-                      disabled={closingCase || solvedCases.has(caseItem.url)}
-                      onClick={() => handleCloseCaseClick(caseItem)}
-                    >
-                      <i className="fas fa-lock" />
-                    </Button>
+                    <CloseCaseButton
+                      caseItem={caseItem}
+                      solved={solvedCases.has(caseItem.url)}
+                      onClosed={setIfModify}
+                    />
                   )}
                 </td>
               </tr>
@@ -443,27 +374,6 @@ const TableCase = ({
         onHide={() => setModalDelete(false)}
         ifConfirm={() => removeCase(url)}
       />
-      <Modal show={showCloseCaseModal} onHide={() => setShowCloseCaseModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{t("ngen.case.close")}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {closeCaseInfo?.eventCount > 1 && (
-            <Alert variant="warning">
-              {t("ngen.case.close.warning", { count: closeCaseInfo.eventCount })}
-            </Alert>
-          )}
-          <p>{t("ngen.case.close.confirm")}</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-secondary" onClick={() => setShowCloseCaseModal(false)} disabled={closingCase}>
-            {t("ngen.cancel")}
-          </Button>
-          <Button variant="outline-danger" onClick={handleCloseCaseConfirm} disabled={closingCase}>
-            {t("ngen.case.close")}
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </React.Fragment>
   );
 };
