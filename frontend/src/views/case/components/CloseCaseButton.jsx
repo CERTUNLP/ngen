@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { patchCaseState } from "api/services/cases";
 import { getState } from "api/services/states";
 import setAlert from "utils/setAlert";
+import { currentUserHasPermissions } from "utils/permissions";
 
 /**
  * Icon button that transitions a case to its "solved" child state, after
@@ -12,6 +13,11 @@ import setAlert from "utils/setAlert";
  */
 const CloseCaseButton = ({ caseItem, onClosed, solved }) => {
   const { t } = useTranslation();
+
+  if (!currentUserHasPermissions(undefined, ["change_case", "change_case_network_admin"])) {
+    return null;
+  }
+
   const [showModal, setShowModal] = useState(false);
   const [closeInfo, setCloseInfo] = useState(null);
   const [closing, setClosing] = useState(false);
