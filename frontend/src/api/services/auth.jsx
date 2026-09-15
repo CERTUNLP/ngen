@@ -205,8 +205,6 @@ const endSession = () => {
 
 const _doLogout = (save_url) => {
   const { dispatch } = store;
-  // Whatever renewal is on its way belongs to the session that is ending here
-  sessionGeneration += 1;
   renewalNotBefore = 0;
   renewalBackoff = BACKOFF_FIRST_MS;
   closing = false;
@@ -229,8 +227,13 @@ const _doLogout = (save_url) => {
 
 const logout = (save_url = false) => {
   // From here on the session is over, whoever asked: what is left in the store
-  // until the api answers is not something to renew or to announce again
+  // until the api answers is not something to renew or to announce again, and
+  // a renewal that was already travelling belongs to the session that is being
+  // closed. Counting it from the answer of the api instead of from here left
+  // the token that came back in the store, logged in, and the requests that
+  // were waiting for it on their way out
   closing = true;
+  sessionGeneration += 1;
   return apiInstance
     .post(COMPONENT_URL.logout)
     .catch(() => {
