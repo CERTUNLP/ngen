@@ -177,6 +177,17 @@ describe("a session that is being closed", () => {
     expect(post).toHaveBeenCalledTimes(asked);
   });
 
+  it("renews nothing once there is no session left in the store", async () => {
+    // The refresh cookie outlives the logout, so an answer to a request that
+    // was already travelling could hand a token back to a browser that nobody
+    // is logged into
+    post.mockResolvedValue(answers());
+    state = { account: { token: "" } };
+
+    await expect(auth.refreshToken()).rejects.toMatchObject({ sessionClosed: true });
+    expect(post).not.toHaveBeenCalled();
+  });
+
   it("says it once and closes it once, however many callers find out", () => {
     post.mockImplementation((url) => (url === LOGOUT_URL ? neverAnswers() : Promise.resolve(answers())));
 

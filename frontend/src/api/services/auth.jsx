@@ -148,6 +148,12 @@ const refreshToken = () => {
     // token to throw away, once every wait for as long as the logout takes
     return Promise.reject(closedSessionError());
   }
+  // A store with no session has nothing to renew. The refresh cookie outlives
+  // the logout, so an answer landing here afterwards would hand back a token
+  // and stand a session up that nobody is in, with no user behind it
+  if (!store.getState().account?.token) {
+    return Promise.reject(closedSessionError());
+  }
   if (renewalInFlight) {
     return renewalInFlight;
   }
