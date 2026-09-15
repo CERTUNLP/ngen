@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useIdleTimer } from "react-idle-timer";
 import { getCurrentAccount } from "utils/permissions";
-import { refreshToken, logout, isSessionExpired } from "api/services/auth";
+import { refreshToken, logout, endSession, isSessionExpired } from "api/services/auth";
 import { getSettingJWTRefreshTokenLifetime } from "api/services/setting";
-import setAlert from "utils/setAlert";
-import i18next from "i18next";
 
 // A token is renewed once this much of its life is gone, so the rest is left as
 // margin for a slow answer or for a couple of tries that did not work. How
@@ -21,13 +19,6 @@ export const useTokenManager = () => {
   // leaves a window where two renewals start at the same time
   const refreshing = useRef(false);
   const refreshLifetime = useRef(null);
-
-  // Landing on the login screen with nothing said is what the report of this
-  // looked like from the outside: a session that ends has to say so
-  const endSession = () => {
-    setAlert(i18next.t("ngen.auth.session_expired"), "error");
-    logout(true);
-  };
 
   const onIdle = () => {
     if (getCurrentAccount()?.token) {

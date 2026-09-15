@@ -53,6 +53,13 @@ const BACKOFF_MAX_MS = 2 * 60 * 1000;
 
 let renewalNotBefore = 0;
 let renewalBackoff = BACKOFF_FIRST_MS;
+// The answer of a renewal that is already travelling is the answer both callers
+// are waiting for, so the second one joins it instead of asking again
+let renewalInFlight = null;
+// Closing a session takes a request, and until it answers the token is still in
+// the store: without this the activity of the user keeps starting renewals and
+// logouts against a session that is already over, and says so once per try
+let closing = false;
 // A session that was closed can not be brought back by an answer that was
 // already on its way: what comes back is only kept if it belongs to the session
 // that asked for it
@@ -123,18 +130,28 @@ const login = (username, password) => {
  * session is for whoever called to decide, and it used to be decided twice
  * -here and in the caller- which logged the user out two times over.
  *
- * It refuses while it is waiting, so neither of the two callers can turn a
- * failure into a stream of requests against an endpoint that is already saying
- * no. The refusal is not the session ending, so nobody logs out over it
+ * Two places ask for the same thing, the renewal on activity and the retry of a
+ * request that was answered that its token is not valid, and they can ask at
+ * the same moment: coming back to a tab wakes the first one and the requests of
+ * the page at once. Whoever arrives second waits for the answer that is already
+ * on its way.
+ *
+ * With nothing travelling it refuses while it is waiting, so neither caller can
+ * turn a failure into a stream of requests against an endpoint that is already
+ * saying no. Neither the refusal nor the wait is the session ending, so nobody
+ * logs out over them
  */
 const refreshToken = () => {
+  if (renewalInFlight) {
+    return renewalInFlight;
+  }
   if (Date.now() < renewalNotBefore) {
     return Promise.reject(postponedError());
   }
   renewalNotBefore = Date.now() + MIN_INTERVAL_MS;
   const generation = sessionGeneration;
 
-  return apiInstance
+  renewalInFlight = apiInstance
     .post(COMPONENT_URL.refreshCookieToken, {})
     .then((response) => {
       if (generation !== sessionGeneration) {
@@ -159,7 +176,26 @@ const refreshToken = () => {
         renewalBackoff = Math.min(renewalBackoff * 2, BACKOFF_MAX_MS);
       }
       return Promise.reject(error);
+    })
+    .finally(() => {
+      renewalInFlight = null;
     });
+
+  return renewalInFlight;
+};
+
+/**
+ * The one way a session ends because it is over. Both the renewal on activity
+ * and the retry of a request can find out at the same time, and the answer is
+ * the same: say it once and close it once
+ */
+const endSession = () => {
+  if (closing) {
+    return;
+  }
+  closing = true;
+  setAlert(i18next.t("ngen.auth.session_expired"), "error");
+  logout(true);
 };
 
 const _doLogout = (save_url) => {
@@ -168,6 +204,7 @@ const _doLogout = (save_url) => {
   sessionGeneration += 1;
   renewalNotBefore = 0;
   renewalBackoff = BACKOFF_FIRST_MS;
+  closing = false;
   // localStorage.clear();
   localStorage.removeItem("ngen-account");
   localStorage.removeItem("ngen-message");
@@ -202,4 +239,4 @@ const logout = (save_url = false) => {
     });
 };
 
-export { register, login, refreshToken, logout, sessionPayload, isSessionExpired };
+export { register, login, refreshToken, logout, endSession, sessionPayload, isSessionExpired };
