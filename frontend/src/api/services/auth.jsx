@@ -142,6 +142,12 @@ const login = (username, password) => {
  * logs out over them
  */
 const refreshToken = () => {
+  if (closing) {
+    // The session is on its way out and the token is only still in the store
+    // because closing it takes a request: renewing it would be asking for a
+    // token to throw away, once every wait for as long as the logout takes
+    return Promise.reject(closedSessionError());
+  }
   if (renewalInFlight) {
     return renewalInFlight;
   }
@@ -193,7 +199,6 @@ const endSession = () => {
   if (closing) {
     return;
   }
-  closing = true;
   setAlert(i18next.t("ngen.auth.session_expired"), "error");
   logout(true);
 };
@@ -223,6 +228,9 @@ const _doLogout = (save_url) => {
 }
 
 const logout = (save_url = false) => {
+  // From here on the session is over, whoever asked: what is left in the store
+  // until the api answers is not something to renew or to announce again
+  closing = true;
   return apiInstance
     .post(COMPONENT_URL.logout)
     .catch(() => {
