@@ -71,6 +71,17 @@ const setup = (store) => {
       if (error.response.data?.code === "token_not_valid" && !originalRequest._retry && !isSessionEndpoint(originalRequest.url)) {
         originalRequest._retry = true;
 
+        // The token this request went out with may have been replaced while it
+        // was travelling, by the renewal on activity or by another request that
+        // got here first. Then there is nothing to renew: it was answered about
+        // a token that is not the one of the session anymore, and asking for
+        // another one so soon after the last is refused by the wait
+        const current = store.getState().account.token;
+        if (current && originalRequest.headers["Authorization"] !== `Bearer ${current}`) {
+          originalRequest.headers["Authorization"] = `Bearer ${current}`;
+          return axios(originalRequest);
+        }
+
         if (!isRefreshing) {
           isRefreshing = true;
           refreshToken()
