@@ -6,6 +6,12 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from rest_framework_simplejwt.token_blacklist.models import (
+    BlacklistedToken,
+    OutstandingToken,
+)
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from ngen.models import User
 
 
@@ -179,7 +185,9 @@ class TestRefreshCookie(APITestCase):
         self.assertTrue(cookie["httponly"])
         self.assertTrue(cookie["secure"])
         self.assertEqual(cookie["samesite"], "Lax")
-        self.assertEqual(cookie["path"], reverse("ctoken-refresh"))
+        # Narrow enough that it only travels to the endpoints of the session,
+        # wide enough to reach the one that takes it out of circulation
+        self.assertEqual(cookie["path"], reverse("ctoken-create"))
 
     @override_settings(DEBUG=False)
     def test_the_refresh_cookie_does_not_outlive_its_token(self):
@@ -200,6 +208,114 @@ class TestRefreshCookie(APITestCase):
         )
 
         self.assertNotIn("refresh", response.data)
+
+
+class TestLogout(APITestCase):
+    """
+    This will handle closing a session actually taking its refresh token out of
+    circulation: the cookie has to reach the endpoint that revokes it, and what
+    gets revoked has to be the token of the user
+    """
+
+    fixtures = [
+        "tests/priority.json",
+        "tests/user.json",
+    ]
+
+    def setUp(self):
+        cache.clear()
+
+    def login(self):
+        response = self.client.post(
+            reverse("ctoken-create"), data={"username": "ngen", "password": "ngen"}
+        )
+        token = response.cookies["refresh_token"].value
+        return token, RefreshToken(token).payload["jti"]
+
+    def test_the_cookie_reaches_the_endpoint_that_revokes_it(self):
+        """
+        A browser only sends a cookie to the paths under the one it was written
+        with, so naming the endpoint that renews it left the logout without it,
+        and the test client sends every cookie no matter the path, which is why
+        this looks at the path itself
+        """
+        self.login()
+
+        path = self.client.cookies["refresh_token"]["path"]
+
+        self.assertTrue(reverse("ctoken-logout").startswith(path))
+        self.assertTrue(reverse("ctoken-refresh").startswith(path))
+
+    def test_closing_a_session_takes_its_refresh_token_out_of_circulation(self):
+        _, jti = self.login()
+
+        response = self.client.post(reverse("ctoken-logout"))
+
+        self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
+        self.assertTrue(BlacklistedToken.objects.filter(token__jti=jti).exists())
+
+    def test_the_token_it_revoked_does_not_work_anymore(self):
+        refresh_token, _ = self.login()
+
+        self.client.post(reverse("ctoken-logout"))
+        # The browser was told to drop it, so it goes back by hand: what is
+        # checked here is that it stopped working, not that it stopped being sent
+        self.client.cookies["refresh_token"] = refresh_token
+        response = self.client.post(reverse("ctoken-refresh"))
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_a_browser_whose_access_token_expired_can_still_close_its_session(self):
+        """
+        Which is the usual state of a browser that was left alone for a while,
+        and the moment somebody closes the session. Asking for an access token
+        on top answered 401 and left the refresh token alive for its whole hour
+        """
+        _, jti = self.login()
+
+        response = self.client.post(
+            reverse("ctoken-logout"), HTTP_AUTHORIZATION="Bearer expired.and.invalid"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
+        self.assertTrue(BlacklistedToken.objects.filter(token__jti=jti).exists())
+
+    def test_a_logout_without_the_cookie_mints_nothing_and_says_so(self):
+        """
+        simplejwt makes a brand new token when it is handed none, so blacklisting
+        that one answered as if the session had been closed while the token of
+        the user stayed valid
+        """
+        self.login()
+        del self.client.cookies["refresh_token"]
+        outstanding = OutstandingToken.objects.count()
+
+        response = self.client.post(reverse("ctoken-logout"))
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(OutstandingToken.objects.count(), outstanding)
+
+    def test_the_cookie_is_taken_out_of_the_browser(self):
+        self.login()
+
+        response = self.client.post(reverse("ctoken-logout"))
+
+        cookie = response.cookies["refresh_token"]
+        self.assertEqual(cookie.value, "")
+        # A cookie is only removed by naming the path it was written with
+        self.assertEqual(cookie["path"], reverse("ctoken-create"))
+
+    def test_closing_a_session_that_was_already_closed_is_not_an_error(self):
+        """
+        Two tabs of the same browser close the same session
+        """
+        refresh_token, _ = self.login()
+        self.client.post(reverse("ctoken-logout"))
+        self.client.cookies["refresh_token"] = refresh_token
+
+        response = self.client.post(reverse("ctoken-logout"))
+
+        self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
 
 
 class TestRefreshThrottle(APITestCase):
