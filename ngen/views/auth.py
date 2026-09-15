@@ -160,6 +160,15 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     throttle_scope = "login"
 
 
+class CustomTokenRefreshView(TokenRefreshView):
+    """
+    The refresh that takes the token in the body instead of the cookie, counted
+    the same as the one the frontend uses
+    """
+
+    throttle_scope = "token_refresh"
+
+
 class CookieTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
     throttle_scope = "login"
@@ -172,8 +181,14 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 
 class CookieTokenRefreshView(TokenRefreshView):
+    """
+    Renewing is counted apart from the login: it is not a way of guessing a
+    password, it asks for the refresh cookie of a session that already exists,
+    and every browser of the deployment comes back here every few minutes
+    """
+
     serializer_class = CookieTokenRefreshSerializer
-    throttle_scope = "login"
+    throttle_scope = "token_refresh"
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get("refresh"):

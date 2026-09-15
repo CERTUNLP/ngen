@@ -202,6 +202,91 @@ class TestRefreshCookie(APITestCase):
         self.assertNotIn("refresh", response.data)
 
 
+class TestRefreshThrottle(APITestCase):
+    """
+    This will handle renewing a token not eating the budget of the login: every
+    browser of the deployment comes back here every few minutes, and the bucket
+    can only be keyed by address because simplejwt leaves the endpoint without
+    authentication, so a whole organization behind one nat shares it
+    """
+
+    fixtures = [
+        "tests/priority.json",
+        "tests/user.json",
+    ]
+
+    def setUp(self):
+        cache.clear()
+
+    def login(self):
+        return self.client.post(
+            reverse("ctoken-create"), data={"username": "ngen", "password": "ngen"}
+        )
+
+    def refresh(self):
+        return self.client.post(reverse("ctoken-refresh"))
+
+    # DRF reads the rates once, when it is imported, so overriding the setting
+    # afterwards changes nothing: the table it kept is what has to be patched
+    @patch.dict(
+        "rest_framework.throttling.SimpleRateThrottle.THROTTLE_RATES",
+        {"login": "2/min", "token_refresh": "100/min"},
+    )
+    def test_renewing_does_not_use_up_the_budget_of_the_login(self):
+        self.assertEqual(self.login().status_code, status.HTTP_200_OK)
+
+        for _ in range(10):
+            self.assertEqual(self.refresh().status_code, status.HTTP_200_OK)
+
+        self.assertEqual(self.login().status_code, status.HTTP_200_OK)
+
+    @patch.dict(
+        "rest_framework.throttling.SimpleRateThrottle.THROTTLE_RATES",
+        {"login": "100/min", "token_refresh": "3/min"},
+    )
+    def test_renewing_still_has_a_limit_of_its_own(self):
+        self.login()
+
+        for _ in range(3):
+            self.assertEqual(self.refresh().status_code, status.HTTP_200_OK)
+
+        self.assertEqual(
+            self.refresh().status_code, status.HTTP_429_TOO_MANY_REQUESTS
+        )
+
+    @patch.dict(
+        "rest_framework.throttling.SimpleRateThrottle.THROTTLE_RATES",
+        {"login": "100/min", "token_refresh": "3/min"},
+    )
+    def test_the_refresh_that_takes_the_token_in_the_body_is_counted_the_same(self):
+        token = self.login().cookies["refresh_token"].value
+
+        for _ in range(3):
+            self.assertEqual(self.refresh().status_code, status.HTTP_200_OK)
+
+        response = self.client.post(
+            reverse("token-refresh"), data={"refresh": token}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
+    def test_the_answer_says_how_long_to_wait(self):
+        """
+        The frontend backs off with this instead of throwing the session away
+        """
+        with patch.dict(
+            "rest_framework.throttling.SimpleRateThrottle.THROTTLE_RATES",
+            {"login": "100/min", "token_refresh": "1/min"},
+        ):
+            self.login()
+            self.refresh()
+
+            response = self.refresh()
+
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        self.assertIn("Retry-After", response)
+
+
 @override_settings(
     OIDC_ENABLED=True,
     OIDC_RP_CLIENT_ID="ngen",
