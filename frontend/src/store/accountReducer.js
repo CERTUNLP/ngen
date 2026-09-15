@@ -20,7 +20,7 @@ const auth = (state = initialState, action) => {
       };
     }
     case LOGIN: {
-      const { user, token, iat, exp, user_id } = action.payload;
+      const { user, token, iat, exp, user_id, lifetime, obtainedAt } = action.payload;
       return {
         ...state,
         isLoggedIn: true,
@@ -28,7 +28,12 @@ const auth = (state = initialState, action) => {
         token: token,
         iat: iat,
         exp: exp,
-        user_id: user_id
+        user_id: user_id,
+        // How long the token lasts and when it got here, the two the renewal
+        // reads: measured against each other they do not need the clock of the
+        // browser to agree with the clock of the server
+        lifetime: lifetime,
+        obtainedAt: obtainedAt
       };
     }
     case LOGOUT: {
@@ -39,18 +44,22 @@ const auth = (state = initialState, action) => {
         iat: null,
         exp: null,
         user_id: null,
-        user: null
+        user: null,
+        lifetime: null,
+        obtainedAt: null
       };
     }
     case REFRESH_TOKEN: {
-      const { token, iat, exp } = action.payload;
+      const { token, iat, exp, lifetime, obtainedAt } = action.payload;
       return {
         ...state,
         token: token,
         isLoggedIn: true,
         isInitialized: true,
         iat: iat,
-        exp: exp
+        exp: exp,
+        lifetime: lifetime,
+        obtainedAt: obtainedAt
       };
     }
     case SAVE_URL: {
