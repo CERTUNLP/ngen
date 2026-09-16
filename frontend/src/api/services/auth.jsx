@@ -50,16 +50,13 @@ const retryAfterMs = (error, fallback) => {
 const MIN_INTERVAL_MS = 15 * 1000;
 const BACKOFF_FIRST_MS = 5 * 1000;
 const BACKOFF_MAX_MS = 2 * 60 * 1000;
-// Closing waits for a renewal that is travelling, but never longer than this:
-// a session that does not close because something else never answered is worse
-// than closing it with the token at hand
-const RENEWAL_WAIT_ON_LOGOUT_MS = 3 * 1000;
 
 let renewalNotBefore = 0;
 let renewalBackoff = BACKOFF_FIRST_MS;
 // The answer of a renewal that is already travelling is the answer both callers
 // are waiting for, so the second one joins it instead of asking again
 let renewalInFlight = null;
+let renewalAbort = null;
 // Closing a session takes a request, and until it answers the token is still in
 // the store: without this the activity of the user keeps starting renewals and
 // logouts against a session that is already over, and says so once per try
@@ -166,9 +163,10 @@ const refreshToken = () => {
   }
   renewalNotBefore = Date.now() + MIN_INTERVAL_MS;
   const generation = sessionGeneration;
+  renewalAbort = new AbortController();
 
   renewalInFlight = apiInstance
-    .post(COMPONENT_URL.refreshCookieToken, {})
+    .post(COMPONENT_URL.refreshCookieToken, {}, { signal: renewalAbort.signal })
     .then((response) => {
       if (generation !== sessionGeneration) {
         // The user logged out while this was travelling, and storing it would
@@ -195,6 +193,7 @@ const refreshToken = () => {
     })
     .finally(() => {
       renewalInFlight = null;
+      renewalAbort = null;
     });
 
   return renewalInFlight;
@@ -237,19 +236,16 @@ const _doLogout = (save_url) => {
 
 /**
  * A renewal that is travelling rotates the cookie, and the browser writes the
- * one that comes back whether anything is listening or not. Closing before it
- * lands revokes the token that is being replaced and leaves the replacement
- * behind, valid, in a browser nobody is logged into. Its answer is waited for,
- * never its success
+ * one that comes back whether anything is listening or not, so closing while
+ * one is in the air leaves a rotated token behind in a browser nobody is logged
+ * into. It is dropped rather than waited for: waiting means picking a number,
+ * and an answer slower than that number lands after the session was revoked and
+ * puts the cookie back. Dropping it keeps the browser from ever reading it
  */
-const whenRenewalSettles = () => {
-  if (!renewalInFlight) {
-    return Promise.resolve();
+const stopRenewal = () => {
+  if (renewalAbort) {
+    renewalAbort.abort();
   }
-  return Promise.race([
-    renewalInFlight.catch(() => {}),
-    new Promise((resolve) => setTimeout(resolve, RENEWAL_WAIT_ON_LOGOUT_MS))
-  ]);
 };
 
 const logout = (save_url = false) => {
@@ -261,8 +257,13 @@ const logout = (save_url = false) => {
   // were waiting for it on their way out
   closing = true;
   sessionGeneration += 1;
-  return whenRenewalSettles()
-    .then(() => apiInstance.post(COMPONENT_URL.logout))
+  stopRenewal();
+  // The cookie is the only credential the api asks for here, so the request
+  // says out loud that a page of the application is the one asking: a form
+  // posted from another origin of the same site cannot add a header, and
+  // anything that can add one is asked for permission first
+  return apiInstance
+    .post(COMPONENT_URL.logout, {}, { headers: { "X-Requested-With": "XMLHttpRequest" } })
     .catch(() => {
       // Best effort: this asks for a token that may be gone already, and the
       // session is being closed either way. Rejecting from here only left

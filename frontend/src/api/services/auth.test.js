@@ -178,35 +178,34 @@ describe("a session that is being closed", () => {
     expect(post).toHaveBeenCalledTimes(asked);
   });
 
-  it("waits for a renewal that is travelling before closing, so what it revokes is the token in the browser", async () => {
-    // Rotation hands back a new cookie, and the browser writes it whether
-    // anything is listening or not: closing first revokes the one being
-    // replaced and leaves the replacement behind, valid
-    let answer;
-    post.mockImplementation((url) => (url === REFRESH_URL ? new Promise((resolve) => (answer = resolve)) : Promise.resolve({})));
+  it("drops a renewal that is travelling instead of racing it", async () => {
+    // Rotation hands back a new cookie and the browser writes it whether
+    // anything is listening or not, so an answer that lands after the session
+    // was revoked would put a valid token back. Waiting for it means picking a
+    // number, and an answer slower than that number does it anyway
+    let signal;
+    post.mockImplementation((url, _body, config) => {
+      if (url === REFRESH_URL) {
+        signal = config.signal;
+        return neverAnswers();
+      }
+      return Promise.resolve({});
+    });
 
     auth.refreshToken();
-    const closed = auth.logout();
-    await vi.advanceTimersByTimeAsync(0);
+    await auth.logout();
 
-    expect(post.mock.calls.filter(([url]) => url === LOGOUT_URL)).toHaveLength(0);
-
-    answer(answers());
-    await closed;
-
+    expect(signal.aborted).toBe(true);
     expect(post.mock.calls.filter(([url]) => url === LOGOUT_URL)).toHaveLength(1);
   });
 
-  it("does not wait forever for a renewal that never answers", async () => {
-    post.mockImplementation((url) => (url === REFRESH_URL ? neverAnswers() : Promise.resolve({})));
+  it("says out loud that the application is the one closing the session", async () => {
+    post.mockResolvedValue({});
 
-    auth.refreshToken();
-    const closed = auth.logout();
+    await auth.logout();
 
-    await vi.advanceTimersByTimeAsync(3000);
-    await closed;
-
-    expect(post.mock.calls.filter(([url]) => url === LOGOUT_URL)).toHaveLength(1);
+    const [, , config] = post.mock.calls.find(([url]) => url === LOGOUT_URL);
+    expect(config.headers["X-Requested-With"]).toBe("XMLHttpRequest");
   });
 
   it("renews nothing once there is no session left in the store", async () => {
