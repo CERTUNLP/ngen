@@ -232,6 +232,11 @@ class TestLogout(APITestCase):
         token = response.cookies["refresh_token"].value
         return token, RefreshToken(token).payload["jti"]
 
+    def logout(self, **extra):
+        return self.client.post(
+            reverse("ctoken-logout"), HTTP_X_REQUESTED_WITH="XMLHttpRequest", **extra
+        )
+
     def test_the_cookie_reaches_the_endpoint_that_revokes_it(self):
         """
         A browser only sends a cookie to the paths under the one it was written
@@ -249,7 +254,7 @@ class TestLogout(APITestCase):
     def test_closing_a_session_takes_its_refresh_token_out_of_circulation(self):
         _, jti = self.login()
 
-        response = self.client.post(reverse("ctoken-logout"))
+        response = self.logout()
 
         self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
         self.assertTrue(BlacklistedToken.objects.filter(token__jti=jti).exists())
@@ -257,7 +262,7 @@ class TestLogout(APITestCase):
     def test_the_token_it_revoked_does_not_work_anymore(self):
         refresh_token, _ = self.login()
 
-        self.client.post(reverse("ctoken-logout"))
+        self.logout()
         # The browser was told to drop it, so it goes back by hand: what is
         # checked here is that it stopped working, not that it stopped being sent
         self.client.cookies["refresh_token"] = refresh_token
@@ -273,9 +278,7 @@ class TestLogout(APITestCase):
         """
         _, jti = self.login()
 
-        response = self.client.post(
-            reverse("ctoken-logout"), HTTP_AUTHORIZATION="Bearer expired.and.invalid"
-        )
+        response = self.logout(HTTP_AUTHORIZATION="Bearer expired.and.invalid")
 
         self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
         self.assertTrue(BlacklistedToken.objects.filter(token__jti=jti).exists())
@@ -290,15 +293,29 @@ class TestLogout(APITestCase):
         del self.client.cookies["refresh_token"]
         outstanding = OutstandingToken.objects.count()
 
-        response = self.client.post(reverse("ctoken-logout"))
+        response = self.logout()
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(OutstandingToken.objects.count(), outstanding)
 
+    def test_a_post_that_did_not_come_from_the_application_is_refused(self):
+        """
+        The cookie is the only credential here and a browser attaches it to any
+        post of the same site, so a form served from another subdomain would be
+        enough to close a session. A form cannot add a header
+        """
+        _, jti = self.login()
+
+        response = self.client.post(reverse("ctoken-logout"))
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertFalse(BlacklistedToken.objects.filter(token__jti=jti).exists())
+        self.assertNotIn("refresh_token", response.cookies)
+
     def test_the_cookie_is_taken_out_of_the_browser(self):
         self.login()
 
-        response = self.client.post(reverse("ctoken-logout"))
+        response = self.logout()
 
         cookie = response.cookies["refresh_token"]
         self.assertEqual(cookie.value, "")
@@ -310,10 +327,10 @@ class TestLogout(APITestCase):
         Two tabs of the same browser close the same session
         """
         refresh_token, _ = self.login()
-        self.client.post(reverse("ctoken-logout"))
+        self.logout()
         self.client.cookies["refresh_token"] = refresh_token
 
-        response = self.client.post(reverse("ctoken-logout"))
+        response = self.logout()
 
         self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
 

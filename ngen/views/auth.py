@@ -232,6 +232,17 @@ class CookieTokenLogoutView(APIView):
     authentication_classes = []
 
     def post(self, request):
+        # The cookie is the only credential this asks for, and a browser
+        # attaches it to any post of the same site: a form served from another
+        # subdomain would be enough to close somebody's session. A header is
+        # what says a page of the application is the one asking, because a form
+        # cannot add one and anything that can is asked for permission first
+        if request.headers.get("X-Requested-With") != "XMLHttpRequest":
+            return Response(
+                {"detail": "Missing X-Requested-With header"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         refresh_token = request.COOKIES.get("refresh_token")
         if not refresh_token:
             # Never hand an empty value to simplejwt: with no token it mints a
