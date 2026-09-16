@@ -166,6 +166,7 @@ describe("a session that is being closed", () => {
     post.mockImplementation((url) => (url === LOGOUT_URL ? neverAnswers() : Promise.resolve(answers())));
 
     auth.logout();
+    await vi.advanceTimersByTimeAsync(0);
     const asked = post.mock.calls.length;
 
     await expect(auth.refreshToken()).rejects.toMatchObject({ sessionClosed: true });
@@ -175,6 +176,37 @@ describe("a session that is being closed", () => {
     await expect(auth.refreshToken()).rejects.toMatchObject({ sessionClosed: true });
 
     expect(post).toHaveBeenCalledTimes(asked);
+  });
+
+  it("waits for a renewal that is travelling before closing, so what it revokes is the token in the browser", async () => {
+    // Rotation hands back a new cookie, and the browser writes it whether
+    // anything is listening or not: closing first revokes the one being
+    // replaced and leaves the replacement behind, valid
+    let answer;
+    post.mockImplementation((url) => (url === REFRESH_URL ? new Promise((resolve) => (answer = resolve)) : Promise.resolve({})));
+
+    auth.refreshToken();
+    const closed = auth.logout();
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(post.mock.calls.filter(([url]) => url === LOGOUT_URL)).toHaveLength(0);
+
+    answer(answers());
+    await closed;
+
+    expect(post.mock.calls.filter(([url]) => url === LOGOUT_URL)).toHaveLength(1);
+  });
+
+  it("does not wait forever for a renewal that never answers", async () => {
+    post.mockImplementation((url) => (url === REFRESH_URL ? neverAnswers() : Promise.resolve({})));
+
+    auth.refreshToken();
+    const closed = auth.logout();
+
+    await vi.advanceTimersByTimeAsync(3000);
+    await closed;
+
+    expect(post.mock.calls.filter(([url]) => url === LOGOUT_URL)).toHaveLength(1);
   });
 
   it("renews nothing once there is no session left in the store", async () => {
@@ -188,12 +220,13 @@ describe("a session that is being closed", () => {
     expect(post).not.toHaveBeenCalled();
   });
 
-  it("says it once and closes it once, however many callers find out", () => {
+  it("says it once and closes it once, however many callers find out", async () => {
     post.mockImplementation((url) => (url === LOGOUT_URL ? neverAnswers() : Promise.resolve(answers())));
 
     auth.endSession();
     auth.endSession();
     auth.endSession();
+    await vi.advanceTimersByTimeAsync(0);
 
     expect(setAlert).toHaveBeenCalledTimes(1);
     expect(post.mock.calls.filter(([url]) => url === LOGOUT_URL)).toHaveLength(1);

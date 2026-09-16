@@ -50,6 +50,10 @@ const retryAfterMs = (error, fallback) => {
 const MIN_INTERVAL_MS = 15 * 1000;
 const BACKOFF_FIRST_MS = 5 * 1000;
 const BACKOFF_MAX_MS = 2 * 60 * 1000;
+// Closing waits for a renewal that is travelling, but never longer than this:
+// a session that does not close because something else never answered is worse
+// than closing it with the token at hand
+const RENEWAL_WAIT_ON_LOGOUT_MS = 3 * 1000;
 
 let renewalNotBefore = 0;
 let renewalBackoff = BACKOFF_FIRST_MS;
@@ -231,6 +235,23 @@ const _doLogout = (save_url) => {
   document.title = "NGEN";
 }
 
+/**
+ * A renewal that is travelling rotates the cookie, and the browser writes the
+ * one that comes back whether anything is listening or not. Closing before it
+ * lands revokes the token that is being replaced and leaves the replacement
+ * behind, valid, in a browser nobody is logged into. Its answer is waited for,
+ * never its success
+ */
+const whenRenewalSettles = () => {
+  if (!renewalInFlight) {
+    return Promise.resolve();
+  }
+  return Promise.race([
+    renewalInFlight.catch(() => {}),
+    new Promise((resolve) => setTimeout(resolve, RENEWAL_WAIT_ON_LOGOUT_MS))
+  ]);
+};
+
 const logout = (save_url = false) => {
   // From here on the session is over, whoever asked: what is left in the store
   // until the api answers is not something to renew or to announce again, and
@@ -240,8 +261,8 @@ const logout = (save_url = false) => {
   // were waiting for it on their way out
   closing = true;
   sessionGeneration += 1;
-  return apiInstance
-    .post(COMPONENT_URL.logout)
+  return whenRenewalSettles()
+    .then(() => apiInstance.post(COMPONENT_URL.logout))
     .catch(() => {
       // Best effort: this asks for a token that may be gone already, and the
       // session is being closed either way. Rejecting from here only left
