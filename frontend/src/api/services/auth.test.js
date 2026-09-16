@@ -229,6 +229,27 @@ describe("a session that is being closed", () => {
     await expect(auth.refreshToken()).rejects.toMatchObject({ sessionClosed: true });
   });
 
+  it("drops a logout that is still travelling when a new session starts", async () => {
+    // The answer takes the cookie out of the browser by name and path, so a
+    // late one takes out whichever is there by then, the one of the session
+    // that just started included. The store is emptied before it is sent, so
+    // the login screen is there to be used while it travels
+    let signal;
+    post.mockImplementation((url, _body, config) => {
+      if (url === LOGOUT_URL) {
+        signal = config.signal;
+        return neverAnswers();
+      }
+      return Promise.resolve({ data: { access: accessToken(), user: { id: 1 } } });
+    });
+
+    auth.logout();
+    auth.login("ngen", "ngen");
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(signal.aborted).toBe(true);
+  });
+
   it("renews nothing once there is no session left in the store", async () => {
     // The refresh cookie outlives the logout, so an answer to a request that
     // was already travelling could hand a token back to a browser that nobody

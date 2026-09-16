@@ -57,6 +57,7 @@ let renewalBackoff = BACKOFF_FIRST_MS;
 // are waiting for, so the second one joins it instead of asking again
 let renewalInFlight = null;
 let renewalAbort = null;
+let logoutAbort = null;
 // A session that was closed can not be brought back by an answer that was
 // already on its way: what comes back is only kept if it belongs to the session
 // that asked for it
@@ -101,6 +102,7 @@ const register = (username, password, email) => {
 };
 
 const login = (username, password) => {
+  stopLogout();
   apiInstance
     .post(COMPONENT_URL.login, {
       username: username,
@@ -245,6 +247,19 @@ const stopRenewal = () => {
   }
 };
 
+/**
+ * The answer to a logout takes the cookie out of the browser, and a cookie is
+ * only its name, its domain and its path: an answer that arrives late takes out
+ * whichever cookie is there by then, the one of the session that just started
+ * included. Since the store is emptied before the request is sent, the login
+ * screen is there to be used while it travels, so a login drops it first
+ */
+const stopLogout = () => {
+  if (logoutAbort) {
+    logoutAbort.abort();
+  }
+};
+
 const logout = (save_url = false) => {
   // From here on the session is over, whoever asked: what is left in the store
   // until the api answers is not something to renew or to announce again, and
@@ -268,7 +283,13 @@ const logout = (save_url = false) => {
   // a page of the application is the one asking: a form posted from another
   // origin of the same site cannot add a header, and anything that can add one
   // is asked for permission first
-  return apiInstance.post(COMPONENT_URL.logout, {}, { headers: { "X-Requested-With": "XMLHttpRequest" } }).catch(() => {});
+  logoutAbort = new AbortController();
+  return apiInstance
+    .post(COMPONENT_URL.logout, {}, { headers: { "X-Requested-With": "XMLHttpRequest" }, signal: logoutAbort.signal })
+    .catch(() => {})
+    .finally(() => {
+      logoutAbort = null;
+    });
 };
 
 export { register, login, refreshToken, logout, endSession, sessionPayload, isSessionExpired };
