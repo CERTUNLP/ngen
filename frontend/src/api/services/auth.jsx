@@ -57,14 +57,18 @@ let renewalBackoff = BACKOFF_FIRST_MS;
 // are waiting for, so the second one joins it instead of asking again
 let renewalInFlight = null;
 let renewalAbort = null;
-// Closing a session takes a request, and until it answers the token is still in
-// the store: without this the activity of the user keeps starting renewals and
-// logouts against a session that is already over, and says so once per try
-let closing = false;
 // A session that was closed can not be brought back by an answer that was
 // already on its way: what comes back is only kept if it belongs to the session
 // that asked for it
 let sessionGeneration = 0;
+
+/**
+ * Whether there is a session at all, which is the store and not a flag of its
+ * own: a logout empties the store the moment it is asked for, so this is what
+ * tells a renewal, a second announcement and a second logout that there is
+ * nothing left to work on
+ */
+const sessionIsOver = () => !store.getState().account?.token;
 
 const postponedError = () => {
   const error = new Error("Token renewal postponed");
@@ -143,16 +147,10 @@ const login = (username, password) => {
  * logs out over them
  */
 const refreshToken = () => {
-  if (closing) {
-    // The session is on its way out and the token is only still in the store
-    // because closing it takes a request: renewing it would be asking for a
-    // token to throw away, once every wait for as long as the logout takes
-    return Promise.reject(closedSessionError());
-  }
-  // A store with no session has nothing to renew. The refresh cookie outlives
-  // the logout, so an answer landing here afterwards would hand back a token
-  // and stand a session up that nobody is in, with no user behind it
-  if (!store.getState().account?.token) {
+  // A store with no session has nothing to renew, and the refresh cookie
+  // outlives the logout: an answer landing here afterwards would hand back a
+  // token and stand a session up that nobody is in, with no user behind it
+  if (sessionIsOver()) {
     return Promise.reject(closedSessionError());
   }
   if (renewalInFlight) {
@@ -205,7 +203,7 @@ const refreshToken = () => {
  * the same: say it once and close it once
  */
 const endSession = () => {
-  if (closing) {
+  if (sessionIsOver()) {
     return;
   }
   setAlert(i18next.t("ngen.auth.session_expired"), "error");
@@ -216,7 +214,6 @@ const _doLogout = (save_url) => {
   const { dispatch } = store;
   renewalNotBefore = 0;
   renewalBackoff = BACKOFF_FIRST_MS;
-  closing = false;
   // localStorage.clear();
   localStorage.removeItem("ngen-account");
   localStorage.removeItem("ngen-message");
@@ -255,27 +252,23 @@ const logout = (save_url = false) => {
   // closed. Counting it from the answer of the api instead of from here left
   // the token that came back in the store, logged in, and the requests that
   // were waiting for it on their way out
-  closing = true;
   sessionGeneration += 1;
   stopRenewal();
-  // The cookie is the only credential the api asks for here, so the request
-  // says out loud that a page of the application is the one asking: a form
-  // posted from another origin of the same site cannot add a header, and
-  // anything that can add one is asked for permission first
-  return apiInstance
-    .post(COMPONENT_URL.logout, {}, { headers: { "X-Requested-With": "XMLHttpRequest" } })
-    .catch(() => {
-      // Best effort: this asks for a token that may be gone already, and the
-      // session is being closed either way. Rejecting from here only left
-      // unhandled rejections behind, since nobody waits for this
-    })
-    .finally(() => {
-      try {
-        _doLogout(save_url);
-      } catch (e) {
-        console.log("Error en el dispatch logout: " + e);
-      }
-    });
+  // The session is over here and not when the api answers. The instance has no
+  // timeout of its own, so a connection that stalls used to leave the browser
+  // sitting on a session it was told to close, for as long as the connection
+  // took to give up
+  try {
+    _doLogout(save_url);
+  } catch (e) {
+    console.log("Error en el dispatch logout: " + e);
+  }
+  // Revoking it is what is left, and now it really is best effort. The cookie
+  // is the only credential the api asks for, so the request says out loud that
+  // a page of the application is the one asking: a form posted from another
+  // origin of the same site cannot add a header, and anything that can add one
+  // is asked for permission first
+  return apiInstance.post(COMPONENT_URL.logout, {}, { headers: { "X-Requested-With": "XMLHttpRequest" } }).catch(() => {});
 };
 
 export { register, login, refreshToken, logout, endSession, sessionPayload, isSessionExpired };

@@ -62,6 +62,16 @@ beforeEach(async () => {
   dispatch.mockReset();
   setAlert.mockReset();
   state = { account: { token: "the one of the session" } };
+  // The store answers what was dispatched to it, which is what says whether
+  // there is a session left at all
+  dispatch.mockImplementation((action) => {
+    if (action?.type === "LOGOUT") {
+      state = { account: { token: "" } };
+    }
+    if (action?.type === "LOGIN" || action?.type === "REFRESH_TOKEN") {
+      state = { account: { token: action.payload.token } };
+    }
+  });
   localStorage.clear();
   // The session lives in the state of the module, so every case gets its own
   vi.resetModules();
@@ -206,6 +216,17 @@ describe("a session that is being closed", () => {
 
     const [, , config] = post.mock.calls.find(([url]) => url === LOGOUT_URL);
     expect(config.headers["X-Requested-With"]).toBe("XMLHttpRequest");
+  });
+
+  it("closes the session in the browser without waiting for the api to answer", async () => {
+    // The instance has no timeout, so a connection that stalls used to leave
+    // the browser sitting on a session it was told to close
+    post.mockImplementation((url) => (url === LOGOUT_URL ? neverAnswers() : Promise.resolve(answers())));
+
+    auth.logout();
+
+    expect(dispatch.mock.calls.map(([action]) => action.type)).toContain("LOGOUT");
+    await expect(auth.refreshToken()).rejects.toMatchObject({ sessionClosed: true });
   });
 
   it("renews nothing once there is no session left in the store", async () => {
