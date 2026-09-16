@@ -168,6 +168,12 @@ REST_FRAMEWORK = {
     # can be reached without credentials and cost something to answer
     "DEFAULT_THROTTLE_RATES": {
         "login": os.environ.get("NGEN_THROTTLE_LOGIN", "20/min"),
+        # Renewing a token is not a place to guess a password: it asks for the
+        # refresh cookie, which only a browser that already logged in has. It is
+        # counted apart from the login, and higher, because simplejwt leaves the
+        # endpoint without authentication and the bucket can only be keyed by
+        # address: a whole organization behind one nat shares it
+        "token_refresh": os.environ.get("NGEN_THROTTLE_TOKEN_REFRESH", "120/min"),
         "register": os.environ.get("NGEN_THROTTLE_REGISTER", "5/hour"),
         "sso": os.environ.get("NGEN_THROTTLE_SSO", "30/min"),
         "export": os.environ.get("NGEN_THROTTLE_EXPORT", "5/hour"),
@@ -805,6 +811,10 @@ else:
 # has to be one that was named: answering any origin with credentials hands the
 # session to whoever asks. Naming the frontend is what turns the cookie flow on
 CORS_ALLOW_CREDENTIALS = bool(frontend_urls)
+# A browser hides every answer header that is not on its short list, so with the
+# api on another origin the frontend could not read how long it was asked to
+# wait and had to guess it
+CORS_EXPOSE_HEADERS = ["Retry-After"]
 CSRF_TRUSTED_ORIGINS = [
     v
     for v in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", frontend_urls).split(",")

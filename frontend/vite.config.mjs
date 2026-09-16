@@ -87,7 +87,14 @@ export default defineConfig(({ mode }) => {
       react(), // Soporte para React
       jsconfigPaths() // Resolver paths según jsconfig.json o tsconfig.json
     ],
-    // Configuración de dependencias optimizadas
+    // Tests unitarios (vitest). Corren en jsdom porque lo que se prueba toca
+    // localStorage y document, y sin navegador de por medio son deterministas
+    test: {
+      environment: "jsdom",
+      include: ["src/**/*.test.{js,jsx}"],
+      restoreMocks: true
+    },
+    // Configuraciones de dependencias optimizadas
     optimizeDeps: {
       exclude: [] // Excluir paquetes específicos del pre-bundling
     }

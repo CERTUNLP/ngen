@@ -38,5 +38,8 @@ jobs:
           sleep 1
         done
 
+    - name: Run frontend tests
+      run: docker exec "$container_react" npm test
+
     - name: Run Vite build
       run: docker exec "$container_react" npm run build

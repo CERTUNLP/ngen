@@ -106,6 +106,7 @@
   "ngen.auth.login.invalidCredentials": "Invalid login credentials",
   "ngen.auth.register.error": "User could not be registered",
   "ngen.auth.register.success": "Successful registration",
+  "ngen.auth.session_expired": "Your session has expired",
   "ngen.cancel": "Cancel",
   "ngen.case.addto": "Add to a case",
   "ngen.case.close": "Close case",

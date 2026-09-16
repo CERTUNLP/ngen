@@ -6,6 +6,12 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from rest_framework_simplejwt.token_blacklist.models import (
+    BlacklistedToken,
+    OutstandingToken,
+)
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from ngen.models import User
 
 
@@ -179,7 +185,9 @@ class TestRefreshCookie(APITestCase):
         self.assertTrue(cookie["httponly"])
         self.assertTrue(cookie["secure"])
         self.assertEqual(cookie["samesite"], "Lax")
-        self.assertEqual(cookie["path"], reverse("ctoken-refresh"))
+        # Narrow enough that it only travels to the endpoints of the session,
+        # wide enough to reach the one that takes it out of circulation
+        self.assertEqual(cookie["path"], reverse("ctoken-create"))
 
     @override_settings(DEBUG=False)
     def test_the_refresh_cookie_does_not_outlive_its_token(self):
@@ -200,6 +208,216 @@ class TestRefreshCookie(APITestCase):
         )
 
         self.assertNotIn("refresh", response.data)
+
+
+class TestLogout(APITestCase):
+    """
+    This will handle closing a session actually taking its refresh token out of
+    circulation: the cookie has to reach the endpoint that revokes it, and what
+    gets revoked has to be the token of the user
+    """
+
+    fixtures = [
+        "tests/priority.json",
+        "tests/user.json",
+    ]
+
+    def setUp(self):
+        cache.clear()
+
+    def login(self):
+        response = self.client.post(
+            reverse("ctoken-create"), data={"username": "ngen", "password": "ngen"}
+        )
+        token = response.cookies["refresh_token"].value
+        return token, RefreshToken(token).payload["jti"]
+
+    def logout(self, **extra):
+        return self.client.post(
+            reverse("ctoken-logout"), HTTP_X_REQUESTED_WITH="XMLHttpRequest", **extra
+        )
+
+    def test_the_cookie_reaches_the_endpoint_that_revokes_it(self):
+        """
+        A browser only sends a cookie to the paths under the one it was written
+        with, so naming the endpoint that renews it left the logout without it,
+        and the test client sends every cookie no matter the path, which is why
+        this looks at the path itself
+        """
+        self.login()
+
+        path = self.client.cookies["refresh_token"]["path"]
+
+        self.assertTrue(reverse("ctoken-logout").startswith(path))
+        self.assertTrue(reverse("ctoken-refresh").startswith(path))
+
+    def test_closing_a_session_takes_its_refresh_token_out_of_circulation(self):
+        _, jti = self.login()
+
+        response = self.logout()
+
+        self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
+        self.assertTrue(BlacklistedToken.objects.filter(token__jti=jti).exists())
+
+    def test_the_token_it_revoked_does_not_work_anymore(self):
+        refresh_token, _ = self.login()
+
+        self.logout()
+        # The browser was told to drop it, so it goes back by hand: what is
+        # checked here is that it stopped working, not that it stopped being sent
+        self.client.cookies["refresh_token"] = refresh_token
+        response = self.client.post(reverse("ctoken-refresh"))
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_a_browser_whose_access_token_expired_can_still_close_its_session(self):
+        """
+        Which is the usual state of a browser that was left alone for a while,
+        and the moment somebody closes the session. Asking for an access token
+        on top answered 401 and left the refresh token alive for its whole hour
+        """
+        _, jti = self.login()
+
+        response = self.logout(HTTP_AUTHORIZATION="Bearer expired.and.invalid")
+
+        self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
+        self.assertTrue(BlacklistedToken.objects.filter(token__jti=jti).exists())
+
+    def test_a_logout_without_the_cookie_mints_nothing_and_says_so(self):
+        """
+        simplejwt makes a brand new token when it is handed none, so blacklisting
+        that one answered as if the session had been closed while the token of
+        the user stayed valid
+        """
+        self.login()
+        del self.client.cookies["refresh_token"]
+        outstanding = OutstandingToken.objects.count()
+
+        response = self.logout()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(OutstandingToken.objects.count(), outstanding)
+
+    def test_a_post_that_did_not_come_from_the_application_is_refused(self):
+        """
+        The cookie is the only credential here and a browser attaches it to any
+        post of the same site, so a form served from another subdomain would be
+        enough to close a session. A form cannot add a header
+        """
+        _, jti = self.login()
+
+        response = self.client.post(reverse("ctoken-logout"))
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertFalse(BlacklistedToken.objects.filter(token__jti=jti).exists())
+        self.assertNotIn("refresh_token", response.cookies)
+
+    def test_the_cookie_is_taken_out_of_the_browser(self):
+        self.login()
+
+        response = self.logout()
+
+        cookie = response.cookies["refresh_token"]
+        self.assertEqual(cookie.value, "")
+        # A cookie is only removed by naming the path it was written with
+        self.assertEqual(cookie["path"], reverse("ctoken-create"))
+
+    def test_closing_a_session_that_was_already_closed_is_not_an_error(self):
+        """
+        Two tabs of the same browser close the same session
+        """
+        refresh_token, _ = self.login()
+        self.logout()
+        self.client.cookies["refresh_token"] = refresh_token
+
+        response = self.logout()
+
+        self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
+
+
+class TestRefreshThrottle(APITestCase):
+    """
+    This will handle renewing a token not eating the budget of the login: every
+    browser of the deployment comes back here every few minutes, and the bucket
+    can only be keyed by address because simplejwt leaves the endpoint without
+    authentication, so a whole organization behind one nat shares it
+    """
+
+    fixtures = [
+        "tests/priority.json",
+        "tests/user.json",
+    ]
+
+    def setUp(self):
+        cache.clear()
+
+    def login(self):
+        return self.client.post(
+            reverse("ctoken-create"), data={"username": "ngen", "password": "ngen"}
+        )
+
+    def refresh(self):
+        return self.client.post(reverse("ctoken-refresh"))
+
+    # DRF reads the rates once, when it is imported, so overriding the setting
+    # afterwards changes nothing: the table it kept is what has to be patched
+    @patch.dict(
+        "rest_framework.throttling.SimpleRateThrottle.THROTTLE_RATES",
+        {"login": "2/min", "token_refresh": "100/min"},
+    )
+    def test_renewing_does_not_use_up_the_budget_of_the_login(self):
+        self.assertEqual(self.login().status_code, status.HTTP_200_OK)
+
+        for _ in range(10):
+            self.assertEqual(self.refresh().status_code, status.HTTP_200_OK)
+
+        self.assertEqual(self.login().status_code, status.HTTP_200_OK)
+
+    @patch.dict(
+        "rest_framework.throttling.SimpleRateThrottle.THROTTLE_RATES",
+        {"login": "100/min", "token_refresh": "3/min"},
+    )
+    def test_renewing_still_has_a_limit_of_its_own(self):
+        self.login()
+
+        for _ in range(3):
+            self.assertEqual(self.refresh().status_code, status.HTTP_200_OK)
+
+        self.assertEqual(
+            self.refresh().status_code, status.HTTP_429_TOO_MANY_REQUESTS
+        )
+
+    @patch.dict(
+        "rest_framework.throttling.SimpleRateThrottle.THROTTLE_RATES",
+        {"login": "100/min", "token_refresh": "3/min"},
+    )
+    def test_the_refresh_that_takes_the_token_in_the_body_is_counted_the_same(self):
+        token = self.login().cookies["refresh_token"].value
+
+        for _ in range(3):
+            self.assertEqual(self.refresh().status_code, status.HTTP_200_OK)
+
+        response = self.client.post(
+            reverse("token-refresh"), data={"refresh": token}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
+    def test_the_answer_says_how_long_to_wait(self):
+        """
+        The frontend backs off with this instead of throwing the session away
+        """
+        with patch.dict(
+            "rest_framework.throttling.SimpleRateThrottle.THROTTLE_RATES",
+            {"login": "100/min", "token_refresh": "1/min"},
+        ):
+            self.login()
+            self.refresh()
+
+            response = self.refresh()
+
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        self.assertIn("Retry-After", response)
 
 
 @override_settings(

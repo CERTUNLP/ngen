@@ -24,7 +24,7 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+from rest_framework_simplejwt.views import TokenVerifyView
 
 from ngen import views
 from project import settings
@@ -189,7 +189,11 @@ urlpatterns = [
         name="user-logentry-list",
     ),
     path("api/token/", views.CustomTokenObtainPairView.as_view(), name="token-create"),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path(
+        "api/token/refresh/",
+        views.CustomTokenRefreshView.as_view(),
+        name="token-refresh",
+    ),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token-verify"),
     path("api/token/simple/", views.ObtainApiKeyView.as_view(), name="token-simple"),
     path("api/", include("rest_framework.urls", namespace="rest_framework")),

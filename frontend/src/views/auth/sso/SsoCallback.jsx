@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import { LOGIN } from "../../../store/actions";
 import { COMPONENT_URL } from "../../../config/constant";
+import { sessionPayload } from "../../../api/services/auth";
 import store from "../../../store";
 import Loader from "../../../components/Loader/Loader";
 
@@ -33,17 +33,13 @@ const SsoCallback = () => {
         return res.json();
       })
       .then((data) => {
-        const decoded = jwtDecode(data.access_token);
         const { dispatch } = store;
 
         dispatch({
           type: LOGIN,
           payload: {
             user: data.user_data,
-            token: data.access_token,
-            iat: decoded.iat,
-            exp: decoded.exp,
-            user_id: decoded.user_id
+            ...sessionPayload(data.access_token)
           }
         });
 
