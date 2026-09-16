@@ -60,6 +60,13 @@ const setup = (store) => {
       return response;
     },
     (error) => {
+      // A renewal that was dropped because the session is closing has no answer
+      // either, and telling the user that the network failed while they are
+      // logging out is both wrong and loud enough to bury the real message
+      if (axios.isCancel(error)) {
+        return Promise.reject(error);
+      }
+
       if (error.response === undefined) {
         setAlert(i18next.t("ngen.conection_failed"), "error");
         console.log("Network connection failed");
