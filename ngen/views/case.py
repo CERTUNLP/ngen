@@ -69,6 +69,7 @@ class EventViewSet(BaseCommunicationChannelsViewSet):
         "domain",
         "uuid",
         "tags__name",
+        "artifact_relation__artifact__value",
     ]
     filterset_class = EventFilter
     ordering_fields = [
@@ -345,7 +346,13 @@ class CaseViewSet(BaseCommunicationChannelsViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    search_fields = ["events__cidr", "events__domain", "name", "uuid"]
+    search_fields = [
+        "events__cidr",
+        "events__domain",
+        "events__artifact_relation__artifact__value",
+        "name",
+        "uuid",
+    ]
     filterset_class = CaseFilter
     ordering_fields = [
         "id",

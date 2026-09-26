@@ -554,6 +554,36 @@ class TestEvent(TagBehaviourTestMixin, APITestCaseWithLogin):
         self.assertIn("another.domain3.com", [artifact.value for artifact in artifacts])
         self.assertIn("another.domain5.com", [artifact.value for artifact in artifacts])
 
+    def test_event_search_by_artifact(self):
+        """
+        This will test that Event search matches the value of its artifacts,
+        not only its own address
+        """
+
+        event = Event.objects.create(
+            domain="search.domain.com",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            priority=self.priority,
+        )
+        Event.objects.create(
+            domain="other.domain.com",
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            priority=self.priority,
+        )
+        artifact = Artifact.objects.create(type="ip", value="203.0.113.7")
+        event.artifact_relation.create(artifact=artifact)
+
+        response = self.client.get(self.url_list, {"search": "203.0.113.7"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["results"][0]["uuid"], str(event.uuid))
+
     def test_event_delete(self):
         """
         This will test successful Event DELETE
