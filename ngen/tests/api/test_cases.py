@@ -15,6 +15,7 @@ from ngen.models import (
     Network,
     Contact,
     NetworkEntity,
+    Artifact,
 )
 from ngen.tests.api.api_test_case_with_login import APITestCaseWithLogin
 from ngen.tests.api.tag_behaviour_test_mixin import TagBehaviourTestMixin
@@ -139,6 +140,53 @@ class TestCase(TagBehaviourTestMixin, APITestCaseWithLogin):
         response = self.client.get(self.url_list)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], len(cases))
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_case_search_by_event_artifact(self):
+        """
+        This will test that Case search matches the artifacts of its events,
+        returning the case once even if several of its events share the artifact
+        """
+
+        case = Case.objects.create(
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
+        )
+        other_case = Case.objects.create(
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
+        )
+        artifact = Artifact.objects.create(type="ip", value="203.0.113.7")
+        for domain in ["a.search.com", "b.search.com"]:
+            event = Event.objects.create(
+                domain=domain,
+                priority=self.priority,
+                taxonomy=self.taxonomy,
+                feed=self.feed,
+                tlp=self.tlp,
+                reporter=self.user,
+                case=case,
+            )
+            event.artifact_relation.create(artifact=artifact)
+        Event.objects.create(
+            domain="c.search.com",
+            priority=self.priority,
+            taxonomy=self.taxonomy,
+            feed=self.feed,
+            tlp=self.tlp,
+            reporter=self.user,
+            case=other_case,
+        )
+
+        response = self.client.get(self.url_list, {"search": "203.0.113.7"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["results"][0]["uuid"], str(case.uuid))
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
