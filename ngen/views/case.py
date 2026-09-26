@@ -350,6 +350,7 @@ class CaseViewSet(BaseCommunicationChannelsViewSet):
         "events__cidr",
         "events__domain",
         "events__artifact_relation__artifact__value",
+        "artifact_relation__artifact__value",
         "name",
         "uuid",
     ]
