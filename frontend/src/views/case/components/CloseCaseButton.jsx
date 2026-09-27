@@ -68,6 +68,7 @@ const CloseCaseButton = ({ caseItem, onClosed, solved }) => {
       console.error(error);
       setAlert(t("ngen.case.close.error"), "error", "case");
     } finally {
+      setClosing(false);
     }
   };
 
