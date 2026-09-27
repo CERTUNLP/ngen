@@ -13,10 +13,7 @@ import { currentUserHasPermissions } from "utils/permissions";
  */
 const CloseCaseButton = ({ caseItem, onClosed, solved }) => {
   const { t } = useTranslation();
-
-  if (!currentUserHasPermissions(undefined, ["change_case", "change_case_network_admin"])) {
-    return null;
-  }
+  const hasPermission = currentUserHasPermissions(undefined, ["change_case", "change_case_network_admin"]);
 
   const [showModal, setShowModal] = useState(false);
   const [closeInfo, setCloseInfo] = useState(null);
@@ -30,6 +27,10 @@ const CloseCaseButton = ({ caseItem, onClosed, solved }) => {
         .catch(() => {});
     }
   }, [caseItem?.state, solved]);
+
+  if (!hasPermission) {
+    return null;
+  }
 
   const isSolved = solved !== undefined ? solved : detectedSolved;
 
