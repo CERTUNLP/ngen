@@ -162,7 +162,7 @@ class TestCase(TagBehaviourTestMixin, APITestCaseWithLogin):
             state=self.state,
         )
         artifact = Artifact.objects.create(type="ip", value="203.0.113.7")
-        for domain in ["a.search.com", "b.search.com"]:
+        for domain in ["a.test.com", "b.test.com"]:
             event = Event.objects.create(
                 domain=domain,
                 priority=self.priority,
@@ -174,7 +174,7 @@ class TestCase(TagBehaviourTestMixin, APITestCaseWithLogin):
             )
             event.artifact_relation.create(artifact=artifact)
         Event.objects.create(
-            domain="c.search.com",
+            domain="c.test.com",
             priority=self.priority,
             taxonomy=self.taxonomy,
             feed=self.feed,
@@ -184,6 +184,34 @@ class TestCase(TagBehaviourTestMixin, APITestCaseWithLogin):
         )
 
         response = self.client.get(self.url_list, {"search": "203.0.113.7"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["results"][0]["uuid"], str(case.uuid))
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_case_search_by_case_artifact(self):
+        """
+        This will test that Case search matches artifacts attached directly
+        to the case, not only through its events
+        """
+
+        case = Case.objects.create(
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
+        )
+        Case.objects.create(
+            priority=self.priority,
+            tlp=self.tlp,
+            casetemplate_creator=self.case_template,
+            state=self.state,
+        )
+        artifact = Artifact.objects.create(type="ip", value="198.51.100.23")
+        case.artifact_relation.create(artifact=artifact)
+
+        response = self.client.get(self.url_list, {"search": "198.51.100.23"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(response.data["results"][0]["uuid"], str(case.uuid))
