@@ -14,6 +14,7 @@ import CrudButton from "components/Button/CrudButton";
 import LetterFormat from "components/LetterFormat";
 import DateShowField from "components/Field/DateShowField";
 import AuditModal from "views/audits/components/AuditModal";
+import CloseCaseButton from "./components/CloseCaseButton";
 
 const ReadCase = ({ routeParams, useLocalStorage=false }) => {
   const basePath = routeParams?.basePath || "";
@@ -28,7 +29,7 @@ const ReadCase = ({ routeParams, useLocalStorage=false }) => {
 
   const [modalShowEvent, setModalShowEvent] = useState(false);
   const [showAudit, setShowAudit] = useState(false);
-  
+
   const [eventList, setEventList] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [listTag, setListTag] = useState([]);
@@ -229,6 +230,7 @@ const ReadCase = ({ routeParams, useLocalStorage=false }) => {
           <Col className="text-right" style={{ textAlign: 'right' }}>
             <CrudButton type="edit" to={`${basePath}/cases/edit/${id}`} checkPermRoute />
             <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
+            <CloseCaseButton caseItem={caseItem} onClosed={(response) => setCaseItem(response.data)} />
           </Col>
         </Row>
         <Row>
