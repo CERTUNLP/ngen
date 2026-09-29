@@ -29,8 +29,9 @@ import AuditModal from "views/audits/components/AuditModal";
 import DateShowField from "components/Field/DateShowField";
 
 // Con `url` se muestra el evento de esa URL (por ejemplo dentro de ModalReadEvent)
-// en lugar del de la ruta
-const ReadEvent = ({ routeParams = {}, url }) => {
+// en lugar del de la ruta. Con `summary` se dejan afuera el caso, los hijos, las
+// tareas del playbook, los retests y los datos adicionales
+const ReadEvent = ({ routeParams = {}, url, summary }) => {
   const basePath = routeParams.basePath || "";
   const [body, setBody] = useState({});
   const [eventItem, setEventItem] = useState(null);
@@ -138,7 +139,7 @@ const ReadEvent = ({ routeParams = {}, url }) => {
     };
 
     // Llamar a la función para obtener los datos de los eventos hijos
-    fetchAllChildren();
+    if (!summary) fetchAllChildren();
 
     getMinifiedTag()
       .then((response) => {
@@ -165,7 +166,7 @@ const ReadEvent = ({ routeParams = {}, url }) => {
         }
       }
     };
-    fetchAllRetests();
+    if (!summary) fetchAllRetests();
   }, [eventItem]);
 
   useEffect(() => {
@@ -490,7 +491,9 @@ const ReadEvent = ({ routeParams = {}, url }) => {
         )}
       </PermissionCheck>
 
-      <SmallCaseTable readCase={body.case} disableColumOption={true} basePath={basePath} hideCreateButton={true} hideLinkButton={true} />
+      {!summary && (
+        <SmallCaseTable readCase={body.case} disableColumOption={true} basePath={basePath} hideCreateButton={true} hideLinkButton={true} />
+      )}
 
       <Card>
         <Card.Header>
@@ -521,69 +524,73 @@ const ReadEvent = ({ routeParams = {}, url }) => {
 
       <EvidenceCard evidences={evidences} disableDelete={true} disableDragAndDrop={true} />
 
-      <EvidenceCard evidences={childrenEvidences} disableDelete={true} disableDragAndDrop={true} title={t("ngen.evidences.children")} />
+      {!summary && (
+        <>
+          <EvidenceCard evidences={childrenEvidences} disableDelete={true} disableDragAndDrop={true} title={t("ngen.evidences.children")} />
 
-      {/* deshabilitamos la columna opciones para view y delete hasta que se corrija el uso de localstorage para la navegacion ya que no puede ir de un evento a otro sin usar href.location */}
-      <SmallEventTable
-        list={children}
-        disableLink={true}
-        disableColumOption={true}
-        disableUuid={false}
-        disableColumnDelete={false}
-        disableMerged={true}
-        title={t("ngen.children")}
-        basePath={basePath}
-      />
-
-      {/* Network admins do not get the todos of an event: the network admin
-          event serializer leaves them out and /api/todo/ is not scoped */}
-      {!basePath.includes("networkadmin") && (
-        <PermissionCheck permissions={["view_todotask"]}>
-          <SmallTodoTable eventId={id.id} />
-        </PermissionCheck>
-      )}
-
-      <PermissionCheck permissions={["view_analyzermapping"]}>
-        <Card>
-          <SmallRetestTable
-            retests={retests}
-            eventId={id.id}
-            eventUrl={eventItem?.url}
-            taxonomyUrl={eventItem?.taxonomy}
+          {/* deshabilitamos la columna opciones para view y delete hasta que se corrija el uso de localstorage para la navegacion ya que no puede ir de un evento a otro sin usar href.location */}
+          <SmallEventTable
+            list={children}
+            disableLink={true}
+            disableColumOption={true}
+            disableUuid={false}
+            disableColumnDelete={false}
+            disableMerged={true}
+            title={t("ngen.children")}
+            basePath={basePath}
           />
-        </Card>
-      </PermissionCheck>
 
-      <Card>
-        <Card.Header>
-          <Card.Title as="h5">{t("ngen.event.additional")}</Card.Title>
-        </Card.Header>
-        <Card.Body>
-          <Table responsive>
-            <tbody>
-              <tr>
-                <td>{t("ngen.comments")}</td>
-                <td>
-                  <Form.Control plaintext readOnly defaultValue="" />
-                </td>
-              </tr>
+          {/* Network admins do not get the todos of an event: the network admin
+              event serializer leaves them out and /api/todo/ is not scoped */}
+          {!basePath.includes("networkadmin") && (
+            <PermissionCheck permissions={["view_todotask"]}>
+              <SmallTodoTable eventId={id.id} />
+            </PermissionCheck>
+          )}
 
-              <tr>
-                <td>{t("ngen.date.created")}</td>
-                <td>
-                  <DateShowField value={body.created} asFormControl />
-                </td>
-              </tr>
-              <tr>
-                <td>{t("ngen.date.modified")}</td>
-                <td>
-                  <DateShowField value={body.modified} asFormControl />
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
+          <PermissionCheck permissions={["view_analyzermapping"]}>
+            <Card>
+              <SmallRetestTable
+                retests={retests}
+                eventId={id.id}
+                eventUrl={eventItem?.url}
+                taxonomyUrl={eventItem?.taxonomy}
+              />
+            </Card>
+          </PermissionCheck>
+
+          <Card>
+            <Card.Header>
+              <Card.Title as="h5">{t("ngen.event.additional")}</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Table responsive>
+                <tbody>
+                  <tr>
+                    <td>{t("ngen.comments")}</td>
+                    <td>
+                      <Form.Control plaintext readOnly defaultValue="" />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>{t("ngen.date.created")}</td>
+                    <td>
+                      <DateShowField value={body.created} asFormControl />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>{t("ngen.date.modified")}</td>
+                    <td>
+                      <DateShowField value={body.modified} asFormControl />
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
+        </>
+      )}
       {!url && buttonReturn !== "false" ? (
         <Button variant="primary" onClick={() => returnBack()}>
           {t("button.return")}

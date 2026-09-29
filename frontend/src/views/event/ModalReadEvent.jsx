@@ -16,7 +16,7 @@ const ModalReadEvent = ({ modalShowCase, returnToListOfCases, linkCaseToEvent, t
       <Modal.Header closeButton />
       <Modal.Body>
         <div id="example-collapse-text">
-          <ReadEvent key={url} url={url} routeParams={{ basePath }} />
+          <ReadEvent key={url} url={url} routeParams={{ basePath }} summary />
         </div>
       </Modal.Body>
       {tableDetail ? (
