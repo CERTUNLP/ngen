@@ -27,7 +27,14 @@ const EventComponent = ({ event, onClick }) => {
     <span
       style={{ display: 'inline-block', verticalAlign: 'middle', cursor: onClick ? 'pointer' : undefined }}
       role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
       onClick={onClick ? () => onClick(event) : undefined}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick(event);
+        }
+      } : undefined}
     >
       <LetterFormat 
         useBadge={true} 
