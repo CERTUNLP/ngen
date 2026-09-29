@@ -251,7 +251,7 @@ const ReadEvent = ({ routeParams = {}, url }) => {
         <Col>
           <h1 className="h3 mb-4 text-gray-800">{t("ngen.event_one")} {body.uuid}</h1>
         </Col>
-        <Col className="text-right" style={{ textAlign: 'right' }}>
+        <Col xs="auto" className="text-right" style={{ textAlign: 'right' }}>
           <CrudButton type="edit" to={`${basePath}/events/edit/${id.id}`} checkPermRoute />{" "}
           <CrudButton type="read" onClick={() => setShowAudit(true)} permissions="view_logentry" />
         </Col>
