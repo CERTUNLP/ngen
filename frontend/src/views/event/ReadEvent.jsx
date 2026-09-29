@@ -66,7 +66,8 @@ const ReadEvent = ({ routeParams = {}, url, summary }) => {
 
   useEffect(() => {
     if (id.id) {
-      getEvent(getUrlAsMe(COMPONENT_URL.event) + id.id + "/")
+      // La URL recibida ya trae el endpoint correcto (por ejemplo el de networkadmin)
+      getEvent(url || getUrlAsMe(COMPONENT_URL.event) + id.id + "/")
         .then((response) => {
           setBody(response.data);
           setEventItem(response.data);
