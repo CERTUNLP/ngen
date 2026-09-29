@@ -3,7 +3,7 @@ import { Button, Modal } from "react-bootstrap";
 import ReadEvent from "./ReadEvent";
 import "./ModalReadEvent.css";
 
-const ModalReadEvent = ({ modalShowCase, returnToListOfCases, linkCaseToEvent, tableDetail, closeModalDetail, url }) => {
+const ModalReadEvent = ({ modalShowCase, returnToListOfCases, linkCaseToEvent, tableDetail, closeModalDetail, url, basePath }) => {
   return (
     <Modal
       show={modalShowCase}
@@ -16,7 +16,7 @@ const ModalReadEvent = ({ modalShowCase, returnToListOfCases, linkCaseToEvent, t
       <Modal.Header closeButton />
       <Modal.Body>
         <div id="example-collapse-text">
-          <ReadEvent url={url} />
+          <ReadEvent key={url} url={url} routeParams={{ basePath }} />
         </div>
       </Modal.Body>
       {tableDetail ? (

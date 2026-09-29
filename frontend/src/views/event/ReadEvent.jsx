@@ -28,7 +28,9 @@ import LetterFormat from "components/LetterFormat";
 import AuditModal from "views/audits/components/AuditModal";
 import DateShowField from "components/Field/DateShowField";
 
-const ReadEvent = ({ routeParams }) => {
+// Con `url` se muestra el evento de esa URL (por ejemplo dentro de ModalReadEvent)
+// en lugar del de la ruta
+const ReadEvent = ({ routeParams = {}, url }) => {
   const basePath = routeParams.basePath || "";
   const [body, setBody] = useState({});
   const [eventItem, setEventItem] = useState(null);
@@ -36,7 +38,8 @@ const ReadEvent = ({ routeParams }) => {
   const [evidences, setEvidences] = useState([]);
   const [retests, setRetests] = useState([]);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
-  const [id] = useState(useParams());
+  const params = useParams();
+  const [id] = useState(url ? { id: url.split("/").filter(Boolean).pop() } : params);
   const [children, setChildren] = useState([]);
   const [childrenEvidences, setChildrenEvidences] = useState([]);
   const [listTag, setListTag] = useState([]);
@@ -581,7 +584,7 @@ const ReadEvent = ({ routeParams }) => {
           </Table>
         </Card.Body>
       </Card>
-      {buttonReturn !== "false" ? (
+      {!url && buttonReturn !== "false" ? (
         <Button variant="primary" onClick={() => returnBack()}>
           {t("button.return")}
         </Button>
