@@ -71,7 +71,6 @@ const FormCase = (props) => {
   const [userNames, setUserNames] = useState({});
 
   const [showModalListEvent, setShowModalListEvent] = useState(false);
-  const [updatePagination, setUpdatePagination] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedEvent, setSelectedEvent] = useState([]);
@@ -503,7 +502,6 @@ const FormCase = (props) => {
   };
 
   const modalListEvent = () => {
-    setUpdatePagination(true);
     setShowModalListEvent(true);
   };
 
@@ -523,7 +521,6 @@ const FormCase = (props) => {
   const returnToListOfEvent = () => {
     setShowModalListEvent(true);
     setModalShowEvent(false);
-    setUpdatePagination(true);
   };
 
   const linkCaseToEvent = () => {
@@ -532,7 +529,6 @@ const FormCase = (props) => {
     }
     setShowModalListEvent(true);
     setModalShowEvent(false);
-    setUpdatePagination(true);
     setUpdateList(!updateList);
   };
 
@@ -780,8 +776,6 @@ const FormCase = (props) => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         disableColumOption={false}
-        setUpdatePagination={setUpdatePagination}
-        updatePagination={updatePagination}
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
         taxonomyNames={taxonomyNames}

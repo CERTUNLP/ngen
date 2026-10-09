@@ -14,7 +14,6 @@ const ListAnalyzerMappings = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [countItems, setCountItems] = useState(0);
-  const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [wordToSearch, setWordToSearch] = useState("");
 
@@ -44,9 +43,6 @@ const ListAnalyzerMappings = () => {
       .then((response) => {
         setCountItems(response.data.count);
         setAnalyzerMappings(response.data.results);
-        if (currentPage === 1) {
-          setUpdatePagination(true);
-        }
         setDisabledPagination(false);
       })
       .catch((error) => {
@@ -94,9 +90,8 @@ const ListAnalyzerMappings = () => {
                 <Col md="auto">
                   <AdvancedPagination
                     countItems={countItems}
+                    currentPage={currentPage}
                     updatePage={updatePage}
-                    updatePagination={updatePagination}
-                    setUpdatePagination={setUpdatePagination}
                     setLoading={setLoading}
                     setDisabledPagination={setDisabledPagination}
                     disabledPagination={disabledPagination}

@@ -23,7 +23,6 @@ const ListTaxonomies = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [countItems, setCountItems] = useState(0);
-  const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [wordToSearch, setWordToSearch] = useState("");
 
@@ -140,9 +139,6 @@ const ListTaxonomies = () => {
       .then((response) => {
         setCountItems(response.data.count);
         setTaxonomies(response.data.results);
-        if (currentPage === 1) {
-          setUpdatePagination(true);
-        }
         setDisabledPagination(false);
       })
       .catch((error) => {
@@ -317,9 +313,8 @@ const ListTaxonomies = () => {
                 <Col md="auto">
                   <AdvancedPagination
                     countItems={countItems}
+                    currentPage={currentPage}
                     updatePage={updatePage}
-                    updatePagination={updatePagination}
-                    setUpdatePagination={setUpdatePagination}
                     setLoading={setLoading}
                     setDisabledPagination={setDisabledPagination}
                     disabledPagination={disabledPagination}

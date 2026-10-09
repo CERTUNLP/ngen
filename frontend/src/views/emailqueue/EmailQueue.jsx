@@ -33,7 +33,6 @@ const EmailQueue = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [countItems, setCountItems] = useState(0);
   const [stats, setStats] = useState({});
-  const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [order, setOrder] = useState("-created");
   const [refresh, setRefresh] = useState(false);
@@ -58,7 +57,6 @@ const EmailQueue = () => {
       .then((response) => {
         setMessages(response.data.results);
         setCountItems(response.data.count);
-        if (currentPage === 1) setUpdatePagination(true);
         setDisabledPagination(false);
       })
       .catch(() => {})
@@ -268,9 +266,8 @@ const EmailQueue = () => {
                 <Col md="auto">
                   <AdvancedPagination
                     countItems={countItems}
+                    currentPage={currentPage}
                     updatePage={updatePage}
-                    updatePagination={updatePagination}
-                    setUpdatePagination={setUpdatePagination}
                     setLoading={setLoading}
                     disabledPagination={disabledPagination}
                     setDisabledPagination={setDisabledPagination}

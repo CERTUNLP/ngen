@@ -124,7 +124,7 @@ const ListTask = (props) => {
                 <Card.Footer>
                   <Row className="justify-content-md-center">
                     <Col md="auto">
-                      <AdvancedPagination countItems={countItems} updatePage={updatePage}></AdvancedPagination>
+                      <AdvancedPagination countItems={countItems} currentPage={currentPage} updatePage={updatePage}></AdvancedPagination>
                     </Col>
                   </Row>
                 </Card.Footer>

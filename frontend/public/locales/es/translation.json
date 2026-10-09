@@ -385,6 +385,8 @@
   "ngen.options": "Opciones",
   "ngen.other": "Otro",
   "ngen.other_add": "Ingrese otro tipo de datos",
+  "ngen.pagination.go_to": "Ir a página",
+  "ngen.pagination.of": "de",
   "ngen.password": "Contraseña",
   "ngen.password.actual": "Ingrese su contraseña actual",
   "ngen.password.confirm": "Confirmar contraseña",
