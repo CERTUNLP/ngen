@@ -385,6 +385,8 @@
   "ngen.options": "Options",
   "ngen.other": "Other",
   "ngen.other_add": "Enter another data type",
+  "ngen.pagination.go_to": "Go to page",
+  "ngen.pagination.of": "of",
   "ngen.password": "Password",
   "ngen.password.actual": "Actual password",
   "ngen.password.change": "Change password",

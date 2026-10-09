@@ -15,7 +15,6 @@ function ListUser() {
   const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [isModify, setIsModify] = useState(null);
 
@@ -52,9 +51,6 @@ function ListUser() {
         //es escencial mantener este orden ya que si no proboca bugs en el paginado
         setUsers(response.data.results);
         setCountItems(response.data.count);
-        if (currentPage === 1) {
-          setUpdatePagination(true);
-        }
         setDisabledPagination(false);
       })
       .catch((error) => {
@@ -103,9 +99,8 @@ function ListUser() {
             <Col md="auto">
               <AdvancedPagination
                 countItems={countItems}
+                currentPage={currentPage}
                 updatePage={updatePage}
-                updatePagination={updatePagination}
-                setUpdatePagination={setUpdatePagination}
                 setLoading={setLoading}
                 setDisabledPagination={setDisabledPagination}
                 disabledPagination={disabledPagination}

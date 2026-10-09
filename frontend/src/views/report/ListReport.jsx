@@ -14,7 +14,6 @@ const ListReport = () => {
   const [reports, setReports] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [countItems, setCountItems] = useState(0);
-  const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [taxonomyNames, setTaxonomyNames] = useState({});
 
@@ -46,9 +45,6 @@ const ListReport = () => {
       .then((response) => {
         setReports(response.data.results);
         setCountItems(response.data.count);
-        if (currentPage === 1) {
-          setUpdatePagination(true);
-        }
         setDisabledPagination(false);
       })
       .catch((error) => {
@@ -100,9 +96,8 @@ const ListReport = () => {
             <Col md="auto">
               <AdvancedPagination
                 countItems={countItems}
+                currentPage={currentPage}
                 updatePage={updatePage}
-                updatePagination={updatePagination}
-                setUpdatePagination={setUpdatePagination}
                 setLoading={setLoading}
                 setDisabledPagination={setDisabledPagination}
                 disabledPagination={disabledPagination}

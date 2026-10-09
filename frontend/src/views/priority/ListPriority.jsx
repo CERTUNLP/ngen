@@ -15,7 +15,6 @@ const ListPriorities = () => {
   const [countItems, setCountItems] = useState(0);
   const [showAlert, setShowAlert] = useState(false);
   const [wordToSearch, setWordToSearch] = useState("");
-  const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const { t } = useTranslation();
 
@@ -44,9 +43,6 @@ const ListPriorities = () => {
         //es escencial mantener este orden ya que si no proboca bugs en el paginado
         setPriorities(response.data.results);
         setCountItems(response.data.count);
-        if (currentPage === 1) {
-          setUpdatePagination(true);
-        }
         setDisabledPagination(false);
       })
       .catch((error) => {
@@ -94,9 +90,8 @@ const ListPriorities = () => {
             <Col md="auto">
               <AdvancedPagination
                 countItems={countItems}
+                currentPage={currentPage}
                 updatePage={updatePage}
-                updatePagination={updatePagination}
-                setUpdatePagination={setUpdatePagination}
                 setLoading={setLoading}
                 setDisabledPagination={setDisabledPagination}
                 disabledPagination={disabledPagination}
