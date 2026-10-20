@@ -69,9 +69,7 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
     skipBlurApplyRef.current = false;
     const nextExact = !exact;
     setExact(nextExact);
-    if (search) {
-      action(nextExact);
-    }
+    action(nextExact);
   };
 
   const handleButtonPointerDown = () => {
