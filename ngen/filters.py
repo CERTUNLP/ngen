@@ -668,11 +668,14 @@ class NgenSearchFilter(SearchFilter):
         Postgres regex matching the term as a whole word. For IP terms the dot
         is also a word character, so 163.10.34.15 does not match 163.10.34.155.
         """
-        word = r"[\w.]" if self.parse_network(term) else r"\w"
+        network = self.parse_network(term)
+        word = r"\w"
+        if network is not None:
+            word = r"[\w.:]" if network.version == 6 else r"[\w.]"
         pattern = re.escape(term)
-        if re.match(r"\w", term[0]):
+        if network is not None or re.match(r"\w", term[0]):
             pattern = rf"(?<!{word}){pattern}"
-        if re.match(r"\w", term[-1]):
+        if network is not None or re.match(r"\w", term[-1]):
             pattern = rf"{pattern}(?!{word})"
         return pattern
 
