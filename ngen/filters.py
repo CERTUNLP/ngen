@@ -2,11 +2,18 @@
 """
 Filters for ngen models.
 """
+import operator
+import re
+from functools import reduce
 from ipaddress import ip_network
 
 import django_filters
+from django.core.exceptions import FieldDoesNotExist, ValidationError
+from django.db import models
 from django_filters import DateFilter, DateFromToRangeFilter
 from django.db.models.functions import Length
+from netfields import CidrAddressField, InetAddressField
+from rest_framework.filters import SearchFilter
 
 from ngen.models import (
     Taxonomy,
@@ -569,3 +576,118 @@ class AnalyzerMappingFilter(BaseFilter):
             "analyzer__type": ["exact"],
             "analyzer__name": ["icontains"],
         }
+
+
+class NgenSearchFilter(SearchFilter):
+    """
+    SearchFilter with an optional literal mode (?search_mode=exact).
+    The default mode keeps the DRF behaviour (icontains on every field).
+    In exact mode every term must still match some search field, but:
+        - cidr fields: exact network match, only when the term is an IP or CIDR
+        - domain and address_value fields: case-insensitive equality
+        - uuid and integer fields: exact match, only when the term is a valid value
+        - text fields: whole word match (an IP term only matches whole IPs)
+    """
+
+    mode_param = "search_mode"
+    exact_mode = "exact"
+
+    def is_exact(self, request):
+        return request.query_params.get(self.mode_param) == self.exact_mode
+
+    def filter_queryset(self, request, queryset, view):
+        if not self.is_exact(request):
+            return super().filter_queryset(request, queryset, view)
+
+        search_fields = self.get_search_fields(view, request)
+        search_terms = [term for term in self.get_search_terms(request) if term]
+        if not search_fields or not search_terms:
+            return queryset
+
+        fields = [self.get_model_field(str(name), queryset) for name in search_fields]
+        conditions = []
+        for term in search_terms:
+            term_conditions = [
+                condition
+                for condition in (
+                    self.exact_condition(name, field, term) for name, field in fields
+                )
+                if condition is not None
+            ]
+            if not term_conditions:
+                return queryset.none()
+            conditions.append(reduce(operator.or_, term_conditions))
+
+        base = queryset
+        queryset = queryset.filter(reduce(operator.and_, conditions))
+        if self.must_call_distinct(queryset, search_fields):
+            queryset = queryset.filter(pk=models.OuterRef("pk"))
+            queryset = base.filter(models.Exists(queryset))
+        return queryset
+
+    def get_model_field(self, field_name, queryset):
+        """
+        Returns (field_name, model field) following the relations of the path.
+        """
+        if field_name[0] in self.lookup_prefixes:
+            field_name = field_name[1:]
+        opts = queryset.model._meta
+        field = None
+        for part in field_name.split("__"):
+            try:
+                field = opts.get_field(opts.pk.name if part == "pk" else part)
+            except FieldDoesNotExist:
+                return field_name, None
+            if field.is_relation and hasattr(field, "path_infos"):
+                opts = field.path_infos[-1].to_opts
+        return field_name, field
+
+    @staticmethod
+    def parse_network(term):
+        try:
+            return ip_network(term, strict=False)
+        except ValueError:
+            return None
+
+    def exact_condition(self, field_name, field, term):
+        if isinstance(field, (CidrAddressField, InetAddressField)):
+            network = self.parse_network(term)
+            return models.Q(**{field_name: str(network)}) if network else None
+        if isinstance(field, (models.UUIDField, models.IntegerField)):
+            try:
+                value = field.to_python(term)
+            except ValidationError:
+                return None
+            return models.Q(**{field_name: value})
+        if field_name.split("__")[-1] in ("domain", "address_value"):
+            return models.Q(**{f"{field_name}__iexact": term})
+        return models.Q(**{f"{field_name}__iregex": self.word_regex(term)})
+
+    def word_regex(self, term):
+        """
+        Postgres regex matching the term as a whole word. For IP terms the dot
+        is also a word character, so 163.10.34.15 does not match 163.10.34.155.
+        """
+        network = self.parse_network(term)
+        word = r"\w"
+        if network is not None:
+            word = r"[\w.:]" if network.version == 6 else r"[\w.]"
+        pattern = re.escape(term)
+        if network is not None or re.match(r"\w", term[0]):
+            pattern = rf"(?<!{word}){pattern}"
+        if network is not None or re.match(r"\w", term[-1]):
+            pattern = rf"{pattern}(?!{word})"
+        return pattern
+
+    def get_schema_operation_parameters(self, view):
+        parameters = super().get_schema_operation_parameters(view)
+        parameters.append(
+            {
+                "name": self.mode_param,
+                "required": False,
+                "in": "query",
+                "description": "Use 'exact' to match whole values or words instead of substrings.",
+                "schema": {"type": "string", "enum": [self.exact_mode]},
+            }
+        )
+        return parameters

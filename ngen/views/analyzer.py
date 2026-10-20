@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ngen import models, serializers
-from ngen.filters import AnalyzerFilter
+from ngen.filters import AnalyzerFilter, NgenSearchFilter
 from ngen.permissions import CustomModelPermissions, CustomApiViewPermission
 
 
@@ -19,7 +19,7 @@ class AnalyzerViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AnalyzerSerializer
     permission_classes = [CustomModelPermissions]
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
