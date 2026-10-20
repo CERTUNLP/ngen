@@ -600,7 +600,7 @@ class NgenSearchFilter(SearchFilter):
             return super().filter_queryset(request, queryset, view)
 
         search_fields = self.get_search_fields(view, request)
-        search_terms = self.get_search_terms(request)
+        search_terms = [term for term in self.get_search_terms(request) if term]
         if not search_fields or not search_terms:
             return queryset
 
