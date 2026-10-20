@@ -43,7 +43,7 @@ const ListAudit = () => {
 
   const buildFilters = () => {
     const parts = [];
-    if (wordToSearch) parts.push(`search=${encodeURIComponent(wordToSearch)}`);
+    if (wordToSearch) parts.push(wordToSearch.replace(/&$/, ""));
     if (actionFilter) parts.push(`action=${actionFilter}`);
     if (actorFilter) parts.push(`actor__username=${encodeURIComponent(actorFilter)}`);
     if (typeFilter) parts.push(`content_type__model=${encodeURIComponent(typeFilter)}`);

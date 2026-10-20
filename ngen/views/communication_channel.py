@@ -13,6 +13,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ngen import models
+from ngen.filters import NgenSearchFilter
 from ngen.serializers.communication_channel import (
     CommunicationChannelSerializer,
     CommunicationChannelReducedSerializer,
@@ -211,7 +212,7 @@ class CommunicationChannelViewSet(viewsets.ModelViewSet):
 
     queryset = models.CommunicationChannel.objects.all().order_by("id")
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -317,7 +318,7 @@ class CommunicationTypeViewSet(viewsets.ModelViewSet):
 
     queryset = models.CommunicationType.objects.all().order_by("id")
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]

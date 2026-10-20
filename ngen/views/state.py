@@ -2,7 +2,7 @@ import django_filters
 from rest_framework import viewsets, filters, mixins
 
 from ngen import models, serializers
-from ngen.filters import StateFilter
+from ngen.filters import StateFilter, NgenSearchFilter
 from ngen.permissions import (
     CustomApiViewPermission,
     CustomModelPermissions,
@@ -13,7 +13,7 @@ from ngen.permissions import (
 class StateViewSet(viewsets.ModelViewSet):
     queryset = models.State.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]

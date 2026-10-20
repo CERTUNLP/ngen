@@ -2,13 +2,14 @@ import django_filters
 from rest_framework import viewsets, filters, mixins
 
 from ngen import models, serializers
+from ngen.filters import NgenSearchFilter
 from ngen.permissions import CustomModelPermissions, CustomApiViewPermission
 
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = models.Tag.objects.all().order_by("name")
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -25,7 +26,7 @@ class TagViewSet(viewsets.ModelViewSet):
 class TagMinifiedViewSet(viewsets.ModelViewSet):
     queryset = models.Tag.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]

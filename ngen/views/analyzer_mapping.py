@@ -1,6 +1,6 @@
 import django_filters
 from rest_framework import viewsets, filters, mixins
-from ngen.filters import AnalyzerMappingFilter
+from ngen.filters import AnalyzerMappingFilter, NgenSearchFilter
 from ngen import models, serializers
 from ngen.permissions import CustomModelPermissions
 
@@ -9,7 +9,7 @@ class AnalyzerMappingViewSet(viewsets.ModelViewSet):
     queryset = models.AnalyzerMapping.objects.all()
     permission_classes = [CustomModelPermissions]
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]

@@ -542,6 +542,8 @@
   "search.by.name.user.email": "by name, username or email",
   "search.bycode": "by code",
   "search.clear": "Clear search",
+  "search.exact": "Exact search",
+  "search.exact.tooltip": "Exact search: match whole values or words (e.g. an IP returns only that IP)",
   "search.taxonomy_feed_affectedresource": "by taxonomy, feed or affected resource",
   "selectOption": "Select an option",
   "session.last": "Last login",

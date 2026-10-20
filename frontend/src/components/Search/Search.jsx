@@ -1,8 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+
+const EXACT_MODE_PARAM = "search_mode=exact&";
+
+const buildSearchQuery = (text, exact) => (text ? "search=" + encodeURIComponent(text) + "&" + (exact ? EXACT_MODE_PARAM : "") : "");
+
+const parseSearchQuery = (query) => {
+  const match = /^search=([^&]*)&/.exec(query || "");
+  return { text: match ? decodeURIComponent(match[1]) : "", exact: (query || "").includes(EXACT_MODE_PARAM) };
+};
 
 const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPage }) => {
   const [search, setSearch] = useState("");
+  const [exact, setExact] = useState(false);
   const skipBlurApplyRef = useRef(false);
   const { t } = useTranslation();
 
@@ -13,8 +24,9 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
     }
 
     if (wordToSearch.startsWith("search=")) {
-      const value = wordToSearch.replace(/^search=/, "").replace(/&$/, "");
-      setSearch(value);
+      const parsed = parseSearchQuery(wordToSearch);
+      setSearch(parsed.text);
+      setExact(parsed.exact);
     }
   }, [wordToSearch]);
 
@@ -22,9 +34,10 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
     setSearch(e.target.value);
   };
 
-  const action = () => {
-    setWordToSearch("search=" + search + "&");
-    if (wordToSearch !== "search=" + search + "&") {
+  const action = (exactMode = exact) => {
+    const query = buildSearchQuery(search, exactMode);
+    setWordToSearch(query);
+    if (wordToSearch !== query) {
       if (setCurrentPage) {
         setCurrentPage(1);
       }
@@ -52,6 +65,15 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
     }
   };
 
+  const toggleExact = () => {
+    skipBlurApplyRef.current = false;
+    const nextExact = !exact;
+    setExact(nextExact);
+    if (search) {
+      action(nextExact);
+    }
+  };
+
   const handleButtonPointerDown = () => {
     skipBlurApplyRef.current = true;
   };
@@ -61,10 +83,7 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
       skipBlurApplyRef.current = false;
       return;
     }
-    const applied = wordToSearch.startsWith("search=")
-      ? wordToSearch.replace(/^search=/, "").replace(/&$/, "")
-      : "";
-    if (search === applied) {
+    if (buildSearchQuery(search, exact) === (wordToSearch || "")) {
       return;
     }
     action();
@@ -94,6 +113,18 @@ const Search = ({ type, setWordToSearch, wordToSearch, setLoading, setCurrentPag
           </button>
         )}
       </div>
+      <OverlayTrigger placement="top" overlay={<Tooltip id="search-exact-tooltip">{t("search.exact.tooltip")}</Tooltip>}>
+        <button
+          type="button"
+          className={`search-exact-btn btn ${exact ? "btn-primary" : "btn-outline-secondary"}`}
+          onClick={toggleExact}
+          onPointerDown={handleButtonPointerDown}
+          aria-pressed={exact}
+          aria-label={t("search.exact")}
+        >
+          <i className="feather icon-crosshair" />
+        </button>
+      </OverlayTrigger>
       <button type="submit" className="search-btn btn btn-primary" onPointerDown={handleButtonPointerDown}>
         <i className="feather icon-search " />
       </button>
