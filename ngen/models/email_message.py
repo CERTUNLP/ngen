@@ -23,9 +23,12 @@ class EmailMessage(AuditModelMixin):
         FAILED = "failed", "Failed"
         SENT = "sent", "Sent"
 
-    root_message_id = models.CharField(max_length=255)
-    parent_message_id = models.CharField(null=True, max_length=255)
-    message_id = models.CharField(max_length=255)
+    # RFC 5322 allows Message-IDs up to the 998-char line limit. 255 was a
+    # latent batch-killer (a legit long id raised DataError on bulk_create) and
+    # forced lossy truncation that could collide distinct ids during dedup.
+    root_message_id = models.CharField(max_length=998)
+    parent_message_id = models.CharField(null=True, max_length=998)
+    message_id = models.CharField(max_length=998)
     references = models.JSONField(default=list)
     senders = models.JSONField(default=list)
     recipients = models.JSONField(default=list)

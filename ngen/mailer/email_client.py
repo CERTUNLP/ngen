@@ -97,10 +97,10 @@ class EmailClient:
         subject = subject.strip().replace("\r", "").replace("\n", "")
 
         email_message = EmailMessage(
-            root_message_id=(self.get_root_message_id(email) or message_id)[:255],
+            root_message_id=self.get_root_message_id(email) or message_id,
             parent_message_id=self.get_parent_message_id(email),
             references=self.get_references_field(email),
-            message_id=message_id[:255],
+            message_id=message_id,
             senders=getattr(email, "sent_from", None) or [],
             recipients=getattr(email, "sent_to", None) or [],
             date=getattr(email, "parsed_date", None),
@@ -130,14 +130,17 @@ class EmailClient:
 
             attachment_path = email_message.attachment_path(filename)
             download_path = path.join(settings.MEDIA_ROOT, attachment_path)
-            makedirs(path.dirname(download_path), exist_ok=True)
 
             try:
+                makedirs(path.dirname(download_path), exist_ok=True)
                 with open(download_path, "wb") as file:
                     file.write(content.read())
 
                 attachments.append({"name": filename, "file": attachment_path})
-            except IOError as e:
+            except OSError as e:
+                # A storage hiccup (incl. makedirs) must drop only this
+                # attachment, never turn an already-parsed message into an
+                # error placeholder.
                 logger.warning("Failed to save attachment %s: %s", filename, e)
 
         return attachments
@@ -157,9 +160,11 @@ class EmailClient:
         body = getattr(email, "body", None) or {}
         plain = body.get("plain") or []
         html = body.get("html") or []
+        # Keep every part of each type (a multipart may carry several), joined in
+        # order, so nothing is silently dropped.
         return (
-            self._as_text(plain[0]) if plain else "",
-            self._as_text(html[0]) if html else "",
+            "\n".join(self._as_text(p) for p in plain),
+            "\n".join(self._as_text(h) for h in html),
         )
 
     def build_error_message(self, email: Messages, error: Exception) -> EmailMessage:
@@ -174,16 +179,29 @@ class EmailClient:
         except Exception:  # pragma: no cover - last-resort safety net
             message_id = EmailMessage.generate_message_id(domain="no-message-id.ngen")
 
+        # Recover threading headers best-effort so the placeholder still threads
+        # into the case conversation (CommunicationChannel.get_messages filters
+        # by root_message_id); fall back to its own id only if unrecoverable.
+        try:
+            references = self.get_references_field(email)
+        except Exception:
+            references = []
+        try:
+            parent_message_id = self.get_parent_message_id(email)
+        except Exception:
+            parent_message_id = None
+        root_message_id = (references[0] if references else None) or message_id
+
         try:
             subject = (getattr(email, "subject", "") or "")[:255]
         except Exception:  # pragma: no cover - last-resort safety net
             subject = ""
 
         return EmailMessage(
-            root_message_id=message_id[:255],
-            parent_message_id=None,
-            references=[],
-            message_id=message_id[:255],
+            root_message_id=root_message_id,
+            parent_message_id=parent_message_id,
+            references=references,
+            message_id=message_id,
             senders=getattr(email, "sent_from", None) or [],
             recipients=getattr(email, "sent_to", None) or [],
             date=getattr(email, "parsed_date", None),
@@ -237,10 +255,11 @@ class EmailClient:
         message_id = getattr(message, "message_id", None) if message else None
         if message_id:
             return message_id
-        raw = getattr(message, "raw_email", "") if message else ""
-        if isinstance(raw, bytes):
-            raw = raw.decode("utf-8", "ignore")
-        digest = hashlib.sha256((raw or "").encode("utf-8", "ignore")).hexdigest()
+        # Hash the raw payload faithfully (no lossy decode): two id-less messages
+        # that differ only by an undecodable byte must not collide in dedup.
+        raw = getattr(message, "raw_email", b"") if message else b""
+        raw_bytes = raw.encode("utf-8", "surrogatepass") if isinstance(raw, str) else (raw or b"")
+        digest = hashlib.sha256(raw_bytes).hexdigest()
         return "<%s@no-message-id.ngen>" % digest
 
     def get_references_field(self, message: Messages):

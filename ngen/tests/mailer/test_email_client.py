@@ -6,6 +6,9 @@ These exercise the defensive ingestion path: a single malformed inbound message
 unparseable) must never abort the batch, and no content must be silently lost.
 """
 
+import io
+from unittest.mock import patch
+
 from django.test import SimpleTestCase
 
 from ngen.mailer.email_client import EmailClient
@@ -126,6 +129,61 @@ class MapEmailTest(SimpleTestCase):
         em = self.client.map_email(msg)
         self.assertEqual(em.body, "olá")
 
+    def test_multiple_body_parts_are_joined(self):
+        # A multipart message may carry several parts of the same type; keep all.
+        msg = FakeImboxMessage(
+            message_id="<multi@ext.org>",
+            subject="multi",
+            parsed_date=None,
+            sent_from=[],
+            sent_to=[],
+            body={"plain": ["part one", "part two"], "html": ["<p>a</p>", "<p>b</p>"]},
+            attachments=[],
+            raw_email="Message-ID: <multi@ext.org>\r\n\r\n",
+        )
+        em = self.client.map_email(msg)
+        self.assertEqual(em.body, "part one\npart two")
+        self.assertEqual(em.body_html, "<p>a</p>\n<p>b</p>")
+
+    def test_long_message_id_is_not_truncated(self):
+        long_id = "<" + "a" * 400 + "@ext.org>"
+        msg = FakeImboxMessage(
+            message_id=long_id,
+            subject="long",
+            parsed_date=None,
+            sent_from=[],
+            sent_to=[],
+            body={"plain": ["x"], "html": []},
+            attachments=[],
+            raw_email="\r\n",
+        )
+        em = self.client.map_email(msg)
+        self.assertEqual(em.message_id, long_id)  # full id preserved (field widened to 998)
+
+
+class SaveAttachmentsTest(SimpleTestCase):
+    def setUp(self):
+        self.client = _client()
+
+    @patch("ngen.mailer.email_client.makedirs", side_effect=OSError("disk full"))
+    def test_storage_failure_keeps_message_without_placeholder(self, _mk):
+        msg = FakeImboxMessage(
+            message_id="<att@ext.org>",
+            subject="with attachment",
+            parsed_date=None,
+            sent_from=[],
+            sent_to=[],
+            body={"plain": ["real body"], "html": []},
+            attachments=[{"filename": "x.pdf", "content": io.BytesIO(b"data")}],
+            raw_email="Message-ID: <att@ext.org>\r\n\r\n",
+        )
+        with patch.object(EmailMessage, "attachment_path", return_value="p/x.pdf"):
+            em = self.client.map_email(msg)
+        # A storage hiccup drops only the attachment, never the parsed message.
+        self.assertEqual(em.body, "real body")
+        self.assertIsNone(em.last_error)
+        self.assertEqual(em.attachments, [])
+
 
 class GetMessageIdTest(SimpleTestCase):
     def setUp(self):
@@ -146,6 +204,15 @@ class GetMessageIdTest(SimpleTestCase):
             self.client.get_message_id(msg_a), self.client.get_message_id(msg_c)
         )
 
+    def test_bytes_payloads_hashed_faithfully(self):
+        # Two id-less messages differing only by an undecodable byte must not
+        # collide (a lossy decode would map both 0xff and 0xfe to "").
+        a = FakeImboxMessage(raw_email=b"\xff")
+        b = FakeImboxMessage(raw_email=b"\xfe")
+        self.assertNotEqual(
+            self.client.get_message_id(a), self.client.get_message_id(b)
+        )
+
 
 class BuildErrorMessageTest(SimpleTestCase):
     def setUp(self):
@@ -163,6 +230,24 @@ class BuildErrorMessageTest(SimpleTestCase):
         self.assertIn("boom", em.last_error)
         self.assertIn("no se pudo procesar", em.body.lower())
         self.assertTrue(em.subject)  # placeholder subject when the message had none
+
+    def test_recovers_threading_headers(self):
+        # The placeholder must thread into the case conversation
+        # (CommunicationChannel filters by root_message_id), so References /
+        # In-Reply-To are recovered best-effort instead of orphaning it.
+        raw = (
+            "Message-ID: <err2@ext.org>\r\n"
+            "References: <root@ngen> <parent@ngen>\r\n"
+            "In-Reply-To: <parent@ngen>\r\n"
+            "\r\nx"
+        )
+        msg = FakeImboxMessage(
+            message_id="<err2@ext.org>", raw_email=raw, sent_from=[], sent_to=[]
+        )
+        em = self.client.build_error_message(msg, ValueError("boom"))
+        self.assertEqual(em.root_message_id, "<root@ngen>")
+        self.assertEqual(em.parent_message_id, "<parent@ngen>")
+        self.assertEqual(em.references, ["<root@ngen>", "<parent@ngen>"])
 
 
 class MapEmailsTest(SimpleTestCase):
