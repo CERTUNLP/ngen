@@ -737,27 +737,50 @@ def retrieve_emails():
         logger.info("retrieve_emails: fetched %s unread emails", len(unread_emails))
 
         if unread_emails:
-            email_messages = email_client.map_emails(unread_emails)
-            created_messages = ngen.models.EmailMessage.objects.bulk_create(
-                email_messages
+            mapped = email_client.map_emails(unread_emails)
+
+            # De-duplicate by Message-ID against what is already stored (and
+            # within this same batch). Messages the app itself sent are recorded
+            # at send time, so their notifications coming back through the
+            # incidentes@ alias are recognised here and not duplicated — without
+            # filtering by sender, so team (@cert) replies and external replies
+            # are both ingested and shown in the case conversation.
+            incoming_ids = [m.message_id for m in mapped if m.message_id]
+            existing_ids = set(
+                ngen.models.EmailMessage.objects.filter(
+                    message_id__in=incoming_ids
+                ).values_list("message_id", flat=True)
             )
+
+            to_create = []
+            seen_ids = set()
+            duplicates = 0
+            for message in mapped:
+                mid = message.message_id
+                if mid and (mid in existing_ids or mid in seen_ids):
+                    duplicates += 1
+                    continue
+                if mid:
+                    seen_ids.add(mid)
+                to_create.append(message)
+
+            created_messages = ngen.models.EmailMessage.objects.bulk_create(to_create)
             logger.info(
-                "retrieve_emails: stored %s new emails, subjects=%s",
+                "retrieve_emails: fetched=%s stored=%s duplicates=%s subjects=%s",
+                len(unread_emails),
                 len(created_messages),
+                duplicates,
                 [m.subject for m in created_messages],
             )
 
-            if len(created_messages) == len(unread_emails):
-                email_client.mark_emails_as_read(unread_emails)
-                logger.debug(
-                    "retrieve_emails: marked %s emails as read", len(unread_emails)
-                )
-            else:
-                logger.warning(
-                    "retrieve_emails: stored %s/%s emails, skipping mark_as_read",
-                    len(created_messages),
-                    len(unread_emails),
-                )
+            # Every fetched message has now been handled (stored, de-duplicated
+            # or kept as an error record), so mark them all read. This is what
+            # prevents a single unparseable message from being re-fetched every
+            # run and stalling ingestion.
+            email_client.mark_emails_as_read(unread_emails)
+            logger.debug(
+                "retrieve_emails: marked %s emails as read", len(unread_emails)
+            )
 
         return {
             "status": "success",
