@@ -338,6 +338,58 @@ class AttachmentFilenameTest(SimpleTestCase):
         self.assertEqual(opened[0], os.path.join("/media", "att", "<fn@ext.org>", "evil.sh"))
         self.assertEqual(em.attachments[0]["name"], "../../../etc/evil.sh")
 
+    @override_settings(MEDIA_ROOT="/media", EMAIL_ATTACHMENTS_FILE_ROOT="att")
+    def test_same_sanitized_name_gets_distinct_files(self):
+        em = self.client.map_email(
+            FakeImboxMessage(
+                message_id="<dup@ext.org>",
+                subject="s",
+                parsed_date=None,
+                sent_from=[],
+                sent_to=[],
+                body={"plain": ["b"], "html": []},
+                attachments=[
+                    {"filename": "one/report.pdf", "content": io.BytesIO(b"1")},
+                    {"filename": "two/report.pdf", "content": io.BytesIO(b"2")},
+                    {"filename": "report.pdf", "content": io.BytesIO(b"3")},
+                ],
+                raw_email="Message-ID: <dup@ext.org>\r\n\r\n",
+            )
+        )
+        writes = {}
+
+        def _open(p, mode):
+            class _Sink:
+                def __enter__(self_):
+                    return self_
+
+                def __exit__(self_, *a):
+                    return False
+
+                def write(self_, data):
+                    writes[p] = data
+
+            return _Sink()
+
+        with patch("ngen.mailer.email_client.makedirs"), patch(
+            "ngen.mailer.email_client.open", side_effect=_open
+        ):
+            self.client.persist_attachments(em)
+
+        files = [a["file"] for a in em.attachments]
+        self.assertEqual(len(set(files)), 3)  # nothing overwritten
+        self.assertEqual(
+            [os.path.basename(f) for f in files],
+            ["report.pdf", "report (2).pdf", "report (3).pdf"],
+        )
+        # original names kept for display, each paired with its own bytes
+        self.assertEqual(
+            [a["name"] for a in em.attachments],
+            ["one/report.pdf", "two/report.pdf", "report.pdf"],
+        )
+        self.assertEqual(sorted(writes.values()), [b"1", b"2", b"3"])
+        self.assertIsNone(em.last_error)
+
 
 class GetMessageIdTest(SimpleTestCase):
     def setUp(self):

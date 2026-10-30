@@ -47,7 +47,10 @@ def _store_inbound_emails(messages):
     Insert mapped inbound messages. Normally a single bulk_create; if the
     database rejects the batch, fall back to one insert per message so a single
     bad row cannot block the rest (the batch is marked read afterwards). A row
-    that still fails is replaced by a minimal, viewable error record.
+    that still fails is replaced by a minimal, viewable error record. If even
+    that record cannot be stored (e.g. the database is down) the error is
+    re-raised, so the batch is NOT marked read and is retried next run (rows
+    stored so far are skipped then by de-duplication).
     """
     EmailMessage = ngen.models.EmailMessage
     try:
@@ -68,10 +71,16 @@ def _store_inbound_emails(messages):
                 "retrieve_emails: could not store message_id=%r", message.message_id
             )
             error = exc
+        # Keep the thread anchors: replies to this record build their References
+        # from it (EmailHandler.send_email), so References[0] must stay the case
+        # root or later answers would fall out of the case conversation.
+        references = [message.root_message_id]
+        if message.parent_message_id and message.parent_message_id not in references:
+            references.append(message.parent_message_id)
         placeholder = EmailMessage(
             root_message_id=message.root_message_id,
             parent_message_id=message.parent_message_id,
-            references=[],
+            references=references,
             message_id=message.message_id,
             senders=[],
             recipients=[],
@@ -87,12 +96,14 @@ def _store_inbound_emails(messages):
         try:
             with transaction.atomic():
                 placeholder.save(force_insert=True)
-            created.append(placeholder)
         except DatabaseError:
             logger.exception(
-                "retrieve_emails: could not store error record for message_id=%r",
+                "retrieve_emails: could not store error record for message_id=%r; "
+                "leaving the batch unread for retry",
                 message.message_id,
             )
+            raise
+        created.append(placeholder)
     return created
 
 

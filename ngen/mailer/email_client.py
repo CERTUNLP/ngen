@@ -133,6 +133,7 @@ class EmailClient:
         """
         attachments = []
         errors = []
+        used_names = set()
 
         for attachment in getattr(email_message, "_pending_attachments", None) or []:
             filename = attachment.get("filename")
@@ -148,6 +149,15 @@ class EmailClient:
                 safe_name = path.basename(str(filename).replace("\\", "/"))
                 if safe_name in ("", ".", ".."):
                     raise ValueError("unusable attachment filename")
+                # Two attachments of one message may share a (sanitized) name,
+                # e.g. image001.png twice: give each its own file so none is
+                # overwritten. The original name is kept for display.
+                stem, ext = path.splitext(safe_name)
+                n = 2
+                while safe_name in used_names:
+                    safe_name = "%s (%d)%s" % (stem, n, ext)
+                    n += 1
+                used_names.add(safe_name)
 
                 attachment_path = email_message.attachment_path(safe_name)
                 download_path = path.join(settings.MEDIA_ROOT, attachment_path)

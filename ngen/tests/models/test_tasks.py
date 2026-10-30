@@ -3,6 +3,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.core import mail
 from unittest.mock import patch, MagicMock
+from django.db import DatabaseError
 
 from ngen import tasks
 from ngen.models import (
@@ -482,7 +483,9 @@ class TestRetrieveEmails(TasksTestCase):
             ),
             EmailMessage(
                 # varchar(255) overflow -> DataError on insert
-                root_message_id="<toolong@x>", message_id="<toolong@x>",
+                root_message_id="<caseroot@x>", parent_message_id="<p@x>",
+                references=["<caseroot@x>", "<mid@x>", "<p@x>"],
+                message_id="<toolong@x>",
                 subject="s" * 300, senders=[], recipients=[], body="b", status="sent",
             ),
         ]
@@ -492,9 +495,37 @@ class TestRetrieveEmails(TasksTestCase):
         self.assertEqual(result["status"], "success")
         self.assertTrue(EmailMessage.objects.filter(message_id="<ok@x>").exists())
         placeholder = EmailMessage.objects.get(message_id="<toolong@x>")
-        self.assertEqual(placeholder.root_message_id, "<toolong@x>")
+        self.assertEqual(placeholder.root_message_id, "<caseroot@x>")
+        # References keep the case root first, so replies to the placeholder
+        # stay in the case conversation.
+        self.assertEqual(placeholder.references, ["<caseroot@x>", "<p@x>"])
         self.assertTrue(placeholder.last_error)
         instance.mark_emails_as_read.assert_called_once_with(unread)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_batch_stays_unread_when_nothing_can_be_stored(self, mock_client):
+        """
+        If even the error record cannot be stored (e.g. database down), the
+        failure propagates and the batch is not marked read, so it is retried.
+        """
+        instance = mock_client.return_value
+        unread = [("1", MagicMock())]
+        instance.fetch_unread_emails.return_value = unread
+        instance.map_emails.return_value = [
+            EmailMessage(
+                root_message_id="<r@x>", message_id="<r@x>", subject="s",
+                senders=[], recipients=[], body="b", status="sent",
+            ),
+        ]
+
+        with patch.object(
+            EmailMessage.objects, "bulk_create", side_effect=DatabaseError("down")
+        ), patch.object(EmailMessage, "save", side_effect=DatabaseError("down")):
+            with self.assertRaises(DatabaseError):
+                tasks.retrieve_emails()
+
+        instance.mark_emails_as_read.assert_not_called()
 
     @use_test_email_env()
     @patch("ngen.tasks.EmailClient")
