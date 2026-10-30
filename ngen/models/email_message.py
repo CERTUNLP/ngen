@@ -2,6 +2,8 @@
 EmailMessage model
 """
 
+import hashlib
+import re
 from os import path
 from email.utils import make_msgid
 from django.db import models
@@ -81,13 +83,32 @@ class EmailMessage(AuditModelMixin):
         """
         return cls.objects.filter(root_message_id=root_message_id).order_by("created")
 
+    # A path component must stay within the typical 255-byte filesystem limit.
+    _MAX_DIR_KEY = 200
+    _SAFE_DIR_KEY = re.compile(r"[A-Za-z0-9._@<>+=-]+")
+
+    def _attachment_dir_key(self):
+        """
+        Bounded, filesystem-safe directory key for this message's attachments.
+
+        A Message-ID can legally reach the RFC 5322 998-char line limit and may
+        carry characters that are awkward as a path component; either can exceed
+        the ~255-byte filesystem limit (ENAMETOOLONG) and make the attachment
+        write fail. A short, already-safe id is used verbatim (so existing paths
+        stay valid); anything longer or unsafe falls back to a stable hash.
+        """
+        key = self.message_id or (str(self.id) if self.id else "")
+        if key and len(key) <= self._MAX_DIR_KEY and self._SAFE_DIR_KEY.fullmatch(key):
+            return key
+        return hashlib.sha256(key.encode("utf-8")).hexdigest()
+
     def attachment_path(self, filename):
         """
         Return the relative path for an email attachment
         """
         attachments_path = path.join(
             settings.EMAIL_ATTACHMENTS_FILE_ROOT,
-            self.message_id or self.id,
+            self._attachment_dir_key(),
             filename,
         )
 

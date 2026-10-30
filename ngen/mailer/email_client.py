@@ -110,18 +110,31 @@ class EmailClient:
             status=EmailMessage.Status.SENT,
         )
 
-        email_message.attachments = self._save_attachments(email, email_message)
+        # Defer attachment persistence until *after* de-duplication (see
+        # persist_attachments / retrieve_emails): writing here, before the
+        # duplicate check, let a discarded duplicate overwrite a retained
+        # message's files (same Message-ID + filename), and touched the
+        # filesystem for records we were about to throw away. We only carry the
+        # raw imbox attachments forward on the instance for now.
+        email_message._pending_attachments = getattr(email, "attachments", None) or []
 
         return email_message
 
-    def _save_attachments(self, email: Messages, email_message: EmailMessage) -> list:
+    def persist_attachments(self, email_message: EmailMessage) -> EmailMessage:
         """
-        Persist the message attachments to MEDIA_ROOT and return their metadata.
-        A single unwritable attachment is logged and skipped, never fatal.
+        Write the attachments deferred by :meth:`map_email` to MEDIA_ROOT and
+        fill ``email_message.attachments`` with their metadata.
+
+        Called only for the records we are actually going to store (after
+        de-duplication). A single unwritable attachment is never fatal and never
+        silently lost: the parsed message is kept and the failure is recorded in
+        ``last_error`` so it stays visible and queryable for later recovery
+        (the message is marked read, so it will not be re-fetched).
         """
         attachments = []
+        errors = []
 
-        for attachment in getattr(email, "attachments", None) or []:
+        for attachment in getattr(email_message, "_pending_attachments", None) or []:
             filename = attachment.get("filename")
             content = attachment.get("content")
 
@@ -138,12 +151,21 @@ class EmailClient:
 
                 attachments.append({"name": filename, "file": attachment_path})
             except OSError as e:
-                # A storage hiccup (incl. makedirs) must drop only this
-                # attachment, never turn an already-parsed message into an
-                # error placeholder.
+                # Drop only this attachment, keep the parsed message, but leave a
+                # durable trace so the loss is never silent.
                 logger.warning("Failed to save attachment %s: %s", filename, e)
+                errors.append("%s: %s" % (filename, e))
 
-        return attachments
+        email_message.attachments = attachments
+        if errors:
+            note = "attachment storage failed -> %s" % "; ".join(errors)
+            email_message.last_error = (
+                "%s\n%s" % (email_message.last_error, note)
+                if email_message.last_error
+                else note
+            )[:2000]
+
+        return email_message
 
     @staticmethod
     def _as_text(value) -> str:

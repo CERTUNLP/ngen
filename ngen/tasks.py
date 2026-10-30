@@ -5,6 +5,7 @@ import traceback
 from os import path
 from celery import shared_task
 from django_celery_beat.models import PeriodicTask
+from django.db import connection
 from django.db.models import F, Min, DateTimeField, ExpressionWrapper, DurationField
 from django.conf import settings
 from django.utils import timezone
@@ -22,7 +23,23 @@ from ngen.services.contact_lookup import ContactLookupService
 
 logger = logging.getLogger(__name__)
 
+# Postgres advisory-lock key that serialises retrieve_emails against itself.
+# The task is beat-scheduled every 60s; without this, a run that outlasts its
+# interval (or a second worker) could fetch the same still-UNSEEN messages and
+# both insert them (message_id has no DB uniqueness constraint).
+RETRIEVE_EMAILS_LOCK_KEY = 0x6E67656E01  # "ngen" + 01
 
+
+def _try_advisory_lock(key: int) -> bool:
+    """Acquire a session-level Postgres advisory lock without blocking."""
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT pg_try_advisory_lock(%s)", [key])
+        return bool(cursor.fetchone()[0])
+
+
+def _advisory_unlock(key: int) -> None:
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT pg_advisory_unlock(%s)", [key])
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
@@ -714,6 +731,16 @@ def retrieve_emails():
             "message": msg,
         }
 
+    # Serialise against overlapping runs so the same still-UNSEEN batch is not
+    # fetched and inserted twice. If another run holds the lock, skip quietly;
+    # the next beat tick will pick the mailbox up.
+    if not _try_advisory_lock(RETRIEVE_EMAILS_LOCK_KEY):
+        logger.info("retrieve_emails: another run is in progress, skipping")
+        return {
+            "status": "skipped",
+            "message": "retrieve_emails already running",
+        }
+
     logger.info(
         "retrieve_emails: connecting to %s:%s (ssl=%s, timeout=%ss, username=%s)",
         host,
@@ -762,6 +789,10 @@ def retrieve_emails():
                     continue
                 if mid:
                     seen_ids.add(mid)
+                # Write attachments only now, for a record we are actually going
+                # to keep, so a discarded duplicate can never overwrite a
+                # retained message's files.
+                email_client.persist_attachments(message)
                 to_create.append(message)
 
             created_messages = ngen.models.EmailMessage.objects.bulk_create(to_create)
@@ -807,6 +838,7 @@ def retrieve_emails():
         if email_client:
             email_client.logout()
             logger.debug("retrieve_emails: logged out")
+        _advisory_unlock(RETRIEVE_EMAILS_LOCK_KEY)
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)

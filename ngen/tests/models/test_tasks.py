@@ -438,6 +438,19 @@ class TestRetrieveEmails(TasksTestCase):
         self.assertEqual(EmailMessage.objects.filter(message_id="<new@x>").count(), 1)
         # all fetched messages marked read (no re-fetch / stall loop)
         instance.mark_emails_as_read.assert_called_once_with(unread)
+        # attachments are written only for the record we actually keep, never for
+        # the duplicates (so a discarded copy can't overwrite a retained file).
+        self.assertEqual(instance.persist_attachments.call_count, 1)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    @patch("ngen.tasks._try_advisory_lock", return_value=False)
+    def test_skips_when_another_run_holds_the_lock(self, _lock, mock_client):
+        """Overlapping runs must not both fetch the same still-UNSEEN batch."""
+        result = tasks.retrieve_emails()
+        self.assertEqual(result["status"], "skipped")
+        # We never even connect / fetch when the lock is held elsewhere.
+        mock_client.assert_not_called()
 
     @use_test_email_env()
     @patch("ngen.tasks.EmailClient")

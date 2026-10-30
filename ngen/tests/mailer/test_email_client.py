@@ -165,9 +165,8 @@ class SaveAttachmentsTest(SimpleTestCase):
     def setUp(self):
         self.client = _client()
 
-    @patch("ngen.mailer.email_client.makedirs", side_effect=OSError("disk full"))
-    def test_storage_failure_keeps_message_without_placeholder(self, _mk):
-        msg = FakeImboxMessage(
+    def _msg_with_attachment(self):
+        return FakeImboxMessage(
             message_id="<att@ext.org>",
             subject="with attachment",
             parsed_date=None,
@@ -177,12 +176,71 @@ class SaveAttachmentsTest(SimpleTestCase):
             attachments=[{"filename": "x.pdf", "content": io.BytesIO(b"data")}],
             raw_email="Message-ID: <att@ext.org>\r\n\r\n",
         )
-        with patch.object(EmailMessage, "attachment_path", return_value="p/x.pdf"):
-            em = self.client.map_email(msg)
-        # A storage hiccup drops only the attachment, never the parsed message.
-        self.assertEqual(em.body, "real body")
-        self.assertIsNone(em.last_error)
+
+    def test_map_email_defers_attachment_writes(self):
+        # map_email must not touch the filesystem (writes are deferred to
+        # persist_attachments, after de-duplication).
+        with patch("ngen.mailer.email_client.makedirs") as mk, patch(
+            "ngen.mailer.email_client.open"
+        ) as op:
+            em = self.client.map_email(self._msg_with_attachment())
+        mk.assert_not_called()
+        op.assert_not_called()
         self.assertEqual(em.attachments, [])
+        self.assertEqual(em._pending_attachments[0]["filename"], "x.pdf")
+
+    @patch("ngen.mailer.email_client.makedirs", side_effect=OSError("disk full"))
+    def test_storage_failure_keeps_message_and_records_error(self, _mk):
+        em = self.client.map_email(self._msg_with_attachment())
+        with patch.object(EmailMessage, "attachment_path", return_value="p/x.pdf"):
+            self.client.persist_attachments(em)
+        # A storage hiccup drops only the attachment, never the parsed message,
+        # but the loss is recorded (never silent) so it can be recovered later.
+        self.assertEqual(em.body, "real body")
+        self.assertEqual(em.attachments, [])
+        self.assertIn("attachment storage failed", em.last_error)
+        self.assertIn("x.pdf", em.last_error)
+
+    def test_persist_attachments_writes_and_fills_metadata(self):
+        em = self.client.map_email(self._msg_with_attachment())
+        written = {}
+
+        class _Sink:
+            def __enter__(self_):
+                return self_
+
+            def __exit__(self_, *a):
+                return False
+
+            def write(self_, data):
+                written["data"] = data
+
+        with patch("ngen.mailer.email_client.makedirs"), patch(
+            "ngen.mailer.email_client.open", return_value=_Sink()
+        ), patch.object(EmailMessage, "attachment_path", return_value="p/x.pdf"):
+            self.client.persist_attachments(em)
+
+        self.assertEqual(written["data"], b"data")
+        self.assertEqual(em.attachments, [{"name": "x.pdf", "file": "p/x.pdf"}])
+        self.assertIsNone(em.last_error)
+
+
+class AttachmentDirKeyTest(SimpleTestCase):
+    """A long/unsafe Message-ID must not blow the filesystem path-component limit."""
+
+    def test_long_message_id_is_bounded_and_safe(self):
+        long_id = "<" + "a" * 400 + "@ext.org>"
+        comp = EmailMessage(message_id=long_id).attachment_path("x.pdf").split("/")[-2]
+        self.assertLessEqual(len(comp.encode("utf-8")), 255)
+        # unsafe/over-long id -> stable hash (hex), deterministic across instances
+        self.assertRegex(comp, r"^[0-9a-f]{64}$")
+        again = EmailMessage(message_id=long_id).attachment_path("y.pdf").split("/")[-2]
+        self.assertEqual(comp, again)
+
+    def test_short_safe_message_id_is_used_verbatim(self):
+        em = EmailMessage(message_id="<abc@ext.org>")
+        comp = em.attachment_path("x.pdf").split("/")[-2]
+        self.assertEqual(comp, "<abc@ext.org>")
 
 
 class GetMessageIdTest(SimpleTestCase):
