@@ -5,7 +5,7 @@ import traceback
 from os import path
 from celery import shared_task
 from django_celery_beat.models import PeriodicTask
-from django.db import connection
+from django.db import DatabaseError, connection, transaction
 from django.db.models import F, Min, DateTimeField, ExpressionWrapper, DurationField
 from django.conf import settings
 from django.utils import timezone
@@ -40,6 +40,60 @@ def _try_advisory_lock(key: int) -> bool:
 def _advisory_unlock(key: int) -> None:
     with connection.cursor() as cursor:
         cursor.execute("SELECT pg_advisory_unlock(%s)", [key])
+
+
+def _store_inbound_emails(messages):
+    """
+    Insert mapped inbound messages. Normally a single bulk_create; if the
+    database rejects the batch, fall back to one insert per message so a single
+    bad row cannot block the rest (the batch is marked read afterwards). A row
+    that still fails is replaced by a minimal, viewable error record.
+    """
+    EmailMessage = ngen.models.EmailMessage
+    try:
+        with transaction.atomic():
+            return EmailMessage.objects.bulk_create(messages)
+    except DatabaseError:
+        logger.exception("retrieve_emails: bulk insert failed, storing one by one")
+
+    created = []
+    for message in messages:
+        try:
+            with transaction.atomic():
+                message.save(force_insert=True)
+            created.append(message)
+            continue
+        except DatabaseError as exc:
+            logger.exception(
+                "retrieve_emails: could not store message_id=%r", message.message_id
+            )
+            error = exc
+        placeholder = EmailMessage(
+            root_message_id=message.root_message_id,
+            parent_message_id=message.parent_message_id,
+            references=[],
+            message_id=message.message_id,
+            senders=[],
+            recipients=[],
+            date=message.date,
+            subject="[ngen] mensaje entrante no legible",
+            body=(
+                "[ngen] No se pudo guardar este mensaje entrante; se conserva "
+                "este registro para no perder la traza."
+            ),
+            status=EmailMessage.Status.SENT,
+            last_error=str(error).replace("\x00", "�")[:2000],
+        )
+        try:
+            with transaction.atomic():
+                placeholder.save(force_insert=True)
+            created.append(placeholder)
+        except DatabaseError:
+            logger.exception(
+                "retrieve_emails: could not store error record for message_id=%r",
+                message.message_id,
+            )
+    return created
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
@@ -795,7 +849,7 @@ def retrieve_emails():
                 email_client.persist_attachments(message)
                 to_create.append(message)
 
-            created_messages = ngen.models.EmailMessage.objects.bulk_create(to_create)
+            created_messages = _store_inbound_emails(to_create)
             logger.info(
                 "retrieve_emails: fetched=%s stored=%s duplicates=%s subjects=%s",
                 len(unread_emails),
@@ -835,10 +889,16 @@ def retrieve_emails():
         }
 
     finally:
-        if email_client:
-            email_client.logout()
-            logger.debug("retrieve_emails: logged out")
-        _advisory_unlock(RETRIEVE_EMAILS_LOCK_KEY)
+        try:
+            if email_client:
+                email_client.logout()
+                logger.debug("retrieve_emails: logged out")
+        except Exception:
+            # A mail-server cleanup failure (e.g. after a timeout) must not
+            # fail the run nor keep the advisory lock held.
+            logger.warning("retrieve_emails: IMAP logout failed", exc_info=True)
+        finally:
+            _advisory_unlock(RETRIEVE_EMAILS_LOCK_KEY)
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)

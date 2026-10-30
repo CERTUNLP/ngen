@@ -7,9 +7,10 @@ unparseable) must never abort the batch, and no content must be silently lost.
 """
 
 import io
+import os
 from unittest.mock import patch
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 
 from ngen.mailer.email_client import EmailClient
 from ngen.models import EmailMessage
@@ -232,8 +233,8 @@ class AttachmentDirKeyTest(SimpleTestCase):
         long_id = "<" + "a" * 400 + "@ext.org>"
         comp = EmailMessage(message_id=long_id).attachment_path("x.pdf").split("/")[-2]
         self.assertLessEqual(len(comp.encode("utf-8")), 255)
-        # unsafe/over-long id -> stable hash (hex), deterministic across instances
-        self.assertRegex(comp, r"^[0-9a-f]{64}$")
+        # unsafe/over-long id -> stable hash, deterministic across instances
+        self.assertRegex(comp, r"^sha256-[0-9a-f]{64}$")
         again = EmailMessage(message_id=long_id).attachment_path("y.pdf").split("/")[-2]
         self.assertEqual(comp, again)
 
@@ -241,6 +242,101 @@ class AttachmentDirKeyTest(SimpleTestCase):
         em = EmailMessage(message_id="<abc@ext.org>")
         comp = em.attachment_path("x.pdf").split("/")[-2]
         self.assertEqual(comp, "<abc@ext.org>")
+
+    def test_hash_shaped_message_id_cannot_collide_with_a_hashed_key(self):
+        # Another mail whose Message-ID *is* a hashed key must not land in the
+        # long id's directory (it would overwrite its attachments).
+        long_id = "<" + "a" * 400 + "@ext.org>"
+        hashed = EmailMessage(message_id=long_id).attachment_path("x").split("/")[-2]
+        lookalike = EmailMessage(message_id=hashed).attachment_path("x").split("/")[-2]
+        self.assertNotEqual(hashed, lookalike)
+
+
+class NulAndBoundsTest(SimpleTestCase):
+    """PostgreSQL cannot store NUL in text/jsonb, nor ids over the column size."""
+
+    def setUp(self):
+        self.client = _client()
+
+    def test_nul_characters_are_replaced_everywhere(self):
+        msg = FakeImboxMessage(
+            message_id="<nul@ext.org>",
+            subject="a\x00b",
+            parsed_date=None,
+            sent_from=[{"name": "Ad\x00min", "email": "a@b.c"}],
+            sent_to=[],
+            body={"plain": ["p\x00"], "html": [b"<p>h\x00</p>"]},
+            attachments=[],
+            raw_email="Message-ID: <nul@ext.org>\r\n\r\n",
+        )
+        em = self.client.map_email(msg)
+        for value in (em.subject, em.body, em.body_html, em.senders[0]["name"]):
+            self.assertNotIn("\x00", value)
+        self.assertEqual(em.body_html, "<p>h�</p>")
+
+    def test_message_id_over_column_size_is_bounded_deterministically(self):
+        huge = "<" + "b" * 1200 + "@ext.org>"
+        a = self.client.get_message_id(FakeImboxMessage(message_id=huge))
+        b = self.client.get_message_id(FakeImboxMessage(message_id=huge))
+        self.assertLessEqual(len(a), 998)
+        self.assertTrue(a.endswith("@long-message-id.ngen>"))
+        self.assertEqual(a, b)
+
+
+class AttachmentFilenameTest(SimpleTestCase):
+    def setUp(self):
+        self.client = _client()
+
+    def _em(self, filename):
+        return self.client.map_email(
+            FakeImboxMessage(
+                message_id="<fn@ext.org>",
+                subject="s",
+                parsed_date=None,
+                sent_from=[],
+                sent_to=[],
+                body={"plain": ["real body"], "html": []},
+                attachments=[{"filename": filename, "content": io.BytesIO(b"d")}],
+                raw_email="Message-ID: <fn@ext.org>\r\n\r\n",
+            )
+        )
+
+    def test_nul_in_filename_is_recorded_not_raised(self):
+        em = self._em("bad\x00name.pdf")
+        # Real open() raises ValueError("embedded null byte"); it must not escape.
+        with patch("ngen.mailer.email_client.makedirs"):
+            self.client.persist_attachments(em)
+        self.assertEqual(em.attachments, [])
+        self.assertIn("attachment storage failed", em.last_error)
+        self.assertNotIn("\x00", em.last_error)
+
+    @override_settings(MEDIA_ROOT="/media", EMAIL_ATTACHMENTS_FILE_ROOT="att")
+    def test_filename_cannot_escape_the_attachment_directory(self):
+        em = self._em("../../../etc/evil.sh")
+        opened = []
+
+        class _Sink:
+            def __enter__(self_):
+                return self_
+
+            def __exit__(self_, *a):
+                return False
+
+            def write(self_, data):
+                pass
+
+        def _open(p, mode):
+            opened.append(p)
+            return _Sink()
+
+        with patch("ngen.mailer.email_client.makedirs"), patch(
+            "ngen.mailer.email_client.open", side_effect=_open
+        ):
+            self.client.persist_attachments(em)
+
+        self.assertEqual(len(opened), 1)
+        self.assertEqual(opened[0], os.path.join("/media", "att", "<fn@ext.org>", "evil.sh"))
+        self.assertEqual(em.attachments[0]["name"], "../../../etc/evil.sh")
 
 
 class GetMessageIdTest(SimpleTestCase):

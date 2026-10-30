@@ -1,3 +1,4 @@
+import django.contrib.postgres.indexes
 from django.db import migrations, models
 
 
@@ -8,6 +9,10 @@ class Migration(migrations.Migration):
     the whole bulk_create batch, and truncating to fit could collide distinct
     ids during de-duplication. Plain column widening: no data loss, no new
     constraint.
+
+    Also index message_id (non-unique hash index) for the per-poll inbound
+    de-duplication lookup; a hash index has no per-row size limit, unlike a
+    btree over a 998-char column.
     """
 
     dependencies = [
@@ -29,5 +34,11 @@ class Migration(migrations.Migration):
             model_name="emailmessage",
             name="message_id",
             field=models.CharField(max_length=998),
+        ),
+        migrations.AddIndex(
+            model_name="emailmessage",
+            index=django.contrib.postgres.indexes.HashIndex(
+                fields=["message_id"], name="email_message_msgid_hash"
+            ),
         ),
     ]

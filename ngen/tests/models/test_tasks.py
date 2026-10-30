@@ -454,6 +454,50 @@ class TestRetrieveEmails(TasksTestCase):
 
     @use_test_email_env()
     @patch("ngen.tasks.EmailClient")
+    @patch("ngen.tasks._advisory_unlock", wraps=tasks._advisory_unlock)
+    def test_lock_released_when_imap_logout_fails(self, unlock, mock_client):
+        instance = mock_client.return_value
+        instance.fetch_unread_emails.return_value = []
+        instance.logout.side_effect = OSError("connection reset")
+
+        result = tasks.retrieve_emails()
+
+        self.assertEqual(result["status"], "success")
+        unlock.assert_called_once_with(tasks.RETRIEVE_EMAILS_LOCK_KEY)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_one_row_rejected_by_db_does_not_block_the_batch(self, mock_client):
+        """
+        If the database rejects a row, the rest are still stored, the bad one is
+        kept as a viewable error record and the batch is marked read.
+        """
+        instance = mock_client.return_value
+        unread = [("1", MagicMock()), ("2", MagicMock())]
+        instance.fetch_unread_emails.return_value = unread
+        instance.map_emails.return_value = [
+            EmailMessage(
+                root_message_id="<ok@x>", message_id="<ok@x>", subject="ok",
+                senders=[], recipients=[], body="b", status="sent",
+            ),
+            EmailMessage(
+                # varchar(255) overflow -> DataError on insert
+                root_message_id="<toolong@x>", message_id="<toolong@x>",
+                subject="s" * 300, senders=[], recipients=[], body="b", status="sent",
+            ),
+        ]
+
+        result = tasks.retrieve_emails()
+
+        self.assertEqual(result["status"], "success")
+        self.assertTrue(EmailMessage.objects.filter(message_id="<ok@x>").exists())
+        placeholder = EmailMessage.objects.get(message_id="<toolong@x>")
+        self.assertEqual(placeholder.root_message_id, "<toolong@x>")
+        self.assertTrue(placeholder.last_error)
+        instance.mark_emails_as_read.assert_called_once_with(unread)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
     def test_error_record_is_stored_and_marked_read(self, mock_client):
         """A placeholder error record (unparseable mail) is persisted, not dropped."""
         instance = mock_client.return_value

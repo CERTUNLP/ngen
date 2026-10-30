@@ -6,6 +6,7 @@ import hashlib
 import re
 from os import path
 from email.utils import make_msgid
+from django.contrib.postgres.indexes import HashIndex
 from django.db import models
 from ngen.models.common.mixins import AuditModelMixin
 from django.conf import settings
@@ -68,6 +69,12 @@ class EmailMessage(AuditModelMixin):
     class Meta:
         db_table = "email_message"
         ordering = ["-created"]
+        indexes = [
+            # Inbound de-duplication looks messages up by message_id on every
+            # poll. A hash index serves those equality lookups and, unlike a
+            # btree, has no per-row size limit for the 998-char column.
+            HashIndex(fields=["message_id"], name="email_message_msgid_hash"),
+        ]
 
     @classmethod
     def generate_message_id(cls, domain: str):
@@ -86,6 +93,9 @@ class EmailMessage(AuditModelMixin):
     # A path component must stay within the typical 255-byte filesystem limit.
     _MAX_DIR_KEY = 200
     _SAFE_DIR_KEY = re.compile(r"[A-Za-z0-9._@<>+=-]+")
+    # Hashed keys live in their own namespace: an id that merely *looks* like
+    # one is never used verbatim, so it cannot share another message's dir.
+    _HASHED_DIR_PREFIX = "sha256-"
 
     def _attachment_dir_key(self):
         """
@@ -98,9 +108,15 @@ class EmailMessage(AuditModelMixin):
         stay valid); anything longer or unsafe falls back to a stable hash.
         """
         key = self.message_id or (str(self.id) if self.id else "")
-        if key and len(key) <= self._MAX_DIR_KEY and self._SAFE_DIR_KEY.fullmatch(key):
+        if (
+            key
+            and len(key) <= self._MAX_DIR_KEY
+            and self._SAFE_DIR_KEY.fullmatch(key)
+            and not key.startswith(self._HASHED_DIR_PREFIX)
+        ):
             return key
-        return hashlib.sha256(key.encode("utf-8")).hexdigest()
+        digest = hashlib.sha256(key.encode("utf-8", "surrogatepass")).hexdigest()
+        return self._HASHED_DIR_PREFIX + digest
 
     def attachment_path(self, filename):
         """

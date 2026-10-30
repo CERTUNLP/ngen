@@ -93,16 +93,16 @@ class EmailClient:
         """
         message_id = self.get_message_id(email)
         body, body_html = self._extract_body(email)
-        subject = (getattr(email, "subject", "") or "")
+        subject = self._clean(getattr(email, "subject", "") or "")
         subject = subject.strip().replace("\r", "").replace("\n", "")
 
         email_message = EmailMessage(
-            root_message_id=self.get_root_message_id(email) or message_id,
-            parent_message_id=self.get_parent_message_id(email),
-            references=self.get_references_field(email),
+            root_message_id=self._bound_id(self.get_root_message_id(email)) or message_id,
+            parent_message_id=self._bound_id(self.get_parent_message_id(email)),
+            references=self._clean(self.get_references_field(email)),
             message_id=message_id,
-            senders=getattr(email, "sent_from", None) or [],
-            recipients=getattr(email, "sent_to", None) or [],
+            senders=self._clean(getattr(email, "sent_from", None) or []),
+            recipients=self._clean(getattr(email, "sent_to", None) or []),
             date=getattr(email, "parsed_date", None),
             subject=subject[:255],
             body=body,
@@ -141,24 +141,33 @@ class EmailClient:
             if not filename or not content:
                 continue
 
-            attachment_path = email_message.attachment_path(filename)
-            download_path = path.join(settings.MEDIA_ROOT, attachment_path)
-
             try:
+                # The filename comes from the sender: keep only its last path
+                # component so it is always stored inside this message's
+                # attachment directory.
+                safe_name = path.basename(str(filename).replace("\\", "/"))
+                if safe_name in ("", ".", ".."):
+                    raise ValueError("unusable attachment filename")
+
+                attachment_path = email_message.attachment_path(safe_name)
+                download_path = path.join(settings.MEDIA_ROOT, attachment_path)
+
                 makedirs(path.dirname(download_path), exist_ok=True)
                 with open(download_path, "wb") as file:
                     file.write(content.read())
 
                 attachments.append({"name": filename, "file": attachment_path})
-            except OSError as e:
-                # Drop only this attachment, keep the parsed message, but leave a
-                # durable trace so the loss is never silent.
-                logger.warning("Failed to save attachment %s: %s", filename, e)
-                errors.append("%s: %s" % (filename, e))
+            except (OSError, ValueError) as e:
+                # Drop only this attachment (ValueError covers e.g. a NUL in the
+                # decoded filename), keep the parsed message, but leave a durable
+                # trace so the loss is never silent. repr() escapes control
+                # chars so the diagnostic itself is storable.
+                logger.warning("Failed to save attachment %r: %s", filename, e)
+                errors.append("%r: %s" % (filename, e))
 
         email_message.attachments = attachments
         if errors:
-            note = "attachment storage failed -> %s" % "; ".join(errors)
+            note = self._clean("attachment storage failed -> %s" % "; ".join(errors))
             email_message.last_error = (
                 "%s\n%s" % (email_message.last_error, note)
                 if email_message.last_error
@@ -167,12 +176,42 @@ class EmailClient:
 
         return email_message
 
+    @classmethod
+    def _clean(cls, value):
+        """
+        Replace NUL characters, recursively through lists/dicts. PostgreSQL
+        cannot store NUL in text or jsonb columns, so a single malformed part
+        would otherwise make bulk_create fail and stall the whole batch.
+        """
+        if isinstance(value, str):
+            return value.replace("\x00", "�")
+        if isinstance(value, list):
+            return [cls._clean(v) for v in value]
+        if isinstance(value, dict):
+            return {cls._clean(k): cls._clean(v) for k, v in value.items()}
+        return value
+
     @staticmethod
-    def _as_text(value) -> str:
-        """Coerce an imbox body part (str or bytes) to text."""
+    def _bound_id(value):
+        """
+        Keep a Message-ID-like value within the 998-char column. A folded header
+        can exceed it (DataError on insert); fall back to a stable hash so the
+        value stays deterministic for de-duplication.
+        """
+        if not value:
+            return value
+        value = EmailClient._clean(value)
+        if len(value) <= 998:
+            return value
+        digest = hashlib.sha256(value.encode("utf-8", "surrogatepass")).hexdigest()
+        return "<%s@long-message-id.ngen>" % digest
+
+    @classmethod
+    def _as_text(cls, value) -> str:
+        """Coerce an imbox body part (str or bytes) to storable text."""
         if isinstance(value, bytes):
-            return value.decode("utf-8", "replace")
-        return value or ""
+            value = value.decode("utf-8", "replace")
+        return cls._clean(value or "")
 
     def _extract_body(self, email: Messages):
         """
@@ -205,17 +244,17 @@ class EmailClient:
         # into the case conversation (CommunicationChannel.get_messages filters
         # by root_message_id); fall back to its own id only if unrecoverable.
         try:
-            references = self.get_references_field(email)
+            references = self._clean(self.get_references_field(email))
         except Exception:
             references = []
         try:
-            parent_message_id = self.get_parent_message_id(email)
+            parent_message_id = self._bound_id(self.get_parent_message_id(email))
         except Exception:
             parent_message_id = None
-        root_message_id = (references[0] if references else None) or message_id
+        root_message_id = self._bound_id(references[0] if references else None) or message_id
 
         try:
-            subject = (getattr(email, "subject", "") or "")[:255]
+            subject = self._clean(getattr(email, "subject", "") or "")[:255]
         except Exception:  # pragma: no cover - last-resort safety net
             subject = ""
 
@@ -224,16 +263,16 @@ class EmailClient:
             parent_message_id=parent_message_id,
             references=references,
             message_id=message_id,
-            senders=getattr(email, "sent_from", None) or [],
-            recipients=getattr(email, "sent_to", None) or [],
+            senders=self._clean(getattr(email, "sent_from", None) or []),
+            recipients=self._clean(getattr(email, "sent_to", None) or []),
             date=getattr(email, "parsed_date", None),
             subject=subject or "[ngen] mensaje entrante no legible",
-            body=(
+            body=self._clean(
                 "[ngen] No se pudo procesar este mensaje entrante; se conserva "
                 "este registro para no perder la traza.\n\n%s" % error
             ),
             status=EmailMessage.Status.SENT,
-            last_error=str(error)[:2000],
+            last_error=self._clean(str(error))[:2000],
         )
 
     def map_emails(self, emails: list) -> List[EmailMessage]:
@@ -276,7 +315,7 @@ class EmailClient:
         """
         message_id = getattr(message, "message_id", None) if message else None
         if message_id:
-            return message_id
+            return self._bound_id(message_id)
         # Hash the raw payload faithfully (no lossy decode): two id-less messages
         # that differ only by an undecodable byte must not collide in dedup.
         raw = getattr(message, "raw_email", b"") if message else b""

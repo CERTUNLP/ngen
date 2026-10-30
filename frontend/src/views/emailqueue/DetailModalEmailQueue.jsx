@@ -22,6 +22,9 @@ const DetailModalEmailQueue = ({ message, onClose }) => {
   const [bodyHtml, setBodyHtml] = useState(null);
   const [bodyLoading, setBodyLoading] = useState(true);
   const [failmsg, setFailmsg] = useState(null);
+  // Show last_error for failed sends and also for any message carrying one
+  // (e.g. an inbound mail whose attachment could not be stored).
+  const showError = message.status === "failed" || message.status === "retrying" || !!message.has_error;
 
   useEffect(() => {
     if (!message?.id) return;
@@ -30,9 +33,7 @@ const DetailModalEmailQueue = ({ message, onClose }) => {
     setFailmsg(null);
     Promise.all([
       getEmailBody(message.id),
-      message.status === "failed" || message.status === "retrying"
-        ? getEmailFailmsg(message.id)
-        : Promise.resolve(null),
+      showError ? getEmailFailmsg(message.id) : Promise.resolve(null),
     ])
       .then(([bodyData, failData]) => {
         setBodyHtml(bodyData.body_html || bodyData.body);
@@ -40,7 +41,7 @@ const DetailModalEmailQueue = ({ message, onClose }) => {
       })
       .catch(() => {
         setBodyHtml(t("ngen.email_queue.no_body_detail") || "-");
-        if (message.status === "failed" || message.status === "retrying") setFailmsg({ last_error: null });
+        if (showError) setFailmsg({ last_error: null });
       })
       .finally(() => setBodyLoading(false));
   }, [message?.id]);
@@ -124,7 +125,7 @@ const DetailModalEmailQueue = ({ message, onClose }) => {
           <dt className="col-sm-3">{t("ngen.email_queue.message_id")}</dt>
           <dd className="col-sm-9 text-break">{message.message_id || "-"}</dd>
         </dl>
-        {(message.status === "failed" || message.status === "retrying") && failmsg && (
+        {showError && failmsg && (
           <dl className="row mb-1">
             <dt className="col-sm-3 text-danger">{t("ngen.email_queue.last_error")}</dt>
             <dd className="col-sm-9">

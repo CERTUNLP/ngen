@@ -88,6 +88,30 @@ class TestEmailMessage(APITestCaseWithLogin):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_email_message_list_flags_errors_independently_of_status(self):
+        """
+        An inbound (SENT) message with a processing error, e.g. a lost
+        attachment, is flagged in the list so the UI can show last_error.
+        """
+        common = dict(
+            references=[], subject="s", senders=[], recipients=[],
+            date=timezone.now(), body="b", status="sent",
+        )
+        EmailMessage.objects.create(
+            root_message_id="<clean@x>", message_id="<clean@x>", **common
+        )
+        EmailMessage.objects.create(
+            root_message_id="<err@x>", message_id="<err@x>",
+            last_error="attachment storage failed -> 'x.pdf': disk full", **common
+        )
+
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        flags = {r["message_id"]: r["has_error"] for r in response.data["results"]}
+        self.assertEqual(flags, {"<clean@x>": False, "<err@x>": True})
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_email_message_get_detail(self):
         """
         This will test successful Email Message GET detail

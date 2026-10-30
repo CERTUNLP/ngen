@@ -5,6 +5,9 @@ from rest_framework import serializers
 class EmailMessageListSerializer(serializers.ModelSerializer):
     attachment_count = serializers.SerializerMethodField()
     recipient_count = serializers.SerializerMethodField()
+    # Whether last_error is set, independently of the send status: inbound
+    # processing errors (e.g. a lost attachment) live on SENT messages.
+    has_error = serializers.SerializerMethodField()
 
     class Meta:
         model = models.EmailMessage
@@ -29,7 +32,11 @@ class EmailMessageListSerializer(serializers.ModelSerializer):
             "retry_count",
             "attachment_count",
             "recipient_count",
+            "has_error",
         ]
+
+    def get_has_error(self, obj):
+        return bool(obj.last_error)
 
     def get_attachment_count(self, obj):
         return len(obj.attachments or [])
