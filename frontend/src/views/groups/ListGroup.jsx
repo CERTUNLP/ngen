@@ -15,7 +15,6 @@ const ListGroup = () => {
   const [isModify, setIsModify] = useState(null);
   const [order, setOrder] = useState("name");
   const [wordToSearch, setWordToSearch] = useState("");
-  const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [refresh, setRefresh] = useState(true);
   const { t } = useTranslation();
@@ -41,9 +40,6 @@ const ListGroup = () => {
       .then((response) => {
         setGroups(response.data.results);
         setCountItems(response.data.count);
-        if (currentPage === 1) {
-          setUpdatePagination(true);
-        }
         setDisabledPagination(false);
       })
       .catch((error) => {
@@ -86,9 +82,8 @@ const ListGroup = () => {
                 <Col md="auto">
                   <AdvancedPagination
                     countItems={countItems}
+                    currentPage={currentPage}
                     updatePage={updatePage}
-                    updatePagination={updatePagination}
-                    setUpdatePagination={setUpdatePagination}
                     setLoading={setLoading}
                     setDisabledPagination={setDisabledPagination}
                     disabledPagination={disabledPagination}

@@ -50,9 +50,6 @@ const ModalListCase = (props) => {
       .then((response) => {
         setCases(response.data.results);
         setCountItems(response.data.count);
-        if (props.currentPage === 1) {
-          props.setUpdatePagination(true);
-        }
         setDisabledPagination(false);
       })
       .catch((error) => {
@@ -164,9 +161,8 @@ const ModalListCase = (props) => {
           <Col md="auto">
             <AdvancedPagination
               countItems={countItems}
+              currentPage={props.currentPage}
               updatePage={updatePage}
-              updatePagination={props.updatePagination}
-              setUpdatePagination={props.setUpdatePagination}
               setLoading={setLoading}
               setDisabledPagination={setDisabledPagination}
               disabledPagination={disabledPagination}

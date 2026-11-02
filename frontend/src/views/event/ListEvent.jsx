@@ -66,7 +66,6 @@ const ListEvent = ({ routeParams }) => {
   const [endDate, setEndDate] = useState("");
   const [filterDate, setFilterDate] = useState(false);
   const [open, setOpen] = useState(false);
-  const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const types = [
     { value: "true", label: t("w.not_assigned") },
@@ -120,7 +119,6 @@ const ListEvent = ({ routeParams }) => {
   const [stateFilter, setStateFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [selectCase, setSelectCase] = useState(""); //puede que se use en el multiselect, tengo ver bien cual es su utilidad
-  const [updatePaginationCase, setUpdatePaginationCase] = useState(false);
   const [caseDefaults, setCaseDefaults] = useState(caseItem);
 
   useEffect(() => {
@@ -208,9 +206,6 @@ const ListEvent = ({ routeParams }) => {
       .then((response) => {
         setEvents(response.data.results);
         setCountItems(response.data.count);
-        if (currentPage === 1) {
-          setUpdatePagination(true);
-        }
         setFilterDate(false);
         setDisabledPagination(false);
       })
@@ -277,7 +272,6 @@ const ListEvent = ({ routeParams }) => {
 
   const modalCase = () => {
     //setId
-    //setUpdatePagination(true)
     if (selectedEvent.length > 0) {
       // get event from selectedEvent to get tlp and priority to set default values in the case creation form
       let event = events.find((event) => event.url === selectedEvent[0]);
@@ -315,7 +309,6 @@ const ListEvent = ({ routeParams }) => {
   const closeOptionsList = () => {
     setShowOptionsToAddCase(false);
     setShowModalListCase(true);
-    setUpdatePaginationCase(true);
   };
 
   const closeOptionsCreate = () => {
@@ -325,7 +318,6 @@ const ListEvent = ({ routeParams }) => {
 
   function closeModal() {
     setShowModalListCase(false);
-    //setUpdatePagination(true)
     setCurrentPageCase(1);
     setTlpFilterCase("");
     setPriorityFilter("");
@@ -376,7 +368,6 @@ const ListEvent = ({ routeParams }) => {
   const returnToListOfCases = () => {
     setShowModalListCase(true);
     setModalShowCase(false);
-    setUpdatePaginationCase(true);
   };
   const linkCaseToEvent = () => {
     patchCase(caseToLink.value, caseToLink.events.concat(selectedEvent)).then((response) => {
@@ -390,7 +381,6 @@ const ListEvent = ({ routeParams }) => {
       setPriorityFilter("");
       setStateFilter("");
       setWordToSearchCase("");
-      setUpdatePaginationCase(true);
     });
   };
   return (
@@ -582,9 +572,8 @@ const ListEvent = ({ routeParams }) => {
             <Col md="auto">
               <AdvancedPagination
                 countItems={countItems}
+                currentPage={currentPage}
                 updatePage={updatePage}
-                updatePagination={updatePagination}
-                setUpdatePagination={setUpdatePagination}
                 setLoading={setLoading}
                 setDisabledPagination={setDisabledPagination}
                 disabledPagination={disabledPagination}
@@ -657,8 +646,6 @@ const ListEvent = ({ routeParams }) => {
           setCurrentPage={setCurrentPageCase}
           wordToSearch={wordToSearchCase}
           setWordToSearch={setWordToSearchCase}
-          updatePagination={updatePaginationCase}
-          setUpdatePagination={setUpdatePaginationCase}
           selectedCases={selectedCases}
           selectCase={selectCase}
           tlpNames={tlpNames}

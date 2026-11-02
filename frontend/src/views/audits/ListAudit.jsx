@@ -26,7 +26,6 @@ const ListAudit = () => {
   const [typeFilter, setTypeFilter] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [open, setOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
@@ -58,7 +57,6 @@ const ListAudit = () => {
       .then((response) => {
         setAudits(response.data.results);
         setCountItems(response.data.count);
-        if (currentPage === 1) setUpdatePagination(true);
         setDisabledPagination(false);
       })
       .catch(() => {})
@@ -176,9 +174,8 @@ const ListAudit = () => {
                 <Col md="auto">
                   <AdvancedPagination
                     countItems={countItems}
+                    currentPage={currentPage}
                     updatePage={updatePage}
-                    updatePagination={updatePagination}
-                    setUpdatePagination={setUpdatePagination}
                     setLoading={setLoading}
                     setDisabledPagination={setDisabledPagination}
                     disabledPagination={disabledPagination}

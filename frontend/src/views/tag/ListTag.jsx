@@ -34,7 +34,6 @@ const ListTag = (props) => {
   const [countItems, setCountItems] = useState(0);
   const [wordToSearch, setWordToSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [updatePagination, setUpdatePagination] = useState(false);
   const [disabledPagination, setDisabledPagination] = useState(true);
   const [order] = useState("");
   const [isModify, setIsModify] = useState(null);
@@ -48,9 +47,6 @@ const ListTag = (props) => {
       .then((response) => {
         setTags(response.data.results);
         setCountItems(response.data.count);
-        if (currentPage === 1) {
-          setUpdatePagination(true);
-        }
         setDisabledPagination(false);
       })
       .catch((error) => {
@@ -164,9 +160,8 @@ const ListTag = (props) => {
             <Col md="auto">
               <AdvancedPagination
                 countItems={countItems}
+                currentPage={currentPage}
                 updatePage={updatePage}
-                updatePagination={updatePagination}
-                setUpdatePagination={setUpdatePagination}
                 setLoading={setLoading}
                 setDisabledPagination={setDisabledPagination}
                 disabledPagination={disabledPagination}

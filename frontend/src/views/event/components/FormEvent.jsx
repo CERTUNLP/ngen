@@ -63,7 +63,6 @@ const FormEvent = (props) => {
   const [stateFilter, setStateFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [wordToSearch, setWordToSearch] = useState("");
-  const [updatePagination, setUpdatePagination] = useState(false);
 
   const [selectedCases, setSelectedCases] = useState([]);
 
@@ -377,7 +376,6 @@ const FormEvent = (props) => {
   };
 
   const modalListCase = () => {
-    setUpdatePagination(true);
     setShowModalListCase(true);
   };
 
@@ -399,7 +397,6 @@ const FormEvent = (props) => {
   const returnToListOfCases = () => {
     setShowModalListCase(true);
     setModalShowCase(false);
-    setUpdatePagination(true);
   };
 
   const linkCaseToEvent = () => {
@@ -412,7 +409,6 @@ const FormEvent = (props) => {
     setPriorityFilter("");
     setStateFilter("");
     setWordToSearch("");
-    setUpdatePagination(true);
   };
 
   function getCurrentDateTime() {
@@ -791,8 +787,6 @@ const FormEvent = (props) => {
         setCurrentPage={setCurrentPage}
         wordToSearch={wordToSearch}
         setWordToSearch={setWordToSearch}
-        updatePagination={updatePagination}
-        setUpdatePagination={setUpdatePagination}
         asNetworkAdmin={props.asNetworkAdmin}
       />
 
