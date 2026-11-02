@@ -8,6 +8,8 @@ unparseable) must never abort the batch, and no content must be silently lost.
 
 import io
 import os
+import time
+from datetime import datetime, timezone as dt_timezone
 from unittest.mock import patch
 
 from django.test import SimpleTestCase, override_settings
@@ -389,6 +391,144 @@ class AttachmentFilenameTest(SimpleTestCase):
         )
         self.assertEqual(sorted(writes.values()), [b"1", b"2", b"3"])
         self.assertIsNone(em.last_error)
+
+
+RECEIVED = (
+    "Received: from relay.example (relay.example [192.0.2.1])\r\n"
+    "\tby mail.cert.unlp.edu.ar (Postfix) with ESMTPS id 1CF449DEB\r\n"
+    "\tfor <incidentes@cert.unlp.edu.ar>; Wed, 21 Oct 2026 12:37:09 -0300 (-03)\r\n"
+)
+
+
+def _utc(*args):
+    return datetime(*args, tzinfo=dt_timezone.utc)
+
+
+class GetDateTest(SimpleTestCase):
+    """
+    The stored date must be the real instant in UTC whatever the sender's zone,
+    the container's zone or settings.TIME_ZONE (imbox's parsed_date dropped the
+    offset: 12:37 -0300 was stored as 12:37 UTC).
+    """
+
+    def setUp(self):
+        self.client = _client()
+
+    def _date(self, headers):
+        return self.client.get_date(FakeImboxMessage(raw_email=headers + "\r\nbody"))
+
+    def test_offset_is_honoured(self):
+        self.assertEqual(
+            self._date("Date: Wed, 21 Oct 2026 12:37:05 -0300 (-03)\r\n"),
+            _utc(2026, 10, 21, 15, 37, 5),
+        )
+
+    def test_any_sender_zone_gives_the_same_instant(self):
+        for header in (
+            "Wed, 21 Oct 2026 12:37:05 -0300",
+            "Wed, 21 Oct 2026 21:07:05 +0530",
+            "Wed, 21 Oct 2026 15:37:05 +0000",
+            "Wed, 21 Oct 2026 15:37:05 GMT",
+            "Wed, 21 Oct 2026 10:37:05 EST",
+            "21 Oct 26 12:37:05 -0300",  # no weekday, 2-digit year
+        ):
+            with self.subTest(header=header):
+                self.assertEqual(self._date("Date: %s\r\n" % header), _utc(2026, 10, 21, 15, 37, 5))
+
+    def test_result_is_always_aware_utc(self):
+        d = self._date("Date: Wed, 21 Oct 2026 12:37:05 -0300\r\n")
+        self.assertEqual(d.utcoffset().total_seconds(), 0)
+
+    def test_no_usable_offset_uses_our_receipt_time(self):
+        # -0000 / unknown zone names / no zone: the sender's zone is unknown.
+        for header in (
+            "Wed, 21 Oct 2026 15:37:05 -0000",
+            "Wed, 21 Oct 2026 17:37:05 CEST",
+            "Wed, 21 Oct 2026 15:37:05",
+        ):
+            with self.subTest(header=header):
+                self.assertEqual(
+                    self._date(RECEIVED + "Date: %s\r\n" % header), _utc(2026, 10, 21, 15, 37, 9)
+                )
+
+    def test_no_usable_offset_and_no_receipt_assumes_utc(self):
+        self.assertEqual(
+            self._date("Date: Wed, 21 Oct 2026 15:37:05 -0000\r\n"), _utc(2026, 10, 21, 15, 37, 5)
+        )
+
+    def test_date_after_our_receipt_is_not_trusted(self):
+        # Sender clock in UTC but labelled -0300: claims 18:37Z, we got it 15:37Z.
+        self.assertEqual(
+            self._date(RECEIVED + "Date: Wed, 21 Oct 2026 15:37:05 -0300\r\n"),
+            _utc(2026, 10, 21, 15, 37, 9),
+        )
+
+    def test_small_clock_skew_keeps_the_sender_date(self):
+        self.assertEqual(
+            self._date(RECEIVED + "Date: Wed, 21 Oct 2026 12:42:00 -0300\r\n"),
+            _utc(2026, 10, 21, 15, 42, 0),
+        )
+
+    def test_missing_or_invalid_date_falls_back_to_receipt(self):
+        self.assertEqual(self._date(RECEIVED), _utc(2026, 10, 21, 15, 37, 9))
+        self.assertEqual(
+            self._date(RECEIVED + "Date: no es una fecha\r\n"), _utc(2026, 10, 21, 15, 37, 9)
+        )
+
+    def test_nothing_usable_gives_none(self):
+        self.assertIsNone(self._date("Subject: x\r\n"))
+        self.assertIsNone(self._date("Date: garbage\r\nReceived: garbage; garbage\r\n"))
+
+    def test_topmost_received_is_ours(self):
+        older = "Received: from a by b; Wed, 21 Oct 2026 12:37:05 -0300\r\n"
+        self.assertEqual(
+            self._date(RECEIVED + older + "Date: Wed, 21 Oct 2026 15:37:05 -0000\r\n"),
+            _utc(2026, 10, 21, 15, 37, 9),
+        )
+
+    def test_out_of_range_dates_do_not_raise(self):
+        self.assertIsNone(self._date("Date: Fri, 31 Dec 9999 23:59:59 -1200\r\n"))
+        received_edge = "Received: from a by b; Fri, 31 Dec 9999 23:59:59 +0000\r\n"
+        self.assertEqual(
+            self._date(received_edge + "Date: Wed, 21 Oct 2026 12:37:05 -0300\r\n"),
+            _utc(2026, 10, 21, 15, 37, 5),
+        )
+
+    @override_settings(TIME_ZONE="Asia/Tokyo")
+    def test_independent_of_container_zone_and_time_zone_setting(self):
+        old = os.environ.get("TZ")
+        os.environ["TZ"] = "America/Argentina/Buenos_Aires"
+        time.tzset()
+        try:
+            d = self._date("Date: Wed, 21 Oct 2026 12:37:05 -0300\r\n")
+        finally:
+            if old is None:
+                os.environ.pop("TZ", None)
+            else:
+                os.environ["TZ"] = old
+            time.tzset()
+        self.assertEqual(d, _utc(2026, 10, 21, 15, 37, 5))
+
+    @override_settings(USE_TZ=False, TIME_ZONE="America/Argentina/Buenos_Aires")
+    def test_naive_local_time_when_use_tz_is_off(self):
+        d = self._date("Date: Wed, 21 Oct 2026 15:37:05 +0000\r\n")
+        self.assertIsNone(d.tzinfo)
+        self.assertEqual(d, datetime(2026, 10, 21, 12, 37, 5))
+
+    def test_map_email_stores_the_corrected_date(self):
+        em = self.client.map_email(
+            FakeImboxMessage(
+                message_id="<tz@ext.org>",
+                subject="tz",
+                parsed_date=datetime(2026, 10, 21, 12, 37, 5),  # imbox's wrong value
+                sent_from=[],
+                sent_to=[],
+                body={"plain": ["x"], "html": []},
+                attachments=[],
+                raw_email="Message-ID: <tz@ext.org>\r\nDate: Wed, 21 Oct 2026 12:37:05 -0300\r\n\r\nx",
+            )
+        )
+        self.assertEqual(em.date, _utc(2026, 10, 21, 15, 37, 5))
 
 
 class GetMessageIdTest(SimpleTestCase):
