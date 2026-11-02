@@ -2,8 +2,11 @@
 EmailMessage model
 """
 
+import hashlib
+import re
 from os import path
 from email.utils import make_msgid
+from django.contrib.postgres.indexes import HashIndex
 from django.db import models
 from ngen.models.common.mixins import AuditModelMixin
 from django.conf import settings
@@ -23,9 +26,12 @@ class EmailMessage(AuditModelMixin):
         FAILED = "failed", "Failed"
         SENT = "sent", "Sent"
 
-    root_message_id = models.CharField(max_length=255)
-    parent_message_id = models.CharField(null=True, max_length=255)
-    message_id = models.CharField(max_length=255)
+    # RFC 5322 allows Message-IDs up to the 998-char line limit. 255 was a
+    # latent batch-killer (a legit long id raised DataError on bulk_create) and
+    # forced lossy truncation that could collide distinct ids during dedup.
+    root_message_id = models.CharField(max_length=998)
+    parent_message_id = models.CharField(null=True, max_length=998)
+    message_id = models.CharField(max_length=998)
     references = models.JSONField(default=list)
     senders = models.JSONField(default=list)
     recipients = models.JSONField(default=list)
@@ -63,6 +69,12 @@ class EmailMessage(AuditModelMixin):
     class Meta:
         db_table = "email_message"
         ordering = ["-created"]
+        indexes = [
+            # Inbound de-duplication looks messages up by message_id on every
+            # poll. A hash index serves those equality lookups and, unlike a
+            # btree, has no per-row size limit for the 998-char column.
+            HashIndex(fields=["message_id"], name="email_message_msgid_hash"),
+        ]
 
     @classmethod
     def generate_message_id(cls, domain: str):
@@ -78,13 +90,41 @@ class EmailMessage(AuditModelMixin):
         """
         return cls.objects.filter(root_message_id=root_message_id).order_by("created")
 
+    # A path component must stay within the typical 255-byte filesystem limit.
+    _MAX_DIR_KEY = 200
+    _SAFE_DIR_KEY = re.compile(r"[A-Za-z0-9._@<>+=-]+")
+    # Hashed keys live in their own namespace: an id that merely *looks* like
+    # one is never used verbatim, so it cannot share another message's dir.
+    _HASHED_DIR_PREFIX = "sha256-"
+
+    def _attachment_dir_key(self):
+        """
+        Bounded, filesystem-safe directory key for this message's attachments.
+
+        A Message-ID can legally reach the RFC 5322 998-char line limit and may
+        carry characters that are awkward as a path component; either can exceed
+        the ~255-byte filesystem limit (ENAMETOOLONG) and make the attachment
+        write fail. A short, already-safe id is used verbatim (so existing paths
+        stay valid); anything longer or unsafe falls back to a stable hash.
+        """
+        key = self.message_id or (str(self.id) if self.id else "")
+        if (
+            key
+            and len(key) <= self._MAX_DIR_KEY
+            and self._SAFE_DIR_KEY.fullmatch(key)
+            and not key.startswith(self._HASHED_DIR_PREFIX)
+        ):
+            return key
+        digest = hashlib.sha256(key.encode("utf-8", "surrogatepass")).hexdigest()
+        return self._HASHED_DIR_PREFIX + digest
+
     def attachment_path(self, filename):
         """
         Return the relative path for an email attachment
         """
         attachments_path = path.join(
             settings.EMAIL_ATTACHMENTS_FILE_ROOT,
-            self.message_id or self.id,
+            self._attachment_dir_key(),
             filename,
         )
 

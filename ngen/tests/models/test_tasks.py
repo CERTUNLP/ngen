@@ -3,6 +3,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.core import mail
 from unittest.mock import patch, MagicMock
+from django.db import DatabaseError
 
 from ngen import tasks
 from ngen.models import (
@@ -392,6 +393,165 @@ class TestRetrieveEmails(TasksTestCase):
         mock_client.side_effect = TimeoutError("timed out")
         result = tasks.retrieve_emails()
         self.assertEqual(result["status"], "error")
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_dedup_against_existing_and_within_batch(self, mock_client):
+        """
+        A Message-ID already stored (e.g. a notification the app itself sent and
+        that came back through the alias) is not duplicated, and a message that
+        appears twice in the same fetch is stored once. Every fetched message is
+        marked read so nothing is re-fetched.
+        """
+        instance = mock_client.return_value
+        EmailMessage.objects.create(
+            root_message_id="<dup@x>",
+            message_id="<dup@x>",
+            subject="already stored",
+            senders=[],
+            recipients=[],
+            body="x",
+            status="sent",
+        )
+        unread = [("1", MagicMock()), ("2", MagicMock()), ("3", MagicMock())]
+        instance.fetch_unread_emails.return_value = unread
+        instance.map_emails.return_value = [
+            EmailMessage(
+                root_message_id="<new@x>", message_id="<new@x>", subject="new",
+                senders=[], recipients=[], body="b", status="sent",
+            ),
+            EmailMessage(
+                root_message_id="<dup@x>", message_id="<dup@x>", subject="dup-existing",
+                senders=[], recipients=[], body="b", status="sent",
+            ),
+            EmailMessage(
+                root_message_id="<new@x>", message_id="<new@x>", subject="new-again",
+                senders=[], recipients=[], body="b", status="sent",
+            ),
+        ]
+
+        result = tasks.retrieve_emails()
+
+        self.assertEqual(result["status"], "success")
+        # existing Message-ID is not duplicated
+        self.assertEqual(EmailMessage.objects.filter(message_id="<dup@x>").count(), 1)
+        # new Message-ID stored once despite appearing twice in the batch
+        self.assertEqual(EmailMessage.objects.filter(message_id="<new@x>").count(), 1)
+        # all fetched messages marked read (no re-fetch / stall loop)
+        instance.mark_emails_as_read.assert_called_once_with(unread)
+        # attachments are written only for the record we actually keep, never for
+        # the duplicates (so a discarded copy can't overwrite a retained file).
+        self.assertEqual(instance.persist_attachments.call_count, 1)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    @patch("ngen.tasks._try_advisory_lock", return_value=False)
+    def test_skips_when_another_run_holds_the_lock(self, _lock, mock_client):
+        """Overlapping runs must not both fetch the same still-UNSEEN batch."""
+        result = tasks.retrieve_emails()
+        self.assertEqual(result["status"], "skipped")
+        # We never even connect / fetch when the lock is held elsewhere.
+        mock_client.assert_not_called()
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    @patch("ngen.tasks._advisory_unlock", wraps=tasks._advisory_unlock)
+    def test_lock_released_when_imap_logout_fails(self, unlock, mock_client):
+        instance = mock_client.return_value
+        instance.fetch_unread_emails.return_value = []
+        instance.logout.side_effect = OSError("connection reset")
+
+        result = tasks.retrieve_emails()
+
+        self.assertEqual(result["status"], "success")
+        unlock.assert_called_once_with(tasks.RETRIEVE_EMAILS_LOCK_KEY)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_one_row_rejected_by_db_does_not_block_the_batch(self, mock_client):
+        """
+        If the database rejects a row, the rest are still stored, the bad one is
+        kept as a viewable error record and the batch is marked read.
+        """
+        instance = mock_client.return_value
+        unread = [("1", MagicMock()), ("2", MagicMock())]
+        instance.fetch_unread_emails.return_value = unread
+        instance.map_emails.return_value = [
+            EmailMessage(
+                root_message_id="<ok@x>", message_id="<ok@x>", subject="ok",
+                senders=[], recipients=[], body="b", status="sent",
+            ),
+            EmailMessage(
+                # varchar(255) overflow -> DataError on insert
+                root_message_id="<caseroot@x>", parent_message_id="<p@x>",
+                references=["<caseroot@x>", "<mid@x>", "<p@x>"],
+                message_id="<toolong@x>",
+                subject="s" * 300, senders=[], recipients=[], body="b", status="sent",
+            ),
+        ]
+
+        result = tasks.retrieve_emails()
+
+        self.assertEqual(result["status"], "success")
+        self.assertTrue(EmailMessage.objects.filter(message_id="<ok@x>").exists())
+        placeholder = EmailMessage.objects.get(message_id="<toolong@x>")
+        self.assertEqual(placeholder.root_message_id, "<caseroot@x>")
+        # References keep the case root first, so replies to the placeholder
+        # stay in the case conversation.
+        self.assertEqual(placeholder.references, ["<caseroot@x>", "<p@x>"])
+        self.assertTrue(placeholder.last_error)
+        instance.mark_emails_as_read.assert_called_once_with(unread)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_batch_stays_unread_when_nothing_can_be_stored(self, mock_client):
+        """
+        If even the error record cannot be stored (e.g. database down), the
+        failure propagates and the batch is not marked read, so it is retried.
+        """
+        instance = mock_client.return_value
+        unread = [("1", MagicMock())]
+        instance.fetch_unread_emails.return_value = unread
+        instance.map_emails.return_value = [
+            EmailMessage(
+                root_message_id="<r@x>", message_id="<r@x>", subject="s",
+                senders=[], recipients=[], body="b", status="sent",
+            ),
+        ]
+
+        with patch.object(
+            EmailMessage.objects, "bulk_create", side_effect=DatabaseError("down")
+        ), patch.object(EmailMessage, "save", side_effect=DatabaseError("down")):
+            with self.assertRaises(DatabaseError):
+                tasks.retrieve_emails()
+
+        instance.mark_emails_as_read.assert_not_called()
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_error_record_is_stored_and_marked_read(self, mock_client):
+        """A placeholder error record (unparseable mail) is persisted, not dropped."""
+        instance = mock_client.return_value
+        unread = [("1", MagicMock())]
+        instance.fetch_unread_emails.return_value = unread
+        instance.map_emails.return_value = [
+            EmailMessage(
+                root_message_id="<err@x>",
+                message_id="<err@x>",
+                subject="[ngen] mensaje entrante no legible",
+                senders=[],
+                recipients=[],
+                body="no legible",
+                status="sent",
+                last_error="boom",
+            ),
+        ]
+
+        tasks.retrieve_emails()
+
+        stored = EmailMessage.objects.get(message_id="<err@x>")
+        self.assertEqual(stored.last_error, "boom")
+        instance.mark_emails_as_read.assert_called_once_with(unread)
 
 
 class TestSendContactChecks(TasksTestCase):

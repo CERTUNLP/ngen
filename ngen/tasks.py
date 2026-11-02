@@ -5,6 +5,7 @@ import traceback
 from os import path
 from celery import shared_task
 from django_celery_beat.models import PeriodicTask
+from django.db import DatabaseError, connection, transaction
 from django.db.models import F, Min, DateTimeField, ExpressionWrapper, DurationField
 from django.conf import settings
 from django.utils import timezone
@@ -22,7 +23,88 @@ from ngen.services.contact_lookup import ContactLookupService
 
 logger = logging.getLogger(__name__)
 
+# Postgres advisory-lock key that serialises retrieve_emails against itself.
+# The task is beat-scheduled every 60s; without this, a run that outlasts its
+# interval (or a second worker) could fetch the same still-UNSEEN messages and
+# both insert them (message_id has no DB uniqueness constraint).
+RETRIEVE_EMAILS_LOCK_KEY = 0x6E67656E01  # "ngen" + 01
 
+
+def _try_advisory_lock(key: int) -> bool:
+    """Acquire a session-level Postgres advisory lock without blocking."""
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT pg_try_advisory_lock(%s)", [key])
+        return bool(cursor.fetchone()[0])
+
+
+def _advisory_unlock(key: int) -> None:
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT pg_advisory_unlock(%s)", [key])
+
+
+def _store_inbound_emails(messages):
+    """
+    Insert mapped inbound messages. Normally a single bulk_create; if the
+    database rejects the batch, fall back to one insert per message so a single
+    bad row cannot block the rest (the batch is marked read afterwards). A row
+    that still fails is replaced by a minimal, viewable error record. If even
+    that record cannot be stored (e.g. the database is down) the error is
+    re-raised, so the batch is NOT marked read and is retried next run (rows
+    stored so far are skipped then by de-duplication).
+    """
+    EmailMessage = ngen.models.EmailMessage
+    try:
+        with transaction.atomic():
+            return EmailMessage.objects.bulk_create(messages)
+    except DatabaseError:
+        logger.exception("retrieve_emails: bulk insert failed, storing one by one")
+
+    created = []
+    for message in messages:
+        try:
+            with transaction.atomic():
+                message.save(force_insert=True)
+            created.append(message)
+            continue
+        except DatabaseError as exc:
+            logger.exception(
+                "retrieve_emails: could not store message_id=%r", message.message_id
+            )
+            error = exc
+        # Keep the thread anchors: replies to this record build their References
+        # from it (EmailHandler.send_email), so References[0] must stay the case
+        # root or later answers would fall out of the case conversation.
+        references = [message.root_message_id]
+        if message.parent_message_id and message.parent_message_id not in references:
+            references.append(message.parent_message_id)
+        placeholder = EmailMessage(
+            root_message_id=message.root_message_id,
+            parent_message_id=message.parent_message_id,
+            references=references,
+            message_id=message.message_id,
+            senders=[],
+            recipients=[],
+            date=message.date,
+            subject="[ngen] mensaje entrante no legible",
+            body=(
+                "[ngen] No se pudo guardar este mensaje entrante; se conserva "
+                "este registro para no perder la traza."
+            ),
+            status=EmailMessage.Status.SENT,
+            last_error=str(error).replace("\x00", "�")[:2000],
+        )
+        try:
+            with transaction.atomic():
+                placeholder.save(force_insert=True)
+        except DatabaseError:
+            logger.exception(
+                "retrieve_emails: could not store error record for message_id=%r; "
+                "leaving the batch unread for retry",
+                message.message_id,
+            )
+            raise
+        created.append(placeholder)
+    return created
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
@@ -714,6 +796,16 @@ def retrieve_emails():
             "message": msg,
         }
 
+    # Serialise against overlapping runs so the same still-UNSEEN batch is not
+    # fetched and inserted twice. If another run holds the lock, skip quietly;
+    # the next beat tick will pick the mailbox up.
+    if not _try_advisory_lock(RETRIEVE_EMAILS_LOCK_KEY):
+        logger.info("retrieve_emails: another run is in progress, skipping")
+        return {
+            "status": "skipped",
+            "message": "retrieve_emails already running",
+        }
+
     logger.info(
         "retrieve_emails: connecting to %s:%s (ssl=%s, timeout=%ss, username=%s)",
         host,
@@ -737,27 +829,54 @@ def retrieve_emails():
         logger.info("retrieve_emails: fetched %s unread emails", len(unread_emails))
 
         if unread_emails:
-            email_messages = email_client.map_emails(unread_emails)
-            created_messages = ngen.models.EmailMessage.objects.bulk_create(
-                email_messages
+            mapped = email_client.map_emails(unread_emails)
+
+            # De-duplicate by Message-ID against what is already stored (and
+            # within this same batch). Messages the app itself sent are recorded
+            # at send time, so their notifications coming back through the
+            # incidentes@ alias are recognised here and not duplicated — without
+            # filtering by sender, so team (@cert) replies and external replies
+            # are both ingested and shown in the case conversation.
+            incoming_ids = [m.message_id for m in mapped if m.message_id]
+            existing_ids = set(
+                ngen.models.EmailMessage.objects.filter(
+                    message_id__in=incoming_ids
+                ).values_list("message_id", flat=True)
             )
+
+            to_create = []
+            seen_ids = set()
+            duplicates = 0
+            for message in mapped:
+                mid = message.message_id
+                if mid and (mid in existing_ids or mid in seen_ids):
+                    duplicates += 1
+                    continue
+                if mid:
+                    seen_ids.add(mid)
+                # Write attachments only now, for a record we are actually going
+                # to keep, so a discarded duplicate can never overwrite a
+                # retained message's files.
+                email_client.persist_attachments(message)
+                to_create.append(message)
+
+            created_messages = _store_inbound_emails(to_create)
             logger.info(
-                "retrieve_emails: stored %s new emails, subjects=%s",
+                "retrieve_emails: fetched=%s stored=%s duplicates=%s subjects=%s",
+                len(unread_emails),
                 len(created_messages),
+                duplicates,
                 [m.subject for m in created_messages],
             )
 
-            if len(created_messages) == len(unread_emails):
-                email_client.mark_emails_as_read(unread_emails)
-                logger.debug(
-                    "retrieve_emails: marked %s emails as read", len(unread_emails)
-                )
-            else:
-                logger.warning(
-                    "retrieve_emails: stored %s/%s emails, skipping mark_as_read",
-                    len(created_messages),
-                    len(unread_emails),
-                )
+            # Every fetched message has now been handled (stored, de-duplicated
+            # or kept as an error record), so mark them all read. This is what
+            # prevents a single unparseable message from being re-fetched every
+            # run and stalling ingestion.
+            email_client.mark_emails_as_read(unread_emails)
+            logger.debug(
+                "retrieve_emails: marked %s emails as read", len(unread_emails)
+            )
 
         return {
             "status": "success",
@@ -781,9 +900,16 @@ def retrieve_emails():
         }
 
     finally:
-        if email_client:
-            email_client.logout()
-            logger.debug("retrieve_emails: logged out")
+        try:
+            if email_client:
+                email_client.logout()
+                logger.debug("retrieve_emails: logged out")
+        except Exception:
+            # A mail-server cleanup failure (e.g. after a timeout) must not
+            # fail the run nor keep the advisory lock held.
+            logger.warning("retrieve_emails: IMAP logout failed", exc_info=True)
+        finally:
+            _advisory_unlock(RETRIEVE_EMAILS_LOCK_KEY)
 
 
 @shared_task(ignore_result=True, store_errors_even_if_ignored=True)
