@@ -486,6 +486,38 @@ class GetDateTest(SimpleTestCase):
             _utc(2026, 10, 21, 15, 37, 9),
         )
 
+    def test_semicolon_inside_trailing_comment_is_ignored(self):
+        received = (
+            "Received: from a by mail.cert.unlp.edu.ar;\r\n"
+            " Wed, 21 Oct 2026 15:37:09 +0000 (UTC; relay (nested; clock))\r\n"
+        )
+        self.assertEqual(
+            self._date(received + "Date: Wed, 21 Oct 2026 15:37:05 -0000\r\n"),
+            _utc(2026, 10, 21, 15, 37, 9),
+        )
+
+    def test_semicolon_inside_quoted_string_is_ignored(self):
+        received = (
+            'Received: from a by b for <"odd;name"@cert.unlp.edu.ar>;'
+            " Wed, 21 Oct 2026 15:37:09 +0000\r\n"
+        )
+        self.assertEqual(
+            self._date(received + "Date: Wed, 21 Oct 2026 15:37:05 -0000\r\n"),
+            _utc(2026, 10, 21, 15, 37, 9),
+        )
+
+    def test_older_hops_are_never_trusted(self):
+        # Our (topmost) Received is unusable; the one below it is sender-supplied
+        # and must not override a valid Date (15:37Z) through the skew check.
+        headers = (
+            "Received: from a by mail.cert.unlp.edu.ar; not a date\r\n"
+            "Received: from x by y; Wed, 21 Oct 2026 15:00:00 +0000\r\n"
+            "Date: Wed, 21 Oct 2026 12:37:05 -0300\r\n"
+        )
+        self.assertEqual(self._date(headers), _utc(2026, 10, 21, 15, 37, 5))
+        # ...nor stand in for a missing Date.
+        self.assertIsNone(self._date(headers.replace("Date: Wed, 21 Oct 2026 12:37:05 -0300\r\n", "")))
+
     def test_out_of_range_dates_do_not_raise(self):
         self.assertIsNone(self._date("Date: Fri, 31 Dec 9999 23:59:59 -1200\r\n"))
         received_edge = "Received: from a by b; Fri, 31 Dec 9999 23:59:59 +0000\r\n"

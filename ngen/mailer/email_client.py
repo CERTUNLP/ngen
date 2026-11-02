@@ -339,18 +339,48 @@ class EmailClient:
         except (TypeError, ValueError, IndexError, OverflowError):
             return None
 
+    @staticmethod
+    def _received_timestamp(value: str) -> str:
+        """
+        Date part of a Received header: what follows the last ";" that is not
+        inside a comment "(...)" (which may nest) or a quoted string, e.g.
+        "...; Wed, 21 Oct 2026 12:37:09 +0000 (UTC; relay clock)".
+        """
+        depth, quoted, escaped, cut = 0, False, False, -1
+        for i, ch in enumerate(value):
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif quoted:
+                quoted = ch != '"'
+            elif ch == '"' and depth == 0:
+                quoted = True
+            elif ch == "(":
+                depth += 1
+            elif ch == ")" and depth:
+                depth -= 1
+            elif ch == ";" and depth == 0:
+                cut = i
+        return value[cut + 1:] if cut >= 0 else ""
+
     def _received_date(self, parsed: Message):
         """
         Time at which our own mail server received the message: the date of the
         topmost ``Received`` header (the one prepended by the last hop, i.e. us).
-        It always carries a numeric offset and survives IMAP re-uploads, unlike
-        INTERNALDATE.
+        It survives IMAP re-uploads, unlike INTERNALDATE.
+
+        Only that header is trusted: older hops are written by whoever sent the
+        message and can be forged, so if ours is unusable there is no receipt
+        time rather than an older hop's.
         """
-        for received in parsed.get_all("Received") or []:
-            stamp = self._parse_header_date(str(received).rpartition(";")[2])
-            if stamp is not None and stamp.tzinfo is not None:
-                return stamp
-        return None
+        received = parsed.get_all("Received") or []
+        if not received:
+            return None
+        stamp = self._parse_header_date(self._received_timestamp(str(received[0])))
+        if stamp is None or stamp.tzinfo is None:
+            return None
+        return stamp
 
     def get_date(self, message: Messages):
         """
