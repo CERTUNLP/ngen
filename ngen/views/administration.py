@@ -3,7 +3,7 @@ from django.db.models import Count
 from rest_framework import filters, viewsets, mixins
 
 from ngen import models, serializers
-from ngen.filters import FeedFilter, PriorityFilter, TlpFilter
+from ngen.filters import FeedFilter, PriorityFilter, TlpFilter, NgenSearchFilter
 from ngen.permissions import (
     CustomApiViewPermission,
     CustomModelPermissions,
@@ -14,7 +14,7 @@ from ngen.permissions import (
 class FeedViewSet(viewsets.ModelViewSet):
     queryset = models.Feed.objects.annotate(events_count=Count("events")).order_by("id")
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -38,7 +38,7 @@ class FeedViewSet(viewsets.ModelViewSet):
 class PriorityViewSet(viewsets.ModelViewSet):
     queryset = models.Priority.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -71,7 +71,7 @@ class PriorityViewSet(viewsets.ModelViewSet):
 class TlpViewSet(viewsets.ModelViewSet):
     queryset = models.Tlp.objects.all().order_by("id")
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]

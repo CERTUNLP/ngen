@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 from ngen import models, serializers
 from rest_framework import permissions, status, viewsets
-from ngen.filters import NetworkFilter, ContactFilter, NetworkEntityFilter
+from ngen.filters import NetworkFilter, ContactFilter, NetworkEntityFilter, NgenSearchFilter
 from ngen.models.constituency import ContactCheck
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -29,7 +29,7 @@ class NetworkViewSet(viewsets.ModelViewSet):
     )
     serializer_class = serializers.NetworkSerializer
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -83,7 +83,7 @@ class NetworkEntityViewSet(viewsets.ModelViewSet):
     ).order_by("id")
     serializer_class = serializers.NetworkEntitySerializer
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -115,7 +115,7 @@ class ContactViewSet(viewsets.ModelViewSet):
     queryset = models.Contact.objects.all()
     serializer_class = serializers.ContactSerializer
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -184,7 +184,7 @@ class ContactCheckViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ContactCheckSerializer
     permission_classes = [CustomModelPermissions]
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]

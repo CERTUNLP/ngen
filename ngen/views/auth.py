@@ -11,7 +11,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 from ngen import models, serializers
-from ngen.filters import UserFilter
+from ngen.filters import UserFilter, NgenSearchFilter
 from ngen.serializers import (
     RegisterSerializer,
     CustomTokenObtainPairSerializer,
@@ -64,7 +64,7 @@ def delete_refresh_cookie(response):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.prefetch_related("contacts").all().order_by("id")
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]

@@ -15,6 +15,7 @@ from celery.result import AsyncResult
 from drf_spectacular.utils import extend_schema
 
 from ngen import models, serializers
+from ngen.filters import NgenSearchFilter
 from ngen.utils import get_settings
 from ngen.permissions import (
     CustomApiViewPermission,
@@ -115,7 +116,7 @@ class AuditViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [CustomModelPermissions]
     filter_backends = [
         django_filters.rest_framework.DjangoFilterBackend,
-        filters.SearchFilter,
+        NgenSearchFilter,
         filters.OrderingFilter,
     ]
     filterset_class = AuditFilter

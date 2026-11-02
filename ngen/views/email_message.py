@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from django.utils import timezone
 from constance import config
 from ngen import models, serializers
+from ngen.filters import NgenSearchFilter
 from ngen.mailer.email_handler import EmailHandler
 from ngen.permissions import CustomModelPermissions
 from ngen.tasks import async_send_email
@@ -26,7 +27,7 @@ class EmailMessageFilter(django_filters.FilterSet):
 class EmailMessageViewSet(viewsets.ModelViewSet):
     queryset = models.EmailMessage.objects.all().order_by("-created")
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]

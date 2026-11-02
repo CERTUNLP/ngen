@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ngen import models, serializers
-from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter
+from ngen.filters import EventFilter, CaseFilter, CaseTemplateFilter, NgenSearchFilter
 from ngen.tasks import create_cases_for_matching_events
 from ngen.tasks import retest_event_kintun
 from ngen.views.communication_channel import BaseCommunicationChannelsViewSet
@@ -57,7 +57,7 @@ class NetworkAdminEvidenceViewSet(EvidenceViewSet):
 class EventViewSet(BaseCommunicationChannelsViewSet):
     queryset = models.Event.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -341,7 +341,7 @@ class NetworkAdminEventViewSet(EventViewSet):
 class CaseViewSet(BaseCommunicationChannelsViewSet):
     queryset = models.Case.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -385,7 +385,7 @@ class NetworkAdminCaseViewSet(CaseViewSet):
 class CaseTemplateViewSet(viewsets.ModelViewSet):
     queryset = models.CaseTemplate.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]

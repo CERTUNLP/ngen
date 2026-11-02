@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ngen import models, serializers
-from ngen.filters import TaxonomyFilter, PlaybookFilter, TodoTaskFilter
+from ngen.filters import TaxonomyFilter, PlaybookFilter, TodoTaskFilter, NgenSearchFilter
 from ngen.permissions import (
     ActionPermission,
     CustomApiViewPermission,
@@ -15,7 +15,7 @@ from ngen.permissions import (
 class TaxonomyViewSet(viewsets.ModelViewSet):
     queryset = models.Taxonomy.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -48,7 +48,7 @@ class TaxonomyViewSet(viewsets.ModelViewSet):
 class TaxonomyGroupViewSet(viewsets.ModelViewSet):
     queryset = models.TaxonomyGroup.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -68,7 +68,7 @@ class TaxonomyGroupViewSet(viewsets.ModelViewSet):
 class PlaybookViewSet(viewsets.ModelViewSet):
     queryset = models.Playbook.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -82,7 +82,7 @@ class PlaybookViewSet(viewsets.ModelViewSet):
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = models.Task.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -129,7 +129,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 class TodoTaskViewSet(viewsets.ModelViewSet):
     queryset = models.TodoTask.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
@@ -154,7 +154,7 @@ class TodoTaskViewSet(viewsets.ModelViewSet):
 class ReportViewSet(viewsets.ModelViewSet):
     queryset = models.Report.objects.all()
     filter_backends = [
-        filters.SearchFilter,
+        NgenSearchFilter,
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
