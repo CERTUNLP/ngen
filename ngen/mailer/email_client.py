@@ -2,8 +2,11 @@ from os import makedirs, path
 import email
 import hashlib
 import logging
+from datetime import timedelta, timezone as dt_timezone
 from django.conf import settings
+from django.utils import timezone as dj_timezone
 from email.message import Message
+from email.utils import parsedate_to_datetime
 from typing import List
 from imbox.messages import Messages
 from ngen.mailer.email_protocol_strategy.email_protocol_strategy import (
@@ -103,7 +106,7 @@ class EmailClient:
             message_id=message_id,
             senders=self._clean(getattr(email, "sent_from", None) or []),
             recipients=self._clean(getattr(email, "sent_to", None) or []),
-            date=getattr(email, "parsed_date", None),
+            date=self.get_date(email),
             subject=subject[:255],
             body=body,
             body_html=body_html,
@@ -267,6 +270,10 @@ class EmailClient:
             subject = self._clean(getattr(email, "subject", "") or "")[:255]
         except Exception:  # pragma: no cover - last-resort safety net
             subject = ""
+        try:
+            date = self.get_date(email)
+        except Exception:  # pragma: no cover - last-resort safety net
+            date = None
 
         return EmailMessage(
             root_message_id=root_message_id,
@@ -275,7 +282,7 @@ class EmailClient:
             message_id=message_id,
             senders=self._clean(getattr(email, "sent_from", None) or []),
             recipients=self._clean(getattr(email, "sent_to", None) or []),
-            date=getattr(email, "parsed_date", None),
+            date=date,
             subject=subject or "[ngen] mensaje entrante no legible",
             body=self._clean(
                 "[ngen] No se pudo procesar este mensaje entrante; se conserva "
@@ -313,6 +320,143 @@ class EmailClient:
         Get parent message ID from In-Reply-To field
         """
         return self.get_custom_email_field(message, "In-Reply-To") or None
+
+    # A message cannot have been sent after we received it; beyond this margin
+    # (clock skew) a later Date header means a misconfigured sender clock/zone.
+    DATE_FUTURE_TOLERANCE = timedelta(minutes=15)
+
+    @staticmethod
+    def _strip_comments(value: str) -> str:
+        """
+        Remove RFC 5322 comments "(...)", which may nest and contain
+        backslash-escaped characters; quoted strings are kept as they are.
+        parsedate_to_datetime does not understand comments: one before the zone
+        ("12:37:05 (local time) -0300") hides the offset or breaks the parse.
+        """
+        out, depth, quoted, escaped = [], 0, False, False
+        for ch in value:
+            if escaped:
+                escaped = False
+                if depth == 0:
+                    out.append(ch)
+            elif ch == "\\":
+                escaped = True
+                if depth == 0:
+                    out.append(ch)
+            elif quoted:
+                quoted = ch != '"'
+                out.append(ch)
+            elif ch == '"' and depth == 0:
+                quoted = True
+                out.append(ch)
+            elif ch == "(":
+                depth += 1
+                if depth == 1:
+                    out.append(" ")
+            elif ch == ")" and depth:
+                depth -= 1
+            elif depth == 0:
+                out.append(ch)
+        return "".join(out)
+
+    @classmethod
+    def _parse_header_date(cls, value):
+        """
+        Parse an RFC 5322 date (comments allowed anywhere). Returns an aware
+        datetime, a naive one when the header carries no usable offset
+        (``-0000``, unknown zone name or none), or None when missing/invalid.
+        """
+        if not value:
+            return None
+        try:
+            return parsedate_to_datetime(" ".join(cls._strip_comments(str(value)).split()))
+        except (TypeError, ValueError, IndexError, OverflowError):
+            return None
+
+    @staticmethod
+    def _received_timestamp(value: str) -> str:
+        """
+        Date part of a Received header: what follows the last ";" that is not
+        inside a comment "(...)" (which may nest) or a quoted string, e.g.
+        "...; Wed, 21 Oct 2026 12:37:09 +0000 (UTC; relay clock)".
+        """
+        depth, quoted, escaped, cut = 0, False, False, -1
+        for i, ch in enumerate(value):
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif quoted:
+                quoted = ch != '"'
+            elif ch == '"' and depth == 0:
+                quoted = True
+            elif ch == "(":
+                depth += 1
+            elif ch == ")" and depth:
+                depth -= 1
+            elif ch == ";" and depth == 0:
+                cut = i
+        return value[cut + 1:] if cut >= 0 else ""
+
+    def _received_date(self, parsed: Message):
+        """
+        Time at which our own mail server received the message: the date of the
+        topmost ``Received`` header (the one prepended by the last hop, i.e. us).
+        It survives IMAP re-uploads, unlike INTERNALDATE.
+
+        Only that header is trusted: older hops are written by whoever sent the
+        message and can be forged, so if ours is unusable there is no receipt
+        time rather than an older hop's.
+        """
+        received = parsed.get_all("Received") or []
+        if not received:
+            return None
+        stamp = self._parse_header_date(self._received_timestamp(str(received[0])))
+        if stamp is None or stamp.tzinfo is None:
+            return None
+        return stamp
+
+    def get_date(self, message: Messages):
+        """
+        Timezone-correct send date of an inbound message.
+
+        imbox's ``parsed_date`` drops the Date header's offset and reads the
+        wall-clock time in the container's local zone, so a mail sent at
+        12:37 -0300 was stored as 12:37 UTC (3h early). Instead:
+
+        - Date with an offset -> that instant, unless it is later than our own
+          receipt (impossible; misconfigured sender), then the receipt time.
+        - Date without a usable offset -> our receipt time, else assume UTC
+          (what RFC 5322 says about ``-0000``).
+        - Missing/invalid Date -> our receipt time, else None.
+
+        The result is always aware (UTC), so it does not depend on the
+        container's zone nor on settings.TIME_ZONE.
+        """
+        parsed = self.map_raw_email(getattr(message, "raw_email", "") or "")
+        sent = self._parse_header_date(parsed.get("Date"))
+        received = self._received_date(parsed)
+
+        if sent is not None and sent.tzinfo is None:
+            sent = None if received is not None else sent.replace(tzinfo=dt_timezone.utc)
+        if sent is None:
+            sent = received
+        elif received is not None:
+            try:
+                if sent > received + self.DATE_FUTURE_TOLERANCE:
+                    sent = received
+            except OverflowError:
+                pass  # receipt at the end of the datetime range: Date can't be later
+        if sent is None:
+            return None
+
+        try:
+            sent = sent.astimezone(dt_timezone.utc)
+        except (OverflowError, ValueError):
+            return None
+        if not settings.USE_TZ:
+            return dj_timezone.make_naive(sent)
+        return sent
 
     def get_message_id(self, message: Messages):
         """
