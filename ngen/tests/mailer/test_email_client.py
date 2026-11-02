@@ -486,6 +486,27 @@ class GetDateTest(SimpleTestCase):
             _utc(2026, 10, 21, 15, 37, 9),
         )
 
+    def test_comments_anywhere_in_date_are_ignored(self):
+        # parsedate_to_datetime alone reads these as naive (offset hidden) or fails.
+        for header in (
+            "Wed, 21 Oct 2026 12:37:05 (local time) -0300",
+            "Wed, (dia) 21 Oct 2026 12:37:05 -0300",
+            "Wed, 21 Oct 2026 12:37:05 (a (nested) one) -0300 (-03)",
+            "Wed, 21 Oct 2026 12:37:05 (escaped \\) paren) -0300",
+        ):
+            with self.subTest(header=header):
+                self.assertEqual(self._date("Date: %s\r\n" % header), _utc(2026, 10, 21, 15, 37, 5))
+                # With a receipt header the sender's (valid) Date is still kept.
+                self.assertEqual(
+                    self._date(RECEIVED + "Date: %s\r\n" % header), _utc(2026, 10, 21, 15, 37, 5)
+                )
+
+    def test_strip_comments_keeps_quoted_strings(self):
+        self.assertEqual(
+            " ".join(EmailClient._strip_comments('a (x (y) z) "q (not a comment)" b').split()),
+            'a "q (not a comment)" b',
+        )
+
     def test_semicolon_inside_trailing_comment_is_ignored(self):
         received = (
             "Received: from a by mail.cert.unlp.edu.ar;\r\n"

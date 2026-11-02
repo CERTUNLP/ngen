@@ -326,16 +326,50 @@ class EmailClient:
     DATE_FUTURE_TOLERANCE = timedelta(minutes=15)
 
     @staticmethod
-    def _parse_header_date(value):
+    def _strip_comments(value: str) -> str:
         """
-        Parse an RFC 5322 date. Returns an aware datetime, a naive one when the
-        header carries no usable offset (``-0000``, unknown zone name or none),
-        or None when missing/invalid.
+        Remove RFC 5322 comments "(...)", which may nest and contain
+        backslash-escaped characters; quoted strings are kept as they are.
+        parsedate_to_datetime does not understand comments: one before the zone
+        ("12:37:05 (local time) -0300") hides the offset or breaks the parse.
+        """
+        out, depth, quoted, escaped = [], 0, False, False
+        for ch in value:
+            if escaped:
+                escaped = False
+                if depth == 0:
+                    out.append(ch)
+            elif ch == "\\":
+                escaped = True
+                if depth == 0:
+                    out.append(ch)
+            elif quoted:
+                quoted = ch != '"'
+                out.append(ch)
+            elif ch == '"' and depth == 0:
+                quoted = True
+                out.append(ch)
+            elif ch == "(":
+                depth += 1
+                if depth == 1:
+                    out.append(" ")
+            elif ch == ")" and depth:
+                depth -= 1
+            elif depth == 0:
+                out.append(ch)
+        return "".join(out)
+
+    @classmethod
+    def _parse_header_date(cls, value):
+        """
+        Parse an RFC 5322 date (comments allowed anywhere). Returns an aware
+        datetime, a naive one when the header carries no usable offset
+        (``-0000``, unknown zone name or none), or None when missing/invalid.
         """
         if not value:
             return None
         try:
-            return parsedate_to_datetime(" ".join(str(value).split()))
+            return parsedate_to_datetime(" ".join(cls._strip_comments(str(value)).split()))
         except (TypeError, ValueError, IndexError, OverflowError):
             return None
 
