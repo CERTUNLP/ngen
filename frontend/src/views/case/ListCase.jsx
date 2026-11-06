@@ -7,6 +7,7 @@ import { getMinifiedPriority } from "../../api/services/priorities";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedState } from "../../api/services/states";
+import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
@@ -49,6 +50,10 @@ const ListCase = ({ routeParams }) => {
   const [states, setStates] = useState([]);
   const [stateFilter, setStateFilter] = useState("");
   const [valueStateFilter, setValueStateFilter] = useState(null);
+
+  const [taxonomies, setTaxonomies] = useState([]);
+  const [taxonomyFilter, setTaxonomyFilter] = useState("");
+  const [valueTaxonomyFilter, setValueTaxonomyFilter] = useState(null);
 
   //url by name
   const [priorityNames, setPriorityNames] = useState({});
@@ -108,6 +113,14 @@ const ListCase = ({ routeParams }) => {
         console.log(error);
       });
 
+    getMinifiedTaxonomy()
+      .then((response) => {
+        setTaxonomies(response.map((taxonomy) => ({ value: taxonomy.url, label: taxonomy.name })));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     getMinifiedTlp()
       .then((response) => {
         let list = [];
@@ -123,7 +136,7 @@ const ListCase = ({ routeParams }) => {
         console.log(error);
       });
     //getCases(currentPage,priorityFilter+tlpFilter+stateFilter+wordToSearch, order)
-    getCases(currentPage, priorityFilter + tlpFilter + stateFilter + wordToSearch, order, routeParams.asNetworkAdmin)
+    getCases(currentPage, priorityFilter + tlpFilter + stateFilter + taxonomyFilter + wordToSearch, order, routeParams.asNetworkAdmin)
       .then((response) => {
         setCases(response.data.results);
         setCountItems(response.data.count);
@@ -135,7 +148,7 @@ const ListCase = ({ routeParams }) => {
         setShowAlert(true);
         setLoading(false);
       });
-  }, [currentPage, ifModify, order, wordToSearch, priorityFilter, tlpFilter, stateFilter, refresh]);
+  }, [currentPage, ifModify, order, wordToSearch, priorityFilter, tlpFilter, stateFilter, taxonomyFilter, refresh]);
 
   const mergeConfirm = () => {
     setShowModal(true);
@@ -168,6 +181,8 @@ const ListCase = ({ routeParams }) => {
     setValueTlpFilter(null);
     setStateFilter("");
     setValueStateFilter(null);
+    setTaxonomyFilter("");
+    setValueTaxonomyFilter(null);
     setCurrentPage(1);
     setRefresh((prev) => !prev);
   };
@@ -210,7 +225,7 @@ const ListCase = ({ routeParams }) => {
               <Collapse in={open}>
                 <div id="example-collapse-text">
                   <Row>
-                    <Col sm={4} lg={4}>
+                    <Col sm={6} lg={3}>
                       <FilterSelectUrl
                         options={priorities}
                         itemName={t("ngen.priority_one")}
@@ -223,7 +238,7 @@ const ListCase = ({ routeParams }) => {
                         setCurrentPage={setCurrentPage}
                       />
                     </Col>
-                    <Col sm={4} lg={4}>
+                    <Col sm={6} lg={3}>
                       <FilterSelectUrl
                         options={tlps}
                         itemName={t("ngen.tlp")}
@@ -236,7 +251,7 @@ const ListCase = ({ routeParams }) => {
                         setCurrentPage={setCurrentPage}
                       />
                     </Col>
-                    <Col sm={4} lg={4}>
+                    <Col sm={6} lg={3}>
                       <FilterSelectUrl
                         options={states}
                         itemName={t("ngen.state_one")}
@@ -245,6 +260,19 @@ const ListCase = ({ routeParams }) => {
                         itemFilterSetter={setStateFilter}
                         value={valueStateFilter}
                         setValue={setValueStateFilter}
+                        setLoading={setLoading}
+                        setCurrentPage={setCurrentPage}
+                      />
+                    </Col>
+                    <Col sm={6} lg={3}>
+                      <FilterSelectUrl
+                        options={taxonomies}
+                        itemName={t("ngen.case.filter.event_taxonomy")}
+                        partOfTheUrl="event_taxonomy"
+                        itemFilter={taxonomyFilter}
+                        itemFilterSetter={setTaxonomyFilter}
+                        value={valueTaxonomyFilter}
+                        setValue={setValueTaxonomyFilter}
                         setLoading={setLoading}
                         setCurrentPage={setCurrentPage}
                       />

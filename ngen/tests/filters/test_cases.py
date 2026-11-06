@@ -390,3 +390,42 @@ class CaseFilterTest(BaseFilterTest):
         filtered_queryset = self.filter(params).qs
 
         self.assertQuerysetEqual(filtered_queryset, [self.case_2])
+
+    def test_filter_by_event_taxonomy(self):
+        """
+        Test filter by event taxonomy: cases with at least one event of that
+        taxonomy, without duplicates when several events match.
+        """
+        event_3 = Event.objects.create(
+            cidr="10.0.2.0/24",
+            taxonomy=self.taxonomy_1,
+            feed=self.feed_3,
+            tlp=self.tlp_3,
+            reporter=self.user_1,
+            priority=self.priority_2,
+        )
+        event_4 = Event.objects.create(
+            cidr="10.0.3.0/24",
+            taxonomy=self.taxonomy_3,
+            feed=self.feed_3,
+            tlp=self.tlp_3,
+            reporter=self.user_1,
+            priority=self.priority_2,
+        )
+        # case_3 now has two events of taxonomy_3 and one of taxonomy_1
+        self.case_3.events.add(event_3, event_4)
+
+        params = {"event_taxonomy": self.taxonomy_3.id}
+        filtered_queryset = self.filter(params).qs
+        self.assertQuerysetEqual(
+            filtered_queryset, [self.case_2, self.case_3], ordered=False
+        )
+        self.assertEqual(filtered_queryset.count(), 2)
+
+        params = {"event_taxonomy": self.taxonomy_1.id}
+        filtered_queryset = self.filter(params).qs
+        self.assertQuerysetEqual(filtered_queryset, [self.case_3])
+
+        params = {"event_taxonomy": self.taxonomy_2.id}
+        filtered_queryset = self.filter(params).qs
+        self.assertQuerysetEqual(filtered_queryset, [])

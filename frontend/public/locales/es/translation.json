@@ -109,6 +109,7 @@
   "ngen.auth.session_expired": "Su sesión ha expirado",
   "ngen.cancel": "Cancelar",
   "ngen.case.addto": "Agregar a un caso",
+  "ngen.case.filter.event_taxonomy": "taxonomía de sus eventos",
   "ngen.case.close": "Cerrar caso",
   "ngen.case.close.confirm": "¿Está seguro de que desea cerrar este caso?",
   "ngen.case.close.warning": "Este caso tiene {{count}} eventos asociados. Al cerrarlo se afectarán todos.",

@@ -109,6 +109,7 @@
   "ngen.auth.session_expired": "Your session has expired",
   "ngen.cancel": "Cancel",
   "ngen.case.addto": "Add to a case",
+  "ngen.case.filter.event_taxonomy": "event taxonomy",
   "ngen.case.close": "Close case",
   "ngen.case.close.confirm": "Are you sure you want to close this case?",
   "ngen.case.close.warning": "This case has {{count}} associated events. Closing it will affect all of them.",
