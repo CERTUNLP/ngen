@@ -50,8 +50,8 @@ const ListEvent = ({ routeParams }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  // url -> case url of every event loaded so far (selection survives page changes)
-  const eventCaseByUrl = useRef({});
+  // url -> { case, parent, children } of every event loaded so far (selection survives page changes)
+  const eventInfoByUrl = useRef({});
   //filters and search
   const [wordToSearch, setWordToSearch] = useState("");
   const [taxonomyFilter, setTaxonomyFilter] = useState("");
@@ -210,7 +210,7 @@ const ListEvent = ({ routeParams }) => {
       .then((response) => {
         setEvents(response.data.results);
         response.data.results.forEach((ev) => {
-          eventCaseByUrl.current[ev.url] = ev.case;
+          eventInfoByUrl.current[ev.url] = { case: ev.case, parent: ev.parent, children: ev.children || [] };
         });
         setCountItems(response.data.count);
         setFilterDate(false);
@@ -277,10 +277,38 @@ const ListEvent = ({ routeParams }) => {
     });
   };
 
+  // Deleting an event also deletes its merged children (backend cascade). Merges are flattened
+  // (a merged event can't be a parent), so `children` are all the descendants.
+  const getDeletionScope = () => {
+    const info = eventInfoByUrl.current;
+    // Compare by id: on network-admin routes `parent` is serialized with the regular event URL
+    const idOf = (url) => url?.split("/").filter(Boolean).pop();
+    const selected = new Set(selectedEvent.map(idOf));
+    // Skip selected events whose parent is also selected: the parent's cascade already deletes them
+    const toDelete = selectedEvent.filter((url) => !(info[url]?.parent && selected.has(idOf(info[url].parent))));
+    // url -> merged children deleted in cascade that the user did not select explicitly
+    const mergedCountByUrl = Object.fromEntries(
+      toDelete.map((url) => [url, (info[url]?.children || []).filter((c) => !selected.has(idOf(c))).length])
+    );
+    const cascaded = Object.values(mergedCountByUrl).reduce((a, b) => a + b, 0);
+    const inCase = selectedEvent.filter((url) => info[url]?.case).length;
+    return { toDelete, mergedCountByUrl, cascaded, inCase };
+  };
+
+  const deleteWarnings = () => {
+    if (!showDeleteModal) return [];
+    const { cascaded, inCase } = getDeletionScope();
+    const warnings = [];
+    if (cascaded > 0) warnings.push(t("ngen.delete.warning.events_merged", { count: cascaded }));
+    if (inCase > 0) warnings.push(t("ngen.delete.warning.events_in_case", { count: inCase, total: selectedEvent.length }));
+    return warnings;
+  };
+
   const deleteSelected = () => {
     if (deleting) return;
     setDeleting(true);
-    deleteEvents(selectedEvent)
+    const { toDelete, mergedCountByUrl } = getDeletionScope();
+    deleteEvents(toDelete, mergedCountByUrl)
       .then(() => {
         setSelectedEvent([]);
         setShowDeleteModal(false);
@@ -448,7 +476,7 @@ const ListEvent = ({ routeParams }) => {
                   </Badge>
                 </Button>
               </PermissionCheck>
-              <PermissionCheck permissions="delete_event">
+              <PermissionCheck permissions={routeParams.asNetworkAdmin ? "delete_event_network_admin" : "delete_event"}>
                 <Button
                   disabled={selectedEvent.length === 0}
                   size="lm"
@@ -632,10 +660,7 @@ const ListEvent = ({ routeParams }) => {
           component={t("ngen.event_other")}
           header={t("ngen.delete.header.events")}
           message={t("ngen.delete.message.events", { count: selectedEvent.length })}
-          warning={(() => {
-            const inCase = selectedEvent.filter((url) => eventCaseByUrl.current[url]).length;
-            return inCase > 0 ? t("ngen.delete.warning.events_in_case", { count: inCase, total: selectedEvent.length }) : null;
-          })()}
+          warning={deleteWarnings()}
           showModal={showDeleteModal}
           onHide={() => setShowDeleteModal(false)}
           ifConfirm={() => deleteSelected()}

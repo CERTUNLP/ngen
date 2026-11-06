@@ -93,15 +93,19 @@ const deleteEvent = (url) => {
     });
 };
 
-const deleteEvents = (urls) => {
-  // Bulk delete: one request per event, a single summary alert at the end
+const deleteEvents = (urls, mergedCountByUrl = {}) => {
+  // Bulk delete: one request per event, a single summary alert at the end.
+  // mergedCountByUrl: url -> number of merged children the backend deletes in cascade with that event.
   return Promise.allSettled(urls.map((url) => apiInstance.delete(url))).then((results) => {
     const failed = results.filter((r) => r.status === "rejected").length;
     const deleted = results.length - failed;
+    // Only count the merged events of the parents that were actually deleted
+    const merged = results.reduce((n, r, i) => n + (r.status === "fulfilled" ? mergedCountByUrl[urls[i]] || 0 : 0), 0);
+    const mergedMsg = merged > 0 ? ` ${i18next.t("ngen.delete.events.merged_deleted", { count: merged })}` : "";
     if (failed === 0) {
-      setAlert(i18next.t("ngen.delete.events.success", { count: deleted }), "success", "event");
+      setAlert(i18next.t("ngen.delete.events.success", { count: deleted }) + mergedMsg, "success", "event");
     } else {
-      setAlert(i18next.t("ngen.delete.events.error", { failed, total: results.length }), "error", "event");
+      setAlert(i18next.t("ngen.delete.events.error", { failed, total: results.length }) + mergedMsg, "error", "event");
     }
     return results;
   });

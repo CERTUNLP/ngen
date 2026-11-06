@@ -4,7 +4,7 @@ import { getTaxonomy } from "../../api/services/taxonomies";
 import { useTranslation } from "react-i18next";
 
 const ModalConfirm = (props) => {
-  // props: showModal, onHide, ifConfirm, type, component, state, name, header (optional override), message (optional override for "delete"), warning (optional alert below the message)
+  // props: showModal, onHide, ifConfirm, type, component, state, name, header (optional override), message (optional override for "delete"), warning (optional string or array of strings, shown as alerts below the message)
   const [warning, setWarning] = useState("");
   const [eventOrCase, setEventOrCase] = useState("");
   const { t } = useTranslation();
@@ -78,12 +78,15 @@ const ModalConfirm = (props) => {
         </Modal.Header>
         <Modal.Body>
           {type[props.type].message}
-          {props.warning && (
-            <div className="alert alert-warning mt-3 mb-0" role="alert">
-              <i className="fa fa-exclamation-triangle me-2" />
-              {props.warning}
-            </div>
-          )}
+          {[]
+            .concat(props.warning || [])
+            .filter(Boolean)
+            .map((warning, i) => (
+              <div key={i} className="alert alert-warning mt-3 mb-0" role="alert">
+                <i className="fa fa-exclamation-triangle me-2" />
+                {warning}
+              </div>
+            ))}
         </Modal.Body>
         <Modal.Footer>
           <Button variant={type[props.type].variantButtonConfirm} onClick={props.ifConfirm}>
