@@ -448,7 +448,7 @@ const ListEvent = ({ routeParams }) => {
                   </Badge>
                 </Button>
               </PermissionCheck>
-              <PermissionCheck permissions="delete_event">
+              <PermissionCheck permissions={routeParams.asNetworkAdmin ? "delete_event_network_admin" : "delete_event"}>
                 <Button
                   disabled={selectedEvent.length === 0}
                   size="lm"
