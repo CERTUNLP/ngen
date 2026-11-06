@@ -328,14 +328,23 @@ const ListEvent = ({ routeParams }) => {
         if (current.length !== snapshot.length || current.some((url, i) => url !== snapshot[i])) {
           return refreshScope();
         }
-        if (results.some((r) => r.status !== "fulfilled")) {
+        // A 404 confirms the event is already gone (e.g. deleted from its row): drop it from the selection.
+        // Any other error leaves its relations unverified, so abort.
+        const isMissing = (r) => r.status === "rejected" && r.reason?.response?.status === 404;
+        if (results.some((r) => r.status === "rejected" && !isMissing(r))) {
           setAlert(t("ngen.delete.events.scope_error"), "error", "event");
           return;
         }
+        const missing = new Set(snapshot.filter((url, i) => isMissing(results[i])));
         results.forEach((r, i) => {
+          if (r.status !== "fulfilled") return;
           const ev = r.value.data;
           eventInfoByUrl.current[snapshot[i]] = { case: ev.case, parent: ev.parent, children: ev.children || [] };
         });
+        if (missing.size > 0) {
+          setSelectedEvent((prev) => prev.filter((url) => !missing.has(url)));
+          if (missing.size === snapshot.length) return;
+        }
         setShowDeleteModal(true);
       });
     };

@@ -103,6 +103,9 @@ const TableEvents = ({
   const handleDelete = () => {
     deleteEvent(deleteUrl)
       .then((response) => {
+        // The deleted event no longer has a checkbox to deselect it, so drop it from the selection
+        // (items are URLs, or objects with a `url` in the case form)
+        setSelectedEvent?.((prev) => (prev || []).filter((item) => (item?.url ?? item) !== deleteUrl));
         setRefresh(response);
         setRemove(false);
       })
