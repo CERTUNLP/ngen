@@ -9,6 +9,7 @@ import FilterSelect from "../../components/Filter/FilterSelect";
 import FilterSelectWithDefault from "../../components/Filter/FilterSelectWithDefault";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
+import setAlert from "../../utils/setAlert";
 import { patchCase } from "../../api/services/cases";
 //filters
 import { getEvents, getEvent, mergeEvent, deleteEvents } from "../../api/services/events";
@@ -53,6 +54,9 @@ const ListEvent = ({ routeParams }) => {
   const [loadingDeleteScope, setLoadingDeleteScope] = useState(false);
   // url -> { case, parent, children } of every event loaded so far (selection survives page changes)
   const eventInfoByUrl = useRef({});
+  // Latest selection, read by async callbacks to detect changes made while they were running
+  const selectedEventRef = useRef(selectedEvent);
+  selectedEventRef.current = selectedEvent;
   //filters and search
   const [wordToSearch, setWordToSearch] = useState("");
   const [taxonomyFilter, setTaxonomyFilter] = useState("");
@@ -309,21 +313,33 @@ const ListEvent = ({ routeParams }) => {
   };
 
   // Events can be merged after their page was loaded (e.g. auto-merge of new events), so refresh the
-  // relations of the selected events before computing what the deletion will affect.
+  // relations of the selected events before computing what the deletion will affect. The confirmation
+  // only opens once every selected event was refreshed and the selection didn't change meanwhile;
+  // otherwise the warnings and the deletion would rely on stale relations.
   const openDeleteConfirm = () => {
     if (loadingDeleteScope) return;
     setLoadingDeleteScope(true);
-    Promise.allSettled(selectedEvent.map((url) => getEvent(url)))
-      .then((results) => {
+    const refreshScope = () => {
+      const snapshot = selectedEventRef.current;
+      return Promise.allSettled(snapshot.map((url) => getEvent(url))).then((results) => {
+        const current = selectedEventRef.current;
+        if (current.length === 0) return;
+        // Selection changed while refreshing: refresh again for the new selection
+        if (current.length !== snapshot.length || current.some((url, i) => url !== snapshot[i])) {
+          return refreshScope();
+        }
+        if (results.some((r) => r.status !== "fulfilled")) {
+          setAlert(t("ngen.delete.events.scope_error"), "error", "event");
+          return;
+        }
         results.forEach((r, i) => {
-          if (r.status === "fulfilled") {
-            const ev = r.value.data;
-            eventInfoByUrl.current[selectedEvent[i]] = { case: ev.case, parent: ev.parent, children: ev.children || [] };
-          }
+          const ev = r.value.data;
+          eventInfoByUrl.current[snapshot[i]] = { case: ev.case, parent: ev.parent, children: ev.children || [] };
         });
         setShowDeleteModal(true);
-      })
-      .finally(() => setLoadingDeleteScope(false));
+      });
+    };
+    refreshScope().finally(() => setLoadingDeleteScope(false));
   };
 
   const deleteWarnings = () => {

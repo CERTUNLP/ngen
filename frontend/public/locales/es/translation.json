@@ -207,6 +207,7 @@
   "ngen.delete.events.error": "No se pudieron eliminar {{failed}} de {{total}} eventos",
   "ngen.delete.events.merged_deleted_one": "También se eliminó {{count}} evento mergeado.",
   "ngen.delete.events.merged_deleted_other": "También se eliminaron {{count}} eventos mergeados.",
+  "ngen.delete.events.scope_error": "No se pudo verificar el estado actual de los eventos seleccionados. Intente nuevamente.",
   "ngen.delete.message": "¿Desea eliminar el",
   "ngen.description": "Descripción",
   "ngen.description.invalid": "Introduzca una descripción de al menos 250 caracteres y que no esté vacía.",
