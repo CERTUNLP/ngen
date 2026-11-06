@@ -7,7 +7,7 @@ import { getMinifiedPriority } from "../../api/services/priorities";
 import { getMinifiedTlp } from "../../api/services/tlp";
 import { getMinifiedUser } from "../../api/services/users";
 import { getMinifiedState } from "../../api/services/states";
-import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
+import { getMinifiedTaxonomyAll as getMinifiedTaxonomy } from "../../api/services/taxonomies"
 import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";

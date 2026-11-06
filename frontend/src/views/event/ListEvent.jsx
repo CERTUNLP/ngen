@@ -286,13 +286,18 @@ const ListEvent = ({ routeParams }) => {
     const selected = new Set(selectedEvent.map(idOf));
     // Skip selected events whose parent is also selected: the parent's cascade already deletes them
     const toDelete = selectedEvent.filter((url) => !(info[url]?.parent && selected.has(idOf(info[url].parent))));
-    // url -> merged children deleted in cascade that the user did not select explicitly
-    const mergedCountByUrl = Object.fromEntries(
-      toDelete.map((url) => [url, (info[url]?.children || []).filter((c) => !selected.has(idOf(c))).length])
+    // url -> merged children deleted in cascade with it: `selected` ones (also chosen by the user, so they
+    // count as deleted selected events) and `merged` ones (not selected, reported as an extra deletion)
+    const cascadeByUrl = Object.fromEntries(
+      toDelete.map((url) => {
+        const children = info[url]?.children || [];
+        const selectedChildren = children.filter((c) => selected.has(idOf(c))).length;
+        return [url, { selected: selectedChildren, merged: children.length - selectedChildren }];
+      })
     );
-    const cascaded = Object.values(mergedCountByUrl).reduce((a, b) => a + b, 0);
+    const cascaded = Object.values(cascadeByUrl).reduce((n, c) => n + c.merged, 0);
     const inCase = selectedEvent.filter((url) => info[url]?.case).length;
-    return { toDelete, mergedCountByUrl, cascaded, inCase };
+    return { toDelete, cascadeByUrl, cascaded, inCase };
   };
 
   const deleteWarnings = () => {
@@ -307,8 +312,8 @@ const ListEvent = ({ routeParams }) => {
   const deleteSelected = () => {
     if (deleting) return;
     setDeleting(true);
-    const { toDelete, mergedCountByUrl } = getDeletionScope();
-    deleteEvents(toDelete, mergedCountByUrl)
+    const { toDelete, cascadeByUrl } = getDeletionScope();
+    deleteEvents(toDelete, cascadeByUrl)
       .then(() => {
         setSelectedEvent([]);
         setShowDeleteModal(false);
