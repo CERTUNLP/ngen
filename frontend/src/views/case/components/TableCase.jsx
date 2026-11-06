@@ -14,6 +14,7 @@ import TlpComponent from "../../tanstackquery/TlpComponent";
 import PriorityComponent from "../../tanstackquery/PriorityComponent";
 import StateComponent from "../../tanstackquery/StateComponent";
 import EventComponent from "views/tanstackquery/EventComponent";
+import ModalReadEvent from "views/event/ModalReadEvent";
 import TaxonomyComponent from "views/tanstackquery/TaxonomyComponent";
 import { getState } from "api/services/states";
 import apiInstance from "api/api";
@@ -70,6 +71,15 @@ const TableCase = ({
   const [closeCaseInfo, setCloseCaseInfo] = useState(null);
   const [closingCase, setClosingCase] = useState(false);
   const [solvedCases, setSolvedCases] = useState(new Set());
+  // La URL se conserva al cerrar para que el modal no vuelva a cargar el evento
+  // sin URL mientras se oculta
+  const [eventDetailUrl, setEventDetailUrl] = useState(null);
+  const [showEventDetail, setShowEventDetail] = useState(false);
+
+  const openEventDetail = (eventUrl) => {
+    setEventDetailUrl(eventUrl);
+    setShowEventDetail(true);
+  };
 
   const { t } = useTranslation();
 
@@ -371,7 +381,7 @@ const TableCase = ({
                 {!disableEvents && caseItem?.events && (
                   <td>
                     {caseItem.events.map((event, idx) => (
-                      <EventComponent key={idx} event={event} />
+                      <EventComponent key={idx} event={event} onClick={openEventDetail} />
                     ))}
                   </td>
                 )}
@@ -464,6 +474,13 @@ const TableCase = ({
           </Button>
         </Modal.Footer>
       </Modal>
+      <ModalReadEvent
+        modalShowCase={showEventDetail}
+        tableDetail={true}
+        closeModalDetail={() => setShowEventDetail(false)}
+        url={eventDetailUrl}
+        basePath={basePath}
+      />
     </React.Fragment>
   );
 };

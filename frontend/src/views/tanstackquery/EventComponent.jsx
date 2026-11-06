@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getEvent } from "api/services/events";
 import LetterFormat from "../../components/LetterFormat";
 
-const EventComponent = ({ event }) => {
+const EventComponent = ({ event, onClick }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['eventKey', event],
     queryFn: () => getEvent(event).then((res) => res.data),
@@ -24,7 +24,18 @@ const EventComponent = ({ event }) => {
   const displayText = `${data.domain || data.cidr || 'N/A'} - ${data.initial_taxonomy_slug || ''}`;
 
   return (
-    <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+    <span
+      style={{ display: 'inline-block', verticalAlign: 'middle', cursor: onClick ? 'pointer' : undefined }}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick ? () => onClick(event) : undefined}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick(event);
+        }
+      } : undefined}
+    >
       <LetterFormat 
         useBadge={true} 
         stringToDisplay={displayText}
