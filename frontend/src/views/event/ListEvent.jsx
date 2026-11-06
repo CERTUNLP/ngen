@@ -718,7 +718,7 @@ const ListEvent = ({ routeParams }) => {
           message={t("ngen.delete.message.events", { count: selectedEvent.length })}
           warning={deleteWarnings()}
           showModal={showDeleteModal}
-          onHide={() => setShowDeleteModal(false)}
+          onHide={() => { if (!deleting) setShowDeleteModal(false); }}
           ifConfirm={() => deleteSelected()}
         />
 
