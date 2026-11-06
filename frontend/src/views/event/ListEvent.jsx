@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Badge, Button, Card, Col, Collapse, Form, Modal, Row } from "react-bootstrap";
 import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import CrudButton from "../../components/Button/CrudButton";
@@ -11,7 +11,7 @@ import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
 import { patchCase } from "../../api/services/cases";
 //filters
-import { getEvents, mergeEvent } from "../../api/services/events";
+import { getEvents, mergeEvent, deleteEvents } from "../../api/services/events";
 import { getMinifiedFeed } from "../../api/services/feeds";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import { getMinifiedTlp } from "../../api/services/tlp";
@@ -48,6 +48,10 @@ const ListEvent = ({ routeParams }) => {
   //merge
   const [selectedEvent, setSelectedEvent] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  // url -> case url of every event loaded so far (selection survives page changes)
+  const eventCaseByUrl = useRef({});
   //filters and search
   const [wordToSearch, setWordToSearch] = useState("");
   const [taxonomyFilter, setTaxonomyFilter] = useState("");
@@ -205,6 +209,9 @@ const ListEvent = ({ routeParams }) => {
     )
       .then((response) => {
         setEvents(response.data.results);
+        response.data.results.forEach((ev) => {
+          eventCaseByUrl.current[ev.url] = ev.case;
+        });
         setCountItems(response.data.count);
         setFilterDate(false);
         setDisabledPagination(false);
@@ -268,6 +275,19 @@ const ListEvent = ({ routeParams }) => {
           setShowModal(false);
         });
     });
+  };
+
+  const deleteSelected = () => {
+    if (deleting) return;
+    setDeleting(true);
+    deleteEvents(selectedEvent)
+      .then(() => {
+        setSelectedEvent([]);
+        setShowDeleteModal(false);
+        setCurrentPage(1);
+        reloadPage();
+      })
+      .finally(() => setDeleting(false));
   };
 
   const modalCase = () => {
@@ -424,6 +444,22 @@ const ListEvent = ({ routeParams }) => {
                 >
                   {t("ngen.case.addto")}&nbsp;
                   <Badge className="badge mr-1" bg={selectedEvent.length > 0 ? "primary" : "secondary"}>
+                    {selectedEvent.length}
+                  </Badge>
+                </Button>
+              </PermissionCheck>
+              <PermissionCheck permissions="delete_event">
+                <Button
+                  disabled={selectedEvent.length === 0}
+                  size="lm"
+                  className="text-capitalize"
+                  variant={selectedEvent.length > 0 ? "outline-danger" : "outline-secondary"}
+                  title={t("ngen.delete.header.events")}
+                  onClick={() => setShowDeleteModal(true)}
+                >
+                  <i className="fa fa-trash" />
+                  {t("ngen.delete.events")}&nbsp;
+                  <Badge className="badge mr-1" bg={selectedEvent.length > 0 ? "danger" : "secondary"}>
                     {selectedEvent.length}
                   </Badge>
                 </Button>
@@ -589,6 +625,20 @@ const ListEvent = ({ routeParams }) => {
           showModal={showModal}
           onHide={() => setShowModal(false)}
           ifConfirm={() => merge()}
+        />
+
+        <ModalConfirm
+          type="delete"
+          component={t("ngen.event_other")}
+          header={t("ngen.delete.header.events")}
+          message={t("ngen.delete.message.events", { count: selectedEvent.length })}
+          warning={(() => {
+            const inCase = selectedEvent.filter((url) => eventCaseByUrl.current[url]).length;
+            return inCase > 0 ? t("ngen.delete.warning.events_in_case", { count: inCase, total: selectedEvent.length }) : null;
+          })()}
+          showModal={showDeleteModal}
+          onHide={() => setShowDeleteModal(false)}
+          ifConfirm={() => deleteSelected()}
         />
 
         <Modal

@@ -4,7 +4,7 @@ import { getTaxonomy } from "../../api/services/taxonomies";
 import { useTranslation } from "react-i18next";
 
 const ModalConfirm = (props) => {
-  // props: showModal, onHide, ifConfirm, type, component, state, name
+  // props: showModal, onHide, ifConfirm, type, component, state, name, header (optional override), message (optional override for "delete"), warning (optional alert below the message)
   const [warning, setWarning] = useState("");
   const [eventOrCase, setEventOrCase] = useState("");
   const { t } = useTranslation();
@@ -58,7 +58,7 @@ const ModalConfirm = (props) => {
       header: `${
         props.component ? (eventOrCase.includes("event") ? t("ngen.delete.header.event") : t("ngen.delete.header.case")) : t("ngen.delete")
       }`,
-      message: `${`${t("ngen.delete.message")} ${props.name}?`}`,
+      message: props.message ?? `${t("ngen.delete.message")} ${props.name}?`,
       variantButtonConfirm: "outline-danger",
       textButtonConfirm: t("ngen.delete")
     },
@@ -74,9 +74,17 @@ const ModalConfirm = (props) => {
     <React.Fragment>
       <Modal show={props.showModal} onHide={props.onHide} aria-labelledby="contained-modal-title-vcenter" centered>
         <Modal.Header closeButton>
-          <Modal.Title>{type[props.type].header}</Modal.Title>
+          <Modal.Title>{props.header ?? type[props.type].header}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>{type[props.type].message}</Modal.Body>
+        <Modal.Body>
+          {type[props.type].message}
+          {props.warning && (
+            <div className="alert alert-warning mt-3 mb-0" role="alert">
+              <i className="fa fa-exclamation-triangle me-2" />
+              {props.warning}
+            </div>
+          )}
+        </Modal.Body>
         <Modal.Footer>
           <Button variant={type[props.type].variantButtonConfirm} onClick={props.ifConfirm}>
             {type[props.type].textButtonConfirm}

@@ -93,6 +93,20 @@ const deleteEvent = (url) => {
     });
 };
 
+const deleteEvents = (urls) => {
+  // Bulk delete: one request per event, a single summary alert at the end
+  return Promise.allSettled(urls.map((url) => apiInstance.delete(url))).then((results) => {
+    const failed = results.filter((r) => r.status === "rejected").length;
+    const deleted = results.length - failed;
+    if (failed === 0) {
+      setAlert(i18next.t("ngen.delete.events.success", { count: deleted }), "success", "event");
+    } else {
+      setAlert(i18next.t("ngen.delete.events.error", { failed, total: results.length }), "error", "event");
+    }
+    return results;
+  });
+};
+
 const mergeEvent = (urlParent, urlChildren) => {
   return patchEvent(urlChildren, { parent: urlParent });
 };
@@ -178,4 +192,4 @@ const simulateEvent = (formData) => {
     });
 };
 
-export { getEvents, postEvent, putEvent, deleteEvent, mergeEvent, getEvent, getAllEvents, getListEvents, patchEvent, markSolved, getQueryEvent, simulateEvent };
+export { getEvents, postEvent, putEvent, deleteEvent, deleteEvents, mergeEvent, getEvent, getAllEvents, getListEvents, patchEvent, markSolved, getQueryEvent, simulateEvent };
