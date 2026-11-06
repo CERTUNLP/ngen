@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Badge, Button, Card, Col, Collapse, Form, Modal, Row } from "react-bootstrap";
 import ListViewHeader from "../../components/ListViewHeader/ListViewHeader";
 import CrudButton from "../../components/Button/CrudButton";
@@ -9,9 +9,10 @@ import FilterSelect from "../../components/Filter/FilterSelect";
 import FilterSelectWithDefault from "../../components/Filter/FilterSelectWithDefault";
 import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
+import setAlert from "../../utils/setAlert";
 import { patchCase } from "../../api/services/cases";
 //filters
-import { getEvents, mergeEvent } from "../../api/services/events";
+import { getEvents, getEvent, mergeEvent, deleteEvents } from "../../api/services/events";
 import { getMinifiedFeed } from "../../api/services/feeds";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import { getMinifiedTlp } from "../../api/services/tlp";
@@ -48,6 +49,14 @@ const ListEvent = ({ routeParams }) => {
   //merge
   const [selectedEvent, setSelectedEvent] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [loadingDeleteScope, setLoadingDeleteScope] = useState(false);
+  // url -> { case, parent, children } of every event loaded so far (selection survives page changes)
+  const eventInfoByUrl = useRef({});
+  // Latest selection, read by async callbacks to detect changes made while they were running
+  const selectedEventRef = useRef(selectedEvent);
+  selectedEventRef.current = selectedEvent;
   //filters and search
   const [wordToSearch, setWordToSearch] = useState("");
   const [taxonomyFilter, setTaxonomyFilter] = useState("");
@@ -205,6 +214,9 @@ const ListEvent = ({ routeParams }) => {
     )
       .then((response) => {
         setEvents(response.data.results);
+        response.data.results.forEach((ev) => {
+          eventInfoByUrl.current[ev.url] = { case: ev.case, parent: ev.parent, children: ev.children || [] };
+        });
         setCountItems(response.data.count);
         setFilterDate(false);
         setDisabledPagination(false);
@@ -268,6 +280,98 @@ const ListEvent = ({ routeParams }) => {
           setShowModal(false);
         });
     });
+  };
+
+  // Deleting an event also deletes its merged children (backend cascade). Merges are flattened
+  // (a merged event can't be a parent), so `children` are all the descendants.
+  const getDeletionScope = () => {
+    const info = eventInfoByUrl.current;
+    // Compare by id: on network-admin routes `parent` is serialized with the regular event URL
+    const idOf = (url) => url?.split("/").filter(Boolean).pop();
+    const selected = new Set(selectedEvent.map(idOf));
+    // Skip selected events whose parent is also selected: the parent's cascade already deletes them
+    const isCoveredByParent = (url) => info[url]?.parent && selected.has(idOf(info[url].parent));
+    const toDelete = selectedEvent.filter((url) => !isCoveredByParent(url));
+    // url -> merged children deleted in cascade with it: `selected` ones (also chosen by the user, so they
+    // count as deleted selected events) and `merged` ones (not selected, reported as an extra deletion).
+    // Selected children are taken from both sides of the relation (the parent's `children` and the
+    // child's `parent`), so one stale side can't drop them from the count.
+    const cascadeByUrl = Object.fromEntries(
+      toDelete.map((url) => {
+        const id = idOf(url);
+        const childIds = new Set((info[url]?.children || []).map(idOf));
+        selectedEvent.forEach((s) => {
+          if (isCoveredByParent(s) && idOf(info[s].parent) === id) childIds.add(idOf(s));
+        });
+        const selectedChildren = [...childIds].filter((c) => selected.has(c)).length;
+        return [url, { selected: selectedChildren, merged: childIds.size - selectedChildren }];
+      })
+    );
+    const cascaded = Object.values(cascadeByUrl).reduce((n, c) => n + c.merged, 0);
+    const inCase = selectedEvent.filter((url) => info[url]?.case).length;
+    return { toDelete, cascadeByUrl, cascaded, inCase };
+  };
+
+  // Events can be merged after their page was loaded (e.g. auto-merge of new events), so refresh the
+  // relations of the selected events before computing what the deletion will affect. The confirmation
+  // only opens once every selected event was refreshed and the selection didn't change meanwhile;
+  // otherwise the warnings and the deletion would rely on stale relations.
+  const openDeleteConfirm = () => {
+    if (loadingDeleteScope) return;
+    setLoadingDeleteScope(true);
+    const refreshScope = () => {
+      const snapshot = selectedEventRef.current;
+      return Promise.allSettled(snapshot.map((url) => getEvent(url))).then((results) => {
+        const current = selectedEventRef.current;
+        if (current.length === 0) return;
+        // Selection changed while refreshing: refresh again for the new selection
+        if (current.length !== snapshot.length || current.some((url, i) => url !== snapshot[i])) {
+          return refreshScope();
+        }
+        // A 404 confirms the event is already gone (e.g. deleted from its row): drop it from the selection.
+        // Any other error leaves its relations unverified, so abort.
+        const isMissing = (r) => r.status === "rejected" && r.reason?.response?.status === 404;
+        if (results.some((r) => r.status === "rejected" && !isMissing(r))) {
+          setAlert(t("ngen.delete.events.scope_error"), "error", "event");
+          return;
+        }
+        const missing = new Set(snapshot.filter((url, i) => isMissing(results[i])));
+        results.forEach((r, i) => {
+          if (r.status !== "fulfilled") return;
+          const ev = r.value.data;
+          eventInfoByUrl.current[snapshot[i]] = { case: ev.case, parent: ev.parent, children: ev.children || [] };
+        });
+        if (missing.size > 0) {
+          setSelectedEvent((prev) => prev.filter((url) => !missing.has(url)));
+          if (missing.size === snapshot.length) return;
+        }
+        setShowDeleteModal(true);
+      });
+    };
+    refreshScope().finally(() => setLoadingDeleteScope(false));
+  };
+
+  const deleteWarnings = () => {
+    if (!showDeleteModal) return [];
+    const { cascaded, inCase } = getDeletionScope();
+    const warnings = [];
+    if (cascaded > 0) warnings.push(t("ngen.delete.warning.events_merged", { count: cascaded }));
+    if (inCase > 0) warnings.push(t("ngen.delete.warning.events_in_case", { count: inCase, total: selectedEvent.length }));
+    return warnings;
+  };
+
+  const deleteSelected = () => {
+    if (deleting) return;
+    setDeleting(true);
+    const { toDelete, cascadeByUrl } = getDeletionScope();
+    deleteEvents(toDelete, cascadeByUrl)
+      .then(() => {
+        setSelectedEvent([]);
+        setShowDeleteModal(false);
+        setCurrentPage(1);
+        reloadPage();
+      })
+      .finally(() => setDeleting(false));
   };
 
   const modalCase = () => {
@@ -424,6 +528,22 @@ const ListEvent = ({ routeParams }) => {
                 >
                   {t("ngen.case.addto")}&nbsp;
                   <Badge className="badge mr-1" bg={selectedEvent.length > 0 ? "primary" : "secondary"}>
+                    {selectedEvent.length}
+                  </Badge>
+                </Button>
+              </PermissionCheck>
+              <PermissionCheck permissions={routeParams.asNetworkAdmin ? "delete_event_network_admin" : "delete_event"}>
+                <Button
+                  disabled={selectedEvent.length === 0 || loadingDeleteScope}
+                  size="lm"
+                  className="text-capitalize"
+                  variant={selectedEvent.length > 0 ? "outline-danger" : "outline-secondary"}
+                  title={t("ngen.delete.header.events")}
+                  onClick={openDeleteConfirm}
+                >
+                  <i className="fa fa-trash" />
+                  {t("ngen.delete.events")}&nbsp;
+                  <Badge className="badge mr-1" bg={selectedEvent.length > 0 ? "danger" : "secondary"}>
                     {selectedEvent.length}
                   </Badge>
                 </Button>
@@ -589,6 +709,17 @@ const ListEvent = ({ routeParams }) => {
           showModal={showModal}
           onHide={() => setShowModal(false)}
           ifConfirm={() => merge()}
+        />
+
+        <ModalConfirm
+          type="delete"
+          component={t("ngen.event_other")}
+          header={t("ngen.delete.header.events")}
+          message={t("ngen.delete.message.events", { count: selectedEvent.length })}
+          warning={deleteWarnings()}
+          showModal={showDeleteModal}
+          onHide={() => { if (!deleting) setShowDeleteModal(false); }}
+          ifConfirm={() => deleteSelected()}
         />
 
         <Modal

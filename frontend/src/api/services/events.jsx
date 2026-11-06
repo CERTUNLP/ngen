@@ -93,6 +93,34 @@ const deleteEvent = (url) => {
     });
 };
 
+const deleteEvents = (urls, cascadeByUrl = {}) => {
+  // Bulk delete: one request per event, a single summary alert at the end.
+  // cascadeByUrl: url -> { selected, merged }: merged children the backend deletes in cascade with that
+  // event, split into those the user also selected (not requested separately) and those not selected.
+  return Promise.allSettled(urls.map((url) => apiInstance.delete(url))).then((results) => {
+    let deleted = 0;
+    let failed = 0;
+    let merged = 0;
+    results.forEach((r, i) => {
+      const { selected = 0, merged: unselected = 0 } = cascadeByUrl[urls[i]] || {};
+      // A selected event covered by its parent's cascade shares the parent's outcome
+      if (r.status === "fulfilled") {
+        deleted += 1 + selected;
+        merged += unselected;
+      } else {
+        failed += 1 + selected;
+      }
+    });
+    const mergedMsg = merged > 0 ? ` ${i18next.t("ngen.delete.events.merged_deleted", { count: merged })}` : "";
+    if (failed === 0) {
+      setAlert(i18next.t("ngen.delete.events.success", { count: deleted }) + mergedMsg, "success", "event");
+    } else {
+      setAlert(i18next.t("ngen.delete.events.error", { failed, total: deleted + failed }) + mergedMsg, "error", "event");
+    }
+    return results;
+  });
+};
+
 const mergeEvent = (urlParent, urlChildren) => {
   return patchEvent(urlChildren, { parent: urlParent });
 };
@@ -178,4 +206,4 @@ const simulateEvent = (formData) => {
     });
 };
 
-export { getEvents, postEvent, putEvent, deleteEvent, mergeEvent, getEvent, getAllEvents, getListEvents, patchEvent, markSolved, getQueryEvent, simulateEvent };
+export { getEvents, postEvent, putEvent, deleteEvent, deleteEvents, mergeEvent, getEvent, getAllEvents, getListEvents, patchEvent, markSolved, getQueryEvent, simulateEvent };

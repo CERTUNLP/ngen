@@ -240,6 +240,7 @@ class CaseFilter(BaseFilter):
         - state (exact)
         - event cidr (net_contained_or_equal)
         - event domain (endswith)
+        - event taxonomy (exact, cases with at least one event of that taxonomy)
     """
 
     date_range = DateFromToRangeFilter(field_name="date")
@@ -250,6 +251,19 @@ class CaseFilter(BaseFilter):
     event_domain = django_filters.CharFilter(
         label="Event domain", method="filter_by_domain"
     )
+
+    event_taxonomy = django_filters.NumberFilter(
+        label="Event taxonomy", method="filter_by_event_taxonomy"
+    )
+
+    def filter_by_event_taxonomy(self, queryset, name, value):
+        """
+        Filter cases that contain at least one event with the given taxonomy id.
+        Uses a subquery to avoid duplicated cases when several events match.
+        """
+        return queryset.filter(
+            pk__in=Event.objects.filter(taxonomy=value).values("case")
+        )
 
     def filter_by_cidr(self, queryset, name, value):
         """
