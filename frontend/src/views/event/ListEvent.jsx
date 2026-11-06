@@ -11,7 +11,7 @@ import AdvancedPagination from "../../components/Pagination/AdvancedPagination";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
 import { patchCase } from "../../api/services/cases";
 //filters
-import { getEvents, mergeEvent, deleteEvents } from "../../api/services/events";
+import { getEvents, getEvent, mergeEvent, deleteEvents } from "../../api/services/events";
 import { getMinifiedFeed } from "../../api/services/feeds";
 import { getMinifiedTaxonomy } from "../../api/services/taxonomies";
 import { getMinifiedTlp } from "../../api/services/tlp";
@@ -50,6 +50,7 @@ const ListEvent = ({ routeParams }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [loadingDeleteScope, setLoadingDeleteScope] = useState(false);
   // url -> { case, parent, children } of every event loaded so far (selection survives page changes)
   const eventInfoByUrl = useRef({});
   //filters and search
@@ -285,19 +286,44 @@ const ListEvent = ({ routeParams }) => {
     const idOf = (url) => url?.split("/").filter(Boolean).pop();
     const selected = new Set(selectedEvent.map(idOf));
     // Skip selected events whose parent is also selected: the parent's cascade already deletes them
-    const toDelete = selectedEvent.filter((url) => !(info[url]?.parent && selected.has(idOf(info[url].parent))));
+    const isCoveredByParent = (url) => info[url]?.parent && selected.has(idOf(info[url].parent));
+    const toDelete = selectedEvent.filter((url) => !isCoveredByParent(url));
     // url -> merged children deleted in cascade with it: `selected` ones (also chosen by the user, so they
-    // count as deleted selected events) and `merged` ones (not selected, reported as an extra deletion)
+    // count as deleted selected events) and `merged` ones (not selected, reported as an extra deletion).
+    // Selected children are taken from both sides of the relation (the parent's `children` and the
+    // child's `parent`), so one stale side can't drop them from the count.
     const cascadeByUrl = Object.fromEntries(
       toDelete.map((url) => {
-        const children = info[url]?.children || [];
-        const selectedChildren = children.filter((c) => selected.has(idOf(c))).length;
-        return [url, { selected: selectedChildren, merged: children.length - selectedChildren }];
+        const id = idOf(url);
+        const childIds = new Set((info[url]?.children || []).map(idOf));
+        selectedEvent.forEach((s) => {
+          if (isCoveredByParent(s) && idOf(info[s].parent) === id) childIds.add(idOf(s));
+        });
+        const selectedChildren = [...childIds].filter((c) => selected.has(c)).length;
+        return [url, { selected: selectedChildren, merged: childIds.size - selectedChildren }];
       })
     );
     const cascaded = Object.values(cascadeByUrl).reduce((n, c) => n + c.merged, 0);
     const inCase = selectedEvent.filter((url) => info[url]?.case).length;
     return { toDelete, cascadeByUrl, cascaded, inCase };
+  };
+
+  // Events can be merged after their page was loaded (e.g. auto-merge of new events), so refresh the
+  // relations of the selected events before computing what the deletion will affect.
+  const openDeleteConfirm = () => {
+    if (loadingDeleteScope) return;
+    setLoadingDeleteScope(true);
+    Promise.allSettled(selectedEvent.map((url) => getEvent(url)))
+      .then((results) => {
+        results.forEach((r, i) => {
+          if (r.status === "fulfilled") {
+            const ev = r.value.data;
+            eventInfoByUrl.current[selectedEvent[i]] = { case: ev.case, parent: ev.parent, children: ev.children || [] };
+          }
+        });
+        setShowDeleteModal(true);
+      })
+      .finally(() => setLoadingDeleteScope(false));
   };
 
   const deleteWarnings = () => {
@@ -483,12 +509,12 @@ const ListEvent = ({ routeParams }) => {
               </PermissionCheck>
               <PermissionCheck permissions={routeParams.asNetworkAdmin ? "delete_event_network_admin" : "delete_event"}>
                 <Button
-                  disabled={selectedEvent.length === 0}
+                  disabled={selectedEvent.length === 0 || loadingDeleteScope}
                   size="lm"
                   className="text-capitalize"
                   variant={selectedEvent.length > 0 ? "outline-danger" : "outline-secondary"}
                   title={t("ngen.delete.header.events")}
-                  onClick={() => setShowDeleteModal(true)}
+                  onClick={openDeleteConfirm}
                 >
                   <i className="fa fa-trash" />
                   {t("ngen.delete.events")}&nbsp;
