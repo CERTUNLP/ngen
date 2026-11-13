@@ -928,7 +928,7 @@ const FormEvent = (props) => {
           </Button>
         ):(<Button variant="secondary" disabled>{t("button.save")}</Button>)
         }
-        <CrudButton type="cancel" />
+        <CrudButton type="cancel" onClick={props.onCancel} />
       </div>
 
       <Modal size="lg" show={showNotesPreview} onHide={() => setShowNotesPreview(false)} centered>

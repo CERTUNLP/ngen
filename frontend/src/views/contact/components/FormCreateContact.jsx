@@ -223,7 +223,7 @@ const FormCreateContact = (props) => {
               </Button>
             </>
           )}
-          <CrudButton type="cancel" />
+          <CrudButton type="cancel" onClick={props.ifCancel} />
         </Form.Group>
       </Form>
     </React.Fragment>

@@ -105,7 +105,7 @@ const CrudButton = ({ type, name, onClick, disabled = false, to, state, permissi
       variant={!disabled ? button[type].variant : ""}
       title={button[type].title}
       disabled={disabled}
-      onClick={button[type].onClick ? button[type].onClick : onClick}
+      onClick={onClick ?? button[type].onClick}
     >
       { button[type].icon ? <i className={button[type].icon} /> : "" }
       {" " + button[type].text}
