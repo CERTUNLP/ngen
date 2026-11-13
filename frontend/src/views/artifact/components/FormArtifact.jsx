@@ -64,7 +64,7 @@ const FormArtifact = (props) => {
             </Button>
           </>
         )}
-        <CrudButton type="cancel" />
+        <CrudButton type="cancel" onClick={props.ifCancel} />
       </Card.Footer>
     </Card>
   );

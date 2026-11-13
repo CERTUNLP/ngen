@@ -212,6 +212,7 @@ const ModalCreateEvent = ({
             disableCardEvidence={true}
             disableCardArtifacts={true}
             asNetworkAdmin={asNetworkAdmin}
+            onCancel={() => setShowModalEvent(false)}
           />
         </div>
       </Modal.Body>
