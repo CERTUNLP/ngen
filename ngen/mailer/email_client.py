@@ -2,6 +2,7 @@ from os import makedirs, path
 import email
 import hashlib
 import logging
+import re
 from datetime import timedelta, timezone as dt_timezone
 from django.conf import settings
 from django.utils import timezone as dj_timezone
@@ -116,12 +117,15 @@ class EmailClient:
         # A delivery status notification (bounce) carries no References to the
         # message it reports on, so on its own it would start a thread of its
         # own, detached from the case. Keep what identifies the original so
-        # retrieve_emails can thread it under that message (see thread_bounces).
+        # retrieve_emails can thread it under that message (see
+        # ngen.tasks._thread_bounces). It is flagged so that it is never picked
+        # as the message to reply to (CommunicationChannel.get_last_message).
         try:
             bounce = self.get_bounce_info(email)
         except Exception:  # noqa: BLE001 - never lose the message over its DSN details
             logger.exception("map_email: could not read bounce details of %s", message_id)
             bounce = None
+        email_message.is_bounce = bool(bounce)
         email_message._bounced_message_id = bounce["message_id"] if bounce else None
         email_message._bounce_failures = bounce["failures"] if bounce else []
 
@@ -333,30 +337,49 @@ class EmailClient:
         """
         return self.get_custom_email_field(message, "In-Reply-To") or None
 
-    # Parts of a delivery status notification (RFC 3464) that carry the
-    # returned message, whole or only its headers.
-    DSN_ORIGINAL_TYPES = ("message/rfc822", "text/rfc822-headers", "message/rfc822-headers")
+    # Delivery status notifications: RFC 3464 and its internationalised form
+    # (RFC 6533, sent for SMTPUTF8 mail).
+    DSN_REPORT_TYPES = ("delivery-status", "global-delivery-status")
+    DSN_STATUS_TYPES = ("message/delivery-status", "message/global-delivery-status")
+    # Parts that carry the returned message, whole or only its headers.
+    DSN_ORIGINAL_TYPES = (
+        "message/rfc822",
+        "text/rfc822-headers",
+        "message/rfc822-headers",
+        "message/global",
+        "message/global-headers",
+    )
 
     def get_bounce_info(self, message: Messages):
         """
-        If the message is a delivery status notification (RFC 3464: a
+        If the message is a delivery status notification (a
         ``multipart/report; report-type=delivery-status``), return the
         Message-ID of the returned (original) message and the recipients that
-        failed, as ``{"message_id": str, "failures": [str, ...]}``. Return None
-        for any other message, or when the original cannot be identified.
+        failed, as ``{"message_id": str, "failures": [{"recipient": str,
+        "detail": str}, ...]}``. Return None for any other message, or when the
+        original cannot be identified.
+
+        Only the report's own parts are read: the returned message may itself
+        carry attached messages (or be a bounce), whose ids and failures are
+        not this report's.
         """
         parsed = self.map_raw_email(getattr(message, "raw_email", "") or "")
         if parsed.get_content_type() != "multipart/report":
             return None
-        if (parsed.get_param("report-type") or "").lower() != "delivery-status":
+        if (parsed.get_param("report-type") or "").lower() not in self.DSN_REPORT_TYPES:
+            return None
+        parts = parsed.get_payload()
+        if not isinstance(parts, list):
             return None
 
         original_id, failures = None, []
-        for part in parsed.walk():
+        for part in parts:
             ctype = part.get_content_type()
-            if ctype in self.DSN_ORIGINAL_TYPES and original_id is None:
+            if ctype in self.DSN_ORIGINAL_TYPES:
                 original_id = self._returned_message_id(part)
-            elif ctype == "message/delivery-status":
+                break
+        for part in parts:
+            if part.get_content_type() in self.DSN_STATUS_TYPES:
                 failures.extend(self._dsn_failures(part))
 
         if not original_id:
@@ -376,27 +399,44 @@ class EmailClient:
         message_id = " ".join(str(message_id).split()) if message_id else ""
         return self._bound_id(message_id) or None
 
+    @staticmethod
+    def _one_line(value) -> str:
+        """Header value unfolded and with whitespace collapsed to single spaces."""
+        return " ".join(str(value or "").split())
+
     def _dsn_failures(self, part: Message):
         """
-        Readable summary of each recipient the DSN reports as failed, e.g.
-        "soporte@fac.unlp.edu.ar: 5.7.1 smtp; 554 5.7.1 clamav: virus found".
+        Each recipient the DSN reports as failed, as ``{"recipient":
+        "soporte@fac.unlp.edu.ar", "detail": "5.7.1 smtp; 554 5.7.1 clamav:
+        virus found"}``.
         """
         blocks = part.get_payload()
+        if part.get_content_type() != "message/delivery-status":
+            # The email package only splits message/delivery-status into its
+            # blocks; it reads the RFC 6533 (global) form as one embedded
+            # message (first block as headers, the rest as its body), so
+            # rebuild the text and split it here.
+            if isinstance(blocks, list):
+                text = "".join(b.as_string() for b in blocks)
+            else:
+                raw = part.get_payload(decode=True)
+                text = raw.decode("utf-8", "replace") if isinstance(raw, bytes) else str(blocks or "")
+            text = text.replace("\r\n", "\n")
+            blocks = [email.message_from_string(b) for b in re.split(r"\n\s*\n", text) if b.strip()]
         if not isinstance(blocks, list):
             return []
         failures = []
-        # The first block describes the reporting MTA; the rest, one recipient each.
-        for block in blocks[1:]:
-            if (block.get("Action") or "").strip().lower() != "failed":
+        # Per-message fields (Reporting-MTA...) come in a block of their own,
+        # without Action, so recipient blocks are told apart by their content.
+        for block in blocks:
+            if self._one_line(block.get("Action")).lower() != "failed":
                 continue
-            recipient = str(block.get("Final-Recipient") or block.get("Original-Recipient") or "")
+            recipient = self._one_line(block.get("Final-Recipient") or block.get("Original-Recipient"))
             recipient = recipient.split(";", 1)[-1].strip()
             detail = " ".join(
-                " ".join(str(block.get(h) or "").split())
-                for h in ("Status", "Diagnostic-Code")
-                if block.get(h)
+                self._one_line(block.get(h)) for h in ("Status", "Diagnostic-Code") if block.get(h)
             )
-            failures.append(self._clean(f"{recipient}: {detail}".strip(": ")))
+            failures.append(self._clean({"recipient": recipient, "detail": detail}))
         return failures
 
     # A message cannot have been sent after we received it; beyond this margin

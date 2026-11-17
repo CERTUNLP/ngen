@@ -65,6 +65,13 @@ class EmailMessage(AuditModelMixin):
         default=0,
         help_text="Number of Celery retry attempts for this email",
     )
+    is_bounce = models.BooleanField(
+        default=False,
+        help_text=(
+            "Inbound delivery status notification (bounce). It is kept in the "
+            "thread of the message it reports on, but never replied to."
+        ),
+    )
 
     class Meta:
         db_table = "email_message"

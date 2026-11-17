@@ -180,6 +180,62 @@ class TestCommunicationChannelCommunicate(APITestCaseWithLogin):
 
     @use_test_email_env()
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_communicate_after_a_bounce_replies_to_the_last_real_message(self):
+        """
+        A bounce in the thread is shown there but never replied to: replying
+        would copy the remote mailer daemon and take the bounce's subject.
+        """
+        root_message_id = "<172654248025.81.10116784141945641235@cert.unlp.edu.ar>"
+        EmailMessage.objects.create(
+            root_message_id=root_message_id,
+            parent_message_id=None,
+            message_id=root_message_id,
+            references=[],
+            subject="Test Subject",
+            senders=[{"name": self.app_email_username, "email": self.app_email_sender}],
+            recipients=[{"name": self.contact.name, "email": self.contact.username}],
+            date=timezone.now(),
+            body="Test body",
+            status="sent",
+        )
+        EmailMessage.objects.create(
+            root_message_id=root_message_id,
+            parent_message_id=root_message_id,
+            message_id="<20261117170522.648C99AE5@mail.example.org>",
+            references=[root_message_id],
+            subject="Undelivered Mail Returned to Sender",
+            senders=[{"name": "", "email": "MAILER-DAEMON@mail.example.org"}],
+            recipients=[{"name": "", "email": "incidentes@example.org"}],
+            date=timezone.now(),
+            body="I'm sorry to have to inform you...",
+            status="sent",
+            is_bounce=True,
+        )
+        self.communication_channel.message_id = root_message_id
+        self.communication_channel.save()
+
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                self.url_communicate(self.communication_channel.id), data={"body": "Test Body"}
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        created_email_message = EmailMessage.objects.get(id=response.data["id"])
+        self.assertEqual(created_email_message.subject, "Re: Test Subject")
+        self.assertEqual(created_email_message.parent_message_id, root_message_id)
+        self.assertEqual(created_email_message.references, [root_message_id])
+        self.assertEqual(
+            created_email_message.recipients,
+            [
+                {"name": self.contact.name, "email": self.contact.username},
+                {"name": "another_contact", "email": "another_contact@example.com"},
+            ],
+        )
+        # the bounce stays in the conversation
+        self.assertEqual(self.communication_channel.get_messages().count(), 3)
+
+    @use_test_email_env()
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_communicate_with_bcc_recipients(self):
         """
         This will test successful POST to communicate endpoint with bcc recipients
