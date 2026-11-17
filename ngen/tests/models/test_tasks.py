@@ -758,7 +758,60 @@ class TestRetrieveEmails(TasksTestCase):
         stored = EmailMessage.objects.get(message_id="<bounce@mta>")
         self.assertEqual(stored.root_message_id, "<case-root@x>")
         self.assertEqual(stored.parent_message_id, "<report@x>")
+        self.assertTrue(stored.is_bounce)  # still never replied to
         self.assertTrue(stored.last_error)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_failure_at_a_forwarding_alias_is_noted(self, mock_client):
+        """We sent to an alias that forwarded elsewhere; the DSN names both."""
+        self._report(to=("soporte@fac1",))
+        bounce = self._bounce("<report@x>", [])
+        bounce._bounce_failures = [
+            {"recipient": "juan@gmail.example", "original_recipient": "soporte@fac1", "detail": "5.1.1"}
+        ]
+
+        self._fetch(mock_client, bounce)
+
+        self.assertEqual(
+            EmailMessage.objects.get(message_id="<report@x>").last_error,
+            "Bounce <bounce@mta>: soporte@fac1 (-> juan@gmail.example): 5.1.1",
+        )
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_note_goes_to_the_copy_ngen_sent(self, mock_client):
+        """
+        Before inbound de-duplication a sent message could be stored twice (the
+        copy that came back through the alias): the note goes to ngen's copy.
+        """
+        echo = self._report(senders=[{"name": "", "email": "incidentes@x"}], to=("a@fac1",))
+        sent = self._report(to=("a@fac1",))
+        self.assertLess(echo.created, sent.created)
+
+        self._fetch(mock_client, self._bounce("<report@x>", ["a@fac1: 5.1.1"]))
+
+        echo.refresh_from_db()
+        sent.refresh_from_db()
+        self.assertIsNone(echo.last_error)
+        self.assertEqual(sent.last_error, "Bounce <bounce@mta>: a@fac1: 5.1.1")
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_original_deleted_meanwhile_does_not_fail_the_run(self, mock_client):
+        original = self._report(to=("a@fac1",))
+        real_thread = tasks._thread_bounces
+
+        def thread_then_delete(messages):
+            threaded = real_thread(messages)
+            EmailMessage.objects.filter(pk=original.pk).delete()
+            return threaded
+
+        with patch("ngen.tasks._thread_bounces", side_effect=thread_then_delete):
+            instance, unread = self._fetch(mock_client, self._bounce("<report@x>", ["a@fac1: 5.1.1"]))
+
+        self.assertTrue(EmailMessage.objects.filter(message_id="<bounce@mta>").exists())
+        instance.mark_emails_as_read.assert_called_once_with(unread)
 
 
 class TestSendContactChecks(TasksTestCase):

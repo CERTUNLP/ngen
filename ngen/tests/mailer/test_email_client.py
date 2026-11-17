@@ -819,6 +819,7 @@ class BounceInfoTest(SimpleTestCase):
         self.assertEqual(len(info["failures"]), 1)
         failure = info["failures"][0]
         self.assertEqual(failure["recipient"], "soporte@fac.example.org")
+        self.assertEqual(failure["original_recipient"], "soporte@fac.example.org")
         # the folded Diagnostic-Code is kept whole, on one line
         self.assertEqual(
             failure["detail"],
@@ -857,7 +858,23 @@ class BounceInfoTest(SimpleTestCase):
             "Status: 5.1.1\r\n"
         )
         info = self._info(_dsn(RETURNED_MESSAGE, blocks=["Reporting-MTA: dns; m\r\n", block]))
-        self.assertEqual(info["failures"], [{"recipient": "soporte@fac.example.org", "detail": "5.1.1"}])
+        self.assertEqual(
+            info["failures"],
+            [{"recipient": "soporte@fac.example.org", "original_recipient": "soporte@fac.example.org",
+              "detail": "5.1.1"}],
+        )
+
+    def test_forwarding_alias_keeps_the_address_we_sent_to(self):
+        """An alias forwarded elsewhere fails at the final address, not the one we used."""
+        block = (
+            "Final-Recipient: rfc822; juan@gmail.example\r\n"
+            "Original-Recipient: rfc822;soporte@fac.example.org\r\n"
+            "Action: failed\r\n"
+            "Status: 5.1.1\r\n"
+        )
+        info = self._info(_dsn(RETURNED_MESSAGE, blocks=["Reporting-MTA: dns; m\r\n", block]))
+        self.assertEqual(info["failures"][0]["recipient"], "juan@gmail.example")
+        self.assertEqual(info["failures"][0]["original_recipient"], "soporte@fac.example.org")
 
     def test_messages_attached_to_the_returned_one_are_not_this_report(self):
         """Only the report's own parts count, not what the returned message carries."""
@@ -866,7 +883,8 @@ class BounceInfoTest(SimpleTestCase):
         self.assertEqual([f["recipient"] for f in info["failures"]], ["soporte@fac.example.org"])
 
     def test_returned_message_without_id_does_not_borrow_an_attached_one(self):
-        self.assertIsNone(self._info(_dsn(_returned_with_attachment(outer_message_id=False))))
+        info = self._info(_dsn(_returned_with_attachment(outer_message_id=False)))
+        self.assertIsNone(info["message_id"])
 
     def test_other_reports_are_not_bounces(self):
         # e.g. a read receipt (report-type=disposition-notification)
@@ -891,9 +909,16 @@ class BounceInfoTest(SimpleTestCase):
         )
         self.assertIsNone(self._info(raw))
 
-    def test_dsn_without_the_original_is_left_alone(self):
+    def test_dsn_without_the_original_is_still_a_bounce(self):
+        """It cannot be threaded, but it must still never be replied to."""
         raw = _dsn("Content-Type: text/plain\r\n\r\nnothing returned\r\n")
-        self.assertIsNone(self._info(raw))
+        info = self._info(raw)
+        self.assertIsNone(info["message_id"])
+        self.assertEqual(len(info["failures"]), 1)
+
+        mapped = self.client.map_email(self._imbox(raw))
+        self.assertTrue(mapped.is_bounce)
+        self.assertIsNone(mapped._bounced_message_id)
 
     def test_plain_message_is_not_a_bounce(self):
         self.assertIsNone(self._info(RAW_FULL))

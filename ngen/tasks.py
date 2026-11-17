@@ -49,6 +49,10 @@ BOUNCE_NOTES_PER_MESSAGE = 20
 BOUNCE_NOTE_PREFIX = "Bounce "
 
 
+def _addresses(people):
+    return {(p.get("email") or "").strip().lower() for p in people or [] if isinstance(p, dict)}
+
+
 def _thread_bounces(messages):
     """
     Put each delivery status notification (bounce) in the thread of the message
@@ -62,12 +66,17 @@ def _thread_bounces(messages):
     bounces = [m for m in messages if getattr(m, "_bounced_message_id", None)]
     if not bounces:
         return []
-    originals = {
-        o.message_id: o
-        for o in ngen.models.EmailMessage.objects.filter(
-            message_id__in={m._bounced_message_id for m in bounces}
-        )
-    }
+    # message_id is not unique (before inbound de-duplication, a message ngen
+    # sent could be stored again when it came back through the alias): prefer
+    # the copy ngen sent, else the first one stored.
+    sender = (config.EMAIL_SENDER or "").strip().lower()
+    originals = {}
+    for o in ngen.models.EmailMessage.objects.filter(
+        message_id__in={m._bounced_message_id for m in bounces}
+    ).order_by("created", "id"):
+        kept = originals.get(o.message_id)
+        if kept is None or (sender not in _addresses(kept.senders) and sender in _addresses(o.senders)):
+            originals[o.message_id] = o
     threaded = []
     for bounce in bounces:
         original = originals.get(bounce._bounced_message_id)
@@ -98,10 +107,6 @@ def _thread_bounces(messages):
     return threaded
 
 
-def _addresses(people):
-    return {(p.get("email") or "").strip().lower() for p in people or [] if isinstance(p, dict)}
-
-
 def _record_bounce_errors(threaded, stored):
     """
     Note on each bounced message which recipients failed and why (shown in the
@@ -116,8 +121,9 @@ def _record_bounce_errors(threaded, stored):
     One line per bounce, appended: a message to several recipients may come
     back in several bounces (one per remote server), and none of them must
     hide the others. Each line is bounded, and so is the number of lines.
-    The append is done under a row lock on a fresh copy, so a concurrent
-    writer of last_error (e.g. a send retry) is not overwritten.
+    The append is done under a row lock on a fresh copy, so a value written
+    meanwhile is kept. (async_send_email does not take that lock: a send that
+    is retried after its bounce arrived may still clear the note.)
     """
     stored_ids = {m.message_id for m in stored}
     sender = (config.EMAIL_SENDER or "").strip().lower()
@@ -128,11 +134,16 @@ def _record_bounce_errors(threaded, stored):
         if sender not in _addresses(original.senders):
             continue
         sent_to = _addresses(original.recipients) | _addresses(original.bcc_recipients)
-        failures = [
-            "%s: %s" % (f["recipient"], f["detail"]) if f["detail"] else f["recipient"]
-            for f in getattr(bounce, "_bounce_failures", None) or []
-            if f["recipient"].lower() in sent_to
-        ]
+        failures = []
+        for f in getattr(bounce, "_bounce_failures", None) or []:
+            final, used = f["recipient"], f.get("original_recipient") or f["recipient"]
+            if used.lower() in sent_to:
+                who = used if final.lower() == used.lower() else "%s (-> %s)" % (used, final)
+            elif final.lower() in sent_to:
+                who = final
+            else:
+                continue
+            failures.append("%s: %s" % (who, f["detail"]) if f["detail"] else who)
         if not failures:
             continue
         note = (BOUNCE_NOTE_PREFIX + "%s: %s" % (bounce.message_id, "; ".join(failures)))[
@@ -140,7 +151,9 @@ def _record_bounce_errors(threaded, stored):
         ]
         try:
             with transaction.atomic():
-                current = EmailMessage.objects.select_for_update().get(pk=original.pk)
+                current = EmailMessage.objects.select_for_update().filter(pk=original.pk).first()
+                if current is None:  # deleted meanwhile
+                    continue
                 lines = (current.last_error or "").split("\n")
                 if sum(1 for line in lines if line.startswith(BOUNCE_NOTE_PREFIX)) >= BOUNCE_NOTES_PER_MESSAGE:
                     logger.info(
@@ -207,6 +220,7 @@ def _store_inbound_emails(messages):
                 "este registro para no perder la traza."
             ),
             status=EmailMessage.Status.SENT,
+            is_bounce=getattr(message, "is_bounce", False),
             last_error=str(error).replace("\x00", "�")[:2000],
         )
         try:

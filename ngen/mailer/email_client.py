@@ -355,9 +355,10 @@ class EmailClient:
         If the message is a delivery status notification (a
         ``multipart/report; report-type=delivery-status``), return the
         Message-ID of the returned (original) message and the recipients that
-        failed, as ``{"message_id": str, "failures": [{"recipient": str,
-        "detail": str}, ...]}``. Return None for any other message, or when the
-        original cannot be identified.
+        failed, as ``{"message_id": str | None, "failures": [{"recipient": str,
+        "original_recipient": str, "detail": str}, ...]}``. ``message_id`` is
+        None when the original cannot be identified (the report is still a
+        bounce). Return None for any other message.
 
         Only the report's own parts are read: the returned message may itself
         carry attached messages (or be a bounce), whose ids and failures are
@@ -382,8 +383,6 @@ class EmailClient:
             if part.get_content_type() in self.DSN_STATUS_TYPES:
                 failures.extend(self._dsn_failures(part))
 
-        if not original_id:
-            return None
         return {"message_id": original_id, "failures": failures}
 
     def _returned_message_id(self, part: Message):
@@ -431,12 +430,19 @@ class EmailClient:
         for block in blocks:
             if self._one_line(block.get("Action")).lower() != "failed":
                 continue
-            recipient = self._one_line(block.get("Final-Recipient") or block.get("Original-Recipient"))
-            recipient = recipient.split(";", 1)[-1].strip()
+            # Final-Recipient is where delivery failed; Original-Recipient,
+            # when present, the address the sender used (e.g. before an alias
+            # forwarded it elsewhere).
+            final = self._one_line(block.get("Final-Recipient")).split(";", 1)[-1].strip()
+            original = self._one_line(block.get("Original-Recipient")).split(";", 1)[-1].strip()
             detail = " ".join(
                 self._one_line(block.get(h)) for h in ("Status", "Diagnostic-Code") if block.get(h)
             )
-            failures.append(self._clean({"recipient": recipient, "detail": detail}))
+            failures.append(self._clean({
+                "recipient": final or original,
+                "original_recipient": original or final,
+                "detail": detail,
+            }))
         return failures
 
     # A message cannot have been sent after we received it; beyond this margin
