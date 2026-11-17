@@ -33,6 +33,7 @@ class EmailMessageListSerializer(serializers.ModelSerializer):
             "attachment_count",
             "recipient_count",
             "has_error",
+            "is_bounce",
         ]
 
     def get_has_error(self, obj):

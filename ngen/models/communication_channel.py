@@ -266,10 +266,12 @@ class CommunicationChannel(AuditModelMixin):
 
     def get_last_message(self):
         """
-        Get the last message sent in the channel
+        Get the last message sent in the channel, the one the next message
+        replies to. Bounces are skipped: replying to one would address the
+        remote mailer daemon and take the bounce's subject.
         """
         messages = self.get_messages()
-        return messages.last() if messages else None
+        return messages.exclude(is_bounce=True).last() if messages else None
 
     def communicate(
         self,

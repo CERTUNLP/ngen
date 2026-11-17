@@ -685,3 +685,304 @@ class MapEmailsTest(SimpleTestCase):
         self.assertEqual(mapped[1].message_id, "<bad@ext.org>")
         self.assertIsNotNone(mapped[1].last_error)
         self.assertEqual(mapped[1].status, EmailMessage.Status.SENT)
+
+
+SOPORTE_FAILED = (
+    "Final-Recipient: rfc822; soporte@fac.example.org\r\n"
+    "Original-Recipient: rfc822;soporte@fac.example.org\r\n"
+    "Action: {action}\r\n"
+    "Status: 5.7.1\r\n"
+    "Remote-MTA: dns; mail.fac.example.org\r\n"
+    "Diagnostic-Code: smtp; 554 5.7.1 clamav: virus found:\r\n"
+    '    "Sanesecurity.Jurlbl.9736be.UNOFFICIAL"\r\n'
+)
+
+
+def _dsn(original, action="failed", report_type="delivery-status",
+         status_type="message/delivery-status", blocks=None):
+    """A Postfix-style delivery status notification (RFC 3464) for a test."""
+    if blocks is None:
+        blocks = [
+            "Reporting-MTA: dns; mail.example.org\r\nX-Postfix-Queue-ID: DD8BD9B87\r\n",
+            SOPORTE_FAILED.format(action=action),
+        ]
+    return (
+        "Message-ID: <20261117170522.648C99AE5@mail.example.org>\r\n"
+        "From: MAILER-DAEMON@mail.example.org (Mail Delivery System)\r\n"
+        "To: incidentes@example.org\r\n"
+        "Subject: Undelivered Mail Returned to Sender\r\n"
+        "Auto-Submitted: auto-replied\r\n"
+        "MIME-Version: 1.0\r\n"
+        f'Content-Type: multipart/report; report-type={report_type};\r\n'
+        '\tboundary="BOUND"\r\n'
+        "\r\n"
+        "--BOUND\r\n"
+        "Content-Type: text/plain; charset=us-ascii\r\n"
+        "\r\n"
+        "I'm sorry to have to inform you that your message could not\r\n"
+        "be delivered to one or more recipients.\r\n"
+        "\r\n"
+        "--BOUND\r\n"
+        f"Content-Type: {status_type}\r\n"
+        "\r\n"
+        + "\r\n".join(blocks)
+        + "\r\n"
+        "--BOUND\r\n"
+        f"{original}"
+        "--BOUND--\r\n"
+    )
+
+
+RETURNED_MESSAGE = (
+    "Content-Type: message/rfc822\r\n"
+    "\r\n"
+    "Return-Path: <incidentes@example.org>\r\n"
+    "Subject: [CERTUNLP][TLP:AMBER][AFFECTED] Case ID:\r\n"
+    " fd18d490-7144-41b0-9350-e3f3eefeda34\r\n"
+    "From: incidentes@example.org\r\n"
+    "To: soporte@fac.example.org\r\n"
+    "Message-ID: <179493511053.23.1606393343886294862@example.org>\r\n"
+    "\r\n"
+    "Report body\r\n"
+    "\r\n"
+)
+
+RETURNED_HEADERS = (
+    "Content-Type: text/rfc822-headers\r\n"
+    "\r\n"
+    "Subject: [CERTUNLP] Case ID: x\r\n"
+    "Message-ID: <only-headers@example.org>\r\n"
+    "\r\n"
+)
+
+
+def _returned_with_attachment(outer_message_id=True):
+    """
+    A returned message that itself carries an attached message which is a
+    bounce (e.g. evidence): its id and failures are not the outer report's.
+    """
+    inner = (
+        "Message-ID: <attached@elsewhere.org>\r\n"
+        "Subject: attached\r\n"
+        "MIME-Version: 1.0\r\n"
+        'Content-Type: multipart/report; report-type=delivery-status; boundary="IN"\r\n'
+        "\r\n"
+        "--IN\r\n"
+        "Content-Type: message/delivery-status\r\n"
+        "\r\n"
+        "Reporting-MTA: dns; other.org\r\n"
+        "\r\n"
+        "Final-Recipient: rfc822; stranger@other.org\r\n"
+        "Action: failed\r\n"
+        "Status: 5.1.1\r\n"
+        "\r\n"
+        "--IN\r\n"
+        "Content-Type: message/rfc822\r\n"
+        "\r\n"
+        "Message-ID: <inner-original@other.org>\r\n"
+        "\r\n"
+        "x\r\n"
+        "--IN--\r\n"
+    )
+    return (
+        "Content-Type: message/rfc822\r\n"
+        "\r\n"
+        "Subject: [CERTUNLP] Case ID: y\r\n"
+        + ("Message-ID: <outer-original@example.org>\r\n" if outer_message_id else "")
+        + "MIME-Version: 1.0\r\n"
+        'Content-Type: multipart/mixed; boundary="MIX"\r\n'
+        "\r\n"
+        "--MIX\r\n"
+        "Content-Type: text/plain\r\n"
+        "\r\n"
+        "report\r\n"
+        "--MIX\r\n"
+        "Content-Type: message/rfc822\r\n"
+        "\r\n"
+        f"{inner}"
+        "--MIX--\r\n"
+        "\r\n"
+    )
+
+
+class BounceInfoTest(SimpleTestCase):
+    def setUp(self):
+        self.client = _client()
+
+    def _info(self, raw):
+        return self.client.get_bounce_info(FakeImboxMessage(raw_email=raw))
+
+    def test_dsn_returns_original_message_id_and_failure(self):
+        info = self._info(_dsn(RETURNED_MESSAGE))
+
+        self.assertEqual(info["message_id"], "<179493511053.23.1606393343886294862@example.org>")
+        self.assertEqual(len(info["failures"]), 1)
+        failure = info["failures"][0]
+        self.assertEqual(failure["recipient"], "soporte@fac.example.org")
+        self.assertEqual(failure["original_recipient"], "soporte@fac.example.org")
+        # the folded Diagnostic-Code is kept whole, on one line
+        self.assertEqual(
+            failure["detail"],
+            '5.7.1 smtp; 554 5.7.1 clamav: virus found: "Sanesecurity.Jurlbl.9736be.UNOFFICIAL"',
+        )
+
+    def test_dsn_with_only_the_returned_headers(self):
+        info = self._info(_dsn(RETURNED_HEADERS))
+        self.assertEqual(info["message_id"], "<only-headers@example.org>")
+
+    def test_internationalised_dsn(self):
+        """RFC 6533 (SMTPUTF8) bounces use the "global" types."""
+        raw = _dsn(
+            RETURNED_MESSAGE.replace("message/rfc822", "message/global"),
+            report_type="global-delivery-status",
+            status_type="message/global-delivery-status",
+        )
+        info = self._info(raw)
+        self.assertEqual(info["message_id"], "<179493511053.23.1606393343886294862@example.org>")
+        self.assertEqual(info["failures"][0]["recipient"], "soporte@fac.example.org")
+
+    def test_delayed_delivery_is_threaded_but_not_a_failure(self):
+        info = self._info(_dsn(RETURNED_MESSAGE, action="delayed"))
+        self.assertEqual(info["message_id"], "<179493511053.23.1606393343886294862@example.org>")
+        self.assertEqual(info["failures"], [])
+
+    def test_recipient_blocks_are_found_without_a_reporting_mta_block(self):
+        raw = _dsn(RETURNED_MESSAGE, blocks=[SOPORTE_FAILED.format(action="failed")])
+        info = self._info(raw)
+        self.assertEqual([f["recipient"] for f in info["failures"]], ["soporte@fac.example.org"])
+
+    def test_folded_recipient_stays_on_one_line(self):
+        block = (
+            "Final-Recipient: rfc822;\r\n soporte@fac.example.org\r\n"
+            "Action: failed\r\n"
+            "Status: 5.1.1\r\n"
+        )
+        info = self._info(_dsn(RETURNED_MESSAGE, blocks=["Reporting-MTA: dns; m\r\n", block]))
+        self.assertEqual(
+            info["failures"],
+            [{"recipient": "soporte@fac.example.org", "original_recipient": "soporte@fac.example.org",
+              "detail": "5.1.1"}],
+        )
+
+    def test_forwarding_alias_keeps_the_address_we_sent_to(self):
+        """An alias forwarded elsewhere fails at the final address, not the one we used."""
+        block = (
+            "Final-Recipient: rfc822; juan@gmail.example\r\n"
+            "Original-Recipient: rfc822;soporte@fac.example.org\r\n"
+            "Action: failed\r\n"
+            "Status: 5.1.1\r\n"
+        )
+        info = self._info(_dsn(RETURNED_MESSAGE, blocks=["Reporting-MTA: dns; m\r\n", block]))
+        self.assertEqual(info["failures"][0]["recipient"], "juan@gmail.example")
+        self.assertEqual(info["failures"][0]["original_recipient"], "soporte@fac.example.org")
+
+    def test_messages_attached_to_the_returned_one_are_not_this_report(self):
+        """Only the report's own parts count, not what the returned message carries."""
+        info = self._info(_dsn(_returned_with_attachment()))
+        self.assertEqual(info["message_id"], "<outer-original@example.org>")
+        self.assertEqual([f["recipient"] for f in info["failures"]], ["soporte@fac.example.org"])
+
+    def test_returned_message_without_id_does_not_borrow_an_attached_one(self):
+        info = self._info(_dsn(_returned_with_attachment(outer_message_id=False)))
+        self.assertIsNone(info["message_id"])
+
+    def test_other_reports_are_not_bounces(self):
+        # e.g. a read receipt (report-type=disposition-notification)
+        raw = _dsn(RETURNED_MESSAGE, report_type="disposition-notification")
+        self.assertIsNone(self._info(raw))
+
+    def test_forwarded_message_is_not_a_bounce(self):
+        """An admin forwarding our report as an attachment is a normal reply."""
+        raw = (
+            "Message-ID: <fwd@fac.example.org>\r\n"
+            "Subject: Fwd: report\r\n"
+            "MIME-Version: 1.0\r\n"
+            'Content-Type: multipart/mixed; boundary="BOUND"\r\n'
+            "\r\n"
+            "--BOUND\r\n"
+            "Content-Type: text/plain\r\n"
+            "\r\n"
+            "see below\r\n"
+            "--BOUND\r\n"
+            f"{RETURNED_MESSAGE}"
+            "--BOUND--\r\n"
+        )
+        self.assertIsNone(self._info(raw))
+
+    def test_dsn_without_the_original_is_still_a_bounce(self):
+        """It cannot be threaded, but it must still never be replied to."""
+        raw = _dsn("Content-Type: text/plain\r\n\r\nnothing returned\r\n")
+        info = self._info(raw)
+        self.assertIsNone(info["message_id"])
+        self.assertEqual(len(info["failures"]), 1)
+
+        mapped = self.client.map_email(self._imbox(raw))
+        self.assertTrue(mapped.is_bounce)
+        self.assertIsNone(mapped._bounced_message_id)
+
+    def test_plain_message_is_not_a_bounce(self):
+        self.assertIsNone(self._info(RAW_FULL))
+
+    def _imbox(self, raw):
+        return FakeImboxMessage(
+            message_id="<20261117170522.648C99AE5@mail.example.org>",
+            subject="Undelivered Mail Returned to Sender",
+            sent_from=[{"name": "", "email": "MAILER-DAEMON@mail.example.org"}],
+            sent_to=[{"name": "", "email": "incidentes@example.org"}],
+            body={"plain": ["I'm sorry"], "html": []},
+            attachments=[],
+            raw_email=raw,
+        )
+
+    def test_map_email_flags_the_bounce_and_keeps_its_details(self):
+        mapped = self.client.map_email(self._imbox(_dsn(RETURNED_MESSAGE)))
+
+        self.assertTrue(mapped.is_bounce)
+        self.assertEqual(
+            mapped._bounced_message_id, "<179493511053.23.1606393343886294862@example.org>"
+        )
+        self.assertEqual(len(mapped._bounce_failures), 1)
+        # threading itself is done against the database by retrieve_emails
+        self.assertEqual(mapped.root_message_id, mapped.message_id)
+
+    def test_a_regular_message_is_not_flagged(self):
+        msg = FakeImboxMessage(
+            message_id="<abc@ext.org>", subject="Re: Case", sent_from=[], sent_to=[],
+            body={"plain": ["hello"], "html": []}, attachments=[], raw_email=RAW_FULL,
+        )
+        mapped = self.client.map_email(msg)
+        self.assertFalse(mapped.is_bounce)
+        self.assertIsNone(mapped._bounced_message_id)
+        self.assertEqual(mapped._bounce_failures, [])
+
+    def test_unreadable_bounce_details_do_not_lose_the_message(self):
+        with patch.object(EmailClient, "get_bounce_info", side_effect=ValueError("boom")):
+            mapped = self.client.map_email(self._imbox(_dsn(RETURNED_MESSAGE)))
+
+        self.assertEqual(mapped.message_id, "<20261117170522.648C99AE5@mail.example.org>")
+        self.assertIsNone(mapped.last_error)
+        self.assertFalse(mapped.is_bounce)
+        self.assertIsNone(mapped._bounced_message_id)
+
+
+class BounceSeveralRecipientsTest(SimpleTestCase):
+    def test_every_failed_recipient_is_reported(self):
+        """One DSN for several recipients: each failure is kept, the delivered one is not."""
+        blocks = [
+            "Reporting-MTA: dns; mail.example.org\r\n",
+            "Final-Recipient: rfc822; full@fac.example.org\r\n"
+            "Action: failed\r\n"
+            "Status: 5.2.2\r\n"
+            "Diagnostic-Code: smtp; 552 5.2.2 Quota exceeded\r\n",
+            "Final-Recipient: rfc822; ok@fac.example.org\r\n"
+            "Action: delivered\r\n"
+            "Status: 2.0.0\r\n",
+            SOPORTE_FAILED.format(action="failed"),
+        ]
+        info = _client().get_bounce_info(FakeImboxMessage(raw_email=_dsn(RETURNED_MESSAGE, blocks=blocks)))
+
+        self.assertEqual(
+            [f["recipient"] for f in info["failures"]],
+            ["full@fac.example.org", "soporte@fac.example.org"],
+        )
+        self.assertEqual(info["failures"][0]["detail"], "5.2.2 smtp; 552 5.2.2 Quota exceeded")
