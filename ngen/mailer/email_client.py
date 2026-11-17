@@ -113,6 +113,18 @@ class EmailClient:
             status=EmailMessage.Status.SENT,
         )
 
+        # A delivery status notification (bounce) carries no References to the
+        # message it reports on, so on its own it would start a thread of its
+        # own, detached from the case. Keep what identifies the original so
+        # retrieve_emails can thread it under that message (see thread_bounces).
+        try:
+            bounce = self.get_bounce_info(email)
+        except Exception:  # noqa: BLE001 - never lose the message over its DSN details
+            logger.exception("map_email: could not read bounce details of %s", message_id)
+            bounce = None
+        email_message._bounced_message_id = bounce["message_id"] if bounce else None
+        email_message._bounce_failures = bounce["failures"] if bounce else []
+
         # Defer attachment persistence until *after* de-duplication (see
         # persist_attachments / retrieve_emails): writing here, before the
         # duplicate check, let a discarded duplicate overwrite a retained
@@ -320,6 +332,72 @@ class EmailClient:
         Get parent message ID from In-Reply-To field
         """
         return self.get_custom_email_field(message, "In-Reply-To") or None
+
+    # Parts of a delivery status notification (RFC 3464) that carry the
+    # returned message, whole or only its headers.
+    DSN_ORIGINAL_TYPES = ("message/rfc822", "text/rfc822-headers", "message/rfc822-headers")
+
+    def get_bounce_info(self, message: Messages):
+        """
+        If the message is a delivery status notification (RFC 3464: a
+        ``multipart/report; report-type=delivery-status``), return the
+        Message-ID of the returned (original) message and the recipients that
+        failed, as ``{"message_id": str, "failures": [str, ...]}``. Return None
+        for any other message, or when the original cannot be identified.
+        """
+        parsed = self.map_raw_email(getattr(message, "raw_email", "") or "")
+        if parsed.get_content_type() != "multipart/report":
+            return None
+        if (parsed.get_param("report-type") or "").lower() != "delivery-status":
+            return None
+
+        original_id, failures = None, []
+        for part in parsed.walk():
+            ctype = part.get_content_type()
+            if ctype in self.DSN_ORIGINAL_TYPES and original_id is None:
+                original_id = self._returned_message_id(part)
+            elif ctype == "message/delivery-status":
+                failures.extend(self._dsn_failures(part))
+
+        if not original_id:
+            return None
+        return {"message_id": original_id, "failures": failures}
+
+    def _returned_message_id(self, part: Message):
+        """Message-ID of the original message carried by a DSN part."""
+        payload = part.get_payload()
+        if isinstance(payload, list):  # message/rfc822: parsed as a sub-message
+            headers = payload[0] if payload else None
+        else:  # headers only, as text
+            raw = part.get_payload(decode=True)
+            text = raw.decode("utf-8", "replace") if isinstance(raw, bytes) else str(payload or "")
+            headers = email.message_from_string(text)
+        message_id = headers.get("Message-ID") if headers is not None else None
+        message_id = " ".join(str(message_id).split()) if message_id else ""
+        return self._bound_id(message_id) or None
+
+    def _dsn_failures(self, part: Message):
+        """
+        Readable summary of each recipient the DSN reports as failed, e.g.
+        "soporte@fac.unlp.edu.ar: 5.7.1 smtp; 554 5.7.1 clamav: virus found".
+        """
+        blocks = part.get_payload()
+        if not isinstance(blocks, list):
+            return []
+        failures = []
+        # The first block describes the reporting MTA; the rest, one recipient each.
+        for block in blocks[1:]:
+            if (block.get("Action") or "").strip().lower() != "failed":
+                continue
+            recipient = str(block.get("Final-Recipient") or block.get("Original-Recipient") or "")
+            recipient = recipient.split(";", 1)[-1].strip()
+            detail = " ".join(
+                " ".join(str(block.get(h) or "").split())
+                for h in ("Status", "Diagnostic-Code")
+                if block.get(h)
+            )
+            failures.append(self._clean(f"{recipient}: {detail}".strip(": ")))
+        return failures
 
     # A message cannot have been sent after we received it; beyond this margin
     # (clock skew) a later Date header means a misconfigured sender clock/zone.

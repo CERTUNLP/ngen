@@ -42,6 +42,76 @@ def _advisory_unlock(key: int) -> None:
         cursor.execute("SELECT pg_advisory_unlock(%s)", [key])
 
 
+# Longest note recorded per bounce on the returned message (see _record_bounce_errors).
+BOUNCE_NOTE_MAX = 1000
+
+
+def _thread_bounces(messages):
+    """
+    Put each delivery status notification (bounce) in the thread of the message
+    it reports on, so it shows up in that case's conversation instead of as a
+    detached thread. ``EmailClient.map_email`` leaves the returned message's id
+    in ``_bounced_message_id``; a bounce whose original is not stored here is
+    left as it is.
+
+    Returns ``[(original, bounce), ...]`` for the bounces that were threaded.
+    """
+    bounces = [m for m in messages if getattr(m, "_bounced_message_id", None)]
+    if not bounces:
+        return []
+    originals = {
+        o.message_id: o
+        for o in ngen.models.EmailMessage.objects.filter(
+            message_id__in={m._bounced_message_id for m in bounces}
+        )
+    }
+    threaded = []
+    for bounce in bounces:
+        original = originals.get(bounce._bounced_message_id)
+        if original is None:
+            continue
+        # Same shape as a reply built by EmailHandler.send_email: References[0]
+        # stays the case root, so answers to the bounce remain in the case too.
+        references = list(original.references or [])
+        if not references or references[0] != original.root_message_id:
+            references.insert(0, original.root_message_id)
+        if original.message_id not in references:
+            references.append(original.message_id)
+        bounce.root_message_id = original.root_message_id
+        bounce.parent_message_id = original.message_id
+        bounce.references = references
+        threaded.append((original, bounce))
+    return threaded
+
+
+def _record_bounce_errors(threaded, stored):
+    """
+    Note on each bounced original which recipients failed and why (shown in the
+    email queue), without changing its status: the message did leave ngen, and
+    resending it unchanged would most likely bounce again.
+
+    One line per bounce, appended: a message to several recipients may come
+    back in several bounces (one per remote server), each with one or more
+    failed recipients, and none of them must hide the others. Each line is
+    bounded instead of the whole field, so a long one cannot push out the rest.
+    """
+    stored_ids = {m.message_id for m in stored}
+    for original, bounce in threaded:
+        failures = getattr(bounce, "_bounce_failures", None) or []
+        if bounce.message_id not in stored_ids or not failures:
+            continue
+        note = ("Bounce %s: %s" % (bounce.message_id, "; ".join(failures)))[:BOUNCE_NOTE_MAX]
+        if original.last_error and note in original.last_error:
+            continue
+        original.last_error = "\n".join(filter(None, [original.last_error, note]))
+        try:
+            original.save(update_fields=["last_error"])
+        except DatabaseError:
+            logger.exception(
+                "retrieve_emails: could not record bounce on message id=%s", original.id
+            )
+
+
 def _store_inbound_emails(messages):
     """
     Insert mapped inbound messages. Normally a single bulk_create; if the
@@ -860,7 +930,9 @@ def retrieve_emails():
                 email_client.persist_attachments(message)
                 to_create.append(message)
 
+            threaded_bounces = _thread_bounces(to_create)
             created_messages = _store_inbound_emails(to_create)
+            _record_bounce_errors(threaded_bounces, created_messages)
             logger.info(
                 "retrieve_emails: fetched=%s stored=%s duplicates=%s subjects=%s",
                 len(unread_emails),

@@ -554,6 +554,146 @@ class TestRetrieveEmails(TasksTestCase):
         instance.mark_emails_as_read.assert_called_once_with(unread)
 
 
+    def _bounce(self, original_id, failures, message_id="<bounce@mta>"):
+        bounce = EmailMessage(
+            root_message_id=message_id, message_id=message_id,
+            subject="Undelivered Mail Returned to Sender",
+            senders=[], recipients=[], body="b", status="sent",
+        )
+        bounce._bounced_message_id = original_id
+        bounce._bounce_failures = failures
+        return bounce
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_bounce_is_threaded_under_the_returned_message(self, mock_client):
+        """
+        A bounce lands in the conversation of the message it reports on (and so
+        in its case), and the failure is noted on that message without changing
+        its status.
+        """
+        instance = mock_client.return_value
+        original = EmailMessage.objects.create(
+            root_message_id="<case-root@x>",
+            parent_message_id="<prev@x>",
+            references=["<case-root@x>", "<prev@x>"],
+            message_id="<report@x>",
+            subject="[CERTUNLP] Case ID: 1",
+            senders=[], recipients=[], body="report", status="sent",
+        )
+        failure = "soporte@fac.example.org: 5.7.1 smtp; 554 5.7.1 clamav: virus found"
+        unread = [("1", MagicMock())]
+        instance.fetch_unread_emails.return_value = unread
+        instance.map_emails.return_value = [self._bounce("<report@x>", [failure])]
+
+        result = tasks.retrieve_emails()
+
+        self.assertEqual(result["status"], "success")
+        bounce = EmailMessage.objects.get(message_id="<bounce@mta>")
+        self.assertEqual(bounce.root_message_id, "<case-root@x>")
+        self.assertEqual(bounce.parent_message_id, "<report@x>")
+        self.assertEqual(bounce.references, ["<case-root@x>", "<prev@x>", "<report@x>"])
+        self.assertIn(bounce, EmailMessage.get_message_thread_by("<case-root@x>"))
+
+        original.refresh_from_db()
+        self.assertEqual(original.status, "sent")
+        self.assertIn("<bounce@mta>", original.last_error)
+        self.assertIn(failure, original.last_error)
+        instance.mark_emails_as_read.assert_called_once_with(unread)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_bounce_of_a_first_report_starts_from_its_root(self, mock_client):
+        """The first report of a case is its own root and has no References."""
+        instance = mock_client.return_value
+        EmailMessage.objects.create(
+            root_message_id="<report@x>", message_id="<report@x>", references=[],
+            subject="[CERTUNLP] Case ID: 1", senders=[], recipients=[], body="r", status="sent",
+        )
+        instance.fetch_unread_emails.return_value = [("1", MagicMock())]
+        instance.map_emails.return_value = [self._bounce("<report@x>", [])]
+
+        tasks.retrieve_emails()
+
+        bounce = EmailMessage.objects.get(message_id="<bounce@mta>")
+        self.assertEqual(bounce.root_message_id, "<report@x>")
+        self.assertEqual(bounce.parent_message_id, "<report@x>")
+        self.assertEqual(bounce.references, ["<report@x>"])
+        # a delay notice (no failed recipient) leaves no error on the original
+        self.assertIsNone(EmailMessage.objects.get(message_id="<report@x>").last_error)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_bounce_of_an_unknown_message_is_stored_as_is(self, mock_client):
+        instance = mock_client.return_value
+        instance.fetch_unread_emails.return_value = [("1", MagicMock())]
+        instance.map_emails.return_value = [self._bounce("<not-ours@x>", ["a@b: 5.1.1"])]
+
+        result = tasks.retrieve_emails()
+
+        self.assertEqual(result["status"], "success")
+        bounce = EmailMessage.objects.get(message_id="<bounce@mta>")
+        self.assertEqual(bounce.root_message_id, "<bounce@mta>")
+        self.assertIsNone(bounce.parent_message_id)
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_duplicate_bounce_does_not_repeat_the_note(self, mock_client):
+        instance = mock_client.return_value
+        EmailMessage.objects.create(
+            root_message_id="<report@x>", message_id="<report@x>",
+            subject="s", senders=[], recipients=[], body="r", status="sent",
+        )
+        instance.fetch_unread_emails.return_value = [("1", MagicMock())]
+        instance.map_emails.side_effect = lambda _: [self._bounce("<report@x>", ["a@b: 5.1.1"])]
+
+        tasks.retrieve_emails()
+        tasks.retrieve_emails()  # same bounce fetched again: de-duplicated
+
+        original = EmailMessage.objects.get(message_id="<report@x>")
+        self.assertEqual(original.last_error.count("<bounce@mta>"), 1)
+        self.assertEqual(EmailMessage.objects.filter(message_id="<bounce@mta>").count(), 1)
+
+
+    @use_test_email_env()
+    @patch("ngen.tasks.EmailClient")
+    def test_several_bounces_of_one_message_are_all_kept(self, mock_client):
+        """
+        A report to several recipients can come back in several bounces, in the
+        same fetch or in later ones: every failure stays on the original, none
+        overwrites another, and a very long one cannot push the rest out.
+        """
+        instance = mock_client.return_value
+        EmailMessage.objects.create(
+            root_message_id="<report@x>", message_id="<report@x>",
+            subject="s", senders=[], recipients=[], body="r", status="sent",
+        )
+        instance.fetch_unread_emails.return_value = [("1", MagicMock()), ("2", MagicMock())]
+        instance.map_emails.return_value = [
+            self._bounce("<report@x>", ["a@fac1: 5.7.1 virus found", "b@fac1: 5.1.1 unknown user"],
+                         message_id="<b1@mta>"),
+            self._bounce("<report@x>", ["c@fac2: 5.2.2 " + "x" * 5000], message_id="<b2@mta>"),
+        ]
+        tasks.retrieve_emails()
+
+        instance.fetch_unread_emails.return_value = [("3", MagicMock())]
+        instance.map_emails.return_value = [
+            self._bounce("<report@x>", ["d@fac3: 5.7.515 access denied"], message_id="<b3@mta>"),
+        ]
+        tasks.retrieve_emails()
+
+        notes = EmailMessage.objects.get(message_id="<report@x>").last_error.split("\n")
+        self.assertEqual(len(notes), 3)
+        self.assertTrue(notes[0].startswith("Bounce <b1@mta>: a@fac1: 5.7.1"))
+        self.assertIn("b@fac1: 5.1.1", notes[0])
+        self.assertTrue(notes[1].startswith("Bounce <b2@mta>: c@fac2"))
+        self.assertEqual(len(notes[1]), tasks.BOUNCE_NOTE_MAX)
+        self.assertEqual(notes[2], "Bounce <b3@mta>: d@fac3: 5.7.515 access denied")
+        for bounce_id in ("<b1@mta>", "<b2@mta>", "<b3@mta>"):
+            self.assertEqual(
+                EmailMessage.objects.get(message_id=bounce_id).parent_message_id, "<report@x>"
+            )
+
 class TestSendContactChecks(TasksTestCase):
     @CELERY_EAGER
     def test_no_frontend_url(self):
